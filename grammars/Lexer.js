@@ -47,7 +47,7 @@ Lexer.RULE_EOF = '<<EOF>>';
  *
  * @public
  */
-Lexer.prototype.reset = function () {
+Lexer.prototype.reset = function() {
   this.source = '';
   this.index = 0;
   this.text = undefined;
@@ -64,7 +64,7 @@ Lexer.prototype.reset = function () {
  *
  * @public
  */
-Lexer.prototype.clear = function () {
+Lexer.prototype.clear = function() {
   this.states = {};
   this.definitions = [];
   this.rules = {};
@@ -85,7 +85,7 @@ Lexer.prototype.clear = function () {
  *
  * @public
  */
-Lexer.prototype.setIgnoreCase = function (ignoreCase) {
+Lexer.prototype.setIgnoreCase = function(ignoreCase) {
   this.ignoreCase = ignoreCase;
 };
 
@@ -98,7 +98,7 @@ Lexer.prototype.setIgnoreCase = function (ignoreCase) {
  *
  * @public
  */
-Lexer.prototype.setDebugEnabled = function (debugEnabled) {
+Lexer.prototype.setDebugEnabled = function(debugEnabled) {
   this.debugEnabled = debugEnabled;
 };
 
@@ -108,9 +108,9 @@ Lexer.prototype.setDebugEnabled = function (debugEnabled) {
  * @param {string}  name
  * @param {boolean} [exclusive]
  */
-Lexer.prototype.addState = function (name, exclusive) {
+Lexer.prototype.addState = function(name, exclusive) {
   this.states[name] = { name: name, exclusive: !!exclusive };
-}
+};
 
 /**
  * Add definition.
@@ -120,21 +120,21 @@ Lexer.prototype.addState = function (name, exclusive) {
  *
  * @public
  */
-Lexer.prototype.addDefinition = function (name, expression) {
-  if (typeof name !== 'string' || !this.idRegExp.test(name)) {
+Lexer.prototype.addDefinition = function(name, expression) {
+  if(typeof name !== 'string' || !this.idRegExp.test(name)) {
     throw new Error('Invalid definition name "' + name + '"');
   }
 
-  if (typeof expression === 'string') {
-    if (expression.length === 0) {
+  if(typeof expression === 'string') {
+    if(expression.length === 0) {
       throw new Error('Empty expression for definition "' + name + '"');
     }
     expression = this.escapeRegExp(expression);
-  } else if (expression instanceof RegExp) {
-    if (expression.source === '(?:)') {
+  } else if(expression instanceof RegExp) {
+    if(expression.source === '(?:)') {
       throw new Error('Empty expression for definition "' + name + '"');
     }
-    if (expression.flags !== '') {
+    if(expression.flags !== '') {
       throw new Error('Expression flags are not supported for definition expressions');
     }
     expression = expression.source;
@@ -158,71 +158,74 @@ Lexer.prototype.addDefinition = function (name, expression) {
  *
  * @public
  */
-Lexer.prototype.addStateRule = function (states, expression, action) {
-  if (states === undefined || states === null) {
+Lexer.prototype.addStateRule = function(states, expression, action) {
+  if(states === undefined || states === null) {
     // convert default state into list of target states
     states = [];
-    for (var index in this.states) {
+    for(var index in this.states) {
       var state = this.states[index];
-      if (!state.exclusive) {
+      if(!state.exclusive) {
         states.push(state.name);
       }
     }
-  } else if (states === Lexer.STATE_ANY) {
+  } else if(states === Lexer.STATE_ANY) {
     // convert any state into list of target states
     states = [];
-    for (var index in this.states) {
+    for(var index in this.states) {
       var state = this.states[index];
       states.push(state.name);
     }
-  } else if (typeof states === 'string') {
+  } else if(typeof states === 'string') {
     // convert single state into list of target states
     states = [states];
   }
 
   // filter empty states
-  states = states.filter(function (state) { return !!state; });
+  states = states.filter(function (state) {
+    return !!state;
+  });
 
   // validate if we have at least one state to add rule into
-  if (!states.length) {
+  if(!states.length) {
     throw new Error('Unable to add rule to empty list of states');
   }
 
   // do not allow to add rules into not registered states
   var notRegisteredStates = states.reduce(function (acc, state) {
-    if (!this.states[state]) {
-      acc.push(state);
-    }
-    return acc;
-  }.bind(this), []);
-  if (notRegisteredStates.length) {
-    throw new Error('Unable to register rule within unregistered state(s): ' + notRegisteredStates.join(', '));
+      if(!this.states[state]) {
+        acc.push(state);
+      }
+      return acc;
+    }.bind(this),
+    []
+  );
+  if(notRegisteredStates.length) {
+    throw new Error('Unable to register rule within unregistered state(s): ' + notRegisteredStates.join(', ')
+    );
   }
 
   var source;
   var flags;
   var fixedWidth;
 
-  if (expression === Lexer.RULE_EOF) {
+  if(expression === Lexer.RULE_EOF) {
     source = null;
-  } else if (typeof expression === 'string') {
-    if (expression.length === 0) {
+  } else if(typeof expression === 'string') {
+    if(expression.length === 0) {
       throw new Error('Empty expression for rule used in states "' + states.join(', ') + '"');
     }
     source = this.escapeRegExp(expression);
     fixedWidth = expression.length;
     flags = '';
-  } else if (expression instanceof RegExp) {
-    if (expression.source === '(?:)') {
+  } else if(expression instanceof RegExp) {
+    if(expression.source === '(?:)') {
       throw new Error('Empty expression for rule used in states "' + states.join(', ') + '"');
     }
-    if (expression.flags !== '') {
-      var notSupportedFlags = expression.flags
-        .split('')
-        .filter(function (flag) {
-          return flag !== 'i' && flag !== 'u';
-        });
-      if (notSupportedFlags.length) {
+    if(expression.flags !== '') {
+      var notSupportedFlags = expression.flags.split('').filter(function (flag) {
+        return flag !== 'i' && flag !== 'u';
+      });
+      if(notSupportedFlags.length) {
         throw new Error('Expression flags besides "i" and "u" are not supported');
       }
     }
@@ -232,7 +235,7 @@ Lexer.prototype.addStateRule = function (states, expression, action) {
     throw new Error('Invalid rule expression "' + expression + '"');
   }
 
-  if (action && typeof action !== 'function') {
+  if(action && typeof action !== 'function') {
     throw new Error('Invalid rule action: should be function or empty');
   }
 
@@ -250,9 +253,9 @@ Lexer.prototype.addStateRule = function (states, expression, action) {
     fixedWidth: fixedWidth // used for weighted match optmization
   };
 
-  for (var index in states) {
+  for(var index in states) {
     var state = states[index];
-    if (!this.rules[state]) {
+    if(!this.rules[state]) {
       this.rules[state] = [];
     }
     this.rules[state].push(rule);
@@ -267,8 +270,8 @@ Lexer.prototype.addStateRule = function (states, expression, action) {
  *
  * @public
  */
-Lexer.prototype.addStateRules = function (states, rules) {
-  for (var index in rules) {
+Lexer.prototype.addStateRules = function(states, rules) {
+  for(var index in rules) {
     var rule = rules[index];
     this.addStateRule(states, rule.expression, rule.action);
   }
@@ -285,7 +288,7 @@ Lexer.prototype.addStateRules = function (states, rules) {
  *
  * @public
  */
-Lexer.prototype.addRule = function (expression, action) {
+Lexer.prototype.addRule = function(expression, action) {
   this.addStateRule(undefined, expression, action);
 };
 
@@ -296,7 +299,7 @@ Lexer.prototype.addRule = function (expression, action) {
  *
  * @public
  */
-Lexer.prototype.addRules = function (rules) {
+Lexer.prototype.addRules = function(rules) {
   this.addStateRules(undefined, rules);
 };
 
@@ -307,7 +310,7 @@ Lexer.prototype.addRules = function (rules) {
  *
  * @public
  */
-Lexer.prototype.setSource = function (source) {
+Lexer.prototype.setSource = function(source) {
   this.source = source;
   this.index = 0;
 };
@@ -319,12 +322,12 @@ Lexer.prototype.setSource = function (source) {
  *
  * @public
  */
-Lexer.prototype.lex = function () {
+Lexer.prototype.lex = function() {
   var result;
 
   do {
     result = this.scan();
-  } while (result === undefined && result !== Lexer.EOF);
+  } while(result === undefined && result !== Lexer.EOF);
 
   return result;
 };
@@ -336,10 +339,10 @@ Lexer.prototype.lex = function () {
  *
  * @public
  */
-Lexer.prototype.lexAll = function () {
+Lexer.prototype.lexAll = function() {
   var result = [];
   var token;
-  while ((token = this.lex()) !== Lexer.EOF) {
+  while((token = this.lex()) !== Lexer.EOF) {
     result.push(token);
   }
   return result;
@@ -350,7 +353,7 @@ Lexer.prototype.lexAll = function () {
  *
  * @public
  */
-Lexer.prototype.discard = function () {
+Lexer.prototype.discard = function() {
   return undefined;
 };
 
@@ -359,8 +362,8 @@ Lexer.prototype.discard = function () {
  *
  * @public
  */
-Lexer.prototype.echo = function () {
-  if (this.isNode) {
+Lexer.prototype.echo = function() {
+  if(this.isNode) {
     process.stdout.write(this.text);
   } else {
     console.log(this.text);
@@ -374,11 +377,11 @@ Lexer.prototype.echo = function () {
  *
  * @public
  */
-Lexer.prototype.begin = function (newState) {
-  if (newState === undefined) {
+Lexer.prototype.begin = function(newState) {
+  if(newState === undefined) {
     newState = Lexer.STATE_INITIAL;
   }
-  if (!this.states[newState]) {
+  if(!this.states[newState]) {
     throw new Error('State "' + newState + '" is not registered');
   }
   this.state = newState;
@@ -389,7 +392,7 @@ Lexer.prototype.begin = function (newState) {
  *
  * @public
  */
-Lexer.prototype.reject = function () {
+Lexer.prototype.reject = function() {
   this.index -= this.text.length;
   this.rejectedRules.push(this.ruleIndex);
 };
@@ -399,7 +402,7 @@ Lexer.prototype.reject = function () {
  *
  * @public
  */
-Lexer.prototype.more = function () {
+Lexer.prototype.more = function() {
   this.readMore = true;
 };
 
@@ -410,8 +413,8 @@ Lexer.prototype.more = function () {
  *
  * @public
  */
-Lexer.prototype.less = function (n) {
-  if (n > this.text.length) {
+Lexer.prototype.less = function(n) {
+  if(n > this.text.length) {
     return;
   }
   this.index -= this.text.length - n;
@@ -425,7 +428,7 @@ Lexer.prototype.less = function (n) {
  *
  * @public
  */
-Lexer.prototype.unput = function (s) {
+Lexer.prototype.unput = function(s) {
   this.source = this.source.substr(0, this.index) + s + this.source.substr(this.index);
 };
 
@@ -438,7 +441,7 @@ Lexer.prototype.unput = function (s) {
  *
  * @public
  */
-Lexer.prototype.input = function (n) {
+Lexer.prototype.input = function(n) {
   var value = this.source.substr(this.index, n === undefined ? 1 : n);
   this.index += value.length;
   return value;
@@ -449,7 +452,7 @@ Lexer.prototype.input = function (n) {
  *
  * @public
  */
-Lexer.prototype.terminate = function () {
+Lexer.prototype.terminate = function() {
   this.reset();
   return Lexer.EOF;
 };
@@ -459,8 +462,8 @@ Lexer.prototype.terminate = function () {
  *
  * @public
  */
-Lexer.prototype.restart = function (newSource) {
-  if (newSource !== undefined) {
+Lexer.prototype.restart = function(newSource) {
+  if(newSource !== undefined) {
     this.source = newSource;
   }
   this.index = 0;
@@ -473,8 +476,8 @@ Lexer.prototype.restart = function (newSource) {
  *
  * @public
  */
-Lexer.prototype.pushState = function (newState) {
-  if (!this.states[newState]) {
+Lexer.prototype.pushState = function(newState) {
+  if(!this.states[newState]) {
     throw new Error('State "' + newState + '" is not registered');
   }
   this.stateStack.push(this.state);
@@ -488,8 +491,8 @@ Lexer.prototype.pushState = function (newState) {
  *
  * @public
  */
-Lexer.prototype.topState = function () {
-  if (!this.stateStack.length) {
+Lexer.prototype.topState = function() {
+  if(!this.stateStack.length) {
     return undefined;
   }
   return this.stateStack[this.stateStack.length - 1];
@@ -500,8 +503,8 @@ Lexer.prototype.topState = function () {
  *
  * @public
  */
-Lexer.prototype.popState = function () {
-  if (!this.stateStack.length) {
+Lexer.prototype.popState = function() {
+  if(!this.stateStack.length) {
     throw new Error('Unable to pop state');
   }
   var oldState = this.stateStack.pop();
@@ -515,7 +518,7 @@ Lexer.prototype.popState = function () {
  *
  * @public
  */
-Lexer.prototype.switchState = function (newState) {
+Lexer.prototype.switchState = function(newState) {
   this.begin(newState);
 };
 
@@ -524,7 +527,7 @@ Lexer.prototype.switchState = function (newState) {
  *
  * @private
  */
-Lexer.prototype.scan = function () {
+Lexer.prototype.scan = function() {
   var isEOF = this.index >= this.source.length;
 
   var matchedRule;
@@ -533,16 +536,16 @@ Lexer.prototype.scan = function () {
   var matchedValueLength = 0; // could be 1 char more than matchedValue for expressions with $ at end
 
   var rules = this.rules[this.state] || [];
-  for (var index in rules) {
-    if (this.rejectedRules.indexOf(index) !== -1) {
+  for(var index in rules) {
+    if(this.rejectedRules.indexOf(index) !== -1) {
       continue;
     }
 
     var rule = rules[index];
 
-    if (isEOF) {
+    if(isEOF) {
       // skip non EOF rules
-      if (rule.isEOF) {
+      if(rule.isEOF) {
         matchedRule = rule;
         matchedIndex = index;
         matchedValue = '';
@@ -550,21 +553,19 @@ Lexer.prototype.scan = function () {
         break;
       }
     } else {
-      if (rule.fixedWidth === undefined
-        || rule.fixedWidth > matchedValueLength
-      ) {
+      if(rule.fixedWidth === undefined || rule.fixedWidth > matchedValueLength) {
         var curMatch = this.execRegExp(rule.expression);
-        if (curMatch !== undefined) {
+        if(curMatch !== undefined) {
           var curMatchLength = curMatch.length;
 
-          if (rule.hasBOL) {
+          if(rule.hasBOL) {
             curMatchLength++;
           }
-          if (rule.hasEOL) {
+          if(rule.hasEOL) {
             curMatchLength++;
           }
 
-          if (curMatchLength > matchedValueLength) {
+          if(curMatchLength > matchedValueLength) {
             matchedRule = rule;
             matchedIndex = index;
             matchedValue = curMatch;
@@ -575,16 +576,16 @@ Lexer.prototype.scan = function () {
     }
   }
 
-  if (matchedRule && this.debugEnabled) {
+  if(matchedRule && this.debugEnabled) {
     this.logAccept(this.state, matchedRule.expression, matchedValue);
   }
 
   this.ruleIndex = matchedIndex;
   this.text = this.readMore ? this.text : '';
-  this.readMore = false
+  this.readMore = false;
 
-  if (!matchedRule) {
-    if (!isEOF) {
+  if(!matchedRule) {
+    if(!isEOF) {
       this.text += this.source.charAt(this.index);
       this.index++;
       return this.echo();
@@ -602,7 +603,7 @@ Lexer.prototype.scan = function () {
   var hasRejection = this.rejectedRules.length > rejectedBefore;
 
   // reset reject state if there is no rejection in last action
-  if (hasRejection) {
+  if(hasRejection) {
     // ignore result if there is rejection in action
     return;
   }
@@ -611,7 +612,7 @@ Lexer.prototype.scan = function () {
 
   // rule action could change buffer or position, so EOF state could be changed too
   // we need revalidate EOF only if EOF was identified before action were executed
-  if (isEOF) {
+  if(isEOF) {
     isEOF = this.index >= this.source.length;
   }
 
@@ -621,19 +622,25 @@ Lexer.prototype.scan = function () {
 /**
  * @private
  */
-Lexer.prototype.logAccept = function (state, expression, value) {
-  console.log(
-    ' - [' + state + '] accepting rule'+
-    ' /' + this.encodeString(expression.source) + '/' +
-    ' ("' + this.encodeString(value) + '")'
+Lexer.prototype.logAccept = function(state, expression, value) {
+  console.log(' - [' +
+      state +
+      '] accepting rule' +
+      ' /' +
+      this.encodeString(expression.source) +
+      '/' +
+      ' ("' +
+      this.encodeString(value) +
+      '")'
   );
-}
+};
 
 /**
  * @private
  */
-Lexer.prototype.encodeString = function (s) {
-  return s.replace(/\r/g, '\\r')
+Lexer.prototype.encodeString = function(s) {
+  return s
+    .replace(/\r/g, '\\r')
     .replace(/\n/g, '\\n')
     .replace(/\t/g, '\\t')
     .replace(/\f/g, '\\f')
@@ -643,23 +650,23 @@ Lexer.prototype.encodeString = function (s) {
 /**
  * @private
  */
-Lexer.prototype.execRegExp = function (re) {
+Lexer.prototype.execRegExp = function(re) {
   re.lastIndex = this.index;
   var result = re.exec(this.source);
   return result ? result[0] : undefined;
-}
+};
 
 /**
  * @private
  */
-Lexer.prototype.compileRuleExpression = function (source, flags) {
-  for (var defName in this.definitions) {
+Lexer.prototype.compileRuleExpression = function(source, flags) {
+  for(var defName in this.definitions) {
     var defExpression = this.definitions[defName];
     var defNameRe = new RegExp('{' + defName + '}', 'ig');
     source = source.replace(defNameRe, '(?:' + defExpression + ')');
   }
 
-  if (this.ignoreCase && flags.indexOf('i') === -1) {
+  if(this.ignoreCase && flags.indexOf('i') === -1) {
     flags += 'i';
   }
 
@@ -671,7 +678,7 @@ Lexer.prototype.compileRuleExpression = function (source, flags) {
 /**
  * @private
  */
-Lexer.prototype.escapeRegExp = function (s) {
+Lexer.prototype.escapeRegExp = function(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
@@ -681,7 +688,7 @@ Lexer.prototype.escapeRegExp = function (s) {
 Lexer.prototype.isRegExpMatchBOL = function(re) {
   // primitive detection but in most cases it is more than enough
   return re.source.substr(0, 1) === '^';
-}
+};
 
 /**
  * @private
@@ -689,6 +696,6 @@ Lexer.prototype.isRegExpMatchBOL = function(re) {
 Lexer.prototype.isRegExpMatchEOL = function(re) {
   // primitive detection but in most cases it is more than enough
   return re.source.substr(-1) === '$';
-}
+};
 
 module.exports = Lexer;

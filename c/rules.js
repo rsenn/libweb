@@ -2,7 +2,7 @@
 
 import Util from '../util.js';
 import { EPSILON, TERMINAL, iterate_over_rules } from './commons.js';
- 
+
 /*
  * abstract_declarator -> pointer direct_abstract_declarator
  *                      | direct_abstract_declarator

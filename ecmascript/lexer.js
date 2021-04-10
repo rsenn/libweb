@@ -9,7 +9,8 @@ export function PathReplacer() {
     re = new RegExp(`(file://)?${pwd}/`, 'g');
     t = s => s.replace(re, '');
   } catch(err) {}
-  return (path, to = '') => (re ? path.replace(re, to) : path);
+  return (path, to = '') =>
+    re ? path.replace(re, to) : path;
 }
 
 export function Stack() {
@@ -26,14 +27,24 @@ export function Stack() {
   stack = [...stack];
   //console.log('stack: ', stack);
 
-  let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
+  let maxLen = stack.reduce((acc, entry) =>
+      entry.functionName
+        ? Math.max(acc, entry.functionName.length)
+        : acc,
     0
   );
 
   return stack
     .filter(s => s.functionName != 'esfactory')
-    .map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) =>
-        `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`
+    .map(({
+        fileName = '',
+        columnNumber,
+        lineNumber,
+        functionName = '',
+        methodName = ''
+      }) =>
+        `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName
+        )}:${lineNumber}`
     );
 
   /*
@@ -63,7 +74,9 @@ export class SyntaxError extends Error {
     this.pos = pos;
     this.stack = new Util.stack(null, 3);
 
-    Util.removeIf(this.stack, frame => frame.functionName == 'esfactory');
+    Util.removeIf(this.stack,
+      frame => frame.functionName == 'esfactory'
+    );
     //console.log("pos:", Util.inspect(pos, { depth: 10 }));
   }
 }
@@ -86,7 +99,11 @@ const distTo = (s, pos, inc, fn) => {
   for(i = pos; !fn(s[i], i); i += inc) {}
   return i - pos;
 };
-const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
+const countLinesCols = (s,
+  p1,
+  p2,
+  lc = { line: 1, column: 1 }
+) => {
   //let { line = 1, column = 1 }  = lc;
   let start = Math.min(p1, p2),
     end = Math.max(p1, p2);
@@ -102,7 +119,12 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
   return lc;
 };
 
-export function Position(line, column, pos, file, freeze = true) {
+export function Position(line,
+  column,
+  pos,
+  file,
+  freeze = true
+) {
   let obj = this || new.target.test || this ? this : {};
 
   /*console.log("obj.constructor:",obj.constructor);
@@ -113,25 +135,48 @@ export function Position(line, column, pos, file, freeze = true) {
     pos,
     file
   });
-  if(this !== obj) Object.setPrototypeOf(obj, Position.prototype);
+  if(this !== obj)
+    Object.setPrototypeOf(obj, Position.prototype);
 
-  return freeze && obj.constructor === Position ? Object.freeze(obj) : obj;
+  return freeze && obj.constructor === Position
+    ? Object.freeze(obj)
+    : obj;
 }
 
-Position.prototype.clone = function(freeze = false, withFilename = true) {
+Position.prototype.clone = function(freeze = false,
+  withFilename = true
+) {
   const { line, column, pos, file } = this;
 
-  return new Position(line, column, pos, withFilename ? file : null, freeze);
+  return new Position(line,
+    column,
+    pos,
+    withFilename ? file : null,
+    freeze
+  );
 };
-Position.prototype[Symbol.toStringTag] = function(n, opts) {
-  const { showFilename = true, colors = false } = opts || {};
+Position.prototype[Symbol.toStringTag] = function(n,
+  opts
+) {
+  const { showFilename = true, colors = false } =
+    opts || {};
   let c = Util.coloring(colors);
 
   let v =
-    typeof this.column == 'number' ? [this.file, this.line, this.column] : [this.file, this.line];
-  if((!showFilename || v[0] == undefined) && v.length >= 3) v.shift();
-  v = v.map((f, i) => c.code(...(i == 0 ? [38, 5, 33] || [1, 33] : [1, /*i == 2 ? 35 :*/ 36])) + f);
-  return v.join(c.code(...([1, 30] || [1, 36])) + ':') + c.code(0);
+    typeof this.column == 'number'
+      ? [this.file, this.line, this.column]
+      : [this.file, this.line];
+  if((!showFilename || v[0] == undefined) && v.length >= 3)
+    v.shift();
+  v = v.map((f, i) =>
+      c.code(...(i == 0
+          ? [38, 5, 33] || [1, 33]
+          : [1, /*i == 2 ? 35 :*/ 36])
+      ) + f
+  );
+  return (v.join(c.code(...([1, 30] || [1, 36])) + ':') +
+    c.code(0)
+  );
 };
 
 Position.prototype[Symbol.iterator] = function* () {
@@ -140,7 +185,10 @@ Position.prototype[Symbol.iterator] = function* () {
   yield* v;
 };
 Position.prototype.toString = function(opts = {}) {
-  return this[Symbol.toStringTag](0, { colors: false, ...opts });
+  return this[Symbol.toStringTag](0, {
+    colors: false,
+    ...opts
+  });
 };
 Position.prototype.valueOf = function() {
   return this.pos;
@@ -149,9 +197,15 @@ Position.prototype[Symbol.toPrimitive] = function(hint) {
   if(hint == 'number') return this.pos;
   if(hint == 'string') return this.toString();
 };
-Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
+Position.prototype[
+  Symbol.for('nodejs.util.inspect.custom')
+] = function(n, opts) {
   return this.toString({ colors: true });
-  return Util.inspect(this, { colors: true, ...opts, toString: Symbol.toStringTag });
+  return Util.inspect(this, {
+    colors: true,
+    ...opts,
+    toString: Symbol.toStringTag
+  });
 };
 /*
 Position.prototype.valueOf = function() {
@@ -180,42 +234,62 @@ export function Range(...args) {
 
   Object.assign(obj, { length });
 
-  if(obj !== this) Object.setPrototypeOf(obj, Range.prototype);
+  if(obj !== this)
+    Object.setPrototypeOf(obj, Range.prototype);
 
   return Object.freeze(obj);
 }
 
-Range.prototype = { ...Position.prototype, constructor: Range };
+Range.prototype = {
+  ...Position.prototype,
+  constructor: Range
+};
 //new Position(0, 0, 0, undefined, false);
 //Range.prototype.constructor = Range;
 
-Range.prototype[Symbol.toStringTag] = function(n, opts = {}) {
+Range.prototype[Symbol.toStringTag] = function(n,
+  opts = {}
+) {
   const { showFile = true, colors = false } = opts;
 
   const { file, line, column, pos, length } = this;
-  const f = typeof file == 'string' && showFile ? `${file}:` : '';
-  return `${f || ''}${line}:${column} - ${f || ''}${line}:${column + length}`;
+  const f =
+    typeof file == 'string' && showFile ? `${file}:` : '';
+  return `${f || ''}${line}:${column} - ${f || ''}${line}:${
+    column + length
+  }`;
 };
 
 Range.prototype.toString = function(showFile = true) {
   const { file, line, column, pos, length } = this;
   const f = file && showFile ? `${file}:` : '';
-  return `${f}${line}:${column} - ${f}${line}:${column + length}`;
+  return `${f}${line}:${column} - ${f}${line}:${
+    column + length
+  }`;
 };
 Range.prototype.toString = function() {
   return this[Symbol.toStringTag](0, { colors: false });
 };
-Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
-  return Util.inspect(this, { ...opts, toString: Symbol.toStringTag });
+Range.prototype[
+  Symbol.for('nodejs.util.inspect.custom')
+] = function(n, opts = {}) {
+  return Util.inspect(this, {
+    ...opts,
+    toString: Symbol.toStringTag
+  });
 };
 
 Range.prototype.in = function(other) {
   if(other instanceof Position) {
     let pos = other.valueOf();
-    return this.start.valueOf() <= pos && pos <= this.end.valueOf();
+    return (this.start.valueOf() <= pos &&
+      pos <= this.end.valueOf()
+    );
   } else if(other instanceof Range) {
     let range = other.valueOf();
-    return this.start.valueOf() <= range[0] && range[1] <= this.end.valueOf();
+    return (this.start.valueOf() <= range[0] &&
+      range[1] <= this.end.valueOf()
+    );
   }
 };
 
@@ -253,7 +327,11 @@ export class Lexer {
   error(errorMessage, astNode) {
     const pos = this.position();
 
-    return new SyntaxError('scan', errorMessage, astNode, pos /*, this*/);
+    return new SyntaxError('scan',
+      errorMessage,
+      astNode,
+      pos /*, this*/
+    );
   }
 
   /*
@@ -275,12 +353,16 @@ export class Lexer {
 
   //Skips over the pending input before this point
   ignore() {
-    if(this.ignoreStart === undefined) this.ignoreStart = this.start;
+    if(this.ignoreStart === undefined)
+      this.ignoreStart = this.start;
     this.start = this.pos;
   }
 
   skipComment() {
-    while(this.start > 0 && isWhitespace(this.source[this.start - 1])) this.start--;
+    while(this.start > 0 &&
+      isWhitespace(this.source[this.start - 1])
+    )
+      this.start--;
 
     //console.log('skipComment', Util.escape(this.getRange(this.start, this.pos)));
 
@@ -295,17 +377,24 @@ export class Lexer {
     let comment = this.getRange(this.start, this.pos);
     const before = this.getRange(0, this.start);
     const column = before.length - before.lastIndexOf('\n');
-    const line = this.line - (comment.split(/\n/g).length - 1) + 1;
+    const line =
+      this.line - (comment.split(/\n/g).length - 1) + 1;
 
-    const start = new Position(line, column, this.start, this.fileName);
+    const start = new Position(line,
+      column,
+      this.start,
+      this.fileName
+    );
 
-    if(comment.startsWith('//')) comment = comment.trimEnd();
+    if(comment.startsWith('//'))
+      comment = comment.trimEnd();
 
     this.ignore();
 
     delete this.ignoreStart;
 
-    if(typeof this.onComment == 'function') this.onComment(comment, start, position);
+    if(typeof this.onComment == 'function')
+      this.onComment(comment, start, position);
   }
 
   getRange(start = this.start, end = this.pos) {
@@ -324,7 +413,11 @@ export class Lexer {
 
     range = range
       .split('')
-      .map((char, i) => (i >= start && i < end ? Util.ansi.text(char, 0, 41, 1, 33) : char))
+      .map((char, i) =>
+        i >= start && i < end
+          ? Util.ansi.text(char, 0, 41, 1, 33)
+          : char
+      )
       .join('');
     return range.replace(/\n/g, '\\n');
   }
@@ -388,7 +481,11 @@ export class Lexer {
     line = lines.length - 1;
     column = lines[line].length - 1;
 
-    return new Position(line + 1, column + 1, pos, fileName);
+    return new Position(line + 1,
+      column + 1,
+      pos,
+      fileName
+    );
   }
 
   accept(validator) {
@@ -423,7 +520,9 @@ export class Lexer {
     const { start, pos, column, line, source } = this;
     const token = new Token(type,
       source.substring(start, pos),
-      new Range(this.position(this.start), this.pos - this.start),
+      new Range(this.position(this.start),
+        this.pos - this.start
+      ),
       this.start
     );
     Object.assign(token, props);
@@ -447,7 +546,8 @@ export class Lexer {
     //Make sure identifier didn't start with a decimal digit
     const firstChar = this.source[this.start];
     if(isDecimalDigit(firstChar))
-      throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`);
+      throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`
+      );
 
     const c = this.peek();
 
@@ -462,13 +562,19 @@ export class Lexer {
     }
 
     if(isQuoteChar(c))
-      throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`
+      throw this.error(`Invalid identifier: ${this.errorRange(
+          this.start,
+          this.pos + 1
+        )}${this.currentLine()}`
       );
 
     const word = this.getRange(this.start, this.pos);
-    if(word === 'true' || word === 'false') this.addToken(Token.types.booleanLiteral);
-    else if(word === 'null') this.addToken(Token.types.nullLiteral);
-    else if(isKeyword(word)) this.addToken(Token.types.keyword);
+    if(word === 'true' || word === 'false')
+      this.addToken(Token.types.booleanLiteral);
+    else if(word === 'null')
+      this.addToken(Token.types.nullLiteral);
+    else if(isKeyword(word))
+      this.addToken(Token.types.keyword);
     else this.addToken(Token.types.identifier);
 
     return this.lexText;
@@ -493,7 +599,8 @@ export class Lexer {
     return [p, e];
   }*/
   getLineRange() {
-    const start = this.getRange(0, this.pos).lastIndexOf('\n') + 1;
+    const start =
+      this.getRange(0, this.pos).lastIndexOf('\n') + 1;
     const end = this.source.indexOf('\n', this.pos);
 
     return [start, end == -1 ? this.source.length : end];
@@ -510,7 +617,11 @@ export class Lexer {
     let column = columnIndex;
 
     let indicator =
-      indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
+      indent +
+      ` column ${column} ----`
+        .padStart(columnIndex)
+        .slice(-columnIndex) +
+      '╯';
 
     return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
       this.accepted.length
@@ -521,7 +632,8 @@ export class Lexer {
     let lines = this.source.split(/\n/g).entries();
     lines = lines.slice(start, end);
     lines.print = function() {
-      for(let [lineno, str] of this) console.log(`${lineno.padStart(10)}: ${str}`);
+      for(let [lineno, str] of this)
+        console.log(`${lineno.padStart(10)}: ${str}`);
     };
     return lines;
   }
@@ -538,20 +650,30 @@ export class Lexer {
 
         //The hex number needs to at least be followed by some digit.
         if(!this.accept(validator))
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.errorRange(
+              this.start,
+              this.pos + 1
+            )}`
+          );
       } else if(this.accept(oneOf('oO'))) {
         validator = isOctalDigit;
 
         //The octal number needs to at least be followed by some digit.
         if(!this.accept(validator))
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.errorRange(
+              this.start,
+              this.pos + 1
+            )}`
+          );
       }
       //If number starts with 0 followed by an octal digit, then it's an
       //octal number.
-      else if(this.accept(isOctalDigit)) validator = isOctalDigit;
+      else if(this.accept(isOctalDigit))
+        validator = isOctalDigit;
       //If a 0 isn't a hex nor an octal number, then it's invalid.
       else if(this.accept(isDecimalDigit))
-        throw this.error(`Invalid number: ${this.errorRange()}`);
+        throw this.error(`Invalid number: ${this.errorRange()}`
+        );
     }
 
     //Keep on consuming valid digits until it runs out
@@ -560,12 +682,17 @@ export class Lexer {
     if(validator == isDecimalDigit) {
       //A number could have a decimal in it, followed by a sequence of valid
       //digits again.
-      if(this.accept(oneOf('.'))) this.acceptRun(validator);
+      if(this.accept(oneOf('.')))
+        this.acceptRun(validator);
 
       if(this.accept(oneOf('eE'))) {
         this.accept(oneOf('+-'));
         if(!this.accept(validator))
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.errorRange(
+              this.start,
+              this.pos + 1
+            )}`
+          );
 
         this.acceptRun(validator);
       }
@@ -575,8 +702,15 @@ export class Lexer {
     //for identifiers or keywords. It also cannot be immediately followed by
     //a string.
     const c = this.peek();
-    if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c))
-      throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+    if(isIdentifierChar(c) ||
+      isQuoteChar(c) ||
+      oneOf('.eE')(c)
+    )
+      throw this.error(`Invalid number: ${this.errorRange(
+          this.start,
+          this.pos + 1
+        )}`
+      );
 
     this.addToken(Token.types.numericLiteral);
 
@@ -593,10 +727,14 @@ export class Lexer {
     let validator = c => {
       //console.log('validator', { c, i, prev, slashes, word, bracket, ws: isWhitespace(c) });
       i++;
-      if(c == '[' && prev != '\\') if (!bracket) bracket = true;
-      if(c == ']' && prev != '\\') if (bracket) bracket = false;
+      if(c == '[' && prev != '\\')
+        if(!bracket) bracket = true;
+      if(c == ']' && prev != '\\')
+        if(bracket) bracket = false;
 
-      if(((i == 1 && isWhitespace(c)) || c == '\n') && prev != '\\') {
+      if(((i == 1 && isWhitespace(c)) || c == '\n') &&
+        prev != '\\'
+      ) {
         return false;
       } else if(slashes == 1 && c == ' ' && prev == '/') {
         return false;
@@ -613,7 +751,9 @@ export class Lexer {
         return true;
       } else if(slashes == 2 && ' \t'.indexOf(c) != -1) {
         return true;
-      } else if(slashes == 2 && 'gimsuy'.indexOf(c) != -1) {
+      } else if(slashes == 2 &&
+        'gimsuy'.indexOf(c) != -1
+      ) {
         /*  word += c;
         prev = c;*/
       } else if(slashes == 2) {
@@ -681,10 +821,15 @@ export class Lexer {
         //console.debug("done", { c, doSubst });
         if(!doSubst && c == '`') {
           this.template = null;
-          this.addToken(Token.types.templateLiteral /*, {head: true, tail: true}*/);
+          this.addToken(Token.types
+              .templateLiteral /*, {head: true, tail: true}*/
+          );
           return this.lexText();
         }
-        let fn = doSubst == this.inSubst ? this.lexText : defaultFn;
+        let fn =
+          doSubst == this.inSubst
+            ? this.lexText
+            : defaultFn;
         let ret;
         if(doSubst && c == '}') {
           c = this.peek();
@@ -706,13 +851,19 @@ export class Lexer {
       let escapeEncountered = false;
       let n = 0;
       do {
-        if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$'))))) escapeEncountered = false;
+        if(this.acceptRun(
+            not(or(c => c === '$', oneOf('\\`{$')))
+          )
+        )
+          escapeEncountered = false;
         prevChar = c;
         c = this.getc();
         ++n;
         //console.debug("template", { prevChar,c,escapeEncountered,n});
         if(c === null) {
-          throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
+          throw this.error(`Illegal template token (${n})  '${
+              this.source[this.start]
+            }': ${this.errorRange()}`
           );
         } else if(!escapeEncountered) {
           if(c == '{' && prevChar == '$') {
@@ -750,19 +901,25 @@ export class Lexer {
       do {
         //Keep consuming characters unless we encounter line
         //terminator, \, or the quote char.
-        if(this.acceptRun(not(or(isLineTerminator, oneOf(`\\${quoteChar}`)))))
+        if(this.acceptRun(
+            not(or(isLineTerminator, oneOf(`\\${quoteChar}`))
+            )
+          )
+        )
           escapeEncountered = false;
         prevChar = c;
         c = this.getc();
         if(c === null) {
           //If we reached EOF without the closing quote char, then this string is
           //incomplete.
-          throw this.error(`Illegal token: ${this.errorRange()}`);
+          throw this.error(`Illegal token: ${this.errorRange()}`
+          );
         } else if(!escapeEncountered) {
           if(isLineTerminator(c) && quoteChar !== '`') {
             //If we somehow reached EOL without encountering the
             //ending quote char then this string is incomplete.
-            throw this.error(`Illegal token: ${this.errorRange()}`);
+            throw this.error(`Illegal token: ${this.errorRange()}`
+            );
           } else if(c === quoteChar) {
             this.addToken(Token.types.stringLiteral);
             return this.lexText;
@@ -820,7 +977,9 @@ export class Lexer {
         return this.lexRegExp;
       } else if(isQuoteChar(c)) {
         return this.lexQuote(c);
-      } else if(isDecimalDigit(c) || (c === '.' && isDecimalDigit(this.peek()))) {
+      } else if(isDecimalDigit(c) ||
+        (c === '.' && isDecimalDigit(this.peek()))
+      ) {
         this.backup();
         return this.lexNumber;
       } else if(isWhitespace(c)) {
@@ -856,7 +1015,9 @@ export class Lexer {
     let idx = this.tokenIndex;
     do {
       this.stateFn = this.stateFn();
-    } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
+    } while(this.stateFn !== null &&
+      this.tokenIndex >= this.tokens.length
+    );
     let tok = this.nextToken();
     //console.log('lex: ', this.tokenIndex, tok, this.stateFn);
     return tok;
@@ -884,7 +1045,12 @@ function oneOf(str) {
 
 //Whitespace characters as specified by ES1
 function isWhitespace(c) {
-  if(c === '\u0009' || c === '\u000B' || c === '\u000C' || c === '\u0020') return true;
+  if(c === '\u0009' ||
+    c === '\u000B' ||
+    c === '\u000C' ||
+    c === '\u0020'
+  )
+    return true;
   return false;
 }
 
@@ -911,18 +1077,83 @@ function isPunctuatorChar(c) {
 function isPunctuator(word) {
   switch (word.length) {
     case 1:
-      /* prettier-ignore */ return ['=', '.', '-', '%', '}', '>', ',', '*', '[', '<', '!', '/', ']', '~', '&', '(', ';', '?', '|', ')', ':', '+', '^', '{', '@'].indexOf(word) >= 0;
+      return ([
+          '=',
+          '.',
+          '-',
+          '%',
+          '}',
+          '>',
+          ',',
+          '*',
+          '[',
+          '<',
+          '!',
+          '/',
+          ']',
+          '~',
+          '&',
+          '(',
+          ';',
+          '?',
+          '|',
+          ')',
+          ':',
+          '+',
+          '^',
+          '{',
+          '@'
+        ].indexOf(word) >= 0
+      );
     case 2:
-      /* prettier-ignore */ return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${', '?.', '**', '??'].indexOf(word) >= 0;
+      return ([
+          '!=',
+          '*=',
+          '&&',
+          '<<',
+          '/=',
+          '||',
+          '>>',
+          '&=',
+          '==',
+          '++',
+          '|=',
+          '<=',
+          '--',
+          '+=',
+          '^=',
+          '>=',
+          '-=',
+          '%=',
+          '=>',
+          '${',
+          '?.',
+          '**',
+          '??'
+        ].indexOf(word) >= 0
+      );
 
     case 3:
-      return (['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(
-          word
-        ) >= 0
+      return ([
+          '!==',
+          '===',
+          '>>>',
+          '>>=',
+          '-->>',
+          '<<=',
+          '...',
+          '**=',
+          '||=',
+          '&&=',
+          '??='
+        ].indexOf(word) >= 0
       );
 
     case 4:
-      return ['>>>=', '-->>='].indexOf(word) >= 0;
+      return [
+        '>>>=',
+        '-->>='
+      ].indexOf(word) >= 0;
 
     default: return false;
   }
@@ -930,7 +1161,10 @@ function isPunctuator(word) {
 
 function isAlphaChar(c) {
   if(typeof c == 'string')
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c.codePointAt(0) > 0xff;
+    return ((c >= 'a' && c <= 'z') ||
+      (c >= 'A' && c <= 'Z') ||
+      c.codePointAt(0) > 0xff
+    );
 }
 
 function isDecimalDigit(c) {
@@ -942,11 +1176,18 @@ function isOctalDigit(c) {
 }
 
 function isHexDigit(c) {
-  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+  return ((c >= '0' && c <= '9') ||
+    (c >= 'a' && c <= 'f') ||
+    (c >= 'A' && c <= 'F')
+  );
 }
 
 function isIdentifierChar(c) {
-  return isAlphaChar(c) || c === '$' || c === '_' || isDecimalDigit(c);
+  return (isAlphaChar(c) ||
+    c === '$' ||
+    c === '_' ||
+    isDecimalDigit(c)
+  );
 }
 
 function isKeyword(word) {

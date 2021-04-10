@@ -53,6 +53,9 @@ function QuickJSSpawn(os, ffi) {
       if(pfds[0]) ret.stdin = MakeWriteStream(pfds[0]);
       if(pfds[1]) ret.stdout = MakeReadStream(pfds[1]);
       if(pfds[2]) ret.stderr = MakeReadStream(pfds[2]);
+
+      // console.log('spawn', console.config({ compact: 1 }),ret);
+
       return ret;
     };
 

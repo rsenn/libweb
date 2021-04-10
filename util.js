@@ -34,8 +34,8 @@ Util.formatAnnotatedObject = function(subject, o) {
     level: level + 1
   };
   if(subject && subject.toSource !== undefined) return subject.toSource();
-  if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
-  if(typeof subject == 'string') return `'${subject}'`;
+  if(subject instanceof Date) return 'new Date('+(new Date().toISOString())+')';
+  if(typeof subject == 'string') return "'"+subject+"'";
   if(typeof subject == 'number') return subject;
   if(subject != null && subject.y2 !== undefined)
     return `rect[${spacing}${subject.x}${separator}${subject.y} | ${subject.x2}${separator}${subject.y2} (${subject.w}x${subject.h}) ]`;
