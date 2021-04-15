@@ -5808,8 +5808,7 @@ Util.isatty = async fd => {
 };
 Util.ttyGetWinSize = (fd = 1) => {
   let ret;
-  console.log('fd:', fd);
-  if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
+   if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
   const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdout'];
   return new Promise(stream.cols
       ? (resolve, reject) => resolve([stream.cols, stream.rows])

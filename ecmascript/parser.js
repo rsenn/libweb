@@ -261,7 +261,7 @@ export class Parser {
 
   position(tok = null) {
     let pos = tok?.position ?? this.lexer.pos;
-//console.log("position",pos);
+    //console.log("position",pos);
     return this.lexer.position(pos);
   }
 }

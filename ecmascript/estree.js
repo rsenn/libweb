@@ -2,8 +2,7 @@ import Util from '../util.js';
 import '../inspect.js';
 
 const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
-const linebreak = /\r?\n/g
-
+const linebreak = /\r?\n/g;
 
 export class ESNode {
   //position = null;

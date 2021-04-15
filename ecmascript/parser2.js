@@ -738,7 +738,7 @@ export class ECMAScriptParser extends Parser {
       }
       break;
     }
-    //console.log("this.processed:", this.processed);
+    //console.log('parseArguments', { args, token: this.token });
     this.expectPunctuators(')', args);
     return args;
   }
@@ -857,7 +857,6 @@ export class ECMAScriptParser extends Parser {
     } else {
       object = this.parsePrimaryExpression();
     }
-    //console.debug("\x1b[1;31mobject:",object, "\x1b[0m");
     object = this.parseRemainingMemberExpression(object);
     let id = object;
     if((this.matchPunctuators('(') || this.matchTemplateLiteral()) && couldBeCallExpression) {
@@ -2332,8 +2331,6 @@ export class ECMAScriptParser extends Parser {
     }
 
     const { tokens } = this;
-    console.log('this.tokens: ', tokens);
-    console.log('this.tokens.length: ', tokens.length);
 
     if(tokens[0] && tokens[0].type !== 'eof') {
       throw new Error(`Didn't consume all tokens: ${Util.inspect(tokens[0])}`);
