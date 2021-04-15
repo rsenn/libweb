@@ -34,8 +34,8 @@ Util.formatAnnotatedObject = function(subject, o) {
     level: level + 1
   };
   if(subject && subject.toSource !== undefined) return subject.toSource();
-  if(subject instanceof Date) return 'new Date('+(new Date().toISOString())+')';
-  if(typeof subject == 'string') return "'"+subject+"'";
+  if(subject instanceof Date) return 'new Date(' + new Date().toISOString() + ')';
+  if(typeof subject == 'string') return "'" + subject + "'";
   if(typeof subject == 'number') return subject;
   if(subject != null && subject.y2 !== undefined)
     return `rect[${spacing}${subject.x}${separator}${subject.y} | ${subject.x2}${separator}${subject.y2} (${subject.w}x${subject.h}) ]`;
@@ -2345,9 +2345,9 @@ Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => {
   return Util.tryFunction(fn, resolve, reject)(...args);
 };
 Util.putError = err => {
-  let e = Util.exception(err);
+  let e = Util.isObject(err) && err instanceof Error ? err : Util.exception(err);
   (console.info || console.log)('Util.putError ', e);
-  let s = Util.stack(err.stack);
+  let s = null; //Util.stack(err.stack);
 
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
@@ -6211,6 +6211,29 @@ Util.instrument = (fn,
         doLog(args, ret);
         return ret;
       };
+};
+
+Util.trace = (fn, enter, leave, both = () => {}) => {
+  enter ??= (name, args) =>
+    console.log(`function '${name}' (${args.map(arg => inspect(arg)).join(', ')}`);
+
+  leave ??= (name, ret) =>
+    console.log(`function '${name}'` +
+        (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '')
+    );
+
+  let orig = fn;
+
+  return function(...args) {
+    let ret;
+    both('enter', fn.name, args);
+    enter(fn.name, args);
+
+    ret = orig.call(this, ...args);
+    both('leave', fn.name, ret);
+    leave(fn.name, ret);
+    return ret;
+  };
 };
 
 Util.bind = function(f, ...args) {
