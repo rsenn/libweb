@@ -14,11 +14,13 @@ import { ESNode, Program, Expression, FunctionLiteral, RegExpLiteral, FunctionBo
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
+const linebreak = new RegExp('\\r?\\n', 'g');
 
 export class Parser {
   lastPos = new Location(1, 1);
   lastTok = 0;
   nodeTokenMap = new WeakMap();
+  debug = () => {};
 
   constructor(sourceText, fileName, debug) {
     this.tokens = [];
@@ -52,6 +54,10 @@ export class Parser {
     //console.log('lexer: ', this.lexer);
     //
     if(debug) {
+      this.debug = function debug(...args) {
+        console.log(`${this.lexer.loc}`, ...args);
+      };
+
       let prevStack;
       this.locStack = [];
       let { locStack, lexer, token } = this;
@@ -191,11 +197,11 @@ export class Parser {
 
         /*if(comment.value.length > maxLen) {
         let trail = comment.value.substring(maxLen, comment.value.length);
-        throw new Error(`Comment ${comment.position} '${comment.value.replace(/\n/g, "\\n")}' length (${comment.value.length}) > ${maxLen}: ${trail.replace(/\n/g, "\\n")}\nNext token: ${tokens[0]}\nLast token: ${tokens[tokens.length-1]}`);
+        throw new Error(`Comment ${comment.position} '${comment.value.replace(linebreak, "\\n")}' length (${comment.value.length}) > ${maxLen}: ${trail.replace(linebreak, "\\n")}\nNext token: ${tokens[0]}\nLast token: ${tokens[tokens.length-1]}`);
       }*/
 
         assoc.comments = add(assoc.comments, comment);
-        //console.log('addCommentsToNodes', comment.position.toString(), comment.value.replace(/\n/g, '\\n'));
+        //console.log('addCommentsToNodes', comment.position.toString(), comment.value.replace(linebreak, '\\n'));
       }
     }
   }
@@ -277,15 +283,11 @@ export class Parser {
     if(token) {
       buf = this.lexer.source
         .substring(token.from, Math.min(token.to, token.from + 6))
-        .replace(/\n/g, '\\n')
+        .replace(linebreak, '\\n')
         .substring(0, 6);
     }
     if(token) return `"${buf}"${Util.pad(buf, 6)} ${pos}${Util.pad(pos, 10)}`;
     return '';
-  }
-
-  debug(...args) {
-    console.log(`${this.lexer.loc}`, ...args);
   }
 
   log() {
@@ -334,52 +336,6 @@ function isLiteral({ type }) {
 
 function isTemplateLiteral({ type }) {
   return type === 'templateLiteral';
-}
-
-function backTrace() {
-  const stack = new Error().stack;
-  const str = stack.toString().replace(/\n\s*at /g, '\n');
-  let arr = str.split(/\n/g);
-
-  arr = arr
-    .map(line => {
-      let matches = /^(.*)\s\((.*):([0-9]*):([0-9]*)\)$/.exec(line);
-      if(matches && !/estree/.test(line)) {
-        let name = matches[1].replace(/Parser\./, 'Parser.prototype.');
-        let r = {
-          name: name.replace(/.*\.prototype\./, ''),
-          file: matches[2].replace(new RegExp('/.*lotto//'), ''),
-          line: parseInt(matches[3]),
-          column: parseInt(matches[4])
-        };
-        let fn = getFn(name);
-        let caller = fn ? (fn ? Util.fnName(fn, Parser.prototype) : fn) : undefined;
-        //this.log("name: '" +name+"'");
-        if(typeof fn === 'function') {
-          //this.log("fn: ", Util.fnName(fn, Parser.prototype, Parser));
-          //this.log("fn: ", caller);
-        }
-        return r;
-      }
-      return null;
-    })
-    .filter(e => e != null)
-    .map(e => ` ${e.file}:${e.line}:${e.column} ${e.name} `);
-
-  //console.log("STACK: ", arr.join("\n"));
-
-  /*
-  let bt = [];
-  let fn = backTrace;
-
-  while(fn) {
-    const name = Util.fnName(fn);
-
-    bt.push(fn);
-
-    fn = fn;
-  }
-  consnole.log("bt: ", bt);*/
 }
 
 function toStr(a) {
@@ -444,8 +400,6 @@ export class ECMAScriptParser extends Parser {
       }
     this.log(`expectIdentifier2(no_keyword=${no_keyword})`);
 
-    //backTrace(p.expectIdentifier);
-
     return new Identifier(token.value);
   }
 
@@ -496,7 +450,10 @@ export class ECMAScriptParser extends Parser {
 
     let value = token.value;
     if(token.type == 'regexpLiteral') {
-      const [match, pattern, flags] = /^\/(.*)\/([a-z]*)$/.exec(token.value);
+      const value = token.lexeme;
+      const [start, end] = [value.indexOf('/'), value.lastIndexOf('/')];
+      const pattern = value.substring(start, end);
+      const flags = value.substring(end + 1);
       return new RegExpLiteral(pattern, flags);
     }
 
@@ -749,7 +706,7 @@ export class ECMAScriptParser extends Parser {
     } else if(is_async) {
       expr = new Identifier('async');
     } else {
-      this.error(`${this.token.position}: Unexpected token '${this.token}'`);
+      throw new Error(`${this.token.position}: Unexpected token '${this.token}'`);
     }
     if(rest_of) {
       expr = new RestElement(expr);
@@ -2159,10 +2116,8 @@ export class ECMAScriptParser extends Parser {
     } else if(this.matchKeywords('with')) {
       stmt = this.parseWithStatement(insideIteration, insideFunction);
     } else if(this.matchKeywords('continue')) {
-      if(insideIteration) {
-        stmt = this.parseContinueStatement();
-      }
-      throw new Error(`continue; statement can only be inside an iteration`);
+      if(insideIteration) stmt = this.parseContinueStatement();
+      else throw new Error(`continue; statement can only be inside an iteration`);
     } else if(this.matchKeywords('break')) {
       let brk = this.parseBreakStatement();
       if(!insideIteration && brk.label === undefined)
@@ -2416,7 +2371,7 @@ const quoteObj = i =>
 
 const quoteArg = a =>
   a.map(i => (Util.isObject(i) && i.value !== undefined ? i.value : quoteObj(i)));
-const quoteStr = s => s.replace(/\n/g, '\\n');
+const quoteStr = s => s.replace(linebreak, '\\n');
 
 Parser.prototype.trace = function() {
   return this.stack
@@ -2490,7 +2445,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     let parsed = lexer.source.substring(start, end);
     this.consumed = end;
 
-    if(parsed.length) parsed = parsed.replace(/\n/g, '\\n');
+    if(parsed.length) parsed = parsed.replace(linebreak, '\\n');
 
     let lexed = lexer.tokens.slice(firstTok /*, lastTok*/);
     this.numToks = lastTok;

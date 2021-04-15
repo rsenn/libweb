@@ -854,12 +854,12 @@ export class Lexer {
   }
 
   nextToken() {
-    if(this.tokenIndex >= this.tokens.length)
+    if(this.tokenIndex >= this.tokens.length) // return null;
       return new Token(Token.types.eof,
         null,
         new Range(this.position(this.pos), 0),
         this.source.length
-      );
+      ); 
     const token = this.tokens[this.tokenIndex];
     this.tokenIndex++;
     return token;

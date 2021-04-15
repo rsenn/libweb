@@ -15,6 +15,8 @@ export function Util(g) {
 Util.toString = undefined;
 //export const Util = {};
 
+const lineSplit  = new RegExp('\\n', 'g');
+
 Util.formatAnnotatedObject = function(subject, o) {
   const {
     indent = '  ',
@@ -53,7 +55,7 @@ Util.formatAnnotatedObject = function(subject, o) {
     } else if(typeof v === 'string' || v instanceof String) {
       s = `'${v}'`;
     } else if(typeof v === 'function') {
-      s = (v + '').replace(/\n/g, '\n' + i);
+      s = (v + '').replace(lineSplit, '\n' + i);
       s = (Util.fnName(s) || 'function') + '()';
     } else if(typeof v === 'number' || typeof v === 'boolean') {
       s = `${v}`;
@@ -604,7 +606,7 @@ Util.debug = function(message) {
   const str = args
     .map(arg => (typeof arg === 'object' ? JSON.toString(arg, removeCircular) : arg))
     .join(' ')
-    .replace(/\n/g, '');
+    .replace(lineSplit, '');
   //console.log("STR: "+str);
   //console.log.call(console, str);
   //Util.log.apply(Util, args)
@@ -1521,7 +1523,7 @@ Util.inspect = function(obj, opts = {}) {
   ) {
     obj = '' + obj;
     //  if(!multiline)
-    obj = obj.split(/\n/g)[0].replace(/{\s*$/, '{}');
+    obj = obj.split(lineSplit)[0].replace(/{\s*$/, '{}');
     print(obj);
   } else if(typeof obj == 'string') {
     print(`${quote}${stringFn(obj)}${quote}`, 1, 36);
@@ -1610,7 +1612,7 @@ Util.inspect = function(obj, opts = {}) {
             newline: newline + '  ',
             depth: depth - 1
           });
-        else print((value + '').replace(/\n/g, sep(true)));
+        else print((value + '').replace(lineSplit, sep(true)));
         i++;
       }
       print(`${multiline ? newline : padding}}`, 1, 36);
@@ -3939,7 +3941,7 @@ Util.stack = function Stack(stack, offset) {
   //console.debug('stack:', typeof stack, stack);
 
   if(typeof stack == 'string') {
-    stack = stack.trim().split(/\n/g);
+    stack = stack.trim().split(lineSplit);
     const re = new RegExp('.* at ([^ ][^ ]*) \\(([^)]*)\\)');
     stack = stack.map(frame =>
       typeof frame == 'string'
@@ -4404,7 +4406,7 @@ Util.stripHTML = html =>
   html
     .replace(/\s*\n\s*/g, ' ')
     .replace(/<[^>]*>/g, '\n')
-    .split(/\n/g)
+    .split(lineSplit)
     .map(p => p.trim())
     .filter(p => p != '');
 
@@ -4466,7 +4468,7 @@ Util.traceProxy = (obj, handler) => {
           return method.apply(obj, arguments);
         };
         member = method.bind(obj);
-        console.log('Util.traceProxy', key, (member + '').replace(/\n\s+/g, ' ').split(/\n/g)[0]);
+        console.log('Util.traceProxy', key, (member + '').replace(/\n\s+/g, ' ').split(lineSplit)[0]);
       }
       return member;
     }
@@ -5297,7 +5299,7 @@ Util.proxyObject = (root, handler) => {
   return node([]);
 };
 Util.parseXML = function(xmlStr) {
-  return Util.tryCatch(() => new DOMParser(),
+  return Util.tryCatch(() => new DOM  (),
     parser => parser.parseFromString(xmlStr, 'application/xml')
   );
 };
@@ -5740,7 +5742,7 @@ Object.assign(Util.consolePrinter.prototype, Util.consoleConcat.prototype, {
         if(/color:/.test(this[0])) {
           throw new Error(`this[0] is CSS: i=${i}\nthis[0] = "${this[0]}"\narg= ${typeof arg} "${(
               arg + ''
-            ).replace(/\n/g, '\\n')}"`
+            ).replace(lineSplit, '\\n')}"`
           );
         }
 
@@ -5963,7 +5965,7 @@ Util.getHRTime = Util.memoize(() => {
       const [s, n] = this;
       return s * 1e9 + n;
     }
-    valueOf() {
+    [Symbol.toPrimitive]() {
       return this.milliseconds;
     }
     diff(o) {
@@ -5988,7 +5990,12 @@ Util.getHRTime = Util.memoize(() => {
       let ret = secs >= 1 ? `${Math.floor(secs)}s ` : '';
       return ret + `${Util.roundTo(msecs, 0.001)}ms`;
     }
+    inspect() {
+return [this.seconds, this.nanoseconds];
+}
     [inspectSymbol]() {
+   
+return [this.seconds, this.nanoseconds];
       let secs = this.seconds;
       let msecs = (secs % 1) * 1e3;
       let nsecs = (msecs % 1) * 1e6;
@@ -6001,8 +6008,8 @@ Util.getHRTime = Util.memoize(() => {
   return Util.isAsync(now)
     ? async function hrtime(previousTimestamp) {
         var clocktime = await now();
-        var secs = Math.floor(clocktime / 1000);
-        var nano = Math.floor((clocktime % 1000) * 1e6);
+        var secs = Math.floor(Number(clocktime / 1000));
+        var nano = Math.floor(Number(clocktime % 1000) * 1e6);
         let ts = new HighResolutionTime(secs, nano);
         if(previousTimestamp) ts = ts.since(previousTimestamp);
         return ts;
@@ -6081,7 +6088,8 @@ Util.lazyProperty(Util,
         gettime(clock, data);
         let [secs, nsecs] = new BigUint64Array(data, 0, 2);
 
-        return Number(secs) * 10e3 + Number(nsecs) * 10e-6;
+let  t = /*BigFloat*/(BigFloat(secs)*1e03l+BigFloat(nsecs)*1e-06l);
+return t;
       };
     }
 
@@ -6159,12 +6167,7 @@ Util.bitsToNames = (flags, map = (name, flag) => name) => {
 Util.instrument = (fn,
   log = (duration, name, args, ret) =>
     console.log(`function '${name}'` +
-        /* (args.length
-          ? ` [${args
-              .map(arg => (typeof arg == 'string' ? `'${Util.escape(Util.abbreviate(arg))}'` : arg))
-              .join(', ')}]`
-          : '') +*/
-        (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '') +
+               (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '') +
         ` timing: ${duration.toFixed(3)}ms`
     ),
   logInterval = 0 //1000

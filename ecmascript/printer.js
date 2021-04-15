@@ -3,6 +3,7 @@ import Util from '../util.js';
 import deep from '../deep.js';
 //import util from 'util';
 //import util from 'util';
+const linebreak = new RegExp('\\r?\\n', 'g');
 
 export class Printer {
   static colors = {
@@ -187,7 +188,7 @@ export class Printer {
   printLiteral(literal) {
     let { value, species } = literal;
 
-    if(species != 'regexp') value = value.replace(/\n/g, '\\n');
+    if(species != 'regexp') value = value.replace(linebreak, '\\n');
 
     return this.colorText.numberLiterals(value);
   }
@@ -389,10 +390,10 @@ export class Printer {
           (multiline ? '\n' : '');
         //console.log("line:", { line, eol });
 
-        if(line != '') s += line.replace(/\n/g, '\n  ') + eol;
+        if(line != '') s += line.replace(linebreak, '\n  ') + eol;
       }
     } else {
-      s += this.printNode(body).replace(/\n/g, '\n  ');
+      s += this.printNode(body).replace(linebreak, '\n  ');
     }
     s = s.trimEnd();
 
@@ -494,7 +495,7 @@ export class Printer {
       const { test, consequent } = case_clause;
       if(test == null) output += '  default:';
       else output += '  case ' + this.printNode(test) + ':';
-      let case_body = this.printNode(consequent).trim().replace(/\n/g, '\n  ');
+      let case_body = this.printNode(consequent).trim().replace(linebreak, '\n  ');
       output += /^[^{].*\n/.test(case_body) ? '\n  ' : ' ';
       output += case_body + (/\n/.test(case_body) ? '\n\n' : '\n');
     }
@@ -729,7 +730,7 @@ export class Printer {
     for(let member of members) {
       let s = this.printNode(member);
       if(member instanceof FunctionDeclaration) s = s.replace(/function\s/, '');
-      s = s.replace(/\n/g, '\n  ');
+      s = s.replace(linebreak, '\n  ');
       if(!s.endsWith('}')) s += this.colorCode.punctuators(s) + ';';
       if(output.endsWith('}') || member instanceof FunctionDeclaration) output += '\n';
       output += '\n  ' + s;
@@ -849,7 +850,7 @@ export class Printer {
         }
       }
 
-      line += value.replace(/\n/g, '\n  ');
+      line += value.replace(linebreak, '\n  ');
 
       if(property.flags &&
         !(property instanceof BindingProperty) &&
@@ -975,7 +976,7 @@ export class Printer {
         output +=
           `\n    ` +
           children
-            .map(child => this.printNode(child).replace(/\n/g, '\n    '))
+            .map(child => this.printNode(child).replace(linebreak, '\n    '))
             .join(this.format ? ',\n    ' : '\n    ') +
           `\n  `;
 
@@ -1010,7 +1011,7 @@ export class Printer {
     }
     if(/\n/.test(output))
       return (this.colorText.punctuators('{') +
-        `\n  ${output.replace(/\n/g, '\n  ')}\n` +
+        `\n  ${output.replace(linebreak, '\n  ')}\n` +
         this.colorText.punctuators('}')
       );
     return this.colorText.punctuators('{') + ` ${output} ` + this.colorText.punctuators('}');

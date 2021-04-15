@@ -2,6 +2,8 @@ import Util from '../util.js';
 import '../inspect.js';
 
 const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
+const linebreak = /\r?\n/g
+
 
 export class ESNode {
   //position = null;
@@ -371,7 +373,7 @@ export class BlockStatement extends Statement {
 export class FunctionBody extends BlockStatement {
   constructor(body) {
     super(body);
-    this.type = 'FunctionBody';
+    this.type = 'BlockStatement';
   }
 }
 
@@ -764,8 +766,8 @@ ESNode.prototype.toString = function() {
       if(value.value !== undefined) {
         value = `"${value.value}"`;
       } else if(value instanceof Array) {
-        value = `[\n  ${this[field].filter(child => child !== undefined).map((child) => child.toString().replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
-        value = value.replace(/\n/g, '\n  ');
+        value = `[\n  ${this[field].filter(child => child !== undefined).map((child) => child.toString().replace(linebreak, '\n  ')).join(',\n  ')}\n]`;
+        value = value.replace(linebreak, '\n  ');
       } else if(typeof value === 'object' && !(value instanceof Array)) {
         value = Util.className(value);
       }
