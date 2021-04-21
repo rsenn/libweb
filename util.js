@@ -15,7 +15,7 @@ export function Util(g) {
 Util.toString = undefined;
 //export const Util = {};
 
-const lineSplit  = new RegExp('\\n', 'g');
+const lineSplit = new RegExp('\\n', 'g');
 
 Util.formatAnnotatedObject = function(subject, o) {
   const {
@@ -4468,7 +4468,10 @@ Util.traceProxy = (obj, handler) => {
           return method.apply(obj, arguments);
         };
         member = method.bind(obj);
-        console.log('Util.traceProxy', key, (member + '').replace(/\n\s+/g, ' ').split(lineSplit)[0]);
+        console.log('Util.traceProxy',
+          key,
+          (member + '').replace(/\n\s+/g, ' ').split(lineSplit)[0]
+        );
       }
       return member;
     }
@@ -5299,7 +5302,7 @@ Util.proxyObject = (root, handler) => {
   return node([]);
 };
 Util.parseXML = function(xmlStr) {
-  return Util.tryCatch(() => new DOM  (),
+  return Util.tryCatch(() => new DOM(),
     parser => parser.parseFromString(xmlStr, 'application/xml')
   );
 };
@@ -5808,7 +5811,7 @@ Util.isatty = async fd => {
 };
 Util.ttyGetWinSize = (fd = 1) => {
   let ret;
-   if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
+  if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
   const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdout'];
   return new Promise(stream.cols
       ? (resolve, reject) => resolve([stream.cols, stream.rows])
@@ -5990,11 +5993,10 @@ Util.getHRTime = Util.memoize(() => {
       return ret + `${Util.roundTo(msecs, 0.001)}ms`;
     }
     inspect() {
-return [this.seconds, this.nanoseconds];
-}
+      return [this.seconds, this.nanoseconds];
+    }
     [inspectSymbol]() {
-   
-return [this.seconds, this.nanoseconds];
+      return [this.seconds, this.nanoseconds];
       let secs = this.seconds;
       let msecs = (secs % 1) * 1e3;
       let nsecs = (msecs % 1) * 1e6;
@@ -6087,8 +6089,8 @@ Util.lazyProperty(Util,
         gettime(clock, data);
         let [secs, nsecs] = new BigUint64Array(data, 0, 2);
 
-let  t = /*BigFloat*/(BigFloat(secs)*1e03l+BigFloat(nsecs)*1e-06l);
-return t;
+        let t = /*BigFloat*/ secs * 1e3 + nsecs * 1e-6;
+        return t;
       };
     }
 
@@ -6166,7 +6168,7 @@ Util.bitsToNames = (flags, map = (name, flag) => name) => {
 Util.instrument = (fn,
   log = (duration, name, args, ret) =>
     console.log(`function '${name}'` +
-               (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '') +
+        (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '') +
         ` timing: ${duration.toFixed(3)}ms`
     ),
   logInterval = 0 //1000

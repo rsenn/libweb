@@ -4,6 +4,7 @@ import Util from '../util.js';
 
 const nodeInspect = Symbol.for('nodejs.util.inspect.custom');
 
+
 export class Rule {
   productions = [];
   fragment = false;
@@ -42,77 +43,11 @@ export class Rule {
     }
   };
 
-  static Self = class Self extends Rule.Symbol {
-    constructor(rule) {
-      super('arguments.callee', (rule && rule.name) || 'arguments.callee', rule);
-    }
+  generate() {
+    return this.map(sym => (!sym.generate ? Util.className(sym) : sym.generate())).join(', ');
+  }
 
-    clone() {
-      const { rule } = this;
-      return new Rule.Self(rule);
-    }
-
-    toString() {
-      return Util.colorText('Self', 0, 36) || 'arguments.callee';
-    }
-
-    toCowbird() {
-      return ['<this>'];
-    }
-
-    [Symbol.for('nodejs.util.inspect.custom')]() {
-      return Util.colorText('Self', 0, 36);
-    }
-  };
-
-  static Match = class Match extends Array {
-    constructor(rule, ...args) {
-      super(...args);
-      /*if(rule)*/ Util.define(this, { rule });
-      if(args.constructor == Array && args.length == 1) return Util.define(args[0], { rule });
-
-      //      this.splice(0, this.length, ...args);
-      return this;
-    }
-
-    clone(pred = (p, i) => true) {
-      const { rule } = this;
-      let ret = new Rule.Match(rule);
-      ret.splice(0, ret.length, ...this.filter(pred));
-      return ret;
-    }
-
-    get [Symbol.species]() {
-      return Rule.Match;
-    }
-
-    parse(symbols) {
-      if(symbols[symbols.length - 1] == Grammar.SKIP) {
-        symbols = symbols.slice(0, -1);
-        this.skip = true;
-        console.log('SKIP!');
-      }
-
-      let i = 0;
-      for(let sym of symbols) {
-        if(i == 0 && sym && sym.str == this.rule.name) {
-          sym = new Rule.Self();
-          this.selfReferential = true;
-          this.rule.selfReferential = true;
-        }
-
-        //console.log("sym:", sym);
-        this.push(sym);
-        i++;
-      }
-      //if(symbols[0] && symbols[0].str == this.rule.name) console.log('SELF:', this.rule.name, this);
-    }
-
-    generate() {
-      return this.map(sym => (!sym.generate ? Util.className(sym) : sym.generate())).join(', ');
-    }
-
-    /* [Symbol.for('nodejs.util.inspect.custom')]() {
+  /* [Symbol.for('nodejs.util.inspect.custom')]() {
       const { repeat = '', length, invert } = this;
       if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
       return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${
@@ -125,94 +60,74 @@ return [...n];
       }).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
     }*/
 
-    toString() {
-      const { repeat = '', length, invert } = this;
-      if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
-      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${
-        invert ? '~' : ''
-      }[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30)
-      )} ]${repeat}`;
-    }
+  toString() {
+    const { repeat = '', length, invert } = this;
+    if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
+    return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${
+      invert ? '~' : ''
+    }[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30)
+    )} ]${repeat}`;
+  }
 
-    /*   *entries() {
+  /*   *entries() {
       for(let match of this) yield [Util.className(match), match];
     }*/
 
-    combinations() {
-      let operators = new Map([...this].reduce(
-          (a, part, i) =>
-            part instanceof Rule.Operator && '?*'.indexOf(part.op) != -1
-              ? [...a, [i, 1 << a.length]]
-              : a,
-          []
-        )
-      );
-      if(operators.size == 0) return [this];
-      console.log('Match operators:', operators, [...this]);
-      let n = Math.pow(2, operators.size);
-      let r = [];
+  combinations() {
+    let operators = new Map([...this].reduce(
+        (a, part, i) =>
+          part instanceof Rule.Operator && '?*'.indexOf(part.op) != -1
+            ? [...a, [i, 1 << a.length]]
+            : a,
+        []
+      )
+    );
+    if(operators.size == 0) return [this];
+    console.log('Match operators:', operators, [...this]);
+    let n = Math.pow(2, operators.size);
+    let r = [];
 
-      for(let i = 0; i < n; i++) {
-        let match = new Rule.Match(this.rule);
+    for(let i = 0; i < n; i++) {
+      let match = new Rule.Match(this.rule);
 
-        for(let j = 0; j < this.length; j++) {
-          if(!operators.has(j)) {
-            match.push(this[j]);
-            continue;
-          }
-          let flag = operators.get(j);
-          if(!(i & flag)) continue;
-
-          let part = this[j].clone();
-
-          if(part.op == '*') {
-            part.op = '+';
-            match.push(part);
-            continue;
-          }
-          console.log(`part.args ${i & flag}:`, part.args);
-          match.splice(match.length, 0, ...part.args);
+      for(let j = 0; j < this.length; j++) {
+        if(!operators.has(j)) {
+          match.push(this[j]);
+          continue;
         }
-        console.log(`Match combinations [${i}]:`, match);
-        r.push(match);
+        let flag = operators.get(j);
+        if(!(i & flag)) continue;
+
+        let part = this[j].clone();
+
+        if(part.op == '*') {
+          part.op = '+';
+          match.push(part);
+          continue;
+        }
+        console.log(`part.args ${i & flag}:`, part.args);
+        match.splice(match.length, 0, ...part.args);
       }
-      console.log('Match combinations:', r);
-      return r;
+      console.log(`Match combinations [${i}]:`, match);
+      r.push(match);
     }
+    console.log('Match combinations:', r);
+    return r;
+  }
 
-    toCowbird(accu, combinations = true) {
-      //      console.log('Match array:', [...this].map(Util.toPlainObject));
-      if(combinations) {
-        return this.combinations().map(match => match.toCowbird(accu, false));
-      }
-      let matches = this.filter(m => m.str != 'eof()').map(rule => {
-        if(!rule.toCowbird)
-          throw new Error(`toCowbird ${Util.className(rule)} ${Util.inspect(rule)}`);
-        return rule.toCowbird(accu, false);
-      });
-      console.log('matches:', matches);
-      return matches.join(' ');
+  toCowbird(accu, combinations = true) {
+    //      console.log('Match array:', [...this].map(Util.toPlainObject));
+    if(combinations) {
+      return this.combinations().map(match => match.toCowbird(accu, false));
     }
-  };
-
-  static Literal = class Literal extends Rule.Symbol {
-    constructor(str, rule) {
-      super(str, undefined, rule);
-    }
-
-    clone() {
-      const { str, rule } = this;
-      return new Rule.Literal(str, rule);
-    }
-
-    toString() {
-      return `'${this.str}'`;
-    }
-
-    toCowbird(accu) {
-      return [Util.escapeRegex(this.str)];
-    }
-  };
+    let matches = this.filter(m => m.str != 'eof()').map(rule => {
+      if(!rule.toCowbird)
+        throw new Error(`toCowbird ${Util.className(rule)} ${Util.inspect(rule)}`);
+      return rule.toCowbird(accu, false);
+    });
+    console.log('matches:', matches);
+    return matches.join(' ');
+  }
 
   static Operator = class Operator extends Node {
     constructor(op, rule, ...args) {
@@ -422,6 +337,94 @@ return [...n];
     return Rule.prototype.toString.call(this, this.name, true);
   }
 }
+
+
+Rule.Self = class Self extends Rule.Symbol {
+  constructor(rule) {
+    super('arguments.callee', (rule && rule.name) || 'arguments.callee', rule);
+  }
+
+  clone() {
+    const { rule } = this;
+    return new Rule.Self(rule);
+  }
+
+  toString() {
+    return Util.colorText('Self', 0, 36) || 'arguments.callee';
+  }
+
+  toCowbird() {
+    return ['<this>'];
+  }
+
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return Util.colorText('Self', 0, 36);
+  }
+};
+
+Rule.Match = class Match extends Array {
+  constructor(rule, ...args) {
+    super(...args);
+    /*if(rule)*/ Util.define(this, { rule });
+    if(args.constructor == Array && args.length == 1) return Util.define(args[0], { rule });
+
+    //      this.splice(0, this.length, ...args);
+    return this;
+  }
+
+  clone(pred = (p, i) => true) {
+    const { rule } = this;
+    let ret = new Rule.Match(rule);
+    ret.splice(0, ret.length, ...this.filter(pred));
+    return ret;
+  }
+
+  get [Symbol.species]() {
+      return Rule.Match;
+    }
+
+  parse(symbols) {
+    if(symbols[symbols.length - 1] == Grammar.SKIP) {
+      symbols = symbols.slice(0, -1);
+      this.skip = true;
+      console.log('SKIP!');
+    }
+
+    let i = 0;
+    for(let sym of symbols) {
+      if(i == 0 && sym && sym.str == this.rule.name) {
+        sym = new Rule.Self();
+        this.selfReferential = true;
+        this.rule.selfReferential = true;
+      }
+
+      //console.log("sym:", sym);
+      this.push(sym);
+      i++;
+    }
+    //if(symbols[0] && symbols[0].str == this.rule.name) console.log('SELF:', this.rule.name, this);
+  }
+};
+
+Rule.Literal = class Literal extends Rule.Symbol {
+  constructor(str, rule) {
+    super(str, undefined, rule);
+  }
+
+  clone() {
+    const { str, rule } = this;
+    return new Rule.Literal(str, rule);
+  }
+
+  toString() {
+    return `'${this.str}'`;
+  }
+
+  toCowbird(accu) {
+    return [Util.escapeRegex(this.str)];
+  }
+};
+
 
 export class Grammar {
   rules = new Map();
