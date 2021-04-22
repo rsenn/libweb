@@ -485,7 +485,7 @@ export class ECMAScriptParser extends Parser {
       return new RegExpLiteral(pattern, flags);
     }
 
-    return new Literal(value ,
+    return new Literal(value,
       {
         stringLiteral: String,
         templateLiteral: String,
@@ -1553,7 +1553,7 @@ export class ECMAScriptParser extends Parser {
           value = this.expectLiteral();
         }
       } else {
-        value = new Literal("true", true);
+        value = new Literal('true', true);
       }
       attrs[name] = value;
     }

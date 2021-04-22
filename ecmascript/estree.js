@@ -170,7 +170,7 @@ export class Identifier extends Pattern {
 
 export class Literal extends Expression {
   constructor(...args) {
-    super( 'Literal');
+    super('Literal');
 
     if(args.length > 0) this.raw = args[0];
     this.value = args.length > 1 ? args[1] : args[0];
