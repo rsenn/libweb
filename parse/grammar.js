@@ -4,7 +4,6 @@ import Util from '../util.js';
 
 const nodeInspect = Symbol.for('nodejs.util.inspect.custom');
 
-
 export class Rule {
   productions = [];
   fragment = false;
@@ -338,7 +337,6 @@ return [...n];
   }
 }
 
-
 Rule.Self = class Self extends Rule.Symbol {
   constructor(rule) {
     super('arguments.callee', (rule && rule.name) || 'arguments.callee', rule);
@@ -424,7 +422,6 @@ Rule.Literal = class Literal extends Rule.Symbol {
     return [Util.escapeRegex(this.str)];
   }
 };
-
 
 export class Grammar {
   rules = new Map();

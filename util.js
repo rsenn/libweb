@@ -6077,6 +6077,8 @@ Util.lazyProperty(Util,
       const CLOCK_MONOTONIC_RAW = 4;
       const CLOCK_BOOTTIME = 7;
 
+      console.log('STACK:', Util.getCallerStack());
+
       performanceNow = async function(clock = CLOCK_MONOTONIC_RAW) {
         if(!gettime) {
           const { dlsym, RTLD_DEFAULT, define, call } = await import('ffi.so');

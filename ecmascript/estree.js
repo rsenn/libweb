@@ -8,7 +8,6 @@ export class ESNode {
   //position = null;
 
   static lastNode = null;
-  static assoc = Util.weakAssoc();
 
   constructor(type = 'Node') {
     //Util.define(this, { type });
@@ -17,9 +16,9 @@ export class ESNode {
     ESNode.lastNode = this;
   }
 
-  static get assocMap() {
-    return this.assoc.mapper.map;
-  }
+  /*static get assocMap() {
+    return this.assoc.map;
+  }*/
 
   [inspectSymbol](depth, opts = {}) {
     const color = Util.coloring(opts.colors);
@@ -49,6 +48,7 @@ Object.defineProperty(ESNode.prototype, 'position', {
   enumerable: false,
   writable: true
 });
+ESNode.assoc = Util.weakMapper(() => ({}), (ESNode.assocMap = new Map())); // Util.weakAssoc();
 
 export class Program extends ESNode {
   constructor(sourceType, body = []) {
@@ -68,7 +68,7 @@ export class ModuleDeclaration extends ESNode {
 /** A specifier in an import or export declaration. */
 export class ModuleSpecifier extends ESNode {
   constructor(type = 'ModuleSpecifier', local) {
-    super('ModuleSpecifier');
+    super(type);
     this.local = local;
   }
 }
@@ -110,7 +110,7 @@ export class ImportDefaultSpecifier extends ModuleSpecifier {
 /** A namespace import specifier, e.g., `* as foo` in `import * as foo from "mod.js"`. */
 export class ImportNamespaceSpecifier extends ModuleSpecifier {
   constructor(local) {
-    super('ImportDefaultSpecifier', local);
+    super('ImportNamespaceSpecifier', local);
   }
 }
 
@@ -169,11 +169,11 @@ export class Identifier extends Pattern {
 }
 
 export class Literal extends Expression {
-  constructor(value, species, type) {
-    super(type ?? 'Literal');
+  constructor(...args) {
+    super( 'Literal');
 
-    if(value !== undefined) this.value = value;
-    if(species !== undefined) Util.define(this, { species });
+    if(args.length > 0) this.raw = args[0];
+    this.value = args.length > 1 ? args[1] : args[0];
   }
 
   toString() {
@@ -198,6 +198,8 @@ export class RegExpLiteral extends Literal {
   constructor(pattern, flags) {
     super();
     this.type = 'RegExpLiteral';
+    //this.value = {}; //new RegExp(pattern,flags);
+    this.raw = `/${pattern}/${flags}`;
     this.regex = {
       pattern,
       flags
@@ -228,10 +230,13 @@ export class TaggedTemplateExpression extends Expression {
 }
 
 export class TemplateElement extends ESNode {
-  constructor(tail, value) {
+  constructor(tail, raw, cooked) {
     super('TemplateElement');
     this.tail = tail;
-    this.value = value;
+    this.value = {
+      raw,
+      cooked
+    };
   }
 }
 
@@ -514,9 +519,9 @@ export class CatchClause extends ESNode {
 }
 
 export class ThrowStatement extends Statement {
-  constructor(expression) {
+  constructor(argument) {
     super('ThrowStatement');
-    this.expression = expression;
+    this.argument = argument;
   }
 }
 
@@ -624,9 +629,9 @@ export class Property extends ESNode {
     this.key = key;
     this.value = value;
     this.kind = kind;
-    if(this.method) this.method = method;
-    if(this.shorthand) this.shorthand = shorthand;
-    if(this.computed) this.computed = computed;
+    if(method) this.method = method;
+    if(shorthand) this.shorthand = shorthand;
+    if(computed) this.computed = computed;
   }
 }
 /*export class MemberVariable extends ESNode {

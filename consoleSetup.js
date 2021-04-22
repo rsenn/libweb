@@ -99,6 +99,8 @@ export async function ConsoleSetup(opts = {}) {
       let inspectFunction;
       let platform = Util.getPlatform();
 
+      newcons.options = inspectOptions;
+
       //console.log('Platform:', platform);
       switch (platform) {
         case 'quickjs':

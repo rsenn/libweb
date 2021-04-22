@@ -60,7 +60,7 @@ export class Printer {
           throw err;
         };
     } catch(err) {
-      console.log('err:', err);
+      //console.log('err:', err);
       throw err;
       process.exit(0);
     }
@@ -186,9 +186,9 @@ export class Printer {
   }*/
 
   printLiteral(literal) {
-    let { value, species } = literal;
+    let { value, raw } = literal;
 
-    if(species != 'regexp') value = value.replace(linebreak, '\\n');
+    if(typeof value == 'string') value = value.replace(linebreak, '\\n');
 
     return this.colorText.numberLiterals(value);
   }
@@ -620,20 +620,25 @@ export class Printer {
     return s;
   }
 
-  printImportNamespaceSpecifier(import_namespace_specifier) {
-    const { local } = import_namespace_specifier;
+  printImportDefaultSpecifier(import_default_specifier) {
+    const { local } = import_default_specifier;
 
     let decl = this.printNode(local);
 
-    let s = '*';
+    return decl;
+  }
 
+  printImportNamespaceSpecifier(import_namespace_specifier) {
+    const { local } = import_namespace_specifier;
+    let decl = this.printNode(local);
+    let s = '*';
     s += ' as ' + decl;
     return s;
   }
 
   printImportDeclaration(import_statement) {
     const { specifiers, source } = import_statement;
-    //console.log('printImportDeclaration', {  specifiers, source });
+    //console.log('printImportDeclaration', console.config({ compact: 1, depth: Infinity }), { specifiers, source });
     let output = this.colorCode.keywords() + 'import ';
 
     const isImportSpecifier = node => Util.isObject(node) && node instanceof ImportSpecifier;
@@ -700,9 +705,9 @@ export class Printer {
   }
 
   printThrowStatement(throw_statement) {
-    let { expression } = throw_statement;
+    let { argument } = throw_statement;
 
-    return 'throw ' + this.printNode(expression);
+    return 'throw ' + this.printNode(argument);
   }
 
   printYieldExpression(yield_expression) {
