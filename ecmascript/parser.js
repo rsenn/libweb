@@ -1,7 +1,7 @@
 import Util from '../util.js';
 
 import { Lexer, SyntaxError, Location, Token } from './lexer.js';
-export { Lexer, SyntaxError, Location, Token } from './lexer.js';
+export { Lexer, SyntaxError, Location, Token, PathReplacer } from './lexer.js';
 
 //import { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/tests/jslexer.js'; export { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/tests/jslexer.js';
 
@@ -9,7 +9,7 @@ import deep from '../deep.js';
 //import util from 'util';
 import { TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, Expression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionArgument, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
+import { ESNode, Program, Expression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionArgument, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -56,9 +56,6 @@ export class Parser {
 
     this.factory.callback = (...args) => this.handleConstruct(...args);
 
-    //console.log("Identifier", Identifier);
-    //console.log("parser: ", this.parser);
-    console.log('lexer: ', this.lexer);
     //
     if(debug) ECMAScriptParser.instrumentate();
   }
@@ -71,7 +68,7 @@ export class Parser {
   }
 
   handleComment(comment, start, end) {
-    console.log('handleComment:', { comment, start, end });
+    //console.log('handleComment:', { comment, start, end });
     if(comment.startsWith('//')) comment += '\n';
     let token = new Token('comment',
       comment,
@@ -479,7 +476,9 @@ export class ECMAScriptParser extends Parser {
       //console.log('token:', token);
       //const head = i == 0 && token.value.startsWith('`');
       const tail = (i > 0 || token.value.length > 1) && token.value.endsWith('`');
-      quasis.push(new TemplateElement(tail, token.value));
+      const raw = token.value.slice(1, -1);
+      const cooked = raw.replace(/\\n/g, '\n');
+      quasis.push(new TemplateElement(tail, raw, cooked));
       if(tail) break;
       expressions.push(this.parseAssignmentExpression());
       const { lexer } = this;
@@ -1273,7 +1272,7 @@ export class ECMAScriptParser extends Parser {
     let properties = [];
     this.expectPunctuators('{');
     while(!this.matchPunctuators('}')) {
-      let kind = 'method';
+      let kind = 'init';
       let _static = false;
       let spread = false;
       let member = null,
@@ -1592,7 +1591,7 @@ export class ECMAScriptParser extends Parser {
         if(this.matchPunctuators('{')) {
           items = items.concat(this.parseModuleItems());
         } else if(this.matchIdentifier() || this.matchPunctuators('*')) {
-          item = this.parseImportSpecifier();
+          item = this.parseImportSpecifier(this.matchIdentifier());
           items.push(item);
         }
         if(this.matchPunctuators(',')) {
@@ -1610,7 +1609,7 @@ export class ECMAScriptParser extends Parser {
     return this.parseRemainingCallExpression(object);
   }
 
-  parseImportSpecifier() {
+  parseImportSpecifier(default_specifier = false) {
     let name;
     let decl;
     if(this.matchPunctuators('*')) {
@@ -1628,7 +1627,7 @@ export class ECMAScriptParser extends Parser {
     } else {
       decl = name;
     }
-    return new ImportSpecifier(name, decl);
+    return default_specifier ? new ImportDefaultSpecifier(decl) : new ImportSpecifier(name, decl);
   }
 
   parseModuleItems(method = 'parseImportSpecifier') {
@@ -2166,7 +2165,7 @@ export class ECMAScriptParser extends Parser {
       }
 
       if(rest_of) param = new RestElement(param);
-      else if(defaultValue) param = new FunctionArgument(param, defaultValue);
+      else if(defaultValue) param = new AssignmentPattern(param, defaultValue);
 
       params.push(param);
       if(rest_of) break;
