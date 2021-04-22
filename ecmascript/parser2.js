@@ -53,7 +53,7 @@ export class Parser {
     //console.log("parser: ", this.parser);
     //console.log('lexer: ', this.lexer);
     //
-    if(debug) {
+    if(debug > 2) {
       this.debug = function debug(...args) {
         console.log(`${this.lexer.loc}`, ...args);
       };
@@ -932,15 +932,10 @@ export class ECMAScriptParser extends Parser {
     this.log(`parseUnaryExpression()`);
     const unaryKeywords = ['delete', 'void', 'typeof', 'await'];
     const unaryPunctuators = ['++', '--', '+', '-', '~', '!'];
-    /*   if(this.matchKeywords('await')) {
-      this.expectKeywords('await');
-      const argument = this.parseAssignmentExpression();
 
-      return this.addNode(AwaitExpression, (argument.ast && argument.ast) || argument);
-    } else*/ if(this.matchKeywords(unaryKeywords)
-    ) {
+    if(this.matchKeywords(unaryKeywords)) {
       const operatorToken = this.expectKeywords(unaryKeywords);
-      console.log('operatorToken', operatorToken);
+      //console.log('operatorToken', operatorToken);
       const argument = this.parseUnaryExpression();
       return {
         ast: this.addNode(UnaryExpression, operatorToken.value, argument.ast, true),
@@ -1251,7 +1246,15 @@ export class ECMAScriptParser extends Parser {
 
       if(this.expectPunctuators(['}', ']', ',']).value != ',') break;
     }
-
+    if(ctor == ArrayPattern) {
+      //      console.log('ArrayPattern', props);
+      props = props.map(element =>
+        element.type == 'Property' && element.key === undefined && element.value === undefined
+          ? null
+          : element
+      );
+      console.log('ArrayPattern', props);
+    }
     return new ctor(props);
   }
 
@@ -2261,6 +2264,7 @@ export class ECMAScriptParser extends Parser {
     let rest_of = false,
       parens = false;
     const checkRestOf = (parser, match) => {
+      parser.matchIdentifier(true);
       if(parser.matchPunctuators('...')) {
         parser.expectPunctuators('...');
         rest_of = true;
@@ -2456,10 +2460,8 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     let depth = this.stack.length;
     let entry = { methodName, start: tokenIndex - this.tokens.length, position, depth };
     this.stack.unshift(entry);
-    let s =
-      ('' + position.toString(false)).padEnd((position.file || '').length + 6) +
-      ` ${(depth + '').padStart(4)} ${this.stack[0].methodName}`;
-    let msg = s + ` ${quoteList(this.stack[depth].tokens || [])}` + `  ${quoteArg(args)}`;
+    let { tokens } = this.stack[depth];
+
     let ret = methods[methodName].call(this, ...args);
     let { token } = this;
     let start = this.consumed || 0;
@@ -2470,40 +2472,32 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     if(ret instanceof ESNode) this.onReturnNode(ret, entry, this.stack);
     let tmp = this.stack[0].tokens || [];
     while(this.stack.length > depth) this.stack.shift();
-    newNodes = [];
-    //console.log(`nodes`, nodes);
 
-    deep.forEach(nodes,
-      (node, path) => {
-        if(node instanceof ESNode) {
-          const name = Util.className(node);
-          newNodes.push(name);
-        }
-      },
-      deep.TYPE_OBJECT
-    );
+    if(this.debug > 1) {
+      let s =
+        ('' + position.toString(false)).padEnd((position.file || '').length + 6) +
+        ` ${(depth + '').padStart(4)} ${methodName.padEnd(32)}`;
+      let msg = s + ` ${quoteList(tokens || [])}` + `  ${quoteArg(args)}`;
 
-    /*    for(let [node, path] of deep.iterate(nodes, n => n instanceof ESNode)) {
-      const name = Util.className(node);
-      newNodes.push(name);
-    }*/
-    let parsed = lexer.source.substring(start, end);
-    this.consumed = end;
-    if(parsed.length) parsed = parsed.replace(linebreak, '\\n');
-    let lexed = this.processed.slice(firstTok);
-    this.numToks = lastTok;
-    let annotate = [];
-    const objectStr = typeof ret == 'object' ? Util.className(ret) : ret;
-    annotate.push(`returned: ${objectStr}`);
-    if(lexed.length)
-      annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`);
-    if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
-    nodes.splice(0, nodes.length);
-    depth--;
-    if(annotate.length) {
-      msg = msg + '    ' + annotate.join(', ');
+      let parsed = lexer.source.substring(start, end);
+      this.consumed = end;
+      if(parsed.length) parsed = parsed.replace(linebreak, '\\n');
+      let lexed = this.processed.slice(firstTok);
+      this.numToks = lastTok;
+      let annotate = [];
+      const objectStr = typeof ret == 'object' ? Util.className(ret) : ret;
+      annotate.push(`returned: ${objectStr}`);
+      if(lexed.length)
+        annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`
+        );
+      /*   if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
+    nodes.splice(0, nodes.length);*/
+      if(annotate.length) {
+        msg = msg + '    ' + annotate.join(', ');
+      }
+      if(ret || !/match/.test(methodName)) console.log(msg);
     }
-    if(this.debug) if (ret || !/match/.test(methodName)) console.log(msg);
+    depth--;
     return ret;
   };
   return esfactory;

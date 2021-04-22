@@ -5482,10 +5482,7 @@ Util.safeFunction = (fn, trapExceptions, thisObj) => {
 };
 Util.safeCall = (fn, ...args) => Util.safeApply(fn, args);
 Util.safeApply = (fn, args = []) => Util.safeFunction(fn, true)(...args);
-Util.signal = (sig, fn) => {
-  if(typeof globalThis.os?.signal == 'function') return globalThis.os.signal(sig, fn);
-  if(Util.getPlatform() == 'quickjs') return import('os').then(({ signal }) => signal(sig.fn));
-};
+
 Util.exit = exitCode => {
   const { callExitHandlers } = Util;
   //console.log('Util.exit', { exitCode, callExitHandlers });
@@ -5824,19 +5821,21 @@ Util.ttySetRaw = (fd = 0, mode = true) => {
   const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdin'];
   return stream?.setRawMode?.(mode);
 };
-
+/*Util.signal = (sig, fn) => {
+  if(typeof globalThis.os?.signal == 'function') return globalThis.os.signal(sig, fn);
+  if(Util.getPlatform() == 'quickjs') return import('os').then(({ signal }) => signal(sig.fn));
+};*/
 Util.signal = (num, act) => {
-  let ret;
-  if(Util.getPlatform() == 'quickjs')
-    return globalThis.os
-      ? os.signal(typeof num == 'string' && num in os ? os[num] : num, act)
-      : import('os').then(m => {
-          if(typeof num == 'string' && num in m) num = m[num];
+  console.log('Util.signal', { num, act });
+  let ret; /*globalThis.os ? os.signal(typeof num == 'string' && num in os ? os[num] : num, act) : */
+  /*if(Util.getPlatform() == 'quickjs')
+    return*/ return import('os')
+    .then(m => {
+      if(typeof num == 'string' && num in m) num = m[num];
 
-          m.signal(num, act);
-        });
-
-  process.on(num, act);
+      m.signal(num, act);
+    })
+    .catch(() => process.on(num, act));
 };
 
 /**

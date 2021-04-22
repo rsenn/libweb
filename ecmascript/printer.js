@@ -999,7 +999,7 @@ export class Printer {
 
     //console.log('printArrayPattern', { elements });
     let output = elements
-      .map(element => this.printNode(element))
+      .map(element => (element ? this.printNode(element) : ''))
       .join(colorCode.punctuators() + ', ');
 
     return colorCode.punctuators() + `[ ${output} ${colorCode.punctuators()}]`;
