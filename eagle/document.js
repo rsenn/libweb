@@ -181,14 +181,16 @@ export class EagleDocument extends EagleNode {
 
   /* prettier-ignore */
   saveTo(file, overwrite = false) {
-    let  fs  = this.project && this.project.fs ? this.project.fs  : globalThis.filesystem;
-    const data = this.toXML('  ');
+    let  fs  =  this.project?.fs ?? globalThis.filesystem ?? globalThis.fs;
+    //console.log('fs',fs);
+  const data = this.toXML('  ');
 
     if(!file)
       file = this.file;
 
   console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
     let ret = fs.writeFile(file, data, overwrite);
+    console.log('ret',ret);
 
 if(ret < 0)
   throw new Error(`Writing file '${file}' failed: ${fs.errstr}`);

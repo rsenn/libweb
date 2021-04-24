@@ -956,5 +956,6 @@ export class EagleElement extends EagleNode {
     '?xml': ['version', 'encoding']
   };
 }
+globalThis.EagleElement = EagleElement;
 
 export const makeEagleElement = (owner, ref, raw) => EagleElement.get(owner, ref, raw);

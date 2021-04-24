@@ -295,10 +295,13 @@ export class EagleProject {
 
   saveTo(dir = '.', overwrite = false) {
     return new Promise((resolve, reject) => {
-      let promises = this.list.map(doc => doc.saveTo([dir, doc.basename].join('/'), overwrite));
+      let promises = this.list.map(doc => [
+        doc.basename,
+        doc.saveTo([dir, doc.basename].join('/'), overwrite)
+      ]);
 
       return Promise.all(promises).then(result => {
-        //console.log('result:', result);
+        console.log('result:', result);
         resolve(Object.fromEntries(result));
       });
     });
