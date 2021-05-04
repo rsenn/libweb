@@ -32,11 +32,11 @@ export async function ConsoleSetup(opts = {}) {
     (await consoleWidth()) ||
     80; // Infinity;
   const {
-    depth = 2,
+    depth = Infinity,
     colors = await Util.isatty(1),
     breakLength = defaultBreakLength,
     maxArrayLength = Infinity,
-    compact = false,
+    compact = 1,
     customInspect = true,
     ...options
   } = opts;
@@ -53,38 +53,43 @@ export async function ConsoleSetup(opts = {}) {
 
   /*if(typeof globalThis.inspect == 'function' || typeof globalThis.inspect == 'object')
     globalThis.inspect.options = inspectOptions;*/
-  ret = await Util.tryCatch(async () => {
-      let c = globalThis.console;
-      let clog = c.log;
+  if(Util.getPlatform() != 'quickjs')
+    ret = await Util.tryCatch(async () => {
+        let c = globalThis.console;
+        let clog = c.log;
 
-      const Console = await import('console').then(module => (globalThis.Console = module.Console));
+        const Console = await import('console').then(module => (globalThis.Console = module.Console)
+        );
 
-      ret = new Console({
-        stdout: proc.stdout,
-        stderr: proc.stderr,
-        colorMode: inspectOptions.colors,
-        inspectOptions
-      });
+        ret = new Console({
+          stdout: proc.stdout,
+          stderr: proc.stderr,
+          colorMode: inspectOptions.colors,
+          inspectOptions
+        });
 
-      Console.prototype.config = function config(obj = {}) {
-        return new ConsoleOptions(obj);
-      };
+        Console.prototype.config = function config(obj = {}) {
+          return new ConsoleOptions(obj);
+        };
 
-      ret.colors = colors;
-      ret.depth = depth;
-      ret.options = inspectOptions;
+        ret.colors = colors;
+        ret.depth = depth;
+        ret.options = inspectOptions;
 
-      const inspectFunction = await import('util').then(module => (globalThis.inspect = module.inspect)
-      );
+        const inspectFunction = await import('util').then(module => (globalThis.inspect = module.inspect)
+        );
 
-      ret = extendWithOptionsHandler(ret, inspectFunction, inspectOptions, clog);
-      clog.call(c, 'ret:', ret.log + '');
-      return ret;
-    },
-    c => c,
-    async () => {
-      let c = globalThis.console;
-      /* let options = {
+        ret = extendWithOptionsHandler(ret, inspectFunction, inspectOptions, clog);
+        clog.call(c, 'ret:', ret.log + '');
+        return ret;
+      },
+      c => c,
+      () => {}
+    );
+  else
+    ret = await Util.tryCatch(async () => {
+        let c = globalThis.console;
+        /* let options = {
         colors: true,
         depth: Infinity,
         customInspect: true,
@@ -92,44 +97,47 @@ export async function ConsoleSetup(opts = {}) {
         ...inspectOptions
       };*/
 
-      class Console {
-        config(obj = {}) {
-          return new ConsoleOptions(obj);
+        class Console {
+          config(obj = {}) {
+            return new ConsoleOptions(obj);
+          }
+
+          valueOf() {
+            return this;
+          }
         }
 
-        valueOf() {
-          return this;
+        globalThis.Console = Console;
+
+        let newcons = new Console();
+        let inspectFunction;
+        let platform = Util.getPlatform();
+
+        newcons.options = inspectOptions;
+
+        //console.log('Platform:', platform);
+        switch (platform) {
+          case 'quickjs':
+            await import('inspect')
+              .catch(() => import('inspect.so'))
+              .then(module => (globalThis.inspect = inspectFunction = module.inspect));
+            break;
+
+          case 'node':
+            await import('util').then(module => (globalThis.inspect = inspectFunction = module.inspect)
+            );
+            break;
+          default: await import('./objectInspect.js').then(
+              module => (globalThis.inspect = inspectFunction = module.inspectFunction)
+            );
+            break;
         }
-      }
 
-      globalThis.Console = Console;
-
-      let newcons = new Console();
-      let inspectFunction;
-      let platform = Util.getPlatform();
-
-      newcons.options = inspectOptions;
-
-      //console.log('Platform:', platform);
-      switch (platform) {
-        case 'quickjs':
-          await import('inspect.so').then(module => (globalThis.inspect = inspectFunction = module.inspect)
-          );
-          break;
-
-        case 'node':
-          await import('util').then(module => (globalThis.inspect = inspectFunction = module.inspect)
-          );
-          break;
-        default: await import('./objectInspect.js').then(
-            module => (globalThis.inspect = inspectFunction = module.inspectFunction)
-          );
-          break;
-      }
-
-      return extendWithOptionsHandler(newcons, inspectFunction, inspectOptions, c.log);
-    }
-  );
+        return extendWithOptionsHandler(newcons, inspectFunction, inspectOptions, c.log);
+      },
+      c => c,
+      () => {}
+    );
 
   globalThis.console = addMissingMethods(ret);
 }
@@ -167,7 +175,7 @@ function extendWithOptionsHandler(newcons, inspect, options, reallog) {
           }
           acc.push(arg);
         } catch(error) {
-          this.reallog('error:', error);
+          this.reallog('error:', error.message, `\n${error.stack}`);
         }
       }
       //console.reallog('args:', acc);

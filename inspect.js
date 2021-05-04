@@ -1,10 +1,12 @@
 import Util from './util.js';
 
 Util.getPlatform() == 'quickjs'
-  ? import('inspect.so').then(module => {
-      globalThis.inspect = module;
-      return module;
-    })
+  ? import('inspect')
+      .catch(() => import('inspect.so'))
+      .then(module => {
+        globalThis.inspect = module;
+        return module;
+      })
   : import('util').then(module => {
       globalThis.inspect = module.inspect;
       return module.inspect;

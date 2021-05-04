@@ -1,5 +1,4 @@
 import Util from '../util.js';
-import '../inspect.js';
 
 const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 const linebreak = /\r?\n/g;

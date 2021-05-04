@@ -465,6 +465,7 @@ export class EagleNode {
   }
 
   toXML(indent = '') {
+    console.log('toXML', this.raw);
     return toXML(this.raw, 10000, '"', indent);
   }
 
