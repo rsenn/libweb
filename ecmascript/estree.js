@@ -25,10 +25,7 @@ export class ESNode {
 
     //  console.log(`ESNode `, text+'');
 
-    return ((type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) +
-      ' ' +
-      inspect(props, depth, opts)
-    );
+    return (type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) + ' ' + inspect(props, depth, opts);
   }
 
   /* toJSON() {
@@ -180,9 +177,7 @@ export class Literal extends Expression {
   }
 
   static string(node) {
-    return Util.isObject(node) && typeof node.value == 'string'
-      ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n')
-      : undefined;
+    return Util.isObject(node) && typeof node.value == 'string' ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n') : undefined;
   }
 
   [inspectSymbol](n, opts = {}) {

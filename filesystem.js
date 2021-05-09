@@ -166,7 +166,7 @@ export function QuickJSFileSystem(std, os) {
       let data,
         size,
         res = { errno: 0 };
-      let file = std.open(filename, 'r', res);
+      let file = std.open(filename, 'rb', res);
       if(!res.errno) {
         file.seek(0, std.SEEK_END);
         size = file.tell();
@@ -175,7 +175,7 @@ export function QuickJSFileSystem(std, os) {
         file.read(data, 0, size);
         //data = file.readAsString(/*size*/);
         file.close();
-        if(encoding != null) data = ArrayBufferToString(data, encoding);
+        // if(encoding != null) data = ArrayBufferToString(data, encoding);
         return data;
       }
       return numerr(-res.errno);
@@ -240,7 +240,7 @@ export function QuickJSFileSystem(std, os) {
             ret = typeof offset == 'bigint' ? fd.tello() : fd.tell();
           break;
       }
-      console.log('seek:', { offset, whence, ret });
+      // console.log('seek:', { offset, whence, ret });
       return ret;
     },
     tell(file) {

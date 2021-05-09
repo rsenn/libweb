@@ -2806,8 +2806,8 @@ Util.roundTo = function(value, prec, digits, type) {
   if(prec == 1) return fn(value);
   let ret = prec > Number.EPSILON ? fn(value / prec) * prec : value;
 
-  if(digits == 0) ret = Math[type](ret);
-  else if(typeof digits == 'number' && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
+  if(typeof digits == 'number' && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
+  else ret = Math[type](ret);
   return ret;
 };
 Util.base64 = (() => {
@@ -4457,7 +4457,7 @@ Util.traceProxy = (obj, handler) => {
   handler = /*handler || */ function(name, args) {
     console.log(`Calling method '${name}':`, ...args);
   };
-  console.log('handler', { handler }, handler + '');
+  //console.log('handler', { handler }, handler + '');
   proxy = new Proxy(obj, {
     get(target, key, receiver) {
       let member = Reflect.get(obj, key, receiver);
@@ -5821,15 +5821,11 @@ Util.ttySetRaw = (fd = 0, mode = true) => {
   const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdin'];
   return stream?.setRawMode?.(mode);
 };
-/*Util.signal = (sig, fn) => {
-  if(typeof globalThis.os?.signal == 'function') return globalThis.os.signal(sig, fn);
-  if(Util.getPlatform() == 'quickjs') return import('os').then(({ signal }) => signal(sig.fn));
-};*/
+
 Util.signal = (num, act) => {
-  console.log('Util.signal', { num, act });
-  let ret; /*globalThis.os ? os.signal(typeof num == 'string' && num in os ? os[num] : num, act) : */
-  /*if(Util.getPlatform() == 'quickjs')
-    return*/ return import('os')
+  //console.log('Util.signal', { num, act });
+  let ret;
+  return import('os')
     .then(m => {
       if(typeof num == 'string' && num in m) num = m[num];
 

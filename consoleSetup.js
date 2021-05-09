@@ -139,7 +139,9 @@ export async function ConsoleSetup(opts = {}) {
       () => {}
     );
 
-  globalThis.console = addMissingMethods(ret);
+  console.log('ret', ret);
+
+  if(ret) globalThis.console = addMissingMethods(ret);
 }
 
 function extendWithOptionsHandler(newcons, inspect, options, reallog) {
@@ -187,9 +189,10 @@ function extendWithOptionsHandler(newcons, inspect, options, reallog) {
 function addMissingMethods(cons) {
   let fns = {};
 
-  for(let method of ['error', 'warn', 'debug']) {
-    if(cons[method] === undefined) fns[method] = cons.log;
-  }
+  if(cons)
+    for(let method of ['error', 'warn', 'debug']) {
+      if(cons[method] === undefined) fns[method] = cons.log;
+    }
   return Util.define(cons, fns);
 }
 
