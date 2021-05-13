@@ -73,3 +73,4 @@ export {
 export { Printer } from './ecmascript/printer.js';
 export { ECMAScriptInterpreter } from './ecmascript/interpreter.js';
 export { Environment } from './ecmascript/environment.js';
+export { PathReplacer } from './ecmascript/lexer.js';

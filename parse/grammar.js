@@ -30,7 +30,11 @@ export class Rule {
       if(this.id !== undefined && this.str !== undefined)
         return Util.colorText(this.str,
           1,
-          this.id == Lexer.tokens.REGEXP ? 35 : this.id == Lexer.tokens.STRING ? 36 : 33
+          this.id == Lexer.tokens.REGEXP
+            ? 35
+            : this.id == Lexer.tokens.STRING
+            ? 36
+            : 33
         );
 
       let str = Util.colorText(this.str, 1, /^['"`]/.test(this.str) ? 36 : 33);
@@ -43,7 +47,9 @@ export class Rule {
   };
 
   generate() {
-    return this.map(sym => (!sym.generate ? Util.className(sym) : sym.generate())).join(', ');
+    return this.map(sym =>
+      !sym.generate ? Util.className(sym) : sym.generate()
+    ).join(', ');
   }
 
   /* [Symbol.for('nodejs.util.inspect.custom')]() {
@@ -61,7 +67,8 @@ return [...n];
 
   toString() {
     const { repeat = '', length, invert } = this;
-    if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
+    if(this.length == 1)
+      return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
     return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${
       invert ? '~' : ''
     }[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30)
@@ -121,7 +128,8 @@ return [...n];
     }
     let matches = this.filter(m => m.str != 'eof()').map(rule => {
       if(!rule.toCowbird)
-        throw new Error(`toCowbird ${Util.className(rule)} ${Util.inspect(rule)}`);
+        throw new Error(`toCowbird ${Util.className(rule)} ${Util.inspect(rule)}`
+        );
       return rule.toCowbird(accu, false);
     });
     console.log('matches:', matches);
@@ -165,7 +173,9 @@ return [...n];
             ? (this.rule.n = (this.rule.n ? this.rule.n : 0) + 1)
             : Util.randStr(8));
 
-        args = args.map(arg => (arg instanceof Array && arg.length == 1 ? arg[0] : arg));
+        args = args.map(arg =>
+          arg instanceof Array && arg.length == 1 ? arg[0] : arg
+        );
 
         console.log('args:', args, args.map(Util.toPlainObject));
         let rule = Rule.from(args, grammar);
@@ -174,12 +184,15 @@ return [...n];
         return [`<${subname}>`];
       } else if(args.length == 1) {
         if(!args[0].toCowbird)
-          throw new Error(`toCowbird ${Util.className(args[0])} ${Util.inspect(args[0])}`);
+          throw new Error(`toCowbird ${Util.className(args[0])} ${Util.inspect(args[0])}`
+          );
         ret = ret.concat(args[0].toCowbird(accu));
       }
       let op = this.op == '+' ? '\\+' : this.op;
       return ret.map(str =>
-        typeof str == 'string' && str.startsWith('<') ? `${str} ${op}` : str + op[op.length - 1]
+        typeof str == 'string' && str.startsWith('<')
+          ? `${str} ${op}`
+          : str + op[op.length - 1]
       );
     }
   };
@@ -224,14 +237,17 @@ return [...n];
     if(multiline) (nl = '\n\t'), (sep = ' | ');
     return `Rule ${this.fragment ? 'fragment ' : ''}${
       name ? Util.colorText(name, 1, 32) + ' ' : ''
-    }${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
+    }${nl}: ${this.productions
+      .map(l => l.toString())
+      .join(`${nl}${sep}`)}${nl};${nl}`;
   }
 
   toCowbird(accu, name) {
     let a = [];
     for(let production of this) {
       let p = production;
-      if(!p.toCowbird) throw new Error(`toCowbird ${Util.className(p)} ${Util.inspect(p)}`);
+      if(!p.toCowbird)
+        throw new Error(`toCowbird ${Util.className(p)} ${Util.inspect(p)}`);
 
       let productions = /*!p.toCowbird ? p.toString() :*/ p.toCowbird(accu);
 
@@ -284,11 +300,14 @@ return [...n];
       s = `/${a.str}/g`;
     } else if(a instanceof Rule.Literal) {
       let fn = 'token';
-      if(/[\r\n\t\ ]/.test(a.str) || a.str == '\\n' || a.str == '\\r') fn = 'char';
+      if(/[\r\n\t\ ]/.test(a.str) || a.str == '\\n' || a.str == '\\r')
+        fn = 'char';
       //console.log("a.str:",a.str);
       //{ f = a.str.length ==1 ? 'char': 'token'; s = a.str ? `'${a.str}'` : a; }
-      return (s = a.str.length == 1 ? `${fn}('${a.str}')` : `${fn}('${a.str}')`);
-    } else if(a instanceof Rule.Operator) s = Rule.generate(a.args, operatorFunctions[a.op]);
+      return (s =
+        a.str.length == 1 ? `${fn}('${a.str}')` : `${fn}('${a.str}')`);
+    } else if(a instanceof Rule.Operator)
+      s = Rule.generate(a.args, operatorFunctions[a.op]);
     else if(a instanceof Rule.Match /*|| a instanceof Array*/) {
       //console.log('a:', a);
       if(f == null && a.length > 1) {
@@ -296,7 +315,11 @@ return [...n];
         sep = ', ';
       }
       s = a
-        .map(p => Rule.generate(p, p instanceof Rule.Match && p.length > 1 ? 'seq' : null))
+        .map(p =>
+          Rule.generate(p,
+            p instanceof Rule.Match && p.length > 1 ? 'seq' : null
+          )
+        )
         .join(sep);
 
       if(a.skip) skip = true;
@@ -323,7 +346,10 @@ return [...n];
   }
 
   generate() {
-    let s = Rule.generate(this.productions, this.productions.length > 1 ? 'choice' : null, ',\n  ');
+    let s = Rule.generate(this.productions,
+      this.productions.length > 1 ? 'choice' : null,
+      ',\n  '
+    );
 
     return s;
   }
@@ -364,7 +390,8 @@ Rule.Match = class Match extends Array {
   constructor(rule, ...args) {
     super(...args);
     /*if(rule)*/ Util.define(this, { rule });
-    if(args.constructor == Array && args.length == 1) return Util.define(args[0], { rule });
+    if(args.constructor == Array && args.length == 1)
+      return Util.define(args[0], { rule });
 
     //      this.splice(0, this.length, ...args);
     return this;
@@ -536,7 +563,8 @@ export class Grammar {
 
     function isCharMatch(m) {
       if(m instanceof Array) {
-        if(m.length == 3 && m[1].str == '..') return isCharMatch(m[0]) && isCharMatch(m[2]);
+        if(m.length == 3 && m[1].str == '..')
+          return isCharMatch(m[0]) && isCharMatch(m[2]);
         if(m.length == 1) return isCharMatch(m[0]);
       } else if(typeof m == 'string') {
         return m.length == 1 || (m.length == 2 && m[0] == '\\');
@@ -554,7 +582,8 @@ export class Grammar {
             m = m.map(tok => tok.str);
             if(m.length == 3 && m[1] == '..')
               return `${Util.escapeRegex(m[0])}-${Util.escapeRegex(m[2])}`;
-            if(m.length == 1) return m[0].length == 1 ? Util.escapeRegex(m[0]) : m[0];
+            if(m.length == 1)
+              return m[0].length == 1 ? Util.escapeRegex(m[0]) : m[0];
           })
           .join('') +
         ']'

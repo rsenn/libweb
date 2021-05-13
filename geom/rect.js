@@ -12,7 +12,8 @@ export function Rect(arg) {
   let ret;
 
   if(typeof args[0] == 'number') arg = args;
-  else if(Util.isObject(args[0]) && args[0].length !== undefined) arg = args.shift();
+  else if(Util.isObject(args[0]) && args[0].length !== undefined)
+    arg = args.shift();
 
   ['x', 'y', 'width', 'height'].forEach(field => {
     if(typeof obj[field] != 'number') obj[field] = 0;
@@ -52,7 +53,10 @@ export function Rect(arg) {
     obj.width = parseFloat(arg.width);
     obj.height = parseFloat(arg.height);
     ret = 1;
-  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
+  } else if(arg &&
+    arg.length >= 4 &&
+    arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))
+  ) {
     let x = arg.shift();
     let y = arg.shift();
     let w = arg.shift();
@@ -62,7 +66,10 @@ export function Rect(arg) {
     obj.width = typeof w === 'number' ? w : parseFloat(w);
     obj.height = typeof h === 'number' ? h : parseFloat(h);
     ret = 4;
-  } else if(arg && arg.length >= 2 && arg.slice(0, 2).every(arg => !isNaN(parseFloat(arg)))) {
+  } else if(arg &&
+    arg.length >= 2 &&
+    arg.slice(0, 2).every(arg => !isNaN(parseFloat(arg)))
+  ) {
     obj.x = 0;
     obj.y = 0;
     obj.width = typeof arg[0] === 'number' ? arg[0] : parseFloat(arg[0]);
@@ -137,9 +144,14 @@ Rect.prototype.toSource = function(opts = {}) {
   const { color = true } = opts;
   const c = Util.coloring(color);
   const { x, y, width, height } = this;
-  return c.concat(c.text('new', 1, 31), c.text('Rect', 1, 33), `(${x},${y},${width},${height})`);
+  return c.concat(c.text('new', 1, 31),
+    c.text('Rect', 1, 33),
+    `(${x},${y},${width},${height})`
+  );
 };
-Rect.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
+Rect.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n,
+  opts = {}
+) {
   const { color = true } = opts;
   const c = Util.coloring(color);
   const { x, y, width, height } = this;
@@ -264,7 +276,9 @@ Rect.prototype.points = function(ctor = items => Array.from(items)) {
 };
 Rect.prototype.toCSS = Rect.toCSS;
 Rect.prototype.equals = function(...args) {
-  return Point.prototype.equals.call(this, ...args) && Size.prototype.equals.call(this, ...args);
+  return (Point.prototype.equals.call(this, ...args) &&
+    Size.prototype.equals.call(this, ...args)
+  );
 };
 Rect.prototype.scale = function(factor) {
   let width = this.width * factor;
@@ -288,7 +302,8 @@ Rect.prototype.div = function(...args) {
   return this;
 };
 Rect.prototype.outset = function(trbl) {
-  if(typeof trbl == 'number') trbl = { top: trbl, right: trbl, bottom: trbl, left: trbl };
+  if(typeof trbl == 'number')
+    trbl = { top: trbl, right: trbl, bottom: trbl, left: trbl };
   this.x -= trbl.left;
   this.y -= trbl.top;
   this.width += trbl.left + trbl.right;
@@ -297,7 +312,9 @@ Rect.prototype.outset = function(trbl) {
 };
 Rect.prototype.inset = function(trbl) {
   if(typeof trbl == 'number') trbl = new TRBL(trbl, trbl, trbl, trbl);
-  if(trbl.left + trbl.right < this.width && trbl.top + trbl.bottom < this.height) {
+  if(trbl.left + trbl.right < this.width &&
+    trbl.top + trbl.bottom < this.height
+  ) {
     this.x += trbl.left;
     this.y += trbl.top;
     this.width -= trbl.left + trbl.right;
@@ -311,8 +328,12 @@ Rect.prototype.inside = function(point) {
 Rect.CONTAIN = 16;
 Rect.COVER = 32;
 
-Rect.prototype.fit = function(other, align = Align.CENTER | Align.MIDDLE | Rect.CONTAIN) {
-  let factors = Size.prototype.fitFactors.call(this, new Size(other)).sort((a, b) => a - b);
+Rect.prototype.fit = function(other,
+  align = Align.CENTER | Align.MIDDLE | Rect.CONTAIN
+) {
+  let factors = Size.prototype.fitFactors
+    .call(this, new Size(other))
+    .sort((a, b) => a - b);
   // console.log('Rect.prototype.fit:', this, ...factors, { factors, other, align });
 
   let rects = factors.reduce((acc, factor) => {
@@ -454,16 +475,21 @@ Rect.prototype[Symbol.iterator] = function* () {
 };
 
 Rect.isBBox = rect =>
-  !(rect instanceof Rect) && ['x1', 'x2', 'y1', 'y2'].every(prop => prop in rect);
-Rect.assign = (to, rect) => Object.assign(to, new Rect(rect).toObject(Rect.isBBox(to)));
-Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
+  !(rect instanceof Rect) &&
+  ['x1', 'x2', 'y1', 'y2'].every(prop => prop in rect);
+Rect.assign = (to, rect) =>
+  Object.assign(to, new Rect(rect).toObject(Rect.isBBox(to)));
+Rect.align = (rect, align_to, a = 0) =>
+  Rect.prototype.align.call(rect, align_to, a);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
 
-Rect.round = (rect, ...args) => Rect.assign(rect, new Rect(rect).round(...args));
+Rect.round = (rect, ...args) =>
+  Rect.assign(rect, new Rect(rect).round(...args));
 Rect.inset = (rect, trbl) => Rect.assign(rect, new Rect(rect).inset(trbl));
 Rect.outset = (rect, trbl) => Rect.assign(rect, new Rect(rect).outset(trbl));
 
-Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+Rect.center = rect =>
+  new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 Rect.bind = rect => {
   let obj = new Rect();
 };
@@ -505,7 +531,8 @@ for(let name of [
   'toPoints',
   'equals'
 ]) {
-  Rect[name] = (rect, ...args) => Rect.prototype[name].call(rect || new Rect(rect), ...args);
+  Rect[name] = (rect, ...args) =>
+    Rect.prototype[name].call(rect || new Rect(rect), ...args);
 }
 
 Rect.toSource = (rect, opts = {}) => {
@@ -526,13 +553,17 @@ Rect.bind = (...args) => {
   return proxy;
 };
 
-Rect.scale = Util.curry((rect, sx, sy) => Matrix.scale(sx, sy).transform_rect(rect));
+Rect.scale = Util.curry((rect, sx, sy) =>
+  Matrix.scale(sx, sy).transform_rect(rect)
+);
 Rect.resize = Util.curry((rect, width, height) => {
   rect.width = width;
   rect.height = height;
   return rect;
 });
-Rect.translate = Util.curry((rect, x, y) => Matrix.translate(f, f).transform_rect(rect));
+Rect.translate = Util.curry((rect, x, y) =>
+  Matrix.translate(f, f).transform_rect(rect)
+);
 
 for(let f of ['scale', 'resize', 'translate']) {
   Rect.prototype[f] = function(...args) {
@@ -544,7 +575,8 @@ for(let f of ['scale', 'resize', 'translate']) {
 Util.defineInspect(Rect.prototype, 'x', 'y', 'width', 'height');
 
 export const isRect = (rect, testFn = (prop, name, obj) => name in obj) =>
-  Util.isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
+  Util.isObject(rect) &&
+  ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
 
 Util.defineGetter(Rect, Symbol.species, function() {
   return this;
@@ -558,7 +590,13 @@ Util.defineGetter(ImmutableRect, Symbol.species, () => ImmutableRect);
 
 Rect.prototype.toString = function(opts = {}) {
   if(typeof opts == 'string') opts = { separator: opts };
-  const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
+  const {
+    precision = 0.001,
+    unit = '',
+    separator = ' ',
+    left = '',
+    right = ''
+  } = opts;
   let { x, y, width, height } = this;
   let props = [x, y, width, height];
   return left + props.map(p => p + unit).join(' ') + right;

@@ -3,7 +3,8 @@ import { RGBA, HSLA } from '../color.js';
 export function GetExponent(value) {
   const suffix = value.replace(/\/.*/g, '').replace(/[^KkMmnpuμ]/g, '');
   let exp = 0;
-  if(suffix.length > 1) throw new Error(`Suffix '${suffix}' of '${value}' length > 1`);
+  if(suffix.length > 1)
+    throw new Error(`Suffix '${suffix}' of '${value}' length > 1`);
   switch (suffix) {
     case 'M':
       exp = 6;
@@ -32,7 +33,8 @@ export function GetExponent(value) {
 export function GetMantissa(value) {
   let mantissa = value.replace(/([-+]?[0-9.]+).*/g, '$1');
   //console.log('GetMantissa', { value, mantissa });
-  if(isNaN(+mantissa)) throw new Error(`GetMantissa '${mantissa}' not a valid number`);
+  if(isNaN(+mantissa))
+    throw new Error(`GetMantissa '${mantissa}' not a valid number`);
   return +mantissa;
 }
 

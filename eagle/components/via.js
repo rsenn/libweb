@@ -32,14 +32,18 @@ export const Via = ({ data, opts = {}, ...props }) => {
   const viaColor = /*layer.getColor(via) ||*/ via.getColor();
   let d = RenderShape(shape, ro, ri);
 
-  const layerProps = layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {};
+  const layerProps = layer
+    ? { 'data-layer': `${layer.number} ${layer.name}` }
+    : {};
   const pathProps = {
-    d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
+    d: d +
+      ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
     stroke: 'none',
     fill: viaColor.toRGB(),
     'fill-opacity': viaColor.a / 255
   };
-  if(viaColor.a < 255) pathProps['fill-opacity'] = Util.roundTo(viaColor.a / 255, 0.001);
+  if(viaColor.a < 255)
+    pathProps['fill-opacity'] = Util.roundTo(viaColor.a / 255, 0.001);
   const baseProps = {
     //  class: ElementToClass(via),
     //fill: viaColor,
@@ -66,10 +70,15 @@ export const Via = ({ data, opts = {}, ...props }) => {
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );
-    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [
-      h('path', { ...pathProps, ...visibleProps }),
-      textElem
-    ]);
+    return h('g',
+      { ...baseProps, ...dataProps, ...visibleProps, ...layerProps },
+      [h('path', { ...pathProps, ...visibleProps }), textElem]
+    );
   }
-  return h('path', { ...baseProps, ...dataProps, ...pathProps, ...visibleProps });
+  return h('path', {
+    ...baseProps,
+    ...dataProps,
+    ...pathProps,
+    ...visibleProps
+  });
 };

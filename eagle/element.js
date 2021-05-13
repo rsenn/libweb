@@ -59,9 +59,11 @@ export class EagleElement extends EagleNode {
     //console.log('mapper:', mapper);
 
     //console.log('EagleElement.get(', { owner, ref, raw }, ')');
-    if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
+    if(typeof ref == 'string')
+      ref = new ImmutablePath(ref, { separator: ' ' });
 
-    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
+    if(!Util.isObject(ref) || !('dereference' in ref))
+      ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
     //console.log('EagleElement.get', { owner, ref, raw });
@@ -97,14 +99,19 @@ export class EagleElement extends EagleNode {
     let path = this.ref.path;
     if(owner === null) throw new Error('owner == null');
     if(raw === undefined ||
-      (raw.tagName === undefined && raw.attributes === undefined && raw.children === undefined)
+      (raw.tagName === undefined &&
+        raw.attributes === undefined &&
+        raw.children === undefined)
     ) {
       try {
         raw = this.ref.dereference();
       } catch(error) {}
     }
     if(raw === null || typeof raw != 'object')
-      throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this)
+      throw new Error('ref: ' +
+          this.ref.inspect() +
+          ' entity: ' +
+          EagleNode.prototype.inspect.call(this)
       );
 
     let { tagName, attributes, children = [] } = raw;
@@ -114,7 +121,8 @@ export class EagleElement extends EagleNode {
 
     let doc = this.getDocument();
     let elem = this;
-    const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
+    const attributeList =
+      EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
 
     if(tagName == 'contactref') {
       lazyProperty(this, 'element', () => {
@@ -175,13 +183,19 @@ export class EagleElement extends EagleNode {
 
         prop(attributes[key]);
         prop.subscribe(value =>
-          value !== undefined ? (raw.attributes[key] = '' + value) : delete raw.attributes[key]
+          value !== undefined
+            ? (raw.attributes[key] = '' + value)
+            : delete raw.attributes[key]
         );
-        prop.subscribe(value => (elem.pushEvent ? elem.pushEvent(elem, key, value) : void 0));
+        prop.subscribe(value =>
+          elem.pushEvent ? elem.pushEvent(elem, key, value) : void 0
+        );
         this.handlers[key] = prop;
 
         if(Object.keys(names).indexOf(key) != -1 &&
-          !(['instance', 'part'].indexOf(tagName) != -1 && ['name', 'value'].indexOf(key) != -1)
+          !(['instance', 'part'].indexOf(tagName) != -1 &&
+            ['name', 'value'].indexOf(key) != -1
+          )
         ) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v =>
@@ -208,7 +222,8 @@ export class EagleElement extends EagleNode {
           trkl.bind(this, key, fn);
         } else if(tagName == 'layer' && key == 'color') {
           Util.defineGetter(this, 'color', () => {
-            let colorIndex = attributes.color == undefined ? 15 : attributes.color;
+            let colorIndex =
+              attributes.color == undefined ? 15 : attributes.color;
             let color = doc.palette[colorIndex] || doc.palette[0b0110];
             //console.log('colorIndex', colorIndex, color);
             return color;
@@ -273,11 +288,15 @@ export class EagleElement extends EagleNode {
               let r,
                 value = elem.attrMap[key];
               let list = key == 'library' ? 'libraries' : key + 's';
-              r = list in doc ? doc[list][value] : doc.get({ tagName: key, [id]: value });
+              r =
+                list in doc
+                  ? doc[list][value]
+                  : doc.get({ tagName: key, [id]: value });
               //console.log(`relation get(${key}, ${attributes[id]}) = `, r);
               return r;
             };
-            if(this[key] == undefined) this.initRelation(key, this.handlers[key], fn);
+            if(this[key] == undefined)
+              this.initRelation(key, this.handlers[key], fn);
           }
           if(this[key] == undefined) trkl.bind(this, key, fn);
         } else {
@@ -292,7 +311,10 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'element')
       lazyProperty(this, 'children', () =>
-        EagleNodeList.create(this.package, this.package.path.down('children'), null)
+        EagleNodeList.create(this.package,
+          this.package.path.down('children'),
+          null
+        )
       );
     else
       lazyProperty(this, 'children', () =>
@@ -355,7 +377,10 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'symbol') {
       lazyProperty(this, 'pins', () => {
-        let list = EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pin');
+        let list = EagleNodeList.create(this,
+          this.path.down('children'),
+          e => e.tagName == 'pin'
+        );
         return EagleNodeMap.create(list, 'name');
       });
     }
@@ -374,13 +399,19 @@ export class EagleElement extends EagleNode {
 
       trkl.bind(this, 'contacts', () =>
         Object.fromEntries([
-            ...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })
+            ...doc.board.signals.getAll({
+              tagName: 'contactref',
+              element: attributes.name
+            })
           ].map(cref => [cref.pad.name, cref.parentNode])
         )
       );
       trkl.bind(this, 'contactrefs', () =>
         Object.fromEntries([
-            ...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })
+            ...doc.board.signals.getAll({
+              tagName: 'contactref',
+              element: attributes.name
+            })
           ].map(cref => [cref.pad.name, cref])
         )
       );
@@ -388,19 +419,31 @@ export class EagleElement extends EagleNode {
     if(tagName == 'signal') {
       for(let prop of ['via', 'wire', 'contactref'])
         lazyProperty(this, prop + 's', () =>
-          EagleNodeList.create(this, this.path.down('children'), e => e.tagName == prop)
+          EagleNodeList.create(this,
+            this.path.down('children'),
+            e => e.tagName == prop
+          )
         );
     }
     if(tagName == 'package') {
       lazyProperty(this, 'vias', () =>
-        EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'via')
+        EagleNodeList.create(this,
+          this.path.down('children'),
+          e => e.tagName == 'via'
+        )
       );
       lazyProperty(this, 'pads', () => {
-        let list = EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pad');
+        let list = EagleNodeList.create(this,
+          this.path.down('children'),
+          e => e.tagName == 'pad'
+        );
         return EagleNodeMap.create(list, 'name');
       });
       lazyProperty(this, 'wires', () =>
-        EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'wire')
+        EagleNodeList.create(this,
+          this.path.down('children'),
+          e => e.tagName == 'wire'
+        )
       );
     }
 
@@ -425,10 +468,12 @@ export class EagleElement extends EagleNode {
     //    let layer  = this.tagName == 'pad' ? this.document.layers['Pads'] :  this.layer;
     if(this.layer || this.tagName == 'pad' || this.tagName == 'via') {
       this.getColor = function() {
-        let layer = this.layer || this.document.layers[Util.ucfirst(this.tagName) + 's'];
+        let layer =
+          this.layer || this.document.layers[Util.ucfirst(this.tagName) + 's'];
         layer.elements.add(this);
         let color = layer.color;
-        if(['pad', 'via'].indexOf(this.tagName) != -1) color = EagleElement.makeTransparent(color);
+        if(['pad', 'via'].indexOf(this.tagName) != -1)
+          color = EagleElement.makeTransparent(color);
 
         return color;
       };
@@ -609,7 +654,8 @@ export class EagleElement extends EagleNode {
       bb.move(x, y);
     } else if(this.tagName == 'sheet' || this.tagName == 'board') {
       const plain = this.find('plain');
-      let list = [...plain.children].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');
+      let list = [...plain.children].filter(e => e.tagName == 'wire' && e.attributes.layer == '47'
+      );
       /*      if(list.length <= 0)*/ list = list.concat([
         ...(this.tagName == 'sheet' ? this.instances.list : this.elements.list)
       ]);
@@ -624,8 +670,10 @@ export class EagleElement extends EagleNode {
       /*  for(let instance of list) {
         bb.update(instance.getBounds(), 0, instance);
       }*/
-    } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
-      for(let child of this.children) bb.update(child.getBounds(e => true, opts));
+    } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1
+    ) {
+      for(let child of this.children)
+        bb.update(child.getBounds(e => true, opts));
       /*} else if(pos) {
       const { x = 0, y = 0 } = opts;
       if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = new Rect(pos.bbox());
@@ -667,7 +715,8 @@ export class EagleElement extends EagleNode {
   transformation() {
     let ret = new TransformationList();
     let rot = this.rot || '';
-    if('x' in this && 'y' in this) ret.push(new Transformation.translation(this.x, this.y));
+    if('x' in this && 'y' in this)
+      ret.push(new Transformation.translation(this.x, this.y));
     if(/M/.test(rot)) ret.push(new Transformation.scaling(-1, 1));
     let angle = +rot.replace(/[MR]/g, '');
     if(angle > 0) ret.push(new Transformation.rotation(angle));
@@ -751,7 +800,9 @@ export class EagleElement extends EagleNode {
     return relationNames.indexOf(name) != -1;
   }
 
-  scope(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)], r = e => Object.fromEntries(e)) {
+  scope(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)],
+    r = e => Object.fromEntries(e)
+  ) {
     return super.scope(t, r);
   }
 
@@ -797,14 +848,17 @@ export class EagleElement extends EagleNode {
       o[name] = value;
     }
 
-    if(typeof e == 'object' && e !== null && 'tagName' in e) o = { tagName, ...o };
+    if(typeof e == 'object' && e !== null && 'tagName' in e)
+      o = { tagName, ...o };
     if(typeof children == 'object' &&
       children !== null &&
       'length' in children &&
       children.length > 0
     ) {
       let a = children.filter(child => typeof child == 'string');
-      children = children.filter(child => typeof child != 'string').map(EagleElement.toObject);
+      children = children
+        .filter(child => typeof child != 'string')
+        .map(EagleElement.toObject);
       text = a.join('\n');
     }
 
@@ -827,13 +881,17 @@ export class EagleElement extends EagleNode {
   }
 
   *getAll(pred, transform = a => a) {
-    const fn = Util.tryFunction((v, p, o) => typeof v == 'object' && v !== null && EagleElement.get(o || this.owner, p, v),
+    const fn = Util.tryFunction((v, p, o) =>
+        typeof v == 'object' &&
+        v !== null &&
+        EagleElement.get(o || this.owner, p, v),
       (r, v, p, o) => r && transform(r, p, o),
       () => undefined
     );
 
     if(typeof pred != 'function') pred = EagleNode.makePredicate(pred);
-    yield* super.getAll((v, p, o) => typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o),
+    yield* super.getAll((v, p, o) =>
+        typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o),
       fn
     );
   }
@@ -908,7 +966,16 @@ export class EagleElement extends EagleNode {
       'textratio'
     ],
     eagle: ['version'],
-    element: ['name', 'library', 'package', 'value', 'x', 'y', 'rot', 'smashed'],
+    element: [
+      'name',
+      'library',
+      'package',
+      'value',
+      'x',
+      'y',
+      'rot',
+      'smashed'
+    ],
     frame: ['x1', 'y1', 'x2', 'y2', 'columns', 'rows', 'layer'],
     gate: ['name', 'symbol', 'x', 'y', 'swaplevel', 'addlevel'],
     grid: [
@@ -933,11 +1000,32 @@ export class EagleElement extends EagleNode {
     net: ['name', 'class'],
     note: ['version', 'minversion', 'severity'],
     package: ['name'],
-    pad: ['name', 'x', 'y', 'drill', 'shape', 'diameter', 'rot', 'stop', 'first', 'thermals'],
+    pad: [
+      'name',
+      'x',
+      'y',
+      'drill',
+      'shape',
+      'diameter',
+      'rot',
+      'stop',
+      'first',
+      'thermals'
+    ],
     param: ['name', 'value'],
     part: ['name', 'library', 'deviceset', 'device', 'value', 'technology'],
     pass: ['name', 'refer', 'active'],
-    pin: ['name', 'x', 'y', 'visible', 'length', 'direction', 'function', 'rot', 'swaplevel'],
+    pin: [
+      'name',
+      'x',
+      'y',
+      'visible',
+      'length',
+      'direction',
+      'function',
+      'rot',
+      'swaplevel'
+    ],
     pinref: ['part', 'gate', 'pin'],
     polygon: ['width', 'layer', 'isolate', 'orphans', 'thermals'],
     port: ['name', 'side', 'coord', 'direction'],
@@ -946,16 +1034,49 @@ export class EagleElement extends EagleNode {
     schematic: ['xreflabel', 'xrefpart'],
     setting: ['alwaysvectorfont', 'verticaltext'],
     signal: ['name', 'class'],
-    smd: ['name', 'x', 'y', 'dx', 'dy', 'layer', 'rot', 'stop', 'cream', 'roundness'],
+    smd: [
+      'name',
+      'x',
+      'y',
+      'dx',
+      'dy',
+      'layer',
+      'rot',
+      'stop',
+      'cream',
+      'roundness'
+    ],
     symbol: ['name'],
     technology: ['name'],
-    text: ['x', 'y', 'size', 'layer', 'ratio', 'rot', 'align', 'font', 'distance'],
+    text: [
+      'x',
+      'y',
+      'size',
+      'layer',
+      'ratio',
+      'rot',
+      'align',
+      'font',
+      'distance'
+    ],
     vertex: ['x', 'y', 'curve'],
     via: ['x', 'y', 'extent', 'drill', 'shape', 'diameter'],
-    wire: ['x1', 'y1', 'x2', 'y2', 'width', 'layer', 'curve', 'style', 'cap', 'extent'],
+    wire: [
+      'x1',
+      'y1',
+      'x2',
+      'y2',
+      'width',
+      'layer',
+      'curve',
+      'style',
+      'cap',
+      'extent'
+    ],
     '?xml': ['version', 'encoding']
   };
 }
 globalThis.EagleElement = EagleElement;
 
-export const makeEagleElement = (owner, ref, raw) => EagleElement.get(owner, ref, raw);
+export const makeEagleElement = (owner, ref, raw) =>
+  EagleElement.get(owner, ref, raw);

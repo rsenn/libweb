@@ -58,7 +58,8 @@ export let parse = function parse(s) {
   const range =
     typeof s == 'string'
       ? (i, j) => s.substring(i, j)
-      : (i, j) => [...s.slice(i, j)].reduce((a, c) => a + String.fromCharCode(c), '');
+      : (i, j) =>
+          [...s.slice(i, j)].reduce((a, c) => a + String.fromCharCode(c), '');
   const start = tagName => {
     e = { tagName, attributes: {}, children: [] };
     st[0].push(e);
@@ -109,7 +110,8 @@ export let parse = function parse(s) {
           if(m[s[i]] & EQUAL && m[s[i + 1]] & QUOTE) {
             //console.log('#2', { i, name }, `'${range(i,i+1)}'`, `"${range(i, i + 20)}..."`);
             i += 2;
-            for(j = i; (m[s[j]] & QUOTE) == 0; j++) if(m[s[j]] & BACKSLASH) j++;
+            for(j = i; (m[s[j]] & QUOTE) == 0; j++)
+              if(m[s[j]] & BACKSLASH) j++;
             value = range(i, j);
             if(m[s[j]] & QUOTE) j++;
             i = j;

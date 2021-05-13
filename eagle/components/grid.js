@@ -47,7 +47,8 @@ export const Pattern = ({
         yield change;
       }
     }) || data;
-  const { distance = 0.1, style, multiple = 1, display, altdistance } = useGrid(data);
+  const { distance = 0.1, style, multiple = 1, display, altdistance } = useGrid(data
+  );
 
   //log('Pattern.render:', { distance, style, multiple, display, altdistance });
   let pattern = useTrkl(attrs);
@@ -84,7 +85,14 @@ export const Pattern = ({
   );
 };
 
-export const Grid = ({ data, rect, id, attrs = { visible: true }, opts = {}, ...props }) => {
+export const Grid = ({
+  data,
+  rect,
+  id,
+  attrs = { visible: true },
+  opts = {},
+  ...props
+}) => {
   let { transform = new TransformationList() } = opts;
   const { distance, style, multiple, display, altdistance } = useGrid(data);
   log('Grid.render:', { data, rect, attrs, opts, props });

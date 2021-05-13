@@ -18,10 +18,14 @@ export async function ConsoleSetup(opts = {}) {
   //console.log("opts.breakLength:",opts.breakLength, Util.stack());
   let ret;
   Util.tryCatch(() => (Error.stackTraceLimit = 1000));
-  const proc = await Util.tryCatch(async () => await import('process'),
+
+  const proc = await Util.tryCatch(() => process,
+    p => p,
+    () => Util.tryCatch(async () => await import('process')),
     ({ stdout, env }) => ({ stdout, env }),
     () => ({ stdout: {}, env: {} })
   );
+
   const consoleWidth = async (fd = 1) => {
     const size = await Util.ttyGetWinSize(fd);
     return Array.isArray(size) ? size[0] : undefined;
@@ -79,7 +83,11 @@ export async function ConsoleSetup(opts = {}) {
         const inspectFunction = await import('util').then(module => (globalThis.inspect = module.inspect)
         );
 
-        ret = extendWithOptionsHandler(ret, inspectFunction, inspectOptions, clog);
+        ret = extendWithOptionsHandler(ret,
+          inspectFunction,
+          inspectOptions,
+          clog
+        );
         clog.call(c, 'ret:', ret.log + '');
         return ret;
       },
@@ -109,7 +117,7 @@ export async function ConsoleSetup(opts = {}) {
 
         globalThis.Console = Console;
 
-        let newcons = new Console();
+        let newcons = new Console({ inspectOptions });
         let inspectFunction;
         let platform = Util.getPlatform();
 
@@ -120,7 +128,9 @@ export async function ConsoleSetup(opts = {}) {
           case 'quickjs':
             await import('inspect')
               .catch(() => import('inspect.so'))
-              .then(module => (globalThis.inspect = inspectFunction = module.inspect));
+              .then(module =>
+                  (globalThis.inspect = inspectFunction = module.inspect)
+              );
             break;
 
           case 'node':
@@ -128,12 +138,17 @@ export async function ConsoleSetup(opts = {}) {
             );
             break;
           default: await import('./objectInspect.js').then(
-              module => (globalThis.inspect = inspectFunction = module.inspectFunction)
+              module =>
+                (globalThis.inspect = inspectFunction = module.inspectFunction)
             );
             break;
         }
 
-        return extendWithOptionsHandler(newcons, inspectFunction, inspectOptions, c.log);
+        return extendWithOptionsHandler(newcons,
+          inspectFunction,
+          inspectOptions,
+          c.log
+        );
       },
       c => c,
       () => {}

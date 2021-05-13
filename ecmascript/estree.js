@@ -1,6 +1,10 @@
 import Util from '../util.js';
+import { inspect } from 'util';
 
-const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
+const inspectSymbol = Symbol.for(Util.getPlatform() == 'quickjs'
+    ? 'quickjs.inspect.custom'
+    : 'nodejs.util.inspect.custom'
+);
 const linebreak = /\r?\n/g;
 
 export class ESNode {
@@ -24,8 +28,16 @@ export class ESNode {
     const { type, ...props } = Util.getMembers(this);
 
     //  console.log(`ESNode `, text+'');
+    return Object.getOwnPropertyNames(this).reduce((acc, name) => ({ ...acc, [name]: this[name] }),
+      {}
+    );
 
-    return (type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) + ' ' + inspect(props, depth, opts);
+    return ((type
+        ? color.text(type, 1, 31)
+        : color.text(Util.className(this), 1, 35)) +
+      ' ' +
+      inspect(props, { ...opts, customInspect: false })
+    );
   }
 
   /* toJSON() {
@@ -165,11 +177,11 @@ export class Identifier extends Pattern {
 }
 
 export class Literal extends Expression {
-  constructor(...args) {
+  constructor(raw, value) {
     super('Literal');
 
-    if(args.length > 0) this.raw = args[0];
-    this.value = args.length > 1 ? args[1] : args[0];
+    this.raw = raw;
+    this.value = value;
   }
 
   toString() {
@@ -177,15 +189,20 @@ export class Literal extends Expression {
   }
 
   static string(node) {
-    return Util.isObject(node) && typeof node.value == 'string' ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n') : undefined;
+    return Util.isObject(node) && typeof node.value == 'string'
+      ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n')
+      : undefined;
   }
 
-  [inspectSymbol](n, opts = {}) {
+  /*[inspectSymbol](n, opts = {}) {
     const { type, value } = this;
     let c = Util.coloring(opts.colors);
     let q = !Util.isNumeric(value) && !value.startsWith('/') ? "'" : '';
-    return c.text(type, 1, 31) + ' ' + c.text(q + value + q, 1, value.startsWith('/') ? 35 : 36);
-  }
+    return (c.text(type, 1, 31) +
+      ' ' +
+      c.text(q + value + q, 1, value.startsWith('/') ? 35 : 36)
+    );
+  }*/
 }
 
 export class RegExpLiteral extends Literal {
@@ -618,7 +635,13 @@ export class ObjectExpression extends ESNode {
 }
 
 export class Property extends ESNode {
-  constructor(key, value, kind = 'init', method = false, shorthand = false, computed = false) {
+  constructor(key,
+    value,
+    kind = 'init',
+    method = false,
+    shorthand = false,
+    computed = false
+  ) {
     super('Property');
     this.key = key;
     this.value = value;
@@ -647,7 +670,13 @@ export class ArrayExpression extends ESNode {
 }
 
 export class JSXLiteral extends ESNode {
-  constructor(tag, attributes, closing = false, selfClosing = false, children = [], spread) {
+  constructor(tag,
+    attributes,
+    closing = false,
+    selfClosing = false,
+    children = [],
+    spread
+  ) {
     super('JSXLiteral');
     this.tag = tag;
     this.attributes = attributes;

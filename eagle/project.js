@@ -8,7 +8,9 @@ import path from '../path.js';
 export class EagleProject {
   //basename = null;
 
-  constructor(file, fs = { readFile: basename => '', exists: basename => false }) {
+  constructor(file,
+    fs = { readFile: basename => '', exists: basename => false }
+  ) {
     //super();
     if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
       this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
@@ -32,7 +34,8 @@ export class EagleProject {
     if(this.fs.exists(file)) this.lazyOpen(file);
     else this.load();
     //    if(!this.basename || !this.load()) this.open(file);
-    if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
+    if(!this.failed)
+      console.log('Opened project:', this.basename, this.eaglePath);
   }
 
   load() {
@@ -51,7 +54,8 @@ export class EagleProject {
       () => {
         let doc = EagleDocument.open(file, this.fs);
         this.list[index] = doc;
-        if(doc.libraries) this.addLibraries(doc.libraries.list.map(l => l.name));
+        if(doc.libraries)
+          this.addLibraries(doc.libraries.list.map(l => l.name));
         return doc;
       },
       { enumerable: true, configurable: true }
@@ -141,7 +145,12 @@ export class EagleProject {
   get root() { let children = this.list; return { children }; }
   get children() { let children = this.list; return children; }
 
-  *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
+  *iterator(t = ([v, l, d]) => [
+      typeof v == 'object' ? EagleElement.get(d, l, v) : v,
+      l,
+      d
+    ]
+  ) {
     const project = this;
     for(let doc of this.list) {
       let prefix = EagleProject.documentKey(doc);

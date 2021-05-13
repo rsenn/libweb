@@ -24,20 +24,30 @@ export class ECMAScriptValue {
       else this.data = init;
     }
 
-    if(!(this instanceof ECMAScriptObject) && type == ECMAScriptValue.types.object) {
+    if(!(this instanceof ECMAScriptObject) &&
+      type == ECMAScriptValue.types.object
+    ) {
       Object.setPrototypeOf(this, ECMAScriptObject);
       return this;
     }
-    if(!(this instanceof ECMAScriptFunction) && type == ECMAScriptValue.types.function) {
+    if(!(this instanceof ECMAScriptFunction) &&
+      type == ECMAScriptValue.types.function
+    ) {
       Object.setPrototypeOf(this, ECMAScriptFunction);
       return this;
     }
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let obj = Util.filterOutKeys({ ...this }, [Symbol.for('nodejs.util.inspect.custom'), 'types']);
-    let t = Object.entries(ECMAScriptValue.types).find(([name, number], i) => number == this.type);
-    if(obj.type === undefined || this.constructor.prototype !== ECMAScriptValue.prototype)
+    let obj = Util.filterOutKeys({ ...this }, [
+      Symbol.for('nodejs.util.inspect.custom'),
+      'types'
+    ]);
+    let t = Object.entries(ECMAScriptValue.types).find(([name, number], i) => number == this.type
+    );
+    if(obj.type === undefined ||
+      this.constructor.prototype !== ECMAScriptValue.prototype
+    )
       delete obj.type;
     else if(t) obj.type = t[0];
     Object.setPrototypeOf(obj, { constructor: this.constructor });
@@ -113,7 +123,10 @@ class Scope {
     return {
       depth: Scope.depth(this),
       declarations: Object.fromEntries(
-        [...this.declarations.entries()].map(([name, value]) => [name, Util.className(value)])
+        [...this.declarations.entries()].map(([name, value]) => [
+          name,
+          Util.className(value)
+        ])
       )
     };
   }
@@ -226,7 +239,10 @@ export class ECMAScriptInterpreter {
     let decls;
 
     if(declarations instanceof Array)
-      decls = declarations.map(({ id, init }) => [id.value, this.evalNode(init)]);
+      decls = declarations.map(({ id, init }) => [
+        id.value,
+        this.evalNode(init)
+      ]);
     else decls = this.evalNode(declarations);
 
     if(what.value) what = what.value;
@@ -236,7 +252,14 @@ export class ECMAScriptInterpreter {
   }
 
   evalFunctionDeclaration(function_declaration) {
-    const { id, params, body, is_async, generator, exported } = function_declaration;
+    const {
+      id,
+      params,
+      body,
+      is_async,
+      generator,
+      exported
+    } = function_declaration;
     let fl = [];
     if(is_async) fl.push('async');
     if(generator) fl.push('*');
@@ -275,7 +298,9 @@ export class ECMAScriptInterpreter {
   }
 
   evalLiteral(literal) {
-    return new ECMAScriptValue(Util.isNumeric(literal.value) ? 'number' : 'string', literal.value);
+    return new ECMAScriptValue(Util.isNumeric(literal.value) ? 'number' : 'string',
+      literal.value
+    );
   }
 
   evalMemberExpression(member_expression) {

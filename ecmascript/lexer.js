@@ -27,14 +27,22 @@ export function Stack() {
   stack = [...stack];
   //console.log('stack: ', stack);
 
-  let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
+  let maxLen = stack.reduce((acc, entry) =>
+      entry.functionName ? Math.max(acc, entry.functionName.length) : acc,
     0
   );
 
   return stack
     .filter(s => s.functionName != 'esfactory')
-    .map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) =>
-        `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`
+    .map(({
+        fileName = '',
+        columnNumber,
+        lineNumber,
+        functionName = '',
+        methodName = ''
+      }) =>
+        `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName
+        )}:${lineNumber}`
     );
 
   /*
@@ -129,9 +137,14 @@ Location.prototype[Symbol.toStringTag] = function(n, opts) {
   let c = Util.coloring(colors);
 
   let v =
-    typeof this.column == 'number' ? [this.file, this.line, this.column] : [this.file, this.line];
+    typeof this.column == 'number'
+      ? [this.file, this.line, this.column]
+      : [this.file, this.line];
   if((!showFilename || v[0] == undefined) && v.length >= 3) v.shift();
-  v = v.map((f, i) => c.code(...(i == 0 ? [38, 5, 33] || [1, 33] : [1, /*i == 2 ? 35 :*/ 36])) + f);
+  v = v.map((f, i) =>
+      c.code(...(i == 0 ? [38, 5, 33] || [1, 33] : [1, /*i == 2 ? 35 :*/ 36])) +
+      f
+  );
   return v.join(c.code(...([1, 30] || [1, 36])) + ':') + c.code(0);
 };
 
@@ -153,7 +166,9 @@ Location.prototype[Symbol.toPrimitive] = function(hint) {
   if(hint == 'number') return this.pos;
   if(hint == 'string') return this.toString();
 };
-Location.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
+Location.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n,
+  opts
+) {
   return this.toString({ colors: true });
   return Util.inspect(this, {
     colors: true,
@@ -216,7 +231,9 @@ Range.prototype.toString = function(showFile = true) {
 Range.prototype.toString = function() {
   return this[Symbol.toStringTag](0, { colors: false });
 };
-Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
+Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n,
+  opts = {}
+) {
   return Util.inspect(this, {
     ...opts,
     toString: Symbol.toStringTag
@@ -294,7 +311,8 @@ export class Lexer {
   }
 
   skipComment() {
-    while(this.start > 0 && isWhitespace(this.source[this.start - 1])) this.start--;
+    while(this.start > 0 && isWhitespace(this.source[this.start - 1]))
+      this.start--;
 
     //console.log('skipComment', Util.escape(this.getRange(this.start, this.pos)));
 
@@ -319,7 +337,8 @@ export class Lexer {
 
     delete this.ignoreStart;
 
-    if(typeof this.onComment == 'function') this.onComment(comment, start, position);
+    if(typeof this.onComment == 'function')
+      this.onComment(comment, start, position);
   }
 
   getRange(start = this.start, end = this.pos) {
@@ -338,7 +357,9 @@ export class Lexer {
 
     range = range
       .split('')
-      .map((char, i) => (i >= start && i < end ? Util.ansi.text(char, 0, 41, 1, 33) : char))
+      .map((char, i) =>
+        i >= start && i < end ? Util.ansi.text(char, 0, 41, 1, 33) : char
+      )
       .join('');
     return range.replace(/\n/g, '\\n');
   }
@@ -461,7 +482,8 @@ export class Lexer {
     //Make sure identifier didn't start with a decimal digit
     const firstChar = this.source[this.start];
     if(isDecimalDigit(firstChar))
-      throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`);
+      throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`
+      );
 
     const c = this.peek();
 
@@ -476,11 +498,15 @@ export class Lexer {
     }
 
     if(isQuoteChar(c))
-      throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`
+      throw this.error(`Invalid identifier: ${this.errorRange(
+          this.start,
+          this.pos + 1
+        )}${this.currentLine()}`
       );
 
     const word = this.getRange(this.start, this.pos);
-    if(word === 'true' || word === 'false') this.addToken(Token.types.booleanLiteral);
+    if(word === 'true' || word === 'false')
+      this.addToken(Token.types.booleanLiteral);
     else if(word === 'null') this.addToken(Token.types.nullLiteral);
     else if(isKeyword(word)) this.addToken(Token.types.keyword);
     else this.addToken(Token.types.identifier);
@@ -524,7 +550,9 @@ export class Lexer {
     let column = columnIndex;
 
     let indicator =
-      indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
+      indent +
+      ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) +
+      '╯';
 
     return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
       this.accepted.length
@@ -535,7 +563,8 @@ export class Lexer {
     let lines = this.source.split(/\n/g).entries();
     lines = lines.slice(start, end);
     lines.print = function() {
-      for(let [lineno, str] of this) console.log(`${lineno.padStart(10)}: ${str}`);
+      for(let [lineno, str] of this)
+        console.log(`${lineno.padStart(10)}: ${str}`);
     };
     return lines;
   }
@@ -552,13 +581,15 @@ export class Lexer {
 
         //The hex number needs to at least be followed by some digit.
         if(!this.accept(validator))
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`
+          );
       } else if(this.accept(oneOf('oO'))) {
         validator = isOctalDigit;
 
         //The octal number needs to at least be followed by some digit.
         if(!this.accept(validator))
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`
+          );
       }
       //If number starts with 0 followed by an octal digit, then it's an
       //octal number.
@@ -579,7 +610,8 @@ export class Lexer {
       if(this.accept(oneOf('eE'))) {
         this.accept(oneOf('+-'));
         if(!this.accept(validator))
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`
+          );
 
         this.acceptRun(validator);
       }
@@ -590,7 +622,8 @@ export class Lexer {
     //a string.
     const c = this.peek();
     if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c))
-      throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+      throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`
+      );
 
     this.addToken(Token.types.numericLiteral);
 
@@ -695,7 +728,8 @@ export class Lexer {
         //console.debug("done", { c, doSubst });
         if(!doSubst && c == '`') {
           this.template = null;
-          this.addToken(Token.types.templateLiteral /*, {head: true, tail: true}*/);
+          this.addToken(Token.types.templateLiteral /*, {head: true, tail: true}*/
+          );
           return this.lexText();
         }
         let fn = doSubst == this.inSubst ? this.lexText : defaultFn;
@@ -720,13 +754,16 @@ export class Lexer {
       let escapeEncountered = false;
       let n = 0;
       do {
-        if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$'))))) escapeEncountered = false;
+        if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$')))))
+          escapeEncountered = false;
         prevChar = c;
         c = this.getc();
         ++n;
         //console.debug("template", { prevChar,c,escapeEncountered,n});
         if(c === null) {
-          throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
+          throw this.error(`Illegal template token (${n})  '${
+              this.source[this.start]
+            }': ${this.errorRange()}`
           );
         } else if(!escapeEncountered) {
           if(c == '{' && prevChar == '$') {
@@ -834,7 +871,9 @@ export class Lexer {
         return this.lexRegExp;
       } else if(isQuoteChar(c)) {
         return this.lexQuote(c);
-      } else if(isDecimalDigit(c) || (c === '.' && isDecimalDigit(this.peek()))) {
+      } else if(isDecimalDigit(c) ||
+        (c === '.' && isDecimalDigit(this.peek()))
+      ) {
         this.backup();
         return this.lexNumber;
       } else if(isWhitespace(c)) {
@@ -899,7 +938,8 @@ function oneOf(str) {
 
 //Whitespace characters as specified by ES1
 function isWhitespace(c) {
-  if(c === '\u0009' || c === '\u000B' || c === '\u000C' || c === '\u0020') return true;
+  if(c === '\u0009' || c === '\u000B' || c === '\u000C' || c === '\u0020')
+    return true;
   return false;
 }
 
@@ -983,9 +1023,19 @@ function isPunctuator(word) {
       );
 
     case 3:
-      return (['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(
-          word
-        ) >= 0
+      return ([
+          '!==',
+          '===',
+          '>>>',
+          '>>=',
+          '-->>',
+          '<<=',
+          '...',
+          '**=',
+          '||=',
+          '&&=',
+          '??='
+        ].indexOf(word) >= 0
       );
 
     case 4:
@@ -997,7 +1047,10 @@ function isPunctuator(word) {
 
 function isAlphaChar(c) {
   if(typeof c == 'string')
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c.codePointAt(0) > 0xff;
+    return ((c >= 'a' && c <= 'z') ||
+      (c >= 'A' && c <= 'Z') ||
+      c.codePointAt(0) > 0xff
+    );
 }
 
 function isDecimalDigit(c) {
@@ -1009,7 +1062,8 @@ function isOctalDigit(c) {
 }
 
 function isHexDigit(c) {
-  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+  return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
+  );
 }
 
 function isIdentifierChar(c) {

@@ -151,7 +151,8 @@ class AnsiKit {
    * @see    blockCursor
    */
   static cursorStyle(style = AnsiKit.underlineCursor) {
-    if(typeof style !== 'number' || style > 6 || style < 1) style = AnsiKit.underlineCursor;
+    if(typeof style !== 'number' || style > 6 || style < 1)
+      style = AnsiKit.underlineCursor;
     return AnsiKit.printCSI(style, ' q');
   }
 
@@ -247,7 +248,8 @@ class AnsiKit {
       '{bright-cyan}': '\x1b[96m'
     };
 
-    for(const key in _colors) text = text.replace(new RegExp(key, 'g'), _colors[key]);
+    for(const key in _colors)
+      text = text.replace(new RegExp(key, 'g'), _colors[key]);
     return `${text}${_colors['{reset}']}`;
   }
 
