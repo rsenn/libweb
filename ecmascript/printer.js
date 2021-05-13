@@ -528,7 +528,7 @@ export class Printer {
       `(${condition}) {\n`;
     for(let case_clause of cases) {
       const { test, consequent } = case_clause;
-      console.log('printSwitchStatement', { test });
+      //console.log('printSwitchStatement', { test });
 
       if(test == null) output += '  default:';
       else if(test.type == 'Literal') {
@@ -819,7 +819,7 @@ export class Printer {
       name = this.printNode(id);
       if(id.type != 'Identifier') name = '[' + name + ']';
     }
-    output += name;
+    if(name != undefined) output += name;
     output = output.replace(/ $/, '');
     output +=
       this.colorCode.punctuators(output) +
@@ -962,7 +962,7 @@ export class Printer {
     let prop,
       isFunction = false;
     prop = value ? this.printNode(value) : '';
-    console.log('printProperty', { value, prop });
+    //console.log('printProperty', { value, prop });
     if(value instanceof FunctionDeclaration)
       if(/function[\s\(]/.test(prop)) {
         prop = prop.replace(/function\s*/, '');
@@ -972,15 +972,19 @@ export class Printer {
       prefix = '*';
       prop = prop.substring(1);
     }
-    console.log('printProperty', { key });
+    //console.log('printProperty', { key,prop ,isFunction,shorthand});
     if(key && (!(key instanceof Identifier) || key?.type != 'Identifier'))
       name = '[' + name + ']';
     if(!isFunction) s += name;
     if(!(shorthand || name == prop)) {
       if(name != '' && s != '') s += this.colorText.punctuators(': ');
       s += prop;
+    } else {
+      prop = prop.replace(name, '');
+      s += prop;
     }
     if(prefix) s = prefix + s;
+    //console.log('printProperty', {s});
     return s;
   }
 
@@ -1095,6 +1099,7 @@ export class Printer {
     for(let binding_property of properties) {
       if(output != '') output += ', ';
       output += this.printNode(binding_property);
+      //console.log('printObjectPattern:', { binding_property, output});
     }
     if(/\n/.test(output))
       return (this.colorText.punctuators('{') +
