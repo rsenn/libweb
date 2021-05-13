@@ -807,8 +807,12 @@ export class Printer {
     output += is_async ? 'async ' : '';
     output += `function `;
     if(generator) output += '*';
-
-    if(id) output += `${this.printNode(id)}`;
+    let name;
+    if(id) {
+      name = this.printNode(id);
+      if(id.type != 'Identifier') name = '[' + name + ']';
+    }
+    output += name;
     output = output.replace(/ $/, '');
     output +=
       this.colorCode.punctuators(output) +
@@ -941,6 +945,7 @@ export class Printer {
     //console.debug('printProperty', property_definition, ESNode.assoc(property_definition));
     const { key, value, kind, shorthand } = property_definition;
     let comments = property_definition.comments || (key && key.comments);
+    let prefix = '';
     let s =
       ['init', 'method'].indexOf(kind) != -1
         ? ''
@@ -950,21 +955,25 @@ export class Printer {
     let prop,
       isFunction = false;
     prop = value ? this.printNode(value) : '';
+    console.log('printProperty', { value, prop });
     if(value instanceof FunctionDeclaration)
       if(/function[\s\(]/.test(prop)) {
         prop = prop.replace(/function\s*/, '');
         isFunction = true;
       }
     if(prop.startsWith('*')) {
-      s += '*';
+      prefix = '*';
       prop = prop.substring(1);
     }
-    if(key && !(key instanceof Identifier)) name = '[' + name + ']';
+    console.log('printProperty', { key });
+    if(key && (!(key instanceof Identifier) || key?.type != 'Identifier'))
+      name = '[' + name + ']';
     if(!isFunction) s += name;
     if(!(shorthand || name == prop)) {
-      s += this.colorText.punctuators(': ');
+      if(name != '' && s != '') s += this.colorText.punctuators(': ');
       s += prop;
     }
+    if(prefix) s = prefix + s;
     return s;
   }
 

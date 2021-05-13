@@ -633,14 +633,13 @@ export class ECMAScriptParser extends Parser {
     const token = this.next();
     let ret;
 
-    if(keywords == 'switch' || keywords[0] == 'switch')
-      console.log('matchKeywords', { keywords, token });
+    // if(keywords == 'switch' || keywords[0] == 'switch') console.log('matchKeywords', { keywords, token });
 
     if(token.type != 'keyword' && token.type != 'identifier') ret = false;
-    else  { if(Array.isArray(keywords)) ret = keywords.indexOf(token.lexeme) >= 0;
-
+    else {
+      if(Array.isArray(keywords)) ret = keywords.indexOf(token.lexeme) >= 0;
       else ret = keywords === token.value || keywords === token.lexeme;
- }
+    }
 
     return ret;
   }
@@ -657,9 +656,10 @@ export class ECMAScriptParser extends Parser {
   }
 
   matchIdentifier(no_keyword = false) {
-     this.trace('matchIdentifier', { no_keyword });
+    this.trace('matchIdentifier', { no_keyword });
     const token = this.next();
-     return (token.type === 'identifier' || (no_keyword && token.type === 'keyword'));
+    return (token.type === 'identifier' || (no_keyword && token.type === 'keyword')
+    );
   }
 
   matchLiteral() {
@@ -2154,7 +2154,6 @@ export class ECMAScriptParser extends Parser {
       kw = this.expectKeywords(['case', 'default']);
       cv = kw.value == 'default' ? null : this.parseExpression();
 
-      console.log('parseSwitchStatement', { kw, cv });
       this.expectPunctuators([':']);
 
       stmt = this.parseList(true, insideFunction, p =>
