@@ -83,24 +83,8 @@ const stringEscapes = {
   '?': '?'
 };
 
-const defaultTypeNames = [
-  'void',
-  'char',
-  'short',
-  'int',
-  'long',
-  'float',
-  'double'
-];
-const defaultTypeModifier = [
-  'signed',
-  'unsigned',
-  'short',
-  'long',
-  'const',
-  'struct',
-  'enum'
-];
+const defaultTypeNames = ['void', 'char', 'short', 'int', 'long', 'float', 'double'];
+const defaultTypeModifier = ['signed', 'unsigned', 'short', 'long', 'const', 'struct', 'enum'];
 
 export function cparse(src, options) {
   var curr;
@@ -200,8 +184,7 @@ export function cparse(src, options) {
           stmts.push(def);
         }
       } else {
-        unexpected('struct, enum, typdef, extern, FunctionDeclaration or VariableDeclaration'
-        );
+        unexpected('struct, enum, typdef, extern, FunctionDeclaration or VariableDeclaration');
       }
     }
 
@@ -692,10 +675,7 @@ export function cparse(src, options) {
     do {
       var skipped = skipComments() || skipSpaces();
 
-      if(!includeSpaces &&
-        (index == 0 || src[index - 1] == '\n') &&
-        curr == '#'
-      ) {
+      if(!includeSpaces && (index == 0 || src[index - 1] == '\n') && curr == '#') {
         consume('#');
         var line = (position.line = readNumber(true) - 1);
         consume(' ');

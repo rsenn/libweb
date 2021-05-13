@@ -25,9 +25,7 @@ export const Hole = ({ data, opts = {}, ...props }) => {
 
   const holeColor = layer.getColor(hole) || hole.getColor();
 
-  const layerProps = layer
-    ? { 'data-layer': `${layer.number} ${layer.name}` }
-    : {};
+  const layerProps = layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {};
 
   const baseProps = {
     class: ElementToClass(hole),

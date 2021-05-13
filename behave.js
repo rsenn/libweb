@@ -155,9 +155,7 @@ export const Behave = function(userOpts) {
           return textVal.substring(0, pos).split('\n').length;
         },
         get() {
-          if(typeof document.createElement('textarea').selectionStart ===
-            'number'
-          ) {
+          if(typeof document.createElement('textarea').selectionStart === 'number') {
             return defaults.textarea.selectionStart;
           } else if(document.selection) {
             let caretPos = 0,
@@ -215,21 +213,17 @@ export const Behave = function(userOpts) {
               endRange = textAreaElement.createTextRange();
               endRange.collapse(false);
 
-              if(textInputRange.compareEndPoints('StartToEnd', endRange) > -1
-              ) {
+              if(textInputRange.compareEndPoints('StartToEnd', endRange) > -1) {
                 start = end = len;
               } else {
                 start = -textInputRange.moveStart('character', -len);
-                start +=
-                  normalizedValue.slice(0, start).split(newLine).length - 1;
+                start += normalizedValue.slice(0, start).split(newLine).length - 1;
 
-                if(textInputRange.compareEndPoints('EndToEnd', endRange) > -1
-                ) {
+                if(textInputRange.compareEndPoints('EndToEnd', endRange) > -1) {
                   end = len;
                 } else {
                   end = -textInputRange.moveEnd('character', -len);
-                  end +=
-                    normalizedValue.slice(0, end).split(newLine).length - 1;
+                  end += normalizedValue.slice(0, end).split(newLine).length - 1;
                 }
               }
             }
@@ -273,10 +267,7 @@ export const Behave = function(userOpts) {
             matchedFence = data.indexOf(defaults.fence);
           }
 
-          if(hacked < pos &&
-            matchedFence + hacked > pos &&
-            matchCase % 2 === 0
-          ) {
+          if(hacked < pos && matchedFence + hacked > pos && matchCase % 2 === 0) {
             return true;
           }
           return false;
@@ -401,26 +392,18 @@ export const Behave = function(userOpts) {
               }
               toIndent = lines.join('\n');
 
-              utils.editor.set(val.substring(0, selection.start) +
-                  toIndent +
-                  val.substring(selection.end)
+              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end)
               );
-              utils.cursor.set(selection.start,
-                selection.start + toIndent.length
-              );
+              utils.cursor.set(selection.start, selection.start + toIndent.length);
             } else {
               for(i in lines) {
                 lines[i] = tab + lines[i];
               }
               toIndent = lines.join('\n');
 
-              utils.editor.set(val.substring(0, selection.start) +
-                  toIndent +
-                  val.substring(selection.end)
+              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end)
               );
-              utils.cursor.set(selection.start,
-                selection.start + toIndent.length
-              );
+              utils.cursor.set(selection.start, selection.start + toIndent.length);
             }
           } else {
             let left = val.substring(0, pos),
@@ -581,19 +564,12 @@ export const Behave = function(userOpts) {
 
         for(i = 0; i < charSettings.keyMap.length; i++) {
           if(charSettings.keyMap[i].close == _char) {
-            let didClose =
-              defaults.overwrite &&
-              charFuncs.closedChar(charSettings.keyMap[i], e);
+            let didClose = defaults.overwrite && charFuncs.closedChar(charSettings.keyMap[i], e);
 
-            if(!didClose &&
-              charSettings.keyMap[i].open == _char &&
-              defaults.autoOpen
-            ) {
+            if(!didClose && charSettings.keyMap[i].open == _char && defaults.autoOpen) {
               charFuncs.openedChar(charSettings.keyMap[i], e);
             }
-          } else if(charSettings.keyMap[i].open == _char &&
-            defaults.autoOpen
-          ) {
+          } else if(charSettings.keyMap[i].open == _char && defaults.autoOpen) {
             charFuncs.openedChar(charSettings.keyMap[i], e);
           }
         }

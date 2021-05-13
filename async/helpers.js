@@ -22,9 +22,7 @@ export const map = async function* (stream, transform = a => a) {
     yield transform(n);
   }
 };
-export const consume = async function(stream,
-  fn = a => console.log(`async consume =`, a)
-) {
+export const consume = async function(stream, fn = a => console.log(`async consume =`, a)) {
   for await(let n of stream) await fn(n);
 };
 export const accumulate = async function(stream, accu) {

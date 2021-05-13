@@ -32,10 +32,7 @@ export default class Shape {
     CLIPPER.AddPaths(this.paths, ClipperLib.PolyType.ptSubject, this.closed);
     for(let i = 0; i < clipShapes.length; i++) {
       const clipShape = clipShapes[i];
-      CLIPPER.AddPaths(clipShape.paths,
-        ClipperLib.PolyType.ptClip,
-        clipShape.closed
-      );
+      CLIPPER.AddPaths(clipShape.paths, ClipperLib.PolyType.ptClip, clipShape.closed);
     }
     CLIPPER.Execute(type, solution);
 
@@ -141,9 +138,7 @@ export default class Shape {
   }
 
   perimeters() {
-    return this.paths.map(path =>
-      ClipperLib.JS.PerimeterOfPath(path, this.closed, 1)
-    );
+    return this.paths.map(path => ClipperLib.JS.PerimeterOfPath(path, this.closed, 1));
   }
 
   totalPerimeter() {
@@ -190,9 +185,7 @@ export default class Shape {
   }
 
   clean(cleanDelta) {
-    return new Shape(ClipperLib.Clipper.CleanPolygons(this.paths, cleanDelta),
-      this.closed
-    );
+    return new Shape(ClipperLib.Clipper.CleanPolygons(this.paths, cleanDelta), this.closed);
   }
 
   orientation(index) {
@@ -215,11 +208,7 @@ export default class Shape {
     return true;
   }
 
-  pointInPath(index,
-    point,
-    capitalConversion = false,
-    integerConversion = false
-  ) {
+  pointInPath(index, point, capitalConversion = false, integerConversion = false) {
     if(capitalConversion) point = vectorToCapital(point);
     if(integerConversion) point = roundVector(point);
     const path = this.paths[index];

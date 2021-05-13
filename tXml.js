@@ -119,13 +119,7 @@ function tXml(S, options) {
    *    is parsing a node, including tagName, Attributes and its children,
    * to parse children it uses the parseChildren again, that makes the parsing recursive
    */
-  let NoChildNodes = options.noChildNodes || [
-    'img',
-    'br',
-    'input',
-    'meta',
-    'link'
-  ];
+  let NoChildNodes = options.noChildNodes || ['img', 'br', 'input', 'meta', 'link'];
 
   function parseNode() {
     pos++;
@@ -208,8 +202,8 @@ function tXml(S, options) {
    *
    */
   function findElements() {
-    let r = new RegExp('\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]'
-    ).exec(S);
+    let r = new RegExp('\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]').exec(S
+    );
     if(r) {
       return r.index;
     }
@@ -345,8 +339,7 @@ tXml.toString = function TOMObjToXML(O) {
 
     if(N.children && N.children.length > 0) {
       out += '>';
-      if(writeChildren(N.children, N.tagName[0] == '?' ? '' : indent + '  '))
-        out += '\n' + indent;
+      if(writeChildren(N.children, N.tagName[0] == '?' ? '' : indent + '  ')) out += '\n' + indent;
       if(N.tagName[0] != '?') out += '</' + N.tagName + '>';
     } else {
       out += ' />';
@@ -455,39 +448,37 @@ tXml.transformStream = function(offset) {
 
   let position = offset || 0;
   let data = '';
-  const stream = through2({ readableObjectMode: true },
-    function (chunk, enc, callback) {
-      data += chunk;
-      let lastPos = 0;
-      do {
-        position = data.indexOf('<', position) + 1;
-        if(!position) {
-          position = lastPos;
-          return callback();
-        }
-        if(data[position + 1] === '/') {
-          position = position + 1;
-          lastPos = pos;
-          continue;
-        }
-        let res = tXml(data, {
-          pos: position - 1,
-          parseNode: true,
-          setPos: true
-        });
-        position = res.pos;
-        if(position > data.length - 1 || position < lastPos) {
-          data = data.slice(lastPos);
-          position = 0;
-          lastPos = 0;
-          return callback();
-        }
-        this.push(res);
-        lastPos = position;
-      } while(1);
-      callback();
-    }
-  );
+  const stream = through2({ readableObjectMode: true }, function(chunk, enc, callback) {
+    data += chunk;
+    let lastPos = 0;
+    do {
+      position = data.indexOf('<', position) + 1;
+      if(!position) {
+        position = lastPos;
+        return callback();
+      }
+      if(data[position + 1] === '/') {
+        position = position + 1;
+        lastPos = pos;
+        continue;
+      }
+      let res = tXml(data, {
+        pos: position - 1,
+        parseNode: true,
+        setPos: true
+      });
+      position = res.pos;
+      if(position > data.length - 1 || position < lastPos) {
+        data = data.slice(lastPos);
+        position = 0;
+        lastPos = 0;
+        return callback();
+      }
+      this.push(res);
+      lastPos = position;
+    } while(1);
+    callback();
+  });
 
   return stream;
 };

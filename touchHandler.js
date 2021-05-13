@@ -29,14 +29,11 @@ export function MovementListener(handler, options) {
 
   var self = function(event) {
     const { nativeEvent, button, buttons } = event;
-    let currentTarget = nativeEvent
-      ? nativeEvent.currentTarget
-      : event.currentTarget;
+    let currentTarget = nativeEvent ? nativeEvent.currentTarget : event.currentTarget;
 
     let type = event.type.toLowerCase();
     let started = type.endsWith('start') || type.endsWith('down');
-    let ends =
-      type.endsWith('end') || type.endsWith('cancel') || type.endsWith('up');
+    let ends = type.endsWith('end') || type.endsWith('cancel') || type.endsWith('up');
 
     //console.log("MovementListener", { type, started, ends });
 
@@ -76,8 +73,7 @@ export function MovementListener(handler, options) {
 
     if(event.touches !== undefined && event.touches.length === 0) return;
 
-    let touches =
-      event.touches && event.touches.length > 0 ? event.touches : [event];
+    let touches = event.touches && event.touches.length > 0 ? event.touches : [event];
 
     if(options.lastTouch) touches = [touches[touches.length - 1]];
 
@@ -124,9 +120,7 @@ export function MovementListener(handler, options) {
         //newpos.prev = move;
         if(start && isPoint(start.client)) Point.sub(newpos, start.client);
         let distance = Point.distance(newpos, move);
-        angle =
-          /* options.angle ?*/ (Point.angle(newpos, move) * 180) /
-          Math.PI; /* : undefined*/
+        angle = /* options.angle ?*/ (Point.angle(newpos, move) * 180) / Math.PI; /* : undefined*/
         if(distance < options.step) return;
         move = { type, index, ...newpos, distance, angle, type: 'touchmove' };
       }
@@ -153,8 +147,7 @@ export function MovementListener(handler, options) {
       move.prev = prev;
 
       (move.time = Date.now() - starttime),
-        (move.timediff =
-          prev && prev.time !== undefined ? move.time - prev.time : 0);
+        (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
 
       if(/*prev && prev.time === 0 &&*/ Math.abs(90 - Math.abs(angle)) < 45) {
         if(self.handler.start() === null) self.handler.start(move);
@@ -219,8 +212,7 @@ export function MultitouchListener(handler, options) {
   var self = function(event) {
     let type = event.type;
     let started = type.endsWith('start') || type.endsWith('down');
-    let ends =
-      type.endsWith('end') || type.endsWith('cancel') || type.endsWith('up');
+    let ends = type.endsWith('end') || type.endsWith('cancel') || type.endsWith('up');
 
     let num = event.touches && event.touches.length;
     //let touches = num > 0 ? event.touches : [event];
@@ -282,16 +274,7 @@ export function MultitouchListener(handler, options) {
 }
 
 export function TurnListener(handler, options) {
-  let index,
-    angle,
-    accum,
-    distance,
-    center,
-    direction,
-    prev,
-    startangle,
-    turns,
-    numTurns;
+  let index, angle, accum, distance, center, direction, prev, startangle, turns, numTurns;
 
   function cancel(event) {
     angle = undefined;
@@ -507,10 +490,7 @@ export const TouchHandler = (handle, options) => {
 
   let fn = function(event) {
     const { nativeEvent } = event;
-    event =
-      typeof event.type == 'string' && event.type.length >= 1
-        ? event
-        : nativeEvent;
+    event = typeof event.type == 'string' && event.type.length >= 1 ? event : nativeEvent;
     const { type } = event;
 
     //console.log("TouchHandler ", { type, event });
