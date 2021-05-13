@@ -874,6 +874,8 @@ export class ECMAScriptParser extends Parser {
       if(parser.matchPunctuators(['...'])) {
         parser.expectPunctuators(['...']);
         rest_of = true;
+      } else {
+        rest_of = false;
       }
     }
     this.expectPunctuators(['(']);

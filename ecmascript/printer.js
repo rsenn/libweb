@@ -197,7 +197,9 @@ export class Printer {
 
     if(typeof value == 'string') value = value.replace(linebreak, '\\n');
 
-    return this.colorText.numberLiterals(value);
+    let s = raw ?? value;
+
+    return this.colorText.numberLiterals(s);
   }
 
   printRegExpLiteral(regexp_literal) {
@@ -526,8 +528,13 @@ export class Printer {
       `(${condition}) {\n`;
     for(let case_clause of cases) {
       const { test, consequent } = case_clause;
+      console.log('printSwitchStatement', { test });
+
       if(test == null) output += '  default:';
-      else output += '  case ' + this.printNode(test) + ':';
+      else if(test.type == 'Literal') {
+        const { raw, value } = test;
+        output += '  case ' + (raw ?? value) + ':';
+      } else output += '  case ' + this.printNode(test) + ':';
       let case_body = this.printNode(consequent).trim();
 
       case_body = (/^[^{].*\n/.test(case_body) ? '\n' : ' ') + case_body;
