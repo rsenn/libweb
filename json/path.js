@@ -2,12 +2,19 @@ import Util from '../util.js';
 import { toXML } from './util.js';
 
 export function DereferenceError(object, member, pos, prev, locator) {
-  let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
+  let error =
+    this instanceof DereferenceError
+      ? this
+      : new DereferenceError(object.index);
   let stack = Util.getCallerStack()
     .filter(frame => null !== frame.getFileName())
     .map(frame => {
       let method = frame.getMethodName();
-      if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
+      if(method)
+        method =
+          (frame.getTypeName() || Util.className(frame.getThis())) +
+          '.' +
+          method;
       else method = frame.getFunctionName();
 
       return `${('' + frame.getFileName()).replace(/.*plot-cv\//,
@@ -18,8 +25,9 @@ export function DereferenceError(object, member, pos, prev, locator) {
   return Object.assign(error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${MutablePath.prototype.toString.call(
-          locator,
+      message: `Error dereferencing ${Util.className(
+          object
+        )} @ ${MutablePath.prototype.toString.call(locator,
           '/',
           MutablePath.partToString,
           'children'
@@ -78,7 +86,12 @@ export class MutablePath extends Array {
   }
 
   constructor(p = [], opts = {}) {
-    const { absolute = false, tagField, separator = '.', specialFields = [] } = opts;
+    const {
+      absolute = false,
+      tagField,
+      separator = '.',
+      specialFields = []
+    } = opts;
     super(typeof p == 'number' ? p : 0);
 
     /*
@@ -86,7 +99,8 @@ export class MutablePath extends Array {
     this.specialFields = specialFields;*/
 
     Util.define(this, tagField ? { tagField } : {});
-    if(specialFields.length > 0) Util.define(this, 'specialFields', specialFields);
+    if(specialFields.length > 0)
+      Util.define(this, 'specialFields', specialFields);
 
     MutablePath.parse(p, this, separator);
     //console.log('this:',this);
@@ -96,7 +110,8 @@ export class MutablePath extends Array {
 
   static matchObj(tagName, attr_or_index, tagField = 'tagName') {
     if(typeof attr_or_index == 'number') return [attr_or_index, tagName];
-    if(Util.isObject(attr_or_index)) return { tagName, attributes: attr_or_index };
+    if(Util.isObject(attr_or_index))
+      return { tagName, attributes: attr_or_index };
     let cmd = `e => e.${tagField} === '${tagName}'`;
     console.log('typeof(tagName):', typeof tagName);
     let ret = eval(cmd);
@@ -130,10 +145,13 @@ export class MutablePath extends Array {
         let part = path[i];
 
         if(typeof part == 'string' &&
-          ((part && part.codePointAt && part.codePointAt(0) >= 256) || part == 'children')
+          ((part && part.codePointAt && part.codePointAt(0) >= 256) ||
+            part == 'children')
         ) {
           part = 'children';
-        } else if(typeof part == 'number' || (typeof part == 'string' && !isNaN(part))) {
+        } else if(typeof part == 'number' ||
+          (typeof part == 'string' && !isNaN(part))
+        ) {
           part = +part;
         } else if(typeof part == 'string') {
           if(/^\[.*\]$/.test(part + '')) {
@@ -160,7 +178,8 @@ export class MutablePath extends Array {
     if(a.length == 0) return null;
     let s = '';
     let part = a.shift();
-    if(typeof part == 'function' && part.object !== undefined) part = part.object;
+    if(typeof part == 'function' && part.object !== undefined)
+      part = part.object;
 
     if(Util.isObject(part)) {
       let { tagName, ...partObj } = part;
@@ -349,7 +368,8 @@ export class MutablePath extends Array {
       },
       { o, n: 0 }
     );
-    if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, a.p, this);
+    if(a.o == null && !noThrow)
+      throw new DereferenceError(obj, a.i, a.n, a.p, this);
     return a.o;
   }
 
@@ -358,7 +378,9 @@ export class MutablePath extends Array {
     let r = this.toArray();
     if(filterChildren) r = r.filter(item => !MutablePath.isChildren(item));
     return `[${r
-      .map(p => (typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p))
+      .map(p =>
+        typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p
+      )
       .join(sep)}]`;
   }
   toCode(name) {
@@ -392,17 +414,25 @@ export class MutablePath extends Array {
     );
     let n = Util.className(this);
     let c = n.startsWith('Mutable') ? 31 : 32;
-    let t = color ? (text, ...args) => `\u001b[${args.join(';')}m` + text : text => text;
+    let t = color
+      ? (text, ...args) => `\u001b[${args.join(';')}m` + text
+      : text => text;
     let max = 100;
 
     if(Util.stripAnsi(p).length > max) {
       let pos = p.length - max;
-      if(p.substring(pos).indexOf(sep) != -1) pos += p.substring(pos).indexOf(sep) + 1;
+      if(p.substring(pos).indexOf(sep) != -1)
+        pos += p.substring(pos).indexOf(sep) + 1;
       const num = p.substring(0, pos - 1).split(sep).length;
-      p = t(`... ${num} components ...`, 1, 36) + ' | ' + p.substring(pos, p.length);
+      p =
+        t(`... ${num} components ...`, 1, 36) +
+        ' | ' +
+        p.substring(pos, p.length);
     }
 
-    return color ? `\x1b[1;${c}m${n.replace(/^Immutable/, '')}\x1b[1;30m ${p}\x1b[0m` : p;
+    return color
+      ? `\x1b[1;${c}m${n.replace(/^Immutable/, '')}\x1b[1;30m ${p}\x1b[0m`
+      : p;
   }
 
   toString(sep = ' ',
@@ -411,7 +441,9 @@ export class MutablePath extends Array {
   ) {
     // console.log("MutablePath.toString",{sep,partToStr, childrenStr});
     const color =
-      true || Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+      true || Util.isBrowser()
+        ? text => text
+        : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
     //   if(this[0] == 'children') sep = ' ';
     while(a.length > 0 && a[0] === '') a.shift();
@@ -437,7 +469,8 @@ export class MutablePath extends Array {
       obj = root;
     for(i = 0; i + 1 < this.length; i++) {
       const key = this.at(i);
-      if(!(key in obj)) throw new Error(`No path ${this.join(',')} in ${typeof root}`);
+      if(!(key in obj))
+        throw new Error(`No path ${this.join(',')} in ${typeof root}`);
       obj = obj[key];
     }
     return this.at(i) in obj;
@@ -472,7 +505,10 @@ export class MutablePath extends Array {
    */
   slice(start = 0, end = this.length) {
     const ctor = this.constructor[Symbol.species] || this.constructor;
-    let r = Array.prototype.slice.call(MutablePath.prototype.toArray.call(this), start, end);
+    let r = Array.prototype.slice.call(MutablePath.prototype.toArray.call(this),
+      start,
+      end
+    );
     r = Object.setPrototypeOf(r, ctor.prototype);
     if(ctor == ImmutablePath) r = Object.freeze(r);
     return r;
@@ -546,7 +582,8 @@ export class MutablePath extends Array {
     const ctor = this.constructor[Symbol.species] || this.constructor;
 
     let ret = [];
-    for(let i = 0; i < this.length; i++) if(fn(this.at(i), i, this)) ret.push(this[i]);
+    for(let i = 0; i < this.length; i++)
+      if(fn(this.at(i), i, this)) ret.push(this[i]);
     return Object.setPrototypeOf(ret, ctor.prototype);
   }
 
@@ -568,7 +605,8 @@ export class MutablePath extends Array {
     let ret = [];
     let i = MutablePath.prototype.offset.call(this);
     for(; i < this.length; i += n) {
-      if(n > 1) ret = ret.concat(Array.prototype.slice.call([...this], i, i + 2));
+      if(n > 1)
+        ret = ret.concat(Array.prototype.slice.call([...this], i, i + 2));
       else ret.push(this[i]);
     }
     return ret;

@@ -55,7 +55,8 @@ function styleObjToCss(s) {
       str +=
         prop[0] == '-'
           ? prop
-          : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
+          : JS_TO_CSS[prop] ||
+            (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
       str += ': ';
       str += val;
 
@@ -208,12 +209,19 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 
       if(options.__r) options.__r(vnode);
 
-      if(!nodeName.prototype || typeof nodeName.prototype.render !== 'function') {
+      if(!nodeName.prototype ||
+        typeof nodeName.prototype.render !== 'function'
+      ) {
         // Necessary for createContext api. Setting this property will pass
         // the context value as `this.context` just for this component.
         var cxType = nodeName.contextType;
         var provider = cxType && context[cxType.__c];
-        var cctx = cxType != null ? (provider ? provider.props.value : cxType.__) : context; // stateless functional components
+        var cctx =
+          cxType != null
+            ? provider
+              ? provider.props.value
+              : cxType.__
+            : context; // stateless functional components
 
         _rendered = nodeName.call(vnode.__c, props, cctx);
       } else {
@@ -222,7 +230,12 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 
         var _provider = _cxType && context[_cxType.__c];
 
-        var _cctx = _cxType != null ? (_provider ? _provider.props.value : _cxType.__) : context; // c = new nodeName(props, context);
+        var _cctx =
+          _cxType != null
+            ? _provider
+              ? _provider.props.value
+              : _cxType.__
+            : context; // c = new nodeName(props, context);
 
         c = vnode.__c = new nodeName(props, _cctx);
         c.__v = vnode; // turn off stateful re-rendering:
@@ -244,7 +257,12 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
           c.componentWillMount(); // If the user called setState in cWM we need to flush pending,
           // state updates. This is the same behaviour in React.
 
-          c.state = c._nextState !== c.state ? c._nextState : c.__s !== c.state ? c.__s : c.state;
+          c.state =
+            c._nextState !== c.state
+              ? c._nextState
+              : c.__s !== c.state
+              ? c.__s
+              : c.state;
         }
         _rendered = c.render(c.props, c.state, c.context);
       }
@@ -313,7 +331,9 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
         v = String(v);
       }
 
-      var hooked = opts.attributeHook && opts.attributeHook(name, v, context, opts, isComponent);
+      var hooked =
+        opts.attributeHook &&
+        opts.attributeHook(name, v, context, opts, isComponent);
 
       if(hooked || hooked === '') {
         s += hooked;
@@ -371,7 +391,9 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
     }
 
     s += html;
-  } else if(propChildren != null && getChildren((children = []), propChildren).length) {
+  } else if(propChildren != null &&
+    getChildren((children = []), propChildren).length
+  ) {
     var hasLarge = pretty && ~s.indexOf('\n');
     var lastWasText = false;
 
@@ -380,8 +402,18 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 
       if(child != null && child !== false) {
         var childSvgMode =
-            nodeName === 'svg' ? true : nodeName === 'foreignObject' ? false : isSvgMode,
-          ret = _renderToString(child, context, opts, true, childSvgMode, selectValue);
+            nodeName === 'svg'
+              ? true
+              : nodeName === 'foreignObject'
+              ? false
+              : isSvgMode,
+          ret = _renderToString(child,
+            context,
+            opts,
+            true,
+            childSvgMode,
+            selectValue
+          );
 
         if(pretty && !hasLarge && isLargeString(ret)) hasLarge = true; // Skip if we received an empty string
 

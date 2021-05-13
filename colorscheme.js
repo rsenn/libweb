@@ -15,7 +15,9 @@ export class ColorScheme {
         p = node.previousElementSibling;
       } else if(node.tagName == 'dict') {
         {
-          let parent = node.parentElement ? node.parentElement.firstElementChild : null;
+          let parent = node.parentElement
+            ? node.parentElement.firstElementChild
+            : null;
           if(parent.innerHTML == 'name') p = parent.nextElementSibling;
         }
       }
@@ -41,7 +43,9 @@ export class ColorScheme {
         p = node.previousElementSibling;
       } else if(node.tagName == 'dict') {
         {
-          let parent = node.parentElement ? node.parentElement.firstElementChild : null;
+          let parent = node.parentElement
+            ? node.parentElement.firstElementChild
+            : null;
           if(parent.innerHTML == 'name') p = parent.nextElementSibling;
         }
       }

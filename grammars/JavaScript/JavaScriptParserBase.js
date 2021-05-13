@@ -25,7 +25,8 @@ JavaScriptParserBase.prototype.notLineTerminator = function() {
 
 JavaScriptParserBase.prototype.notOpenBraceAndNotFunction = function() {
   const nextTokenType = this._input.LT(1).type;
-  return (nextTokenType !== JavaScriptParser.OpenBrace && nextTokenType !== JavaScriptParser.Function
+  return (nextTokenType !== JavaScriptParser.OpenBrace &&
+    nextTokenType !== JavaScriptParser.Function
   );
 };
 
@@ -58,7 +59,8 @@ JavaScriptParserBase.prototype.lineTerminatorAhead = function() {
   const text = ahead.type;
   const type = ahead.type;
 
-  return ((type === JavaScriptParser.MultiLineComment && (text.includes('\r') || text.includes('\n'))) ||
+  return ((type === JavaScriptParser.MultiLineComment &&
+      (text.includes('\r') || text.includes('\n'))) ||
     type === JavaScriptParser.LineTerminator
   );
 };

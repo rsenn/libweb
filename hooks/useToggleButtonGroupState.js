@@ -6,7 +6,9 @@ export function useToggleButtonGroupState(arg) {
   const options = arg === void 0 ? initialState : arg;
   const { selectedId } = options;
   const attributeId =
-    options.attributeId === void 0 ? initialState.attributeId : options.attributeId;
+    options.attributeId === void 0
+      ? initialState.attributeId
+      : options.attributeId;
 
   const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
 

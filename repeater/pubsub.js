@@ -159,7 +159,8 @@ let InMemoryPubSub = /** @class */ (function () {
     let publishers = this.publishers[topic];
     if(publishers != null) {
       try {
-        for(var publishers_1 = __values(publishers), publishers_1_1 = publishers_1.next();
+        for(var publishers_1 = __values(publishers),
+            publishers_1_1 = publishers_1.next();
           !publishers_1_1.done;
           publishers_1_1 = publishers_1.next()
         ) {
@@ -177,7 +178,10 @@ let InMemoryPubSub = /** @class */ (function () {
         e_1 = { error: e_1_1 };
       } finally {
         try {
-          if(publishers_1_1 && !publishers_1_1.done && (_a = publishers_1.return))
+          if(publishers_1_1 &&
+            !publishers_1_1.done &&
+            (_a = publishers_1.return)
+          )
             _a.call(publishers_1);
         } finally {
           if(e_1) throw e_1.error;
@@ -192,7 +196,8 @@ let InMemoryPubSub = /** @class */ (function () {
       return;
     }
     try {
-      for(var publishers_2 = __values(publishers), publishers_2_1 = publishers_2.next();
+      for(var publishers_2 = __values(publishers),
+          publishers_2_1 = publishers_2.next();
         !publishers_2_1.done;
         publishers_2_1 = publishers_2.next()
       ) {
@@ -203,7 +208,10 @@ let InMemoryPubSub = /** @class */ (function () {
       e_2 = { error: e_2_1 };
     } finally {
       try {
-        if(publishers_2_1 && !publishers_2_1.done && (_a = publishers_2.return))
+        if(publishers_2_1 &&
+          !publishers_2_1.done &&
+          (_a = publishers_2.return)
+        )
           _a.call(publishers_2);
       } finally {
         if(e_2) throw e_2.error;

@@ -14,7 +14,8 @@ let { Request, Response, Headers } = globalThis;
 
 const requires = (i, args) => {
   if(args.length < i)
-    throw new TypeError(`${i} argument required, but only ${args.length} present.`);
+    throw new TypeError(`${i} argument required, but only ${args.length} present.`
+    );
 };
 
 const isReq = req => req && req[Symbol.toStringTag] === 'Request';
@@ -59,7 +60,9 @@ export class Cache {
             header.append(key, val);
           }
           json.headers = header;
-          let res = new Response(fs.createReadStream(fullPath, { start: 4 + L }), json);
+          let res = new Response(fs.createReadStream(fullPath, { start: 4 + L }),
+            json
+          );
           result.push(res);
         }
 
@@ -87,7 +90,8 @@ export class Cache {
       req = new Request(req);
 
       if(!/^((http|https):\/\/)/.test(req.url))
-        throw new TypeError(`Add/AddAll does not support schemes other than "http" or "https"`);
+        throw new TypeError(`Add/AddAll does not support schemes other than "http" or "https"`
+        );
 
       if(req.method !== 'GET')
         throw new TypeError(`Add/AddAll only supports the GET request method`);
@@ -96,7 +100,8 @@ export class Cache {
 
       await fetch(req).then(res => {
         if(res.status === 206)
-          throw new TypeError('Partial response (status code 206) is unsupported');
+          throw new TypeError('Partial response (status code 206) is unsupported'
+          );
 
         if(!res.ok) throw new TypeError('Request failed');
 
@@ -120,9 +125,11 @@ export class Cache {
     req = isReq(req) ? req : new Request(req);
 
     if(!/^((http|https):\/\/)/.test(req.url))
-      throw new TypeError(`Request scheme '${req.url.split(':')[0]}' is unsupported`);
+      throw new TypeError(`Request scheme '${req.url.split(':')[0]}' is unsupported`
+      );
 
-    if(req.method !== 'GET') throw new TypeError(`Request method '${req.method}' is unsupported`);
+    if(req.method !== 'GET')
+      throw new TypeError(`Request method '${req.method}' is unsupported`);
 
     if(res.status === 206)
       throw new TypeError('Partial response (status code 206) is unsupported');
@@ -133,10 +140,12 @@ export class Cache {
       throw new TypeError('Vary header contains *');
     }
 
-    if(res.body != null) if (res.bodyUsed) throw new TypeError('Response body is already used');
+    if(res.body != null)
+      if(res.bodyUsed) throw new TypeError('Response body is already used');
 
     let folder = wm(this);
-    let fileStream = fs.createWriteStream(folder + strToBase64(req.url.split('#')[0]));
+    let fileStream = fs.createWriteStream(folder + strToBase64(req.url.split('#')[0])
+    );
 
     let map = []; // [...res.headers] < requires node-fetch v2
     res.headers.forEach((key, value) => map.push([key, value]));
@@ -203,7 +212,9 @@ export class Cache {
 
     return new Promise((resolve, reject) => {
       fs.readdir(folder, (err, files) =>
-        err ? reject(err) : resolve(search(files).map(file => new Request(base64ToStr(file))))
+        err
+          ? reject(err)
+          : resolve(search(files).map(file => new Request(base64ToStr(file))))
       );
     });
   }

@@ -43,7 +43,10 @@ export const Element = ({ data, opts = {}, ...props }) => {
   });
 
   return h('g',
-    { className: `element.${element.name}`, 'data-path': element.path.toString(' '), transform },
-    [pkg]
+    {
+      className: `element.${element.name}`,
+      'data-path': element.path.toString(' '),
+      transform
+    }, [pkg]
   );
 };

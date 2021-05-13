@@ -24,7 +24,9 @@ export class Observe {
 
   get(target, key, context) {
     if(Reflect.has(target, key)) {
-      this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'get' }]);
+      this.fn.apply(this, [
+        { name: key, object: JSON.toString(target), type: 'get' }
+      ]);
       return Reflect.get(target, key, context);
     }
     throw new ReferenceError(`${key} doesnt exist`);
@@ -33,17 +35,29 @@ export class Observe {
   set(target, key, value, context) {
     if(Reflect.has(target, key)) {
       this.fn.apply(this, [
-        { name: key, object: JSON.toString(target), type: 'update', oldValue: target[key] }
+        {
+          name: key,
+          object: JSON.toString(target),
+          type: 'update',
+          oldValue: target[key]
+        }
       ]);
       return Reflect.set(target, key, value, context);
     }
-    this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'add' }]);
+    this.fn.apply(this, [
+      { name: key, object: JSON.toString(target), type: 'add' }
+    ]);
     return Reflect.set(target, key, value, context);
   }
 
   deleteProperty(target, key) {
     this.fn.apply(this, [
-      { name: key, object: JSON.toString(target), type: 'delete', oldValue: target[key] }
+      {
+        name: key,
+        object: JSON.toString(target),
+        type: 'delete',
+        oldValue: target[key]
+      }
     ]);
     return Reflect.deleteProperty(target, key);
   }

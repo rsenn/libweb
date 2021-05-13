@@ -2,7 +2,8 @@ import Util from './util.js';
 import { trkl } from './trkl.js';
 
 export function Instance({ trackable = false, callback, initVal = null }) {
-  let inst = trackable && trackable.subscribe !== undefined ? trackable : trkl(initVal);
+  let inst =
+    trackable && trackable.subscribe !== undefined ? trackable : trkl(initVal);
 
   if(callback) inst.subscribe(value => callback(value, inst));
 
@@ -74,7 +75,11 @@ export function lazyProperty(obj, name, fn) {
  * @param      {<type>}    prototyp                  The prototyp
  * @return     {Proxy}     { description_of_the_return_value }
  */
-export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
+export function lazyMap(arr,
+  lookup = item => item.name,
+  ctor = arg => arg,
+  prototyp
+) {
   /*  let m = new Map();
 
   for(let [k,v] of entries)
@@ -99,19 +104,23 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
     return new Proxy(arr, {
       get(target, key, receiver) {
         //console.log("key:", key);
-        let index = typeof key == 'string' && /^[0-9]+$/.test(key) ? parseInt(key) : key;
+        let index =
+          typeof key == 'string' && /^[0-9]+$/.test(key) ? parseInt(key) : key;
         if(cache[key]) return cache[key];
         if(key == 'length') {
           index = key;
         } else if(typeof index == 'string') {
           index = Util.findKey(target, (v, k) => lookup(v) === key);
-          if(typeof index == 'string' && /^[0-9]+$/.test(index)) index = parseInt(index);
+          if(typeof index == 'string' && /^[0-9]+$/.test(index))
+            index = parseInt(index);
 
           if(typeof index != 'number' || typeof index != 'string') index = key;
         }
 
         let ret =
-          typeof proto[key] == 'function' ? proto[key] : Reflect.get(target, index, receiver);
+          typeof proto[key] == 'function'
+            ? proto[key]
+            : Reflect.get(target, index, receiver);
 
         if(typeof ret == 'object' && typeof index == 'number') {
           key = lookup(ret);
@@ -135,7 +144,8 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
         const len = target.length;
         if(typeof key == 'number') return key >= 0 && key < len;
 
-        for(let i = 0; i < len; i++) if(lookup(target[i]) === key) return true;
+        for(let i = 0; i < len; i++)
+          if(lookup(target[i]) === key) return true;
         return false;
       },
       getPrototypeOf(target) {

@@ -129,7 +129,9 @@ const Implementations = {
         try {
           tmp = result.clone();
           if(!tmp)
-            tmp = Object.create(Object.getPrototypeOf(result), Object.getOwnPropertyDescriptors());
+            tmp = Object.create(Object.getPrototypeOf(result),
+              Object.getOwnPropertyDescriptors()
+            );
 
           if(!tmp) throw new Error('clone failed');
           result = tmp;
@@ -140,7 +142,9 @@ const Implementations = {
     },
 
     request(obj) {
-      if(obj instanceof Request || (Util.isObject(obj) && typeof obj.url == 'string'))
+      if(obj instanceof Request ||
+        (Util.isObject(obj) && typeof obj.url == 'string')
+      )
         obj = obj.url;
       return obj;
     },
@@ -188,7 +192,8 @@ const Implementations = {
           statusText: 'OK',
           headers: { 'Content-Type': type }
         });
-      if(typeof cache.put == 'function') return await cache.put(request, response);
+      if(typeof cache.put == 'function')
+        return await cache.put(request, response);
     },
 
     async removeItem(request) {
@@ -236,7 +241,10 @@ const Implementations = {
 
     eachKey(fn) {
       const { obj } = this;
-      let prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters(obj.cacheBucket) + '(.*)'
+      let prefixRegExp = new RegExp('^' +
+          CACHE_PREFIX +
+          escapeRegExpSpecialCharacters(obj.cacheBucket) +
+          '(.*)'
       );
       // Loop in reverse as removing items will change indices of tail
       for(let i = localStorage.length - 1; i >= 0; --i) {
@@ -277,9 +285,11 @@ function flushExpiredItem(key) {
 
 function warn(message, err) {
   if(!this.warnings) return;
-  if(!('console' in window) || typeof window.console.warn !== 'function') return;
+  if(!('console' in window) || typeof window.console.warn !== 'function')
+    return;
   window.console.warn.call(this, 'lscache - ' + message);
-  if(err) window.console.warn.call(this, 'lscache - The error was: ' + err.message);
+  if(err)
+    window.console.warn.call(this, 'lscache - The error was: ' + err.message);
 }
 
 function calculateMaxDate(expiryMilliseconds) {
@@ -315,7 +325,8 @@ export function brcache(cache) {
 
     Util.define(impl, {
       async getCache() {
-        if(tmp && typeof tmp.open == 'function') return await tmp.open(cacheName);
+        if(tmp && typeof tmp.open == 'function')
+          return await tmp.open(cacheName);
       },
       get cache() {
         return this.getCache();
@@ -328,7 +339,8 @@ export function brcache(cache) {
 
   //  Object.assign(brcache, brcache.prototype);
 
-  if(typeof obj.keys != 'function') Object.assign(obj, Util.getMethods(BaseCache.prototype, 1, 0));
+  if(typeof obj.keys != 'function')
+    Object.assign(obj, Util.getMethods(BaseCache.prototype, 1, 0));
 
   Object.assign(obj, { cacheBucket: '', warnings: false, hits: {} });
 
@@ -417,7 +429,9 @@ export class BaseCache {
         let targetSize = (value || '').length;
         while(storedKeys.length && targetSize > 0) {
           storedKey = storedKeys.pop();
-          impl.warn.call(this, "Cache is full, removing item with key '" + key + "'");
+          impl.warn.call(this,
+            "Cache is full, removing item with key '" + key + "'"
+          );
           impl.flushItem.call(this, storedKey.key);
           targetSize -= storedKey.size;
         }
@@ -602,12 +616,16 @@ export class BaseCache {
     let lscache = this;
     // console.log('keys()', { lscache });
 
-    await impl.eachKey.call(this, key => keys.push(impl.request.call(this, key)));
+    await impl.eachKey.call(this, key =>
+      keys.push(impl.request.call(this, key))
+    );
     return keys;
   }
 }
 
-Object.setPrototypeOf(lscache.prototype, new (class LocalStorageCache extends BaseCache {})());
+Object.setPrototypeOf(lscache.prototype,
+  new (class LocalStorageCache extends BaseCache {})()
+);
 
 brcache.prototype = new (class BrowserCache extends BaseCache {})();
 

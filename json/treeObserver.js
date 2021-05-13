@@ -14,8 +14,10 @@ export class TreeObserver extends ObservableMembrane {
     if(!Util.isObject(value)) return null;
     //else if(Util.isArray(value) || ImmutablePath.isChildren([...path][path.length - 1])) type = 'NodeList';
     else if('tagName' in value) type = 'Element';
-    else if(Util.isObject(path) && [...path].reverse()[0] == 'attributes') type = 'AttributeMap';
-    else if(Util.isObject(path) && [...path].reverse()[0] == 'children') type = 'NodeList';
+    else if(Util.isObject(path) && [...path].reverse()[0] == 'attributes')
+      type = 'AttributeMap';
+    else if(Util.isObject(path) && [...path].reverse()[0] == 'children')
+      type = 'NodeList';
     else type = /attributes/.test(path + '') ? 'AttributeMap' : 'Node';
     //Util.log('getType', type);
     return type;
@@ -32,7 +34,8 @@ export class TreeObserver extends ObservableMembrane {
         const value = target[key];
         if(Util.isObject(value)) {
           pathMapper.set(value, path.concat([]));
-          for(let handler of this.handlers) handler('access', target, path.concat([key]), value);
+          for(let handler of this.handlers)
+            handler('access', target, path.concat([key]), value);
         }
         this.last = { target, key, path };
       },
@@ -40,7 +43,8 @@ export class TreeObserver extends ObservableMembrane {
         let path = getPath.call(this, target, key);
         let obj = target;
         const idx = ['attributes', 'tagName', 'children'].indexOf(key);
-        if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path || [], true);
+        if(!(path instanceof ImmutablePath))
+          path = new ImmutablePath(path || [], true);
         let value = path.apply(obj);
         if(Util.isObject(obj) && !Util.isArray(obj) && key != 'tagName') {
         }
@@ -56,7 +60,9 @@ export class TreeObserver extends ObservableMembrane {
         if(key || path) {
           //Util.log('valueDistortion', { key, path, valueType, valueClass, valueKeys });
           if(!Util.isObject(target)) return value;
-          let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
+          let q = Util.isObject(value)
+            ? Object.getPrototypeOf(value)
+            : Object.prototype;
           if(typeof value == 'string' && !isNaN(+value)) value = +value;
           if(Util.isObject(value)) {
             this.types(value, key);
@@ -122,7 +128,9 @@ export class TreeObserver extends ObservableMembrane {
   });
 
   getField = field =>
-    Util.transformer(this.entry, ret => (Util.isObject(ret) && field in ret ? ret[field] : ret));
+    Util.transformer(this.entry, ret =>
+      Util.isObject(ret) && field in ret ? ret[field] : ret
+    );
 
   proxy = this.getField('proxy');
   type = this.getField('type');

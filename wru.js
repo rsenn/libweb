@@ -45,7 +45,9 @@ if(typeof global != 'undefined') {
             fn.apply(null, args);
           }
         });
-        interval ? timer.schedule(ids[id], delay, delay) : timer.schedule(ids[id], delay);
+        interval
+          ? timer.schedule(ids[id], delay, delay)
+          : timer.schedule(ids[id], delay);
         return id;
       }
     })(new java.util.Timer(), {}, [].slice, 0);
@@ -175,7 +177,10 @@ export const wru = (function (window) {
   }
 
   function writeItOrdered(fail) {
-    for(let i = 0, length = fail[LENGTH]; i < length; log('    ' + ++i + '. ' + fail[i - 1]));
+    for(let i = 0, length = fail[LENGTH];
+      i < length;
+      log('    ' + ++i + '. ' + fail[i - 1])
+    );
   }
 
   function Dary() {

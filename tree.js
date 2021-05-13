@@ -30,7 +30,9 @@ export function Tree(root) {
   tree = function(arg) {
     let path, node;
 
-    if((typeof arg == 'string' || Array.isArray(arg)) && (node = tree.at(arg))) {
+    if((typeof arg == 'string' || Array.isArray(arg)) &&
+      (node = tree.at(arg))
+    ) {
     } else if(isObject(arg) && parents.has(arg)) {
       node = arg;
     } else if(Array.isArray(arg) && arg.length == 2) {
@@ -169,7 +171,10 @@ Tree.prototype.pop = function(node) {
 };
 
 Tree.prototype.push = function(node, ...children) {
-  mapRecurse((child, parent) => this.parents.set(child, parent), node, ...children);
+  mapRecurse((child, parent) => this.parents.set(child, parent),
+    node,
+    ...children
+  );
   splice(node, sizeOf(node), 0, ...children);
   return sizeOf(node);
 };
@@ -254,7 +259,11 @@ Tree.prototype.create = function(path) {
     parent[current] = {};
 
     const obj = parent[current];
-    console.log('Tree.create', { current, path: path.join('.'), parent: parent + '' });
+    console.log('Tree.create', {
+      current,
+      path: path.join('.'),
+      parent: parent + ''
+    });
   }
   /*
   if(typeof key == 'number') {
@@ -276,7 +285,10 @@ Tree.prototype.build = function(iterable) {
   return this.root;
 };
 
-Tree.prototype.each = function* (node, reduce = (acc, node) => [...acc, node], acc = []) {
+Tree.prototype.each = function* (node,
+  reduce = (acc, node) => [...acc, node],
+  acc = []
+) {
   if(!node) node = this.root;
 
   yield [node, (acc = reduce(acc, node))];
@@ -291,12 +303,15 @@ Tree.prototype[Symbol.iterator] = function() {
 
 Tree.prototype.filter = function* (...args) {
   const [root, pred] = args.length == 1 ? [this.root, ...args] : args;
-  const iterator = filter(recurse(root), ([p, n]) => typeof n == 'object' && n != null);
+  const iterator = filter(recurse(root),
+    ([p, n]) => typeof n == 'object' && n != null
+  );
   for(let [path, node] of iterator) if(pred(node, path, this)) yield node;
 };
 Tree.prototype.filterPath = function* (...args) {
   const [root, pred] = args.length == 1 ? [this.root, ...args] : args;
-  for(let [path, node] of filter(recurse(root), ([p, n]) => pred(n, p, this))) yield path;
+  for(let [path, node] of filter(recurse(root), ([p, n]) => pred(n, p, this)))
+    yield path;
 };
 /*  const iterator = filter(recurse(root), ([p, n]) => typeof n == 'object' && n != null);
   for(let [path, node] of iterator)
@@ -346,7 +361,8 @@ Object.defineProperty(Array, Symbol.hasInstance, {
     return Array.isArray(instance);
   }
 });
-Path.prototype = Object.entries(Object.getOwnPropertyDescriptors(Array.prototype))
+Path.prototype = Object.entries(Object.getOwnPropertyDescriptors(Array.prototype)
+)
   .filter(([n]) => typeof n != 'symbol')
   .reduce((a, [n, desc]) => Object.defineProperty(a, n, desc), Path.prototype);
 Path.prototype.constructor = Path;
@@ -433,7 +449,9 @@ function entries(obj) {
 
 function keys(obj) {
   if(typeof obj == 'object' && obj != null)
-    return obj instanceof Array ? Array.prototype.keys.call(obj) : Object.getOwnPropertyNames(obj);
+    return obj instanceof Array
+      ? Array.prototype.keys.call(obj)
+      : Object.getOwnPropertyNames(obj);
   return [];
 }
 
@@ -459,7 +477,9 @@ function splice(obj, start, deleteCount, ...addItems) {
     delete obj[name];
     removed.push(value);
   }
-  let add = addItems.reduce((a, i) => (i instanceof Array ? [...a, i] : [...a, ...entries(i)]), []);
+  let add = addItems.reduce((a, i) => (i instanceof Array ? [...a, i] : [...a, ...entries(i)]),
+    []
+  );
   for(let [name, value] of add) {
     obj[name] = value;
   }
@@ -469,7 +489,8 @@ function splice(obj, start, deleteCount, ...addItems) {
 function* walk(node, parent = null) {
   yield [node, parent];
   for(let key in node) {
-    if(typeof node[key] == 'object' && node[key] !== null) yield* walk(node[key], node);
+    if(typeof node[key] == 'object' && node[key] !== null)
+      yield* walk(node[key], node);
   }
 }
 

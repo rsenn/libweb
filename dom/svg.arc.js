@@ -44,7 +44,9 @@ import 'svgjs';
   SVG.extend(SVG.Line, {
     //Get point
     mid() {
-      return new SVG.Point((this.x1() + this.x2()) / 2.0, (this.y1() + this.y2()) / 2.0);
+      return new SVG.Point((this.x1() + this.x2()) / 2.0,
+        (this.y1() + this.y2()) / 2.0
+      );
     }
   });
 
@@ -57,8 +59,13 @@ import 'svgjs';
 
     distanceToLine(pt1, pt2) {
       return (Math.abs(
-          (pt2.y - pt1.y) * this.x - (pt2.x - pt1.x) * this.y + pt2.x * pt1.y - pt2.y * pt1.x
-        ) / Math.sqrt((pt2.y - pt1.y) * (pt2.y - pt1.y) + (pt2.x - pt1.x) * (pt2.x - pt1.x))
+          (pt2.y - pt1.y) * this.x -
+            (pt2.x - pt1.x) * this.y +
+            pt2.x * pt1.y -
+            pt2.y * pt1.x
+        ) /
+        Math.sqrt((pt2.y - pt1.y) * (pt2.y - pt1.y) + (pt2.x - pt1.x) * (pt2.x - pt1.x)
+        )
       );
     },
     withinLineRange(pt1, pt2) {
@@ -79,7 +86,8 @@ import 'svgjs';
       if(arc.bbox().contains(this)) {
         x = arc.cx() + arc.r * Math.cos(arc.ang);
         y = arc.cy() + arc.r * Math.sin(arc.ang);
-        return ((this.x - x) * (this.x - x) + (this.y - y) * (this.y - y) <= Trig.TOLERANCE_DISTANCE_SQR
+        return ((this.x - x) * (this.x - x) + (this.y - y) * (this.y - y) <=
+          Trig.TOLERANCE_DISTANCE_SQR
         );
       }
       return false;
@@ -178,7 +186,8 @@ import 'svgjs';
         //now calculate radius of the arc
         this.r = (((lc / 2.0) * lc) / 2.0 + h * h) / (2.0 * h);
         //arc lineAngle
-        if(h * 2 <= lc) this.ang = Math.PI - 2.0 * Math.acos(lc / (2.0 * this.r));
+        if(h * 2 <= lc)
+          this.ang = Math.PI - 2.0 * Math.acos(lc / (2.0 * this.r));
         else this.ang = Math.PI + 2.0 * Math.acos(lc / (2.0 * this.r));
 
         let phi = Math.PI * 0.5 + ac - this.ang * 0.5;
@@ -215,7 +224,9 @@ import 'svgjs';
 
           x = this.cx() + this.r * Math.cos(theta);
           y = this.cy() + this.r * Math.sin(theta);
-          return (pt.x - x) * (pt.x - x) + (pt.y - y) * (pt.y - y) <= Trig.TOLERANCE_DISTANCE_SQR;
+          return ((pt.x - x) * (pt.x - x) + (pt.y - y) * (pt.y - y) <=
+            Trig.TOLERANCE_DISTANCE_SQR
+          );
         }
         return false;
       },
@@ -262,7 +273,13 @@ import 'svgjs';
       sweep(f) {
         if(f != undefined) {
           this.sweepFlag = f;
-          this.plot(this.x1(), this.y1(), this.h(), this.sweepFlag, this.x2(), this.y2());
+          this.plot(this.x1(),
+            this.y1(),
+            this.h(),
+            this.sweepFlag,
+            this.x2(),
+            this.y2()
+          );
         } else return this.sweepFlag;
       }
     },

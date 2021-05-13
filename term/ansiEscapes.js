@@ -61,7 +61,8 @@ ansiEscapes.eraseLines = count => {
   let clear = '';
 
   for(let i = 0; i < count; i++) {
-    clear += ansiEscapes.eraseLine + (i < count - 1 ? ansiEscapes.cursorUp() : '');
+    clear +=
+      ansiEscapes.eraseLine + (i < count - 1 ? ansiEscapes.cursorUp() : '');
   }
 
   if(count) {
@@ -123,8 +124,11 @@ ansiEscapes.iTerm = {
 
     const hasX = typeof options.x !== 'undefined';
     const hasY = typeof options.y !== 'undefined';
-    if((hasX || hasY) && !(hasX && hasY && typeof options.length !== 'undefined')) {
-      throw new Error('`x`, `y` and `length` must be defined when `x` or `y` is defined');
+    if((hasX || hasY) &&
+      !(hasX && hasY && typeof options.length !== 'undefined')
+    ) {
+      throw new Error('`x`, `y` and `length` must be defined when `x` or `y` is defined'
+      );
     }
 
     message = message.replace(/\|/g, '');

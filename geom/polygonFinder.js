@@ -13,7 +13,8 @@ export class PolygonFinder {
     let connectedSegments = [];
     let connectedIntersections = [];
     segments.forEach(segment => {
-      let intersectionsOnSegment = intersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment
+      let intersectionsOnSegment = intersections.filter(intersection =>
+          intersection.line1 === segment || intersection.line2 === segment
       );
 
       if(intersectionsOnSegment.length > 1) {
@@ -27,7 +28,8 @@ export class PolygonFinder {
     });
 
     connectedSegments.forEach(segment => {
-      let intersectionsOnSegment = connectedIntersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment
+      let intersectionsOnSegment = connectedIntersections.filter(intersection =>
+          intersection.line1 === segment || intersection.line2 === segment
       );
 
       //For each intersection on a line, find the nearest neighbor in each direction.
@@ -35,7 +37,8 @@ export class PolygonFinder {
       let nearestNeighborTrios = intersectionsOnSegment.map((intersection, index, intersections) => {
           let nearestNeighborPair = [null, null];
           let minimumDistancePair = [Infinity, Infinity];
-          let possibleNeighbors = intersections.filter(possibleNeighborIntersection => intersection != possibleNeighborIntersection
+          let possibleNeighbors = intersections.filter(possibleNeighborIntersection =>
+              intersection != possibleNeighborIntersection
           );
 
           possibleNeighbors.forEach(possibleNeighbor => {
@@ -54,15 +57,21 @@ export class PolygonFinder {
               return null;
             }
 
-            if(possibleNeighbor.point[comparisonProperty] < intersection.point[comparisonProperty]
+            if(possibleNeighbor.point[comparisonProperty] <
+              intersection.point[comparisonProperty]
             ) {
-              if(nearestNeighborPair[0] == null || distanceBetween < minimumDistancePair[0]) {
+              if(nearestNeighborPair[0] == null ||
+                distanceBetween < minimumDistancePair[0]
+              ) {
                 nearestNeighborPair[0] = possibleNeighbor;
                 minimumDistancePair[0] = distanceBetween;
               }
-            } else if(possibleNeighbor.point[comparisonProperty] > intersection.point[comparisonProperty]
+            } else if(possibleNeighbor.point[comparisonProperty] >
+              intersection.point[comparisonProperty]
             ) {
-              if(nearestNeighborPair[1] == null || distanceBetween < minimumDistancePair[1]) {
+              if(nearestNeighborPair[1] == null ||
+                distanceBetween < minimumDistancePair[1]
+              ) {
                 nearestNeighborPair[1] = possibleNeighbor;
                 minimumDistancePair[1] = distanceBetween;
               }
@@ -122,7 +131,9 @@ export class PolygonFinder {
     let intersections = [];
     for(let i = 0; i < segmentSet.length; i++) {
       for(let j = i + 1; j < segmentSet.length; j++) {
-        let intersection = Intersection.findIntersection(segmentSet[i], segmentSet[j]);
+        let intersection = Intersection.findIntersection(segmentSet[i],
+          segmentSet[j]
+        );
         //Util.log('findIntersection:', segmentSet[i].toObject(), segmentSet[j].toObject(), ' = ', intersection);
         if(intersection !== null) {
           let alreadyInSet = false;

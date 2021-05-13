@@ -19,7 +19,8 @@ export class Polyline extends PointList {
     const addUnique = point => {
       if(typeof point == 'string') point = new Point(point);
 
-      const ok = this.length > 0 ? !Point.equals(this[this.length - 1], point) : true;
+      const ok =
+        this.length > 0 ? !Point.equals(this[this.length - 1], point) : true;
       if(ok) Array.prototype.push.call(this, Point.clone(point));
       return ok;
     };
@@ -44,7 +45,11 @@ export class Polyline extends PointList {
     }
   }
 
-  toSVG(factory, attrs = { stroke: '#000', fill: 'none' }, parent = null, prec) {
+  toSVG(factory,
+    attrs = { stroke: '#000', fill: 'none' },
+    parent = null,
+    prec
+  ) {
     if(!factory) factory = createFactory(document.body);
     console.log('Polyline.toSVG', factory);
 
@@ -72,7 +77,9 @@ export class Polyline extends PointList {
     for(i = 0, j = nvert - 1; i < nvert; j = i++) {
       if(this[i].y > point.y !== this[j].y > point.y &&
         point.x <
-          ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x
+          ((this[j].x - this[i].x) * (point.y - this[i].y)) /
+            (this[j].y - this[i].y) +
+            this[i].x
       ) {
         c = !c;
       }

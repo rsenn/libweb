@@ -21,11 +21,16 @@ export function Circle(x, y, radius) {
 
   if(obj === null) obj = Object.create(Circle.prototype);
 
-  if(Object.getPrototypeOf(obj) !== Circle.prototype) Object.setPrototypeOf(obj, Circle.prototype);
+  if(Object.getPrototypeOf(obj) !== Circle.prototype)
+    Object.setPrototypeOf(obj, Circle.prototype);
 
   //if(!('a' in obj) || !('b' in obj)) throw new Error('no a/b prop');
 
-  if(arg && arg.x !== undefined && arg.y !== undefined && arg.radius !== undefined) {
+  if(arg &&
+    arg.x !== undefined &&
+    arg.y !== undefined &&
+    arg.radius !== undefined
+  ) {
     obj.x = +arg.x;
     obj.y = +arg.y;
     obj.radius = +arg.radius;
@@ -40,7 +45,10 @@ export function Circle(x, y, radius) {
     obj.x2 = parseFloat(args[1].x);
     obj.y2 = parseFloat(args[1].y);*/
     ret = 2;
-  } else if(arg && arg.length >= 3 && arg.slice(0, 3).every(arg => !isNaN(parseFloat(arg)))) {
+  } else if(arg &&
+    arg.length >= 3 &&
+    arg.slice(0, 3).every(arg => !isNaN(parseFloat(arg)))
+  ) {
     obj.x = +arg[0];
     obj.y = +arg[1];
     obj.radius + arg[2];
@@ -59,11 +67,24 @@ export function Circle(x, y, radius) {
   /*  if(this !== obj)*/ return obj;
 }
 
-export const isCircle = obj => ['x', 'y', 'radius'].every(prop => obj[prop] !== undefined);
+export const isCircle = obj =>
+  ['x', 'y', 'radius'].every(prop => obj[prop] !== undefined);
 
-Object.defineProperty(Circle.prototype, 'x', { value: 0, enumerable: true, writable: true });
-Object.defineProperty(Circle.prototype, 'y', { value: 0, enumerable: true, writable: true });
-Object.defineProperty(Circle.prototype, 'radius', { value: 0, enumerable: true, writable: true });
+Object.defineProperty(Circle.prototype, 'x', {
+  value: 0,
+  enumerable: true,
+  writable: true
+});
+Object.defineProperty(Circle.prototype, 'y', {
+  value: 0,
+  enumerable: true,
+  writable: true
+});
+Object.defineProperty(Circle.prototype, 'radius', {
+  value: 0,
+  enumerable: true,
+  writable: true
+});
 
 Object.defineProperty(Circle.prototype, 'center', {
   get() {
@@ -96,7 +117,10 @@ Circle.prototype.clone = function() {
 Circle.prototype.transform = function(m, round = true) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_point.call(m, this);
-  const [w, h] = Matrix.prototype.transform_wh.call(m, this.radius, this.radius);
+  const [w, h] = Matrix.prototype.transform_wh.call(m,
+    this.radius,
+    this.radius
+  );
   this.radius = Math.abs(Math.max(w, h));
   if(round) Circle.prototype.round.call(this, 1e-13, 13);
   return this;

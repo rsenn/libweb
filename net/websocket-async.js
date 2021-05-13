@@ -36,7 +36,12 @@ export class WebSocketClient {
         ['receiveDataQueue', []],
         ['receiveCallbacksQueue', []],
         ['closeEvent', null]
-      ].reduce((acc, [name, value]) => ({ ...acc, [name]: { value, enumerable: false } }), {})
+      ].reduce((acc, [name, value]) => ({
+          ...acc,
+          [name]: { value, enumerable: false }
+        }),
+        {}
+      )
     );
   }
 
@@ -78,9 +83,11 @@ export class WebSocketClient {
    * @returns A promise that resolves with the data received.
    */
   receive() {
-    if(this.receiveDataQueue.length !== 0) return Promise.resolve(this.receiveDataQueue.shift());
+    if(this.receiveDataQueue.length !== 0)
+      return Promise.resolve(this.receiveDataQueue.shift());
 
-    if(!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
+    if(!this.connected)
+      return Promise.reject(this.closeEvent || new Error('Not connected.'));
 
     const receivePromise = new Promise((resolve, reject) =>
       this.receiveCallbacksQueue.push({ resolve, reject })
@@ -181,7 +188,8 @@ export class WebSocketClient {
   }
 
   async *[Symbol.asyncIterator]() {
-    while(this.readyState !== 3) yield await oncePromise(this.socket, 'message', 'close', 'error');
+    while(this.readyState !== 3)
+      yield await oncePromise(this.socket, 'message', 'close', 'error');
     //    yield (await oncePromise(this.socket, 'close', 'error'));
   }
 }

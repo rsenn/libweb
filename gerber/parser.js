@@ -153,8 +153,10 @@ function normalizeCoord(number, format) {
   if(!Number.isFinite(leading) || !Number.isFinite(trailing)) return NaN;
 
   // pad according to trailing or leading zero suppression
-  if(format.zero === 'T') numberString = numberString.padStart(leading + trailing, '0');
-  else if(format.zero === 'L') numberString = numberString.padStart(leading + trailing, '0');
+  if(format.zero === 'T')
+    numberString = numberString.padStart(leading + trailing, '0');
+  else if(format.zero === 'L')
+    numberString = numberString.padStart(leading + trailing, '0');
   else return NaN;
 
   // finally, parse the numberString
@@ -388,7 +390,8 @@ function parseMacroBlock(parser, block) {
   }
 
   if(code === 22) {
-    parser.warn('macro aperture lower-left rectangle primitives are deprecated');
+    parser.warn('macro aperture lower-left rectangle primitives are deprecated'
+    );
     return {
       type: 'rectLL',
       exp,
@@ -511,7 +514,10 @@ function parseToolDef(parser, block) {
   if(shape === 'circle') {
     val = [normalizeCoord(toolArgs[0], format)];
   } else if(shape === 'rect' || shape === 'obround') {
-    val = [normalizeCoord(toolArgs[0], format), normalizeCoord(toolArgs[1], format)];
+    val = [
+      normalizeCoord(toolArgs[0], format),
+      normalizeCoord(toolArgs[1], format)
+    ];
   } else if(shape === 'poly') {
     val = [normalizeCoord(toolArgs[0], format), Number(toolArgs[1]), 0];
     if(toolArgs[2]) {
@@ -541,7 +547,9 @@ function parseMacroDef(parser, block) {
     parser.warn('hyphens in macro name are illegal: ' + name);
   }
   let blockMatch = macroMatch[2].length ? macroMatch[2].split('*') : [];
-  let blocks = blockMatch.filter(Boolean).map(block => parseMacroBlock(parser, block));
+  let blocks = blockMatch
+    .filter(Boolean)
+    .map(block => parseMacroBlock(parser, block));
 
   return parser.push(commandMap.macro(name, blocks));
 }
@@ -603,7 +611,8 @@ function parse(parser, block) {
 
     // warn if there were unknown characters in the format spec
     if(unknown) {
-      parser.warn('unknown characters "' + unknown + '" in "' + block + '" were ignored');
+      parser.warn('unknown characters "' + unknown + '" in "' + block + '" were ignored'
+      );
     }
 
     let epsilon = 1.5 * Math.pow(10, -format.places[1]);
@@ -687,7 +696,8 @@ function parse(parser, block) {
   }
 
   // if we reach here the block was unhandled, so warn if it is not empty
-  return parser.warn('block "' + block + '" was not recognized and was ignored');
+  return parser.warn('block "' + block + '" was not recognized and was ignored'
+  );
 }
 
 // drill parser drill and route modes
@@ -892,7 +902,8 @@ function flush(parser) {
     parser.drillStash.forEach(data => {
       if(!parser.format.zero && reCOORD$1.test(data.block)) {
         parser.format.zero = 'T';
-        parser.warn('zero suppression missing and not detectable;' + ' assuming trailing suppression'
+        parser.warn('zero suppression missing and not detectable;' +
+            ' assuming trailing suppression'
         );
       }
       parseBlock(parser, data.block, data.line);
@@ -928,7 +939,8 @@ function parse$2(parser, block) {
       parser.format.zero = parseCoord.detectZero(block);
       if(parser.format.zero) {
         let zero = parser.format.zero === 'L' ? 'leading' : 'trailing';
-        parser.warn('zero suppression missing; detected ' + zero + ' suppression');
+        parser.warn('zero suppression missing; detected ' + zero + ' suppression'
+        );
         flush(parser);
         return parseBlock(parser, block, parser.line);
       }
@@ -1031,7 +1043,9 @@ export class Parser {
   flush(controller) {
     if(this.format.filetype === 'drill') parseDrill.flush(this);
 
-    return typeof controller == 'object' ? controller.terminate() : controller && controller();
+    return typeof controller == 'object'
+      ? controller.terminate()
+      : controller && controller();
   }
 
   push(data) {
@@ -1061,7 +1075,9 @@ export class Parser {
     let ret = [];
     let parser = new Parser();
 
-    await LineReader(file).pipeThrough(new TransformStream(parser)).pipeTo(ArrayWriter(ret));
+    await LineReader(file)
+      .pipeThrough(new TransformStream(parser))
+      .pipeTo(ArrayWriter(ret));
     // await readStream(LineReader(file).pipeThrough(new TransformStream(parser)), ret);
     return ret;
   }

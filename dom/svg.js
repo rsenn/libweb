@@ -20,14 +20,17 @@ export class SVG extends Element {
     } else {
       attrfn = arg => arg; //Util.decamelize;
     }
-    Util.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, '-'), value));
+    Util.foreach(attr, (value, name) =>
+      svg.setAttribute(attrfn(name, '-'), value)
+    );
 
     if(parent && parent.appendChild) {
       parent.appendChild(svg);
       if(outerHTML) svg.outerHTML = outerHTML;
     }
     /*    if(innerHTML) svg.innerHTML = text;
-else */ if(text) svg.innerHTML = innerHTML;
+else */ if(text)
+      svg.innerHTML = innerHTML;
     return svg;
   }
 
@@ -38,7 +41,9 @@ else */ if(text) svg.innerHTML = innerHTML;
         ? args.shift()
         : {};
     let parent = Util.isObject(args[0])
-      ? typeof args[0] == 'function' || 'tagName' in args[0] || 'appendChild' in args[0]
+      ? typeof args[0] == 'function' ||
+        'tagName' in args[0] ||
+        'appendChild' in args[0]
         ? args.shift()
         : null
       : null;
@@ -52,7 +57,11 @@ else */ if(text) svg.innerHTML = innerHTML;
         return (to || parent).appendChild(elem);
       },
       setattr(elem, name, value) {
-        name != 'ns' && elem.setAttributeNS(document.namespaceURI, /*Util.decamelize*/ name, value);
+        name != 'ns' &&
+          elem.setAttributeNS(document.namespaceURI,
+            /*Util.decamelize*/ name,
+            value
+          );
       },
       setcss(elem, css) {
         delegate.setattr(elem, 'style', css);
@@ -71,7 +80,10 @@ else */ if(text) svg.innerHTML = innerHTML;
           return getRoot();
         }
       };
-    } else if(parent && parent.tagName && parent.tagName.toLowerCase() == 'svg') {
+    } else if(parent &&
+      parent.tagName &&
+      parent.tagName.toLowerCase() == 'svg'
+    ) {
       delegate.root = parent;
     } else if(this !== SVG && this && this.appendChild) {
       delegate.root = this;
@@ -108,7 +120,8 @@ else */ if(text) svg.innerHTML = innerHTML;
       const create = (tag, attr, parent) => {
         let e = delegate.create(tag);
         //    console.debug('SVG.factory create', tag, attr, parent);
-        for(let a in attr) if(attr[a] !== undefined) delegate.setattr(e, a, attr[a]);
+        for(let a in attr)
+          if(attr[a] !== undefined) delegate.setattr(e, a, attr[a]);
         delegate.append_to.call(delegate, e, parent);
         return e;
       };
@@ -116,7 +129,8 @@ else */ if(text) svg.innerHTML = innerHTML;
       children = children ? children : [];
       //  console.log('SVG.factory children =', children);
       for(let child of children) {
-        if(typeof child == 'string') delegate.append_to(document.createTextNode(child), elem);
+        if(typeof child == 'string')
+          delegate.append_to(document.createTextNode(child), elem);
         else factory.apply({ ...delegate, root: elem }, child);
       }
       if(tag == 'svg') delegate.root = elem;
@@ -166,8 +180,13 @@ else */ if(text) svg.innerHTML = innerHTML;
     return null;
   }
 
-  static bbox(element, options = { parent: null, absolute: false, client: false, screen: false }) {
-    let e = typeof element === 'string' ? Element.find(element, options.parent) : element;
+  static bbox(element,
+    options = { parent: null, absolute: false, client: false, screen: false }
+  ) {
+    let e =
+      typeof element === 'string'
+        ? Element.find(element, options.parent)
+        : element;
     let bb;
     if(Util.isObject(e)) {
       if(options.client && e.getBoundingClientRect) {
@@ -191,7 +210,9 @@ else */ if(text) svg.innerHTML = innerHTML;
     return bb;
   }
 
-  static gradient(type, { stops, factory = SVG.create, parent = null, line = false, ...props }) {
+  static gradient(type,
+    { stops, factory = SVG.create, parent = null, line = false, ...props }
+  ) {
     let defs = factory('defs', {}, parent);
     const map = new Map(stops instanceof Array ? stops : Object.entries(stops));
 
@@ -207,7 +228,9 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     map.forEach((color, o) => {
       //console.log('color:' + color + ' o:' + o);
-      factory('stop', { offset: Math.round(o * 100) + '%', stopColor: color }, grad);
+      factory('stop', { offset: Math.round(o * 100) + '%', stopColor: color },
+        grad
+      );
     });
 
     return grad;
@@ -230,7 +253,8 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static getProperty(elem, name) {
-    if(!elem.style[name] && elem.hasAttribute(name)) return elem.getAttribute(name);
+    if(!elem.style[name] && elem.hasAttribute(name))
+      return elem.getAttribute(name);
     let props = window.getComputedStyle(elem);
     return props[name];
   }
@@ -254,7 +278,8 @@ else */ if(text) svg.innerHTML = innerHTML;
 
       const value = {
         item,
-        props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }),
+        props: a.reduce((acc, [name, value]) =>
+            /#/.test(value) ? acc : { ...acc, [name]: value },
           {}
         )
       };
@@ -272,7 +297,10 @@ else */ if(text) svg.innerHTML = innerHTML;
       for(let prop in props) addColor(props[prop], item, prop);
     }
 
-    let list = [...map.keys()].map(color => ({ color, elements: map.get(color) }));
+    let list = [...map.keys()].map(color => ({
+      color,
+      elements: map.get(color)
+    }));
     return {
       list,
       get colors() {
@@ -284,7 +312,11 @@ else */ if(text) svg.innerHTML = innerHTML;
           : this.list.findIndex(item => item.color === name);
       },
       name(i) {
-        return typeof i == 'number' ? this.list[i].name : typeof i == 'string' ? i : null;
+        return typeof i == 'number'
+          ? this.list[i].name
+          : typeof i == 'string'
+          ? i
+          : null;
       },
       get(arg) {
         return this.list[arg] || this.list.find(item => item.color == arg);
@@ -296,7 +328,10 @@ else */ if(text) svg.innerHTML = innerHTML;
       dump() {
         for(let i = 0; i < this.list.length; i++) {
           const { color, elements } = this.list[i];
-          console.log(`${i}: %c    %c ${color}`, `background: ${color};`, `background: none`);
+          console.log(`${i}: %c    %c ${color}`,
+            `background: ${color};`,
+            `background: none`
+          );
         }
         return this;
       },
@@ -383,7 +418,8 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static *pathIterator(e, opts, fn = p => p) {
-    let { numPoints, step } = typeof opts == 'number' ? { numPoints: opts } : opts || {};
+    let { numPoints, step } =
+      typeof opts == 'number' ? { numPoints: opts } : opts || {};
     if(typeof e == 'string') e = Element.find(e);
     let len = e.getTotalLength();
     let pos;
@@ -405,7 +441,9 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     let do_point = point => {
       const { x, y, slope, next, prev, i, isin } = point;
-      let d = (point.distance = slope ? Point.distance(slope) : Number.POSITIVE_INFINITY);
+      let d = (point.distance = slope
+        ? Point.distance(slope)
+        : Number.POSITIVE_INFINITY);
       point.angle = slope ? slope.toAngle(true) : NaN;
       point.move = !isin.stroke || Math.abs(d - step) > step / 100;
       point.ok = point.move || prev.angle != point.angle;
@@ -438,7 +476,12 @@ else */ if(text) svg.innerHTML = innerHTML;
         }
       };
       p = new Point(point);
-      Object.assign(p, { slope: prev ? Point.diff(prev, p) : null, prev, i, isin });
+      Object.assign(p, {
+        slope: prev ? Point.diff(prev, p) : null,
+        prev,
+        i,
+        isin
+      });
       y = do_point(p);
       if(prev) prev.next = y;
 
@@ -480,7 +523,10 @@ else */ if(text) svg.innerHTML = innerHTML;
     };
     let data = new SvgPath();
 
-    if(typeof path != 'string' && Util.isObject(path) && typeof path.getAttribute == 'function')
+    if(typeof path != 'string' &&
+      Util.isObject(path) &&
+      typeof path.getAttribute == 'function'
+    )
       path = path.getAttribute('d');
 
     path.replace(segment, (_, command, args) => {
@@ -511,13 +557,17 @@ else */ if(text) svg.innerHTML = innerHTML;
     if(typeof element == 'string') element = Element.find(element);
     if(element.ownerSVGElement) element = element.ownerSVGElement;
     let vbattr;
-    if(rect) element.setAttribute('viewBox', 'toString' in rect ? rect.toString() : rect);
+    if(rect)
+      element.setAttribute('viewBox',
+        'toString' in rect ? rect.toString() : rect
+      );
     vbattr = Element.attr(element, 'viewBox');
     return new Rect(vbattr.split(/\s+/g).map(parseFloat));
   }
 
   static splitPath(path) {
-    if(isElement(path) && typeof path.getAttribute == 'function') path = path.getAttribute('d');
+    if(isElement(path) && typeof path.getAttribute == 'function')
+      path = path.getAttribute('d');
     else if(Util.isObject(path) && 'd' in path) path = path.d;
     let ret = [...(path + '').matchAll(/([A-Za-z])([^A-Za-z]*)/g)];
     ret = ret.map(command => [...command].slice(1));

@@ -350,7 +350,8 @@ let shaderMask = {
 };
 
 //Fragment shader source
-WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMask) {
+WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMask
+) {
   let fsSource = [
     '#ifdef GL_ES',
     'precision highp float;',
@@ -385,7 +386,9 @@ WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMa
   return fsSource;
 };
 
-WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDepth, sMask) {
+WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDepth,
+  sMask
+) {
   let w = 2 / this.canvas.width,
     h = -2 / this.canvas.height;
 
@@ -404,7 +407,11 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDe
 
     'varying vec4 vColor;',
 
-    'const mat4 pMatrix = mat4(' + w + ',0,0,0, 0,' + h + ',0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);',
+    'const mat4 pMatrix = mat4(' +
+      w +
+      ',0,0,0, 0,' +
+      h +
+      ',0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);',
 
     'mat3 crunchStack(void) {',
     'mat3 result = uTransforms[0];',
@@ -427,7 +434,9 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDe
 };
 
 //Initialize fragment and vertex shaders
-WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask) {
+WebGL2D.prototype.initShaders = function initShaders(transformStackDepth,
+  sMask
+) {
   let gl = this.gl;
 
   transformStackDepth = transformStackDepth || 1;
@@ -453,7 +462,9 @@ WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask)
   }
 
   let vs = (this.vs = gl.createShader(gl.VERTEX_SHADER));
-  gl.shaderSource(this.vs, this.getVertexShaderSource(transformStackDepth, sMask));
+  gl.shaderSource(this.vs,
+    this.getVertexShaderSource(transformStackDepth, sMask)
+  );
   gl.compileShader(this.vs);
 
   if(!gl.getShaderParameter(this.vs, gl.COMPILE_STATUS)) {
@@ -472,16 +483,22 @@ WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask)
 
   gl.useProgram(shaderProgram);
 
-  shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+  shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram,
+    'aVertexPosition'
+  );
   gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
   shaderProgram.uColor = gl.getUniformLocation(shaderProgram, 'uColor');
   shaderProgram.uSampler = gl.getUniformLocation(shaderProgram, 'uSampler');
-  shaderProgram.uCropSource = gl.getUniformLocation(shaderProgram, 'uCropSource');
+  shaderProgram.uCropSource = gl.getUniformLocation(shaderProgram,
+    'uCropSource'
+  );
 
   shaderProgram.uTransforms = [];
   for(let i = 0; i < transformStackDepth; ++i) {
-    shaderProgram.uTransforms[i] = gl.getUniformLocation(shaderProgram, 'uTransforms[' + i + ']');
+    shaderProgram.uTransforms[i] = gl.getUniformLocation(shaderProgram,
+      'uTransforms[' + i + ']'
+    );
   } //for
   this.shaderPool[transformStackDepth][sMask] = shaderProgram;
   return shaderProgram;
@@ -495,7 +512,24 @@ let pathVertexPositionBuffer;
 let pathVertexColorBuffer;
 
 //2D Vertices and Texture UV coords
-let rectVerts = new Float32Array([0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0]);
+let rectVerts = new Float32Array([
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  0,
+  1,
+  0
+]);
 
 WebGL2D.prototype.initBuffers = function initBuffers() {
   let gl = this.gl;
@@ -582,7 +616,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     if((match = reRGBAColor.exec(value))) {
       (hasAlpha = match[1]), (alphaChannel = parseFloat(match[8]));
 
-      if((hasAlpha && isNaN(alphaChannel)) || (!hasAlpha && !isNaN(alphaChannel))) {
+      if((hasAlpha && isNaN(alphaChannel)) ||
+        (!hasAlpha && !isNaN(alphaChannel))
+      ) {
         return false;
       }
 
@@ -624,7 +660,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
         1.0
       ];
     } else if((match = reHex3Color.exec(value))) {
-      let hexString = '#' + [match[1], match[1], match[2], match[2], match[3], match[3]].join('');
+      let hexString =
+        '#' +
+        [match[1], match[1], match[2], match[2], match[3], match[3]].join('');
       result = colorStringToVec4(hexString);
     } else if(value.toLowerCase() in colorKeywords) {
       result = colorStringToVec4(colorKeywords[value.toLowerCase()]);
@@ -1119,7 +1157,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     let shaderProgram = gl2d.initShaders(transform.c_stack + 2, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+      4,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     transform.pushMatrix();
 
@@ -1145,7 +1189,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     let shaderProgram = gl2d.initShaders(transform.c_stack + 2, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+      4,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     transform.pushMatrix();
 
@@ -1236,7 +1286,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl.bindBuffer(gl.ARRAY_BUFFER, pathVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+      4,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     transform.pushMatrix();
 
@@ -1270,7 +1326,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl.bindBuffer(gl.ARRAY_BUFFER, pathVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+      4,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     transform.pushMatrix();
 
@@ -1315,15 +1377,28 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     //we may wish to consider tiling large images like this instead of scaling and
     //adjust appropriately (flip to next texture source and tile offset) when drawing
-    if(image.width > gl2d.maxTextureSize || image.height > gl2d.maxTextureSize) {
+    if(image.width > gl2d.maxTextureSize ||
+      image.height > gl2d.maxTextureSize
+    ) {
       let canvas = document.createElement('canvas');
 
-      canvas.width = image.width > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.width;
-      canvas.height = image.height > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.height;
+      canvas.width =
+        image.width > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.width;
+      canvas.height =
+        image.height > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.height;
 
       let ctx = canvas.getContext('2d');
 
-      ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image,
+        0,
+        0,
+        image.width,
+        image.height,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
       image = canvas;
     }
@@ -1336,7 +1411,10 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     //Enable Mip mapping on power-of-2 textures
     if(isPOT(image.width) && isPOT(image.height)) {
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D,
+        gl.TEXTURE_MIN_FILTER,
+        gl.LINEAR_MIPMAP_LINEAR
+      );
       gl.generateMipmap(gl.TEXTURE_2D);
     } else {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -1395,7 +1473,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+      4,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     gl.bindTexture(gl.TEXTURE_2D, texture.obj);
     gl.activeTexture(gl.TEXTURE0);
@@ -1478,7 +1562,9 @@ export const crosskit = {
     }
 
     if(renderer == SVG) {
-      cakecanvas = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      cakecanvas = document.createElementNS('http://www.w3.org/2000/svg',
+        'svg'
+      );
       cakecanvas.setAttribute('width', v.w);
       cakecanvas.setAttribute('height', v.h);
       body.appendChild(cakecanvas);
@@ -1536,28 +1622,51 @@ export const crosskit = {
       if(v.pos1[1] > biggest_y) biggest_y = v.pos1[1];
       if(v.pos2[0] > biggest_x) biggest_x = v.pos2[0];
       if(v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
-      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x1', v.pos1[0].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y1', v.pos1[1].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x2', v.pos2[0].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y2', v.pos2[1].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line')
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x1',
+        v.pos1[0].toString()
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y1',
+        v.pos1[1].toString()
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x2',
+        v.pos2[0].toString()
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y2',
+        v.pos2[1].toString()
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke',
+        v.stroke
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth =
+        v.line_width;
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
     //And Sorry,Drawing Lines And Anything Related-To Polygons
     //Including Triangles And Polygons Are Not Supported In DOM
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('x1', v.pos1[0].toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('y1', v.pos1[1].toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('x2', v.pos2[0].toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('y2', v.pos2[1].toString());
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line')
+      );
+      svg_shapes[svg_shapes.length - 1].setAttribute('x1',
+        v.pos1[0].toString()
+      );
+      svg_shapes[svg_shapes.length - 1].setAttribute('y1',
+        v.pos1[1].toString()
+      );
+      svg_shapes[svg_shapes.length - 1].setAttribute('x2',
+        v.pos2[0].toString()
+      );
+      svg_shapes[svg_shapes.length - 1].setAttribute('y2',
+        v.pos2[1].toString()
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1578,7 +1687,11 @@ export const crosskit = {
         cakepen.lineTo(v.x + v.w - v.r, v.y);
         cakepen.quadraticCurveTo(v.x + v.w, v.y, v.x + v.w, v.y + v.r);
         cakepen.lineTo(v.x + v.w, v.y + v.h - v.r);
-        cakepen.quadraticCurveTo(v.x + v.w, v.y + v.h, v.x + v.w - v.r, v.y + v.h);
+        cakepen.quadraticCurveTo(v.x + v.w,
+          v.y + v.h,
+          v.x + v.w - v.r,
+          v.y + v.h
+        );
         cakepen.lineTo(v.x + v.r, v.y + v.h);
         cakepen.quadraticCurveTo(v.x, v.y + v.h, v.x, v.y + v.h - v.r);
         cakepen.lineTo(v.x, v.y + v.r);
@@ -1594,7 +1707,8 @@ export const crosskit = {
     if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border =
+        '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.w + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.h + 'px';
@@ -1602,12 +1716,14 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.left = v.x + 'px';
       dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
@@ -1616,7 +1732,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1635,26 +1752,30 @@ export const crosskit = {
     if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border =
+        '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.size / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.size / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size * 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.size);
       svg_shapes[svg_shapes.length - 1].setAttribute('height', v.size);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1677,19 +1798,22 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.height = '1px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y + '1px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x + '1px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', 1);
       svg_shapes[svg_shapes.length - 1].setAttribute('height', 1);
       svg_shapes[svg_shapes.length - 1].setAttribute('color', v.color);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1705,7 +1829,11 @@ export const crosskit = {
       cakepen.lineTo(v.x + v.w - v.r, v.y);
       cakepen.quadraticCurveTo(v.x + v.w, v.y, v.x + v.w, v.y + v.r);
       cakepen.lineTo(v.x + v.w, v.y + v.h - v.r);
-      cakepen.quadraticCurveTo(v.x + v.w, v.y + v.h, v.x + v.w - v.r, v.y + v.h);
+      cakepen.quadraticCurveTo(v.x + v.w,
+        v.y + v.h,
+        v.x + v.w - v.r,
+        v.y + v.h
+      );
       cakepen.lineTo(v.x + v.r, v.y + v.h);
       cakepen.quadraticCurveTo(v.x, v.y + v.h, v.x, v.y + v.h - v.r);
       cakepen.lineTo(v.x, v.y + v.r);
@@ -1720,20 +1848,23 @@ export const crosskit = {
     if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border =
+        '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.w / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.h / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h * 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
@@ -1742,7 +1873,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1759,7 +1891,11 @@ export const crosskit = {
         x1 = v.r * Math.cos((angle * Math.PI) / 180);
         y1 = v.r * Math.sin((angle * Math.PI) / 180);
         cakepen.fillRect(v.x + x1 + v.r, v.y + y1 + v.r, v.r * 1.5, v.r * 1.5);
-        cakepen.strokeRect(v.x + x1 + v.r, v.y + y1 + v.r, v.r * 1.5, v.r * 1.5);
+        cakepen.strokeRect(v.x + x1 + v.r,
+          v.y + y1 + v.r,
+          v.r * 1.5,
+          v.r * 1.5
+        );
       }
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
@@ -1783,26 +1919,30 @@ export const crosskit = {
     if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border =
+        '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.r * 1.85 + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.r * 1.85 + 'px';
       dom_shapes[dom_shapes.length - 1].style.borderRadius = '50%';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.r + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'circle'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('cx', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('cy', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('r', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1857,12 +1997,14 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h / 60 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w / 60 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'image'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'image')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('href', v.img);
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
@@ -1870,7 +2012,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
       svg_shapes[svg_shapes.length - 1].setAttribute('height', v.h);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1898,20 +2041,23 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.color = v.fill;
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'text'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'text')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].innerHTML = v.txt;
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.fontFamily = v.font;
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       svg_shapes[svg_shapes.length - 1].style.fontSize = v.size + 'px';
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
@@ -1942,7 +2088,8 @@ export const crosskit = {
       if(v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
       if(v.pos3[0] > biggest_x) biggest_x = v.pos3[0];
       if(v.pos3[1] > biggest_y) biggest_y = v.pos3[1];
-      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
+      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+      );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points',
         (
           v.pos1[0] +
@@ -1963,14 +2110,19 @@ export const crosskit = {
         ).toString()
       );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke',
+        v.stroke
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth =
+        v.line_width;
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('points',
         (
           v.pos1[0] +
@@ -1993,7 +2145,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -2006,7 +2159,8 @@ export const crosskit = {
       cakepen.rotate(v.angle / 50);
       cakepen.beginPath();
       cakepen.moveTo(v.points[0][0], v.points[0][1]);
-      for(var i = 0; i < v.points.length; i++) cakepen.lineTo(v.points[i][0], v.points[i][1]);
+      for(var i = 0; i < v.points.length; i++)
+        cakepen.lineTo(v.points[i][0], v.points[i][1]);
       cakepen.closePath();
       cakepen.fill();
       cakepen.stroke();
@@ -2021,26 +2175,34 @@ export const crosskit = {
         if(v.points[i][1] > biggest_y) biggest_y = v.points[i][1];
         domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
       }
-      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
+      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+      );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points',
         domvg_polygon_points.toString()
       );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke',
+        v.stroke
+      );
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+      );
       domvg_polygon_points = '';
       domvg_polygon_points += v.points[0][0] + ',' + v.points[0][1] + ' ';
       for(var i = 0; i < v.points.length; i++)
         domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
-      svg_shapes[svg_shapes.length - 1].setAttribute('points', domvg_polygon_points.toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute('points',
+        domvg_polygon_points.toString()
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform =
+        'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -2072,7 +2234,11 @@ export const crosskit = {
     }
   },
   bgcolor(c) {
-    if(renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM)
+    if(renderer == CANVAS ||
+      renderer == WEBGL ||
+      renderer == SVG ||
+      renderer == DOM
+    )
       cakecanvas.style.backgroundColor = c;
     if(renderer == DOM) svg_board.style.backgroundColor = c;
   },
@@ -2084,7 +2250,8 @@ export const crosskit = {
     if(renderer == CANVAS || renderer == WEBGL || renderer == DOM)
       window.requestAnimationFrame(v.frame);
     if(renderer == SVG) {
-      svg_anims.push(document.createElementNS('http://www.w3.org/2000/svg', 'animate'));
+      svg_anims.push(document.createElementNS('http://www.w3.org/2000/svg', 'animate')
+      );
       svg_anims[svg_anims.length - 1].setAttribute('attributeType', 'XML');
       svg_anims[svg_anims.length - 1].setAttribute('attributeName', v.attr);
       svg_anims[svg_anims.length - 1].setAttribute('dur', v.dur + 's');
@@ -2092,10 +2259,14 @@ export const crosskit = {
       svg_anims[svg_anims.length - 1].setAttribute('from', v.from);
       svg_anims[svg_anims.length - 1].setAttribute('repeatCount', v.loop_num);
       svg_anims[svg_anims.length - 1].setAttribute('repeatDur', v.loop_dur);
-      svg_anims[svg_anims.length - 1].anim_id = 'animation-' + svg_anims[svg_anims.length - 1];
-      svg_anims[svg_anims.length - 1].setAttribute('id', svg_anims[svg_anims.length - 1].anim_id);
+      svg_anims[svg_anims.length - 1].anim_id =
+        'animation-' + svg_anims[svg_anims.length - 1];
+      svg_anims[svg_anims.length - 1].setAttribute('id',
+        svg_anims[svg_anims.length - 1].anim_id
+      );
       let svg_obj = svg_shapes[v.index];
-      let prev_anim = document.getElementById(svg_anims[svg_anims.length - 1].anim_id);
+      let prev_anim = document.getElementById(svg_anims[svg_anims.length - 1].anim_id
+      );
       if(prev_anim != null) svg_obj.removeChild(prev_anim);
       svg_obj.appendChild(svg_anims[svg_anims.length - 1]);
     }
@@ -2110,9 +2281,13 @@ export const crosskit = {
     return window.update(f, t);
   },
   pause(v) {
-    if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
+    if(v.interval == undefined &&
+      (renderer == DOM || renderer == CANVAS || renderer == WEBGL)
+    )
       window.cancelAnimationFrame(v.frame);
-    if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
+    if(!(v.interval == undefined) &&
+      (renderer == DOM || renderer == CANVAS || renderer == WEBGL)
+    )
       window.clearInterval(v.interval);
   }
 };
@@ -2129,6 +2304,8 @@ let hsla = function(v) {
   return 'hsla(' + v.h + ',' + v.s + ',' + v.l + ',' + v.a + ')';
 };
 window.addEventListener('keypress', e => {
-  if(e.key == 'f' && !window.fullscreen) document.documentElement.requestFullscreen();
-  if(e.key == 'f' && window.fullscreen) document.documentElement.exitFullscreen();
+  if(e.key == 'f' && !window.fullscreen)
+    document.documentElement.requestFullscreen();
+  if(e.key == 'f' && window.fullscreen)
+    document.documentElement.exitFullscreen();
 });

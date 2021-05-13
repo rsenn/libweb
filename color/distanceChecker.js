@@ -4,13 +4,22 @@
  * - https://en.wikipedia.org/wiki/Color_difference
  */
 
-const extractHashSign = hex => (hex.charAt(0) === '#' ? hex.substring(1, 7) : hex);
+const extractHashSign = hex =>
+  hex.charAt(0) === '#' ? hex.substring(1, 7) : hex;
 const generateRGB = color => {
-  if(typeof color == 'object' && color !== null && 'r' in color && 'g' in color && 'b' in color)
+  if(typeof color == 'object' &&
+    color !== null &&
+    'r' in color &&
+    'g' in color &&
+    'b' in color
+  )
     return color;
   const hex = extractHashSign(color);
 
-  const rgb = hex.length === 3 ? [...hex].reduce((total, char) => `${total}${char}${char}`) : hex;
+  const rgb =
+    hex.length === 3
+      ? [...hex].reduce((total, char) => `${total}${char}${char}`)
+      : hex;
 
   return {
     r: parseInt(rgb.substring(0, 2), 16),

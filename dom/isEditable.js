@@ -1,5 +1,7 @@
 export default function(element) {
-  if(element.ownerDocument.designMode && element.ownerDocument.designMode.toLowerCase() === 'on') {
+  if(element.ownerDocument.designMode &&
+    element.ownerDocument.designMode.toLowerCase() === 'on'
+  ) {
     return true;
   }
 
@@ -18,7 +20,9 @@ export default function(element) {
 }
 
 function isContentEditable(element) {
-  if(element.contentEditable && element.contentEditable.toLowerCase() === 'true') {
+  if(element.contentEditable &&
+    element.contentEditable.toLowerCase() === 'true'
+  ) {
     return true;
   }
   if(element.contentEditable &&

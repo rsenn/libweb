@@ -29,7 +29,10 @@ let setValues = function hashMapSetValues(HashMap, values) {
       }
     }
   },
-  defineArrayProperty = function hashMapDefineArrayProperty(obj, property_name) {
+  defineArrayProperty = function hashMapDefineArrayProperty(
+    obj,
+    property_name
+  ) {
     Object.defineProperty(obj, property_name, {
       value: [],
       writable: false,

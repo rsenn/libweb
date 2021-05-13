@@ -187,7 +187,8 @@ WeakEventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
     i;
 
   if(listeners.fn) {
-    if(listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+    if(listeners.once)
+      this.removeListener(event, listeners.fn, undefined, true);
 
     switch (len) {
       case 1:
@@ -214,7 +215,8 @@ WeakEventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
       j;
 
     for(i = 0; i < length; i++) {
-      if(listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+      if(listeners[i].once)
+        this.removeListener(event, listeners[i].fn, undefined, true);
 
       switch (len) {
         case 1:
@@ -278,7 +280,11 @@ WeakEventEmitter.prototype.once = function once(event, fn, context) {
  * @returns {WeakEventEmitter} `this`.
  * @public
  */
-WeakEventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+WeakEventEmitter.prototype.removeListener = function removeListener(event,
+  fn,
+  context,
+  once
+) {
   let evt = prefix ? prefix + event : event;
 
   var _events = this._weakMap.get(this);
@@ -325,7 +331,8 @@ WeakEventEmitter.prototype.removeListener = function removeListener(event, fn, c
  * @returns {WeakEventEmitter} `this`.
  * @public
  */
-WeakEventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+WeakEventEmitter.prototype.removeAllListeners = function removeAllListeners(event
+) {
   let evt;
 
   if(event) {

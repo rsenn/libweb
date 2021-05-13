@@ -35,7 +35,9 @@ export class EagleReference {
     let r;
     try {
       r =
-        (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) ||
+        (Util.isObject(root) &&
+          'owner' in root &&
+          path.apply(root.owner, true)) ||
         path.apply(root);
     } catch(err) {
       if(!noThrow) throw err;

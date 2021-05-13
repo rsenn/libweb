@@ -4,7 +4,10 @@ import { isPoint } from './point.js';
 export function Size(arg) {
   let obj = this instanceof Size ? this : {};
   let args = [...arguments];
-  if(args.length == 1 && Util.isObject(args[0]) && args[0].length !== undefined) {
+  if(args.length == 1 &&
+    Util.isObject(args[0]) &&
+    args[0].length !== undefined
+  ) {
     args = args[0];
     arg = args[0];
   }
@@ -23,7 +26,9 @@ export function Size(arg) {
       obj.height = arg.bottom - arg.top;
     }
   } else {
-    while(typeof arg == 'object' && (arg instanceof Array || 'length' in arg)) {
+    while(typeof arg == 'object' &&
+      (arg instanceof Array || 'length' in arg)
+    ) {
       args = [...arg];
       arg = args[0];
     }
@@ -32,8 +37,10 @@ export function Size(arg) {
       let h = args.shift();
       if(typeof w == 'object' && 'baseVal' in w) w = w.baseVal.value;
       if(typeof h == 'object' && 'baseVal' in h) h = h.baseVal.value;
-      obj.width = typeof w == 'number' ? w : parseFloat(w.replace(/[^-.0-9]*$/, ''));
-      obj.height = typeof h == 'number' ? h : parseFloat(h.replace(/[^-.0-9]*$/, ''));
+      obj.width =
+        typeof w == 'number' ? w : parseFloat(w.replace(/[^-.0-9]*$/, ''));
+      obj.height =
+        typeof h == 'number' ? h : parseFloat(h.replace(/[^-.0-9]*$/, ''));
       Object.defineProperty(obj, 'units', {
         value: {
           width: typeof w == 'number' ? 'px' : w.replace(obj.width.toString(), ''),
@@ -56,7 +63,8 @@ Size.prototype.width = NaN;
 Size.prototype.height = NaN;
 Size.prototype.units = null;
 
-Size.prototype.convertUnits = function(w = 'window' in global ? window : null) {
+Size.prototype.convertUnits = function(w = 'window' in global ? window : null
+) {
   if(w === null) return this;
   const view = {
     vw: w.innerWidth,
@@ -85,7 +93,8 @@ Size.prototype.toCSS = function(units) {
       ? { width: units, height: units }
       : units || this.units || { width: 'px', height: 'px' };
   if(this.width !== undefined) ret.width = this.width + (units.width || 'px');
-  if(this.height !== undefined) ret.height = this.height + (units.height || 'px');
+  if(this.height !== undefined)
+    ret.height = this.height + (units.height || 'px');
   return ret;
 };
 Size.prototype.transform = function(m) {
@@ -146,7 +155,11 @@ Size.prototype.prod = function(...args) {
 };
 Size.prototype.mul = function(...args) {
   for(let f of getOther(args)) {
-    const o = isSize(f) ? f : isPoint(f) ? { width: f.x, height: f.y } : { width: f, height: f };
+    const o = isSize(f)
+      ? f
+      : isPoint(f)
+      ? { width: f.x, height: f.y }
+      : { width: f, height: f };
     this.width *= o.width;
     this.height *= o.height;
   }
@@ -172,8 +185,14 @@ Size.prototype.round = function(precision = 1, digits, type) {
   return this;
 };
 Size.prototype.bounds = function(other) {
-  let w = [Math.min(this.width, other.width), Math.max(this.width, other.width)];
-  let h = [Math.min(this.height, other.height), Math.max(this.height, other.height)];
+  let w = [
+    Math.min(this.width, other.width),
+    Math.max(this.width, other.width)
+  ];
+  let h = [
+    Math.min(this.height, other.height),
+    Math.max(this.height, other.height)
+  ];
 
   let scale = h / this.height;
   this.mul(scale);
@@ -210,7 +229,9 @@ Size.prototype.fitFactors = function(other) {
 Size.prototype.toString = function(opts = {}) {
   const { unit = '', separator = ' \u2715 ', left = '', right = '' } = opts;
   const { width, height, units = { width: unit, height: unit } } = this;
-  return `${left}${width}${(Util.isObject(units) && units.width) || unit}${separator}${height}${
+  return `${left}${width}${
+    (Util.isObject(units) && units.width) || unit
+  }${separator}${height}${
     (Util.isObject(units) && units.height) || unit
   }${right}`;
 };
@@ -247,12 +268,16 @@ Size.bind = (...args) => {
 
 for(let method of Util.getMethodNames(Size.prototype))
   if(method != 'toString')
-    Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
+    Size[method] = (size, ...args) =>
+      Size.prototype[method].call(size || new Size(size), ...args);
 
 export const isSize = o =>
   o &&
   ((o.width !== undefined && o.height !== undefined) ||
-    (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) ||
+    (o.x !== undefined &&
+      o.x2 !== undefined &&
+      o.y !== undefined &&
+      o.y2 !== undefined) ||
     (o.left !== undefined &&
       o.right !== undefined &&
       o.top !== undefined &&
@@ -271,7 +296,8 @@ for(let name of [
   'quot',
   'div'
 ]) {
-  Size[name] = (size, ...args) => Size.prototype[name].call(size || new Size(size), ...args);
+  Size[name] = (size, ...args) =>
+    Size.prototype[name].call(size || new Size(size), ...args);
 }
 
 Util.defineGetter(Size, Symbol.species, function() {

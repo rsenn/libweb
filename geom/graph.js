@@ -85,8 +85,12 @@ export class Graph {
       return false;
     }
 
-    let node1Matches = this.nodes.filter(node => Point.equals(node.point, node1.point));
-    let node2Matches = this.nodes.filter(node => Point.equals(node.point, node2.point));
+    let node1Matches = this.nodes.filter(node =>
+      Point.equals(node.point, node1.point)
+    );
+    let node2Matches = this.nodes.filter(node =>
+      Point.equals(node.point, node2.point)
+    );
 
     if(node1Matches.length > 1) {
       //Util.log('Too many maches for node 1.  length = ' + node1Matches.length);
@@ -124,7 +128,9 @@ export class Graph {
   }
 
   addNode(newNode) {
-    let duplicateNodes = this.nodes.filter(node => Point.equals(newNode.point, node.point));
+    let duplicateNodes = this.nodes.filter(node =>
+      Point.equals(newNode.point, node.point)
+    );
 
     if(duplicateNodes.length > 1) {
       //Util.log('TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING');
@@ -143,9 +149,14 @@ export class Graph {
       let path = [adjacencyListSourceIndex];
       let startingNeighborIndex = neighbors[i];
       let tmpAdjacencyList = { ...adjacencyList };
-      tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(nodeIndex => nodeIndex !== adjacencyListSourceIndex
-      );
-      path = path.concat(Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, adjacencyListSourceIndex)
+      tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[
+        startingNeighborIndex
+      ].filter(nodeIndex => nodeIndex !== adjacencyListSourceIndex);
+      path = path.concat(Graph.findShortestPath(
+          tmpAdjacencyList,
+          startingNeighborIndex,
+          adjacencyListSourceIndex
+        )
       );
       paths.push(path);
     }
@@ -163,8 +174,9 @@ export class Graph {
     let cyclesToRemove = [];
     let uniqueCycles = [];
     for(let i = 0; i < cycles.length; i++) {
-      if(uniqueCycles.filter(cycle => Graph.doArraysContainSameElements(cycle, cycles[i])).length ===
-        0
+      if(uniqueCycles.filter(cycle =>
+          Graph.doArraysContainSameElements(cycle, cycles[i])
+        ).length === 0
       ) {
         uniqueCycles.push(cycles[i]);
       }
@@ -242,17 +254,20 @@ export class Graph {
           let path = [i];
           let startingNeighborIndex = neighbors[j];
           let tmpAdjacencyList = { ...leftoverAdjacencyList };
-          tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(nodeIndex => nodeIndex !== i
+          tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[
+            startingNeighborIndex
+          ].filter(nodeIndex => nodeIndex !== i);
+          path = path.concat(Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, i)
           );
-          path = path.concat(Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, i));
           extraPaths.push(path);
         }
       }
     }
     let leftoverCycles = [];
     for(let i = 0; i < extraPaths.length; i++) {
-      if(leftoverCycles.filter(cycle => Graph.doArraysContainSameElements(cycle, extraPaths[i]))
-          .length === 0
+      if(leftoverCycles.filter(cycle =>
+          Graph.doArraysContainSameElements(cycle, extraPaths[i])
+        ).length === 0
       ) {
         leftoverCycles.push(extraPaths[i]);
       }
@@ -340,8 +355,10 @@ Graph.Connection = class {
   }
 
   equals(connection) {
-    return ((this.node1.equals(connection.node1) && this.node2.equals(connection.node2)) ||
-      (this.node2.equals(connection.node1) && this.node1.equals(connection.node2))
+    return ((this.node1.equals(connection.node1) &&
+        this.node2.equals(connection.node2)) ||
+      (this.node2.equals(connection.node1) &&
+        this.node1.equals(connection.node2))
     );
   }
 };

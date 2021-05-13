@@ -20,8 +20,10 @@ export function TRBL(arg) {
   } else if(arg) {
     if(args.length > 1) arg = args;
 
-    if(typeof arg === 'string') arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
-    else if(arg.length == 4) arg = arg.map(v => parseInt(v.replace(/[a-z]*$/g, '')));
+    if(typeof arg === 'string')
+      arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
+    else if(arg.length == 4)
+      arg = arg.map(v => parseInt(v.replace(/[a-z]*$/g, '')));
 
     ret.top = arg[0];
     ret.right = arg[1];
@@ -56,7 +58,11 @@ TRBL.neg = (trbl = this) => ({
 });
 
 TRBL.prototype.isNaN = function() {
-  return isNaN(this.top) || isNaN(this.right) || isNaN(this.bottom) || isNaN(this.left);
+  return (isNaN(this.top) ||
+    isNaN(this.right) ||
+    isNaN(this.bottom) ||
+    isNaN(this.left)
+  );
 };
 Object.defineProperty(TRBL.prototype, 'inset', {
   get() {
@@ -112,7 +118,8 @@ TRBL.union = (trbl, other) => ({
   left: other.left < trbl.left ? other.left : trbl.left
 });
 
-TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
+TRBL.toRect = trbl =>
+  new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
 TRBL.prototype.toString = function(unit = 'px') {
   return ('' +

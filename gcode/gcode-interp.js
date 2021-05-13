@@ -31,7 +31,9 @@ function G0(prevState, nextState, command, args, i) {
           nextState.fp = 0;
         }
         break;
-      default: throw new Error('error I do not understand this arguement' + '<' + arg + '>');
+      default: throw new Error(
+          'error I do not understand this arguement' + '<' + arg + '>'
+        );
         break;
     }
   }
@@ -56,7 +58,9 @@ function G92(prevState, nextState, command, args) {
         case 'e':
           nextState.erel = prevState.e - parseFloat(args[j].slice(1));
           break;
-        default: throw new Error('error I do not understand this arguement' + '<' + args[j] + '>');
+        default: throw new Error(
+            'error I do not understand this arguement' + '<' + args[j] + '>'
+          );
           break;
       }
     }
@@ -76,7 +80,8 @@ function G04(prevState, nextState, command, args) {
 function G90(prevState, nextState, command, args) {
   // Milling: Absolute programming
   // else: Fixed cycle, simple cycle, for roughing (Z-axis emphasis)
-  console.info('Absolute programming /  Fixed cycle, simple cycle, for roughing (Z-axis emphasis)');
+  console.info('Absolute programming /  Fixed cycle, simple cycle, for roughing (Z-axis emphasis)'
+  );
   console.log(`#${this.i}: cmd:`,
     command,
     ' args:',

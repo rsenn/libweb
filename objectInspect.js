@@ -26,18 +26,24 @@ const booleanValueOf = Boolean.prototype.valueOf;
 const objectToString = Object.prototype.toString;
 const functionToString = Function.prototype.toString;
 const match = String.prototype.match;
-const bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
+const bigIntValueOf =
+  typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
 const gOPS = Object.getOwnPropertySymbols;
-const symToString = typeof Symbol === 'function' ? Symbol.prototype.toString : null;
+const symToString =
+  typeof Symbol === 'function' ? Symbol.prototype.toString : null;
 const isEnumerable = Object.prototype.propertyIsEnumerable;
 
 const inspectCustom = ['inspect', Symbol.for('nodejs.util.inspect.custom')];
-const inspectSymbol = inspectCustom && inspectCustom.every(s => isSymbol(s)) ? inspectCustom : null;
+const inspectSymbol =
+  inspectCustom && inspectCustom.every(s => isSymbol(s)) ? inspectCustom : null;
 
 export function ObjectInspect(obj, options, depth, seen) {
   const opts = options || {};
 
-  if(has(opts, 'quoteStyle') && opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double') {
+  if(has(opts, 'quoteStyle') &&
+    opts.quoteStyle !== 'single' &&
+    opts.quoteStyle !== 'double'
+  ) {
     throw new TypeError('option "quoteStyle" must be "single" or "double"');
   }
   for(let optName of ['maxStringLength', 'maxArrayLength', 'breakLength']) {
@@ -55,7 +61,8 @@ export function ObjectInspect(obj, options, depth, seen) {
   //console.reallog("customInspect:",customInspect);
 
   if(typeof customInspect !== 'boolean') {
-    throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
+    throw new TypeError('option "customInspect", if provided, must be `true` or `false`'
+    );
   }
 
   if(has(opts, 'indent') &&
@@ -63,7 +70,8 @@ export function ObjectInspect(obj, options, depth, seen) {
     opts.indent !== '\t' &&
     !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)
   ) {
-    throw new TypeError('options "indent" must be "\\t", an integer > 0, or `null`');
+    throw new TypeError('options "indent" must be "\\t", an integer > 0, or `null`'
+    );
   }
   //console.reallog('opts.colors', opts.colors);
   // console.reallog("obj:", obj, typeof obj);
@@ -153,7 +161,10 @@ export function ObjectInspect(obj, options, depth, seen) {
     inspectName = inspectCustom.find(n => typeof obj[n] === 'function');
 
     if(inspectName) {
-      let r = obj[inspectName]({ ...opts, depth: depth > 0 ? depth - 1 : depth });
+      let r = obj[inspectName]({
+        ...opts,
+        depth: depth > 0 ? depth - 1 : depth
+      });
       /*  if(typeof r == 'string')*/ {
         s += r;
         return s;
@@ -178,7 +189,11 @@ export function ObjectInspect(obj, options, depth, seen) {
     s += '<' + String(obj.nodeName).toLowerCase();
     const attrs = obj.attributes || [];
     for(let i = 0; i < attrs.length; i++) {
-      s += ' ' + attrs[i].name + '=' + wrapQuotes(quote(attrs[i].value), 'double', opts);
+      s +=
+        ' ' +
+        attrs[i].name +
+        '=' +
+        wrapQuotes(quote(attrs[i].value), 'double', opts);
     }
     s += '>';
     if(obj.childNodes && obj.childNodes.length) {
@@ -226,7 +241,9 @@ export function ObjectInspect(obj, options, depth, seen) {
     });
     let i = 0;
     if(opts.alignMap) {
-      let maxKeyLen = mapKeys.reduce((a, k) => (k.length > a ? k.length : a), 0);
+      let maxKeyLen = mapKeys.reduce((a, k) => (k.length > a ? k.length : a),
+        0
+      );
       mapKeys = mapKeys.map(key => key.padEnd(maxKeyLen));
     }
 
@@ -258,7 +275,8 @@ export function ObjectInspect(obj, options, depth, seen) {
     const proto = Object.getPrototypeOf(obj);
 
     if(proto !== Object.prototype) {
-      const className = proto === null ? `[Object: null prototype]` : nameOf(proto.constructor);
+      const className =
+        proto === null ? `[Object: null prototype]` : nameOf(proto.constructor);
       if(className) s += className + ' ';
     }
     s += '{';
@@ -337,7 +355,8 @@ function isBoolean(obj) {
 function isGenerator(obj) {
   if(toStr(obj) === '[object Generator]') return true;
 
-  if(typeof obj == 'object' && obj != null && typeof obj.next == 'function') return true;
+  if(typeof obj == 'object' && obj != null && typeof obj.next == 'function')
+    return true;
 }
 
 const hasOwn =
@@ -347,7 +366,8 @@ const hasOwn =
   };
 function has(obj, key, opts = {}) {
   const { hideKeys } = opts;
-  return ((obj[key] !== undefined || hasOwn.call(obj, key)) && (!hideKeys || hideKeys.indexOf(key) == -1)
+  return ((obj[key] !== undefined || hasOwn.call(obj, key)) &&
+    (!hideKeys || hideKeys.indexOf(key) == -1)
   );
 }
 
@@ -359,7 +379,9 @@ function nameOf(f) {
   if(typeof f == 'function' && f.name) {
     return f.name;
   }
-  const m = match.call(f + '' /*functionToString.call(f)*/, /^function\s*([\w$]+)/);
+  const m = match.call(f + '' /*functionToString.call(f)*/,
+    /^function\s*([\w$]+)/
+  );
   if(m) {
     return m[1];
   }
@@ -455,7 +477,8 @@ function isElement(x) {
 function inspectString(str, opts) {
   if(str.length > opts.maxStringLength) {
     const remaining = str.length - opts.maxStringLength;
-    const trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
+    const trailer =
+      '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
     return inspectString(str.slice(0, opts.maxStringLength), opts) + trailer;
   }
   //  let s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
@@ -493,7 +516,9 @@ function weakCollectionOf(type) {
 }
 
 function collectionOf(type, size, entries, indent) {
-  const joinedEntries = indent ? indentedJoin(entries, indent) : entries.join(', ');
+  const joinedEntries = indent
+    ? indentedJoin(entries, indent)
+    : entries.join(', ');
   return type + ' (' + size + ') {' + joinedEntries + '}';
 }
 
@@ -525,7 +550,8 @@ function indentedJoin(xs, indent, opts = {}) {
   if(xs.length === 0) {
     return '';
   }
-  if(!(typeof indent == 'object' && indent != null)) indent = { prev: '', base: '' };
+  if(!(typeof indent == 'object' && indent != null))
+    indent = { prev: '', base: '' };
   const c = opts.colors ? wrapColor : s => s;
 
   const lineJoiner = '\n' + indent.prev + indent.base;
@@ -534,10 +560,16 @@ function indentedJoin(xs, indent, opts = {}) {
 
 function arrObjKeys(obj, inspect, opts = {}) {
   const isArr = isArray(obj) || isArrayLike(obj);
-  if(isArr && typeof opts == 'object' && opts != null && obj.length > opts.maxArrayLength) {
+  if(isArr &&
+    typeof opts == 'object' &&
+    opts != null &&
+    obj.length > opts.maxArrayLength
+  ) {
     const remaining = obj.length - opts.maxArrayLength;
-    const trailer = '... ' + remaining + ' more items' + (remaining > 1 ? 's' : '');
-    return arrObjKeys(obj.slice(0, opts.maxArrayLength), inspect, opts) + trailer;
+    const trailer =
+      '... ' + remaining + ' more items' + (remaining > 1 ? 's' : '');
+    return (arrObjKeys(obj.slice(0, opts.maxArrayLength), inspect, opts) + trailer
+    );
   }
   let xs = [];
 
@@ -545,7 +577,8 @@ function arrObjKeys(obj, inspect, opts = {}) {
     xs = new Array(obj.length);
 
     //xs.length = obj.length;
-    for(let i = 0; i < obj.length; i++) xs[i] = /*has(obj, i) ?*/ inspect(obj[i], obj) /* : ''*/;
+    for(let i = 0; i < obj.length; i++)
+      xs[i] = /*has(obj, i) ?*/ inspect(obj[i], obj) /* : ''*/;
   }
   let c = opts.colors ? wrapColor : s => s;
 
@@ -571,7 +604,11 @@ function arrObjKeys(obj, inspect, opts = {}) {
     const syms = gOPS(obj);
     for(let j = 0; j < syms.length; j++) {
       if(isEnumerable.call(obj, syms[j])) {
-        xs.push(c('[', 1, 36) + inspect(syms[j]) + c(']: ', 1, 36) + inspect(obj[syms[j]], obj));
+        xs.push(c('[', 1, 36) +
+            inspect(syms[j]) +
+            c(']: ', 1, 36) +
+            inspect(obj[syms[j]], obj)
+        );
       }
     }
   }

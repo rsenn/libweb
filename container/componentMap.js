@@ -90,7 +90,8 @@ export class BucketMap {
 export class ComponentMap extends BucketMap {
   constructor(options = {}) {
     super(Object.assign({}, options, {
-        getBucketName: options.getBucketName || (key => key.displayName || key.name || 'Unknown')
+        getBucketName: options.getBucketName ||
+          (key => key.displayName || key.name || 'Unknown')
       })
     );
   }

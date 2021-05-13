@@ -114,19 +114,25 @@ let hu = (function () {
   fn.rgrad = function(cx, cy, r, c1, c2) {
     return this.def('<radialGradient')
       .attr({ cx, cy, r })
-      .stops({ offset: '0%', stopColor: c1 }, { offset: '100%', stopColor: c2 });
+      .stops({ offset: '0%', stopColor: c1 },
+        { offset: '100%', stopColor: c2 }
+      );
   };
 
   fn.width = function(v) {
     //window.getComputedStyle is the only thing that seems to work on FF when
     //there are nested svg elements
     if(v === undefined)
-      return this.n.getBBox().width || parseInt(window.getComputedStyle(this.n).width);
+      return (this.n.getBBox().width ||
+        parseInt(window.getComputedStyle(this.n).width)
+      );
     return this.attrnv('width', v);
   };
   fn.height = function(v) {
     if(v === undefined)
-      return this.n.getBBox().height || parseInt(window.getComputedStyle(this.n).height);
+      return (this.n.getBBox().height ||
+        parseInt(window.getComputedStyle(this.n).height)
+      );
     return this.attrnv('height', v);
   };
 

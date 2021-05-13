@@ -213,7 +213,9 @@ SpatialHashMap.prototype.resizeTo = function(newSize, obj) {
   return this;
 };
 
-SpatialHashMap.prototype.moveBy = SpatialHashMap.prototype.move = function(diff, obj) {
+SpatialHashMap.prototype.moveBy = SpatialHashMap.prototype.move = function(diff,
+  obj
+) {
   diff.w = 0;
   diff.h = 0;
   this.moveAndResizeBy(diff, obj);

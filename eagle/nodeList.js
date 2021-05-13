@@ -5,7 +5,8 @@ import { text, concat, inspectSymbol } from './common.js';
 
 export class EagleNodeList {
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
-    if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
+    if(Util.isObject(ref) && !('dereference' in ref))
+      ref = EagleRef(owner, ref);
     let raw = ref.dereference();
     //console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     let species = Util.getConstructor(owner);
@@ -23,7 +24,9 @@ export class EagleNodeList {
     if(pos < 0) pos += raw.length;
     //console.log('EagleNodeList', { pos, pred});
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) {
-      let element = this.getOrCreate(owner.document, ref.down(pos) /*, raw[pos]*/);
+      let element = this.getOrCreate(owner.document,
+        ref.down(pos) /*, raw[pos]*/
+      );
       if(pred(element)) return element;
     }
   }
@@ -68,7 +71,10 @@ export class EagleNodeList {
     args = args.map(({ tagName, attributes, children }) =>
       EagleElement.create(tagName, attributes, children)
     );
-    parent.children.splice(parent.children.length, parent.children.length, ...args);
+    parent.children.splice(parent.children.length,
+      parent.children.length,
+      ...args
+    );
     return this;
   }
 
@@ -97,7 +103,9 @@ export class EagleNodeList {
     let instance = new EagleNodeList(owner, ref, pred, getOrCreate);
     return new Proxy(instance, {
       set(target, prop, value) {
-        if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
+        if(typeof prop == 'number' ||
+          (typeof prop == 'string' && /^[0-9]+$/.test(prop))
+        ) {
           prop = +prop;
           let list = instance.ref.dereference();
           if(typeof value == 'object' && 'raw' in value) value = value.raw;
@@ -111,7 +119,9 @@ export class EagleNodeList {
         let index;
         let is_symbol = typeof prop == 'symbol';
         let e;
-        if(typeof prop == 'number' || (typeof prop == 'string' && /^-?[0-9]+$/.test(prop))) {
+        if(typeof prop == 'number' ||
+          (typeof prop == 'string' && /^-?[0-9]+$/.test(prop))
+        ) {
           prop = +prop;
           return instance.item(prop);
         }
@@ -129,13 +139,16 @@ export class EagleNodeList {
         if(typeof EagleNodeList.prototype[prop] == 'function')
           return EagleNodeList.prototype[prop];
         if(prop == 'path') return instance.ref.path;
-        if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
+        if(typeof instance[prop] == 'function')
+          return instance[prop].bind(instance);
         if(instance[prop] !== undefined) return instance[prop];
         let list = instance && instance.ref ? instance.ref.dereference() : null;
         if(prop == 'find')
           return name => {
             const idx = list.findIndex(e => e.attributes.name == name);
-            return idx == -1 ? null : this.getOrCreate(instance, instance.ref.concat([idx]));
+            return idx == -1
+              ? null
+              : this.getOrCreate(instance, instance.ref.concat([idx]));
           };
         //      if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
 

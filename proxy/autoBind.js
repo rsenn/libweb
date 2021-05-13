@@ -19,8 +19,11 @@ export const autoBind = (() => {
   let self = function autoBind(target) {
     if(proxiesMap.has(target)) return proxiesMap.get(target);
 
-    if((typeof target !== 'object' && typeof target !== 'function') || target === null) {
-      throw TypeError('expected a non-null object, ' + `got ${target === null ? 'null' : typeof target}`
+    if((typeof target !== 'object' && typeof target !== 'function') ||
+      target === null
+    ) {
+      throw TypeError('expected a non-null object, ' +
+          `got ${target === null ? 'null' : typeof target}`
       );
     }
 

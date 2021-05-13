@@ -50,7 +50,13 @@ export function debounceAsync(fn, wait = 0, options = {}) {
   let timer;
   let pendingArgs = [];
   const callFn = (thisObj, args) => {
-    console.debug(`debounceAsync calling`, { lastCallAt, deferred, timer, pendingArgs, fn });
+    console.debug(`debounceAsync calling`, {
+      lastCallAt,
+      deferred,
+      timer,
+      pendingArgs,
+      fn
+    });
     return fn.call(thisObj, ...args);
   };
 
@@ -58,7 +64,12 @@ export function debounceAsync(fn, wait = 0, options = {}) {
     const currentWait = getWait(wait);
     const currentTime = new Date().getTime();
     const isCold = !lastCallAt || currentTime - lastCallAt > currentWait;
-    console.debug(`debounceAsync handler`, { lastCallAt, currentWait, currentTime, isCold });
+    console.debug(`debounceAsync handler`, {
+      lastCallAt,
+      currentWait,
+      currentTime,
+      isCold
+    });
     lastCallAt = currentTime;
     if(isCold && options.leading)
       return options.accumulate

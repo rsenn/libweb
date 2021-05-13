@@ -5,7 +5,8 @@ function oneObject(str) {
 }
 let voidTag = oneObject('area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr'
 );
-let specalTag = oneObject('xmp,style,script,noscript,textarea,template,#comment');
+let specalTag = oneObject('xmp,style,script,noscript,textarea,template,#comment'
+);
 
 let hiddenTag = oneObject('style,script,noscript,template');
 
@@ -206,7 +207,9 @@ function parseCode(string) {
             }
           } while(--index >= 0);
           let chunkString = string.slice(i);
-          if(word === '' || (/(=>|return|\{|\(|\[|\,)$/.test(word) && /\<\w/.test(chunkString))) {
+          if(word === '' ||
+            (/(=>|return|\{|\(|\[|\,)$/.test(word) && /\<\w/.test(chunkString))
+          ) {
             collectJSX(string, codeIndex, i, nodes);
             let chunk = lexer(chunkString, true);
             nodes.push(chunk[1]);
@@ -404,7 +407,8 @@ function getAttrs(string) {
         var arr = parseCode(string.slice(i));
         i += arr[0].length;
 
-        props[state === 'SpreadJSX' ? 'spreadAttribute' : attrName] = makeJSX(arr[1]);
+        props[state === 'SpreadJSX' ? 'spreadAttribute' : attrName] = makeJSX(arr[1]
+        );
         attrName = attrValue = '';
         state = 'AttrNameOrJSX';
         break;

@@ -159,9 +159,31 @@ KolorWheel.prototype.multi = function(fn, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
     let src = sourceList[i];
     src.workList = [];
     if(fn == 'rel')
-      KolorWheel.prototype.spinSingle.call(src, 'rel', p1, p2, p3, p4, p5, p6, p7, p8, p9);
+      KolorWheel.prototype.spinSingle.call(src,
+        'rel',
+        p1,
+        p2,
+        p3,
+        p4,
+        p5,
+        p6,
+        p7,
+        p8,
+        p9
+      );
     if(fn == 'abs')
-      KolorWheel.prototype.spinSingle.call(src, 'abs', p1, p2, p3, p4, p5, p6, p7, p8, p9);
+      KolorWheel.prototype.spinSingle.call(src,
+        'abs',
+        p1,
+        p2,
+        p3,
+        p4,
+        p5,
+        p6,
+        p7,
+        p8,
+        p9
+      );
     this.resultList = this.resultList.concat(src.workList);
   } //foreach sourceList
 
@@ -285,7 +307,11 @@ KolorWheel.prototype.spinSingle = function(mode, dh, ds, dl, length, start) {
   } //for step
 }; //spinSingle()
 
-KolorWheel.prototype.calcLinearGradientStep = function(step, length, base, target) {
+KolorWheel.prototype.calcLinearGradientStep = function(step,
+  length,
+  base,
+  target
+) {
   let progress = step / (length - 1);
   let result = base + (target - base) * progress;
 

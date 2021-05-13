@@ -15,7 +15,13 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
         ? (rgbB - rgbR) / delta
         : (rgbR - rgbG) / delta;
     const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
+      value === rgbR
+        ? segment < 0
+          ? 360 / 60
+          : 0 / 60
+        : value === rgbG
+        ? 120 / 60
+        : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
   } else {
@@ -39,7 +45,8 @@ export function hue2rgb(t1, t2, hue) {
 export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
   const l1 = max(relativeLuminance1, relativeLuminance2);
   const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
+  return ((l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision)
+  );
 }
 
 export function rgb2value(rgbR, rgbG, rgbB) {
@@ -55,7 +62,10 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 export function matrix(params, mats) {
   return mats.map(mat =>
     mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
+        acc +
+        (params.index * precision * (value * precision)) /
+          precision /
+          precision,
       0
     )
   );
@@ -136,7 +146,8 @@ export function lab2ciede([L1, a1, b1], [L2, a2, b2]) {
   const sl = 1 + (0.015 * precision * slCoeff) / sqrt(20 + slCoeff) / precision;
   const sc = 1 + (0.045 * precision * cBarPrime) / precision;
   const sh = 1 + (0.015 * precision * cBarPrime * T) / precision;
-  const RtCoeff = 60 * exp(-((hBarPrime - 275) / 25) * ((hBarPrime - 275) / 25));
+  const RtCoeff =
+    60 * exp(-((hBarPrime - 275) / 25) * ((hBarPrime - 275) / 25));
   const Rt = -2 * cCoeff * sind(RtCoeff);
   const term1 = deltaLPrime / (kl * sl);
   const term2 = deltaCPrime / (kc * sc);

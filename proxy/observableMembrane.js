@@ -43,7 +43,8 @@ function registerProxy(proxy, value) {
   proxyToValueMap.set(proxy, value);
 }
 
-const unwrap = replicaOrAny => proxyToValueMap.get(replicaOrAny) || replicaOrAny;
+const unwrap = replicaOrAny =>
+  proxyToValueMap.get(replicaOrAny) || replicaOrAny;
 
 class BaseProxyHandler {
   constructor(membrane, value) {
@@ -91,7 +92,9 @@ class BaseProxyHandler {
     const {
       membrane: { tagPropertyKey }
     } = this;
-    if(!isUndefined(tagPropertyKey) && !hasOwnProperty.call(shadowTarget, tagPropertyKey)) {
+    if(!isUndefined(tagPropertyKey) &&
+      !hasOwnProperty.call(shadowTarget, tagPropertyKey)
+    ) {
       ObjectDefineProperty(shadowTarget, tagPropertyKey, ObjectCreate(null));
     }
     preventExtensions(shadowTarget);
@@ -134,7 +137,8 @@ class BaseProxyHandler {
     } = this;
     //if the membrane tag key exists and it is not in the original target, we add it to the keys.
     const keys =
-      isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey)
+      isUndefined(tagPropertyKey) ||
+      hasOwnProperty.call(originalTarget, tagPropertyKey)
         ? []
         : [tagPropertyKey];
     //small perf optimization using push instead of concat to avoid creating an extra array
@@ -178,7 +182,12 @@ class BaseProxyHandler {
 
       //if the key is the membrane tag key, and is not in the original target,
       //we produce a synthetic descriptor and install it on the shadow target
-      desc = { value: undefined, writable: false, configurable: false, enumerable: false };
+      desc = {
+        value: undefined,
+        writable: false,
+        configurable: false,
+        enumerable: false
+      };
       ObjectDefineProperty(shadowTarget, tagPropertyKey, desc);
       return desc;
     }
@@ -360,7 +369,10 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       return true;
     }
 
-    ObjectDefineProperty(originalTarget, key, this.unwrapDescriptor(descriptor));
+    ObjectDefineProperty(originalTarget,
+      key,
+      this.unwrapDescriptor(descriptor)
+    );
     //intentionally testing if false since it could be undefined as well
     if(descriptor.configurable === false) {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
@@ -500,16 +512,18 @@ function extract(objectOrArray) {
   const obj = ObjectCreate(getPrototypeOf(objectOrArray));
   const names = getOwnPropertyNames(objectOrArray);
   return ArrayConcat.call(names, getOwnPropertySymbols(objectOrArray)).reduce((seed, key) => {
-    const item = objectOrArray[key];
-    const original = unwrap(item);
-    if(original !== item) {
-      seed[key] = extract(original);
-    } else {
-      seed[key] = item;
-    }
+      const item = objectOrArray[key];
+      const original = unwrap(item);
+      if(original !== item) {
+        seed[key] = extract(original);
+      } else {
+        seed[key] = item;
+      }
 
-    return seed;
-  }, obj);
+      return seed;
+    },
+    obj
+  );
 }
 
 const formatter = {
@@ -597,7 +611,10 @@ function defaultValueIsObservable(value) {
   }
 
   const proto = getPrototypeOf(value);
-  return proto === ObjectDotPrototype || proto === null || getPrototypeOf(proto) === null;
+  return (proto === ObjectDotPrototype ||
+    proto === null ||
+    getPrototypeOf(proto) === null
+  );
 }
 
 const defaultValueObserved = (obj, key) => {
@@ -628,9 +645,15 @@ class ReactiveMembrane {
         valueIsObservable,
         tagPropertyKey
       } = options;
-      this.valueDistortion = isFunction(valueDistortion) ? valueDistortion : defaultValueDistortion;
-      this.valueMutated = isFunction(valueMutated) ? valueMutated : defaultValueMutated;
-      this.valueObserved = isFunction(valueObserved) ? valueObserved : defaultValueObserved;
+      this.valueDistortion = isFunction(valueDistortion)
+        ? valueDistortion
+        : defaultValueDistortion;
+      this.valueMutated = isFunction(valueMutated)
+        ? valueMutated
+        : defaultValueMutated;
+      this.valueObserved = isFunction(valueObserved)
+        ? valueObserved
+        : defaultValueObserved;
       this.valueIsObservable = isFunction(valueIsObservable)
         ? valueIsObservable
         : defaultValueIsObservable;

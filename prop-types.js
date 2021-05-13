@@ -49,7 +49,12 @@ ReactPropTypes.PropTypes = ReactPropTypes;
 
 let printWarning = function() {};
 
-export function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+export function checkPropTypes(typeSpecs,
+  values,
+  location,
+  componentName,
+  getStack
+) {
   if(process.env.NODE_ENV !== 'production') {
     for(let typeSpecName in typeSpecs) {
       if(has(typeSpecs, typeSpecName)) {
@@ -101,7 +106,11 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
 
           let stack = getStack ? getStack() : '';
 
-          printWarning('Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
+          printWarning('Failed ' +
+              location +
+              ' type: ' +
+              error.message +
+              (stack != null ? stack : '')
           );
         }
       }

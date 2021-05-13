@@ -24,7 +24,9 @@ export const Drawing = ({
   //
   log('Drawing.render', { attrs, grid, nodefs });
 
-  const defs = nodefs ? {} : { defs: h(Pattern, { data: grid, id, attrs: attrs.grid }) };
+  const defs = nodefs
+    ? {}
+    : { defs: h(Pattern, { data: grid, id, attrs: attrs.grid }) };
 
   return h(SVG, { viewBox, styles, style, ...defs, ...props }, [
     h('g', { id: 'bg', transform }, [

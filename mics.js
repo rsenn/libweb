@@ -28,7 +28,8 @@ function mix(...args) {
   let factory = (isFactory(args[args.length - 1]) && args.pop()) || derive;
   superclass = isMixin(superclass) ? superclass.class : derive(superclass);
   if(args.length)
-    factory = (org => superclass => org(args.reduce((s, m) => m.mixin(s), superclass)))(factory);
+    factory = (org => superclass =>
+      org(args.reduce((s, m) => m.mixin(s), superclass)))(factory);
 
   function mixin(superclass) {
     const result = is(superclass, mixin) ? superclass : factory(superclass);
@@ -75,7 +76,11 @@ function is(x, type) {
     let c = x;
     while(c !== Object) {
       if(c === type || c === type.class) return true;
-      if(type.mixin && type.mixin.classes && type.mixin.classes.indexOf(c) !== -1) return true;
+      if(type.mixin &&
+        type.mixin.classes &&
+        type.mixin.classes.indexOf(c) !== -1
+      )
+        return true;
       c = Object.getPrototypeOf(c.prototype).constructor;
     }
   }
@@ -105,10 +110,17 @@ function is(x, type) {
  */
 function like(x, type) {
   if(is(x, type)) return true;
-  const itf = type.interface || (typeof type == 'function' && getInterface(type.prototype));
-  const subject = typeof x == 'function' ? x.interface || getInterface(x.prototype) : x;
+  const itf =
+    type.interface ||
+    (typeof type == 'function' && getInterface(type.prototype));
+  const subject =
+    typeof x == 'function' ? x.interface || getInterface(x.prototype) : x;
   return (itf &&
-    Object.keys(itf).reduce((f, k) => f && (typeof itf[k] == 'function' ? typeof subject[k] == 'function' : k in subject),
+    Object.keys(itf).reduce((f, k) =>
+        f &&
+        (typeof itf[k] == 'function'
+          ? typeof subject[k] == 'function'
+          : k in subject),
       true
     )
   );
@@ -152,7 +164,8 @@ function isClass(x) {
   if(typeof x != 'function') return false;
   const s = x.toString();
   return (/^class\s/.test(s) ||
-    /^.*classCallCheck\(/.test(s.replace(/^[^{]*{\s*/, '').replace(/\s*}[^}]*$/, ''))
+    /^.*classCallCheck\(/.test(s.replace(/^[^{]*{\s*/, '').replace(/\s*}[^}]*$/, '')
+    )
   );
 }
 
@@ -161,4 +174,5 @@ function isFactory(x) {
 }
 
 const baseclass = class Object {};
-const derive = superclass => ({}[superclass.name || 'Object'] = class extends superclass {});
+const derive = superclass =>
+  ({}[superclass.name || 'Object'] = class extends superclass {});

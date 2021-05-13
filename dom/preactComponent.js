@@ -97,10 +97,8 @@ export class ReactComponent {
     function flatten(obj, path) {
       insert(path, obj);
       if(obj.props) {
-        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [
-          child,
-          [...path, 'props', 'children', i++]
-        ]);
+        let children = ReactComponent.toChildArray(obj.props.children
+        ).map((child, i) => [child, [...path, 'props', 'children', i++]]);
         children.forEach(args => flatten(...args));
       }
     }
@@ -110,7 +108,8 @@ export class ReactComponent {
 
   static isComponent(obj) {
     return (Util.isObject(obj) &&
-      ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined)
+      ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined
+      )
     );
   }
 
@@ -118,7 +117,8 @@ export class ReactComponent {
     if(typeof render_to === 'string') render_to = Element.find(render_to);
     if(typeof render_to !== 'function') {
       root = root || render_to;
-      render_to = component => require('react-dom').render(component, root || render_to);
+      render_to = component =>
+        require('react-dom').render(component, root || render_to);
     }
     let ret = function(...args) {
       let ret = ReactComponent.create(...args);
@@ -182,7 +182,8 @@ export class ReactComponent {
       let { children, key, innerHTML, ...props } = arg.props || {};
 
       let obj = { tagName, ...props };
-      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
+      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined)
+        obj.key = key;
 
       if(!children) children = arg.children;
 
@@ -231,7 +232,9 @@ export class ReactComponent {
     o += `}`;
     let s = ReactComponent.toSource;
     let c = Util.isArray(children)
-      ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]`
+      ? `[${children
+          .map(obj => nl + '  ' + s(obj, opts, depth + 1))
+          .join(',')}]`
       : children
       ? '  ' + s(children, opts, depth + 1)
       : '';
@@ -243,7 +246,8 @@ export class ReactComponent {
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
     let s = '';
-    if(Util.isObject(obj) && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
+    if(Util.isObject(obj) && '__' in obj && 'key' in obj && 'ref' in obj)
+      obj = this.toObject(obj);
     if(Util.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
@@ -323,7 +327,8 @@ export class Portal extends Component {
   componentWillUnmount() {
     this.renderLayer(false);
     this.isMounted = false;
-    if(this.remote && this.remote.parentNode) this.remote.parentNode.removeChild(this.remote);
+    if(this.remote && this.remote.parentNode)
+      this.remote.parentNode.removeChild(this.remote);
   }
 
   findNode(node) {
@@ -342,7 +347,8 @@ export class Portal extends Component {
       this.into = this.findNode(this.props.into);
     }
 
-    this.remote = render((h(PortalProxy, { context: this.context }), (show && this.props.children) || null),
+    this.remote = render((h(PortalProxy, { context: this.context }),
+      (show && this.props.children) || null),
       this.into,
       this.remote
     );

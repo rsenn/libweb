@@ -32,7 +32,8 @@ function __extends(d, b) {
   function __() {
     this.constructor = d;
   }
-  d.prototype = b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
+  d.prototype =
+    b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
 }
 
 function __awaiter(thisArg, _arguments, P, generator) {
@@ -192,7 +193,8 @@ function __read(o, n) {
 }
 
 function __spread() {
-  for(var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+  for(var ar = [], i = 0; i < arguments.length; i++)
+    ar = ar.concat(__read(arguments[i]));
   return ar;
 }
 
@@ -201,7 +203,8 @@ function __await(v) {
 }
 
 function __asyncGenerator(thisArg, _arguments, generator) {
-  if(!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
+  if(!Symbol.asyncIterator)
+    throw new TypeError('Symbol.asyncIterator is not defined.');
   let g = generator.apply(thisArg, _arguments || []),
     i,
     q = [];
@@ -289,7 +292,8 @@ let SlidingBuffer = /** @class */ (function () {
     this.arr = [];
     this.full = false;
     if(capacity <= 0) {
-      throw new RangeError('SlidingBuffer capacity cannot be less than or equal to zero');
+      throw new RangeError('SlidingBuffer capacity cannot be less than or equal to zero'
+      );
     }
   }
   Object.defineProperty(SlidingBuffer.prototype, 'empty', {
@@ -319,7 +323,8 @@ let DroppingBuffer = /** @class */ (function () {
     this.arr = [];
     this.full = false;
     if(capacity <= 0) {
-      throw new RangeError('DroppingBuffer capacity cannot be less than or equal to zero');
+      throw new RangeError('DroppingBuffer capacity cannot be less than or equal to zero'
+      );
     }
   }
   Object.defineProperty(DroppingBuffer.prototype, 'empty', {
@@ -450,7 +455,9 @@ let RepeaterController = /** @class */ (function () {
     this.execution = execution.then(() => undefined,
       () => undefined
     );
-    return this.pending === undefined ? execution : this.pending.then(() => execution);
+    return this.pending === undefined
+      ? execution
+      : this.pending.then(() => execution);
   };
 
   /**
@@ -500,7 +507,9 @@ let RepeaterController = /** @class */ (function () {
       return Promise.resolve(undefined);
     }
     let valueP =
-      this.pending === undefined ? Promise.resolve(value) : this.pending.then(() => value);
+      this.pending === undefined
+        ? Promise.resolve(value)
+        : this.pending.then(() => value);
     valueP = valueP.catch(err => {
       if(this.state < 2 /* Stopped */) {
         this.err = err;
@@ -567,7 +576,10 @@ let RepeaterController = /** @class */ (function () {
     this.onstop();
     if(this.err == null) this.err = err;
     try {
-      for(var _c = __values(this.pushQueue), _d = _c.next(); !_d.done; _d = _c.next()) {
+      for(var _c = __values(this.pushQueue), _d = _c.next();
+        !_d.done;
+        _d = _c.next()
+      ) {
         let push = _d.value;
         push.resolve();
       }
@@ -586,10 +598,15 @@ let RepeaterController = /** @class */ (function () {
     if(this.pullQueue.length) {
       this.finish();
       try {
-        for(var _e = __values(this.pullQueue), _f = _e.next(); !_f.done; _f = _e.next()) {
+        for(var _e = __values(this.pullQueue), _f = _e.next();
+          !_f.done;
+          _f = _e.next()
+        ) {
           let pull = _f.value;
           let execution =
-            this.pending === undefined ? this.consume() : this.pending.then(() => this.consume());
+            this.pending === undefined
+              ? this.consume()
+              : this.pending.then(() => this.consume());
           pull.resolve(this.unwrap(execution));
         }
       } catch(e_2_1) {
@@ -642,7 +659,10 @@ let RepeaterController = /** @class */ (function () {
   };
 
   RepeaterController.prototype.throw = function(err) {
-    if(this.state <= 0 /* Initial */ || this.state >= 2 /* Stopped */ || !this.buffer.empty) {
+    if(this.state <= 0 /* Initial */ ||
+      this.state >= 2 /* Stopped */ ||
+      !this.buffer.empty
+    ) {
       this.finish();
       if(this.err == null) {
         this.err = err;
@@ -715,66 +735,73 @@ function asyncIterators(contenders, options) {
     } else if(isIterable(contender)) {
       let iter_1 = contender[Symbol.iterator]();
       iters.push((function syncToAsyncIterator() {
-          return __asyncGenerator(this, arguments, function syncToAsyncIterator_1() {
-            let result;
-            return __generator(this, _a => {
-              switch (_a.label) {
-                case 0:
-                  _a.trys.push([0, undefined, 6, 7]);
-                  result = iter_1.next();
-                  _a.label = 1;
-                case 1:
-                  if(result.done) return [3 /*break*/, 4];
-                  return [4 /*yield*/, __await(result.value)];
-                case 2:
-                  return [4 /*yield*/, _a.sent()];
-                case 3:
-                  _a.sent();
-                  result = iter_1.next();
-                  return [3 /*break*/, 1];
-                case 4:
-                  return [4 /*yield*/, __await(result.value)];
-                case 5:
-                  return [2 /*return*/, _a.sent()];
-                case 6:
-                  iter_1.return && iter_1.return();
-                  return [7 /*endfinally*/];
-                case 7:
-                  return [2 /*return*/];
-              }
-            });
-          });
+          return __asyncGenerator(this,
+            arguments,
+            function syncToAsyncIterator_1() {
+              let result;
+              return __generator(this, _a => {
+                switch (_a.label) {
+                  case 0:
+                    _a.trys.push([0, undefined, 6, 7]);
+                    result = iter_1.next();
+                    _a.label = 1;
+                  case 1:
+                    if(result.done) return [3 /*break*/, 4];
+                    return [4 /*yield*/, __await(result.value)];
+                  case 2:
+                    return [4 /*yield*/, _a.sent()];
+                  case 3:
+                    _a.sent();
+                    result = iter_1.next();
+                    return [3 /*break*/, 1];
+                  case 4:
+                    return [4 /*yield*/, __await(result.value)];
+                  case 5:
+                    return [2 /*return*/, _a.sent()];
+                  case 6:
+                    iter_1.return && iter_1.return();
+                    return [7 /*endfinally*/];
+                  case 7:
+                    return [2 /*return*/];
+                }
+              });
+            }
+          );
         })()
       );
     } else {
       iters.push((function valueToAsyncIterator() {
-          return __asyncGenerator(this, arguments, function valueToAsyncIterator_1() {
-            return __generator(this, _a => {
-              switch (_a.label) {
-                case 0:
-                  if(!yieldValues) return [3 /*break*/, 3];
-                  return [4 /*yield*/, __await(contender)];
-                case 1:
-                  return [4 /*yield*/, _a.sent()];
-                case 2:
-                  _a.sent();
-                  _a.label = 3;
-                case 3:
-                  if(!returnValues) return [3 /*break*/, 5];
-                  return [4 /*yield*/, __await(contender)];
-                case 4:
-                  return [2 /*return*/, _a.sent()];
-                case 5:
-                  return [2 /*return*/];
-              }
-            });
-          });
+          return __asyncGenerator(this,
+            arguments,
+            function valueToAsyncIterator_1() {
+              return __generator(this, _a => {
+                switch (_a.label) {
+                  case 0:
+                    if(!yieldValues) return [3 /*break*/, 3];
+                    return [4 /*yield*/, __await(contender)];
+                  case 1:
+                    return [4 /*yield*/, _a.sent()];
+                  case 2:
+                    _a.sent();
+                    _a.label = 3;
+                  case 3:
+                    if(!returnValues) return [3 /*break*/, 5];
+                    return [4 /*yield*/, __await(contender)];
+                  case 4:
+                    return [2 /*return*/, _a.sent()];
+                  case 5:
+                    return [2 /*return*/];
+                }
+              });
+            }
+          );
         })()
       );
     }
   };
   try {
-    for(var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next();
+    for(var contenders_1 = __values(contenders),
+        contenders_1_1 = contenders_1.next();
       !contenders_1_1.done;
       contenders_1_1 = contenders_1.next()
     ) {
@@ -816,7 +843,8 @@ function race(contenders) {
             if(stopped) return [3 /*break*/, 6];
             results = iters.map(iter => iter.next());
             try {
-              for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next();
+              for(results_1 = ((e_4 = void 0), __values(results)),
+                  results_1_1 = results_1.next();
                 !results_1_1.done;
                 results_1_1 = results_1.next()
               ) {
@@ -835,7 +863,8 @@ function race(contenders) {
               e_4 = { error: e_4_1 };
             } finally {
               try {
-                if(results_1_1 && !results_1_1.done && (_a = results_1.return)) _a.call(results_1);
+                if(results_1_1 && !results_1_1.done && (_a = results_1.return))
+                  _a.call(results_1);
               } finally {
                 if(e_4) throw e_4.error;
               }
@@ -843,7 +872,8 @@ function race(contenders) {
             return [4 /*yield*/, Promise.race(__spread([stop], results))];
           case 3:
             result = _b.sent();
-            if(!(result !== undefined && !result.done)) return [3 /*break*/, 5];
+            if(!(result !== undefined && !result.done))
+              return [3 /*break*/, 5];
             return [4 /*yield*/, push(result.value)];
           case 4:
             _b.sent();
@@ -854,7 +884,10 @@ function race(contenders) {
             return [2 /*return*/, returned];
           case 7:
             stop();
-            return [4 /*yield*/, Promise.race(iters.map(iter => iter.return && iter.return()))];
+            return [
+              4 /*yield*/,
+              Promise.race(iters.map(iter => iter.return && iter.return()))
+            ];
           case 8:
             _b.sent();
             return [7 /*endfinally*/];
@@ -892,7 +925,10 @@ function merge(contenders) {
                           _b.label = 1;
                         case 1:
                           if(stopped) return [3 /*break*/, 5];
-                          return [4 /*yield*/, Promise.race([iter.next(), stop])];
+                          return [
+                            4 /*yield*/,
+                            Promise.race([iter.next(), stop])
+                          ];
                         case 2:
                           result = _b.sent();
                           if(!(result !== undefined)) return [3 /*break*/, 4];
@@ -974,7 +1010,10 @@ function zip(contenders) {
             return [3 /*break*/, 8];
           case 6:
             stop();
-            return [4 /*yield*/, Promise.all(iters.map(iter => iter.return && iter.return()))];
+            return [
+              4 /*yield*/,
+              Promise.all(iters.map(iter => iter.return && iter.return()))
+            ];
           case 7:
             _a.sent();
             return [7 /*endfinally*/];
@@ -1036,7 +1075,10 @@ function latest(contenders) {
                           _a.label = 1;
                         case 1:
                           if(stopped) return [3 /*break*/, 5];
-                          return [4 /*yield*/, Promise.race([stop, iter.next()])];
+                          return [
+                            4 /*yield*/,
+                            Promise.race([stop, iter.next()])
+                          ];
                         case 2:
                           result = _a.sent();
                           if(!(result !== undefined)) return [3 /*break*/, 4];
@@ -1062,7 +1104,10 @@ function latest(contenders) {
             return [2 /*return*/, _a.sent()];
           case 5:
             stop();
-            return [4 /*yield*/, Promise.all(iters.map(iter => iter.return && iter.return()))];
+            return [
+              4 /*yield*/,
+              Promise.all(iters.map(iter => iter.return && iter.return()))
+            ];
           case 6:
             _a.sent();
             return [7 /*endfinally*/];

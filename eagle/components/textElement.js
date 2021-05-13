@@ -21,7 +21,15 @@ export const TextElement = ({
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  let { children, text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
+  let {
+    children,
+    text: innerText,
+    align = 'bottom-left',
+    size,
+    font,
+    rot,
+    layer
+  } = data;
   let text =
     innerText ||
     /* labelText || */ Util.tryCatch(() => children.join('\n'),
@@ -45,7 +53,8 @@ export const TextElement = ({
   // if(data.path !== undefined)
   // attrs['data-path'] = data.path.toString(' ');
   if(rot !== undefined) attrs['data-rot'] = rot;
-  if(layer !== undefined) attrs['data-layer'] = `${layer.number} ${layer.name}`;
+  if(layer !== undefined)
+    attrs['data-layer'] = `${layer.number} ${layer.name}`;
   attrs['data-alignment'] = [...Alignment(align)].join('|');
 
   return h(Text, {

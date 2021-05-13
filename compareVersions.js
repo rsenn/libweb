@@ -48,9 +48,14 @@ export function compareVersions(v1, v2) {
     let p2 = sp2.split('.').map(tryParse);
 
     for(i = 0; i < Math.max(p1.length, p2.length); i++) {
-      if(p1[i] === undefined || (typeof p2[i] === 'string' && typeof p1[i] === 'number'))
+      if(p1[i] === undefined ||
+        (typeof p2[i] === 'string' && typeof p1[i] === 'number')
+      )
         return -1;
-      if(p2[i] === undefined || (typeof p1[i] === 'string' && typeof p2[i] === 'number')) return 1;
+      if(p2[i] === undefined ||
+        (typeof p1[i] === 'string' && typeof p2[i] === 'number')
+      )
+        return 1;
 
       if(p1[i] > p2[i]) return 1;
       if(p2[i] > p1[i]) return -1;
@@ -74,10 +79,12 @@ let operatorResMap = {
 
 function validateOperator(op) {
   if(typeof op !== 'string') {
-    throw new TypeError('Invalid operator type, expected string but got ' + typeof op);
+    throw new TypeError('Invalid operator type, expected string but got ' + typeof op
+    );
   }
   if(allowedOperators.indexOf(op) === -1) {
-    throw new TypeError('Invalid operator, expected one of ' + allowedOperators.join('|'));
+    throw new TypeError('Invalid operator, expected one of ' + allowedOperators.join('|')
+    );
   }
 }
 

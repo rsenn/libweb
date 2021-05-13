@@ -14,7 +14,16 @@ function RelationManager(instance, subjectSpec, spec) {
   this.subjectSpec = subjectSpec;
   this.spec = spec;
   for(let key in Array.prototype) {
-    if(['copyWithin', 'fill', 'pop', 'push', 'shift', 'splice', 'unshift'].indexOf(key) >= 0) {
+    if([
+        'copyWithin',
+        'fill',
+        'pop',
+        'push',
+        'shift',
+        'splice',
+        'unshift'
+      ].indexOf(key) >= 0
+    ) {
       delete this[key];
     }
   }
@@ -31,11 +40,15 @@ RelationManager.prototype.add = function(subject, recursing) {
     subjectSpec = this.subjectSpec,
     spec = this.spec;
   if(!(subject instanceof subjectSpec.class)) {
-    throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name
+    throw new TypeError(subjectSpec.property +
+        '.add(object) ... object is not instanceof ' +
+        subjectSpec.class.name
     );
   }
   if(instance[subjectSpec.property].length === subjectSpec.cardinality) {
-    throw new RangeError(subjectSpec.property + '.add(object) ... exceeds maximum of ' + subjectSpec.cardinality
+    throw new RangeError(subjectSpec.property +
+        '.add(object) ... exceeds maximum of ' +
+        subjectSpec.cardinality
     );
   }
   let i = [].indexOf.call(instance[subjectSpec.property], subject);
@@ -137,7 +150,10 @@ function addRelations(instance, specs) {
         if(!subject && oldvalue && oldvalue[spec.property] === instance) {
           //set the reflecting property in oldvalue to null
           oldvalue[spec.property] = null;
-        } else if(subject && spec.cardinality === 1 && subject[spec.property] !== instance) {
+        } else if(subject &&
+          spec.cardinality === 1 &&
+          subject[spec.property] !== instance
+        ) {
           subject[spec.property] = instance;
         } else if(subject && spec.cardinality > 1) {
           subject[spec.property].add(instance);
@@ -146,7 +162,9 @@ function addRelations(instance, specs) {
     }
     set.value = null;
     //does class checking and sets reflecting relation for cardinality>1
-    if(subjectSpec.cardinality > 1 && !Array.isArray(instance[subjectSpec.property])) {
+    if(subjectSpec.cardinality > 1 &&
+      !Array.isArray(instance[subjectSpec.property])
+    ) {
       Object.defineProperty(instance, subjectSpec.property, {
         enumerable: subjectSpec.enumerable,
         configurable: true,
@@ -174,7 +192,11 @@ function addRelations(instance, specs) {
   }
 }
 function defineRelation(scope, name, sname, head, specs) {
-  let cons = new Function('return function ' + name + '(' + head + ') { return Relation.apply(this,arguments); }'
+  let cons = new Function('return function ' +
+      name +
+      '(' +
+      head +
+      ') { return Relation.apply(this,arguments); }'
   )();
   cons.prototype = Object.create(Relation.prototype);
   cons.prototype.constructor = cons;
@@ -202,7 +224,8 @@ Relation.define = function(scope) {
     subjectSpec = specs[0],
     name = '',
     head,
-    sname = uFirst(subjectSpec.relation ? subjectSpec.relation : subjectSpec.property);
+    sname = uFirst(subjectSpec.relation ? subjectSpec.relation : subjectSpec.property
+    );
   (subjectSpec.class = subjectSpec.class ? subjectSpec.class : Object), head;
   specs.forEach((spec, i) => {
     let s = spec.relation ? spec.relation : spec.property;
@@ -212,7 +235,10 @@ Relation.define = function(scope) {
     }
     head = head ? (head += ',' + s) : s;
     //make sure we are pointing to most current definition since they get updated as we go through loop
-    spec.class = spec.class && scope[spec.class.name] ? scope[spec.class.name] : spec.class;
+    spec.class =
+      spec.class && scope[spec.class.name]
+        ? scope[spec.class.name]
+        : spec.class;
     //default to Object if no class specified
     spec.class = spec.class ? spec.class : Object;
     if(!spec.class.prototype.relations) {
@@ -242,7 +268,10 @@ Relation.define = function(scope) {
         }
         Object.keys(object).forEach(key => {
           //if the property key is part of a relation spec and is an Array
-          if(subjectSpec.property[key] && subjectSpec.class && Array.isArray(object[key])) {
+          if(subjectSpec.property[key] &&
+            subjectSpec.class &&
+            Array.isArray(object[key])
+          ) {
             //loop through the items and restore them
             object[key].forEach(item => {
               instance[key].add(subjectSpec.class.prototype.fromJSON(item));
@@ -262,11 +291,17 @@ Relation.define = function(scope) {
       ? spec.class.prototype.relations
       : [];
     if(i > 0) {
-      spec.class.prototype.relations.push({ subject: subjectSpec, object: spec });
+      spec.class.prototype.relations.push({
+        subject: subjectSpec,
+        object: spec
+      });
     }
   });
   if(specs.length === 1) {
-    subjectSpec.class.prototype.relations.push({ subject: subjectSpec, object: subjectSpec });
+    subjectSpec.class.prototype.relations.push({
+      subject: subjectSpec,
+      object: subjectSpec
+    });
   }
   //define the actual Relation class
   return defineRelation(scope, name, sname, head, specs);

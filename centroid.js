@@ -12,16 +12,21 @@ const pairwiseSumReduce = (array, f, init = 0) => {
 
 function polygonCentroid(polygonPoints) {
   //Calculate the area of the polygon.
-  const area = pairwiseSumReduce(polygonPoints, (p1, p2) => p1.x * p2.y - p1.y * p2.x) / 2;
+  const area =
+    pairwiseSumReduce(polygonPoints, (p1, p2) => p1.x * p2.y - p1.y * p2.x) / 2;
 
   //Calculate the x coordinate of the centroid.
   const cx =
-    pairwiseSumReduce(polygonPoints, (p1, p2) => (p1.x + p2.x) * (p1.x * p2.y - p1.y * p2.x)) /
+    pairwiseSumReduce(polygonPoints,
+      (p1, p2) => (p1.x + p2.x) * (p1.x * p2.y - p1.y * p2.x)
+    ) /
     (6 * area);
 
   //Calculate the y coordinate of the centroid.
   const cy =
-    pairwiseSumReduce(polygonPoints, (p1, p2) => (p1.y + p2.y) * (p1.x * p2.y - p1.y * p2.x)) /
+    pairwiseSumReduce(polygonPoints,
+      (p1, p2) => (p1.y + p2.y) * (p1.x * p2.y - p1.y * p2.x)
+    ) /
     (6 * area);
 
   return { x: cx, y: cy };

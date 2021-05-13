@@ -3,14 +3,19 @@ import Util from '../util.js';
 
 function gotClassPrototype(name, protoFn) {
   let ctor = Util.getGlobalObject()[name];
-  return Util.isConstructor(ctor) && ctor.prototype && typeof ctor.prototype[protoFn] == 'function';
+  return (Util.isConstructor(ctor) &&
+    ctor.prototype &&
+    typeof ctor.prototype[protoFn] == 'function'
+  );
 }
 
 export function isStream(obj) {
   if(/Stream$/.test(Util.className(obj))) return true;
 
-  if(typeof obj.pipe == 'function' && typeof obj.cork == 'function') return true;
-  if(typeof obj.getReader == 'function' || typeof obj.getWriter == 'function') return true;
+  if(typeof obj.pipe == 'function' && typeof obj.cork == 'function')
+    return true;
+  if(typeof obj.getReader == 'function' || typeof obj.getWriter == 'function')
+    return true;
 
   return false;
 }
@@ -62,7 +67,8 @@ export const AcquireReader =
             };
 
             function addListeners() {
-              for(let eventName in listeners) stream.addListener(eventName, listeners[eventName]);
+              for(let eventName in listeners)
+                stream.addListener(eventName, listeners[eventName]);
             }
             function removeListeners() {
               for(let eventName in listeners)
@@ -101,7 +107,9 @@ export const AcquireWriter =
         write(chunk) {
           return stream.write(chunk);
           return new Promise((resolve, reject) =>
-            stream.write(chunk, 'utf-8', err => (err ? reject(err) : resolve(chunk.length)))
+            stream.write(chunk, 'utf-8', err =>
+              err ? reject(err) : resolve(chunk.length)
+            )
           );
         }
       });
@@ -320,7 +328,9 @@ export function StringReader(str, chunk = (pos, str) => [pos, str.length]) {
   }
 }
 
-export function LineReader(str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length) {
+export function LineReader(str,
+  chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length
+) {
   let pos = 0;
   let len = str.length;
   return new ReadableStream({
@@ -364,7 +374,9 @@ export class DebugTransformStream {
   }
 }
 
-export async function CreateWritableStream(handler, options = { decodeStrings: false }) {
+export async function CreateWritableStream(handler,
+  options = { decodeStrings: false }
+) {
   let ctor, browser, args;
   if((ctor = Util.getGlobalObject('WritableStream'))) {
     browser = true;
@@ -376,7 +388,9 @@ export async function CreateWritableStream(handler, options = { decodeStrings: f
         super(...args);
       }
       _write(chunk, encoding, callback) {
-        if(options.decodeStrings === false && typeof chunk.toString == 'function')
+        if(options.decodeStrings === false &&
+          typeof chunk.toString == 'function'
+        )
           chunk = chunk.toString();
         let ret = handler.write(chunk);
 
@@ -400,14 +414,17 @@ export async function CreateWritableStream(handler, options = { decodeStrings: f
     args = [options];
 
     function handleReturnValue(ret, callback) {
-      if(ret instanceof Promise) ret.then(() => callback()).catch(err => callback(err));
+      if(ret instanceof Promise)
+        ret.then(() => callback()).catch(err => callback(err));
       else if(ret === true) callback();
     }
   }
   return new ctor(...args);
 }
 
-export async function CreateTransformStream(handler, options = { decodeStrings: false }) {
+export async function CreateTransformStream(handler,
+  options = { decodeStrings: false }
+) {
   let ctor, browser, args;
   if((ctor = Util.getGlobalObject('TransformStream'))) {
     browser = true;
@@ -433,7 +450,9 @@ export async function CreateTransformStream(handler, options = { decodeStrings: 
       _transform(chunk, encoding, done) {
         if(!('instance' in controller)) controller.instance = this;
         controller.callback = done;
-        if(options.decodeStrings == false && typeof chunk.toString == 'function')
+        if(options.decodeStrings == false &&
+          typeof chunk.toString == 'function'
+        )
           chunk = chunk.toString();
 
         handler.transform(chunk, controller);
@@ -472,10 +491,12 @@ export function RepeaterSource(stream) {
       }
     };
     function addListeners() {
-      for(let eventName in listeners) stream.addListener(eventName, listeners[eventName]);
+      for(let eventName in listeners)
+        stream.addListener(eventName, listeners[eventName]);
     }
     function removeListeners() {
-      for(let eventName in listeners) stream.removeListener(eventName, listeners[eventName]);
+      for(let eventName in listeners)
+        stream.removeListener(eventName, listeners[eventName]);
     }
     addListeners();
   });
@@ -510,7 +531,8 @@ export async function LineBufferStream(options = {}) {
 
   let stream = await CreateTransformStream({
       queue(str) {
-        if(typeof str != 'string') if (typeof str.toString == 'function') str = str.toString();
+        if(typeof str != 'string')
+          if(typeof str.toString == 'function') str = str.toString();
 
         if(lines.length > 0 && !lines[lines.length - 1].endsWith('\n'))
           lines[lines.length - 1] += str;
@@ -524,7 +546,9 @@ export async function LineBufferStream(options = {}) {
           this.queue(j ? chunk.slice(i, j) : chunk.slice(i));
           if(j == 0) break;
         }
-        while(lines.length > 0 && !(lines.length == 1 && !lines[0].endsWith('\n')))
+        while(lines.length > 0 &&
+          !(lines.length == 1 && !lines[0].endsWith('\n'))
+        )
           if(!controller.enqueue(lines.shift())) return false;
       },
       flush(controller) {
@@ -538,7 +562,10 @@ export async function LineBufferStream(options = {}) {
 }
 
 export function TextTransformStream(tfn) {
-  tfn = tfn || (chunk => (typeof chunk.toString == 'function' ? chunk.toString() : chunk + ''));
+  tfn =
+    tfn ||
+    (chunk =>
+      typeof chunk.toString == 'function' ? chunk.toString() : chunk + '');
   return CreateTransformStream({
     transform(chunk, controller) {
       chunk = tfn(chunk);
@@ -577,7 +604,8 @@ export async function* Reader(input) {
 
 export async function ReadAll(input) {
   let data = '';
-  for await(let chunk of await Reader(input)) data += filesystem.bufferToString(chunk);
+  for await(let chunk of await Reader(input))
+    data += filesystem.bufferToString(chunk);
   return data;
 }
 
@@ -602,13 +630,15 @@ export default {
 
 const blah =
   false &&
-  (function testTransform(str = 'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAH\nTEST\nXXX\n...\n\n') {
+  (function testTransform(str = 'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAH\nTEST\nXXX\n...\n\n'
+  ) {
     let ts = new DebugTransformStream();
     let rs = LineReader(str).pipeThrough(ts);
     let [loop, read] = rs.tee();
 
     (async () => {
-      for await(let item of await PipeToRepeater(loop)) console.log('Item:', item);
+      for await(let item of await PipeToRepeater(loop))
+        console.log('Item:', item);
     })();
     return readStream(read, []);
   })();

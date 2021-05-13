@@ -12,7 +12,8 @@ export const KeyEvents = {
   UP: 1 << 2,
   INPUT: 1 << 3
 };
-KeyEvents.ALL = KeyEvents.DOWN | KeyEvents.PRESS | KeyEvents.UP | KeyEvents.INPUT;
+KeyEvents.ALL =
+  KeyEvents.DOWN | KeyEvents.PRESS | KeyEvents.UP | KeyEvents.INPUT;
 
 /**
  * Represents a keystroke, or a single key code with a set of active modifiers.
@@ -136,7 +137,9 @@ export class Keyboard {
         event.metaKey = keystroke.metaKey;
         event.ctrlKey = keystroke.ctrlKey;
         event.keyCode =
-          type === 'keypress' ? this.charCodeForKeystroke(keystroke) : keystroke.keyCode;
+          type === 'keypress'
+            ? this.charCodeForKeystroke(keystroke)
+            : keystroke.keyCode;
         event.charCode = type === 'keypress' ? event.keyCode : 0;
         event.which = event.keyCode;
         break;
@@ -168,7 +171,10 @@ export class Keyboard {
     let currentModifierState = 0;
     for(let i = 0, length = input.length; i < length; i++) {
       const keystroke = this.keystrokeForCharCode(input.charCodeAt(i));
-      this.dispatchModifierStateTransition(target, currentModifierState, keystroke.modifiers);
+      this.dispatchModifierStateTransition(target,
+        currentModifierState,
+        keystroke.modifiers
+      );
       this.dispatchEventsForKeystroke(keystroke, target, false);
       currentModifierState = keystroke.modifiers;
     }
@@ -214,12 +220,19 @@ export class Keyboard {
     events = KeyEvents.ALL
   ) {
     if(transitionModifiers) {
-      this.dispatchModifierStateTransition(target, 0, keystroke.modifiers, events);
+      this.dispatchModifierStateTransition(target,
+        0,
+        keystroke.modifiers,
+        events
+      );
     }
 
     let keydownEvent;
     if(events & KeyEvents.DOWN) {
-      keydownEvent = this.createEventFromKeystroke('keydown', keystroke, target);
+      keydownEvent = this.createEventFromKeystroke('keydown',
+        keystroke,
+        target
+      );
     }
 
     if(keydownEvent &&
@@ -228,21 +241,36 @@ export class Keyboard {
     ) {
       let keypressEvent;
       if(events & KeyEvents.PRESS) {
-        keypressEvent = this.createEventFromKeystroke('keypress', keystroke, target);
+        keypressEvent = this.createEventFromKeystroke('keypress',
+          keystroke,
+          target
+        );
       }
-      if(keypressEvent && keypressEvent.charCode && target.dispatchEvent(keypressEvent)) {
+      if(keypressEvent &&
+        keypressEvent.charCode &&
+        target.dispatchEvent(keypressEvent)
+      ) {
         if(events & KeyEvents.INPUT) {
-          const textinputEvent = this.createEventFromKeystroke('textInput', keystroke, target);
+          const textinputEvent = this.createEventFromKeystroke('textInput',
+            keystroke,
+            target
+          );
           target.dispatchEvent(textinputEvent);
 
-          const inputEvent = this.createEventFromKeystroke('input', keystroke, target);
+          const inputEvent = this.createEventFromKeystroke('input',
+            keystroke,
+            target
+          );
           target.dispatchEvent(inputEvent);
         }
       }
     }
 
     if(events & KeyEvents.UP) {
-      const keyupEvent = this.createEventFromKeystroke('keyup', keystroke, target);
+      const keyupEvent = this.createEventFromKeystroke('keyup',
+        keystroke,
+        target
+      );
       target.dispatchEvent(keyupEvent);
     }
 
@@ -577,6 +605,8 @@ const US_ENGLISH_ACTION_KEYCODE_MAP = {
  *
  * @return {Keyboard}
  */
-Keyboard.US_ENGLISH = new Keyboard(US_ENGLISH_CHARCODE_KEYCODE_MAP, US_ENGLISH_ACTION_KEYCODE_MAP);
+Keyboard.US_ENGLISH = new Keyboard(US_ENGLISH_CHARCODE_KEYCODE_MAP,
+  US_ENGLISH_ACTION_KEYCODE_MAP
+);
 
 export default { KeyEvents, Keystroke, Keyboard };

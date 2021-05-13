@@ -13,7 +13,9 @@ class InvalidArgumentException extends Error {
  * @see See {@link http://ecma-international.org/ecma-262/5.1/#sec-7.6} for more info.
  */
 let getValidPropertyName = name => {
-  name = name.replace(/^[^A-Za-z$_]+/, match => new Array(match.length + 1).join('_'));
+  name = name.replace(/^[^A-Za-z$_]+/, match =>
+    new Array(match.length + 1).join('_')
+  );
 
   return name.replace(/[^a-z0-9$_]/gi, '_');
 };
@@ -100,7 +102,8 @@ export class Enum {
    */
   static create(items, extra = null) {
     if(extra && !Array.isArray(extra)) {
-      throw new InvalidArgumentException('Extra params should be an array or null');
+      throw new InvalidArgumentException('Extra params should be an array or null'
+      );
     }
 
     if(Array.isArray(extra) && extra.length !== Object.keys(items).length) {
@@ -120,7 +123,10 @@ export class Enum {
       }
 
       let value = items[name];
-      let enumInstance = new newEnum(name, value, Array.isArray(extra) ? extra[index] : null);
+      let enumInstance = new newEnum(name,
+        value,
+        Array.isArray(extra) ? extra[index] : null
+      );
       newEnum[propertyName] = enumInstance;
       valueToEnumMap[value] = enumInstance;
       nameToEnumMap[name.toUpperCase()] = enumInstance;

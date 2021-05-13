@@ -10,7 +10,11 @@ export const Object2Array = (xmlObj, flat) => {
 
   if(!flat)
     entries = entries.reduce((acc, [k, v]) => (
-        /*console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), */ deep.set(acc, k, v), acc
+        /*console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), */ deep.set(acc,
+          k,
+          v
+        ),
+        acc
       ),
       []
     );
@@ -29,7 +33,8 @@ export class XMLIterator extends IteratorAdapter {
     if(node.children && node.children.length > 0) {
       let a = node.children;
       let p = (path || []).concat(['children']);
-      for(let i = 0; i < a.length; i++) yield* this.iterate(a[i], f, p.concat([i]), root);
+      for(let i = 0; i < a.length; i++)
+        yield* this.iterate(a[i], f, p.concat([i]), root);
     }
   }
 }
@@ -46,7 +51,8 @@ class XMLAttribute {
     let i = 0;
     Util.define(a, { length });
 
-    for(let name of keys) if(a[name] === undefined) a[name] = new XMLAttribute(name, obj);
+    for(let name of keys)
+      if(a[name] === undefined) a[name] = new XMLAttribute(name, obj);
 
     return a;
   });

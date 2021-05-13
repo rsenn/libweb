@@ -38,7 +38,9 @@ peg$SyntaxError.buildMessage = function(expected, found) {
       for(i = 0; i < expectation.parts.length; i++) {
         escapedParts +=
           expectation.parts[i] instanceof Array
-            ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1])
+            ? classEscape(expectation.parts[i][0]) +
+              '-' +
+              classEscape(expectation.parts[i][1])
             : classEscape(expectation.parts[i]);
       }
 
@@ -118,7 +120,9 @@ peg$SyntaxError.buildMessage = function(expected, found) {
         return descriptions[0] + ' or ' + descriptions[1];
 
       default: return (
-          descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1]
+          descriptions.slice(0, -1).join(', ') +
+          ', or ' +
+          descriptions[descriptions.length - 1]
         );
     }
   }
@@ -127,7 +131,12 @@ peg$SyntaxError.buildMessage = function(expected, found) {
     return found ? '"' + literalEscape(found) + '"' : 'end of input';
   }
 
-  return 'Expected ' + describeExpected(expected) + ' but ' + describeFound(found) + ' found.';
+  return ('Expected ' +
+    describeExpected(expected) +
+    ' but ' +
+    describeFound(found) +
+    ' found.'
+  );
 };
 
 function peg$parse(input, options) {
@@ -138,7 +147,8 @@ function peg$parse(input, options) {
     peg$startRuleFunction = peg$parsesvg_path,
     peg$c0 = function(data) {
       if(!data) return [];
-      for(var cmds = [], i = 0; i < data.length; i++) cmds = cmds.concat.apply(cmds, data[i]);
+      for(var cmds = [], i = 0; i < data.length; i++)
+        cmds = cmds.concat.apply(cmds, data[i]);
       let first = cmds[0];
       if(first && first.code == 'm') {
         //Per spec, first moveto is never relative
@@ -256,7 +266,8 @@ function peg$parse(input, options) {
 
   if('startRule' in options) {
     if(!(options.startRule in peg$startRuleFunctions)) {
-      throw new Error('Can\'t start parsing from rule "' + options.startRule + '".');
+      throw new Error('Can\'t start parsing from rule "' + options.startRule + '".'
+      );
     }
 
     peg$startRuleFunction = peg$startRuleFunctions[options.startRule];
@@ -271,7 +282,10 @@ function peg$parse(input, options) {
   }
 
   function expected(description, location) {
-    location = location !== void 0 ? location : peg$computeLocation(peg$savedPos, peg$currPos);
+    location =
+      location !== void 0
+        ? location
+        : peg$computeLocation(peg$savedPos, peg$currPos);
 
     throw peg$buildStructuredError([peg$otherExpectation(description)],
       input.substring(peg$savedPos, peg$currPos),
@@ -280,7 +294,10 @@ function peg$parse(input, options) {
   }
 
   function error(message, location) {
-    location = location !== void 0 ? location : peg$computeLocation(peg$savedPos, peg$currPos);
+    location =
+      location !== void 0
+        ? location
+        : peg$computeLocation(peg$savedPos, peg$currPos);
 
     throw peg$buildSimpleError(message, location);
   }
@@ -2105,7 +2122,8 @@ function peg$parse(input, options) {
 
   function merge(first, more) {
     if(!more) return [first];
-    for(var a = [first], i = 0, l = more.length; i < l; i++) a[i + 1] = more[i][1];
+    for(var a = [first], i = 0, l = more.length; i < l; i++)
+      a[i + 1] = more[i][1];
     return a;
   }
 

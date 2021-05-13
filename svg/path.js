@@ -165,7 +165,14 @@ SvgPath.prototype.bezier2 = function(x1, y1, x, y) {
  */
 SvgPath.prototype.arc = function(rx, ry, rotation, large, sweep, x, y) {
   let point = typeof x === 'object' ? x : { x, y };
-  return this._cmd('A')(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
+  return this._cmd('A')(rx,
+    ry,
+    rotation,
+    large ? 1 : 0,
+    sweep ? 1 : 0,
+    point.x,
+    point.y
+  );
 };
 
 SvgPath.prototype.cmd = function(command, ...args) {
@@ -180,7 +187,8 @@ SvgPath.prototype.cmd = function(command, ...args) {
 SvgPath.prototype.str = function(digits, lineSep = ' ') {
   return this.commands
     .map(command => {
-      let str = Command.prototype.toString.call(command, digits) || command + '';
+      let str =
+        Command.prototype.toString.call(command, digits) || command + '';
 
       return str;
     })

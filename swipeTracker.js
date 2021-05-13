@@ -38,7 +38,10 @@ export class SwipeTracker {
         });
       });
       mouseObserver.subscribe(pos => {
-        if(this.mouse === null || !this.mouse || typeof this.mouse.move != 'function')
+        if(this.mouse === null ||
+          !this.mouse ||
+          typeof this.mouse.move != 'function'
+        )
           this.mouse = new Point(pos);
         else this.mouse.move(pos.x, pos.y);
       });
@@ -64,7 +67,8 @@ export class SwipeTracker {
         );
       });
       touchObserver.subscribe(pos => {
-        if(!this.touch || typeof this.touch.move !== 'function') this.touch = new Point(pos);
+        if(!this.touch || typeof this.touch.move !== 'function')
+          this.touch = new Point(pos);
         else this.touch.move(pos.x, pos.y);
       });
     }

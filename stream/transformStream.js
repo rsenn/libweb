@@ -9,14 +9,16 @@ import { WritableStream } from './writableStream.js';
 // Methods on the transform stream controller object
 
 function TransformStreamCloseReadable(transformStream) {
-  if(transformStream._errored === true) throw new TypeError('TransformStream is already errored');
+  if(transformStream._errored === true)
+    throw new TypeError('TransformStream is already errored');
   if(transformStream._readableClosed === true)
     throw new TypeError('Readable side is already closed');
   TransformStreamCloseReadableInternal(transformStream);
 }
 
 function TransformStreamEnqueueToReadable(transformStream, chunk) {
-  if(transformStream._errored === true) throw new TypeError('TransformStream is already errored');
+  if(transformStream._errored === true)
+    throw new TypeError('TransformStream is already errored');
 
   if(transformStream._readableClosed === true)
     throw new TypeError('Readable side is already closed');
@@ -46,7 +48,8 @@ function TransformStreamEnqueueToReadable(transformStream, chunk) {
 }
 
 function TransformStreamError(transformStream, e) {
-  if(transformStream._errored === true) throw new TypeError('TransformStream is already errored');
+  if(transformStream._errored === true)
+    throw new TypeError('TransformStream is already errored');
   TransformStreamErrorInternal(transformStream, e);
 }
 
@@ -59,17 +62,22 @@ function TransformStreamCloseReadableInternal(transformStream) {
 }
 
 function TransformStreamErrorIfNeeded(transformStream, e) {
-  if(transformStream._errored === false) TransformStreamErrorInternal(transformStream, e);
+  if(transformStream._errored === false)
+    TransformStreamErrorInternal(transformStream, e);
 }
 
 function TransformStreamErrorInternal(transformStream, e) {
   transformStream._errored = true;
   transformStream._storedError = e;
   if(transformStream._writableDone === false)
-    WritableStreamDefaultControllerError(transformStream._writableController, e);
+    WritableStreamDefaultControllerError(transformStream._writableController,
+      e
+    );
 
   if(transformStream._readableClosed === false)
-    ReadableStreamDefaultControllerError(transformStream._readableController, e);
+    ReadableStreamDefaultControllerError(transformStream._readableController,
+      e
+    );
 }
 
 // Used for preventing the next write() call on TransformStreamSink until there
@@ -122,7 +130,8 @@ function TransformStreamTransform(transformStream, chunk) {
 function IsTransformStreamDefaultController(x) {
   if(!typeIsObject(x)) return false;
 
-  if(!Object.prototype.hasOwnProperty.call(x, '_controlledTransformStream')) return false;
+  if(!Object.prototype.hasOwnProperty.call(x, '_controlledTransformStream'))
+    return false;
 
   return true;
 }
@@ -130,7 +139,8 @@ function IsTransformStreamDefaultController(x) {
 function IsTransformStream(x) {
   if(!typeIsObject(x)) return false;
 
-  if(!Object.prototype.hasOwnProperty.call(x, '_transformStreamController')) return false;
+  if(!Object.prototype.hasOwnProperty.call(x, '_transformStreamController'))
+    return false;
 
   return true;
 }
@@ -144,7 +154,9 @@ export class TransformStreamSink {
   start(c) {
     const transformStream = this._transformStream;
     transformStream._writableController = c;
-    return this._startPromise.then(() => TransformStreamReadableReadyPromise(transformStream));
+    return this._startPromise.then(() =>
+      TransformStreamReadableReadyPromise(transformStream)
+    );
   }
 
   write(chunk) {
@@ -155,15 +167,18 @@ export class TransformStreamSink {
   abort() {
     const transformStream = this._transformStream;
     transformStream._writableDone = true;
-    TransformStreamErrorInternal(transformStream, new TypeError('Writable side aborted'));
+    TransformStreamErrorInternal(transformStream,
+      new TypeError('Writable side aborted')
+    );
   }
 
   close() {
     const transformStream = this._transformStream;
     transformStream._writableDone = true;
-    const flushPromise = PromiseInvokeOrNoop(transformStream._transformer, 'flush', [
-      transformStream._transformStreamController
-    ]);
+    const flushPromise = PromiseInvokeOrNoop(transformStream._transformer,
+      'flush',
+      [transformStream._transformStreamController]
+    );
     // Return a promise that is fulfilled with undefined on success.
     return flushPromise
       .then(() => {
@@ -211,7 +226,9 @@ export class TransformStreamSource {
   cancel() {
     const transformStream = this._transformStream;
     transformStream._readableClosed = true;
-    TransformStreamErrorInternal(transformStream, new TypeError('Readable side canceled'));
+    TransformStreamErrorInternal(transformStream,
+      new TypeError('Readable side canceled')
+    );
   }
 }
 
@@ -290,7 +307,8 @@ export const TransformStream =
       this._backpressureChangePromise = undefined;
       this._backpressureChangePromise_resolve = undefined;
 
-      this._transformStreamController = new TransformStreamDefaultController(this);
+      this._transformStreamController = new TransformStreamDefaultController(this
+      );
 
       let startPromise_resolve;
       const startPromise = new Promise(resolve => {
@@ -305,7 +323,8 @@ export const TransformStream =
 
       this._writable = new WritableStream(sink, writableStrategy);
 
-      const desiredSize = ReadableStreamDefaultControllerGetDesiredSize(this._readableController);
+      const desiredSize = ReadableStreamDefaultControllerGetDesiredSize(this._readableController
+      );
       // Set _backpressure based on desiredSize. As there is no read() at this point, we can just interpret
       // desiredSize being non-positive as backpressure.
       TransformStreamSetBackpressure(this, desiredSize <= 0);
@@ -373,7 +392,8 @@ function WritableStreamDefaultControllerError(controller, e) {
 // Helper functions for the TransformStream.
 
 function streamBrandCheckException(name) {
-  return new TypeError(`TransformStream.prototype.${name} can only be used on a TransformStream`);
+  return new TypeError(`TransformStream.prototype.${name} can only be used on a TransformStream`
+  );
 }
 
 // Copied from helpers.js.

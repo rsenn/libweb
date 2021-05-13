@@ -52,7 +52,16 @@ State.prototype.clone = function() {
 };
 
 function initialState() {
-  return new State({ x: 0, y: 0, z: 0 }, 0, 0, 0, { x: 0, y: 0, z: 0 }, 0, 0, '', 0);
+  return new State({ x: 0, y: 0, z: 0 },
+    0,
+    0,
+    0,
+    { x: 0, y: 0, z: 0 },
+    0,
+    0,
+    '',
+    0
+  );
 }
 
 function nextState(gcode, prevState, linenum, i) {
@@ -127,7 +136,8 @@ function removeInLineComment(line) {
 async function parseGCode(fileContent) {
   //split gcode into lines and extract those that are relevent.  Also remove inline comments.
   const lines =
-    ((Util.isIterator(fileContent) || Util.isIterable(fileContent)) && fileContent) ||
+    ((Util.isIterator(fileContent) || Util.isIterable(fileContent)) &&
+      fileContent) ||
     fileContent.split(/\r\n|\n/);
   const gcode = [];
   const linenums = []; //an array of line numbers for each gcode command (numbers will be missing if there are comments/empty space
@@ -137,7 +147,9 @@ async function parseGCode(fileContent) {
     ++i;
 
     if(typeof item == 'string') {
-      const stripped = ((item.line && item.line) || item).replace(/^N\d+\s+/, '');
+      const stripped = ((item.line && item.line) || item).replace(/^N\d+\s+/,
+        ''
+      );
       if(stripped.match(/^(G|M)/)) gcode.push(removeInLineComment(stripped));
     } else {
       if(item.line[0] == '(') continue;

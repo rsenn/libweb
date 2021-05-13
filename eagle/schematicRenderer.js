@@ -43,15 +43,24 @@ export class SchematicRenderer extends EagleSVGRenderer {
    * @param      {<type>}  [opts={}]  The options
    */
   renderItem(item, parent, options = {}) {
-    const { transform = new TransformationList(), rot, pos, labelText, ...opts } = options;
+    const {
+      transform = new TransformationList(),
+      rot,
+      pos,
+      labelText,
+      ...opts
+    } = options;
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     this.debug(`SchematicRenderer.renderItem`, { item, options });
 
-    if(!('transformation' in opts)) opts.transformation = this.transform.concat(transform);
+    if(!('transformation' in opts))
+      opts.transformation = this.transform.concat(transform);
 
     const layer = item.layer;
     const color =
-      typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
+      typeof item.getColor == 'function'
+        ? item.getColor()
+        : SchematicRenderer.palette[16];
     const svg = (elem, attr, parent) =>
       this.create(elem, {
           className: item.tagName, //...LayerAttributes(layer),
@@ -242,11 +251,22 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     bounds = new BBox(rect.x1, -rect.y2, rect.x2, -rect.y1);
 
-    this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds, viewBox: rect });
+    this.debug(`SchematicRenderer.render`, {
+      doc,
+      sheetNo,
+      bounds,
+      viewBox: rect
+    });
     let { transform } = this;
     let svgElem = super.render(sheet, { bounds });
 
-    this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
+    this.debug('this.transform:',
+      this.transform,
+      'this.rect:',
+      this.rect,
+      'doc:',
+      doc
+    );
 
     this.renderSheet(sheet, svgElem);
     this.debug(`SchematicRenderer.render`, { sheet, svgElem });

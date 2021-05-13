@@ -3,7 +3,8 @@ import Util from './util.js';
 function Stack() {
   let stack = Util.getCallerStack(1, 100).map(Util.stackFrame);
 
-  stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
+  stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName)
+  );
   stack = stack.filter(({ typeName }) => typeName == 'Parser');
   stack = stack.map(({ functionName, methodName, position }) => ({
     method: functionName || methodName,
@@ -39,8 +40,14 @@ class Node {
       if(prop == 'type') continue;
       let value = node[prop];
       if(value instanceof Array || (value && value.map !== undefined))
-        value = value.map(v => `${indent}  ${v.toString ? v.toString() : v}`).join('\n');
-      else value = node[prop] && node[prop].toString ? node[prop].toString() : node[prop];
+        value = value
+          .map(v => `${indent}  ${v.toString ? v.toString() : v}`)
+          .join('\n');
+      else
+        value =
+          node[prop] && node[prop].toString
+            ? node[prop].toString()
+            : node[prop];
       str += indent + `  ${prop}:${value}\n`;
     }
 
@@ -257,7 +264,9 @@ const pairs =(table) => {
     }
 
     function js_local_statement({ variables, init }) {
-      return variables.map(({ name }, i) => `${name} = ${js(init[i])}`).join('\n');
+      return variables
+        .map(({ name }, i) => `${name} = ${js(init[i])}`)
+        .join('\n');
     }
 
     function js_do_statement({ body }) {
@@ -316,7 +325,9 @@ ${js(body)}
       let list = 0;
       const fields = node.fields
         .map(({ type, key, value }) =>
-          type == 'Recfield' ? `"${js(key)}": ${js(value)}` : `"${list++}": ${js(value)}`
+          type == 'Recfield'
+            ? `"${js(key)}": ${js(value)}`
+            : `"${list++}": ${js(value)}`
         )
         .join(', ');
       return `{${fields}}`;
@@ -337,15 +348,17 @@ ${js(body)}
     }
 
     function js_fornum_statement(node) {
-      return `for ${js(node.id)} = ${js(node.begin)}, ${js(node.end)}; ${js(node.id)} += ${js(node.step
-      )}) {
+      return `for ${js(node.id)} = ${js(node.begin)}, ${js(node.end)}; ${js(node.id
+      )} += ${js(node.step)}) {
                 ${js(node.body)}
             }
 `;
     }
 
     function js_forlist_statement(node) {
-      const left = node.left.map((variable, i) => `${js(variable)} = value[${i}]`).join('\n');
+      const left = node.left
+        .map((variable, i) => `${js(variable)} = value[${i}]`)
+        .join('\n');
 
       return `
             for(const iterator = ${js(node.right)};;) {
@@ -456,7 +469,9 @@ ${other}`;
           return js_function_declaration(node);
         case 'ReturnStatement':
           return js_return_statement(node);
-        default: throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
+        default: throw new Error(
+            `Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`
+          );
       }
     }
   }
@@ -498,7 +513,9 @@ class MoonScriptGenerator {
 
   subtree(node, multiline = false) {
     const subtree =
-      node && node.length !== undefined ? new Node({ type: 'Chunk', body: node }) : node; //new Node({ type: 'Program', body: node });
+      node && node.length !== undefined
+        ? new Node({ type: 'Chunk', body: node })
+        : node; //new Node({ type: 'Program', body: node });
     const gen = MoonScriptGenerator.create(subtree, multiline);
     return gen.to_moonscript(node);
   }
@@ -608,7 +625,9 @@ class MoonScriptGenerator {
         if(!isNaN(num)) key = num;
         if(field.type == 'Recfield')
           return (`['${key}']: ` +
-            generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`)
+            generator
+              .subtree(field.value, false, `${indent}  `)
+              .replace(/\n/g, `\n${indent}`)
           );
         return generator.str(field.value, node.multiline, indent);
       });
@@ -638,7 +657,8 @@ class MoonScriptGenerator {
             variable.name == r.left.name &&
             ['*', '%', '/', '+', '-'].indexOf(r.op) != -1
           ) {
-            return `${moonscript(variable)} ${r.op}${node.op} ${moonscript(node.right[i].right)}`;
+            return `${moonscript(variable)} ${r.op}${node.op} ${moonscript(node.right[i].right
+            )}`;
           }
 
           return `${moonscript(variable)} ${node.op} ${moonscript(r)}`;
@@ -647,13 +667,15 @@ class MoonScriptGenerator {
     }
 
     function moonscript_fornum_statement(node) {
-      return `for ${moonscript(node.id)} = ${moonscript(node.begin)}, ${moonscript(node.end
-      )}, ${moonscript(node.step)}
+      return `for ${moonscript(node.id)} = ${moonscript(node.begin
+      )}, ${moonscript(node.end)}, ${moonscript(node.step)}
   ${moonscript_body(node.body)}`;
     }
 
     function moonscript_forlist_statement(node) {
-      const left = node.left.map((variable, i) => moonscript(variable)).join(', ');
+      const left = node.left
+        .map((variable, i) => moonscript(variable))
+        .join(', ');
       return `for ${left} in ${moonscript(node.right)}
   ${moonscript_body(node.body)}`;
     }
@@ -1233,7 +1255,8 @@ class Lexer {
               peek = this.lookahead(1, true);
               if(!this.is_digit_or_letter(peek) && peek != '_') {
                 identifier = identifier.join('');
-                if(this.keywords[identifier]) return this.token(0, Token.KEYWORD, identifier);
+                if(this.keywords[identifier])
+                  return this.token(0, Token.KEYWORD, identifier);
                 return this.token(0, Token.IDENTIFIER, identifier);
               } else if(peek == undefined) {
                 return this.croak();
@@ -1271,7 +1294,9 @@ class Parser {
           this.log('position: ', this.cur_token.position, ' args: ', args);
           let ret = fn.apply(this, args);
           if(ret && ret !== null) {
-            this.log('ret: ', ret.toString ? ret.toString().replace(/\n/g, `\n${indent}`) : ret);
+            this.log('ret: ',
+              ret.toString ? ret.toString().replace(/\n/g, `\n${indent}`) : ret
+            );
             this.node = ret;
           }
 
@@ -1289,7 +1314,8 @@ class Parser {
     let stack = Util.getCallers(0, 10);
 
     stack = stack.filter(({ typeName, methodName, functionName }) =>
-        (typeName == 'Parser' || (methodName || functionName || '').indexOf('parse') != -1) &&
+        (typeName == 'Parser' ||
+          (methodName || functionName || '').indexOf('parse') != -1) &&
         methodName != 'log'
     );
     const names = stack
@@ -1787,7 +1813,9 @@ class Parser {
       expr = this.parse_simpleexp();
     }
 
-    while(this.is_binary() && Parser.OP[this.cur_token.value].prec >= min_prec) {
+    while(this.is_binary() &&
+      Parser.OP[this.cur_token.value].prec >= min_prec
+    ) {
       let token = this.next();
       let op = Parser.OP[token.value];
       let next_prec;
@@ -1823,7 +1851,9 @@ class Parser {
       this.next();
       return this.ast.comment(text);
     }
-    if(this.cur_token.type == Token.NUMBER || this.cur_token.type == Token.STRING) {
+    if(this.cur_token.type == Token.NUMBER ||
+      this.cur_token.type == Token.STRING
+    ) {
       //console.error("this.cur_token: ", this.lexer.quote, this.cur_token);
       let q = this.lexer.quote;
       let cur_token = this.next();
@@ -2002,7 +2032,9 @@ class Parser {
                           | <listfield>
          */
 
-    if(this.cur_token.value == '[' /* || this.cur_token.type == Token.IDENTIFIER*/) {
+    if(this.cur_token.value ==
+      '[' /* || this.cur_token.type == Token.IDENTIFIER*/
+    ) {
       return this.parse_recfield();
     }
     return this.parse_listfield();
@@ -2122,7 +2154,8 @@ class Parser {
       case 'HASH':
       case 'MINUS':
         return true;
-      default: if (this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
+      default: if (this.cur_token.value == 'not' || this.cur_token.value == '#')
+          return true;
         return false;
     }
   }
@@ -2137,7 +2170,9 @@ class Parser {
   }
 
   is_binary() {
-    if(Parser.OP[this.cur_token.value] && Parser.OP[this.cur_token.value].binary) {
+    if(Parser.OP[this.cur_token.value] &&
+      Parser.OP[this.cur_token.value].binary
+    ) {
       return true;
     }
     return false;

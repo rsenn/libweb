@@ -2,7 +2,8 @@ import PortableFileSystem from '../filesystem.js';
 import { EventEmitter } from '../eventEmitter.js';
 import Util from '../util.js';
 
-if(!globalThis.filesystem) PortableFileSystem(/*instance => (filesystem = instance)*/);
+if(!globalThis.filesystem)
+  PortableFileSystem(/*instance => (filesystem = instance)*/);
 
 export const WritableStream =
   Util.getGlobalObject().WritableStream ||
@@ -47,7 +48,11 @@ export const WritableStream =
       let result = this.length < this.highWaterMark;
       this.needDrain = !result;
       cb =
-        cb || (r => this.emit('data', r > 0 && r < chunk.byteLength ? chunk.slice(0, r) : chunk));
+        cb ||
+        (r =>
+          this.emit('data',
+            r > 0 && r < chunk.byteLength ? chunk.slice(0, r) : chunk
+          ));
       /* const { pos, length, writing } =this;
     console.log('write:',  { pos, length, writing });*/
 
@@ -64,7 +69,8 @@ export const WritableStream =
     }
 
     _write(chunk, encoding, cb) {
-      if(this.fd === undefined) return this.once('open', () => this._write(chunk, encoding, cb));
+      if(this.fd === undefined)
+        return this.once('open', () => this._write(chunk, encoding, cb));
       //  console.log("filesystem.write(",this.fd, chunk, 0, chunk.byteLength, ")");
       let bytesWrite = filesystem.write(this.fd, chunk, 0, chunk.byteLength);
       // console.log("bytesWrite:",bytesWrite);
@@ -80,7 +86,10 @@ export const WritableStream =
     clearBuffer() {
       let buf = this.buffers.shift();
       if(buf) {
-        this._write(buf.chunk, buf.encoding, () => (buf.cb && buf.cb(), this.clearBuffer()));
+        this._write(buf.chunk,
+          buf.encoding,
+          () => (buf.cb && buf.cb(), this.clearBuffer())
+        );
       } else {
         if(this.needDrain) {
           this.needDrain = false;

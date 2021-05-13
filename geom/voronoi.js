@@ -216,8 +216,10 @@ export class Voronoi {
     if(vb) {
       this.setEdgeEndpoint(edge, lSite, rSite, vb);
     }
-    this.cells[lSite.voronoiId].halfedges.push(this.createHalfedge(edge, lSite, rSite));
-    this.cells[rSite.voronoiId].halfedges.push(this.createHalfedge(edge, rSite, lSite));
+    this.cells[lSite.voronoiId].halfedges.push(this.createHalfedge(edge, lSite, rSite)
+    );
+    this.cells[rSite.voronoiId].halfedges.push(this.createHalfedge(edge, rSite, lSite)
+    );
     return edge;
   }
 
@@ -272,7 +274,8 @@ export class Voronoi {
   //performance gain.
 
   createBeachsection(site) {
-    let beachsection = this.beachsectionJunkyard.pop() || new this.Beachsection();
+    let beachsection =
+      this.beachsectionJunkyard.pop() || new this.Beachsection();
 
     beachsection.site = site;
     return beachsection;
@@ -337,7 +340,14 @@ export class Voronoi {
       b = hl / plby2;
     if(aby2)
       return ((-b +
-          this.sqrt(b * b - 2 * aby2 * ((hl * hl) / (-2 * plby2) - lfocy + plby2 / 2 + rfocy - pby2 / 2)
+          this.sqrt(b * b -
+              2 *
+                aby2 *
+                ((hl * hl) / (-2 * plby2) -
+                  lfocy +
+                  plby2 / 2 +
+                  rfocy -
+                  pby2 / 2)
           )) /
           aby2 +
         rfocx
@@ -600,7 +610,9 @@ export class Voronoi {
         d = 2 * (bx * cy - by * cx),
         hb = bx * bx + by * by,
         hc = cx * cx + cy * cy,
-        vertex = this.createVertex((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
+        vertex = this.createVertex((cy * hb - by * hc) / d + ax,
+          (bx * hc - cx * hb) / d + ay
+        );
 
       //one transition disappear
       this.setEdgeStartpoint(rArc.edge, lSite, rSite, vertex);
@@ -713,7 +725,9 @@ export class Voronoi {
     let predecessor = null,
       node = this.circleEvents.root;
     while(node) {
-      if(circleEvent.y < node.y || (circleEvent.y === node.y && circleEvent.x <= node.x)) {
+      if(circleEvent.y < node.y ||
+        (circleEvent.y === node.y && circleEvent.x <= node.x)
+      ) {
         if(node.rbLeft) {
           node = node.rbLeft;
         } else {
@@ -1029,7 +1043,8 @@ export class Voronoi {
       //it is looking more like a point than a line
       if(!this.connectEdge(edge, bbox) ||
         !this.clipEdge(edge, bbox) ||
-        (abs_fn(edge.va.x - edge.vb.x) < 1e-9 && abs_fn(edge.va.y - edge.vb.y) < 1e-9)
+        (abs_fn(edge.va.x - edge.vb.x) < 1e-9 &&
+          abs_fn(edge.va.y - edge.vb.y) < 1e-9)
       ) {
         edge.va = edge.vb = null;
         edges.splice(iEdge, 1);
@@ -1092,12 +1107,16 @@ export class Voronoi {
           //find entry point:
           switch (true) {
             //walk downward along left side
-            case this.equalWithEpsilon(va.x, xl) && this.lessThanWithEpsilon(va.y, yb):
+            case this.equalWithEpsilon(va.x, xl) &&
+              this.lessThanWithEpsilon(va.y, yb):
               lastBorderSegment = this.equalWithEpsilon(vz.x, xl);
               vb = this.createVertex(xl, lastBorderSegment ? vz.y : yb);
               edge = this.createBorderEdge(cell.site, va, vb);
               iLeft++;
-              halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+              halfedges.splice(iLeft,
+                0,
+                this.createHalfedge(edge, cell.site, null)
+              );
               nHalfedges++;
               if(lastBorderSegment) {
                 break;
@@ -1106,12 +1125,16 @@ export class Voronoi {
             //fall through
 
             //walk rightward along bottom side
-            case this.equalWithEpsilon(va.y, yb) && this.lessThanWithEpsilon(va.x, xr):
+            case this.equalWithEpsilon(va.y, yb) &&
+              this.lessThanWithEpsilon(va.x, xr):
               lastBorderSegment = this.equalWithEpsilon(vz.y, yb);
               vb = this.createVertex(lastBorderSegment ? vz.x : xr, yb);
               edge = this.createBorderEdge(cell.site, va, vb);
               iLeft++;
-              halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+              halfedges.splice(iLeft,
+                0,
+                this.createHalfedge(edge, cell.site, null)
+              );
               nHalfedges++;
               if(lastBorderSegment) {
                 break;
@@ -1120,12 +1143,16 @@ export class Voronoi {
             //fall through
 
             //walk upward along right side
-            case this.equalWithEpsilon(va.x, xr) && this.greaterThanWithEpsilon(va.y, yt):
+            case this.equalWithEpsilon(va.x, xr) &&
+              this.greaterThanWithEpsilon(va.y, yt):
               lastBorderSegment = this.equalWithEpsilon(vz.x, xr);
               vb = this.createVertex(xr, lastBorderSegment ? vz.y : yt);
               edge = this.createBorderEdge(cell.site, va, vb);
               iLeft++;
-              halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+              halfedges.splice(iLeft,
+                0,
+                this.createHalfedge(edge, cell.site, null)
+              );
               nHalfedges++;
               if(lastBorderSegment) {
                 break;
@@ -1134,12 +1161,16 @@ export class Voronoi {
             //fall through
 
             //walk leftward along top side
-            case this.equalWithEpsilon(va.y, yt) && this.greaterThanWithEpsilon(va.x, xl):
+            case this.equalWithEpsilon(va.y, yt) &&
+              this.greaterThanWithEpsilon(va.x, xl):
               lastBorderSegment = this.equalWithEpsilon(vz.y, yt);
               vb = this.createVertex(lastBorderSegment ? vz.x : xl, yt);
               edge = this.createBorderEdge(cell.site, va, vb);
               iLeft++;
-              halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+              halfedges.splice(iLeft,
+                0,
+                this.createHalfedge(edge, cell.site, null)
+              );
               nHalfedges++;
               if(lastBorderSegment) {
                 break;
@@ -1152,7 +1183,10 @@ export class Voronoi {
               vb = this.createVertex(xl, lastBorderSegment ? vz.y : yb);
               edge = this.createBorderEdge(cell.site, va, vb);
               iLeft++;
-              halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+              halfedges.splice(iLeft,
+                0,
+                this.createHalfedge(edge, cell.site, null)
+              );
               nHalfedges++;
               if(lastBorderSegment) {
                 break;
@@ -1165,7 +1199,10 @@ export class Voronoi {
               vb = this.createVertex(lastBorderSegment ? vz.x : xr, yb);
               edge = this.createBorderEdge(cell.site, va, vb);
               iLeft++;
-              halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+              halfedges.splice(iLeft,
+                0,
+                this.createHalfedge(edge, cell.site, null)
+              );
               nHalfedges++;
               if(lastBorderSegment) {
                 break;
@@ -1178,7 +1215,10 @@ export class Voronoi {
               vb = this.createVertex(xr, lastBorderSegment ? vz.y : yt);
               edge = this.createBorderEdge(cell.site, va, vb);
               iLeft++;
-              halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+              halfedges.splice(iLeft,
+                0,
+                this.createHalfedge(edge, cell.site, null)
+              );
               nHalfedges++;
               if(lastBorderSegment) {
                 break;
@@ -1197,7 +1237,9 @@ export class Voronoi {
   //---------------------------------------------------------------------------
   //Debugging helper
   dumpBeachline(y) {
-    console.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:', y);
+    console.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:',
+      y
+    );
     if(!this.beachline) {
       console.log('  None');
     } else {
@@ -1301,7 +1343,11 @@ export class Voronoi {
       circle = this.firstCircleEvent;
 
       //add beach section
-      if(site && (!circle || site.y < circle.y || (site.y === circle.y && site.x < circle.x))) {
+      if(site &&
+        (!circle ||
+          site.y < circle.y ||
+          (site.y === circle.y && site.x < circle.x))
+      ) {
         //only if site is not a duplicate
         if(site.x !== xsitex || site.y !== xsitey) {
           //first create cell for new site
@@ -1699,7 +1745,9 @@ export class Cell {
       edge = this.halfedges[iHalfedge].edge;
       if(edge.lSite !== null && edge.lSite.voronoiId != this.site.voronoiId) {
         neighbors.push(edge.lSite.voronoiId);
-      } else if(edge.rSite !== null && edge.rSite.voronoiId != this.site.voronoiId) {
+      } else if(edge.rSite !== null &&
+        edge.rSite.voronoiId != this.site.voronoiId
+      ) {
         neighbors.push(edge.rSite.voronoiId);
       }
     }

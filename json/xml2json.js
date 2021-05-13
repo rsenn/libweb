@@ -54,9 +54,12 @@ function xml2json_translator() {
           for(var n = xml.firstChild; n; n = n.nextSibling) {
             if(n.nodeType == 1) {
               hasElementChild = true;
-              elemCount[n.nodeName] = elemCount[n.nodeName] ? elemCount[n.nodeName] + 1 : 1;
+              elemCount[n.nodeName] = elemCount[n.nodeName]
+                ? elemCount[n.nodeName] + 1
+                : 1;
               if(elemCount[n.nodeName] > 1) needsArray = true;
-            } else if(n.nodeType == 3 && n.nodeValue.match(/[^\ \f\n\r\t\v]/)) textChild++;
+            } else if(n.nodeType == 3 && n.nodeValue.match(/[^\ \f\n\r\t\v]/))
+              textChild++;
             //non-whitespace text
             else if(n.nodeType == 4) cdataChild++; //cdata section node
           }
@@ -134,7 +137,10 @@ function xml2json_translator() {
           if(typeof o[i] == 'string') extra_indent = ind + '\t';
           o[i] = extra_indent + X.toJson(o[i], ind + '\t');
         }
-        json += '[' + (o.length > 1 ? '\n' + o.join(',\n') + '\n' + ind : o.join('')) + ']';
+        json +=
+          '[' +
+          (o.length > 1 ? '\n' + o.join(',\n') + '\n' + ind : o.join('')) +
+          ']';
       } else if(o == null) json += 'null';
       else if(typeof o == 'string') json += '"' + o.toString() + '"';
       else if(typeof o == 'object') {
@@ -144,7 +150,13 @@ function xml2json_translator() {
         for(var member in o) i++;
         //...so that we know when we are at the last element when doing this
         for(var member in o) {
-          json += '\n' + ind + '\t"' + member + '":' + X.toJson(o[member], ind + '\t');
+          json +=
+            '\n' +
+            ind +
+            '\t"' +
+            member +
+            '":' +
+            X.toJson(o[member], ind + '\t');
           json += i > 1 ? ',' : '\n' + ind;
           i--;
         }

@@ -1,7 +1,8 @@
 import Util from '../util.js';
 import { Lexer, lexMatch, lexIsToken } from './lexer.js';
 
-const addUnique = (arr, item) => (arr && arr.indexOf(item) != -1 ? arr || [] : add(arr.item));
+const addUnique = (arr, item) =>
+  arr && arr.indexOf(item) != -1 ? arr || [] : add(arr.item);
 const add = (arr, item) => [...(arr || []), item];
 
 export class Node {
@@ -52,7 +53,8 @@ export class Parser {
     let { lexer } = this;
 
     const parser = this;
-    if(this.tokIndex < this.tokens.length) return newTok(this.tokens[this.tokIndex]);
+    if(this.tokIndex < this.tokens.length)
+      return newTok(this.tokens[this.tokIndex]);
 
     let it = this.lexer.next();
     let { value, done } = it;
@@ -72,7 +74,9 @@ export class Parser {
       parser.token = { tok, str };
       parser.tokens = add(parser.tokens, parser.token);
       if(tokIndex > parser.prevTok)
-        console.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`, parser.token);
+        console.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`,
+          parser.token
+        );
       return Util.define({ ...parser.token }, { unget });
     }
     return null;
@@ -105,10 +109,13 @@ export class Parser {
     //console.log('token:', token);
 
     if(!r)
-      throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.inspect(s, {
-          multiline: false,
-          colors: false
-        })})  ${Lexer.tokenName(token.tok)}, ${Util.inspect(token.str)}`
+      throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.inspect(
+          s,
+          {
+            multiline: false,
+            colors: false
+          }
+        )})  ${Lexer.tokenName(token.tok)}, ${Util.inspect(token.str)}`
       );
     return this.getTok();
   }

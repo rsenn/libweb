@@ -179,7 +179,12 @@ function GpmClient(options) {
           case GPM_DOWN:
             self.emit('btndown', evnt.buttons, evnt.modifiers, evnt.x, evnt.y);
             if(evnt.type & GPM_DOUBLE) {
-              self.emit('dblclick', evnt.buttons, evnt.modifiers, evnt.x, evnt.y);
+              self.emit('dblclick',
+                evnt.buttons,
+                evnt.modifiers,
+                evnt.x,
+                evnt.y
+              );
             }
             break;
           case GPM_UP:

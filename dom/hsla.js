@@ -17,7 +17,11 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
 
   /*  if(!this) return Object.assign({}, HSLA.prototype, { h, s, l, a });*/
 
-  if(typeof args[0] == 'object' && 'h' in args[0] && 's' in args[0] && 'l' in args[0]) {
+  if(typeof args[0] == 'object' &&
+    'h' in args[0] &&
+    's' in args[0] &&
+    'l' in args[0]
+  ) {
     ret.h = args[0].h;
     ret.s = args[0].s;
     ret.l = args[0].l;
@@ -31,7 +35,8 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     const arg = args[0];
     if(typeof arg === 'string') {
       let matches =
-        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
+        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg
+        ) ||
         /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) c = [...matches].slice(1);
@@ -44,8 +49,12 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.a = c[3] !== undefined ? c[3] : 1.0;
 
     ['h', 's', 'l', 'a'].forEach(channel => {
-      if(String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));
-      else ret[channel] = parseFloat(ret[channel]) * (channel == 'a' || channel == 'h' ? 1 : 100);
+      if(String(ret[channel]).endsWith('%'))
+        ret[channel] = parseFloat(ret[channel].slice(0, -1));
+      else
+        ret[channel] =
+          parseFloat(ret[channel]) *
+          (channel == 'a' || channel == 'h' ? 1 : 100);
     });
   } else {
     ret.h = 0;
@@ -160,7 +169,12 @@ HSLA.prototype.toString = function() {
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
-HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
+HSLA.random = function(h = [0, 360],
+  s = [0, 100],
+  l = [0, 100],
+  a = [1, 1],
+  rng = Math.random
+) {
   return new HSLA(Util.randInt(h, rng),
     Util.randInt(s, rng),
     Util.randInt(l, rng),
@@ -168,12 +182,25 @@ HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng
   );
 };
 HSLA.prototype.dump = function() {
-  console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
+  console.log(`[%c    %c]`,
+    `background: ${this.toString()};`,
+    `background: none`,
+    this
+  );
   return this;
 };
 
-for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {
+for(let name of [
+  'css',
+  'toHSL',
+  'clamp',
+  'round',
+  'hex',
+  'toRGBA',
+  'toString'
+]) {
   HSLA[name] = hsla => HSLA.prototype[name].call(hsla || new HSLA());
 }
 
-export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
+export const isHSLA = obj =>
+  HSLA.properties.every(prop => obj.hasOwnProperty(prop));

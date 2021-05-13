@@ -37,7 +37,10 @@ const iterateArray = (arr = [], opts = {}, iteratee = noop, done = noop) => {
   opts.batchSize = opts.batchSize || 1;
 
   const loop = (i = 0) => {
-    for(let count = 0; i < arr.length && count < opts.batchSize; ++i, ++count) {
+    for(let count = 0;
+      i < arr.length && count < opts.batchSize;
+      ++i, ++count
+    ) {
       iteratee(arr[i], i, arr);
     }
     if(i < arr.length) {
@@ -244,7 +247,8 @@ export const parseStringSync = (str, options) => {
   return results;
 };
 
-let TransformStream = Util.getGlobalObject().TransformStream || transformStream.TransformStream;
+let TransformStream =
+  Util.getGlobalObject().TransformStream || transformStream.TransformStream;
 
 // @param {string} str The G-code text string
 // @param {options} options The options object
@@ -277,7 +281,8 @@ export class GCodeLineStream extends TransformStream {
         transform(chunk, controller) {
           const { instance } = this;
           instance._transform(chunk, 'utf8', () => {
-            while(instance.queue.length) controller.enqueue(instance.queue.shift());
+            while(instance.queue.length)
+              controller.enqueue(instance.queue.shift());
           });
           //console.debug('transform', instance._transform, { instance, chunk, controller });
         },
@@ -285,7 +290,8 @@ export class GCodeLineStream extends TransformStream {
         flush(controller) {
           const { instance } = this;
           instance._flush(() => {
-            while(instance.queue.length) controller.enqueue(instance.queue.shift());
+            while(instance.queue.length)
+              controller.enqueue(instance.queue.shift());
           });
           // console.debug('flush', instance._flush, { instance, controller });
         }
@@ -329,7 +335,8 @@ export class GCodeLineStream extends TransformStream {
       lines.shift();
     }
 
-    this.state.lastChunkEndedWithCR = this.lineBuffer[this.lineBuffer.length - 1] === '\r';
+    this.state.lastChunkEndedWithCR =
+      this.lineBuffer[this.lineBuffer.length - 1] === '\r';
 
     if(this.lineBuffer[this.lineBuffer.length - 1] === '\r' ||
       this.lineBuffer[this.lineBuffer.length - 1] === '\n'

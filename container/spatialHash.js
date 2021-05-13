@@ -89,7 +89,11 @@ SpatialHash.prototype.update = function(item) {
   this.insert(item);
 };
 
-SpatialHash.prototype.srch = function(range, selector, callback, returnOnFirst) {
+SpatialHash.prototype.srch = function(range,
+  selector,
+  callback,
+  returnOnFirst
+) {
   let b = getBounds(range),
     bucketSize = this.bucketSize;
 

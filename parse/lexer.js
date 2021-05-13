@@ -41,7 +41,9 @@ const lexString = lexer => {
       }
       if(ret === -1) break;
       if(s.endsWith('\\\\')) {
-        console.log('lexer.source.substring', lexer.source.substring(lexer.pos - 1, lexer.pos + 1));
+        console.log('lexer.source.substring',
+          lexer.source.substring(lexer.pos - 1, lexer.pos + 1)
+        );
         lexer.skip();
         continue;
       }
@@ -241,9 +243,11 @@ export class Lexer {
       lexer.lexWhile(/[ \n\r\t]$/);
       if(lexer.start < lexer.pos) return Lexer.tokens.WHITESPACE;
       if(!(lexer.start < lexer.pos)) {
-        console.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${
-            lexer.pos
-          } len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`
+        console.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${
+            lexer.start
+          } pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start,
+            lexer.pos + 1
+          )}'`
         );
         return 0;
       }
@@ -256,7 +260,15 @@ export class Lexer {
     let tokIndex = -1;
     let len = source.length;
 
-    Util.define(this, { source, tokIndex, file, len, line: 1, column: 1, eof: false });
+    Util.define(this, {
+      source,
+      tokIndex,
+      file,
+      len,
+      line: 1,
+      column: 1,
+      eof: false
+    });
 
     const { pos, start } = this;
     console.log('Lexer.constructor', { file, pos, start, tokIndex, len });
@@ -305,7 +317,11 @@ export class Lexer {
 
     const result = (tok, s, done = false) => {
       this.tokIndex++;
-      let str = s || (this.pos == this.len ? -1 : this.source.substring(this.start, this.pos));
+      let str =
+        s ||
+        (this.pos == this.len
+          ? -1
+          : this.source.substring(this.start, this.pos));
       let value = Lexer.token({
         tok,
         str
@@ -367,7 +383,10 @@ export class Lexer {
     }
 
     if(tok == -1 || tok === 0) {
-      if(tok === 0) console.log('source:', this.source.substring(this.start).split(/\n/g)[0]);
+      if(tok === 0)
+        console.log('source:',
+          this.source.substring(this.start).split(/\n/g)[0]
+        );
 
       /*console.log('retvals:', retvals);
       console.log('posisionts:', positions);*/
