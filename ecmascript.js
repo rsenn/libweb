@@ -73,4 +73,15 @@ export {
 export { Printer } from './ecmascript/printer.js';
 export { ECMAScriptInterpreter } from './ecmascript/interpreter.js';
 export { Environment } from './ecmascript/environment.js';
-export { PathReplacer } from './ecmascript/lexer.js';
+
+
+
+export function PathReplacer() {
+  let re;
+  try {
+    let pwd = process.cwd();
+    re = new RegExp(`(file://)?${pwd}/`, 'g');
+    t = s => s.replace(re, '');
+  } catch(err) {}
+  return (path, to = '') => (re ? path.replace(re, to) : path);
+}

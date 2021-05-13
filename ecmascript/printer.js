@@ -1,6 +1,6 @@
 import { ESNode, Literal, FunctionLiteral, TemplateLiteral, Property, MethodDefinition, FunctionDeclaration, ArrowFunctionExpression, Identifier, ClassDeclaration, ObjectPattern, SpreadElement, MemberExpression, Statement, ImportDeclaration, ImportSpecifier, BlockStatement, IfStatement } from './estree.js';
 import Util from '../util.js';
-import deep from '../deep.js';
+import * as deep from '../deep.js';
 //import util from 'util';
 //import util from 'util';
 const linebreak = new RegExp('\\r?\\n', 'g');
@@ -918,7 +918,7 @@ export class Printer {
       prefix = '*';
       prop = prop.substring(1);
     }
-    console.log('printProperty', { key, prop, isFunction, shorthand });
+    // console.log('printProperty', { key, prop, isFunction, shorthand });
     if(key && (!(key instanceof Identifier) || key?.type != 'Identifier')) name = '[' + name + ']';
 
     if(!isFunction) s += name;

@@ -1,13 +1,13 @@
 import Util from '../util.js';
 import { inspect } from 'util';
 
-/*import { Lexer, SyntaxError, Location, Token } from './lexer.js';
-export { Lexer, SyntaxError, Location, Token } from './lexer.js';*/
+import { Lexer, SyntaxError, Location, Token } from './lexer.js';
+export { Lexer, SyntaxError, Location, Token } from './lexer.js';
 
-import { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';
-export { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';
+/*import { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';
+export { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';*/
 
-import * as deep from 'deep';
+import * as deep from '../deep.js';
 //import util from 'util';
 import { TokenList } from './token.js';
 import { Printer } from './printer.js';
