@@ -65,8 +65,7 @@ export class EagleDocument extends EagleNode {
     this.data = xmlStr;
 
     Util.define(this, {
-      raw2element: Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw)
-      )
+      raw2element: Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
     });
 
     const { pathMapper, raw2element } = this;
@@ -114,8 +113,7 @@ export class EagleDocument extends EagleNode {
 
     Util.define(this,
       'palette',
-      Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b)
-      )
+      Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
 
     //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
@@ -205,15 +203,11 @@ fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
   }
 
   *getAll(pred, transform) {
-    yield* super.getAll(pred,
-      transform || ((v, p, o) => EagleElement.get(this, p, v))
-    );
+    yield* super.getAll(pred, transform || ((v, p, o) => EagleElement.get(this, p, v)));
   }
 
   find(pred, transform) {
-    return super.find(pred,
-      transform || ((v, p, o) => EagleElement.get(this, p, v))
-    );
+    return super.find(pred, transform || ((v, p, o) => EagleElement.get(this, p, v)));
   }
 
   lookup(xpath) {
@@ -239,9 +233,7 @@ fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
     if(this.type == 'sch') {
-      return this.sheets[sheetNo].getBounds(v =>
-        /(instance|net)/.test(v.tagName)
-      );
+      return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
     } else if(this.elements) {
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
@@ -256,10 +248,7 @@ fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
           .filter(c => !!c.geometry)
       );
       bb.update([...project.doc.elements.list].map(e =>
-          e.package
-            .getBounds()
-            .toRect(Rect.prototype)
-            .transform(e.transformation())
+          e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())
         )
       );
 
@@ -270,8 +259,7 @@ fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
   }
 
   getMeasures(options = {}) {
-    const { bbox, geometry, points } =
-      typeof options == 'boolean' ? { bbox: true } : options;
+    const { bbox, geometry, points } = typeof options == 'boolean' ? { bbox: true } : options;
     //console.log("this.type", this.type);
     let plain = this.plain;
 
@@ -280,13 +268,11 @@ fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
     if(plain) plain = plain.filter(e => e.tagName == 'wire');
 
     if(plain) {
-      let measures = plain.filter(obj =>
-          obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1
+      let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1
       );
 
       if(measures.length) {
-        if(bbox || geometry || points)
-          measures = measures.map(e => e.geometry);
+        if(bbox || geometry || points) measures = measures.map(e => e.geometry);
 
         if(points)
           measures = measures
@@ -321,8 +307,7 @@ fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
     return new Map([...this.signals].map(([name, signal]) => {
         let objects = [...signal.children]
           .map(child => [child, child.geometry])
-          .filter(([child, geometry]) => !!geometry || child.tagName == 'contactref'
-          )
+          .filter(([child, geometry]) => !!geometry || child.tagName == 'contactref')
           .map(([child, geometry]) => child);
 
         return [name, objects];
@@ -331,9 +316,7 @@ fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
   }
 
   getLayer(id) {
-    for(let name_or_id of (id + '')
-      .split(/\s+/g)
-      .map(n => (+n !== NaN ? +n : n))) {
+    for(let name_or_id of (id + '').split(/\s+/g).map(n => (+n !== NaN ? +n : n))) {
       const layer = this.layers[name_or_id];
       if(layer) return layer;
     }
