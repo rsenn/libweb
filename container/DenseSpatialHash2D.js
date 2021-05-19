@@ -68,11 +68,7 @@ export class DenseSpatialHash2D {
       const minY = y >> bucketSizePow2;
       const maxX = (x + w) >> bucketSizePow2;
       const maxY = (y + h) >> bucketSizePow2;
-      const changed =
-        minX !== rect[4] ||
-        minY !== rect[5] ||
-        maxX !== rect[6] ||
-        maxY !== rect[7];
+      const changed = minX !== rect[4] || minY !== rect[5] || maxX !== rect[6] || maxY !== rect[7];
       if(changed) {
         this.deleteFromBuckets(id);
       }
@@ -95,12 +91,7 @@ export class DenseSpatialHash2D {
   setRect(id, x, y, w, h) {
     if(id >= 0 && id < this.rects.length) {
       const rect = this.rects[id];
-      return this.addRect(id,
-        x - rect[0],
-        y - rect[1],
-        w - rect[2],
-        h - rect[3]
-      );
+      return this.addRect(id, x - rect[0], y - rect[1], w - rect[2], h - rect[3]);
     }
     return false;
   }

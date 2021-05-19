@@ -3,18 +3,10 @@ export const Event = {
     let evtName = typeof type === 'string' ? 'key' + type : 'keydown';
     //var modifier = (typeof(modifiers) === "object") ? modifier : {};
 
-    const {
-      ctrlKey = false,
-      shiftKey = false,
-      altKey = false,
-      metaKey = false
-    } = modifiers || {};
+    const { ctrlKey = false, shiftKey = false, altKey = false, metaKey = false } = modifiers || {};
 
     let key = keyCode == 9 ? 'Tab' : String.fromCodePoint(keyCode);
-    let code =
-      keyCode == 9
-        ? 'Tab'
-        : 'Key' + String.fromCodePoint(keyCode).toUpperCase();
+    let code = keyCode == 9 ? 'Tab' : 'Key' + String.fromCodePoint(keyCode).toUpperCase();
 
     //var event = Object.assign(new window.Event('keydown'), {keyCode, key,code, ctrlKey,shiftKey,altKey,metaKey});
     //, srcElement: target, target: target, currentTarget: target, view: window });

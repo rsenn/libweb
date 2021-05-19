@@ -162,9 +162,7 @@ Point.prototype.neg = function() {
   return this;
 };
 Point.prototype.distanceSquared = function(other = { x: 0, y: 0 }) {
-  return ((other.y - this.y) * (other.y - this.y) +
-    (other.x - this.x) * (other.x - this.x)
-  );
+  return (other.y - this.y) * (other.y - this.y) + (other.x - this.x) * (other.x - this.x);
 };
 Point.prototype.distance = function(other = { x: 0, y: 0 }) {
   return Math.sqrt(Point.prototype.distanceSquared.call(this, Point(other)));
@@ -236,14 +234,7 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
 };
 */ Point.prototype.toString = function(opts = {}
 ) {
-  const {
-    precision = 0.001,
-    unit = '',
-    separator = ',',
-    left = '',
-    right = '',
-    pad = 0
-  } = opts;
+  const { precision = 0.001, unit = '', separator = ',', left = '', right = '', pad = 0 } = opts;
   let x = Util.roundTo(this.x, precision);
   let y = Util.roundTo(this.y, precision);
   if(pad > 0) {
@@ -253,18 +244,11 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
     if(x[0] != '-') x = ' ' + x;
   }
   //console.debug("toString", {x,y}, {pad});
-  return `${left}${(x + '').padStart(pad, ' ')}${unit}${separator}${(y + ''
-  ).padEnd(pad, ' ')}${unit}${right}`;
+  return `${left}${(x + '').padStart(pad, ' ')}${unit}${separator}${(y + '').padEnd(pad,
+    ' '
+  )}${unit}${right}`;
 };
-Util.defineGetterSetter(Point.prototype,
-  Symbol.toStringTag,
-  function() {
-    return `Point{ ${Point.prototype.toSource.call(this)}`;
-  },
-  () => {},
-  false
-);
-
+Point.prototype[Symbol.toStringTag] = 'Point';
 Point.prototype.toSource = function(opts = {}) {
   const {
     asArray = false,
@@ -279,10 +263,10 @@ Point.prototype.toSource = function(opts = {}) {
   if(asArray) return `[${x},${y}]`;
   if(plainObj) return `{x:${x},y:${y}}`;
 
-  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(',
+  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',',
     1,
     36
-  )}${c(x, 1, 32)}${c(',', 1, 36)}${c(y, 1, 32)}${c(')', 1, 36)}`;
+  )}${c(y, 1, 32)}${c(')', 1, 36)}`;
 };
 
 /*Point.prototype.toSource = function() {
@@ -343,15 +327,13 @@ Point.prototype.normal = function() {
 
 Point.fromString = str => new Point(...str.split(/[^-.0-9]+/g).map(n => +n));
 Point.move = (point, x, y) => Point.prototype.move.call(point, x, y);
-Point.angle = (point, other, deg = false) =>
-  Point.prototype.angle.call(point, other, deg);
+Point.angle = (point, other, deg = false) => Point.prototype.angle.call(point, other, deg);
 Point.inside = (point, rect) => Point.prototype.inside.call(point, rect);
 Point.sub = (point, other) => Point.prototype.sub.call(point, other);
 Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 Point.equals = (a, b) => Point.prototype.equals.call(a, b);
-Point.round = (point, prec, digits, type) =>
-  Point.prototype.round.call(point, prec, digits, type);
+Point.round = (point, prec, digits, type) => Point.prototype.round.call(point, prec, digits, type);
 Point.fromAngle = (angle, f) => new Point().fromAngle(angle, f);
 
 for(let name of [
@@ -369,8 +351,7 @@ for(let name of [
   'sum',
   'distance'
 ]) {
-  Point[name] = (point, ...args) =>
-    Point.prototype[name].call(Point(point), ...args);
+  Point[name] = (point, ...args) => Point.prototype[name].call(Point(point), ...args);
 }
 Point.interpolate = (p1, p2, a) => {
   a = Util.clamp(0, 1, a);
@@ -389,7 +370,11 @@ export const isPoint = o =>
     Object.getPrototypeOf(o).constructor === Point);
 
 Point.isPoint = isPoint;
-Util.defineInspect(Point.prototype, 'x', 'y');
+
+Point.prototype[Util.inspectSymbol] = function(depth, options) {
+  const { x, y } = this;
+  return Object.setPrototypeOf({ x, y }, Point.prototype);
+};
 
 Point.bind = (...args) => {
   const keys = ['x', 'y'];
@@ -397,12 +382,8 @@ Point.bind = (...args) => {
   if(p == null) p = keys;
   //console.debug('Point.bind', { keys, o, p });
   const { x, y } =
-    (Util.isArray(p) &&
-      p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) ||
-    p;
-  return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }),
-    Point.prototype
-  );
+    (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
+  return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
 export default Point;
 

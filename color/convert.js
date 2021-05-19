@@ -33,13 +33,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
     // calculate shift
     const shift =
-      value === rgbR
-        ? segment < 0
-          ? 360 / 60
-          : 0 / 60
-        : value === rgbG
-        ? 120 / 60
-        : 240 / 60;
+      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
 
     // calculate hue
     const hue = (segment + shift) * 60;
@@ -97,8 +91,7 @@ export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
   // l1 is the relative luminance of the darker of the colors
   const l2 = min(relativeLuminance1, relativeLuminance2);
 
-  return ((l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision)
-  );
+  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
 }
 /* RGB tooling
 /* ========================================================================== */
@@ -119,10 +112,7 @@ export function matrix(params, mats) {
   return mats.map(mat =>
     mat.reduce(// (acc, value, index) => acc + params[index] * value,
       (acc, value, index) =>
-        acc +
-        (params[index] * precision * (value * precision)) /
-          precision /
-          precision,
+        acc + (params[index] * precision * (value * precision)) / precision / precision,
       0
     )
   );
@@ -217,10 +207,7 @@ export function rgb2hsl(rgbR, rgbG, rgbB, fallbackhue) {
 
 export function hsl2rgb(hslH, hslS, hslL) {
   // calcuate t2
-  const t2 =
-    hslL <= 50
-      ? (hslL * (hslS + 100)) / 100
-      : hslL + hslS - (hslL * hslS) / 100;
+  const t2 = hslL <= 50 ? (hslL * (hslS + 100)) / 100 : hslL + hslS - (hslL * hslS) / 100;
 
   // calcuate t1
   const t1 = hslL * 2 - t2;
@@ -669,12 +656,7 @@ export function hex2rgb(hex) {
     const red = rr !== undefined ? parseInt(rr, 16) : parseInt(r + r, 16);
     const green = gg !== undefined ? parseInt(gg, 16) : parseInt(g + g, 16);
     const blue = bb !== undefined ? parseInt(bb, 16) : parseInt(b + b, 16);
-    const alpha =
-      aa !== undefined
-        ? parseInt(aa, 16)
-        : a !== undefined
-        ? parseInt(a + a, 16)
-        : 255;
+    const alpha = aa !== undefined ? parseInt(aa, 16) : a !== undefined ? parseInt(a + a, 16) : 255;
     return [red, green, blue, alpha].map(c => (c * 100) / 255);
   }
 
@@ -927,8 +909,7 @@ function lab2ciede([L1, a1, b1], [L2, a2, b2]) {
   const sl = 1 + (0.015 * precision * slCoeff) / sqrt(20 + slCoeff) / precision;
   const sc = 1 + (0.045 * precision * cBarPrime) / precision;
   const sh = 1 + (0.015 * precision * cBarPrime * T) / precision;
-  const RtCoeff =
-    60 * exp(-((hBarPrime - 275) / 25) * ((hBarPrime - 275) / 25));
+  const RtCoeff = 60 * exp(-((hBarPrime - 275) / 25) * ((hBarPrime - 275) / 25));
   const Rt = -2 * cCoeff * sind(RtCoeff);
   const term1 = deltaLPrime / (kl * sl);
   const term2 = deltaCPrime / (kc * sc);

@@ -91,9 +91,7 @@ function realTypeOf(subject) {
     return 'array';
   } else if(Object.prototype.toString.call(subject) === '[object Date]') {
     return 'date';
-  } else if(typeof subject.toString === 'function' &&
-    /^\/.*\//.test(subject.toString())
-  ) {
+  } else if(typeof subject.toString === 'function' && /^\/.*\//.test(subject.toString())) {
     return 'regexp';
   }
   return 'object';
@@ -150,15 +148,7 @@ function getOrderIndependentHash(object) {
   return accum + hashThisString(stringToHash);
 }
 
-function deepDiff(lhs,
-  rhs,
-  changes,
-  prefilter,
-  path,
-  key,
-  stack,
-  orderIndependent
-) {
+function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndependent) {
   changes = changes || [];
   path = path || [];
   stack = stack || [];
@@ -226,32 +216,20 @@ function deepDiff(lhs,
       if(Array.isArray(lhs)) {
         //If order doesn't matter, we need to sort our arrays
         if(orderIndependent) {
-          lhs.sort((a, b) => getOrderIndependentHash(a) - getOrderIndependentHash(b)
-          );
+          lhs.sort((a, b) => getOrderIndependentHash(a) - getOrderIndependentHash(b));
 
-          rhs.sort((a, b) => getOrderIndependentHash(a) - getOrderIndependentHash(b)
-          );
+          rhs.sort((a, b) => getOrderIndependentHash(a) - getOrderIndependentHash(b));
         }
         i = rhs.length - 1;
         j = lhs.length - 1;
         while(i > j) {
-          changes.push(new DiffArray(currentPath, i, new DiffNew(undefined, rhs[i--]))
-          );
+          changes.push(new DiffArray(currentPath, i, new DiffNew(undefined, rhs[i--])));
         }
         while(j > i) {
-          changes.push(new DiffArray(currentPath, j, new DiffDeleted(undefined, lhs[j--]))
-          );
+          changes.push(new DiffArray(currentPath, j, new DiffDeleted(undefined, lhs[j--])));
         }
         for(; i >= 0; --i) {
-          deepDiff(lhs[i],
-            rhs[i],
-            changes,
-            prefilter,
-            currentPath,
-            i,
-            stack,
-            orderIndependent
-          );
+          deepDiff(lhs[i], rhs[i], changes, prefilter, currentPath, i, stack, orderIndependent);
         }
       } else {
         let akeys = Object.keys(lhs);
@@ -260,15 +238,7 @@ function deepDiff(lhs,
           k = akeys[i];
           other = pkeys.indexOf(k);
           if(other >= 0) {
-            deepDiff(lhs[k],
-              rhs[k],
-              changes,
-              prefilter,
-              currentPath,
-              k,
-              stack,
-              orderIndependent
-            );
+            deepDiff(lhs[k], rhs[k], changes, prefilter, currentPath, k, stack, orderIndependent);
             pkeys[other] = null;
           } else {
             deepDiff(lhs[k],
@@ -320,14 +290,7 @@ function observableDiff(lhs, rhs, observer, prefilter, orderIndependent) {
   return changes;
 }
 
-function orderIndependentDeepDiff(lhs,
-  rhs,
-  changes,
-  prefilter,
-  path,
-  key,
-  stack
-) {
+function orderIndependentDeepDiff(lhs, rhs, changes, prefilter, path, key, stack) {
   return deepDiff(lhs, rhs, changes, prefilter, path, key, stack, true);
 }
 
@@ -393,10 +356,7 @@ function applyArrayChange(arr, index, change) {
 }
 
 function applyChange(target, source, change) {
-  if(typeof change === 'undefined' &&
-    source &&
-    ~validKinds.indexOf(source.kind)
-  ) {
+  if(typeof change === 'undefined' && source && ~validKinds.indexOf(source.kind)) {
     change = source;
   }
   if(target && change && change.kind) {
@@ -406,8 +366,7 @@ function applyChange(target, source, change) {
     while(++i < last) {
       if(typeof it[change.path[i]] === 'undefined') {
         it[change.path[i]] =
-          typeof change.path[i + 1] !== 'undefined' &&
-          typeof change.path[i + 1] === 'number'
+          typeof change.path[i + 1] !== 'undefined' && typeof change.path[i + 1] === 'number'
             ? []
             : {};
       }
@@ -418,10 +377,7 @@ function applyChange(target, source, change) {
         if(change.path && typeof it[change.path[i]] === 'undefined') {
           it[change.path[i]] = [];
         }
-        applyArrayChange(change.path ? it[change.path[i]] : it,
-          change.index,
-          change.item
-        );
+        applyArrayChange(change.path ? it[change.path[i]] : it, change.index, change.item);
         break;
       case 'D':
         delete it[change.path[i]];

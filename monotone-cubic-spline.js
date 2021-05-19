@@ -22,14 +22,7 @@ export class CubicSpline {
     const t0 = tgts[0];
 
     //Add starting 'M' and 'C' points
-    pts.push(p0, [
-      p0[0] + t0[0],
-      p0[1] + t0[1],
-      p[0] - t[0],
-      p[1] - t[1],
-      p[0],
-      p[1]
-    ]);
+    pts.push(p0, [p0[0] + t0[0], p0[1] + t0[1], p[0] - t[0], p[1] - t[1], p[0], p[1]]);
 
     //Add 'S' points
     for(let i = 2, n = tgts.length; i < n; i++) {
@@ -57,10 +50,8 @@ export class CubicSpline {
       if(pts[1].length < 6) {
         const n = pts[0].length;
 
-        pts[1] = [
-          pts[0][n - 2] * 2 - pts[0][n - 4],
-          pts[0][n - 1] * 2 - pts[0][n - 3]
-        ].concat(pts[1]);
+        pts[1] = [pts[0][n - 2] * 2 - pts[0][n - 4], pts[0][n - 1] * 2 - pts[0][n - 3]].concat(pts[1]
+        );
       }
       //Remove control points for 'M'
       pts[0] = pts[0].slice(-2);
@@ -128,9 +119,7 @@ function tangents(points) {
   }
 
   for(let i = 0; i <= n; i++) {
-    s =
-      (points[Math.min(n, i + 1)][0] - points[Math.max(0, i - 1)][0]) /
-      (6 * (1 + m[i] * m[i]));
+    s = (points[Math.min(n, i + 1)][0] - points[Math.max(0, i - 1)][0]) / (6 * (1 + m[i] * m[i]));
     tgts.push([s || 0, m[i] * s || 0]);
   }
 

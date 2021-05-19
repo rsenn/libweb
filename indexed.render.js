@@ -6,8 +6,7 @@
 
 var Indexed = {};
 
-Indexed.indexed_vert =
-  '\
+Indexed.indexed_vert = '\
 attribute vec4 position;\
 void main() {\
 	gl_Position = position;\
@@ -68,11 +67,7 @@ Indexed.Renderer = function(canvas_id, width, height, scale, forcecanvas) {
       this.backcanvas.height = this.height;
       this.backcontext = this.backcanvas.getContext('2d');
       this.backcontext.fillRect(0, 0, this.width, this.height);
-      this.imagedata = this.backcontext.getImageData(0,
-        0,
-        this.width,
-        this.height
-      );
+      this.imagedata = this.backcontext.getImageData(0, 0, this.width, this.height);
     } else {
       this.context.fillRect(0, 0, this.width * scale, this.height * scale);
       this.imagedata = this.context.getImageData(0, 0, this.width, this.height);
@@ -97,9 +92,7 @@ Indexed.Renderer = function(canvas_id, width, height, scale, forcecanvas) {
     //find power-2 texture sizes for this canvas size
     var twidth = Math.pow(2, Math.ceil(Math.log(this.width) / Math.log(2)));
     var theight = Math.pow(2, Math.ceil(Math.log(this.height) / Math.log(2)));
-    var palwidth = Math.pow(2,
-      Math.ceil(Math.log(this.palette.length) / Math.log(2))
-    );
+    var palwidth = Math.pow(2, Math.ceil(Math.log(this.palette.length) / Math.log(2)));
     this.textures = twgl.createTextures(this.gl, {
       pal: {
         min: this.gl.NEAREST,
@@ -194,12 +187,7 @@ Indexed.Renderer.prototype = {
       this.imagedata.data.set(this.prebuffer8);
       if(this.backcanvas) {
         this.backcontext.putImageData(this.imagedata, 0, 0);
-        this.context.drawImage(this.backcanvas,
-          0,
-          0,
-          this.canvas.width,
-          this.canvas.height
-        );
+        this.context.drawImage(this.backcanvas, 0, 0, this.canvas.width, this.canvas.height);
       } else this.context.putImageData(this.imagedata, 0, 0);
     }
   }
@@ -346,10 +334,7 @@ Indexed.Buffer.prototype = {
     ctx.drawImage(img, 0, 0);
     var imgdata = ctx.getImageData(0, 0, c.width, c.height).data;
     for(var i = 0, len = imgdata.length, j = 0; i < len; i += 4, j++) {
-      this.data[j] = pal.getColorIndex(imgdata[i],
-        imgdata[i + 1],
-        imgdata[i + 2]
-      );
+      this.data[j] = pal.getColorIndex(imgdata[i], imgdata[i + 1], imgdata[i + 2]);
     }
     this.palette = pal;
   },
@@ -562,8 +547,7 @@ if(window.PLAYGROUND) {
     for(var i = 0; i < arguments.length; i++) {
       var arg = arguments[i];
       if(typeof arg === 'object') {
-        for(var key in arg)
-          promises = promises.concat(this.loadOnePCX(arg[key]));
+        for(var key in arg) promises = promises.concat(this.loadOnePCX(arg[key]));
       } else {
         promises.push(this.loadOnePCX(arg));
       }
@@ -578,16 +562,13 @@ if(window.PLAYGROUND) {
     var self = this;
 
     var xobj = new XMLHttpRequest();
-    if(xobj.overrideMimeType)
-      xobj.overrideMimeType('application/octet-stream');
+    if(xobj.overrideMimeType) xobj.overrideMimeType('application/octet-stream');
     xobj.responseType = 'arraybuffer';
     xobj.open('GET', entry.url, true);
     xobj.onreadystatechange = function() {
       if(xobj.readyState == 4) {
         if(xobj.status == '200') {
-          self.pcx[entry.key] = new Indexed.Buffer(new Uint8Array(xobj.response),
-            true
-          );
+          self.pcx[entry.key] = new Indexed.Buffer(new Uint8Array(xobj.response), true);
           self.loader.success(entry.url);
         } else {
           self.loader.error('Could not load ' + entry.url);

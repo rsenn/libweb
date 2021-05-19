@@ -85,9 +85,7 @@ const Hyphenator = function(patterns, exceptions) {
           }
         }
       }
-      points[1] = points[2] = points[points.length - 2] = points[
-        points.length - 3
-      ] = 0;
+      points[1] = points[2] = points[points.length - 2] = points[points.length - 3] = 0;
     }
 
     const pieces = [''];
@@ -105,14 +103,8 @@ const Hyphenator = function(patterns, exceptions) {
     return pieces;
   };
 
-  patterns
-    .replace(MSRGX, ' ')
-    .split(' ')
-    .forEach(this._insert_pattern.bind(this));
-  exceptions
-    .replace(MSRGX, ' ')
-    .split(' ')
-    .forEach(this._insert_exception.bind(this));
+  patterns.replace(MSRGX, ' ').split(' ').forEach(this._insert_pattern.bind(this));
+  exceptions.replace(MSRGX, ' ').split(' ').forEach(this._insert_exception.bind(this));
 };
 
 /**

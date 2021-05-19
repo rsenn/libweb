@@ -43,14 +43,7 @@ ParseNode.prototype.print = function(indent) {
   for(var i = 0; i < indent; i++) spaces = spaces + ' ';
 
   console.log(spaces + '{');
-  console.log(spaces +
-      '   type: ' +
-      this.type +
-      ' start: ' +
-      this.start +
-      ' end: ' +
-      this.end
-  );
+  console.log(spaces + '   type: ' + this.type + ' start: ' + this.start + ' end: ' + this.end);
   console.log(spaces + '  value: ' + this.value());
   console.log(spaces + '  children:');
   for(var i = 0; i < this.children.length; i++) {
@@ -68,14 +61,7 @@ function ParseNode(type, buffer, start, end) {
   this.end = end;
 
   log('ParseNode',
-    this.type +
-      ' start=' +
-      this.start +
-      ' end=' +
-      this.end +
-      ' value=.' +
-      this.value() +
-      '.'
+    this.type + ' start=' + this.start + ' end=' + this.end + ' value=.' + this.value() + '.'
   );
 }
 
@@ -87,9 +73,7 @@ ParseState.prototype.charAt = function(offset) {
 
 ParseState.prototype.advance = function(n) {
   let msg = 'offset=' + this.offset + ' n=' + n;
-  this.lineNumber +=
-    this.buffer.substring(this.offset, this.offset + n).split(/\r*\n/).length -
-    1;
+  this.lineNumber += this.buffer.substring(this.offset, this.offset + n).split(/\r*\n/).length - 1;
   this.offset += n;
   this.current = this.buffer.charAt(this.offset);
   log('advance', msg + ' new offset=' + this.offset);
@@ -183,9 +167,7 @@ function ParseState(rule, buffer, offset, lineNumber) {
       ' lineNumber=' +
       this.lineNumber +
       ' text=' +
-      buffer
-        .substring(this.offset, this.offset + 20)
-        .replace(/(?:\r\n|\r|\n)/g, '\\n')
+      buffer.substring(this.offset, this.offset + 20).replace(/(?:\r\n|\r|\n)/g, '\\n')
   );
 }
 
@@ -204,17 +186,11 @@ Parser.prototype.pushFrame = function(rule) {
 
   if(recursion > 1) {
     //allow one, deny more than one
-    log('recursion',
-      'infinite recursion detected at rule=' + rule + ' offset=' + sstate.offset
-    );
+    log('recursion', 'infinite recursion detected at rule=' + rule + ' offset=' + sstate.offset);
     return null;
   }
 
-  let pstate = new ParseState(rule,
-    this.state.buffer,
-    this.state.offset,
-    this.state.lineNumber
-  );
+  let pstate = new ParseState(rule, this.state.buffer, this.state.offset, this.state.lineNumber);
   log('stack', 'push: rule=' + rule);
   this.stack.push(pstate);
   this.state = pstate;
@@ -235,9 +211,7 @@ Parser.prototype.popFrame = function(rule, pnode) {
   this.stack.pop();
   this.state = this.stack[this.stack.length - 1];
   if(pnode != null && pnode.end > this.maxParseEnd) {
-    log('stack',
-      'maxParseEnd: ' + this.maxParseEnd + ' pnode.end: ' + pnode.end
-    );
+    log('stack', 'maxParseEnd: ' + this.maxParseEnd + ' pnode.end: ' + pnode.end);
     this.maxParseEnd = pnode.end;
     this.maxParseNode = pnode;
     pnode.print(0);
@@ -304,10 +278,7 @@ Parser.prototype.parseIdentifier = function() {
   let identifier = null;
   if(this.parseLetter() > 0) {
     pstate.advance(1);
-    while(this.parseLetter() > 0 ||
-      this.parseDigit(pstate) > 0 ||
-      pstate.current == '_'
-    ) {
+    while(this.parseLetter() > 0 || this.parseDigit(pstate) > 0 || pstate.current == '_') {
       pstate.advance(1);
     }
 
@@ -378,11 +349,7 @@ Parser.prototype.parseLhs = function() {
   return lhs;
 };
 
-Parser.prototype._parseBinary = function(rule,
-  parseLeft,
-  operator,
-  parseRight
-) {
+Parser.prototype._parseBinary = function(rule, parseLeft, operator, parseRight) {
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
 
@@ -412,11 +379,7 @@ Parser.prototype._parseBinary = function(rule,
   return binary;
 };
 
-Parser.prototype._parseEnclosure = function(rule,
-  beginEnclosure,
-  parseEnclosed,
-  endEnclosure
-) {
+Parser.prototype._parseEnclosure = function(rule, beginEnclosure, parseEnclosed, endEnclosure) {
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
 
@@ -490,12 +453,7 @@ Parser.prototype.parseRhs = function() {
   ].forEach(parseRule => {
     child = parseRule[1].call(parseRule[0]);
     if(child != null) {
-      best =
-        best == null
-          ? child
-          : child.nodeLength() > best.nodeLength()
-          ? child
-          : best;
+      best = best == null ? child : child.nodeLength() > best.nodeLength() ? child : best;
     }
   });
 

@@ -183,9 +183,7 @@ Component.prototype.render = Fragment;
 
 function getDomSibling(vnode, childIndex) {
   if(childIndex == null) {
-    return vnode.__
-      ? getDomSibling(vnode.__, vnode.__.__k.indexOf(vnode) + 1)
-      : null;
+    return vnode.__ ? getDomSibling(vnode.__, vnode.__.__k.indexOf(vnode) + 1) : null;
   }
 
   var sibling;
@@ -246,9 +244,7 @@ function updateParentDomPointers(vnode) {
 }
 var rerenderQueue = [];
 var defer =
-  typeof Promise == 'function'
-    ? Promise.prototype.then.bind(Promise.resolve())
-    : setTimeout;
+  typeof Promise == 'function' ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout;
 var prevDebounce;
 
 function enqueueRender(c) {
@@ -312,12 +308,7 @@ function diffChildren(parentDom,
     if(childVNode == null || typeof childVNode == 'boolean') {
       childVNode = newParentVNode.__k[i] = null;
     } else if(typeof childVNode == 'string' || typeof childVNode == 'number') {
-      childVNode = newParentVNode.__k[i] = createVNode(null,
-        childVNode,
-        null,
-        null,
-        childVNode
-      );
+      childVNode = newParentVNode.__k[i] = createVNode(null, childVNode, null, null, childVNode);
     } else if(Array.isArray(childVNode)) {
       childVNode = newParentVNode.__k[i] = createVNode(Fragment,
         { children: childVNode },
@@ -345,19 +336,14 @@ function diffChildren(parentDom,
     oldVNode = oldChildren[i];
 
     if(oldVNode === null ||
-      (oldVNode &&
-        childVNode.key == oldVNode.key &&
-        childVNode.type === oldVNode.type)
+      (oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type)
     ) {
       oldChildren[i] = undefined;
     } else {
       for(j = 0; j < oldChildrenLength; j++) {
         oldVNode = oldChildren[j];
 
-        if(oldVNode &&
-          childVNode.key == oldVNode.key &&
-          childVNode.type === oldVNode.type
-        ) {
+        if(oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type) {
           oldChildren[j] = undefined;
           break;
         }
@@ -409,10 +395,7 @@ function diffChildren(parentDom,
       } else if(typeof newParentVNode.type == 'function') {
         newParentVNode.__d = oldDom;
       }
-    } else if(oldDom &&
-      oldVNode.__e == oldDom &&
-      oldDom.parentNode != parentDom
-    ) {
+    } else if(oldDom && oldVNode.__e == oldDom && oldDom.parentNode != parentDom) {
       oldDom = getDomSibling(oldVNode);
     }
   }
@@ -468,10 +451,7 @@ function placeChild(parentDom,
   if(childVNode.__d !== undefined) {
     nextDom = childVNode.__d;
     childVNode.__d = undefined;
-  } else if(excessDomChildren == oldVNode ||
-    newDom != oldDom ||
-    newDom.parentNode == null
-  ) {
+  } else if(excessDomChildren == oldVNode || newDom != oldDom || newDom.parentNode == null) {
     outer: if(oldDom == null || oldDom.parentNode !== parentDom) {
       parentDom.appendChild(newDom);
       nextDom = null;
@@ -602,14 +582,9 @@ function setProperty(dom, name, value, oldValue, isSvg) {
   } else if(typeof value != 'function' && name !== 'dangerouslySetInnerHTML') {
     if(name !== (name = name.replace(/xlink:?/, ''))) {
       if(value == null || value === false) {
-        dom.removeAttributeNS('http://www.w3.org/1999/xlink',
-          name.toLowerCase()
-        );
+        dom.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase());
       } else {
-        dom.setAttributeNS('http://www.w3.org/1999/xlink',
-          name.toLowerCase(),
-          value
-        );
+        dom.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);
       }
     } else if(value == null || (value === false && !/^ar/.test(name))) {
       dom.removeAttribute(name);
@@ -639,14 +614,7 @@ function reorderChildren(newVNode, oldDom, parentDom) {
           reorderChildren(vnode, oldDom, parentDom);
         }
 
-        oldDom = placeChild(parentDom,
-          vnode,
-          vnode,
-          newVNode.__k,
-          null,
-          vnode.__e,
-          oldDom
-        );
+        oldDom = placeChild(parentDom, vnode, vnode, newVNode.__k, null, vnode.__e, oldDom);
 
         if(typeof newVNode.type == 'function') {
           newVNode.__d = oldDom;
@@ -690,11 +658,7 @@ function diff(parentDom,
       var newProps = newVNode.props;
       tmp = newType.contextType;
       var provider = tmp && globalContext[tmp.__c];
-      var componentContext = tmp
-        ? provider
-          ? provider.props.value
-          : tmp.__
-        : globalContext;
+      var componentContext = tmp ? (provider ? provider.props.value : tmp.__) : globalContext;
 
       if(oldVNode.__c) {
         c = newVNode.__c = oldVNode.__c;
@@ -740,9 +704,7 @@ function diff(parentDom,
       oldState = c.state;
 
       if(isNew) {
-        if(newType.getDerivedStateFromProps == null &&
-          c.componentWillMount != null
-        ) {
+        if(newType.getDerivedStateFromProps == null && c.componentWillMount != null) {
           c.componentWillMount();
         }
 
@@ -759,8 +721,7 @@ function diff(parentDom,
 
         if((!c.__e &&
             c.shouldComponentUpdate != null &&
-            c.shouldComponentUpdate(newProps, c.__s, componentContext) ===
-              false) ||
+            c.shouldComponentUpdate(newProps, c.__s, componentContext) === false) ||
           newVNode.__v === oldVNode.__v
         ) {
           c.props = newProps;
@@ -815,8 +776,7 @@ function diff(parentDom,
         snapshot = c.getSnapshotBeforeUpdate(oldProps, oldState);
       }
 
-      var isTopLevelFragment =
-        tmp != null && tmp.type == Fragment && tmp.key == null;
+      var isTopLevelFragment = tmp != null && tmp.type == Fragment && tmp.key == null;
       var renderResult = isTopLevelFragment ? tmp.props.children : tmp;
       diffChildren(parentDom,
         Array.isArray(renderResult) ? renderResult : [renderResult],
@@ -912,9 +872,7 @@ function diffElementNodes(dom,
       var child = excessDomChildren[i];
 
       if(child != null &&
-        ((newVNode.type === null
-          ? child.nodeType === 3
-          : child.localName === newVNode.type) ||
+        ((newVNode.type === null ? child.nodeType === 3 : child.localName === newVNode.type) ||
           dom == child)
       ) {
         dom = child;
@@ -931,9 +889,7 @@ function diffElementNodes(dom,
 
     dom = isSvg
       ? document.createElementNS('http://www.w3.org/2000/svg', newVNode.type)
-      : document.createElement(newVNode.type,
-          newProps.is && { is: newProps.is }
-        );
+      : document.createElement(newVNode.type, newProps.is && { is: newProps.is });
     excessDomChildren = null;
     isHydrating = false;
   }
@@ -962,8 +918,7 @@ function diffElementNodes(dom,
 
       if(newHtml || oldHtml) {
         if(!newHtml ||
-          ((!oldHtml || newHtml.__html != oldHtml.__html) &&
-            newHtml.__html !== dom.innerHTML)
+          ((!oldHtml || newHtml.__html != oldHtml.__html) && newHtml.__html !== dom.innerHTML)
         ) {
           dom.innerHTML = (newHtml && newHtml.__html) || '';
         }
@@ -997,10 +952,7 @@ function diffElementNodes(dom,
         setProperty(dom, 'value', i, oldProps.value, false);
       }
 
-      if('checked' in newProps &&
-        (i = newProps.checked) !== undefined &&
-        i !== dom.checked
-      ) {
+      if('checked' in newProps && (i = newProps.checked) !== undefined && i !== dom.checked) {
         setProperty(dom, 'checked', i, oldProps.checked, false);
       }
     }
@@ -1078,9 +1030,7 @@ function render(vnode, parentDom, replaceNode) {
   }
 
   var isHydrating = replaceNode === IS_HYDRATE;
-  var oldVNode = isHydrating
-    ? null
-    : (replaceNode && replaceNode.__k) || parentDom.__k;
+  var oldVNode = isHydrating ? null : (replaceNode && replaceNode.__k) || parentDom.__k;
   vnode = createElement(Fragment, null, [vnode]);
   var commitQueue = [];
   diff(parentDom,
@@ -1136,12 +1086,7 @@ function cloneElement(vnode, props, children) {
     normalizedProps.children = children;
   }
 
-  return createVNode(vnode.type,
-    normalizedProps,
-    key || vnode.key,
-    ref || vnode.ref,
-    null
-  );
+  return createVNode(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
 }
 var i = 0;
 
@@ -1294,8 +1239,7 @@ function getHookState(index, type) {
     }
 
     currentHook = 0;
-    var hooks =
-      currentComponent.__H || (currentComponent.__H = { __: [], __h: [] });
+    var hooks = currentComponent.__H || (currentComponent.__H = { __: [], __h: [] });
 
     if(index >= hooks.__.length) {
       hooks.__.push({});
@@ -1585,9 +1529,7 @@ export const evaluate = (h, built, fields, args) => {
 
   for(let i = 1; i < built.length; i++) {
     const type = built[i++];
-    const value = built[i]
-      ? ((built[0] |= type ? 1 : 2), fields[built[i++]])
-      : built[++i];
+    const value = built[i] ? ((built[0] |= type ? 1 : 2), fields[built[i++]]) : built[++i];
 
     if(type === TAG_SET) {
       args[0] = value;
@@ -1625,9 +1567,7 @@ export const build = function(statics) {
   let char, propName;
 
   const commit = field => {
-    if(mode === MODE_TEXT &&
-      (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))
-    ) {
+    if(mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
       if(MINI) {
         current.push(field ? fields[field] : buffer);
       } else {
@@ -1730,9 +1670,7 @@ export const build = function(statics) {
         mode = MODE_PROP_SET;
         propName = buffer;
         buffer = '';
-      } else if(char === '/' &&
-        (mode < MODE_PROP_SET || statics[i][j + 1] === '>')
-      ) {
+      } else if(char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
         commit();
 
         if(mode === MODE_TAGNAME) {
@@ -1748,11 +1686,7 @@ export const build = function(statics) {
         }
 
         mode = MODE_SLASH;
-      } else if(char === ' ' ||
-        char === '\t' ||
-        char === '\n' ||
-        char === '\r'
-      ) {
+      } else if(char === ' ' || char === '\t' || char === '\n' || char === '\r') {
         commit();
         mode = MODE_WHITESPACE;
       } else {

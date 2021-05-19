@@ -14,10 +14,7 @@ import { makeLocalStorage } from './autoStore.js';
 
 const env = 'development';
 
-if(0 &&
-  ['development', 'test', 'local'].indexOf(env) != -1 &&
-  'window' in global
-) {
+if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
   window.accumulateClasses = () => {
     let st = storage('dev');
     let classes = st.get('classes') || [];
@@ -164,8 +161,7 @@ export const colors = (() => {
 
 export async function getStars() {
   let r = {};
-  r.bg_stars =
-    dom.Element.find('#background-stars') || (await img('background-stars'));
+  r.bg_stars = dom.Element.find('#background-stars') || (await img('background-stars'));
   r.elements = dom.Element.findAll('defs > radialGradient > stop', r.bg_stars)
     .map(s => s.parentElement)
     .unique();
@@ -181,9 +177,7 @@ export async function getStars() {
     Util.log('getRect: ', { matrix, rect });
     return rect;
   }
-  r.paths = dom.Element.findAll('path', r.svg).filter(e =>
-    getRect(e).isSquare()
-  );
+  r.paths = dom.Element.findAll('path', r.svg).filter(e => getRect(e).isSquare());
   r.circles = r.paths.map(e => ({
     position: getRect(e).center,
     radius: getRect(e).width / 2
@@ -242,9 +236,7 @@ export function gradient(element) {
     element,
     steps: nodes.map(e => {
       const offset = Element.attr(e, 'offset');
-      const color = RGBA.fromHex(e.getAttribute('stopColor') ||
-          e.getAttribute('stop-color') ||
-          '#00000000'
+      const color = RGBA.fromHex(e.getAttribute('stopColor') || e.getAttribute('stop-color') || '#00000000'
       );
       return {
         color,
@@ -255,10 +247,7 @@ export function gradient(element) {
       };
     }),
     toString() {
-      return (Util.decamelize(e.tagName) +
-        '(0deg, ' +
-        this.steps.map(s => s.toString()).join(', ') +
-        ');'
+      return (Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map(s => s.toString()).join(', ') + ');'
       );
     }, [Symbol.iterator]: () =>
       new (class GradientIterator {
@@ -372,11 +361,9 @@ export function gettext(elem, done) {
   }
   const getNodeText = node => {
     let txt = '';
-    if(node.innerHTML && !node.innerHTML.match(/<.*>/))
-      txt = '"' + node.innerHTML + '": ""';
+    if(node.innerHTML && !node.innerHTML.match(/<.*>/)) txt = '"' + node.innerHTML + '": ""';
     else if(node.placeholder) txt = node.placeholder;
-    else if(node.nodeType == Node.TEXT_NODE && node.textContent)
-      txt = node.textContent;
+    else if(node.nodeType == Node.TEXT_NODE && node.textContent) txt = node.textContent;
     else txt = '';
     return txt;
   };
@@ -387,14 +374,10 @@ export function gettext(elem, done) {
     let prevParent;
     Element.walk(e, (node, root) => {
       if(node) {
-        let parent =
-          node && node.parentNode !== undefined ? node.parentNode : null;
+        let parent = node && node.parentNode !== undefined ? node.parentNode : null;
         let path = Element.xpath(node, e);
         let txt = node.innerText || node.textContent;
-        if(txt &&
-          !['option', 'script', 'style', '#SL_'].some(tag => path.indexOf(tag) != -1
-          )
-        ) {
+        if(txt && !['option', 'script', 'style', '#SL_'].some(tag => path.indexOf(tag) != -1)) {
           if(parent != prevParent) {
             //text.push("Parent: "+Element.xpath(parent));
           }
@@ -560,8 +543,7 @@ export function ws(cmd = 'send', filename, data) {
           ws.onmessage = msg => {
             Util.log('ws.msg ', msg);
             if(msg.data == '') return;
-            let x =
-              msg.data.charAt(0) != '{' ? decodeBase64(msg.data) : msg.data;
+            let x = msg.data.charAt(0) != '{' ? decodeBase64(msg.data) : msg.data;
             if(x.charAt(0) == '{') {
               x = JSON.parse(x);
               if(x.cmd == 'recv') return;
@@ -618,11 +600,7 @@ export async function img(name, arg = {}) {
           /*let xpath = arg.xpath || Element.xpath(svg);
       if(xpath && xpath.replace) xpath = xpath.replace(/.*\//, '');*/
           Element.attr(svg, { 'data-name': svg.id });
-          let r = new Rect(0,
-            0,
-            svg.getAttribute('width'),
-            svg.getAttribute('height')
-          );
+          let r = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
           r = Rect.round(r);
           let width = this.width + r.width;
 
@@ -641,8 +619,7 @@ export async function img(name, arg = {}) {
 
     const page = Element.find('.page');
     const body = Element.find('body');
-    const getID = () =>
-      (window.img_id = window.img_id > 0 ? window.img_id + 1 : 1);
+    const getID = () => (window.img_id = window.img_id > 0 ? window.img_id + 1 : 1);
     const img_id = getID();
     const img_name = path.replace(/.*\/(.*)\.[^.]*$/g, '$1');
     const res = await axios.get(path);
@@ -667,19 +644,11 @@ export async function img(name, arg = {}) {
         ...props
       });
       e.innerHTML = await res.data;
-      const av =
-        e &&
-        e.firstChild &&
-        e.firstChild.viewBox &&
-        e.firstChild.viewBox.animVal;
+      const av = e && e.firstChild && e.firstChild.viewBox && e.firstChild.viewBox.animVal;
       let svg = e.firstChild;
       Element.attr(svg, { id: img_name });
       while(svg.viewBox === undefined) svg = svg.nextElementSibling;
-      const bbox = new Rect(0,
-        0,
-        svg.getAttribute('width'),
-        svg.getAttribute('height')
-      );
+      const bbox = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
       let r = Rect(av ? av : bbox);
       Util.log('r = ', r, ' bbox = ', bbox);
       let pr = Element.rect('.page');
@@ -735,9 +704,7 @@ export function createsvg(wh, fixed = false) {
     return e;
   }
   let body = Element.find('body');
-  let rect = fixed
-    ? Size(window.innerWidth, window.innerHeight)
-    : Element.rect(body);
+  let rect = fixed ? Size(window.innerWidth, window.innerHeight) : Element.rect(body);
   const size = Size(args) || new Size(rect);
   Util.log('svg size: ', size);
   createsvg.factory = SVG.factory(body, Size.convertUnits(size));
@@ -809,8 +776,7 @@ export function walk(element) {
       return key.replace(/\//g, ' > ');
     },
     obj => {
-      if(obj.id === undefined)
-        Object.assign(obj, { id: Element.attr(obj.e, 'id') });
+      if(obj.id === undefined) Object.assign(obj, { id: Element.attr(obj.e, 'id') });
       if(obj.e) {
         let prev;
         obj.div = obj.e.parentNode;
@@ -824,8 +790,7 @@ export function walk(element) {
       obj.r = Element.rect(obj.e);
       obj.y = Rect.y2(svgr) - Rect.y2(obj.r);
       obj.x = obj.r.x - svgr.x;
-      if(obj.name === undefined)
-        obj.name = Element.xpath(obj.e).replace(/.*\//, '');
+      if(obj.name === undefined) obj.name = Element.xpath(obj.e).replace(/.*\//, '');
       return obj;
     }
   );
@@ -847,9 +812,7 @@ export function walk(element) {
         //id.match(/_fa/i)
         if(text.charCodeAt(0) > 255) lang = 'fa-IR';
 
-        if(text.length > 0 &&
-          !(key.startsWith('style') || key.startsWith('script'))
-        ) {
+        if(text.length > 0 && !(key.startsWith('style') || key.startsWith('script'))) {
           const ch = text.charCodeAt(0);
           let line = texts.add({ e, id, lang, key, text, rect });
           Util.log('Text ', line[line.length - 1]);
@@ -876,9 +839,7 @@ export function walk(element) {
       else str = strs.join('\n  ');
       let rect = texts
         .at(key)
-        .reduce((acc, it) => Rect.union(acc, Element.rect(it.e)),
-          this[name][0].r
-        );
+        .reduce((acc, it) => Rect.union(acc, Element.rect(it.e)), this[name][0].r);
       let rstr = Rect.toString(rect);
 
       if(strs.length != 2 && strs.length > 0 && str.length) {
@@ -889,11 +850,7 @@ export function walk(element) {
       else if(Rect.area(rect)) global.lines[0].push(str);
     }
   });
-  let out =
-    '\n' +
-    Util.distinct(lines[0]).join('\n') +
-    '\n\n' +
-    Util.distinct(lines[1]).join('\n');
+  let out = '\n' + Util.distinct(lines[0]).join('\n') + '\n\n' + Util.distinct(lines[1]).join('\n');
 
   ws({ send: 'extract.txt', data: out });
 
@@ -991,9 +948,7 @@ export function rect(...args) {
 
   while(args.length > 0) {
     if(args[0] instanceof Rect) r = args.shift();
-    else if(isElement(args[0]) ||
-      (typeof args[0] == 'string' && (e = Element.find(args[0])))
-    )
+    else if(isElement(args[0]) || (typeof args[0] == 'string' && (e = Element.find(args[0]))))
       r = Element.rect(args.shift());
     else r = new Rect(args);
 
@@ -1020,8 +975,7 @@ export function rect(...args) {
       //console.log('rect:', rect);
     }
 
-    let color =
-      args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [64, 64]);
+    let color = args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [64, 64]);
     //  color.a = 64;
     let borderColor = args.shift() || null;
     parent = parent || args.shift() || body;
@@ -1068,9 +1022,7 @@ export function borders(element) {
   let rects = {};
 
   rects.border = b.border.null() ? Rect.clone(r) : b.border.outset(r);
-  rects.margin = b.margin.null()
-    ? Rect.clone(rects.border)
-    : b.margin.outset(rects.border);
+  rects.margin = b.margin.null() ? Rect.clone(rects.border) : b.margin.outset(rects.border);
   rects.padding = b.padding.null() ? Rect.clone(r) : b.padding.inset(r);
 
   if(!b.border.null()) rect(rects.border, 'rgba(255,0,0,0.5)', 'red');

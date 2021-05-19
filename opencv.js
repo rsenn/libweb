@@ -11,16 +11,4 @@ import { Size } from 'size.so';
 import { TickMeter } from 'utility.so';
 import { VideoCapture } from 'video-capture.so';
 
-export {
-  cv,
-  draw,
-  Contour,
-  Line,
-  Mat,
-  Point,
-  PointIterator,
-  Rect,
-  Size,
-  TickMeter,
-  VideoCapture
-};
+export { cv, draw, Contour, Line, Mat, Point, PointIterator, Rect, Size, TickMeter, VideoCapture };

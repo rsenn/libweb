@@ -34,8 +34,7 @@ function __extends(d, b) {
   function __() {
     this.constructor = d;
   }
-  d.prototype =
-    b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
+  d.prototype = b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
 }
 
 function __awaiter(thisArg, _arguments, P, generator) {
@@ -289,8 +288,7 @@ function delay(wait) {
               e_1 = { error: e_1_1 };
             } finally {
               try {
-                if(timers_1_1 && !timers_1_1.done && (_a = timers_1.return))
-                  _a.call(timers_1);
+                if(timers_1_1 && !timers_1_1.done && (_a = timers_1.return)) _a.call(timers_1);
               } finally {
                 if(e_1) throw e_1.error;
               }
@@ -324,8 +322,7 @@ function timeout(wait) {
             }
             timer = new Timer(wait);
             timer.run(() => {
-              throw new TimeoutError(wait + 'ms elapsed without next being called'
-              );
+              throw new TimeoutError(wait + 'ms elapsed without next being called');
             });
             return [4 /*yield*/, push(timer.promise)];
           case 3:

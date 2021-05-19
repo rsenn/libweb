@@ -14,17 +14,12 @@ function interpolate(p0, p1, p2, p3, t) {
   let v1 = (p3 - p1) * 0.5;
   let t2 = t * t;
   let t3 = t * t2;
-  return ((2 * p1 - 2 * p2 + v0 + v1) * t3 +
-    (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 +
-    v0 * t +
-    p1
-  );
+  return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
 }
 
 export function splinePoints(points, options) {
   let isClosedPath = options && options.closed;
-  let segmentLength =
-    options && options.segmentLength ? options.segmentLength : 0;
+  let segmentLength = options && options.segmentLength ? options.segmentLength : 0;
 
   let subpoints = [];
   let numPoints = isClosedPath ? points.length : points.length - 1;
@@ -51,24 +46,9 @@ export function splinePoints(points, options) {
     }
     let step = 1 / numSteps;
     for(let t = 0; t < 1; t += step) {
-      let x = interpolate(points[c0][0],
-        points[c1][0],
-        points[c2][0],
-        points[c3][0],
-        t
-      );
-      let y = interpolate(points[c0][1],
-        points[c1][1],
-        points[c2][1],
-        points[c3][1],
-        t
-      );
-      let z = interpolate(points[c0][2],
-        points[c1][2],
-        points[c2][2],
-        points[c3][2],
-        t
-      );
+      let x = interpolate(points[c0][0], points[c1][0], points[c2][0], points[c3][0], t);
+      let y = interpolate(points[c0][1], points[c1][1], points[c2][1], points[c3][1], t);
+      let z = interpolate(points[c0][2], points[c1][2], points[c2][2], points[c3][2], t);
       subpoints.push([x, y, z]);
     }
   }
@@ -88,9 +68,7 @@ export function splinePoints(points, options) {
   }
 
   if(!isClosedPath &&
-    distance(finalPoints[finalPoints.length - 1],
-      subpoints[subpoints.length - 1]
-    ) >
+    distance(finalPoints[finalPoints.length - 1], subpoints[subpoints.length - 1]) >
       segmentLength / 2
   ) {
     finalPoints.push(subpoints[subpoints.length - 1]);

@@ -70,11 +70,7 @@ const _assign = (pointer, subject, value, cursor) => {
     subject[segment] = value;
   } else {
     const segment = pointer.shift();
-    _assign(pointer,
-      applySegment(subject, segment, cursor),
-      value,
-      append(segment, cursor)
-    );
+    _assign(pointer, applySegment(subject, segment, cursor), value, append(segment, cursor));
   }
 };
 
@@ -128,14 +124,11 @@ const _remove = (pointer, subject, cursor) => {
   }
 };
 
-export const append = curry((pointer, ...segments) =>
-    pointer + segments.map(segment => '/' + escape(segment)).join('')
+export const append = curry((pointer, ...segments) => pointer + segments.map(segment => '/' + escape(segment)).join('')
 );
 
-const escape = segment =>
-  segment.toString().replace(/~/g, '~0').replace(/\//g, '~1');
-const unescape = segment =>
-  segment.toString().replace(/~1/g, '/').replace(/~0/g, '~');
+const escape = segment => segment.toString().replace(/~/g, '~0').replace(/\//g, '~1');
+const unescape = segment => segment.toString().replace(/~1/g, '/').replace(/~0/g, '~');
 const computeSegment = (value, segment) =>
   Array.isArray(value) && segment === '-' ? value.length : segment;
 
@@ -146,8 +139,7 @@ const applySegment = (value, segment, cursor = '') => {
 
   const computedSegment = computeSegment(value, segment);
   if(!(computedSegment in value)) {
-    throw Error(`Value at '${cursor}' does not have index '${computedSegment}'`
-    );
+    throw Error(`Value at '${cursor}' does not have index '${computedSegment}'`);
   }
 
   return value[computedSegment];

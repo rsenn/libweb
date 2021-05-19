@@ -36,11 +36,7 @@ function json2xml_translator() {
           }
         }
         if(name != null) {
-          xml +=
-            (xml.charAt(xml.length - 1) == '\n' ? ind : '') +
-            '</' +
-            name +
-            '>\n';
+          xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>\n';
         }
       } else if(typeof v == 'object') {
         let hasChild = false;
@@ -58,8 +54,7 @@ function json2xml_translator() {
           if(m.search('@') >= 1) {
             //@ exists, but is not the first character
             let parts = m.split('@');
-            if(typeof newSiblingAttrs[parts[0]] == 'undefined')
-              newSiblingAttrs[parts[0]] = {};
+            if(typeof newSiblingAttrs[parts[0]] == 'undefined') newSiblingAttrs[parts[0]] = {};
             newSiblingAttrs[parts[0]][parts[1]] = v[m];
             delete v[m];
           }
@@ -69,8 +64,7 @@ function json2xml_translator() {
           //either be a child, like so: {e : {@attribute : value}} or a
           //sibling, like so: {e : ..., e@attribute : value }
           //This test for the child (legacy)
-          if(m.charAt(0) == '@')
-            xml += ' ' + m.substr(1) + '="' + v[m].toString() + '"';
+          if(m.charAt(0) == '@') xml += ' ' + m.substr(1) + '="' + v[m].toString() + '"';
           else hasChild = true;
         }
         //Now add sibling attributes (passed by caller)
@@ -90,11 +84,7 @@ function json2xml_translator() {
               xml += X.toXml(v[m], m, ind + '\t', newSiblingAttrs[m]) + '\n';
           }
           if(name != null) {
-            xml +=
-              (xml.charAt(xml.length - 1) == '\n' ? ind : '') +
-              '</' +
-              name +
-              '>\n';
+            xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>\n';
           }
         }
       } else {
@@ -111,8 +101,7 @@ function json2xml_translator() {
     },
     parseJson(jsonString) {
       //Util.log('parseJSON:', jsonString);
-      let obj =
-        typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
+      let obj = typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
       return obj;
     }
   };

@@ -33,10 +33,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer || this.layers.tPlace;
-    const color =
-      typeof item.getColor == 'function'
-        ? item.getColor()
-        : BoardRenderer.palette[16];
+    const color = typeof item.getColor == 'function' ? item.getColor() : BoardRenderer.palette[16];
 
     const svg = (elem, attr, parent) =>
       this.create(elem, {
@@ -68,8 +65,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         let data = RenderShape(shape, ro, ri);
         svg('path', {
             fill: padColor,
-            d: data +
-              ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
+            d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
           },
           parent
@@ -90,9 +86,7 @@ export class BoardRenderer extends EagleSVGRenderer {
                 //                'stroke-width': 0.01,
                 x: 0.04,
                 y: -0.04,
-                ...(layer
-                  ? { 'data-layer': `${layer.number} ${layer.name}` }
-                  : {}),
+                ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
                 //     filter: 'url(#shadow)',
                 ...EagleSVGRenderer.alignmentAttrs('center', VERTICAL),
                 'font-size': 0.6,
@@ -160,12 +154,10 @@ export class BoardRenderer extends EagleSVGRenderer {
     }
 
     for(let item of other)
-      if(predicate(item) && item.tagName == 'pad')
-        this.renderItem(item, parent, { ...opts });
+      if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
 
     for(let item of other)
-      if(predicate(item) && item.tagName != 'pad')
-        this.renderItem(item, parent, { ...opts });
+      if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
 
     for(let [layerId, wires] of wireMap) {
       let classList = (parent && parent.classList) || [];
@@ -303,9 +295,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       transformation: this.transform.concat(transform),
       flat: true
     });
-    this.create(Origin, { /* x, y,*/ element, layer: this.layers['tOrigins'] },
-      g
-    );
+    this.create(Origin, { /* x, y,*/ element, layer: this.layers['tOrigins'] }, g);
 
     /*    let angle = Util.randInt(0, 360);
     let angles = [angle, angle + 120, angle + 240, angle + 360];
@@ -321,16 +311,11 @@ export class BoardRenderer extends EagleSVGRenderer {
     let props = {};
     if('layer' in options) {
       let layer = options.layer ? this.doc.layers[options.layer] : null;
-      children = children.filter(child =>
-          (options.layer ? child.layer : !child.layer) || child.tagName == 'via'
+      children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via'
       );
       if(layer) {
         children = children.filter(child => child.layer.number == layer.number);
-        this.debug('Filtering',
-          layer.number,
-          layer.name,
-          ...children.map(c => '\n' + c.toXML())
-        );
+        this.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
       } else {
       }
     }
@@ -353,10 +338,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       //console.log('class:', className, 'children.length:', children.length, ' options.layer:', options.layer, 'cond:', children.length > 1 && !(typeof options.layer == 'string') );
       if(children.length > 1 && options.layer != '') {
         delete options.layer;
-        let signalGroup = this.create('g',
-          { /*id, */ ...props, 'font-family': 'Fixed' },
-          parent
-        );
+        let signalGroup = this.create('g', { /*id, */ ...props, 'font-family': 'Fixed' }, parent);
         return this.renderCollection(children, signalGroup, options);
       }
     }
@@ -388,10 +370,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);
-    let plainGroup = this.create('g',
-      { id: 'plain', transform, 'font-family': 'Fixed' },
-      parent
-    );
+    let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
     let signalsGroup = this.create('g',
       {
         id: 'signals',
@@ -422,8 +401,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         layer: '',
         predicate: i => i.attributes.layer === undefined
       });
-    for(let element of this.elements.list)
-      this.renderElement(element, elementsGroup);
+    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
     let plain = [...this.doc.plain];
     this.renderCollection(plain, plainGroup);
     this.bounds = bounds;

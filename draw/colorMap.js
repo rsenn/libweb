@@ -40,10 +40,7 @@ export class ColorMap extends Map {
     const base = opts.base || this.base;
     let a = [];
     for(let [key, color] of this)
-      a.push(color.toString
-          ? color.toString(',', num => num.toString(base))
-          : '' + color
-      );
+      a.push(color.toString ? color.toString(',', num => num.toString(base)) : '' + color);
     a.join(',');
   }
 
@@ -53,11 +50,7 @@ export class ColorMap extends Map {
 
   getMinMax() {
     let channels =
-      this.type == RGBA
-        ? ['r', 'g', 'b', 'a']
-        : this.type == HSLA
-        ? ['h', 's', 'l', 'a']
-        : [];
+      this.type == RGBA ? ['r', 'g', 'b', 'a'] : this.type == HSLA ? ['h', 's', 'l', 'a'] : [];
     const minmax = a => [Math.min(...a), Math.max(...a)];
     return channels.reduce((acc, chan) => ({
         ...acc,

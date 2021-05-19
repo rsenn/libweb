@@ -1,6 +1,5 @@
 Lexer.defunct = function(chr) {
-  throw new Error('Unexpected character at index ' + (this.index - 1) + ': ' + chr
-  );
+  throw new Error('Unexpected character at index ' + (this.index - 1) + ': ' + chr);
 };
 try {
   Lexer.engineHasStickySupport = typeof /(?:)/.sticky == 'boolean';
@@ -121,10 +120,7 @@ export function Lexer(defunct) {
       var start = rule.start;
       var states = start.length;
 
-      if(!states ||
-        start.indexOf(state) >= 0 ||
-        (state % 2 && states === 1 && !start[0])
-      ) {
+      if(!states || start.indexOf(state) >= 0 || (state % 2 && states === 1 && !start[0])) {
         var pattern = rule.pattern;
         pattern.lastIndex = lastIndex;
         var result = pattern.exec(input);

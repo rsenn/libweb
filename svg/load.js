@@ -25,8 +25,7 @@ export function loadSVGs() {
 }
 
 const CacheSVG = new (class CacheProxy {
-  instance =
-    'window' in global && 'caches' in window ? caches.open('svg') : null;
+  instance = 'window' in global && 'caches' in window ? caches.open('svg') : null;
 
   async get(url) {
     if(this.instace !== null) {
@@ -41,9 +40,7 @@ const CacheSVG = new (class CacheProxy {
   put(url, data) {
     if(this.instace !== null) {
       this.instance.then(cache =>
-        cache.put(url,
-          new Response(data, { headers: { 'Content-Type': 'image/svg+xml' } })
-        )
+        cache.put(url, new Response(data, { headers: { 'Content-Type': 'image/svg+xml' } }))
       );
     }
   }

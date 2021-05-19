@@ -45,8 +45,7 @@ export function dom() {
           'length'
         ].indexOf(key) == -1 && typeof functions[key] == 'function'
     );
-    for(let key of keys)
-      if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
+    for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
 
   args = args.map(arg => (typeof arg == 'string' ? Element.findAll(arg) : arg));

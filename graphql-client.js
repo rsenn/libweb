@@ -57,8 +57,7 @@ const client = (options = {}) => {
           .then(res => {
             if(res.errors) {
               if(logger && logger.trace) logger.trace(res.errors);
-              else if(logger && typeof logger === 'function')
-                logger('error', res.errors);
+              else if(logger && typeof logger === 'function') logger('error', res.errors);
               else console.trace(res.errors); //eslint-disable-line no-console
 
               reject(res.errors);

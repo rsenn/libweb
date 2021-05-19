@@ -178,20 +178,7 @@ export function normalizePath(d) {
           x = args[a + 4];
           y = args[a + 5];
         }
-        normalized +=
-          'C ' +
-          cx +
-          ' ' +
-          cy +
-          ' ' +
-          cx2 +
-          ' ' +
-          cy2 +
-          ' ' +
-          x +
-          ' ' +
-          y +
-          ' ';
+        normalized += 'C ' + cx + ' ' + cy + ' ' + cx2 + ' ' + cy2 + ' ' + x + ' ' + y + ' ';
       }
     } else if(lop === 's') {
       for(a = 0; a < alen; a += 4) {
@@ -210,20 +197,7 @@ export function normalizePath(d) {
           x = args[a + 2];
           y = args[a + 3];
         }
-        normalized +=
-          'C ' +
-          cx +
-          ' ' +
-          cy +
-          ' ' +
-          cx2 +
-          ' ' +
-          cy2 +
-          ' ' +
-          x +
-          ' ' +
-          y +
-          ' ';
+        normalized += 'C ' + cx + ' ' + cy + ' ' + cx2 + ' ' + cy2 + ' ' + x + ' ' + y + ' ';
       }
     }
 
@@ -246,21 +220,7 @@ export function normalizePath(d) {
           y = args[a + 6];
         }
         normalized +=
-          'A ' +
-          rx +
-          ' ' +
-          ry +
-          ' ' +
-          xrot +
-          ' ' +
-          lflag +
-          ' ' +
-          sweep +
-          ' ' +
-          x +
-          ' ' +
-          y +
-          ' ';
+          'A ' + rx + ' ' + ry + ' ' + xrot + ' ' + lflag + ' ' + sweep + ' ' + x + ' ' + y + ' ';
       }
     } else if(lop === 'z') {
       normalized += 'Z ';

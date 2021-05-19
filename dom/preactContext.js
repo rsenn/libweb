@@ -7,19 +7,10 @@
     root.plotCv = factory(root.tslib, root.preact);
   }
 })(typeof self !== 'undefined' ? self : this, (tslib, preact) =>
-  (function (contextFactory,
-    tslib,
-    preact,
-    contextValueEmitterFactory,
-    utilsFactory
-  ) {
+  (function (contextFactory, tslib, preact, contextValueEmitterFactory, utilsFactory) {
     let utilsExports = utilsFactory();
     let contextValueEmitterExports = contextValueEmitterFactory();
-    return contextFactory(tslib,
-      preact,
-      contextValueEmitterExports,
-      utilsExports
-    );
+    return contextFactory(tslib, preact, contextValueEmitterExports, utilsExports);
   })((tslib, preact, contextValueEmitter, utils) => {
       let __extends = tslib.__extends,
         h = preact.h,
@@ -43,9 +34,7 @@
           __extends(Provider, _super);
           function Provider(props) {
             let _this = _super.call(this, props) || this;
-            _this._emitter = createEmitter(props.value,
-              bitmaskFactory || defaultBitmaskFactory
-            );
+            _this._emitter = createEmitter(props.value, bitmaskFactory || defaultBitmaskFactory);
             return _this;
           }
           Provider.prototype.getChildContext = function() {
@@ -74,8 +63,7 @@
             _this._updateContext = function(value, bitmask) {
               let unstable_observedBits = _this.props.unstable_observedBits;
               let observed =
-                unstable_observedBits === undefined ||
-                unstable_observedBits === null
+                unstable_observedBits === undefined || unstable_observedBits === null
                   ? MAX_SIGNED_31_BIT_INT
                   : unstable_observedBits;
               observed = observed | 0;
@@ -90,9 +78,7 @@
           Consumer.prototype.componentDidMount = function() {
             this._getEmitter().register(this._updateContext);
           };
-          Consumer.prototype.shouldComponentUpdate = function(nextProps,
-            nextState
-          ) {
+          Consumer.prototype.shouldComponentUpdate = function(nextProps, nextState) {
             return (this.state.value !== nextState.value ||
               getRenderer(this.props) !== getRenderer(nextProps)
             );

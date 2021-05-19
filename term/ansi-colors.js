@@ -1,7 +1,6 @@
 'use strict';
 
-const isObject = val =>
-  val !== null && typeof val === 'object' && !Array.isArray(val);
+const isObject = val => val !== null && typeof val === 'object' && !Array.isArray(val);
 const identity = val => val;
 
 /* eslint-disable no-control-regex */
@@ -31,9 +30,7 @@ export const create = () => {
   };
 
   const wrap = (style, input, newline) => {
-    return typeof style === 'function'
-      ? style(input)
-      : style.wrap(input, newline);
+    return typeof style === 'function' ? style(input) : style.wrap(input, newline);
   };
 
   const style = (input, stack) => {
@@ -153,8 +150,7 @@ export const create = () => {
   };
 
   colors.theme = custom => {
-    if(!isObject(custom))
-      throw new TypeError('Expected theme to be an object');
+    if(!isObject(custom)) throw new TypeError('Expected theme to be an object');
     for(let name of Object.keys(custom)) {
       colors.alias(name, custom[name]);
     }

@@ -23,10 +23,7 @@ export const equals = (a, b) => {
     if(!(Util.isArray(b) && a.length === b.length)) {
       return false;
     }
-    for(i = j = 0, ref = a.length;
-      0 <= ref ? j < ref : j > ref;
-      i = 0 <= ref ? ++j : --j
-    ) {
+    for(i = j = 0, ref = a.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
       if(!equals(a[i], b[i])) {
         return false;
       }
@@ -49,8 +46,7 @@ export const equals = (a, b) => {
 
 export const extend = (...args) => {
   let destination, k, source, sources, j, len;
-  (destination = args[0]),
-    (sources = 2 <= args.length ? Array.prototype.slice.call(args, 1) : []);
+  (destination = args[0]), (sources = 2 <= args.length ? Array.prototype.slice.call(args, 1) : []);
   for(j = 0, len = sources.length; j < len; j++) {
     source = sources[j];
     for(k in source) {
@@ -74,8 +70,7 @@ export const select = (root, filter, path) => {
   if(filter(root, path)) selected.push({ path, value: root });
   else if(Util.isObject(root))
     for(k in root)
-      selected = selected.concat(select(root[k], filter, path.concat([isNaN(+k) ? k : +k]))
-      );
+      selected = selected.concat(select(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
   return selected;
 };
 
@@ -108,8 +103,7 @@ export const forEach = function(...args) {
   fn(value, path, root);
 
   if(Util.isObject(value))
-    for(let k in value)
-      forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+    for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -121,11 +115,7 @@ export const iterate = function* (...args) {
   if(r !== -1)
     if(Util.isObject(value)) {
       for(let k in value)
-        yield* iterate(value[k],
-          filter,
-          path.concat([isNaN(+k) ? k : +k]),
-          root
-        );
+        yield* iterate(value[k], filter, path.concat([isNaN(+k) ? k : +k]), root);
     }
 };
 
@@ -137,10 +127,8 @@ export const flatten = (iter,
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
-  if(typeof dst.set == 'function')
-    insert = (name, value) => dst.set(name, value);
-  else if(typeof dst.push == 'function')
-    insert = (name, value) => dst.push([name, value]);
+  if(typeof dst.set == 'function') insert = (name, value) => dst.set(name, value);
+  else if(typeof dst.push == 'function') insert = (name, value) => dst.push([name, value]);
   else insert = (name, value) => (dst[name] = value);
 
   for(let [value, path] of iter) insert(...map(path, value));
@@ -168,8 +156,7 @@ export const set = (root, path, value) => {
   for(let j = 0, len = path.length; j + 1 < len; j++) {
     let pathElement = isNaN(+path[j]) ? path[j] : +path[j];
     //console.log("path element:",pathElement);
-    if(!(pathElement in root))
-      root[pathElement] = /^[0-9]+$/.test(path[j + 1]) ? [] : {};
+    if(!(pathElement in root)) root[pathElement] = /^[0-9]+$/.test(path[j + 1]) ? [] : {};
     root = root[pathElement];
   }
   let lastPath = path.pop();
@@ -187,9 +174,7 @@ export const delegate = (root, path) => {
     };
   }
   return function(path, value) {
-    return value !== undefined
-      ? obj.set(root, path, value)
-      : obj.get(root, path);
+    return value !== undefined ? obj.set(root, path, value) : obj.get(root, path);
   };
 };
 

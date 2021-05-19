@@ -83,11 +83,7 @@ export async function ConsoleSetup(opts = {}) {
         const inspectFunction = await import('util').then(module => (globalThis.inspect = module.inspect)
         );
 
-        ret = extendWithOptionsHandler(ret,
-          inspectFunction,
-          inspectOptions,
-          clog
-        );
+        ret = extendWithOptionsHandler(ret, inspectFunction, inspectOptions, clog);
         clog.call(c, 'ret:', ret.log + '');
         return ret;
       },
@@ -128,9 +124,7 @@ export async function ConsoleSetup(opts = {}) {
           case 'quickjs':
             await import('inspect')
               .catch(() => import('inspect.so'))
-              .then(module =>
-                  (globalThis.inspect = inspectFunction = module.inspect)
-              );
+              .then(module => (globalThis.inspect = inspectFunction = module.inspect));
             break;
 
           case 'node':
@@ -138,17 +132,12 @@ export async function ConsoleSetup(opts = {}) {
             );
             break;
           default: await import('./objectInspect.js').then(
-              module =>
-                (globalThis.inspect = inspectFunction = module.inspectFunction)
+              module => (globalThis.inspect = inspectFunction = module.inspectFunction)
             );
             break;
         }
 
-        return extendWithOptionsHandler(newcons,
-          inspectFunction,
-          inspectOptions,
-          c.log
-        );
+        return extendWithOptionsHandler(newcons, inspectFunction, inspectOptions, c.log);
       },
       c => c,
       () => {}

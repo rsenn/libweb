@@ -51,8 +51,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     //  this.debug(`LibraryRenderer.renderItem`, item, item.raw);
     const layer = item.layer;
-    const color =
-      (options && options.color) || (layer && this.getColor(layer.color));
+    const color = (options && options.color) || (layer && this.getColor(layer.color));
     const comp = ElementToComponent(item);
     let component;
     if(!comp) throw new Error(`No component for item '${item.tagName}'`);
@@ -69,15 +68,12 @@ export class LibraryRenderer extends EagleSVGRenderer {
       );
 
     let devicesets = [
-      ...this.doc.getAll(e => e.attributes && e.attributes[item.tagName] == item.name
-      )
+      ...this.doc.getAll(e => e.attributes && e.attributes[item.tagName] == item.name)
     ]
       .map(e => [e, e.scope().deviceset])
       .map(([e, deviceset]) => deviceset)
       .filter(deviceset => !!deviceset);
-    let prefixes = Util.unique(devicesets
-        .map(deviceset => deviceset && deviceset.prefix)
-        .filter(prefix => !!prefix)
+    let prefixes = Util.unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix)
     );
     let suffix = '';
     if(item.tagName == 'symbol') {
@@ -138,9 +134,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
         Rect.round(bounds, 2.54);
       }
       measure = measure.outset(1.28).round(2.54);
-      let matrix = new Matrix().affine_transform(measure.toPoints(),
-        new Rect(bounds).toPoints()
-      );
+      let matrix = new Matrix().affine_transform(measure.toPoints(), new Rect(bounds).toPoints());
       //  console.debug("LibraryRenderer.renderItem ", {matrix});
 
       let { scaling, translation } = (transformation = transformation.concat(TransformationList.fromMatrix(matrix)
@@ -159,17 +153,15 @@ if(translation) {
 
       window.matrix = matrix;
 
-      component = super.render(item,
-        { ...options, index, transform: transformation, bounds },
-        [group]
-      );
+      component = super.render(item, { ...options, index, transform: transformation, bounds }, [
+        group
+      ]);
     }
     return component;
   }
 
   renderCollection(collection, options = {}) {
-    if(collection instanceof EagleElement)
-      collection = [...collection.children];
+    if(collection instanceof EagleElement) collection = [...collection.children];
 
     this.debug('LibraryRenderer.renderCollection', { collection, options });
     let items = collection.map((item, index) => [
@@ -188,10 +180,7 @@ if(translation) {
       ...opts
     } = options;
     const { symbols, packages, devicesets } = this.doc.library;
-    let allItems = (window.allItems = [
-      ...symbols.children,
-      ...packages.children
-    ]);
+    let allItems = (window.allItems = [...symbols.children, ...packages.children]);
     let bbox = allItems.reduce((a, it) => a.update(it.getBounds()), new BBox());
     let size = bbox.toRect(Rect.prototype).size;
     let items = [symbols, packages].reduce((a, collection) => [
@@ -204,10 +193,7 @@ if(translation) {
       []
     );
 
-    this.entries = items.map(([title, component]) => [
-      title.join(' '),
-      component
-    ]);
+    this.entries = items.map(([title, component]) => [title.join(' '), component]);
     if(asEntries) return this.entries;
     component = 'div';
     props = {

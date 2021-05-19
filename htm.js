@@ -22,9 +22,7 @@ var evaluate = function(h, built, fields, args) {
   for(var i = 1; i < built.length; i++) {
     var type = built[i++]; // Set `built[0]`'s appropriate bits if this element depends on a dynamic value.
 
-    var value = built[i]
-      ? ((built[0] |= type ? 1 : 2), fields[built[i++]])
-      : built[++i];
+    var value = built[i] ? ((built[0] |= type ? 1 : 2), fields[built[i++]]) : built[++i];
 
     if(type === TAG_SET) {
       args[0] = value;
@@ -69,9 +67,7 @@ var build = function(statics) {
   var char, propName;
 
   var commit = function(field) {
-    if(mode === MODE_TEXT &&
-      (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))
-    ) {
+    if(mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
       {
         current.push(CHILD_APPEND, field, buffer);
       }
@@ -155,9 +151,7 @@ var build = function(statics) {
         mode = MODE_PROP_SET;
         propName = buffer;
         buffer = '';
-      } else if(char === '/' &&
-        (mode < MODE_PROP_SET || statics[i][j + 1] === '>')
-      ) {
+      } else if(char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
         commit();
 
         if(mode === MODE_TAGNAME) {
@@ -171,11 +165,7 @@ var build = function(statics) {
         }
 
         mode = MODE_SLASH;
-      } else if(char === ' ' ||
-        char === '\t' ||
-        char === '\n' ||
-        char === '\r'
-      ) {
+      } else if(char === ' ' || char === '\t' || char === '\n' || char === '\r') {
         // <a disabled>
         commit();
         mode = MODE_WHITESPACE;

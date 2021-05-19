@@ -57,9 +57,7 @@ export function Matrix(...args) {
     /*} else if(typeof arg === 'number') {
     Matrix.prototype.init.call(ret, ...args);*/
   } else if(typeof arg === 'string' && /matrix\([^)]*\)/.test(arg)) {
-    let [xx, xy, x0, yy, yx, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m =>
-      parseFloat(m[0])
-    );
+    let [xx, xy, x0, yy, yx, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
     ret[0] = xx;
     ret[1] = xy;
     ret[2] = x0;
@@ -69,8 +67,7 @@ export function Matrix(...args) {
   } else {
     Array.prototype.splice.call(ret, 0, ret.length, 1, 0, 0, 0, 1, 0, 0, 0, 1);
   }
-  for(let i = 0; i < 9; i++)
-    if(ret[i] === undefined) ret[i] = [1, 0, 0, 0, 1, 0, 0, 0, 1][i];
+  for(let i = 0; i < 9; i++) if(ret[i] === undefined) ret[i] = [1, 0, 0, 0, 1, 0, 0, 0, 1][i];
 
   if(!(this instanceof Matrix)) return ret;
 }
@@ -85,9 +82,7 @@ Matrix.prototype.splice = Array.prototype.splice;
 Matrix.prototype.slice = Array.prototype.slice;
 */
 
-Object.assign(Matrix.prototype,
-  new Array() || Util.getMethods(Array.prototype)
-);
+Object.assign(Matrix.prototype, new Array() || Util.getMethods(Array.prototype));
 
 Matrix.prototype.constructor = Matrix;
 
@@ -98,9 +93,7 @@ Object.defineProperty(Matrix, Symbol.species, {
 });
 
 Util.defineGetter(Matrix.prototype, Symbol.toStringTag, function() {
-  return `[object ${Matrix.prototype.toString
-    .apply(this, arguments)
-    .replace(/^[^(]*/g, '')}]`;
+  return `[object ${Matrix.prototype.toString.apply(this, arguments).replace(/^[^(]*/g, '')}]`;
 });
 Matrix.prototype[Symbol.isConcatSpreadable] = false;
 
@@ -184,11 +177,7 @@ Matrix.prototype.init = function(...args) {
     Array.prototype.splice.call(this, 3, row1.length, ...row1);
     Array.prototype.splice.call(this, 6, row2.length, ...row2);
   } else {
-    Array.prototype.splice.call(this,
-      0,
-      Math.min(this.length, args.length),
-      ...args
-    );
+    Array.prototype.splice.call(this, 0, Math.min(this.length, args.length), ...args);
   }
   return this;
 };
@@ -201,17 +190,11 @@ Matrix.prototype.set_row = function(...args) {
 };
 
 Matrix.prototype.multiply = function(other) {
-  return Object.setPrototypeOf(matrixMultiply(this.rows(), other.rows()).flat(),
-    Matrix.prototype
-  );
+  return Object.setPrototypeOf(matrixMultiply(this.rows(), other.rows()).flat(), Matrix.prototype);
 };
 
 Matrix.prototype.multiplySelf = function(other) {
-  Array.prototype.splice.call(this,
-    0,
-    6,
-    ...matrixMultiply(this.rows(), other.rows()).flat()
-  );
+  Array.prototype.splice.call(this, 0, 6, ...matrixMultiply(this.rows(), other.rows()).flat());
   return this;
 };
 Matrix.prototype.toObject = function() {
@@ -252,8 +235,7 @@ Matrix.prototype.columns = function() {
 };
 Matrix.prototype.rows = function() {
   let ret = [];
-  for(let i = 0; i < 9; i += 3)
-    ret.push([this[i + 0], this[i + 1], this[i + 2]]);
+  for(let i = 0; i < 9; i += 3) ret.push([this[i + 0], this[i + 1], this[i + 2]]);
   return ret;
 };
 
@@ -300,9 +282,7 @@ Matrix.prototype.scalar_product = function(f) {
 Matrix.prototype.toSource = function(construct = false, multiline = true) {
   const nl = multiline ? '\n' : '';
   const rows = Matrix.prototype.rows.call(this);
-  const src = `${rows
-    .map(row => row.join(','))
-    .join(multiline ? ',\n ' : ',')}`;
+  const src = `${rows.map(row => row.join(',')).join(multiline ? ',\n ' : ',')}`;
   return construct ? `new Matrix([${nl}${src}${nl}])` : `[${src}]`;
 };
 
@@ -314,10 +294,7 @@ Matrix.prototype.toString = function(separator = ' ') {
     rows = [['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]])];
   }
 
-  return (`${name}(` +
-    rows.map(row => row.join(',' + separator)).join(',' + separator) +
-    ')'
-  );
+  return `${name}(` + rows.map(row => row.join(',' + separator)).join(',' + separator) + ')';
 };
 const inspectSym = 'inspect' || Symbol.for('nodejs.util.inspect.custom');
 Matrix.prototype[inspectSym] = function() {
@@ -325,13 +302,9 @@ Matrix.prototype[inspectSym] = function() {
   let numRows = Math.max(...columns.map(col => col.length));
   let numCols = columns.length;
   columns = columns.map(column =>
-    column.map(n =>
-      typeof n == 'number' ? Util.roundTo(n, 1e-12, 12) : undefined
-    )
+    column.map(n => (typeof n == 'number' ? Util.roundTo(n, 1e-12, 12) : undefined))
   );
-  let pad = columns.map(column =>
-    Math.max(...column.map(n => (n + '').length))
-  );
+  let pad = columns.map(column => Math.max(...column.map(n => (n + '').length)));
   let s = '│ ';
   for(let row = 0; row < numRows; row++) {
     if(row > 0) s += ` │\n│ `;
@@ -349,10 +322,7 @@ Matrix.prototype[inspectSym] = function() {
 };
 
 Matrix.prototype.toSVG = function() {
-  return ('matrix(' +
-    ['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]]).join(',') +
-    ')'
-  );
+  return 'matrix(' + ['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]]).join(',') + ')';
 };
 
 Matrix.prototype.toDOM = function(ctor = DOMMatrix) {
@@ -374,9 +344,7 @@ Matrix.fromDOM = matrix => {
 };
 
 Matrix.prototype.equals = function(other) {
-  return (this.length <= other.length &&
-    Array.prototype.every.call(this, (n, i) => other[i] == n)
-  );
+  return this.length <= other.length && Array.prototype.every.call(this, (n, i) => other[i] == n);
 };
 
 Matrix.prototype.transform_distance = function(d) {
@@ -603,10 +571,7 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
   //if(useLU) {
   let sign, cos, sin;
   sign = Matrix.prototype.scale_sign.call(this);
-  rotation =
-    (Math.atan2(this[3], this[4]) +
-      Math.atan2(-sign * this[1], sign * this[0])) /
-    2;
+  rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
   cos = Math.cos(rotation);
   sin = Math.sin(rotation);
   scale = {
@@ -640,9 +605,7 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
 
   return {
     translate,
-    rotate: degrees === true
-        ? Util.roundTo((rotation * 180) / Math.PI, 0.1)
-        : rotation,
+    rotate: degrees === true ? Util.roundTo((rotation * 180) / Math.PI, 0.1) : rotation,
     scale,
     skew: degrees == true
         ? {
@@ -735,22 +698,15 @@ for(let name of [
 }
 
 for(let name of ['translate', 'scale', 'rotate', 'skew']) {
-  Matrix[name] = (...args) =>
-    Matrix.prototype['init_' + name].call(new Matrix(), ...args);
+  Matrix[name] = (...args) => Matrix.prototype['init_' + name].call(new Matrix(), ...args);
 }
 
 for(let name of ['translate', 'scale', 'rotate', 'skew']) {
   Matrix.prototype[name] = function(...args) {
-    return Matrix.prototype.multiply.call(this,
-      new Matrix()['init_' + name](...args)
-    );
+    return Matrix.prototype.multiply.call(this, new Matrix()['init_' + name](...args));
   };
-  Matrix.prototype[name + 'Self'] = Matrix.prototype[
-    name + '_self'
-  ] = function(...args) {
-    return Matrix.prototype.multiplySelf.call(this,
-      new Matrix()['init_' + name](...args)
-    );
+  Matrix.prototype[name + 'Self'] = Matrix.prototype[name + '_self'] = function(...args) {
+    return Matrix.prototype.multiplySelf.call(this, new Matrix()['init_' + name](...args));
   };
 }
 
@@ -767,13 +723,9 @@ for(let name of [
   const method = Matrix.prototype[name];
 
   if(method.length == 2) {
-    Matrix[name] = Util.curry((m, a, b) =>
-      Matrix.prototype[name].call(m || new Matrix(m), a, b)
-    );
+    Matrix[name] = Util.curry((m, a, b) => Matrix.prototype[name].call(m || new Matrix(m), a, b));
   } else if(method.length == 1) {
-    Matrix[name] = Util.curry((m, a) =>
-      Matrix.prototype[name].call(m || new Matrix(m), a)
-    );
+    Matrix[name] = Util.curry((m, a) => Matrix.prototype[name].call(m || new Matrix(m), a));
   }
 }
 

@@ -1,6 +1,7 @@
 import { EagleRef, EagleReference } from './ref.js';
 import Util from '../util.js';
-import deep from '../deep.js';
+import * as deep from '../deep.js';
+import * as xml from '../xml.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';
@@ -25,9 +26,7 @@ export class EagleNode {
   constructor(owner, ref, raw) {
     //if(!owner) owner = new EagleReference(ref.root, []).dereference();
     if(!(ref instanceof EagleReference))
-      ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [
-        ...ref
-      ]);
+      ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
     if(!raw) raw = ref.dereference();
     //console.log("EagleNode.constructor",{owner,ref,raw});
     //Object.assign(this, { ref, owner });
@@ -61,10 +60,7 @@ export class EagleNode {
           if(i == 0) ignore();
           if(!value ||
             !value.attributes ||
-            !(value.tagName == 'library' ||
-              value.tagName == 'sheet' ||
-              value.attributes.name
-            )
+            !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)
           )
             ignore();
 
@@ -125,13 +121,7 @@ export class EagleNode {
           ['sheets'] /*, ['modules']*/
         ];
       case 'board':
-        return [
-          ['plain'],
-          ['libraries'],
-          ['classes'],
-          ['elements'],
-          ['signals']
-        ];
+        return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
       case 'module':
         return [['ports'], ['variantdefs'], ['parts'], ['sheets']];
       case 'sheet':
@@ -235,9 +225,7 @@ export class EagleNode {
 
       pred = (v, p, o) =>
         keys.every((key, i) =>
-          key == 'tagName'
-            ? v[key] == values[i]
-            : v.attributes[key] == values[i]
+          key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]
         );
     }
     return pred;
@@ -287,17 +275,11 @@ export class EagleNode {
   getByName(element,
     name,
     attr = 'name',
-    t = ([v, l, d]) =>
-      makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)
+    t = ([v, l, d]) => makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)
   ) {
     for(let [v, l, d] of this.iterator([], it => it)) {
-      if(typeof v == 'object' &&
-        'tagName' in v &&
-        'attributes' in v &&
-        attr in v.attributes
-      ) {
-        if(v.tagName == element && v.attributes[attr] == name)
-          return t([v, l, d]);
+      if(typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
+        if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
       }
     }
     return null;
@@ -352,18 +334,16 @@ export class EagleNode {
     //    return tXml.toString([this.raw]);
   }
 
-  inspect() {
+  inspect(depth, options) {
     let attrs = [''];
-
+    //console.log('EagleNode.inspect', { depth, options });
     const { raw } = this;
     const { children, tagName, attributes } = raw;
     const { attributeLists } = EagleElement;
-    const attributeList =
-      attributeLists[tagName] || Object.keys(raw.attributes);
+    const attributeList = attributeLists[tagName] || Object.keys(raw.attributes);
     // console.log('EagleNode.inspect',  { tagName, attributeList });
     const getAttr = name => {
-      for(let attrMap of [attributes, this, raw])
-        if(name in attrMap) return attrMap[name];
+      for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];
     };
     if(true) {
       attrs = attributeList
@@ -392,13 +372,20 @@ export class EagleNode {
         text(numChildren == 0 ? ' />' : '>', 1, 36)
       );
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
-    if(numChildren > 0)
-      ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
+    if(numChildren > 0) {
+      if(depth < 1) {
+        ret += ('\n' + xml.write(children, options.depth - depth)).replace(/\n/g, '\n  ');
+        ret += '\n';
+      } else {
+        ret += concat(ret, `{...${numChildren} children...}`);
+      }
+      ret += `</${tag}>`;
+    }
     return (ret = concat(text(Util.className(this) + ' ', 0), ret));
   }
 
-  [Symbol.for('nodejs.util.inspect.custom')]() {
-    return this.inspect();
+  [Symbol.for('nodejs.util.inspect.custom')](depth, options) {
+    return this.inspect(depth, options);
   }
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
@@ -416,8 +403,7 @@ export class EagleNode {
   getBounds(pred = e => true) {
     let bb = new BBox();
     if(this.children && this.children.length) {
-      for(let element of this.getAll(e => e.tagName !== undefined && pred(e)
-      )) {
+      for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
         let g = element.geometry;
         if(g) {
           let bound = typeof g.bbox == 'function' ? g.bbox() : g;
@@ -519,13 +505,7 @@ export class EagleNode {
     let l = e.path + '';
     let type = Util.className(e);
     if(arr.length) arr.unshift('');
-    let ret = [
-      text(type, 38, 5, 219),
-      p,
-      text('⧃❋⭗', 38, 5, 112),
-      ...arr,
-      text(`〕`, 1, 37)
-    ];
+    let ret = [text(type, 38, 5, 219), p, text('⧃❋⭗', 38, 5, 112), ...arr, text(`〕`, 1, 37)];
 
     return (l.trim() ? l + '  ' : '') + ret.join(' ') + text('', 0);
   };

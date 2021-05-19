@@ -8,9 +8,7 @@ import path from '../path.js';
 export class EagleProject {
   //basename = null;
 
-  constructor(file,
-    fs = { readFile: basename => '', exists: basename => false }
-  ) {
+  constructor(file, fs = { readFile: basename => '', exists: basename => false }) {
     //super();
     if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
       this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
@@ -20,22 +18,21 @@ export class EagleProject {
     Util.define(this, {
       file,
       dir: path.dirname(file),
-      fs: globalThis.filesystem || fs,
+      fs,
       documents: {},
       list: [],
       data: { sch: null, brd: null, lbr: {} }
     });
-
+    console.log('this.fs', this.fs);
     let libraryPath = [this.dir];
     let dir = path.join(this.dir, 'lbr');
-    if(this.fs.exists(dir)) libraryPath.push(dir);
+    if(this.fs.existsSync(dir)) libraryPath.push(dir);
     this.libraryPath = libraryPath;
     this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
-    if(this.fs.exists(file)) this.lazyOpen(file);
+    if(this.fs.existsSync(file)) this.lazyOpen(file);
     else this.load();
     //    if(!this.basename || !this.load()) this.open(file);
-    if(!this.failed)
-      console.log('Opened project:', this.basename, this.eaglePath);
+    if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
   }
 
   load() {
@@ -54,8 +51,7 @@ export class EagleProject {
       () => {
         let doc = EagleDocument.open(file, this.fs);
         this.list[index] = doc;
-        if(doc.libraries)
-          this.addLibraries(doc.libraries.list.map(l => l.name));
+        if(doc.libraries) this.addLibraries(doc.libraries.list.map(l => l.name));
         return doc;
       },
       { enumerable: true, configurable: true }
@@ -111,7 +107,7 @@ export class EagleProject {
     for(let dir of path) {
       bin = dir + '/eagle';
 
-      if(fs.exists(bin)) {
+      if(fs.existsSync(bin)) {
         if(!/(eagle)/i.test(dir)) {
           bin = fs.realpath(bin);
           dir = bin.replace(/\/[^\/]+$/, '');
@@ -133,7 +129,9 @@ export class EagleProject {
       pred = name => re.test(name);
     }
     let names = Object.getOwnPropertyNames(this.documents);
-    return this.documents[names.find(pred)];
+    const name = names.find(pred);
+    console.log('findDocument', { names, name, pred: pred + '' });
+    return this.documents[name];
   }
   getLibrary(name) {
     return this.findDocument(name + '.lbr');
@@ -145,12 +143,7 @@ export class EagleProject {
   get root() { let children = this.list; return { children }; }
   get children() { let children = this.list; return children; }
 
-  *iterator(t = ([v, l, d]) => [
-      typeof v == 'object' ? EagleElement.get(d, l, v) : v,
-      l,
-      d
-    ]
-  ) {
+  *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
     const project = this;
     for(let doc of this.list) {
       let prefix = EagleProject.documentKey(doc);
@@ -199,7 +192,7 @@ export class EagleProject {
   findLibrary(name, dirs = this.libraryPath) {
     for(let dir of dirs) {
       const file = `${dir}/${name}.lbr`;
-      if(this.fs.exists(file)) return file;
+      if(this.fs.existsSync(file)) return file;
     }
     return null;
   }
@@ -306,7 +299,7 @@ export class EagleProject {
     return new Promise((resolve, reject) => {
       let promises = this.list.map(doc => [
         doc.basename,
-        doc.saveTo([dir, doc.basename].join('/'), overwrite)
+        doc.saveTo([dir, doc.basename].join('/'), overwrite, this.fs)
       ]);
 
       return Promise.all(promises).then(result => {

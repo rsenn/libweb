@@ -23,8 +23,7 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 function assertPath(p) {
-  if(typeof p !== 'string')
-    throw new TypeError('Path must be a string. Received ' + p);
+  if(typeof p !== 'string') throw new TypeError('Path must be a string. Received ' + p);
 }
 
 // Resolves . and .. elements in a path with directory names
@@ -92,8 +91,7 @@ function normalizeStringPosix(path, allowAboveRoot) {
 
 function _format(sep, pathObject) {
   let dir = pathObject.dir || pathObject.root;
-  let base =
-    pathObject.base || (pathObject.name || '') + (pathObject.ext || '');
+  let base = pathObject.base || (pathObject.name || '') + (pathObject.ext || '');
   if(!dir) {
     return base;
   }
@@ -319,8 +317,7 @@ export const posix = {
     if(ext !==
       undefined /* && typeof ext == 'string' && ext.length > 0 && ext.length <= path.length*/
     ) {
-      if(typeof ext == 'string')
-        if(ext.length === path.length && ext === path) return '';
+      if(typeof ext == 'string') if (ext.length === path.length && ext === path) return '';
 
       let extIdx = ext.length - 1;
       let firstNonSlashEnd = -1;
@@ -444,8 +441,7 @@ export const posix = {
 
   format(pathObject) {
     if(pathObject === null || typeof pathObject !== 'object') {
-      throw new TypeError('The "pathObject" argument must be of type Object. Received type ' +
-          typeof pathObject
+      throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject
       );
     }
     return _format('/', pathObject);
@@ -512,8 +508,7 @@ export const posix = {
       (preDotState === 1 && startDot === end - 1 && startDot === startPart + 1)
     ) {
       if(end !== -1) {
-        if(startPart === 0 && isAbsolute)
-          ret.base = ret.name = path.slice(1, end);
+        if(startPart === 0 && isAbsolute) ret.base = ret.name = path.slice(1, end);
         else ret.base = ret.name = path.slice(startPart, end);
       }
     } else {

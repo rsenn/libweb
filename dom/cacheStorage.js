@@ -6,8 +6,7 @@ const strToBase64 = str => new Buffer(str).toString('base64');
 const base64ToStr = hex => new Buffer(hex, 'base64').toString();
 const requires = (i, args) => {
   if(args.length < i)
-    throw new TypeError(`${i} argument required, but only ${args.length} present.`
-    );
+    throw new TypeError(`${i} argument required, but only ${args.length} present.`);
 };
 
 export class CacheStorage {
@@ -24,9 +23,7 @@ export class CacheStorage {
         if(err) return resolve(false);
 
         if(stats.isDirectory()) {
-          fs.remove(tmpDir + cacheName, err =>
-            err ? reject(err) : resolve(true)
-          );
+          fs.remove(tmpDir + cacheName, err => (err ? reject(err) : resolve(true)));
         } else {
           resolve(false);
         }
@@ -97,9 +94,7 @@ export class CacheStorage {
     let folder = tmpDir + b64;
 
     return new Promise((resolve, reject) =>
-      fs.mkdirs(folder, err =>
-        err ? reject(err) : resolve(new Cache(cacheName, folder + '/'))
-      )
+      fs.mkdirs(folder, err => (err ? reject(err) : resolve(new Cache(cacheName, folder + '/'))))
     );
   }
 

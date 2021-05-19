@@ -1,7 +1,6 @@
 const nothing = str => ['', str];
 
-const char = c => str =>
-  str.length && str[0] === c ? [str[0], str.slice(1)] : [];
+const char = c => str => (str.length && str[0] === c ? [str[0], str.slice(1)] : []);
 
 const range = (start, end) => str =>
   str[0] >= start && str[0] <= end ? [str[0], str.slice(1)] : [];
@@ -32,9 +31,10 @@ const seq = (parsers, reducer = results => results.join('')) => str => {
       : recurse(remainingParsers.slice(1), [[...memo, result[0]], result[1]]);
   };
 
-  const [result, remaining] = recurse(typeof parsers === 'function' ? parsers() : parsers,
-    [[], str]
-  );
+  const [result, remaining] = recurse(typeof parsers === 'function' ? parsers() : parsers, [
+    [],
+    str
+  ]);
   return !result ? [] : [reducer(result), remaining];
 };
 

@@ -123,10 +123,7 @@ export function QuickJSChildProcess(fs, std, os) {
           let termSig = status & 0x7f;
           numerr(ret);
           /*if(termSig == 0) resolve(exitCode);
-          else*/ resolve([
-            exitCode,
-            termSig
-          ]);
+          else*/ resolve([exitCode, termSig]);
         });
       };
       obj.kill = function(signum = SIGTERM) {
@@ -191,9 +188,7 @@ export function NodeJSChildProcess(fs, tty, child_process) {
 
     if(stdio) {
       opts.stdio = stdio.map(strm =>
-        typeof strm == 'object' && strm != null && typeof strm.fd == 'number'
-          ? strm.fd
-          : strm
+        typeof strm == 'object' && strm != null && typeof strm.fd == 'number' ? strm.fd : strm
       );
     }
     //  console.log('child', { command, args, opts });
@@ -216,10 +211,7 @@ export function NodeJSChildProcess(fs, tty, child_process) {
   };
 }
 
-export function BrowserChildProcess(TextDecoderStream,
-  TransformStream,
-  WritableStream
-) {
+export function BrowserChildProcess(TextDecoderStream, TransformStream, WritableStream) {
   return function(command, args = [], options = {}) {};
 }
 
@@ -242,11 +234,7 @@ export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
   }
   err = null;
   try {
-    a = [
-      await import('fs'),
-      await import('tty'),
-      await import('child_process')
-    ];
+    a = [await import('fs'), await import('tty'), await import('child_process')];
     fs = await CreatePortableChildProcess(NodeJSChildProcess, ...a);
   } catch(error) {
     err = error;

@@ -17,11 +17,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
 
   /*  if(!this) return Object.assign({}, HSLA.prototype, { h, s, l, a });*/
 
-  if(typeof args[0] == 'object' &&
-    'h' in args[0] &&
-    's' in args[0] &&
-    'l' in args[0]
-  ) {
+  if(typeof args[0] == 'object' && 'h' in args[0] && 's' in args[0] && 'l' in args[0]) {
     ret.h = args[0].h;
     ret.s = args[0].s;
     ret.l = args[0].l;
@@ -35,8 +31,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     const arg = args[0];
     if(typeof arg === 'string') {
       let matches =
-        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg
-        ) ||
+        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
         /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) c = [...matches].slice(1);
@@ -49,12 +44,8 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.a = c[3] !== undefined ? c[3] : 1.0;
 
     ['h', 's', 'l', 'a'].forEach(channel => {
-      if(String(ret[channel]).endsWith('%'))
-        ret[channel] = parseFloat(ret[channel].slice(0, -1));
-      else
-        ret[channel] =
-          parseFloat(ret[channel]) *
-          (channel == 'a' || channel == 'h' ? 1 : 100);
+      if(String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));
+      else ret[channel] = parseFloat(ret[channel]) * (channel == 'a' || channel == 'h' ? 1 : 100);
     });
   } else {
     ret.h = 0;
@@ -221,8 +212,9 @@ HSLA.prototype.toString = function(prec = 1 / 255) {
   const a = Util.roundTo(this.a, 1 * prec, 4);
 
   if(this.a == 1)
-    return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%'
-    ).padEnd(6, ' ')})`;
+    return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6,
+      ' '
+    )})`;
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 HSLA.prototype.toSource = function(prec = 1 / 255) {
@@ -251,12 +243,7 @@ HSLA.prototype.valid = function() {
   const { h, s, l, a } = this;
   return [h, s, l, a].every(n => !isNaN(n) && typeof n == 'number');
 };
-HSLA.random = function(h = [0, 360],
-  s = [0, 100],
-  l = [0, 100],
-  a = [0, 1],
-  rng = Util.rng
-) {
+HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Util.rng) {
   return new HSLA(Util.randInt(...[...h, 360].slice(0, 2), rng),
     Util.randInt(...[...s, 100].slice(0, 2), rng),
     Util.randInt(...[...l, 50].slice(0, 2), rng),
@@ -291,9 +278,7 @@ HSLA.prototype.equals = function(other) {
   return h == other.h && s == other.s && l == other.l && a == other.a;
 };
 HSLA.prototype.compareTo = function(other) {
-  let d =
-    HSLA.prototype.binaryValue.call(other) -
-    HSLA.prototype.binaryValue.call(this);
+  let d = HSLA.prototype.binaryValue.call(other) - HSLA.prototype.binaryValue.call(this);
   return d < 0 ? -1 : d > 0 ? 1 : 0;
 };
 HSLA.prototype.toAnsi256 = function() {
@@ -314,32 +299,27 @@ HSLA.prototype[Symbol.iterator] = function() {
   return [h, s, l, a][Symbol.iterator]();
 };
 
-HSLA.prototype[
-  Symbol.for('nodejs.util.inspect.custom')
-] = HSLA.prototype.inspect = function(options = {}) {
+HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = HSLA.prototype.inspect = function(options = {}
+) {
   const { colors = true } = options;
   const { h, s, l, a } = this;
   const haveAlpha = !isNaN(a) && a !== 1;
   let arr = haveAlpha ? [h, s, l, a] : [h, s, l];
   let ret = arr
     .map((n, i) =>
-      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + ''
-      ).padStart(i < 3 ? 3 : 2, ' ')
+      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2,
+        ' '
+      )
     )
     .join(', ');
   const color = this.toRGBA().toAnsi(/*256*/ true);
   let o = '';
-  let c = colors
-    ? (str, ...a) => `\x1b[${a.join(';')}m${str}\x1b[0m`
-    : str => str;
+  let c = colors ? (str, ...a) => `\x1b[${a.join(';')}m${str}\x1b[0m` : str => str;
 
   o += arr.map(n => c(n, 0, 33)).join('');
   o = color + o;
 
-  return (c('HSLA', 1, 31) +
-    c(`(${ret})`.padEnd(24, ' '), 1, 36) +
-    ` ${color}    \x1b[0m`
-  );
+  return c('HSLA', 1, 31) + c(`(${ret})`.padEnd(24, ' '), 1, 36) + ` ${color}    \x1b[0m`;
 };
 
 HSLA.blend = (a, b, o = 0.5) => {
@@ -352,20 +332,11 @@ HSLA.blend = (a, b, o = 0.5) => {
   );
 };
 
-for(let name of [
-  'css',
-  'toHSL',
-  'clamp',
-  'round',
-  'hex',
-  'toRGBA',
-  'toString'
-]) {
+for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {
   HSLA[name] = hsla => HSLA.prototype[name].call(hsla || new HSLA());
 }
 
-export const isHSLA = obj =>
-  HSLA.properties.every(prop => obj.hasOwnProperty(prop));
+export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
 
 Util.defineGetter(HSLA, Symbol.species, function() {
   return this;

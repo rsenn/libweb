@@ -1,10 +1,6 @@
 // @create-index
 
-export {
-  GcodeObject,
-  gcodeToObject,
-  parseGcode
-} from './gcode/gcodeToObject.js';
+export { GcodeObject, gcodeToObject, parseGcode } from './gcode/gcodeToObject.js';
 export { objectToGcode } from './gcode/objectToGcode.js';
 
 export {

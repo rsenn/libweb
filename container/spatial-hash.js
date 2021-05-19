@@ -26,13 +26,9 @@ export class SpatialHash {
     if(!item.range) throw 'Exception: item has no range object';
     let bounds = getBounds(item.range);
     let x1 = Math.max(~~((bounds.left - this.range.x) / this.cellSize), 0);
-    let x2 = Math.min(~~((bounds.right - this.range.x) / this.cellSize),
-      this.horizontalCells - 1
-    );
+    let x2 = Math.min(~~((bounds.right - this.range.x) / this.cellSize), this.horizontalCells - 1);
     let y1 = Math.max(~~((bounds.top - this.range.y) / this.cellSize), 0);
-    let y2 = Math.min(~~((bounds.bottom - this.range.y) / this.cellSize),
-      this.verticalCells - 1
-    );
+    let y2 = Math.min(~~((bounds.bottom - this.range.y) / this.cellSize), this.verticalCells - 1);
 
     item.b = {
       x1,
@@ -47,8 +43,7 @@ export class SpatialHash {
       for(j = x1; j <= x2; j++) this.hash[i][j].push(item);
     }
 
-    if(this.itemCount++ >= 9e15)
-      throw 'Exception: more than 9E15 (900 000 000 000 000) items';
+    if(this.itemCount++ >= 9e15) throw 'Exception: more than 9E15 (900 000 000 000 000) items';
     else if(this.id > 9e15 - 1) this.id = -9e15;
   }
 
@@ -92,13 +87,9 @@ export class SpatialHash {
 
     //range might be larger than the hash's size itself
     let x1 = Math.max(~~((bounds.left - this.range.x) / this.cellSize), 0);
-    let x2 = Math.min(~~((bounds.right - this.range.x) / this.cellSize),
-      this.horizontalCells - 1
-    );
+    let x2 = Math.min(~~((bounds.right - this.range.x) / this.cellSize), this.horizontalCells - 1);
     let y1 = Math.max(~~((bounds.top - this.range.y) / this.cellSize), 0);
-    let y2 = Math.min(~~((bounds.bottom - this.range.y) / this.cellSize),
-      this.verticalCells - 1
-    );
+    let y2 = Math.min(~~((bounds.bottom - this.range.y) / this.cellSize), this.verticalCells - 1);
 
     let i,
       j,
@@ -139,10 +130,7 @@ export class SpatialHash {
 }
 
 export function intersects(a, b) {
-  return (a.x <= b.x + b.width &&
-    a.x + a.width >= b.x &&
-    a.y <= b.y + b.height &&
-    a.y + a.height >= b.y
+  return (a.x <= b.x + b.width && a.x + a.width >= b.x && a.y <= b.y + b.height && a.y + a.height >= b.y
   );
 }
 

@@ -105,9 +105,7 @@ function createVariableStore(parent, vars) {
 
 function addDeclarationsToStore(declarations, varStore) {
   for(let key in declarations) {
-    if(declarations.hasOwnProperty(key) &&
-      !varStore.vars.hasOwnProperty(key)
-    ) {
+    if(declarations.hasOwnProperty(key) && !varStore.vars.hasOwnProperty(key)) {
       varStore.vars[key] = declarations[key]();
     }
   }
@@ -477,9 +475,7 @@ export class Environment extends EventEmitter {
   }
 
   memberExpressionProperty(node) {
-    return node.computed
-      ? this.generateClosure(node.property)
-      : this.objKey(node.property);
+    return node.computed ? this.generateClosure(node.property) : this.objKey(node.property);
   }
 
   generateThisExpression() {
@@ -619,8 +615,7 @@ export class Environment extends EventEmitter {
     let val = this.generateClosure(node.right);
     return function* () {
       self.emit('line',
-        (node.left.loc && node.left.loc.start.line) ||
-          ESNode.assoc(node.left).position.line
+        (node.left.loc && node.left.loc.start.line) || ESNode.assoc(node.left).position.line
       );
       let v = val();
       if(v !== undefined) {
@@ -743,10 +738,7 @@ export class Environment extends EventEmitter {
           result = stmtClosures[i]();
           yield;
         }
-        if(result === Break ||
-          result === Continue ||
-          result instanceof Return
-        ) {
+        if(result === Break || result === Continue || result instanceof Return) {
           break;
         }
       }
@@ -804,9 +796,7 @@ export class Environment extends EventEmitter {
       return self.generateClosure(node.test)();
     };
     let consequent = this.generateClosure(node.consequent);
-    let alternate = node.alternate
-      ? this.generateClosure(node.alternate)
-      : noop;
+    let alternate = node.alternate ? this.generateClosure(node.alternate) : noop;
 
     return function() {
       return test() ? consequent() : alternate();
@@ -885,9 +875,7 @@ export class Environment extends EventEmitter {
     let obj = self.generateClosure(node.object);
     let body = self.generateClosure(node.body);
     return function* () {
-      self.currentVariableStore = createVariableStore(self.currentVariableStore,
-        obj()
-      );
+      self.currentVariableStore = createVariableStore(self.currentVariableStore, obj());
       let result = yield* body();
       self.currentVariableStore = self.currentVariableStore.parent;
       return result;

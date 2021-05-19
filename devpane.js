@@ -42,9 +42,7 @@ export default class devpane {
       this.root()
     );
     this.createSVGElement('defs', {}, svg);
-    this.createSVGElement('rect', { x: 100, y: 100, w: 100, h: 100, fill: '#f0f' },
-      svg
-    );
+    this.createSVGElement('rect', { x: 100, y: 100, w: 100, h: 100, fill: '#f0f' }, svg);
     return svg;
   });
   log = lazyInitializer(() =>
@@ -136,8 +134,7 @@ export default class devpane {
     this.open = !this.open;
     //Util.log("devpane.toggleOpenClose open=" + this.open);
     this.config.assign({ open: this.open });
-    if(this.pane())
-      this.pane().style.display = this.open ? 'inline-block' : 'none';
+    if(this.pane()) this.pane().style.display = this.open ? 'inline-block' : 'none';
     if(this.open) {
       //this.pane.style.display = 'inline-block';
       //if(global.window)  this.rectList = this.buildRectList(document.body);
@@ -172,9 +169,7 @@ export default class devpane {
         }
       });
       let pane = this.pane();
-      while(pane.lastElementChild &&
-        pane.lastElementChild.tagName.toLowerCase() == 'table'
-      ) {
+      while(pane.lastElementChild && pane.lastElementChild.tagName.toLowerCase() == 'table') {
         pane.removeChild(pane.lastElementChild);
       }
       pane.appendChild(table);
@@ -253,9 +248,7 @@ export default class devpane {
 
         if(rect.x == 0 && rect.y == 0) {
           const { offsetParent } = elem;
-          const offsetRect = offsetParent
-            ? Element.getRect(offsetParent)
-            : null;
+          const offsetRect = offsetParent ? Element.getRect(offsetParent) : null;
           //Util.log("Zero ", { elem, rect, offsetParent, offsetRect });
         }
 
@@ -317,17 +310,15 @@ export default class devpane {
     if(!innerHTML.match(/<.*>/)) {
       ret.push(innerHTML);
     } else {
-      Element.walk(firstElementChild,
-        ({ innerHTML, textContent, innerText }, accu) => {
-          let text = '';
-          if(!innerHTML.match(/<.*>/)) {
-            text = innerHTML.replace(/&nbsp;/g, '');
-          } else {
-            text = textContent || innerText || '';
-          }
-          if(text.length > 0) ret.push(text);
+      Element.walk(firstElementChild, ({ innerHTML, textContent, innerText }, accu) => {
+        let text = '';
+        if(!innerHTML.match(/<.*>/)) {
+          text = innerHTML.replace(/&nbsp;/g, '');
+        } else {
+          text = textContent || innerText || '';
         }
-      );
+        if(text.length > 0) ret.push(text);
+      });
     }
     return ret;
   }
@@ -424,9 +415,7 @@ export default class devpane {
 
     Util.log(`devpane.handleToggle ${fn}`);
     const mouseEvents = elem =>
-      ['mouseenter', 'mouseleave'].forEach(listener =>
-        elem[fn](listener, this.mouseEvent)
-      );
+      ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
 
     window[`${what}EventListener`]('mousemove', this.mouseMove);
 
@@ -556,13 +545,7 @@ export default class devpane {
       Util.log('language store: ', res);
     });
 
-    const createTable = ({
-      rows,
-      spacing = 0,
-      padding = 0,
-      border = 0,
-      ...props
-    }) => {
+    const createTable = ({ rows, spacing = 0, padding = 0, border = 0, ...props }) => {
       let tbl = Element.create('table', {
         cellpadding: padding,
         cellspacing: spacing,
@@ -626,34 +609,32 @@ export default class devpane {
       save: createButton('Save', e => t.save(e)),
       new: createButton('New', () => this.renderTranslateBox()),
       load: createButton('Load', () => {
-        axios
-          .get('/api/read/static/locales/fa-IR/common.json')
-          .then(({ data }) => {
-            const elem = t.factory('textarea', {
-              cols: 80,
-              rows: 25,
-              style: {
-                fontFamily: "monospace,fixed,'Courier New'",
-                fontSize: '12px'
-              }
-            });
-
-            const json = Util.base64.decode(data.data);
-            const obj = JSON.parse(json);
-            //const data = atob(cmd.data);
-
-            let rows = [];
-            Util.foreach(obj, (v, k) => rows.push([k, v]));
-            let tbl = createTable({ rows, spacing: 3, padding: 2 });
-            Element.setCSS(tbl, { fontFamily: 'Arial', fontSize: '13px' });
-
-            t.layer.insertBefore(tbl, t.layer.firstElementChild);
-
-            Util.log('Load ', { json, obj });
-            elem.innerHTML = json;
-
-            t.trans = json;
+        axios.get('/api/read/static/locales/fa-IR/common.json').then(({ data }) => {
+          const elem = t.factory('textarea', {
+            cols: 80,
+            rows: 25,
+            style: {
+              fontFamily: "monospace,fixed,'Courier New'",
+              fontSize: '12px'
+            }
           });
+
+          const json = Util.base64.decode(data.data);
+          const obj = JSON.parse(json);
+          //const data = atob(cmd.data);
+
+          let rows = [];
+          Util.foreach(obj, (v, k) => rows.push([k, v]));
+          let tbl = createTable({ rows, spacing: 3, padding: 2 });
+          Element.setCSS(tbl, { fontFamily: 'Arial', fontSize: '13px' });
+
+          t.layer.insertBefore(tbl, t.layer.firstElementChild);
+
+          Util.log('Load ', { json, obj });
+          elem.innerHTML = json;
+
+          t.trans = json;
+        });
       })
     };
     t.set = t.set.bind(t);
@@ -687,9 +668,7 @@ export default class devpane {
               let bbox = Element.rect(res);
               let css = Element.getCSS(res);
 
-              bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${
-                css.fontSize
-              }`; //`x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
+              bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${css.fontSize}`; //`x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
             }
             Util.log('selectElement (resolved) = ', res);
 
@@ -816,9 +795,7 @@ export default class devpane {
             Util.log('selectElement selected: ', this.selected);
             elm.innerHTML = this.selected.map(({ e }) => `#${e.id}`).join(',');
             this.fontSize = Element.getCSS(this.selected[0].e, 'font-size');
-            Util.log(`${Element.xpath(this.selected[0].e)} font-size: `,
-              this.fontSize
-            );
+            Util.log(`${Element.xpath(this.selected[0].e)} font-size: `, this.fontSize);
           } else {
             elm.innerHTML = '';
           }
@@ -860,8 +837,7 @@ export default class devpane {
         );
       } else if(!inside && rect.boxes) {
         //Util.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
-        while(rect.boxes.firstChild)
-          rect.boxes.removeChild(rect.boxes.firstChild);
+        while(rect.boxes.firstChild) rect.boxes.removeChild(rect.boxes.firstChild);
         rect.boxes.parentNode.removeChild(rect.boxes);
         rect.boxes = null;
         rect.serial = serial;
@@ -879,9 +855,7 @@ export default class devpane {
 
     //if(rects.length) Util.log("rects: ", rects);
     let svg = this.svg();
-    [...svg.querySelectorAll('rect')].forEach(e =>
-      e.parentElement.removeChild(e)
-    );
+    [...svg.querySelectorAll('rect')].forEach(e => e.parentElement.removeChild(e));
     let f = SVG.factory(svg);
 
     this.svgRects = rects;

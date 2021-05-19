@@ -46,9 +46,7 @@ export class HashList {
   indexOf(name) {
     let i = Object.keys(this).indexOf(name);
     if(i != -1) return name;
-    return Object.keys(this).reduce((acc, key) => (this[key] === name ? key : -1),
-      -1
-    );
+    return Object.keys(this).reduce((acc, key) => (this[key] === name ? key : -1), -1);
   }
 
   at(index) {

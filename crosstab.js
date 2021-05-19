@@ -29,8 +29,7 @@
     //--- Handle Support ---
     //See: http://detectmobilebrowsers.com/about
     let useragent =
-      (window.navigator &&
-        (window.navigator.userAgent || window.navigator.vendor)) ||
+      (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) ||
       window.opera ||
       'none';
     let isMobile =
@@ -630,8 +629,7 @@
     };
 
     crosstab.id = util.generateId();
-    crosstab.supported =
-      !!localStorage && window.addEventListener && !isMobile && setItemAllowed;
+    crosstab.supported = !!localStorage && window.addEventListener && !isMobile && setItemAllowed;
     crosstab.util = util;
     crosstab.broadcast = broadcast;
     crosstab.broadcastMaster = broadcastMaster;

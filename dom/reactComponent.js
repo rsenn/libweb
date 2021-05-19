@@ -24,8 +24,7 @@ export class ReactComponent {
     if(typeof render_to === 'string') render_to = Element.find(append_to);
     if(typeof render_to !== 'function') {
       root = root || render_to;
-      render_to = component =>
-        require('react-dom').render(component, root || render_to);
+      render_to = component => require('react-dom').render(component, root || render_to);
     }
     let ret = function() {
       let args = [...arguments];
@@ -50,8 +49,7 @@ export class ReactComponent {
       let { children, key, innerHTML, ...props } = arg.props || {};
 
       let obj = { tagName, ...props };
-      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined)
-        obj.key = key;
+      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
       if(!children) children = arg.children;
       let a = React.toChildArray(children);
       children = a.length > 0 ? this.toObject(...a) : [];
@@ -80,8 +78,7 @@ export class ReactComponent {
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
     let s = '';
-    if(obj.__ === null && 'key' in obj && 'ref' in obj)
-      obj = this.toObject(obj);
+    if(obj.__ === null && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
     if(Util.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;

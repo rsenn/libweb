@@ -135,8 +135,7 @@ Lexer.prototype.addDefinition = function(name, expression) {
       throw new Error('Empty expression for definition "' + name + '"');
     }
     if(expression.flags !== '') {
-      throw new Error('Expression flags are not supported for definition expressions'
-      );
+      throw new Error('Expression flags are not supported for definition expressions');
     }
     expression = expression.source;
   } else {
@@ -201,8 +200,7 @@ Lexer.prototype.addStateRule = function(states, expression, action) {
     []
   );
   if(notRegisteredStates.length) {
-    throw new Error('Unable to register rule within unregistered state(s): ' +
-        notRegisteredStates.join(', ')
+    throw new Error('Unable to register rule within unregistered state(s): ' + notRegisteredStates.join(', ')
     );
   }
 
@@ -214,26 +212,21 @@ Lexer.prototype.addStateRule = function(states, expression, action) {
     source = null;
   } else if(typeof expression === 'string') {
     if(expression.length === 0) {
-      throw new Error('Empty expression for rule used in states "' + states.join(', ') + '"'
-      );
+      throw new Error('Empty expression for rule used in states "' + states.join(', ') + '"');
     }
     source = this.escapeRegExp(expression);
     fixedWidth = expression.length;
     flags = '';
   } else if(expression instanceof RegExp) {
     if(expression.source === '(?:)') {
-      throw new Error('Empty expression for rule used in states "' + states.join(', ') + '"'
-      );
+      throw new Error('Empty expression for rule used in states "' + states.join(', ') + '"');
     }
     if(expression.flags !== '') {
-      var notSupportedFlags = expression.flags
-        .split('')
-        .filter(function (flag) {
-          return flag !== 'i' && flag !== 'u';
-        });
+      var notSupportedFlags = expression.flags.split('').filter(function (flag) {
+        return flag !== 'i' && flag !== 'u';
+      });
       if(notSupportedFlags.length) {
-        throw new Error('Expression flags besides "i" and "u" are not supported'
-        );
+        throw new Error('Expression flags besides "i" and "u" are not supported');
       }
     }
     source = expression.source;
@@ -246,16 +239,9 @@ Lexer.prototype.addStateRule = function(states, expression, action) {
     throw new Error('Invalid rule action: should be function or empty');
   }
 
-  var compiledExpression =
-    source === null ? null : this.compileRuleExpression(source, flags);
-  var hasBOL =
-    compiledExpression === null
-      ? null
-      : this.isRegExpMatchBOL(compiledExpression);
-  var hasEOL =
-    compiledExpression === null
-      ? null
-      : this.isRegExpMatchEOL(compiledExpression);
+  var compiledExpression = source === null ? null : this.compileRuleExpression(source, flags);
+  var hasBOL = compiledExpression === null ? null : this.isRegExpMatchBOL(compiledExpression);
+  var hasEOL = compiledExpression === null ? null : this.isRegExpMatchEOL(compiledExpression);
   var isEOF = source === null;
 
   var rule = {
@@ -443,8 +429,7 @@ Lexer.prototype.less = function(n) {
  * @public
  */
 Lexer.prototype.unput = function(s) {
-  this.source =
-    this.source.substr(0, this.index) + s + this.source.substr(this.index);
+  this.source = this.source.substr(0, this.index) + s + this.source.substr(this.index);
 };
 
 /**
@@ -568,9 +553,7 @@ Lexer.prototype.scan = function() {
         break;
       }
     } else {
-      if(rule.fixedWidth === undefined ||
-        rule.fixedWidth > matchedValueLength
-      ) {
+      if(rule.fixedWidth === undefined || rule.fixedWidth > matchedValueLength) {
         var curMatch = this.execRegExp(rule.expression);
         if(curMatch !== undefined) {
           var curMatchLength = curMatch.length;
@@ -616,9 +599,7 @@ Lexer.prototype.scan = function() {
   this.index += this.text.length;
 
   var rejectedBefore = this.rejectedRules.length;
-  var actionResult = matchedRule.action
-    ? matchedRule.action(this)
-    : this.discard();
+  var actionResult = matchedRule.action ? matchedRule.action(this) : this.discard();
   var hasRejection = this.rejectedRules.length > rejectedBefore;
 
   // reset reject state if there is no rejection in last action

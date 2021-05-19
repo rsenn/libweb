@@ -22,8 +22,7 @@ var __assign = function() {
     function __assign(t) {
       for(var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
-        for(let p in s)
-          if(Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        for(let p in s) if(Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
       }
       return t;
     };
@@ -166,14 +165,12 @@ function __values(o) {
 }
 
 function __asyncValues(o) {
-  if(!Symbol.asyncIterator)
-    throw new TypeError('Symbol.asyncIterator is not defined.');
+  if(!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
   let m = o[Symbol.asyncIterator],
     i;
   return m
     ? m.call(o)
-    : ((o =
-        typeof __values === 'function' ? __values(o) : o[Symbol.iterator]()),
+    : ((o = typeof __values === 'function' ? __values(o) : o[Symbol.iterator]()),
       (i = {}),
       verb('next'),
       verb('throw'),
@@ -328,11 +325,7 @@ function throttler(wait, options) {
                   e_3 = { error: e_3_1 };
                 } finally {
                   try {
-                    if(tokens_1_1 &&
-                      !tokens_1_1.done &&
-                      (_a = tokens_1.return)
-                    )
-                      _a.call(tokens_1);
+                    if(tokens_1_1 && !tokens_1_1.done && (_a = tokens_1.return)) _a.call(tokens_1);
                   } finally {
                     if(e_3) throw e_3.error;
                   }

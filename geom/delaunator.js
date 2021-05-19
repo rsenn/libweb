@@ -103,13 +103,7 @@ export default class Delaunator {
     //find the third point which forms the smallest circumcircle with the first two
     for(let i = 0; i < n; i++) {
       if(i === i0 || i === i1) continue;
-      const r = circumradius(i0x,
-        i0y,
-        i1x,
-        i1y,
-        coords[2 * i],
-        coords[2 * i + 1]
-      );
+      const r = circumradius(i0x, i0y, i1x, i1y, coords[2 * i], coords[2 * i + 1]);
       if(r < minRadius) {
         i2 = i;
         minRadius = r;
@@ -122,8 +116,7 @@ export default class Delaunator {
       //order collinear points by dx (or dy if all x are identical)
       //and return the list as a hull
       for(let i = 0; i < n; i++) {
-        this._dists[i] =
-          coords[2 * i] - coords[0] || coords[2 * i + 1] - coords[1];
+        this._dists[i] = coords[2 * i] - coords[0] || coords[2 * i + 1] - coords[1];
       }
       quicksort(this._ids, this._dists, 0, n - 1);
       const hull = new Uint32Array(n);
@@ -159,11 +152,7 @@ export default class Delaunator {
     this._cy = center.y;
 
     for(let i = 0; i < n; i++) {
-      this._dists[i] = dist(coords[2 * i],
-        coords[2 * i + 1],
-        center.x,
-        center.y
-      );
+      this._dists[i] = dist(coords[2 * i], coords[2 * i + 1], center.x, center.y);
     }
 
     //sort the points by distance from the seed triangle circumcenter
@@ -195,8 +184,7 @@ export default class Delaunator {
       const y = coords[2 * i + 1];
 
       //skip near-duplicate points
-      if(k > 0 && Math.abs(x - xp) <= EPSILON && Math.abs(y - yp) <= EPSILON)
-        continue;
+      if(k > 0 && Math.abs(x - xp) <= EPSILON && Math.abs(y - yp) <= EPSILON) continue;
       xp = x;
       yp = y;
 
@@ -214,14 +202,7 @@ export default class Delaunator {
       let e = start,
         q;
       while(((q = hullNext[e]),
-        !orient(
-          x,
-          y,
-          coords[2 * e],
-          coords[2 * e + 1],
-          coords[2 * q],
-          coords[2 * q + 1]
-        ))
+        !orient(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1]))
       ) {
         e = q;
         if(e === start) {
@@ -242,14 +223,7 @@ export default class Delaunator {
       //walk forward through the hull, adding more triangles and flipping recursively
       let n = hullNext[e];
       while(((q = hullNext[n]),
-        orient(
-          x,
-          y,
-          coords[2 * n],
-          coords[2 * n + 1],
-          coords[2 * q],
-          coords[2 * q + 1]
-        ))
+        orient(x, y, coords[2 * n], coords[2 * n + 1], coords[2 * q], coords[2 * q + 1]))
       ) {
         t = this._addTriangle(n, i, q, hullTri[i], -1, hullTri[n]);
         hullTri[i] = this._legalize(t + 2);
@@ -261,14 +235,7 @@ export default class Delaunator {
       //walk backward from the other side, adding more triangles and flipping
       if(e === start) {
         while(((q = hullPrev[e]),
-          orient(
-            x,
-            y,
-            coords[2 * q],
-            coords[2 * q + 1],
-            coords[2 * e],
-            coords[2 * e + 1]
-          ))
+          orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]))
         ) {
           t = this._addTriangle(q, i, e, -1, hullTri[e], hullTri[q]);
           this._legalize(t + 2);
@@ -301,9 +268,7 @@ export default class Delaunator {
   }
 
   _hashKey(x, y) {
-    return (Math.floor(pseudoAngle(x - this._cx, y - this._cy) * this._hashSize) %
-      this._hashSize
-    );
+    return Math.floor(pseudoAngle(x - this._cx, y - this._cy) * this._hashSize) % this._hashSize;
   }
 
   _legalize(a) {
@@ -435,9 +400,7 @@ function dist(ax, ay, bx, by) {
 function orientIfSure(px, py, rx, ry, qx, qy) {
   const l = (ry - py) * (qx - px);
   const r = (rx - px) * (qy - py);
-  return Math.abs(l - r) >= 3.3306690738754716e-16 * Math.abs(l + r)
-    ? l - r
-    : 0;
+  return Math.abs(l - r) >= 3.3306690738754716e-16 * Math.abs(l + r) ? l - r : 0;
 }
 
 //a more robust orientation test that's stable in a given triangle (to fix robustness issues)
@@ -460,11 +423,7 @@ function inCircle(ax, ay, bx, by, cx, cy, px, py) {
   const bp = ex * ex + ey * ey;
   const cp = fx * fx + fy * fy;
 
-  return (dx * (ey * cp - bp * fy) -
-      dy * (ex * cp - bp * fx) +
-      ap * (ex * fy - ey * fx) <
-    0
-  );
+  return dx * (ey * cp - bp * fy) - dy * (ex * cp - bp * fx) + ap * (ex * fy - ey * fx) < 0;
 }
 
 function circumradius(ax, ay, bx, by, cx, cy) {

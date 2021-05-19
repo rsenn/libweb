@@ -60,10 +60,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
 
   *[Symbol.iterator](keyAttr = this.key) {
-    const fn =
-      keyAttr == 'tagName'
-        ? item => item.tagName
-        : item => item.attributes[keyAttr];
+    const fn = keyAttr == 'tagName' ? item => item.tagName : item => item.attributes[keyAttr];
     for(let item of this.list) yield [fn(item), item];
   }
 
@@ -79,9 +76,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
     return (text(Util.className(this), 0) +
       ` {\n  ` +
       [...this.entries()].reduce((acc, [k, v]) =>
-          (acc ? acc + ',\n  ' : acc) +
-          `'${text(k, 1, 32)}' => ` +
-          v[inspectSymbol](),
+          (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + v[inspectSymbol](),
         ''
       ) +
       `\n}`
@@ -105,8 +100,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
           return instance.list.item(+prop);
         } else */ if(typeof prop == 'string'
         ) {
-          if(prop == 'ref' || prop == 'raw' || prop == 'owner')
-            return instance.list[prop];
+          if(prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
           if(prop == 'instance') return instance;
 
           /*          if(prop == 'length' || prop == 'size') return (instance.list.raw || instance.list).length;
@@ -116,8 +110,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
         //if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
 
         //        if((index = [...instance.keys()].indexOf(prop)) != -1) return instance.list[index];
-        if(typeof instance[prop] == 'function')
-          return instance[prop] /*.bind(instance)*/;
+        if(typeof instance[prop] == 'function') return instance[prop] /*.bind(instance)*/;
 
         if(typeof instance.list[prop] == 'function') {
           if(typeof prop == 'symbol') return instance.list[prop];

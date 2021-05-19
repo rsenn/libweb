@@ -29,8 +29,7 @@ function styleObjToCss(s) {
       str +=
         prop[0] == '-'
           ? prop
-          : JS_TO_CSS[prop] ||
-            (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
+          : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
       str += ': ';
       str += val;
       if(typeof val === 'number' && IS_NON_DIMENSIONAL.test(prop) === false) {
@@ -118,27 +117,16 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       if(options.__r) {
         options.__r(vnode);
       }
-      if(!nodeName.prototype ||
-        typeof nodeName.prototype.render !== 'function'
-      ) {
+      if(!nodeName.prototype || typeof nodeName.prototype.render !== 'function') {
         let cxType = nodeName.contextType;
         let provider = cxType && context[cxType.__c];
-        let cctx =
-          cxType != null
-            ? provider
-              ? provider.props.value
-              : cxType.__
-            : context;
+        let cctx = cxType != null ? (provider ? provider.props.value : cxType.__) : context;
         rendered$1 = nodeName.call(vnode.__c, props, cctx);
       } else {
         let cxType$1 = nodeName.contextType;
         let provider$1 = cxType$1 && context[cxType$1.__c];
         let cctx$1 =
-          cxType$1 != null
-            ? provider$1
-              ? provider$1.props.value
-              : cxType$1.__
-            : context;
+          cxType$1 != null ? (provider$1 ? provider$1.props.value : cxType$1.__) : context;
         c = vnode.__c = new nodeName(props, cctx$1);
         c.__v = vnode;
         c._dirty = c.__d = true;
@@ -156,12 +144,7 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
           );
         } else if(c.componentWillMount) {
           c.componentWillMount();
-          c.state =
-            c._nextState !== c.state
-              ? c._nextState
-              : c.__s !== c.state
-              ? c.__s
-              : c.state;
+          c.state = c._nextState !== c.state ? c._nextState : c.__s !== c.state ? c.__s : c.state;
         }
         rendered$1 = c.render(c.props, c.state, c.context);
       }
@@ -224,9 +207,7 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       if(name[0] === 'a' && name['1'] === 'r' && typeof v === 'boolean') {
         v = String(v);
       }
-      let hooked =
-        opts.attributeHook &&
-        opts.attributeHook(name, v, context, opts, isComponent);
+      let hooked = opts.attributeHook && opts.attributeHook(name, v, context, opts, isComponent);
       if(hooked || hooked === '') {
         s += hooked;
         continue;
@@ -280,27 +261,15 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       html = '\n' + indentChar + indent(html, indentChar);
     }
     s += html;
-  } else if(propChildren != null &&
-    getChildren((children = []), propChildren).length
-  ) {
+  } else if(propChildren != null && getChildren((children = []), propChildren).length) {
     let hasLarge = pretty && ~s.indexOf('\n');
     let lastWasText = false;
     for(let i$2 = 0; i$2 < children.length; i$2++) {
       let child = children[i$2];
       if(child != null && child !== false) {
         let childSvgMode =
-            nodeName === 'svg'
-              ? true
-              : nodeName === 'foreignObject'
-              ? false
-              : isSvgMode,
-          ret = renderToString(child,
-            context,
-            opts,
-            true,
-            childSvgMode,
-            selectValue
-          );
+            nodeName === 'svg' ? true : nodeName === 'foreignObject' ? false : isSvgMode,
+          ret = renderToString(child, context, opts, true, childSvgMode, selectValue);
         if(pretty && !hasLarge && isLargeString(ret)) {
           hasLarge = true;
         }

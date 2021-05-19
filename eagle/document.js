@@ -1,7 +1,7 @@
 import parseXML from '../xml/parse.js';
 import tXml from '../tXml.js';
 import Util from '../util.js';
-import deep from '../deep.js';
+import * as deep from '../deep.js';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
 import { ImmutablePath } from '../json.js';
@@ -51,7 +51,7 @@ export class EagleDocument extends EagleNode {
 
   static open(filename, fs) {
     //console.log('EagleDocument.open', filename, Util.getCallers(1, Infinity));
-    let xml = (fs || filesystem).readFile(filename, 'utf-8');
+    let xml = fs.readFileSync(filename, 'utf-8');
 
     return new EagleDocument(/*Util.bufferToString*/ xml, null, filename);
   }
@@ -180,16 +180,14 @@ export class EagleDocument extends EagleNode {
   }
 
   /* prettier-ignore */
-  saveTo(file, overwrite = false) {
-    let  fs  =  this.project?.fs ?? globalThis.filesystem ?? globalThis.fs;
-   console.log('fs',fs);
+  saveTo(file, overwrite = false, fs) {
     const data = this.toXML('  ');
     if(!file)
       file = this.file;
 
-fs.writeFile(file+'.json', JSON.stringify(this.raw,null,2), true);
+fs.writeFileSync(file+'.json', JSON.stringify(this.raw,null,2), true);
     console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
-    let ret = fs.writeFile(file, data, overwrite);
+    let ret = fs.writeFileSync(file, data, overwrite);
     console.log('ret',ret);
 
     if(ret < 0)

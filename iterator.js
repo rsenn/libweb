@@ -77,13 +77,11 @@ export class Iterator extends IterableInterface {
         for(let i = 0; i < arg; i++) yield i;
       })();
     } else {
-      throw new Error('Not iterable? ' + typeof arg + ' ' + Util.className(arg)
-      );
+      throw new Error('Not iterable? ' + typeof arg + ' ' + Util.className(arg));
     }
 
     if(!(ret instanceof Iterator))
-      if(Object.hasOwnProperty(ret, 'next'))
-        Object.setPrototypeOf(ret, Iterator.prototype);
+      if(Object.hasOwnProperty(ret, 'next')) Object.setPrototypeOf(ret, Iterator.prototype);
       else Util.extend(ret, Util.getMethods(Iterator.prototype));
 
     //Util.log("ret.next = ",ret.next+'');

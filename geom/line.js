@@ -20,8 +20,7 @@ export function Line(...args) {
 
   if(obj === null) obj = Object.create(Line.prototype);
 
-  if(Object.getPrototypeOf(obj) !== Line.prototype)
-    Object.setPrototypeOf(obj, Line.prototype);
+  if(Object.getPrototypeOf(obj) !== Line.prototype) Object.setPrototypeOf(obj, Line.prototype);
 
   //if(!('a' in obj) || !('b' in obj)) throw new Error('no a/b prop');
   if(arg &&
@@ -44,10 +43,7 @@ export function Line(...args) {
     obj.x2 = args[1].x;
     obj.y2 = args[1].y;
     ret = 2;
-  } else if(arg &&
-    arg.length >= 4 &&
-    arg.slice(0, 4).every(arg => !isNaN(+arg))
-  ) {
+  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(+arg))) {
     const [x1, y1, x2, y2] = arg.map(a => +a);
     obj.x1 = x1;
     obj.y1 = y1;
@@ -79,8 +75,7 @@ export function Line(...args) {
 }
 
 export const isLine = obj =>
-  (Util.isObject(obj) &&
-    ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined)) ||
+  (Util.isObject(obj) && ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined)) ||
   ['a', 'b'].every(prop => isPoint(obj[prop]));
 
 /*
@@ -94,9 +89,7 @@ Line.prototype.intersect = function(other) {
   if(ma - mb < Number.EPSILON) return undefined;
   return new Point({
     x: (ma * this[0].x - mb * other[0].x + other[0].y - this[0].y) / (ma - mb),
-    y:
-      (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) /
-      (mb - ma)
+    y: (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) / (mb - ma)
   });
 };
 
@@ -301,17 +294,14 @@ Line.prototype.points = function() {
   return [a, b];
 };
 
-Line.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n,
-  options = {}
-) {
+Line.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, options = {}) {
   const { x1, y1, x2, y2 } = this;
   return 'Line ' + Util.inspect({ x1, y1, x2, y2 }, options) + ' }';
 };
 Line.prototype.toString = function(opts = {}) {
   let { separator = ', ', brackets, pad = 6, ...options } = opts;
 
-  if(typeof brackets != 'function')
-    brackets = brackets ? s => `[ ${s} ]` : s => s;
+  if(typeof brackets != 'function') brackets = brackets ? s => `[ ${s} ]` : s => s;
 
   const { x1, y1, x2, y2 } = this;
   return (brackets(
@@ -439,9 +429,7 @@ Line.prototype.every = function(pred) {
   return pred(this.a) && pred(this.b);
 };
 Line.prototype.includes = function(point) {
-  return (Point.prototype.equals.call(this.a, point) ||
-    Point.prototype.equals.call(this.b, point)
-  );
+  return Point.prototype.equals.call(this.a, point) || Point.prototype.equals.call(this.b, point);
 };
 Line.prototype.equals = function(...args) {
   let other = Line(...args);
@@ -503,8 +491,7 @@ for(let name of [
   'distanceToPointSquared',
   'distanceToPoint'
 ]) {
-  Line[name] = (line, ...args) =>
-    Line.prototype[name].call(line || new Line(line), ...args);
+  Line[name] = (line, ...args) => Line.prototype[name].call(line || new Line(line), ...args);
 }
 
 Util.defineInspect(Line.prototype, 'x1', 'y1', 'x2', 'y2');
@@ -516,8 +503,7 @@ Line.from = obj => {
 
   for(let extra of ['curve', 'width']) {
     if(typeof obj[extra] == 'number') l[extra] = obj[extra];
-    else if(typeof obj[extra] == 'string' && !isNaN(+obj[extra]))
-      l[extra] = +obj[extra];
+    else if(typeof obj[extra] == 'string' && !isNaN(+obj[extra])) l[extra] = +obj[extra];
   }
   return l;
 };

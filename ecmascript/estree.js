@@ -1,9 +1,7 @@
 import Util from '../util.js';
-import { inspect } from 'util';
+import inspect from '../objectInspect.js';
 
-const inspectSymbol = Symbol.for(Util.getPlatform() == 'quickjs'
-    ? 'quickjs.inspect.custom'
-    : 'nodejs.util.inspect.custom'
+const inspectSymbol = Symbol.for(Util.getPlatform() == 'quickjs' ? 'quickjs.inspect.custom' : 'nodejs.util.inspect.custom'
 );
 const linebreak = /\r?\n/g;
 
@@ -32,9 +30,7 @@ export class ESNode {
       {}
     );
 
-    return ((type
-        ? color.text(type, 1, 31)
-        : color.text(Util.className(this), 1, 35)) +
+    return ((type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) +
       ' ' +
       inspect(props, { ...opts, customInspect: false })
     );
@@ -635,13 +631,7 @@ export class ObjectExpression extends ESNode {
 }
 
 export class Property extends ESNode {
-  constructor(key,
-    value,
-    kind = 'init',
-    method = false,
-    shorthand = false,
-    computed = false
-  ) {
+  constructor(key, value, kind = 'init', method = false, shorthand = false, computed = false) {
     super('Property');
     this.key = key;
     this.value = value;
@@ -670,13 +660,7 @@ export class ArrayExpression extends ESNode {
 }
 
 export class JSXLiteral extends ESNode {
-  constructor(tag,
-    attributes,
-    closing = false,
-    selfClosing = false,
-    children = [],
-    spread
-  ) {
+  constructor(tag, attributes, closing = false, selfClosing = false, children = [], spread) {
     super('JSXLiteral');
     this.tag = tag;
     this.attributes = attributes;

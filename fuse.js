@@ -8,9 +8,7 @@
  */
 
 function isArray(value) {
-  return !Array.isArray
-    ? getTag(value) === '[object Array]'
-    : Array.isArray(value);
+  return !Array.isArray ? getTag(value) === '[object Array]' : Array.isArray(value);
 }
 
 // Adapted from: https://github.com/lodash/lodash/blob/master/.internal/baseToString.js
@@ -75,8 +73,7 @@ const EXTENDED_SEARCH_UNAVAILABLE = 'Extended search is not available';
 
 const INCORRECT_INDEX_TYPE = "Incorrect 'index' type";
 
-const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = key =>
-  `Invalid value for key ${key}`;
+const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = key => `Invalid value for key ${key}`;
 
 const PATTERN_LENGTH_TOO_LARGE = max => `Pattern length exceeds max of ${max}.`;
 
@@ -181,9 +178,7 @@ function get(obj, path) {
 
       // If we're at the last value in the path, and if it's a string/number/bool,
       // add it to the list
-      if(index === path.length - 1 &&
-        (isString(value) || isNumber(value) || isBoolean(value))
-      ) {
+      if(index === path.length - 1 && (isString(value) || isNumber(value) || isBoolean(value))) {
         list.push(toString(value));
       } else if(isArray(value)) {
         arr = true;
@@ -227,8 +222,7 @@ const BasicOptions = {
   // Whether to sort the result list, by score
   shouldSort: true,
   // Default sort function: sort by ascending score, ascending index
-  sortFn: (a, b) =>
-    a.score === b.score ? (a.idx < b.idx ? -1 : 1) : a.score < b.score ? -1 : 1
+  sortFn: (a, b) => (a.score === b.score ? (a.idx < b.idx ? -1 : 1) : a.score < b.score ? -1 : 1)
 };
 
 const FuzzyOptions = {
@@ -513,9 +507,7 @@ function computeScore(pattern,
   return accuracy + proximity / distance;
 }
 
-function convertMaskToIndices(matchmask = [],
-  minMatchCharLength = Config.minMatchCharLength
-) {
+function convertMaskToIndices(matchmask = [], minMatchCharLength = Config.minMatchCharLength) {
   let indices = [];
   let start = -1;
   let end = -1;
@@ -662,8 +654,7 @@ function search(text,
 
       // Subsequent passes: fuzzy match
       if(i) {
-        bitArr[j] |=
-          ((lastBitArr[j + 1] | lastBitArr[j]) << 1) | 1 | lastBitArr[j + 1];
+        bitArr[j] |= ((lastBitArr[j + 1] | lastBitArr[j]) << 1) | 1 | lastBitArr[j + 1];
       }
 
       if(bitArr[j] & mask) {
@@ -1342,13 +1333,11 @@ const KeyType = {
   PATTERN: '$val'
 };
 
-const isExpression = query =>
-  !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
+const isExpression = query => !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
 
 const isPath = query => !!query[KeyType.PATH];
 
-const isLeaf = query =>
-  !isArray(query) && isObject(query) && !isExpression(query);
+const isLeaf = query => !isArray(query) && isObject(query) && !isExpression(query);
 
 const convertToExplicit = query => ({
   [LogicalOperator.AND]: Object.keys(query).map(key => ({
@@ -1476,13 +1465,7 @@ class Fuse {
   }
 
   search(query, { limit = -1 } = {}) {
-    const {
-      includeMatches,
-      includeScore,
-      shouldSort,
-      sortFn,
-      ignoreFieldNorm
-    } = this.options;
+    const { includeMatches, includeScore, shouldSort, sortFn, ignoreFieldNorm } = this.options;
 
     let results = isString(query)
       ? isString(this._docs[0])
@@ -1704,10 +1687,7 @@ function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
 
 function format(results,
   docs,
-  {
-    includeMatches = Config.includeMatches,
-    includeScore = Config.includeScore
-  } = {}
+  { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}
 ) {
   const transformers = [];
 

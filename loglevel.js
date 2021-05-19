@@ -77,8 +77,7 @@
     /*jshint validthis:true */
     for(let i = 0; i < logMethods.length; i++) {
       let methodName = logMethods[i];
-      this[methodName] =
-        i < level ? noop : this.methodFactory(methodName, level, loggerName);
+      this[methodName] = i < level ? noop : this.methodFactory(methodName, level, loggerName);
     }
 
     //Define log.log as an alias for log.debug
@@ -100,9 +99,7 @@
   //otherwise we wait for a console to appear, and then try again.
   function defaultMethodFactory(methodName, level, loggerName) {
     /*jshint validthis:true */
-    return (realMethod(methodName) ||
-      enableLoggingWhenConsoleArrives.apply(this, arguments)
-    );
+    return realMethod(methodName) || enableLoggingWhenConsoleArrives.apply(this, arguments);
   }
 
   function Logger(name, defaultLevel, factory) {
@@ -126,8 +123,7 @@
 
       //Use session cookie as fallback
       try {
-        window.document.cookie =
-          encodeURIComponent(storageKey) + '=' + levelName + ';';
+        window.document.cookie = encodeURIComponent(storageKey) + '=' + levelName + ';';
       } catch(ignore) {}
     }
 
@@ -176,15 +172,10 @@
     };
 
     self.setLevel = function(level, persist) {
-      if(typeof level === 'string' &&
-        self.levels[level.toUpperCase()] !== undefined
-      ) {
+      if(typeof level === 'string' && self.levels[level.toUpperCase()] !== undefined) {
         level = self.levels[level.toUpperCase()];
       }
-      if(typeof level === 'number' &&
-        level >= 0 &&
-        level <= self.levels.SILENT
-      ) {
+      if(typeof level === 'number' && level >= 0 && level <= self.levels.SILENT) {
         currentLevel = level;
         if(persist !== false) {
           //defaults to true

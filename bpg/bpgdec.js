@@ -24,8 +24,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     typeof process === 'object' &&
     typeof process.versions === 'object' &&
     typeof process.versions.node === 'string';
-  ENVIRONMENT_IS_SHELL =
-    !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
+  ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
   var scriptDirectory = '';
   function locateFile(path) {
     if(Module['locateFile']) {
@@ -103,8 +102,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     if(typeof print !== 'undefined') {
       if(typeof console === 'undefined') console = {};
       console.log = print;
-      console.warn = console.error =
-        typeof printErr !== 'undefined' ? printErr : print;
+      console.warn = console.error = typeof printErr !== 'undefined' ? printErr : print;
     }
   } else if(ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
     if(ENVIRONMENT_IS_WORKER) {
@@ -113,9 +111,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
       scriptDirectory = document.currentScript.src;
     }
     if(scriptDirectory.indexOf('blob:') !== 0) {
-      scriptDirectory = scriptDirectory.substr(0,
-        scriptDirectory.lastIndexOf('/') + 1
-      );
+      scriptDirectory = scriptDirectory.substr(0, scriptDirectory.lastIndexOf('/') + 1);
     } else {
       scriptDirectory = '';
     }
@@ -207,8 +203,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   });
   function preRun() {
     if(Module['preRun']) {
-      if(typeof Module['preRun'] == 'function')
-        Module['preRun'] = [Module['preRun']];
+      if(typeof Module['preRun'] == 'function') Module['preRun'] = [Module['preRun']];
       while(Module['preRun'].length) {
         addOnPreRun(Module['preRun'].shift());
       }
@@ -224,8 +219,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   }
   function postRun() {
     if(Module['postRun']) {
-      if(typeof Module['postRun'] == 'function')
-        Module['postRun'] = [Module['postRun']];
+      if(typeof Module['postRun'] == 'function') Module['postRun'] = [Module['postRun']];
       while(Module['postRun'].length) {
         addOnPostRun(Module['postRun'].shift());
       }
@@ -279,9 +273,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     throw e;
   }
   function hasPrefix(str, prefix) {
-    return String.prototype.startsWith
-      ? str.startsWith(prefix)
-      : str.indexOf(prefix) === 0;
+    return String.prototype.startsWith ? str.startsWith(prefix) : str.indexOf(prefix) === 0;
   }
   var dataURIPrefix = 'data:application/octet-stream;base64,';
   function isDataURI(filename) {
@@ -317,8 +309,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
         })
           .then(function (response) {
             if(!response['ok']) {
-              throw ("failed to load wasm binary file at '" + wasmBinaryFile + "'"
-              );
+              throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
             }
             return response['arrayBuffer']();
           })
@@ -440,49 +431,49 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   };
   var asm = createWasm();
   var ___wasm_call_ctors = (Module['___wasm_call_ctors'] = function() {
-    return (___wasm_call_ctors = Module['___wasm_call_ctors'] =
-      Module['asm']['f']).apply(null, arguments);
+    return (___wasm_call_ctors = Module['___wasm_call_ctors'] = Module['asm']['f']).apply(null,
+      arguments
+    );
   });
   var _malloc = (Module['_malloc'] = function() {
-    return (_malloc = Module['_malloc'] = Module['asm']['g']).apply(null,
-      arguments
-    );
+    return (_malloc = Module['_malloc'] = Module['asm']['g']).apply(null, arguments);
   });
   var _free = (Module['_free'] = function() {
-    return (_free = Module['_free'] = Module['asm']['h']).apply(null,
+    return (_free = Module['_free'] = Module['asm']['h']).apply(null, arguments);
+  });
+  var _bpg_decoder_get_info = (Module['_bpg_decoder_get_info'] = function() {
+    return (_bpg_decoder_get_info = Module['_bpg_decoder_get_info'] = Module['asm']['i']).apply(null,
       arguments
     );
   });
-  var _bpg_decoder_get_info = (Module['_bpg_decoder_get_info'] = function() {
-    return (_bpg_decoder_get_info = Module['_bpg_decoder_get_info'] =
-      Module['asm']['i']).apply(null, arguments);
-  });
   var _bpg_decoder_start = (Module['_bpg_decoder_start'] = function() {
-    return (_bpg_decoder_start = Module['_bpg_decoder_start'] =
-      Module['asm']['j']).apply(null, arguments);
+    return (_bpg_decoder_start = Module['_bpg_decoder_start'] = Module['asm']['j']).apply(null,
+      arguments
+    );
   });
-  var _bpg_decoder_get_frame_duration = (Module[
-    '_bpg_decoder_get_frame_duration'
-  ] = function() {
-    return (_bpg_decoder_get_frame_duration = Module[
-      '_bpg_decoder_get_frame_duration'
-    ] = Module['asm']['k']).apply(null, arguments);
+  var _bpg_decoder_get_frame_duration = (Module['_bpg_decoder_get_frame_duration'] = function() {
+    return (_bpg_decoder_get_frame_duration = Module['_bpg_decoder_get_frame_duration'] =
+      Module['asm']['k']).apply(null, arguments);
   });
   var _bpg_decoder_get_line = (Module['_bpg_decoder_get_line'] = function() {
-    return (_bpg_decoder_get_line = Module['_bpg_decoder_get_line'] =
-      Module['asm']['l']).apply(null, arguments);
+    return (_bpg_decoder_get_line = Module['_bpg_decoder_get_line'] = Module['asm']['l']).apply(null,
+      arguments
+    );
   });
   var _bpg_decoder_open = (Module['_bpg_decoder_open'] = function() {
-    return (_bpg_decoder_open = Module['_bpg_decoder_open'] =
-      Module['asm']['m']).apply(null, arguments);
+    return (_bpg_decoder_open = Module['_bpg_decoder_open'] = Module['asm']['m']).apply(null,
+      arguments
+    );
   });
   var _bpg_decoder_decode = (Module['_bpg_decoder_decode'] = function() {
-    return (_bpg_decoder_decode = Module['_bpg_decoder_decode'] =
-      Module['asm']['n']).apply(null, arguments);
+    return (_bpg_decoder_decode = Module['_bpg_decoder_decode'] = Module['asm']['n']).apply(null,
+      arguments
+    );
   });
   var _bpg_decoder_close = (Module['_bpg_decoder_close'] = function() {
-    return (_bpg_decoder_close = Module['_bpg_decoder_close'] =
-      Module['asm']['o']).apply(null, arguments);
+    return (_bpg_decoder_close = Module['_bpg_decoder_close'] = Module['asm']['o']).apply(null,
+      arguments
+    );
   });
   var calledRun;
   function ExitStatus(status) {
@@ -525,8 +516,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   }
   Module['run'] = run;
   if(Module['preInit']) {
-    if(typeof Module['preInit'] == 'function')
-      Module['preInit'] = [Module['preInit']];
+    if(typeof Module['preInit'] == 'function') Module['preInit'] = [Module['preInit']];
     while(Module['preInit'].length > 0) {
       Module['preInit'].pop()();
     }
@@ -549,21 +539,14 @@ var Module = typeof Module !== 'undefined' ? Module : {};
       'array',
       'number'
     ]),
-    bpg_decoder_get_info: Module['cwrap']('bpg_decoder_get_info', 'number', [
+    bpg_decoder_get_info: Module['cwrap']('bpg_decoder_get_info', 'number', ['number', 'number']),
+    bpg_decoder_start: Module['cwrap']('bpg_decoder_start', 'number', ['number', 'number']),
+    bpg_decoder_get_frame_duration: Module['cwrap']('bpg_decoder_get_frame_duration', 'void', [
+      'number',
       'number',
       'number'
     ]),
-    bpg_decoder_start: Module['cwrap']('bpg_decoder_start', 'number', [
-      'number',
-      'number'
-    ]),
-    bpg_decoder_get_frame_duration: Module[
-      'cwrap'
-    ]('bpg_decoder_get_frame_duration', 'void', ['number', 'number', 'number']),
-    bpg_decoder_get_line: Module['cwrap']('bpg_decoder_get_line', 'number', [
-      'number',
-      'number'
-    ]),
+    bpg_decoder_get_line: Module['cwrap']('bpg_decoder_get_line', 'number', ['number', 'number']),
     bpg_decoder_close: Module['cwrap']('bpg_decoder_close', 'void', ['number']),
     load: function(url) {
       var request = new XMLHttpRequest();
@@ -599,12 +582,8 @@ var Module = typeof Module !== 'undefined' ? Module : {};
       frames = [];
       for(;;) {
         if(this.bpg_decoder_start(img, 1) < 0) break;
-        this.bpg_decoder_get_frame_duration(img,
-          img_info_buf,
-          img_info_buf + 4
-        );
-        duration =
-          (heap32[img_info_buf >> 2] * 1e3) / heap32[(img_info_buf + 4) >> 2];
+        this.bpg_decoder_get_frame_duration(img, img_info_buf, img_info_buf + 4);
+        duration = (heap32[img_info_buf >> 2] * 1e3) / heap32[(img_info_buf + 4) >> 2];
         cimg = this.ctx.createImageData(w, h);
         dst = cimg.data;
         p0 = 0;
@@ -666,9 +645,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
         function next_frame() {
           var frame_index = dec.frame_index;
           if(++frame_index >= frames.length) {
-            if(dec['loop_count'] == 0 ||
-              dec.loop_counter < dec['loop_count']
-            ) {
+            if(dec['loop_count'] == 0 || dec.loop_counter < dec['loop_count']) {
               frame_index = 0;
               dec.loop_counter++;
             } else {

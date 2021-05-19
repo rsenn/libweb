@@ -17,6 +17,8 @@ Util.toString = undefined;
 
 const lineSplit = new RegExp('\\n', 'g');
 
+Util.inspectSymbol = inspectSymbol;
+
 Util.formatAnnotatedObject = function(subject, o) {
   const {
     indent = '  ',
@@ -2379,7 +2381,7 @@ Util.isBrowser = function() {
     () => {}
   );
   Util.tryCatch(() => document,
-    w => (Util.isObject(w) ? (ret = true) : undefined),
+    d => (d == window.document && Util.isObject(d) ? (ret = true) : undefined),
     () => {}
   );
   return ret;

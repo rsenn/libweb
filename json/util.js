@@ -11,9 +11,7 @@ export let toXML = (o, ...opts) => {
   if(typeof o == 'object' && o !== null) {
     if('raw' in o) o = o.raw;
     if(Util.isArray(o))
-      return o.length === 1
-        ? toString(o[0], depth)
-        : o.map(it => toString(it, depth)).join('\n');
+      return o.length === 1 ? toString(o[0], depth) : o.map(it => toString(it, depth)).join('\n');
     return toString(o, depth);
   }
 
@@ -49,11 +47,7 @@ export let toXML = (o, ...opts) => {
       } else if(depth > 0) {
         for(let child of a)
           s +=
-            nl +
-            toString(child,
-              depth > 0 ? depth - 1 : depth,
-              nl
-            ) /*.replace(/>\n/g, '>' + nl)*/;
+            nl + toString(child, depth > 0 ? depth - 1 : depth, nl) /*.replace(/>\n/g, '>' + nl)*/;
         if(tagName[0] != '?') s += `${newline}</${tagName}>`;
       }
     } else {

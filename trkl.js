@@ -41,9 +41,7 @@ export function trkl(initValue) {
   function write(newValue, thisObj) {
     let oldValue = value;
 
-    if(newValue === oldValue &&
-      (newValue === null || typeof newValue !== 'object')
-    ) {
+    if(newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
       return; //bail out
     }
 

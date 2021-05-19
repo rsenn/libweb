@@ -11,8 +11,7 @@ export class LineList extends Array {
     super();
     if(Util.isArray(lines) || Util.isGenerator(lines)) {
       for(let line of lines) {
-        if(!(line instanceof Line))
-          line = Util.isArray(line) ? new Line(...line) : new Line(line);
+        if(!(line instanceof Line)) line = Util.isArray(line) ? new Line(...line) : new Line(line);
         this.push(line);
       }
     }
@@ -30,25 +29,17 @@ export class LineList extends Array {
   }
 
   toSVG(factory, makeGroup) {
-    if(isElement(makeGroup)) {
-      let parentElem = makeGroup;
-      makeGroup = () => parentElem;
-    }
-    makeGroup =
-      makeGroup ||
-      (() =>
-        factory('g', { stroke: 'black', fill: 'none', 'stroke-width': 0.1 }));
-    let group = makeGroup(),
+    makeGroup ??= () => ({
+      tagName: 'g',
+      attributes: { stroke: 'black', fill: 'none', 'stroke-width': 0.025 }
+    });
+    let group,
       lines = this;
-    lines = [...lines].map(({ x1, y1, x2, y2 }) => [
-      'line',
-      { x1, y1, x2, y2 }
-    ]);
-    if(typeof factory == 'function') {
-      lines = lines.map(([tag, attrs]) => factory(tag, attrs, group));
-    } else {
-      group = ['g', {}, lines];
-    }
+    lines = [...lines].map(({ x1, y1, x2, y2 }) => ['line', { x1, y1, x2, y2 }]);
+    lines = lines.map(([tag, attrs]) => factory(tag, attrs, group));
+
+    group ??= makeGroup('g', {}, lines);
+    group.children = lines;
     return group || lines;
   }
 
@@ -145,16 +136,12 @@ export class LineList extends Array {
 
   coincidences() {
     let entries = [
-      ...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]])
-      )
+      ...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))
     ];
 
     //entries =    entries.filter(([p,indexes]) => indexes.length > 1);
 
-    entries = entries.map(([pointStr, indexes]) => [
-      Point.fromString(pointStr),
-      indexes
-    ]);
+    entries = entries.map(([pointStr, indexes]) => [Point.fromString(pointStr), indexes]);
     return new Map(entries);
   }
 
@@ -172,11 +159,8 @@ export class LineList extends Array {
   }
 
   toString(opts = {}) {
-    const { separator = ' ', ...options } =
-      typeof opts == 'string' ? { separator: opts } : opts;
-    return this.map(line =>
-      line.toString({ ...options, pad: 0, separator: '|' })
-    ).join(separator);
+    const { separator = ' ', ...options } = typeof opts == 'string' ? { separator: opts } : opts;
+    return this.map(line => line.toString({ ...options, pad: 0, separator: '|' })).join(separator);
   }
   [Symbol.toStringTag]() {
     return this.toString({ separator: '\n' });

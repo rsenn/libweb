@@ -1,8 +1,15 @@
 import Util from '../util.js';
 import { PointList } from './pointList.js';
 import { Line } from './line.js';
+import { Point } from './point.js';
 
-export const Polygon = function Polygon() {};
+export class Polygon extends PointList {
+  constructor(...args) {
+    super(...args);
+  }
+
+  get [Symbol.toStringTag]() { return 'Polygon'; }
+}
 
 Polygon.area = polygon => {
   let area = 0;
@@ -115,5 +122,14 @@ Polygon.pointInside = function(polygon, point) {
 
   return inside;
 };
+
+export function MakePolygon(n = 8, r = 1.27, start = 0) {
+  const $2pi = Math.PI * 2;
+  const step = $2pi / n;
+  return new Polygon(Util.range(0, n - 1)
+      .map(i => ($2pi * i) / n)
+      .map(a => Point.fromAngle(a + step * start, r))
+  );
+}
 
 export default Polygon;

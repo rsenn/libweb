@@ -12,7 +12,7 @@ import { isCircle, Circle } from './geom/circle.js';
 import { PointList, ImmutablePointList } from './geom/pointList.js';
 import { Polyline } from './geom/polyline.js';
 import { PolygonFinder } from './geom/polygonFinder.js';
-import { Polygon } from './geom/polygon.js';
+import { Polygon, MakePolygon } from './geom/polygon.js';
 import { isRect, Rect, ImmutableRect } from './geom/rect.js';
 import { isSize, Size, ImmutableSize } from './geom/size.js';
 import { SweepLineClass } from './geom/sweepLine.js';
@@ -80,7 +80,7 @@ export { Intersection } from './geom/intersection.js';
 export { isLine, Line } from './geom/line.js';
 export { Arc } from './geom/arc.js';
 export { LineList } from './geom/lineList.js';
-export { Polygon } from './geom/polygon.js';
+export { Polygon, MakePolygon } from './geom/polygon.js';
 
 export { isMatrix, Matrix } from './geom/matrix.js';
 export { isPoint, Point } from './geom/point.js';

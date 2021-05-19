@@ -61,9 +61,7 @@
         f = pdist.scaleto(2);
       }
 
-      return f.plus(dist.scaleto(
-          0.1 * Math.min(300, Math.pow(Math.max(overlapArea(b, other)), 0.5))
-        )
+      return f.plus(dist.scaleto(0.1 * Math.min(300, Math.pow(Math.max(overlapArea(b, other)), 0.5)))
       );
     };
 

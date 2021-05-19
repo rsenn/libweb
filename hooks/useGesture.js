@@ -93,8 +93,7 @@ function rubberband2(distance, constant) {
 }
 
 function rubberband(distance, dimension, constant) {
-  if(dimension === 0 || Math.abs(dimension) === Infinity)
-    return rubberband2(distance, constant);
+  if(dimension === 0 || Math.abs(dimension) === Infinity) return rubberband2(distance, constant);
   return (distance * dimension * constant) / (dimension + constant * distance);
 }
 
@@ -103,11 +102,9 @@ function rubberbandIfOutOfBounds(position, min, max, constant) {
 
   if(constant === 0) return minMax(position, min, max);
 
-  if(position < min)
-    return -rubberband(min - position, max - min, constant) + min;
+  if(position < min) return -rubberband(min - position, max - min, constant) + min;
 
-  if(position > max)
-    return rubberband(position - max, max - min, constant) + max;
+  if(position > max) return rubberband(position - max, max - min, constant) + max;
 
   return position;
 }
@@ -136,8 +133,7 @@ function _extends() {
         let source = arguments[i];
 
         for(let key in source) {
-          if(Object.prototype.hasOwnProperty.call(source, key))
-            target[key] = source[key];
+          if(Object.prototype.hasOwnProperty.call(source, key)) target[key] = source[key];
         }
       }
 
@@ -170,8 +166,7 @@ function objectWithoutPropertiesLoose(source, excluded) {
 
 function assertThisInitialized(self) {
   if(self === void 0)
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called"
-    );
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
 
   return self;
 }
@@ -221,17 +216,11 @@ function createForOfIteratorHelperLoose(o) {
 function noop() {} // returns a function that chains all functions given as parameters
 
 let chainFns = function chainFns() {
-  for(var _len = arguments.length, fns = new Array(_len), _key = 0;
-    _key < _len;
-    _key++
-  )
+  for(var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++)
     fns[_key] = arguments[_key];
 
   return function() {
-    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0;
-      _key2 < _len2;
-      _key2++
-    )
+    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++)
       args[_key2] = arguments[_key2];
 
     return fns.forEach(fn => fn.apply(void 0, args));
@@ -520,9 +509,7 @@ let Controller = function Controller() {
     _this.resetBindings();
 
     Object.values(_this.timeouts).forEach(clearTimeout);
-    Object.keys(_this.windowListeners).forEach(stateKey =>
-      _this.removeWindowListeners(stateKey)
-    );
+    Object.keys(_this.windowListeners).forEach(stateKey => _this.removeWindowListeners(stateKey));
   };
 
   /**
@@ -570,10 +557,7 @@ let Controller = function Controller() {
     let listeners = _this.windowListeners[stateKey];
 
     if(listeners) {
-      removeListeners(_this.config.window,
-        listeners,
-        _this.config.eventOptions
-      );
+      removeListeners(_this.config.window, listeners, _this.config.eventOptions);
       delete _this.windowListeners[stateKey];
     }
   };
@@ -590,10 +574,7 @@ let Controller = function Controller() {
       let event = _ref[0],
         fns = _ref[1];
 
-      _this.domListeners.push([
-        event.substr(2).toLowerCase(),
-        chainFns.apply(void 0, fns)
-      ]);
+      _this.domListeners.push([event.substr(2).toLowerCase(), chainFns.apply(void 0, fns)]);
     });
     addListeners(target, _this.domListeners, _this.config.eventOptions);
   };
@@ -606,9 +587,7 @@ let Controller = function Controller() {
    */
 
   this.addBindings = function(eventNames, fn) {
-    let eventNamesArray = !Array.isArray(eventNames)
-      ? [eventNames]
-      : eventNames;
+    let eventNamesArray = !Array.isArray(eventNames) ? [eventNames] : eventNames;
     eventNamesArray.forEach(eventName => {
       if(_this.bindings[eventName]) _this.bindings[eventName].push(fn);
       else _this.bindings[eventName] = [fn];
@@ -671,10 +650,7 @@ export function useRecognizers(handlers, classes, config, nativeHandlers) {
     function bind(...args) {
       current.resetBindings();
 
-      for(var _len = args.length, args = new Array(_len), _key = 0;
-        _key < _len;
-        _key++
-      )
+      for(var _len = args.length, args = new Array(_len), _key = 0; _key < _len; _key++)
         args[_key] = args[_key];
 
       for(var _iterator = createForOfIteratorHelperLoose(classes), _step;
@@ -743,17 +719,13 @@ let Recognizer = /*#__PURE__*/ (function () {
 
       if(ms === void 0) ms = 140;
 
-      for(var _len = arguments.length,
-          args = new Array(_len > 2 ? _len - 2 : 0),
-          _key = 2;
+      for(var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2;
         _key < _len;
         _key++
       )
         args[_key - 2] = arguments[_key];
 
-      _this.controller.timeouts[
-        _this.stateKey
-      ] = (_window = window).setTimeout.apply(_window,
+      _this.controller.timeouts[_this.stateKey] = (_window = window).setTimeout.apply(_window,
         [callback, ms].concat(args)
       );
     }; // Convenience method to clear a timeout for a given gesture
@@ -825,8 +797,7 @@ let Recognizer = /*#__PURE__*/ (function () {
       let _this$state$_intentio = _this.state._intentional,
         intentionalX = _this$state$_intentio[0],
         intentionalY = _this$state$_intentio[1];
-      if(!forceFlag && intentionalX === false && intentionalY === false)
-        return null;
+      if(!forceFlag && intentionalX === false && intentionalY === false) return null;
       let _this$state = _this.state,
         _active = _this$state._active,
         active = _this$state.active;
@@ -896,10 +867,7 @@ let Recognizer = /*#__PURE__*/ (function () {
    * below.
    */
 
-  _proto.checkIntentionality = function checkIntentionality(_intentional,
-    _movement,
-    _state
-  ) {
+  _proto.checkIntentionality = function checkIntentionality(_intentional, _movement, _state) {
     return {
       _intentional,
       _blocked: false
@@ -941,19 +909,14 @@ let Recognizer = /*#__PURE__*/ (function () {
     if(i1 === false) i1 = getIntentionalDisplacement(_m1, t1);
     // Get gesture specific state properties based on intentionality and movement.
 
-    let intentionalityCheck = this.checkIntentionality([i0, i1],
-      [_m0, _m1],
-      state
-    );
+    let intentionalityCheck = this.checkIntentionality([i0, i1], [_m0, _m1], state);
     let _intentional = intentionalityCheck._intentional,
       _blocked = intentionalityCheck._blocked;
     let _i0 = _intentional[0],
       _i1 = _intentional[1];
     let _movement = [_m0, _m1];
-    if(_i0 !== false && intentional[0] === false)
-      _initial[0] = valueFn(initial)[0];
-    if(_i1 !== false && intentional[1] === false)
-      _initial[1] = valueFn(initial)[1];
+    if(_i0 !== false && intentional[0] === false) _initial[0] = valueFn(initial)[0];
+    if(_i1 !== false && intentional[1] === false) _initial[1] = valueFn(initial)[1];
 
     /**
      * If the gesture has been blocked (from gesture specific checkIntentionality),
@@ -1065,10 +1028,7 @@ let CoordinatesRecognizer = /*#__PURE__*/ (function (_Recognizer) {
    * @param {PartialGestureState<T>} state
    */
 
-  _proto.checkIntentionality = function checkIntentionality(_intentional,
-    _movement,
-    state
-  ) {
+  _proto.checkIntentionality = function checkIntentionality(_intentional, _movement, state) {
     let _intentional2 = _intentional,
       _ix = _intentional2[0],
       _iy = _intentional2[1];
@@ -1149,8 +1109,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
   function DragRecognizer(controller, args) {
     let thisObj;
 
-    thisObj =
-      _CoordinatesRecognize.call(this, 'drag', controller, args) || this;
+    thisObj = _CoordinatesRecognize.call(this, 'drag', controller, args) || this;
     thisObj.ingKey = 'dragging';
     thisObj.wasTouch = false;
 
@@ -1197,8 +1156,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _this$state = thisObj.state,
         currentTarget = _this$state.currentTarget,
         pointerId = _this$state.pointerId;
-      if(currentTarget && pointerId)
-        currentTarget.releasePointerCapture(pointerId);
+      if(currentTarget && pointerId) currentTarget.releasePointerCapture(pointerId);
     };
 
     thisObj.setListeners = function(isTouch) {
@@ -1228,9 +1186,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         thisObj.state._delayedEvent = true;
         if(typeof event.persist === 'function') event.persist();
 
-        thisObj.setTimeout(() => thisObj.startDrag(event),
-          thisObj.config.delay
-        );
+        thisObj.setTimeout(() => thisObj.startDrag(event), thisObj.config.delay);
       } else {
         thisObj.startDrag(event);
       }
@@ -1256,9 +1212,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         values = _getPointerEventValue.values;
       let kinematics = thisObj.getKinematics(values, event);
       let _isTap = thisObj.state._isTap;
-      if(_isTap &&
-        calculateDistance(kinematics._movement) >= TAP_DISTANCE_THRESHOLD
-      )
+      if(_isTap && calculateDistance(kinematics._movement) >= TAP_DISTANCE_THRESHOLD)
         _isTap = false;
       thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics, {
           _isTap,
@@ -1304,10 +1258,8 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         sy = _this$config$swipeDis[1];
       let swipe = [0, 0];
       if(elapsedTime < SWIPE_MAX_ELAPSED_TIME) {
-        if(ix !== false && Math.abs(vx) > svx && Math.abs(mx) > sx)
-          swipe[0] = Math.sign(vx);
-        if(iy !== false && Math.abs(vy) > svy && Math.abs(my) > sy)
-          swipe[1] = Math.sign(vy);
+        if(ix !== false && Math.abs(vx) > svx && Math.abs(mx) > sx) swipe[0] = Math.sign(vx);
+        if(iy !== false && Math.abs(vy) > svy && Math.abs(my) > sy) swipe[1] = Math.sign(vy);
       }
       thisObj.updateGestureState(_extends(
           {
@@ -1321,13 +1273,11 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         )
       );
 
-      thisObj.fireGestureHandler(thisObj.config.filterTaps && thisObj.state._isTap
-      );
+      thisObj.fireGestureHandler(thisObj.config.filterTaps && thisObj.state._isTap);
     };
 
     thisObj.clean = function() {
-      _CoordinatesRecognize.prototype.clean.call(assertThisInitialized(thisObj)
-      );
+      _CoordinatesRecognize.prototype.clean.call(assertThisInitialized(thisObj));
 
       thisObj.state._delayedEvent = false;
       if(thisObj.controller.config.pointer) thisObj.removePointers();
@@ -1382,13 +1332,9 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
     if(this.controller.config.pointer) {
       this.controller.addBindings('onPointerDown', this.onDragStart);
       this.controller.addBindings('onPointerMove', this.onDragChange);
-      this.controller.addBindings(['onPointerUp', 'onPointerCancel'],
-        this.onDragEnd
-      );
+      this.controller.addBindings(['onPointerUp', 'onPointerCancel'], this.onDragEnd);
     } else {
-      this.controller.addBindings(['onTouchStart', 'onMouseDown'],
-        this.onDragStart
-      );
+      this.controller.addBindings(['onTouchStart', 'onMouseDown'], this.onDragStart);
     }
   };
 
@@ -1422,17 +1368,14 @@ function getInternalGenericOptions(config) {
 
   let _config = config,
     _config$eventOptions = _config.eventOptions;
-  _config$eventOptions =
-    _config$eventOptions === void 0 ? {} : _config$eventOptions;
+  _config$eventOptions = _config$eventOptions === void 0 ? {} : _config$eventOptions;
 
   let _config$eventOptions$ = _config$eventOptions.passive,
     passive = _config$eventOptions$ === void 0 ? true : _config$eventOptions$,
     _config$eventOptions$2 = _config$eventOptions.capture,
-    capture =
-      _config$eventOptions$2 === void 0 ? false : _config$eventOptions$2,
+    capture = _config$eventOptions$2 === void 0 ? false : _config$eventOptions$2,
     _config$eventOptions$3 = _config$eventOptions.pointer,
-    pointer =
-      _config$eventOptions$3 === void 0 ? false : _config$eventOptions$3,
+    pointer = _config$eventOptions$3 === void 0 ? false : _config$eventOptions$3,
     _config$window = _config.window,
     window = _config$window === void 0 ? defaultWindow : _config$window,
     _config$domTarget = _config.domTarget,
@@ -1462,16 +1405,14 @@ function getInternalGenericOptions(config) {
 
 function getInternalGestureOptions(gestureConfig) {
   let _gestureConfig$thresh = gestureConfig.threshold,
-    threshold =
-      _gestureConfig$thresh === void 0 ? undefined : _gestureConfig$thresh,
+    threshold = _gestureConfig$thresh === void 0 ? undefined : _gestureConfig$thresh,
     _gestureConfig$rubber = gestureConfig.rubberband,
     rubberband = _gestureConfig$rubber === void 0 ? 0 : _gestureConfig$rubber,
     _gestureConfig$enable = gestureConfig.enabled,
     enabled = _gestureConfig$enable === void 0 ? true : _gestureConfig$enable,
     _gestureConfig$initia = gestureConfig.initial,
     initial = _gestureConfig$initia === void 0 ? [0, 0] : _gestureConfig$initia;
-  if(typeof rubberband === 'boolean')
-    rubberband = rubberband ? DEFAULT_RUBBERBAND : 0;
+  if(typeof rubberband === 'boolean') rubberband = rubberband ? DEFAULT_RUBBERBAND : 0;
   if(threshold === void 0) threshold = 0;
   return {
     enabled,
@@ -1498,14 +1439,8 @@ function getInternalCoordinatesOptions(coordinatesConfig) {
     ]);
 
   let boundsArray = [
-    [
-      def.withDefault(bounds.left, -Infinity),
-      def.withDefault(bounds.right, Infinity)
-    ],
-    [
-      def.withDefault(bounds.top, -Infinity),
-      def.withDefault(bounds.bottom, Infinity)
-    ]
+    [def.withDefault(bounds.left, -Infinity), def.withDefault(bounds.right, Infinity)],
+    [def.withDefault(bounds.top, -Infinity), def.withDefault(bounds.bottom, Infinity)]
   ];
   return _extends({},
     getInternalGestureOptions(internalOptions),
@@ -1531,25 +1466,17 @@ function getInternalDistanceAngleOptions(distanceAngleConfig) {
 
   let _distanceAngleConfig = distanceAngleConfig,
     _distanceAngleConfig$ = _distanceAngleConfig.distanceBounds,
-    distanceBounds =
-      _distanceAngleConfig$ === void 0 ? {} : _distanceAngleConfig$,
+    distanceBounds = _distanceAngleConfig$ === void 0 ? {} : _distanceAngleConfig$,
     _distanceAngleConfig$2 = _distanceAngleConfig.angleBounds,
-    angleBounds =
-      _distanceAngleConfig$2 === void 0 ? {} : _distanceAngleConfig$2,
+    angleBounds = _distanceAngleConfig$2 === void 0 ? {} : _distanceAngleConfig$2,
     internalOptions = objectWithoutPropertiesLoose(_distanceAngleConfig, [
       'distanceBounds',
       'angleBounds'
     ]);
 
   let boundsArray = [
-    [
-      def.withDefault(distanceBounds.min, -Infinity),
-      def.withDefault(distanceBounds.max, Infinity)
-    ],
-    [
-      def.withDefault(angleBounds.min, -Infinity),
-      def.withDefault(angleBounds.max, Infinity)
-    ]
+    [def.withDefault(distanceBounds.min, -Infinity), def.withDefault(distanceBounds.max, Infinity)],
+    [def.withDefault(angleBounds.min, -Infinity), def.withDefault(angleBounds.max, Infinity)]
   ];
   return _extends({}, getInternalGestureOptions(internalOptions), {
     bounds: boundsArray
@@ -1577,19 +1504,14 @@ function getInternalDragOptions(dragConfig) {
 
   let _dragOptions$swipeVel = dragOptions.swipeVelocity,
     swipeVelocity =
-      _dragOptions$swipeVel === void 0
-        ? DEFAULT_SWIPE_VELOCITY
-        : _dragOptions$swipeVel,
+      _dragOptions$swipeVel === void 0 ? DEFAULT_SWIPE_VELOCITY : _dragOptions$swipeVel,
     _dragOptions$swipeDis = dragOptions.swipeDistance,
     swipeDistance =
-      _dragOptions$swipeDis === void 0
-        ? DEFAULT_SWIPE_DISTANCE
-        : _dragOptions$swipeDis,
+      _dragOptions$swipeDis === void 0 ? DEFAULT_SWIPE_DISTANCE : _dragOptions$swipeDis,
     _dragOptions$delay = dragOptions.delay,
     delay = _dragOptions$delay === void 0 ? false : _dragOptions$delay,
     _dragOptions$filterTa = dragOptions.filterTaps,
-    filterTaps =
-      _dragOptions$filterTa === void 0 ? false : _dragOptions$filterTa,
+    filterTaps = _dragOptions$filterTa === void 0 ? false : _dragOptions$filterTa,
     axis = dragOptions.axis,
     lockDirection = dragOptions.lockDirection;
 
@@ -1612,9 +1534,7 @@ function getInternalDragOptions(dragConfig) {
   );
   return _extends({}, internalCoordinatesOptions, {
     filterTaps: filterTaps ||
-      internalCoordinatesOptions.threshold[0] +
-        internalCoordinatesOptions.threshold[1] >
-        0,
+      internalCoordinatesOptions.threshold[0] + internalCoordinatesOptions.threshold[1] > 0,
     swipeVelocity: def.array(swipeVelocity),
     swipeDistance: def.array(swipeDistance),
     delay: typeof delay === 'number' ? delay : delay ? DEFAULT_DRAG_DELAY : 0
@@ -1638,11 +1558,7 @@ export function useDrag(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    drag = objectWithoutPropertiesLoose(_config, [
-      'domTarget',
-      'eventOptions',
-      'window'
-    ]);
+    drag = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -1748,8 +1664,7 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
 
   function PinchRecognizer(controller, args) {
     let thisObj;
-    thisObj =
-      _DistanceAngleRecogni.call(this, 'pinch', controller, args) || this;
+    thisObj = _DistanceAngleRecogni.call(this, 'pinch', controller, args) || this;
     thisObj.ingKey = 'pinching';
     thisObj.pinchShouldStart = function(event) {
       let _getGenericEventData = getGenericEventData(event),
@@ -1785,8 +1700,7 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
         _active = _this$state._active;
       if(canceled || !_active) return;
       let genericEventData = getGenericEventData(event);
-      if(genericEventData.touches !== 2 || event.timeStamp === timeStamp)
-        return;
+      if(genericEventData.touches !== 2 || event.timeStamp === timeStamp) return;
       thisObj.updateSharedState(genericEventData);
       let _getTwoTouchesEventDa2 = getTwoTouchesEventData(event),
         values = _getTwoTouchesEventDa2.values,
@@ -1899,11 +1813,7 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
     };
 
     thisObj.updateTouchData = function(event) {
-      if(!thisObj.enabled ||
-        event.touches.length !== 2 ||
-        !thisObj.state._active
-      )
-        return;
+      if(!thisObj.enabled || event.touches.length !== 2 || !thisObj.state._active) return;
       let _getTwoTouchesEventDa3 = getTwoTouchesEventData(event),
         origin = _getTwoTouchesEventDa3.origin;
       thisObj.state.origin = origin;
@@ -2013,18 +1923,12 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
     if(this.controller.config.domTarget && supportsGestureEvents()) {
       this.controller.addBindings('onGestureStart', this.onGestureStart);
       this.controller.addBindings('onGestureChange', this.onGestureChange);
-      this.controller.addBindings(['onGestureEnd', 'onTouchCancel'],
-        this.onGestureEnd
-      );
-      this.controller.addBindings(['onTouchStart', 'onTouchMove'],
-        this.updateTouchData
-      );
+      this.controller.addBindings(['onGestureEnd', 'onTouchCancel'], this.onGestureEnd);
+      this.controller.addBindings(['onTouchStart', 'onTouchMove'], this.updateTouchData);
     } else {
       this.controller.addBindings('onTouchStart', this.onPinchStart);
       this.controller.addBindings('onTouchMove', this.onPinchChange);
-      this.controller.addBindings(['onTouchEnd', 'onTouchCancel'],
-        this.onPinchEnd
-      );
+      this.controller.addBindings(['onTouchEnd', 'onTouchCancel'], this.onPinchEnd);
       this.controller.addBindings('onWheel', this.onWheel);
     }
   };
@@ -2051,11 +1955,7 @@ export function usePinch(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    pinch = objectWithoutPropertiesLoose(_config, [
-      'domTarget',
-      'eventOptions',
-      'window'
-    ]);
+    pinch = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2085,8 +1985,7 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
 
   function WheelRecognizer(controller, args) {
     let thisObj;
-    thisObj =
-      _CoordinatesRecognize.call(this, 'wheel', controller, args) || this;
+    thisObj = _CoordinatesRecognize.call(this, 'wheel', controller, args) || this;
     thisObj.ingKey = 'wheeling';
     thisObj.debounced = true;
     thisObj.wheelShouldRun = function(event) {
@@ -2139,8 +2038,7 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _this$getValuesFromEv2 = thisObj.getValuesFromEvent(event),
         values = _this$getValuesFromEv2.values;
       let kinematics = thisObj.getKinematics(values, event);
-      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics)
-      );
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics));
       thisObj.fireGestureHandler();
     };
 
@@ -2185,11 +2083,7 @@ export function useWheel(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    wheel = objectWithoutPropertiesLoose(_config, [
-      'domTarget',
-      'eventOptions',
-      'window'
-    ]);
+    wheel = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2219,8 +2113,7 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
 
   function MoveRecognizer(controller, args) {
     let thisObj;
-    thisObj =
-      _CoordinatesRecognize.call(this, 'move', controller, args) || this;
+    thisObj = _CoordinatesRecognize.call(this, 'move', controller, args) || this;
     thisObj.ingKey = 'moving';
     thisObj.debounced = true;
     thisObj.moveShouldRun = function() {
@@ -2255,8 +2148,7 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _getPointerEventValue2 = getPointerEventValues(event),
         values = _getPointerEventValue2.values;
       let kinematics = thisObj.getKinematics(values, event);
-      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics)
-      );
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics));
       thisObj.fireGestureHandler();
     };
 
@@ -2289,8 +2181,7 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
             hovering: true
           }
         );
-        thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state))
-        );
+        thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
       if('move' in thisObj.controller.handlers) thisObj.onMoveStart(event);
     };
@@ -2311,8 +2202,7 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
             active: false
           }
         );
-        thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state))
-        );
+        thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
     };
 
@@ -2365,11 +2255,7 @@ export function useMove(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    move = objectWithoutPropertiesLoose(_config, [
-      'domTarget',
-      'eventOptions',
-      'window'
-    ]);
+    move = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2413,11 +2299,7 @@ export function useHover(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    hover = objectWithoutPropertiesLoose(_config, [
-      'domTarget',
-      'eventOptions',
-      'window'
-    ]);
+    hover = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2452,8 +2334,7 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
   function ScrollRecognizer(controller, args) {
     let thisObj;
 
-    thisObj =
-      _CoordinatesRecognize.call(this, 'scroll', controller, args) || this;
+    thisObj = _CoordinatesRecognize.call(this, 'scroll', controller, args) || this;
     thisObj.ingKey = 'scrolling';
     thisObj.debounced = true;
 
@@ -2497,8 +2378,7 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _getScrollEventValues2 = getScrollEventValues(event),
         values = _getScrollEventValues2.values;
       let kinematics = thisObj.getKinematics(values, event);
-      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics)
-      );
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics));
       thisObj.fireGestureHandler();
     };
 
@@ -2541,11 +2421,7 @@ export function useScroll(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    scroll = objectWithoutPropertiesLoose(_config, [
-      'domTarget',
-      'eventOptions',
-      'window'
-    ]);
+    scroll = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2623,46 +2499,31 @@ export function useGesture(handlers, config) {
 
   if(actions.has('onDrag')) {
     classes.push(DragRecognizer);
-    internalHandlers.drag = includeStartEndHandlers(handlers,
-      'onDrag',
-      _nativeHandlers
-    );
+    internalHandlers.drag = includeStartEndHandlers(handlers, 'onDrag', _nativeHandlers);
     mergedConfig.drag = getInternalDragOptions(drag);
   }
 
   if(actions.has('onWheel')) {
     classes.push(WheelRecognizer);
-    internalHandlers.wheel = includeStartEndHandlers(handlers,
-      'onWheel',
-      _nativeHandlers
-    );
+    internalHandlers.wheel = includeStartEndHandlers(handlers, 'onWheel', _nativeHandlers);
     mergedConfig.wheel = getInternalCoordinatesOptions(wheel);
   }
 
   if(actions.has('onScroll')) {
     classes.push(ScrollRecognizer);
-    internalHandlers.scroll = includeStartEndHandlers(handlers,
-      'onScroll',
-      _nativeHandlers
-    );
+    internalHandlers.scroll = includeStartEndHandlers(handlers, 'onScroll', _nativeHandlers);
     mergedConfig.scroll = getInternalCoordinatesOptions(scroll);
   }
 
   if(actions.has('onMove')) {
     classes.push(MoveRecognizer);
-    internalHandlers.move = includeStartEndHandlers(handlers,
-      'onMove',
-      _nativeHandlers
-    );
+    internalHandlers.move = includeStartEndHandlers(handlers, 'onMove', _nativeHandlers);
     mergedConfig.move = getInternalCoordinatesOptions(move);
   }
 
   if(actions.has('onPinch')) {
     classes.push(PinchRecognizer);
-    internalHandlers.pinch = includeStartEndHandlers(handlers,
-      'onPinch',
-      _nativeHandlers
-    );
+    internalHandlers.pinch = includeStartEndHandlers(handlers, 'onPinch', _nativeHandlers);
     mergedConfig.pinch = getInternalDistanceAngleOptions(pinch);
   }
 
@@ -2677,11 +2538,7 @@ export function useGesture(handlers, config) {
     delete _nativeHandlers.onHover;
   }
 
-  return useRecognizers(internalHandlers,
-    classes,
-    mergedConfig,
-    _nativeHandlers
-  );
+  return useRecognizers(internalHandlers, classes, mergedConfig, _nativeHandlers);
 }
 
 /**

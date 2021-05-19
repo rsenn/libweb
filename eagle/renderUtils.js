@@ -20,19 +20,14 @@ export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 export let DEBUG = false;
 
 export let log = DEBUG
-  ? (typeof console.debug == 'function'
-      ? console.debug
-      : console.info || console.log
-    ).bind(console)
+  ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
   : () => {};
 
 export const setDebug = state => {
   DEBUG = state;
   log = state
-    ? (typeof console.debug == 'function'
-        ? console.debug
-        : console.info || console.log
-      ).bind(console)
+    ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console
+      )
     : () => {};
 };
 
@@ -187,19 +182,7 @@ export const RenderArc = (x, y, radius, startAngle, endAngle) => {
   let start = PolarToCartesian(x, y, radius, endAngle);
   let end = PolarToCartesian(x, y, radius, startAngle);
   let arcSweep = endAngle - startAngle <= 180 ? '0' : '1';
-  let d = [
-    'M',
-    start.x,
-    start.y,
-    'A',
-    radius,
-    radius,
-    0,
-    arcSweep,
-    0,
-    end.x,
-    end.y
-  ].join(' ');
+  let d = ['M', start.x, start.y, 'A', radius, radius, 0, arcSweep, 0, end.x, end.y].join(' ');
   return d;
 };
 /*
@@ -318,10 +301,7 @@ const RenderArcFromTo = (start, radius, theta, end) => {
 
   const sweep = (diff.x < 0) ^ (diff.y < 0);
 
-  return [
-    `M ${start.x} ${start.y}`,
-    RenderArcTo(distance, radius, theta, sweep, end)
-  ];
+  return [`M ${start.x} ${start.y}`, RenderArcTo(distance, radius, theta, sweep, end)];
 };
 
 /**
@@ -372,9 +352,7 @@ export const LinesToPath = (lines, lineFn) => {
 
         //if(isFinite(radius))
         if(debug)
-          Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius },
-            debug
-          ).print(console.log);
+          Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius }, debug).print(console.log);
 
         if(curve !== undefined && isFinite(radius))
           return RenderArcTo(dist, Math.abs(radius), theta, sweep, p[1]);
@@ -459,9 +437,7 @@ export function MakeCoordTransformer(matrix) {
       const [x2, y2] = tr.xy(obj.x2, obj.y2);
       coords = { ...coords, x1, y1, x2, y2 };
     }
-    let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }),
-      {}
-    );
+    let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
     let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.000001) }),
       {}
     );
@@ -495,12 +471,7 @@ export const RenderShape = (shape, ro, ri) => {
       break;
     }
     case 'square': {
-      d = [
-        new Point(-1, -1),
-        new Point(1, -1),
-        new Point(1, 1),
-        new Point(-1, 1)
-      ]
+      d = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)]
         .map(p => p.prod(ro))
         .map(p => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)

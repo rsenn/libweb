@@ -35,8 +35,7 @@ export function autofillEvent(window, changeHandler) {
 
   function initAutoFillListeners() {
     const inputElements = [
-      ...(document.getElementsByTagName('input') ||
-        document.querySelectorAll('input'))
+      ...(document.getElementsByTagName('input') || document.querySelectorAll('input'))
     ];
 
     //mark all values that are present when the DOM is ready.
@@ -60,10 +59,7 @@ export function autofillEvent(window, changeHandler) {
   if(!window.document.addEventListener) {
     window.document.attachEvent('DOMContentLoaded', initAutoFillListeners);
   } else {
-    window.document.addEventListener('DOMContentLoaded',
-      initAutoFillListeners,
-      false
-    );
+    window.document.addEventListener('DOMContentLoaded', initAutoFillListeners, false);
   }
 
   //----------

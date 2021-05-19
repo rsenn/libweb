@@ -15,10 +15,7 @@ Node.fromArray = function(a) {
   if(n == 0) return null;
 
   const i = Math.floor(n / 2);
-  return new Node(a[i],
-    Node.fromArray(a.slice(0, i)),
-    Node.fromArray(a.slice(i + 1))
-  );
+  return new Node(a[i], Node.fromArray(a.slice(0, i)), Node.fromArray(a.slice(i + 1)));
 };
 
 Node.prototype.isLeaf = function() {
@@ -28,9 +25,9 @@ Node.prototype.isLeaf = function() {
 Node.prototype.toSource = function() {
   const { value, left, right } = this;
   if(this.isLeaf()) return `new BinaryTree.Node(${Util.toSource(value)})`;
-  return `new BinaryTree.Node(${Util.toSource(value)}, ${
-    left && left.toSource()
-  }, ${right && right.toSource()})`;
+  return `new BinaryTree.Node(${Util.toSource(value)}, ${left && left.toSource()}, ${
+    right && right.toSource()
+  })`;
 };
 
 export class BinaryTree {

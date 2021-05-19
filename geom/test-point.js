@@ -94,9 +94,7 @@ wru.test([
     test: () => {
       let point = new Point(50, 50);
       let prod = point.prod(4);
-      wru.assert('prod.equals(new Point(200,200))',
-        prod.equals(new Point(200, 200))
-      );
+      wru.assert('prod.equals(new Point(200,200))', prod.equals(new Point(200, 200)));
     }
   },
   {
@@ -104,9 +102,7 @@ wru.test([
     test: () => {
       let point = new Point(50, 50);
       point.mul(0.2);
-      wru.assert('point.equals(new Point(10,10))',
-        point.equals(new Point(10, 10))
-      );
+      wru.assert('point.equals(new Point(10,10))', point.equals(new Point(10, 10)));
     }
   },
   {
@@ -122,9 +118,7 @@ wru.test([
     test: () => {
       let point = new Point(84, 56);
       point.div(7);
-      wru.assert('point.equals(new Point(12,8))',
-        point.equals(new Point(12, 8))
-      );
+      wru.assert('point.equals(new Point(12,8))', point.equals(new Point(12, 8)));
     }
   },
   {
@@ -140,18 +134,14 @@ wru.test([
     name: 'Point.neg()',
     test: () => {
       let point = new Point(50, 50);
-      wru.assert('point.neg().equals(new Point(-50,-50))',
-        point.neg().equals(new Point(-50, -50))
-      );
+      wru.assert('point.neg().equals(new Point(-50,-50))', point.neg().equals(new Point(-50, -50)));
     }
   },
   {
     name: 'Point.distanceSquared()',
     test: () => {
       let point = new Point(50, 50);
-      wru.assert('point.distanceSquared()==5000',
-        point.distanceSquared() == 5000
-      );
+      wru.assert('point.distanceSquared()==5000', point.distanceSquared() == 5000);
     }
   },
   {
@@ -221,12 +211,8 @@ wru.test([
     name: 'Point.toSource()',
     test: () => {
       let point = new Point(50, 100);
-      wru.assert('toSource',
-        point.toSource({ showNew: false }) == 'Point(50,100)'
-      );
-      wru.assert('toSource',
-        point.toSource({ showNew: true }) == 'new Point(50,100)'
-      );
+      wru.assert('toSource', point.toSource({ showNew: false }) == 'Point(50,100)');
+      wru.assert('toSource', point.toSource({ showNew: true }) == 'new Point(50,100)');
     }
   },
   {
@@ -268,9 +254,7 @@ wru.test([
     name: 'Point.inside()',
     test: () => {
       let point = new Point(50, 50);
-      wru.assert('inside',
-        point.inside({ x: 0, y: 0, width: 100, height: 100 })
-      );
+      wru.assert('inside', point.inside({ x: 0, y: 0, width: 100, height: 100 }));
     }
   },
   {
@@ -296,18 +280,14 @@ wru.test([
     name: 'Point.normalize()',
     test: () => {
       let point = new Point(50, 50);
-      wru.assert('normalize',
-        point.normalize({ x1: 0, x2: 100, y1: 0, y2: 100 })
-      );
+      wru.assert('normalize', point.normalize({ x1: 0, x2: 100, y1: 0, y2: 100 }));
     }
   },
   {
     name: 'static Point.fromAngle()',
     test: () => {
       let point = Point.fromAngle((45 * Math.PI) / 180);
-      wru.assert('fromAngle',
-        point.round(0.00001).equals({ x: 0.70711, y: 0.70711 })
-      );
+      wru.assert('fromAngle', point.round(0.00001).equals({ x: 0.70711, y: 0.70711 }));
     }
   },
   {

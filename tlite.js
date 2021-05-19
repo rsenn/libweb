@@ -36,11 +36,7 @@ export function tlite(getTooltipOpts) {
       }
     }
     if(!getTitle)
-      getTitle = e => [
-        'title',
-        (e.hasAttribute('title') && e.getAttribute('title')) || '',
-        e
-      ];
+      getTitle = e => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
     opts.getTitle = e => {
       let attrName,
         title,
@@ -97,9 +93,7 @@ if(elem)
 
       //el.setAttribute(fallbackAttrib, text);
       // console.info('show():',{attr,text,elem});
-      text &&
-        !showTimer &&
-        (showTimer = setTimeout(() => fadeIn(el), isAuto ? 150 : 1));
+      text && !showTimer && (showTimer = setTimeout(() => fadeIn(el), isAuto ? 150 : 1));
     }
 
     function autoHide(el) {
@@ -119,8 +113,7 @@ if(elem)
     function fadeIn(el) {
       if(!tooltipEl) {
         tooltipEl = mapper(el, text, opts);
-        if(tooltipEl.parentElement)
-          tooltipEl.parentElement.removeChild(tooltipEl);
+        if(tooltipEl.parentElement) tooltipEl.parentElement.removeChild(tooltipEl);
 
         (elem || el).appendChild(tooltipEl);
       }
@@ -150,9 +143,7 @@ if(elem)
               `<tr class="tlite-table tlite-row-${j}">` +
               row
                 .map((col, i) =>
-                    `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` +
-                    col +
-                    '</td>'
+                    `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>'
                 )
                 .join('') +
               '</tr>\n'

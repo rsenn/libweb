@@ -28,17 +28,12 @@ export function Pattern(patterns, shift, match) {
   }
   ret.type = tok;
   if(patterns.length &&
-    lexMatch('PUNCTUATION',
-      ch => ch === '+' || ch === '*' || ch === '?',
-      patterns[0]
-    )
+    lexMatch('PUNCTUATION', ch => ch === '+' || ch === '*' || ch === '?', patterns[0])
   )
     repeat = shift().str;
   if(repeat) ret.repeat = repeat;
   //console.log("Pattern.parse",patterns[0]);
-  Object.assign(ret,
-    repeat !== undefined ? { tok, str, repeat } : { tok, str }
-  );
+  Object.assign(ret, repeat !== undefined ? { tok, str, repeat } : { tok, str });
   return ret;
 }
 
@@ -49,11 +44,7 @@ Pattern.prototype.toString = function() {
   return ((this.invert ? '~' : '') +
     Util.colorText(str,
       1,
-      this.tok == Lexer.tokens.REGEXP
-        ? 35
-        : this.tok == Lexer.tokens.IDENTIFIER
-        ? 33
-        : 36
+      this.tok == Lexer.tokens.REGEXP ? 35 : this.tok == Lexer.tokens.IDENTIFIER ? 33 : 36
     ) +
     (this.repeat ? Util.colorText(this.repeat, 1, 34) : '')
   );

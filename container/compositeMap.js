@@ -23,13 +23,9 @@ export class CompositeMap {
     } else {
       this.keyLength = (options && options.keyLength) || 0;
       if(!this.keyLength) {
-        throw new Error('Array inputs require a non-zero value for options.keyLength'
-        );
+        throw new Error('Array inputs require a non-zero value for options.keyLength');
       }
-      this.data = recursiveEntriesToRecursiveMap(this.keyLength - 1,
-        entries,
-        0
-      );
+      this.data = recursiveEntriesToRecursiveMap(this.keyLength - 1, entries, 0);
     }
   }
   set(key, value) {
@@ -190,9 +186,7 @@ export class CompositeMap {
             key[level] = result.value[0];
             level++;
             levelIterator =
-              level === lastLevel
-                ? result.value[1].keys()
-                : result.value[1].entries();
+              level === lastLevel ? result.value[1].keys() : result.value[1].entries();
             levelIterators[level] = levelIterator;
           } else {
             const key2 = key.slice();
@@ -370,9 +364,7 @@ function recursiveEntriesToRecursiveMap(lastKeyPos, entries, level) {
     });
   } else {
     entries.forEach(entry => {
-      map.set(entry[0],
-        recursiveEntriesToRecursiveMap(lastKeyPos, entry[1], level + 1)
-      );
+      map.set(entry[0], recursiveEntriesToRecursiveMap(lastKeyPos, entry[1], level + 1));
     });
   }
   return map;

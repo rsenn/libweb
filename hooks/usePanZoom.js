@@ -146,9 +146,7 @@ export const usePanZoom = ({
         event.preventDefault();
         if(!requireCtrlToZoom || event.ctrlKey) {
           const { pageX, pageY, deltaY } = event;
-          const pointerPosition = _.getPositionOnElement(container.current)(pageX,
-            pageY
-          );
+          const pointerPosition = _.getPositionOnElement(container.current)(pageX, pageY);
 
           let newVal = setZoom(zoom => zoom * Math.pow(1 - zoomSensitivity, deltaY),
             pointerPosition
@@ -163,18 +161,7 @@ export const usePanZoom = ({
           }));
         }
       }
-    }, [
-      enableZoom,
-      onZoom,
-      minX,
-      maxX,
-      minY,
-      maxY,
-      minZoom,
-      maxZoom,
-      scrollPanSensitivity,
-      setPan
-    ]
+    }, [enableZoom, onZoom, minX, maxX, minY, maxY, minZoom, maxZoom, scrollPanSensitivity, setPan]
   );
 
   const onGestureStart = useCallback(event => {
@@ -186,9 +173,7 @@ export const usePanZoom = ({
     event.preventDefault();
 
     const { pageX, pageY, scale } = event;
-    const pointerPosition = getPositionOnElement(container.current)(pageX,
-      pageY
-    );
+    const pointerPosition = getPositionOnElement(container.current)(pageX, pageY);
 
     let newVal = setZoom(prevZoom.current * scale, pointerPosition);
 
@@ -228,17 +213,13 @@ export const usePanZoom = ({
   }, []);
 
   const onTouchStart = ({ touches }) =>
-    startPanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY }))
-    );
+    startPanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
   const onTouchMove = ({ touches }) =>
-    movePanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY }))
-    );
+    movePanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
   const onTouchEnd = () => endPanZoom();
   const onTouchCancel = () => endPanZoom();
-  const onMouseDown = ({ pageX, pageY }) =>
-    startPanZoom([{ x: pageX, y: pageY }]);
-  const onMouseMove = ({ pageX, pageY }) =>
-    movePanZoom([{ x: pageX, y: pageY }]);
+  const onMouseDown = ({ pageX, pageY }) => startPanZoom([{ x: pageX, y: pageY }]);
+  const onMouseMove = ({ pageX, pageY }) => movePanZoom([{ x: pageX, y: pageY }]);
   const onMouseUp = () => endPanZoom();
   const onMouseLeave = () => endPanZoom();
 

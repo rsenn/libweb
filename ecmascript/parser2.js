@@ -1,5 +1,5 @@
 import Util from '../util.js';
-import { inspect } from 'util';
+import inspect from '../objectInspect.js';
 
 import { Lexer, SyntaxError, Location, Token } from './lexer.js';
 export { Lexer, SyntaxError, Location, Token } from './lexer.js';

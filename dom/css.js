@@ -4,10 +4,7 @@ import { Element } from './element.js';
 const getStyleMap = (obj, key) => {
   let rule = Util.find(obj, item => item.selectorText == key);
   return Util.adapter(rule,
-    obj =>
-      obj && obj.styleMap && obj.styleMap.size !== undefined
-        ? obj.styleMap.size
-        : 0,
+    obj => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
     (obj, i) => [...obj.styleMap.keys()][i],
     (obj, key) =>
       obj.styleMap
@@ -19,8 +16,7 @@ const getStyleMap = (obj, key) => {
 const getStyleSheet = (obj, key) => {
   let sheet = obj.cssRules
     ? obj
-    : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) ||
-      obj[key];
+    : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
   return Util.adapter(sheet.rules,
     obj => (obj && obj.length !== undefined ? obj.length : 0),
@@ -96,9 +92,7 @@ export class CSS {
 
   static parse(str) {
     let css = new Map();
-    for(let [wholeRule, selectors, body] of Util.matchAll(/([^{]*)\s*{\s*([^}]*)}?/gm,
-      str
-    )) {
+    for(let [wholeRule, selectors, body] of Util.matchAll(/([^{]*)\s*{\s*([^}]*)}?/gm, str)) {
       selectors = selectors.split(/,\s*/g).map(s => s.trim());
       let rule = new Map();
 
@@ -119,8 +113,7 @@ export class CSS {
       if(typeof selectors == 'string')
         selectors = selectors.split(/,\s*/g).map(s => s.trim().split(/\s+/g));
 
-      if(selectors.some(s => Util.equals(s, selector)))
-        ret = Util.merge(ret, rule);
+      if(selectors.some(s => Util.equals(s, selector))) ret = Util.merge(ret, rule);
       //       ret.push([selectors,rule]);
     }
     return new Map(ret);
@@ -157,8 +150,7 @@ export class CSS {
         return this.map.keys();
       },
       *entries() {
-        for(let [selector, props] of this.map.entries())
-          yield [selector, props.toObject()];
+        for(let [selector, props] of this.map.entries()) yield [selector, props.toObject()];
       },
       update(text = '') {
         if(text != '') {
@@ -170,8 +162,7 @@ export class CSS {
       },
       generate() {
         this.element.innerHTML = '';
-        for(let [selector, props] of this.map)
-          this.update(CSS.section(selector, props));
+        for(let [selector, props] of this.map) this.update(CSS.section(selector, props));
         return this;
       },
       get text() {
@@ -186,14 +177,12 @@ export class CSS {
   }
 
   static consolidate(properties) {
-    let props = new Map(Util.isIterable(properties) ? properties : Object.entries(properties)
-    );
+    let props = new Map(Util.isIterable(properties) ? properties : Object.entries(properties));
 
     const trblExpr = /(Top|Right|Bottom|Left)/;
     const cswExpr = /(Color|Style|Width)/;
 
-    let keyList = [...props.keys()].filter(k => trblExpr.test(k) || cswExpr.test(k)
-    );
+    let keyList = [...props.keys()].filter(k => trblExpr.test(k) || cswExpr.test(k));
 
     //console.log("props:",Util.unique(keyList.filter(k => k.startsWith('border')).map(k => k.replace(/^border/, "").replace(trblExpr, ""))));
     for(let key of keyList) {

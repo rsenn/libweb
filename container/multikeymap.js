@@ -39,10 +39,7 @@ class Traversor {
       return this._current;
     }
 
-    const value =
-      typeof this._node.data === 'undefined'
-        ? undefined
-        : this._node.data.value;
+    const value = typeof this._node.data === 'undefined' ? undefined : this._node.data.value;
 
     this._current = { done: false, value: value };
 
@@ -65,8 +62,7 @@ export class MultiKeyMap {
   }
 
   _assertKeys(keys) {
-    if(!Array.isArray(keys))
-      throw new TypeError('Argument "keys" must be an array');
+    if(!Array.isArray(keys)) throw new TypeError('Argument "keys" must be an array');
   }
 
   _assertCallback(callback) {
@@ -183,8 +179,7 @@ export class MultiKeyMap {
   set(keys, value) {
     this._assertKeys(keys);
 
-    if(arguments.length < 2)
-      throw new TypeError('The "value" argument is required');
+    if(arguments.length < 2) throw new TypeError('The "value" argument is required');
 
     const added = this._set(keys, keys, value, this._root);
 

@@ -68,8 +68,7 @@ function parseCommentTag(comment) {
 export function gcodeToObject(gcode) {
   // Valdate input to be of type "string"
   if(typeof gcode !== 'string') {
-    throw new Error(`gcode argument must be of type "string". ${gcode} is type "${typeof gcode}"`
-    );
+    throw new Error(`gcode argument must be of type "string". ${gcode} is type "${typeof gcode}"`);
   }
 
   // Constructing a blank gcode object, with functions
@@ -95,17 +94,14 @@ export function gcodeToObject(gcode) {
       : undefined;
 
   // Set the gcode to lower case and remove any G<number> or M<number> commands
-  const gcodeArgString = gcodeWithoutComment
-    .toLowerCase()
-    .replace(/[gm]\d+/, '');
+  const gcodeArgString = gcodeWithoutComment.toLowerCase().replace(/[gm]\d+/, '');
 
   // Parse each axis for a trailing floating number
   // If no float, treat the axis as a boolean flag
   const axes = 'abcdefghijklmnopqrstuvwxyz'.split('');
   axes.forEach(axis => {
     // In most cases we are looking for an axis followed by a number
-    const axisAndFloatRegex = new RegExp(`${axis}\\s*([+-]?([0-9]*[.])?[0-9]+)`
-    );
+    const axisAndFloatRegex = new RegExp(`${axis}\\s*([+-]?([0-9]*[.])?[0-9]+)`);
     const result = gcodeArgString.match(axisAndFloatRegex);
     if(result) {
       gcodeObject.args[axis] = Number(result[1]);
@@ -125,8 +121,7 @@ export function* parseGcode(data) {
   for(let line of data) {
     let gcodeObj = gcodeToObject(line);
 
-    if(gcodeObj.command !== undefined || Object.keys(gcodeObj.args).length > 0)
-      yield gcodeObj;
+    if(gcodeObj.command !== undefined || Object.keys(gcodeObj.args).length > 0) yield gcodeObj;
   }
 }
 

@@ -18,24 +18,14 @@ export function string(str) {
 }
 
 export function token(str) {
-  let tok =
-    str instanceof RegExp
-      ? regex(str)
-      : typeof str == 'string'
-      ? string(str)
-      : str;
+  let tok = str instanceof RegExp ? regex(str) : typeof str == 'string' ? string(str) : str;
   return one(concat(
       ignore(any(char(' \n\r\t'))),
-      str instanceof RegExp
-        ? regex(str)
-        : typeof str == 'function'
-        ? str
-        : string(str),
+      str instanceof RegExp ? regex(str) : typeof str == 'function' ? str : string(str),
       ignore(any(char(' \n\r\t')))
     )
   );
-  return one(concat(ignore(any(char(' \n\r\t'))), tok /*, ignore(any(char(' \n\r\t')))*/)
-  );
+  return one(concat(ignore(any(char(' \n\r\t'))), tok /*, ignore(any(char(' \n\r\t')))*/));
   return tok;
 }
 
@@ -164,8 +154,7 @@ export function invert(parser) {
  * @return {Function}
  */
 export function regex(re) {
-  if(typeof re == 'string')
-    re = new RegExp('^(?:' + re.source + ')', re.ignoreCase ? 'i' : '');
+  if(typeof re == 'string') re = new RegExp('^(?:' + re.source + ')', re.ignoreCase ? 'i' : '');
 
   return (target, position) => {
     re.lastIndex = 0;
@@ -236,8 +225,7 @@ export function option(parser) {
  */
 export function ignore(parser) {
   return map(parser,
-    result =>
-      null /*(result instanceof Array && result.length == 0) ? null : result*/
+    result => null /*(result instanceof Array && result.length == 0) ? null : result*/
   );
 }
 

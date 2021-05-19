@@ -291,14 +291,7 @@ util.findAxes = function(crossAxe) {
  * @param {string} re - The real axis.
  * @param {string} im - The imaginary axis.
  */
-util.scaleAndRotation = function(center,
-  point,
-  newPoint,
-  angle,
-  length,
-  re,
-  im
-) {
+util.scaleAndRotation = function(center, point, newPoint, angle, length, re, im) {
   let c = center,
     p = point,
     nP = newPoint;
@@ -740,9 +733,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     let bez = [];
     let axes = util.findAxes(that.crossAxe);
 
-    if(that.start[axes.re] === that.end[axes.re] &&
-      that.start[axes.im] === that.end[axes.im]
-    ) {
+    if(that.start[axes.re] === that.end[axes.re] && that.start[axes.im] === that.end[axes.im]) {
       bez = circleToBezier();
     } else {
       bez = arcToBezier();
@@ -850,12 +841,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
         return false;
       }
     } else {
-      center = findCenterWithRadius(start,
-        end,
-        parsedCommand.r * delta,
-        clockwise,
-        crossAxe
-      );
+      center = findCenterWithRadius(start, end, parsedCommand.r * delta, clockwise, crossAxe);
       if(center === false) {
         return false;
       }
@@ -893,9 +879,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
       max = { x: 0, y: 0, z: 0 };
 
     // Is circle
-    if(that.start[axes.re] === that.end[axes.re] &&
-      that.start[axes.im] === that.end[axes.im]
-    ) {
+    if(that.start[axes.re] === that.end[axes.re] && that.start[axes.im] === that.end[axes.im]) {
       min[axes.re] = that.center[axes.re] - radius;
       min[axes.im] = that.center[axes.im] - radius;
       min[axes.cr] = Math.min(that.start[axes.cr], that.end[axes.cr]);
@@ -1131,8 +1115,7 @@ let GParser = (function () {
 
     if('startRule' in options) {
       if(!(options.startRule in peg$startRuleFunctions)) {
-        throw new Error('Can\'t start parsing from rule "' + options.startRule + '".'
-        );
+        throw new Error('Can\'t start parsing from rule "' + options.startRule + '".');
       }
 
       peg$startRuleFunction = peg$startRuleFunctions[options.startRule];
@@ -1155,10 +1138,7 @@ let GParser = (function () {
     }
 
     function expected(description) {
-      throw peg$buildException(null,
-        [{ type: 'other', description }],
-        peg$reportedPos
-      );
+      throw peg$buildException(null, [{ type: 'other', description }], peg$reportedPos);
     }
 
     function error(message) {
@@ -1267,9 +1247,7 @@ let GParser = (function () {
 
         expectedDesc =
           expected.length > 1
-            ? expectedDescs.slice(0, -1).join(', ') +
-              ' or ' +
-              expectedDescs[expected.length - 1]
+            ? expectedDescs.slice(0, -1).join(', ') + ' or ' + expectedDescs[expected.length - 1]
             : expectedDescs[0];
 
         foundDesc = found ? '"' + stringEscape(found) + '"' : 'end of input';
@@ -2308,8 +2286,7 @@ let GParser = (function () {
                                       }
                                     }
                                     if(s0 === peg$FAILED) {
-                                      if(input.charCodeAt(peg$currPos) === 84
-                                      ) {
+                                      if(input.charCodeAt(peg$currPos) === 84) {
                                         s0 = peg$c105;
                                         peg$currPos++;
                                       } else {
@@ -2319,8 +2296,7 @@ let GParser = (function () {
                                         }
                                       }
                                       if(s0 === peg$FAILED) {
-                                        if(input.charCodeAt(peg$currPos) === 88
-                                        ) {
+                                        if(input.charCodeAt(peg$currPos) === 88) {
                                           s0 = peg$c107;
                                           peg$currPos++;
                                         } else {
@@ -2330,8 +2306,7 @@ let GParser = (function () {
                                           }
                                         }
                                         if(s0 === peg$FAILED) {
-                                          if(input.charCodeAt(peg$currPos) === 89
-                                          ) {
+                                          if(input.charCodeAt(peg$currPos) === 89) {
                                             s0 = peg$c109;
                                             peg$currPos++;
                                           } else {
@@ -2341,9 +2316,7 @@ let GParser = (function () {
                                             }
                                           }
                                           if(s0 === peg$FAILED) {
-                                            if(input.charCodeAt(peg$currPos) ===
-                                              90
-                                            ) {
+                                            if(input.charCodeAt(peg$currPos) === 90) {
                                               s0 = peg$c111;
                                               peg$currPos++;
                                             } else {
@@ -2473,8 +2446,7 @@ export default function parse(code) {
     for(j = parameters.length - 1; j >= 0; j--) {
       for(i = acceptedParameters.length - 1; i >= 0; i--) {
         accepted = false;
-        if(parameters[j].toUpperCase() === acceptedParameters[i].toUpperCase()
-        ) {
+        if(parameters[j].toUpperCase() === acceptedParameters[i].toUpperCase()) {
           accepted = true;
           acceptedParameters.splice(i, 1);
           break;
@@ -2530,11 +2502,7 @@ export default function parse(code) {
     let c = command;
     let consideredFeedrate = c.f === undefined ? settings.feedrate : c.f;
 
-    if(c.type !== undefined &&
-      c.type !== 'G1' &&
-      c.type !== 'G2' &&
-      c.type !== 'G3'
-    ) {
+    if(c.type !== undefined && c.type !== 'G1' && c.type !== 'G2' && c.type !== 'G3') {
       return false;
     }
 
@@ -2545,8 +2513,7 @@ export default function parse(code) {
     if(consideredFeedrate < 0) {
       errorList.push(createError(
           line,
-          '(warning) Cannot use a negative feed rate ' +
-            '(the absolute value is used).',
+          '(warning) Cannot use a negative feed rate ' + '(the absolute value is used).',
           false
         )
       );
@@ -2554,8 +2521,7 @@ export default function parse(code) {
       return false;
     }
 
-    errorList.push(createError(line, '(error) Cannot use a null feed rate (skipped).', true)
-    );
+    errorList.push(createError(line, '(error) Cannot use a null feed rate (skipped).', true));
     settings.feedrate = 0;
 
     return true;
@@ -2628,8 +2594,7 @@ export default function parse(code) {
     parameters.splice(parameters.indexOf('type'), 1);
 
     if(checkWrongParameter(acceptedParameters, parameters) === true) {
-      errorList.push(createError(line, '(warning) Some parameters are wrong.', false)
-      );
+      errorList.push(createError(line, '(warning) Some parameters are wrong.', false));
     }
     return true;
   }
@@ -2648,8 +2613,7 @@ export default function parse(code) {
     parameters.splice(parameters.indexOf('type'), 1);
 
     if(checkWrongParameter(acceptedParameters, parameters) === true) {
-      errorList.push(createError(line, '(warning) Some parameters are wrong.', false)
-      );
+      errorList.push(createError(line, '(warning) Some parameters are wrong.', false));
     }
 
     return !checkErrorFeedrate(command, errorList, line, previousFeedrate);
@@ -2669,8 +2633,7 @@ export default function parse(code) {
     parameters.splice(parameters.indexOf('type'), 1);
 
     if(checkWrongParameter(acceptedParameters, parameters) === true) {
-      errorList.push(createError(line, '(warning) Some parameters are wrong.', false)
-      );
+      errorList.push(createError(line, '(warning) Some parameters are wrong.', false));
     }
 
     if(command.r === undefined &&
@@ -2678,21 +2641,14 @@ export default function parse(code) {
       command.j === undefined &&
       command.k === undefined
     ) {
-      errorList.push(createError(line, '(error) No parameter R, I, J or K.', true)
-      );
+      errorList.push(createError(line, '(error) No parameter R, I, J or K.', true));
       return false;
     }
 
     if(command.r !== undefined &&
-      (command.i !== undefined ||
-        command.j !== undefined ||
-        command.k !== undefined)
+      (command.i !== undefined || command.j !== undefined || command.k !== undefined)
     ) {
-      errorList.push(createError(
-          line,
-          '(error) Cannot use R and I, J or K at the same time.',
-          true
-        )
+      errorList.push(createError(line, '(error) Cannot use R and I, J or K at the same time.', true)
       );
       return false;
     }
@@ -2710,17 +2666,8 @@ export default function parse(code) {
    * @param  {object}  errorList  The error list
    */
   function manageG0G1(command, settings, lineNumber, lines, totalSize) {
-    let nextPosition = findPosition(settings.position,
-      command,
-      settings.relative,
-      settings.inMm
-    );
-    let line = new StraightLine(lineNumber,
-      settings.position,
-      nextPosition,
-      command,
-      settings
-    );
+    let nextPosition = findPosition(settings.position, command, settings.relative, settings.inMm);
+    let line = new StraightLine(lineNumber, settings.position, nextPosition, command, settings);
     settings.previousMoveCommand = command.type;
     checkTotalSize(totalSize, line.getSize());
     lines.push(line.returnLine());
@@ -2739,29 +2686,13 @@ export default function parse(code) {
    * @param  {object}  totalSize  The the whole operation size (modified)
    * @param  {object}  errorList  The error list
    */
-  function manageG2G3(command,
-    settings,
-    lineNumber,
-    lines,
-    totalSize,
-    errorList
-  ) {
-    let nextPosition = findPosition(settings.position,
-      command,
-      settings.relative,
-      settings.inMm
-    );
-    let line = new CurvedLine(lineNumber,
-      settings.position,
-      nextPosition,
-      command,
-      settings
-    );
+  function manageG2G3(command, settings, lineNumber, lines, totalSize, errorList) {
+    let nextPosition = findPosition(settings.position, command, settings.relative, settings.inMm);
+    let line = new CurvedLine(lineNumber, settings.position, nextPosition, command, settings);
     if(line.center !== false) {
       let temp = line.returnLine();
       if(temp === false) {
-        errorList.push(createError(lineNumber, '(error) Impossible to create arc.', true)
-        );
+        errorList.push(createError(lineNumber, '(error) Impossible to create arc.', true));
         return;
       }
       settings.feedrate = line.feedrate;
@@ -2770,11 +2701,7 @@ export default function parse(code) {
       lines.push(temp);
       settings.position = util.copyObject(line.end);
     } else {
-      errorList.push(createError(
-          lineNumber,
-          '(error) Physically impossible to do with those values.',
-          true
-        )
+      errorList.push(createError(lineNumber, '(error) Physically impossible to do with those values.', true)
       );
     }
   }
@@ -2789,13 +2716,7 @@ export default function parse(code) {
    * @param  {object}  errorList  The error list
    * @return {bool}  Returns true if have to continue, else false
    */
-  function manageCommand(command,
-    settings,
-    lineNumber,
-    lines,
-    totalSize,
-    errorList
-  ) {
+  function manageCommand(command, settings, lineNumber, lines, totalSize, errorList) {
     //Empty line
     if(command.type === undefined && Object.keys(command).length === 0) {
       return true;
@@ -2808,9 +2729,7 @@ export default function parse(code) {
         checkErrorFeedrate(command, errorList, lineNumber, settings.feedrate);
         settings.feedrate = command.f;
       }
-    } else if(command.type === 'G0' &&
-      checkG0(command, errorList, lineNumber) === true
-    ) {
+    } else if(command.type === 'G0' && checkG0(command, errorList, lineNumber) === true) {
       manageG0G1(command, settings, lineNumber, lines, totalSize);
     } else if(command.type === 'G1' &&
       checkG1(command, errorList, lineNumber, settings) === true
@@ -2886,21 +2805,14 @@ export default function parse(code) {
 
     j = 0;
     while(j < tabRes.length && parsing === true) {
-      parsing = manageCommand(tabRes[j],
-        settings,
-        i + 1,
-        lines,
-        totalSize,
-        errorList
-      );
+      parsing = manageCommand(tabRes[j], settings, i + 1, lines, totalSize, errorList);
       j++;
     }
     i++;
   }
 
   if(i < gcode.length) {
-    errorList.push(createError(i + 1, '(warning) The next code is not executed.', false)
-    );
+    errorList.push(createError(i + 1, '(warning) The next code is not executed.', false));
   }
 
   return {
