@@ -1067,6 +1067,7 @@ export class ECMAScriptParser extends Parser {
       '*',
       '/',
       '%',
+      '**',
       '??'
     ];
     const result = this.parseUnaryExpression();
