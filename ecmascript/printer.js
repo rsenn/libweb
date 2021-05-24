@@ -277,6 +277,12 @@ export class Printer {
     return output;
   }
 
+  printChainExpression(chain_expression) {
+    const { expression } = chain_expression;
+
+    return this.printNode(expression);
+  }
+
   printMemberExpression(member_expression) {
     const { object, property, computed, optional } = member_expression;
     const { colorText, colorCode } = this;
@@ -976,7 +982,7 @@ export class Printer {
     const { elements } = array_literal;
     let output = this.colorCode.punctuators() + '[ ';
 
-    output += elements.map(elem => this.printNode(elem)).join(', ');
+    output += elements.map(elem => (elem === null ? '' : this.printNode(elem))).join(', ');
     output += this.colorCode.punctuators(output) + ' ]';
 
     return output;
@@ -1036,6 +1042,8 @@ export class Printer {
       .map(element => (element ? this.printNode(element) : ''))
       .join(colorCode.punctuators() + ', ');
 
+    / blah /;
+
     return colorCode.punctuators() + `[ ${output} ${colorCode.punctuators()}]`;
   }
 
@@ -1073,6 +1081,12 @@ export class Printer {
   printRestElement(rest_element) {
     const { argument } = rest_element;
     return `...${this.printNode(argument)}`;
+  }
+
+  printMetaProperty(meta_property) {
+    const { meta, identifier } = meta_property;
+
+    return this.printNode(meta) + '.' + this.printNode(identifier);
   }
 }
 

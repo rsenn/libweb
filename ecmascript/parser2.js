@@ -11,7 +11,7 @@ import * as deep from '../deep.js';
 //import util from 'util';
 import { TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, Expression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
+import { ESNode, Program, Expression, ChainExpression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -449,12 +449,17 @@ export class ECMAScriptParser extends Parser {
    * Helper Functions
    */
 
-  expectIdentifier(no_keyword = false) {
+  expectIdentifier(no_keyword = false, private_id = false) {
     //this.log(`expectIdentifier(no_keyword=${no_keyword})`);
     const token = this.consume();
 
     if(token.type != 'nullLiteral')
-      if(!(token.type === 'identifier' || (no_keyword && token.type == 'keyword'))) {
+      if(!(
+          token.type === 'identifier' ||
+          (private_id && token.type === 'privateIdentifier') ||
+          (no_keyword && token.type == 'keyword')
+        )
+      ) {
         throw new Error(`Expecting <Identifier> but got <${token.type}> with value '${token.value}'`
         );
       }
@@ -618,10 +623,13 @@ export class ECMAScriptParser extends Parser {
     return ret;
   }
 
-  matchIdentifier(no_keyword = false) {
+  matchIdentifier(no_keyword = false, private_id = false) {
     this.trace('matchIdentifier', { no_keyword });
     const token = this.next();
-    return token.type === 'identifier' || (no_keyword && token.type === 'keyword');
+    return (token.type === 'identifier' ||
+      (private_id && token.type == 'privateIdentifier') ||
+      (no_keyword && token.type === 'keyword')
+    );
   }
 
   matchLiteral() {
@@ -865,20 +873,18 @@ export class ECMAScriptParser extends Parser {
         const expression = this.parseExpression(true);
         this.expectPunctuators([']']);
         object = this.addNode(MemberExpression, object, expression, true, optional);
-        continue;
-      }
-      if(optional && this.matchPunctuators(['('])) {
+      } else if(optional && this.matchPunctuators(['('])) {
         object = this.parseRemainingCallExpression(object, false, true);
-        continue;
-      }
-      if(optional || this.matchPunctuators(['.'])) {
+      } else if(optional || this.matchPunctuators(['.'])) {
         if(!optional) this.expectPunctuators(['.']);
-        const identifier = this.expectIdentifier(true);
+        const identifier = this.expectIdentifier(true, object instanceof ThisExpression);
         if(object === null) throw new Error('Object ' + object);
         if(object instanceof Identifier && (object.name == 'new' || object.name == 'import'))
           object = this.addNode(MetaProperty, object, identifier);
         else object = this.addNode(MemberExpression, object, identifier, false, optional);
       }
+
+      if(object.optional === true) object = new ChainExpression(object);
     }
     return object;
   }
@@ -1169,7 +1175,10 @@ export class ECMAScriptParser extends Parser {
         '-->>=',
         '&=',
         '^=',
-        '|='
+        '|=',
+        '??=',
+        '||=',
+        '&&='
       ];
       if(this.matchPunctuators(assignmentOperators) ||
         assignmentOperators.indexOf(this.token.value) != -1
@@ -1380,6 +1389,7 @@ export class ECMAScriptParser extends Parser {
   parseObject(isClass = false, args = []) {
     //let ctor = ObjectExpression;
     let ctor = isClass ? ClassDeclaration : ObjectExpression;
+    const parser = this;
     this.trace('parseObject', ctor, isClass);
     //this.log(`parseObject()`);
     let properties = [];
@@ -1424,8 +1434,8 @@ export class ECMAScriptParser extends Parser {
           is_generator = true;
         }
         if(!member) {
-          if(this.matchIdentifier(true)) {
-            member = this.expectIdentifier(true);
+          if(this.matchIdentifier(true, isClass)) {
+            member = this.expectIdentifier(true, isClass);
           } else if(this.matchPunctuators(['['])) {
             this.expectPunctuators(['[']);
             member = this.parseAssignmentExpression();
@@ -1502,9 +1512,17 @@ export class ECMAScriptParser extends Parser {
     if(this.matchPunctuators(['?.', '.'])) ret = this.parseRemainingMemberExpression(ret);
 
     function BindingProperty(property, id, initializer) {
-      let shorthand = id === property;
-      if(initializer) id = this.addNode(AssignmentPattern, id, initializer);
-      return this.addNode(AssignmentProperty, property, id, shorthand);
+      let shorthand = (id ?? property) === property;
+      console.log('BindingProperty', { id, initializer, property, shorthand });
+      if(initializer &&
+        !(initializer instanceof Identifier &&
+          property instanceof Identifier &&
+          Identifier.string(initializer) == Identifier.string(property)
+        )
+      ) {
+        id = parser.addNode(AssignmentPattern, id ?? property, initializer);
+      }
+      return parser.addNode(AssignmentProperty, property, id ?? property, shorthand);
     }
     return ret;
   }
@@ -1519,6 +1537,12 @@ export class ECMAScriptParser extends Parser {
     while(!this.matchPunctuators([']'])) {
       let spread = false,
         element;
+
+      if(this.matchPunctuators([','])) {
+        this.expectPunctuators([',']);
+        members.push(null);
+        continue;
+      }
 
       if(this.matchPunctuators(['...'])) {
         this.expectPunctuators(['...']);
