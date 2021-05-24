@@ -556,7 +556,8 @@ export class ECMAScriptParser extends Parser {
 
       const do_expression = token.lexeme.endsWith('${');
 
-      const raw = do_expression ? token.lexeme.slice(0, -2) : token.lexeme;
+      let raw = do_expression ? token.lexeme.slice(0, -2) : token.lexeme;
+      raw = raw.slice(raw.startsWith('`') ? 1 : 0, raw.endsWith('`') ? -1 : raw.length);
 
       const cooked = raw.replace(/\\n/g, '\n');
 

@@ -4,10 +4,11 @@ import { toXML } from './util.js';
 export function DereferenceError(object, member, pos, prev, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
   let stack = Util.getCallerStack()
-    .filter(frame => null !== frame.getFileName())
+    .filter(frame => null !== frame.fileName)
     .map(frame => {
-      let method = frame.getMethodName();
-      if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
+      console.log('frame', frame);
+      let method = frame.methodName;
+      if(method) method = (frame.typeName || Util.className(frame.thisObj)) + '.' + method;
       else method = frame.getFunctionName();
 
       return `${('' + frame.getFileName()).replace(/.*plot-cv\//,

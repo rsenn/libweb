@@ -1507,7 +1507,9 @@ Util.inspect = function(obj, opts = {}) {
     ...opts
   };
 
-  if(Util == obj) return Util;
+  try {
+    if(Util == obj) return Util;
+  } catch(e) {}
   //console.log("Util.inspect", {quote,colors,multiline,json})
 
   let out;
@@ -3760,11 +3762,18 @@ Util.define(Util.location.prototype, {
 
 Util.stackFrame = function StackFrame(frame) {
   //   console.debug('Util.stackFrame', frame, frame.getFunctionName, frame.getFileName);
-  ['methodName', 'functionName', 'fileName', 'lineNumber', 'columnNumber', 'typeName'].forEach(prop => {
-      let fn = 'get' + Util.ucfirst(prop);
-      if(frame[prop] === undefined && typeof frame[fn] == 'function') frame[prop] = frame[fn]();
-    }
-  );
+  [
+    'methodName',
+    'functionName',
+    'fileName',
+    'lineNumber',
+    'columnNumber',
+    'typeName',
+    'thisObj'
+  ].forEach(prop => {
+    let fn = prop == 'thisObj' ? 'getThis' : 'get' + Util.ucfirst(prop);
+    if(frame[prop] === undefined && typeof frame[fn] == 'function') frame[prop] = frame[fn]();
+  });
   if(Util.colorCtor) frame.colorCtor = Util.colorCtor;
 
   return Object.setPrototypeOf(frame, Util.stackFrame.prototype);
@@ -3792,7 +3801,9 @@ Util.define(Util.stackFrame, {
 });
 Util.memoizedProperties(Util.stackFrame, {
   propertyMap() {
-    return this.methodNames.map(method => [method, Util.lcfirst(method.replace(/^get/, ''))]);
+    return this.methodNames
+      .map(method => [method, Util.lcfirst(method.replace(/^get/, ''))])
+      .map(([method, func]) => [method, func == 'this' ? 'thisObj' : func]);
   }
 });
 
