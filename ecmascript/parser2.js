@@ -856,48 +856,30 @@ export class ECMAScriptParser extends Parser {
 
   parseRemainingMemberExpression(object) {
     this.trace('parseRemainingMemberExpression(1)', { object });
-    //console.log('parseRemainingMemberExpression(1)', { object });
     while(this.matchPunctuators(['.', '[', '?.'])) {
       let optional;
-
       optional = this.matchPunctuators(['?.']);
-
-      //console.log(`lookahead(${optional ? 1 : 0})`, this.lookahead(optional ? 1 : 0));
-
       if(optional) this.expectPunctuators(['?.']);
-
       if(this.matchPunctuators(['['])) {
         this.expectPunctuators(['[']);
         const expression = this.parseExpression(true);
-        //console.log('parseRemainingMemberExpression(2)', { expression });
         this.expectPunctuators([']']);
         object = this.addNode(MemberExpression, object, expression, true, optional);
         continue;
       }
-
-      //console.log(`lookahead(${optional ? 0 : 1})`, this.lookahead(optional ? 0 : 1));
-
       if(optional && this.matchPunctuators(['('])) {
         object = this.parseRemainingCallExpression(object, false, true);
         continue;
       }
-
       if(optional || this.matchPunctuators(['.'])) {
         if(!optional) this.expectPunctuators(['.']);
-        //console.log('tokens:', [...this.processed,...this.tokens].slice(-3));
-
         const identifier = this.expectIdentifier(true);
-
         if(object === null) throw new Error('Object ' + object);
-
         if(object instanceof Identifier && (object.name == 'new' || object.name == 'import'))
           object = this.addNode(MetaProperty, object, identifier);
         else object = this.addNode(MemberExpression, object, identifier, false, optional);
-
-        //this.log('parseRemainingMemberExpression2(', object.toString(), ')', Util.fnName(this.parseRemainingMemberExpression));
       }
     }
-    //console.log('parseRemainingMemberExpression(3)', { object });
     return object;
   }
 
