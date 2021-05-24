@@ -858,16 +858,35 @@ export class ECMAScriptParser extends Parser {
     this.trace('parseRemainingMemberExpression(1)', { object });
     //console.log('parseRemainingMemberExpression(1)', { object });
     while(this.matchPunctuators(['.', '[', '?.'])) {
-      if(this.matchPunctuators(['.', '?.'])) {
-        const optional = this.matchPunctuators(['?.']);
+      let optional;
 
-        this.expectPunctuators(['.', '?.']);
+      optional = this.matchPunctuators(['?.']);
+
+      //console.log(`lookahead(${optional ? 1 : 0})`, this.lookahead(optional ? 1 : 0));
+
+      if(optional) this.expectPunctuators(['?.']);
+
+      if(this.matchPunctuators(['['])) {
+        this.expectPunctuators(['[']);
+        const expression = this.parseExpression(true);
+        //console.log('parseRemainingMemberExpression(2)', { expression });
+        this.expectPunctuators([']']);
+        object = this.addNode(MemberExpression, object, expression, true, optional);
+        continue;
+      }
+
+      //console.log(`lookahead(${optional ? 0 : 1})`, this.lookahead(optional ? 0 : 1));
+
+      if(optional && this.matchPunctuators(['('])) {
+        object = this.parseRemainingCallExpression(object, false, true);
+        continue;
+      }
+
+      if(optional || this.matchPunctuators(['.'])) {
+        if(!optional) this.expectPunctuators(['.']);
         //console.log('tokens:', [...this.processed,...this.tokens].slice(-3));
 
         const identifier = this.expectIdentifier(true);
-
-        /* console.log('object:', object);
-        //console.log('identifier:', identifier);*/
 
         if(object === null) throw new Error('Object ' + object);
 
@@ -876,12 +895,6 @@ export class ECMAScriptParser extends Parser {
         else object = this.addNode(MemberExpression, object, identifier, false, optional);
 
         //this.log('parseRemainingMemberExpression2(', object.toString(), ')', Util.fnName(this.parseRemainingMemberExpression));
-      } else if(this.matchPunctuators(['['])) {
-        this.expectPunctuators(['[']);
-        const expression = this.parseExpression(true);
-        //console.log('parseRemainingMemberExpression(2)', { expression });
-        this.expectPunctuators([']']);
-        object = this.addNode(MemberExpression, object, expression, true);
       }
     }
     //console.log('parseRemainingMemberExpression(3)', { object });
@@ -912,7 +925,7 @@ export class ECMAScriptParser extends Parser {
     return this.addNode(ArrowFunctionExpression, args, body, is_async);
   }
 
-  parseRemainingCallExpression(object, is_async = false) {
+  parseRemainingCallExpression(object, is_async = false, optional = false) {
     this.trace('parseRemainingCallExpression');
     /* let args = this.parseArguments();
 
@@ -936,7 +949,7 @@ export class ECMAScriptParser extends Parser {
       } else if(this.matchPunctuators(['('])) {
         let args = this.parseArguments();
         if(this.matchPunctuators(['=>'])) object = this.parseArrowFunction(args, is_async);
-        else object = this.addNode(CallExpression, object, args);
+        else object = this.addNode(CallExpression, object, args, optional);
       } else if(this.matchTemplateLiteral()) {
         let arg = this.parseTemplateLiteral();
 

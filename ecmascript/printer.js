@@ -297,7 +297,14 @@ export class Printer {
 
     if(!computed)
       return left + colorText.punctuators(punctuator) + colorCode.identifiers() + right;
-    return left + colorCode.punctuators(left) + '[' + right + colorCode.punctuators() + ']';
+    return (left +
+      colorCode.punctuators(left) +
+      (optional ? '?.' : '') +
+      '[' +
+      right +
+      colorCode.punctuators() +
+      ']'
+    );
   }
 
   printConditionalExpression(conditional_expression) {
@@ -313,7 +320,7 @@ export class Printer {
   }
 
   printCallExpression(call_expression) {
-    const { arguments: args, callee } = call_expression;
+    const { arguments: args, callee, optional = false } = call_expression;
     //console.log("args:", util.inspect(args, { depth: Infinity, breakLength: 1000 }));
 
     if(args instanceof TemplateLiteral)
@@ -323,6 +330,7 @@ export class Printer {
 
     return (fn +
       this.colorCode.punctuators(fn) +
+      (optional ? '?.' : '') +
       '(' +
       args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') +
       this.colorCode.punctuators() +

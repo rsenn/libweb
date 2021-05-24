@@ -304,7 +304,15 @@ export class MemberExpression extends Expression {
     this.object = object;
     this.property = property;
     this.computed = computed;
-    this.optional = optional;
+
+    if(optional) this.optional = optional;
+  }
+}
+
+export class ChainExpression extends Expression {
+  constructor(expression) {
+    super('ChainExpression');
+    this.expression = expression;
   }
 }
 
@@ -318,10 +326,12 @@ export class ConditionalExpression extends Expression {
 }
 
 export class CallExpression extends Expression {
-  constructor(callee, args) {
+  constructor(callee, args, optional = false) {
     super('CallExpression');
     this.callee = callee;
     this.arguments = args;
+
+    if(optional) this.optional = true;
   }
 }
 
@@ -816,6 +826,7 @@ export const CTORS = {
   AssignmentExpression,
   LogicalExpression,
   MemberExpression,
+  ChainExpression,
   ConditionalExpression,
   CallExpression,
   DecoratorExpression,
