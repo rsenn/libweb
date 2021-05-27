@@ -294,7 +294,7 @@ export class Parser {
         // this.trace('token:', token);
         if(token.type == 'whitespace') continue;
         if(token.type == 'comment') continue;
-        token.stack = globalThis.GetStack(null, fr => !/esfactory/.test(fr) );
+        token.stack = globalThis.GetStack(null, fr => !/esfactory/.test(fr));
       }
       break;
     }
@@ -2547,7 +2547,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     ret = methods[methodName].call(this, ...args);
 
-    let { token, consumed = 0, numToks = 0 } = this; 
+    let { token, consumed = 0, numToks = 0 } = this;
     let lastTok = this.tokenIndex - this.tokens.length;
 
     entry.end = lastTok;
@@ -2559,45 +2559,12 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     if(this.debug > 1) {
       let end = (token && token.pos) || lexer.pos;
+
       Debug(position, end);
     }
-
-
-      let annotate = [];
-      let objectStr = ret ? Object2Str(ret) : '';
-
-      if(end) {
-        let parsed = lexer.source.substring(parser.numToks ?? 0, end);
-        parser.consumed = end;
-        if(parsed.length) parsed = parsed.replace(linebreak, '\\n');
-        let lexed = parser.processed.slice(parser.consumed ?? 0);
-        parser.numToks = parser.tokenIndex - parser.tokens.length;
-        if(lexed.length)
-          annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`);
-        annotate.push(`returned: ${objectStr}`);
-      }
-
-      /*
-      if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
-    nodes.splice(0, nodes.length);*/
-      if(annotate.length) {
-        msg = msg + '    ' + annotate.join(', ');
-      }
-      if(ret || !/match/.test(methodName)) console.log(msg);
-    }
-
-      function Object2Str(obj) {
-        if('ast' in obj) obj = { ...obj, ast: Object2Str(obj.ast) };
-        if('object' in obj) obj = { ...obj, object: Object2Str(obj.object) };
-        let s = typeof obj == 'object' ? Util.className(obj) : obj;
-        if(s == 'Object' || !(obj instanceof ESNode)) s = inspect(obj, { depth: 0, compact: 100 });
-        if(obj instanceof Literal) s += ` ${obj.value}`;
-        if(obj instanceof Identifier) s += ` ${obj.name}`;
-        return s;
-      }
-
     function Debug(position, end) {
       let msg = ('' + position.toString(false)).padEnd((position.file || '').length + 8);
+
       let argstr =
         args.length > 0
           ? `(${args
@@ -2613,8 +2580,47 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       msg += ` ${(depth + '').padStart(4)} ${
         (end == undefined ? 'ENTER' : 'LEAVE') + ' ' + (methodName + argstr).padEnd(32)
       }`;
- 
- 
+
+      //    msg += ` ${quoteList(tokens || [])}`
+
+      //msg += `  ${quoteArg(args)}`;
+
+      let annotate = [];
+      let objectStr = ret ? Object2Str(ret) : '';
+
+      function Object2Str(obj) {
+        if('ast' in obj) obj = { ...obj, ast: Object2Str(obj.ast) };
+        if('object' in obj) obj = { ...obj, object: Object2Str(obj.object) };
+
+        let s = typeof obj == 'object' ? Util.className(obj) : obj;
+        if(s == 'Object' || !(obj instanceof ESNode)) s = inspect(obj, { depth: 0, compact: 100 });
+
+        if(obj instanceof Literal) s += ` ${obj.value}`;
+        if(obj instanceof Identifier) s += ` ${obj.name}`;
+        return s;
+      }
+
+      if(end) {
+        let parsed = lexer.source.substring(parser.numToks ?? 0, end);
+        parser.consumed = end;
+        if(parsed.length) parsed = parsed.replace(linebreak, '\\n');
+        let lexed = parser.processed.slice(parser.consumed ?? 0);
+        parser.numToks = parser.tokenIndex - parser.tokens.length;
+
+        if(lexed.length)
+          annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`
+          );
+        annotate.push(`returned: ${objectStr}`);
+      }
+
+      /*
+      if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
+    nodes.splice(0, nodes.length);*/
+      if(annotate.length) {
+        msg = msg + '    ' + annotate.join(', ');
+      }
+      if(ret || !/match/.test(methodName)) console.log(msg);
+    }
     depth--;
     return ret;
   };
