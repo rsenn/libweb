@@ -8,12 +8,16 @@ export { Lexer, SyntaxError, Location, Token } from './lexer.js';
 export { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';*/
 
 import * as deep from '../deep.js';
+import { Stack, StackFrame } from '../../stack.js';
 //import util from 'util';
 import { TokenList } from './token.js';
 import { Printer } from './printer.js';
 import { ESNode, Program, Expression, ChainExpression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
-
+const symbols = {
+  enter: '⬊',
+  leave: '⬁'
+};
 const add = (arr, ...items) => [...(arr || []), ...items];
 const linebreak = new RegExp('\\r?\\n', 'g');
 
@@ -34,7 +38,7 @@ function GetStack(stack, cond, max = Infinity) {
 globalThis.GetStack = GetStack;
 
 export class Parser {
-  lastPos = new Location(1, 1);
+  lastPos = new Location(null, 1, 1);
   lastTok = 0;
   nodeTokenMap = new WeakMap();
   debug = () => {};
@@ -100,7 +104,7 @@ export class Parser {
                 let ret = arg;
                 let last = locStack[locStack.length - 1];
                 if(last[0] == name) locStack.pop();
-                console.log(`LEAVE[${locStack.length}]`,
+                console.log(`${symbols.leave}[${locStack.length}]`,
                   (token ?? lexer).loc + '',
                   inspect({ name, ret }, { depth: 2, breakLength: Infinity, compact: 10 })
                 );
@@ -117,7 +121,7 @@ export class Parser {
                     prevStack = st;
                   }
                 }
-                console.log(`ENTER[${locStack.length}]`,
+                console.log(`${symbols.enter}[${locStack.length}]`,
                   (token ?? lexer).loc + '',
                   inspect({ name, arg }, { compact: 10 })
                 );
@@ -266,12 +270,8 @@ export class Parser {
   //Returns the next token
   next() {
     let token;
-    if(this.tokens.length > 0) {
-      token = this.tokens[0];
-    } else {
-      token = this.gettok();
-    }
-    if(!token)
+
+    if(!(token = this.tokens[0] ?? this.gettok()))
       return (this.token = {
         type: 'eof',
         id: -1,
@@ -285,6 +285,15 @@ export class Parser {
     return token;
   }
 
+  revert() {
+    const { lexer, tokens } = this;
+    let to;
+    if((to = tokens[0])) {
+      lexer.back(to.loc);
+
+      tokens.splice(0, tokens.length);
+    }
+  }
   gettok(state) {
     let token;
 
@@ -294,14 +303,15 @@ export class Parser {
         // this.trace('token:', token);
         if(token.type == 'whitespace') continue;
         if(token.type == 'comment') continue;
-        token.stack = globalThis.GetStack(null, fr => !/esfactory/.test(fr));
+        Object.defineProperty(token, 'stack', {
+          value: new Stack(null, (fr, i) => !/esfactory/.test(fr) && i > 2),
+          enumerable: false
+        });
       }
       break;
     }
     if(!token) return token;
-
     this.tokens.push(token);
-
     return token;
   }
 
@@ -362,8 +372,7 @@ export class Parser {
     console.log.apply(console, [
       posstr + Util.pad(posstr, this.prefix.length + 8),
       name + Util.pad(name, width),
-      this.printtoks(),
-      'stack: ' + stack.indexOf('parseProgram')
+      this.printtoks()
     ]);
   }
 
@@ -771,18 +780,9 @@ export class ECMAScriptParser extends Parser {
       expr = this.parseArray();
     } else if(!is_async && this.matchPunctuators(['<'])) {
       expr = this.parseJSX();
-      /*    } else if(this.matchTemplateLiteral()) {
-      expr = this.parseTemplateLiteral();*/
     } else if(!is_async && (this.matchLiteral() || this.matchTemplateLiteral())) {
       if(this.matchTemplateLiteral()) expr = this.parseTemplateLiteral();
-      else {
-        expr = this.expectLiteral();
-        //console.log('parsePrimaryExpression', { expr });
-      }
-
-      /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
-      this.expectIdentifier("super");
-      expr = new Identifier("super");*/
+      else expr = this.expectLiteral();
     } else if(this.matchKeywords('super')) {
       this.expectKeywords('super');
       expr = this.addNode(Super);
@@ -793,9 +793,10 @@ export class ECMAScriptParser extends Parser {
 
       let expression = [];
       let parentheses = this.matchPunctuators(['(']);
-      // if(parentheses) this.expectPunctuators(['(']);
 
       if(!this.matchPunctuators([')'])) expression = this.parseExpression(false, true);
+      console.log('expression:', expression);
+      console.log('this.next():', this.next());
 
       this.expectPunctuators([')']);
 
@@ -991,7 +992,11 @@ export class ECMAScriptParser extends Parser {
       }
     } else {
       //  console.log('parseNewOrCallOrMemberExpression', { token: this.next() });
+      this.lexer.pushState('NOREGEX');
+
       object = this.parsePrimaryExpression();
+      this.lexer.popState('NOREGEX');
+
       //console.log('parseNewOrCallOrMemberExpression', { object });
     }
     object = this.parseRemainingMemberExpression(object);
@@ -1097,7 +1102,6 @@ export class ECMAScriptParser extends Parser {
     let { ast, lhs } = result;
 
     this.lexer.pushState('NOREGEX');
-
     this.matchPunctuators(punctuators);
     this.lexer.popState('NOREGEX');
 
@@ -1175,42 +1179,38 @@ export class ECMAScriptParser extends Parser {
     //come across things that cannot be in LeftHandSideExpression.
     const result = this.parseConditionalExpression();
 
-    if(this.matchPunctuators(['}'])) {
-      return result.ast;
-      //throw new Error(`${this.position()}`);
-    }
-
-    if(result.lhs) {
-      //Once it is determined that the parse result yielded
-      //LeftHandSideExpression though, then we can parse the remaining
-      //AssignmentExpression with that knowledge
-      const assignmentOperators = [
-        '=',
-        '*=',
-        '/=',
-        '%=',
-        '+=',
-        '-=',
-        '<<=',
-        '>>=',
-        '>>>=',
-        '-->>=',
-        '&=',
-        '^=',
-        '|=',
-        '??=',
-        '||=',
-        '&&='
-      ];
-      if(this.matchPunctuators(assignmentOperators) ||
-        assignmentOperators.indexOf(this.token.value) != -1
-      ) {
-        const left = result.ast;
-        const operatorToken = this.expectPunctuators(assignmentOperators);
-        const right = this.parseExpression();
-        return this.addNode(AssignmentExpression, operatorToken.value, left, right);
+    if(!this.matchPunctuators(['}'])) {
+      if(result.lhs) {
+        //Once it is determined that the parse result yielded
+        //LeftHandSideExpression though, then we can parse the remaining
+        //AssignmentExpression with that knowledge
+        const assignmentOperators = [
+          '=',
+          '*=',
+          '/=',
+          '%=',
+          '+=',
+          '-=',
+          '<<=',
+          '>>=',
+          '>>>=',
+          '-->>=',
+          '&=',
+          '^=',
+          '|=',
+          '??=',
+          '||=',
+          '&&='
+        ];
+        if(this.matchPunctuators(assignmentOperators) ||
+          assignmentOperators.indexOf(this.token.value) != -1
+        ) {
+          const left = result.ast;
+          const operatorToken = this.expectPunctuators(assignmentOperators);
+          const right = this.parseExpression();
+          result.ast = this.addNode(AssignmentExpression, operatorToken.value, left, right);
+        }
       }
-      //      return result.ast;
     }
     //console.log(`parseAssignmentExpression`, { result });
     return result.ast;
@@ -1222,7 +1222,7 @@ export class ECMAScriptParser extends Parser {
     let ret,
       expression = this.parseAssignmentExpression();
 
-    this.trace('parseExpression', { expression });
+    //this.trace('parseExpression', { expression });
 
     if(expression !== null) {
       expressions.push(expression);
@@ -2486,6 +2486,10 @@ let fns = [];
 
 const methodNames = [...Util.getMethodNames(ECMAScriptParser.prototype)];
 let methods = {};
+let frameMap = new WeakMap();
+let stackMap = new WeakMap();
+
+Object.assign(Parser, { frameMap, stackMap });
 
 const quoteArray = arr => (arr.length < 5 ? `[${arr.join(', ')}]` : `[${arr.length}]`);
 
@@ -2539,27 +2543,31 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       position,
       depth
     };
+    this.callStack = Stack.update(this.callStack,
+      new Stack(null, fr => fr.functionName != 'esfactory')
+    );
+
+    if(this.stack.length) {
+      //      this.stack[0].frame = this.callStack[0];
+
+      frameMap.set(this.callStack[0], this.stack[0]);
+      stackMap.set(this.stack[0], this.callStack[0]);
+    }
+
     this.stack.unshift(entry);
+
     let { tokens } = this.stack[depth];
     let ret;
-
     if(this.debug > 1) Debug((parser.next() ?? lexer).loc);
-
     ret = methods[methodName].call(this, ...args);
-
     let { token, consumed = 0, numToks = 0 } = this;
     let lastTok = this.tokenIndex - this.tokens.length;
-
     entry.end = lastTok;
-
     if(ret instanceof ESNode) this.onReturnNode(ret, entry, this.stack);
-
     let tmp = this.stack[0].tokens || [];
     while(this.stack.length > depth) this.stack.shift();
-
     if(this.debug > 1) {
       let end = (token && token.pos) || lexer.pos;
-
       Debug(position, end);
     }
     function Debug(position, end) {
@@ -2578,13 +2586,12 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
               .join(', ')})`
           : '';
       msg += ` ${(depth + '').padStart(4)} ${
-        (end == undefined ? 'ENTER' : 'LEAVE') + ' ' + (methodName + argstr).padEnd(32)
+        (end == undefined ? symbols.enter : symbols.leave) + ' ' + (methodName + argstr).padEnd(40)
       }`;
 
       //    msg += ` ${quoteList(tokens || [])}`
 
       //msg += `  ${quoteArg(args)}`;
-
       let annotate = [];
       let objectStr = ret ? Object2Str(ret) : '';
 
@@ -2610,6 +2617,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
         if(lexed.length)
           annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`
           );
+
         annotate.push(`returned: ${objectStr}`);
       }
 
