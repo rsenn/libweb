@@ -53,7 +53,8 @@ export function Error(msg) {
 }
 */
 export class SyntaxError extends Error {
-  constructor(ctx, msg, ast, pos) {
+  constructor(...args) {
+    const [msg, ctx, ast, pos] = args;
     super(msg);
 
     this.msg = msg;

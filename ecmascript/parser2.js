@@ -17,6 +17,22 @@ import MultiMap from '../container/multiMap.js';
 const add = (arr, ...items) => [...(arr || []), ...items];
 const linebreak = new RegExp('\\r?\\n', 'g');
 
+function GetStack(stack, cond, max = Infinity) {
+  stack ??= new Error().stack;
+  let st = (stack + '').split(/\n/g);
+  let index;
+  cond ??= frame => /\s(expect|parse|match)/.test(frame);
+  if(cond) {
+    if((index = st.findIndex(cond)) != -1) st = st.slice(index);
+    else st = st.filter(cond);
+  }
+  st = st.map(frame => frame.replace(/^\s*at\s+([^ ]+)\s\(([^:]+):([^\)]*)\).*/, '$1 $2:$3'));
+  if(Number.isFinite(max)) st = st.slice(0, max);
+  return st;
+}
+
+globalThis.GetStack = GetStack;
+
 export class Parser {
   lastPos = new Location(1, 1);
   lastTok = 0;
@@ -269,21 +285,21 @@ export class Parser {
     return token;
   }
 
-  gettok() {
+  gettok(state) {
     let token;
 
     for(;;) {
-      token = this.lex();
+      token = this.lex(state);
       if(token) {
         // this.trace('token:', token);
         if(token.type == 'whitespace') continue;
         if(token.type == 'comment') continue;
+        token.stack = globalThis.GetStack(null, fr => !/esfactory/.test(fr) );
       }
       break;
     }
-    if(!token) {
-      return token;
-    }
+    if(!token) return token;
+
     this.tokens.push(token);
 
     return token;
@@ -477,7 +493,7 @@ export class ECMAScriptParser extends Parser {
       token.type !== 'identifier' &&
       (!Array.isArray(keywords) || keywords.length == 0)
     )
-      throw new Error(` Expecting Keyword(${keywords}), but got ${token.type} with value '${token.value}'`
+      throw new SyntaxError(` Expecting Keyword(${keywords}), but got ${token.type} with value '${token.value}'`
       );
 
     if(keywords.indexOf(token.value) < 0) {
@@ -493,7 +509,9 @@ export class ECMAScriptParser extends Parser {
     const token = this.consume();
     //console.log(`expectPunctuators(2)`, { token });
     if(token.type !== 'punctuator') {
-      throw new Error(`Expecting Punctuator(${punctuators}), but got ${token.type} with value '${token.value}'`,
+      throw new Error(`Expecting Punctuator([ ${punctuators.map(p => `'${p}'`).join(', ')} ]), but got ${
+          token.type
+        } with value '${token.value}'`,
         ast
       );
     }
@@ -1078,7 +1096,10 @@ export class ECMAScriptParser extends Parser {
     }
     let { ast, lhs } = result;
 
+    this.lexer.pushState('NOREGEX');
+
     this.matchPunctuators(punctuators);
+    this.lexer.popState('NOREGEX');
 
     let tok = this.token;
     let value = tok.value;
@@ -2526,9 +2547,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     ret = methods[methodName].call(this, ...args);
 
-    let { token, consumed = 0, numToks = 0 } = this;
-    /* let start = this.consumed || 0;
-    let firstTok = this.numToks || 0;*/
+    let { token, consumed = 0, numToks = 0 } = this; 
     let lastTok = this.tokenIndex - this.tokens.length;
 
     entry.end = lastTok;
@@ -2540,12 +2559,45 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     if(this.debug > 1) {
       let end = (token && token.pos) || lexer.pos;
-
       Debug(position, end);
     }
+
+
+      let annotate = [];
+      let objectStr = ret ? Object2Str(ret) : '';
+
+      if(end) {
+        let parsed = lexer.source.substring(parser.numToks ?? 0, end);
+        parser.consumed = end;
+        if(parsed.length) parsed = parsed.replace(linebreak, '\\n');
+        let lexed = parser.processed.slice(parser.consumed ?? 0);
+        parser.numToks = parser.tokenIndex - parser.tokens.length;
+        if(lexed.length)
+          annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`);
+        annotate.push(`returned: ${objectStr}`);
+      }
+
+      /*
+      if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
+    nodes.splice(0, nodes.length);*/
+      if(annotate.length) {
+        msg = msg + '    ' + annotate.join(', ');
+      }
+      if(ret || !/match/.test(methodName)) console.log(msg);
+    }
+
+      function Object2Str(obj) {
+        if('ast' in obj) obj = { ...obj, ast: Object2Str(obj.ast) };
+        if('object' in obj) obj = { ...obj, object: Object2Str(obj.object) };
+        let s = typeof obj == 'object' ? Util.className(obj) : obj;
+        if(s == 'Object' || !(obj instanceof ESNode)) s = inspect(obj, { depth: 0, compact: 100 });
+        if(obj instanceof Literal) s += ` ${obj.value}`;
+        if(obj instanceof Identifier) s += ` ${obj.name}`;
+        return s;
+      }
+
     function Debug(position, end) {
       let msg = ('' + position.toString(false)).padEnd((position.file || '').length + 8);
-
       let argstr =
         args.length > 0
           ? `(${args
@@ -2561,47 +2613,8 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       msg += ` ${(depth + '').padStart(4)} ${
         (end == undefined ? 'ENTER' : 'LEAVE') + ' ' + (methodName + argstr).padEnd(32)
       }`;
-
-      //    msg += ` ${quoteList(tokens || [])}`
-
-      //msg += `  ${quoteArg(args)}`;
-
-      let annotate = [];
-      let objectStr = ret ? Object2Str(ret) : '';
-
-      function Object2Str(obj) {
-        if('ast' in obj) obj = { ...obj, ast: Object2Str(obj.ast) };
-        if('object' in obj) obj = { ...obj, object: Object2Str(obj.object) };
-
-        let s = typeof obj == 'object' ? Util.className(obj) : obj;
-        if(s == 'Object' || !(obj instanceof ESNode)) s = inspect(obj, { depth: 0, compact: 100 });
-
-        if(obj instanceof Literal) s += ` ${obj.value}`;
-        if(obj instanceof Identifier) s += ` ${obj.name}`;
-        return s;
-      }
-
-      if(end) {
-        let parsed = lexer.source.substring(parser.numToks ?? 0, end);
-        parser.consumed = end;
-        if(parsed.length) parsed = parsed.replace(linebreak, '\\n');
-        let lexed = parser.processed.slice(parser.consumed ?? 0);
-        parser.numToks = parser.tokenIndex - parser.tokens.length;
-
-        if(lexed.length)
-          annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`
-          );
-        annotate.push(`returned: ${objectStr}`);
-      }
-
-      /*
-      if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
-    nodes.splice(0, nodes.length);*/
-      if(annotate.length) {
-        msg = msg + '    ' + annotate.join(', ');
-      }
-      if(ret || !/match/.test(methodName)) console.log(msg);
-    }
+ 
+ 
     depth--;
     return ret;
   };
