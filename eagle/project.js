@@ -8,19 +8,19 @@ import * as path from 'path';
 export class EagleProject {
   //basename = null;
 
-  constructor(file, fs  ) {
-     fs ??= this.fs ?? globalThis.fs;
-   //super();
+  constructor(file, fs) {
+    fs ??= this.fs ?? globalThis.fs;
+    //super();
     if(file) {
-    if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
-      this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
-}
+      if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
+        this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
+    }
     this.filenames = [];
 
     Util.define(this, {
       file,
       dir: path.dirname(file),
-       documents: {},
+      documents: {},
       list: [],
       data: { sch: null, brd: null, lbr: {} }
     });
