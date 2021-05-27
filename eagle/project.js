@@ -3,33 +3,34 @@ import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { dump } from './common.js';
-import path from '../path.js';
+import * as path from 'path';
 
 export class EagleProject {
   //basename = null;
 
-  constructor(file, fs = { readFile: basename => '', exists: basename => false }) {
-    //super();
+  constructor(file, fs  ) {
+     fs ??= this.fs ?? globalThis.fs;
+   //super();
+    if(file) {
     if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
       this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
-
+}
     this.filenames = [];
 
     Util.define(this, {
       file,
       dir: path.dirname(file),
-      fs,
-      documents: {},
+       documents: {},
       list: [],
       data: { sch: null, brd: null, lbr: {} }
     });
     console.log('this.fs', this.fs);
     let libraryPath = [this.dir];
     let dir = path.join(this.dir, 'lbr');
-    if(this.fs.existsSync(dir)) libraryPath.push(dir);
+    if(fs.existsSync(dir)) libraryPath.push(dir);
     this.libraryPath = libraryPath;
     this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
-    if(this.fs.existsSync(file)) this.lazyOpen(file);
+    if(fs.existsSync(file)) this.lazyOpen(file);
     else this.load();
     //    if(!this.basename || !this.load()) this.open(file);
     if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);

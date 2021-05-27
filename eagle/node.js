@@ -1,14 +1,14 @@
 import { EagleRef, EagleReference } from './ref.js';
 import Util from '../util.js';
 import * as deep from '../deep.js';
-import * as xml from '../xml.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml.js';
 import { BBox } from '../geom.js';
-import { ImmutablePath, toXML } from '../json.js';
+import { ImmutablePath } from '../json.js';
+import { write as toXML, read as fromXML } from 'xml';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -478,8 +478,7 @@ export class EagleNode {
   }
 
   toXML(indent = '') {
-    console.log('toXML', this.raw);
-    return toXML(this.raw, 10000, '"', indent);
+    return toXML(this.raw); //, 10000, '"', indent);
   }
 
   static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {

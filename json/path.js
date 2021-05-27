@@ -6,7 +6,6 @@ export function DereferenceError(object, member, pos, prev, locator) {
   let stack = Util.getCallerStack()
     .filter(frame => null !== frame.fileName)
     .map(frame => {
-      console.log('frame', frame);
       let method = frame.methodName;
       if(method) method = (frame.typeName || Util.className(frame.thisObj)) + '.' + method;
       else method = frame.getFunctionName();

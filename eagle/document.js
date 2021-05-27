@@ -2,6 +2,7 @@ import parseXML from '../xml/parse.js';
 import tXml from '../tXml.js';
 import Util from '../util.js';
 import * as deep from '../deep.js';
+import fs from 'fs';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
 import { ImmutablePath } from '../json.js';
@@ -14,6 +15,7 @@ import { EagleNodeList } from './nodeList.js';
 import { PathMapper } from '../json/pathMapper.js';
 import { Palette } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
+import { read as fromXML, write as toXML } from 'xml';
 
 export class EagleDocument extends EagleNode {
   static types = ['brd', 'sch', 'lbr'];
@@ -50,7 +52,8 @@ export class EagleDocument extends EagleNode {
   }
 
   static open(filename, fs) {
-    //console.log('EagleDocument.open', filename, Util.getCallers(1, Infinity));
+    fs ??= this.fs ?? globalThis.fs;
+
     let xml = fs.readFileSync(filename, 'utf-8');
 
     return new EagleDocument(/*Util.bufferToString*/ xml, null, filename);
@@ -58,7 +61,8 @@ export class EagleDocument extends EagleNode {
 
   constructor(xmlStr, project, filename, type, fs) {
     // console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
-    const xml = parseXML(xmlStr);
+    const xml = fromXML(xmlStr); //parseXML(xmlStr);
+
     let xmlObj = deep.clone(xml[0]);
     super(project, EagleRef(xmlObj, []), xmlObj);
     this.pathMapper = new PathMapper(xmlObj, ImmutablePath);
@@ -182,13 +186,16 @@ export class EagleDocument extends EagleNode {
   /* prettier-ignore */
   saveTo(file, overwrite = false, fs) {
     const data = this.toXML('  ');
+
     if(!file)
       file = this.file;
 
+fs ??= this.fs ?? globalThis.fs;
 fs.writeFileSync(file+'.json', JSON.stringify(this.raw,null,2), true);
-    console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
+
+    console.log('Saving', file, 'data: ',Util.abbreviate(data));
     let ret = fs.writeFileSync(file, data, overwrite);
-    console.log('ret',ret);
+  //  console.log('ret',ret);
 
     if(ret < 0)
       throw new Error(`Writing file '${file}' failed: ${fs.errstr}`);
