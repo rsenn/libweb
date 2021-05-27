@@ -600,17 +600,26 @@ export class ECMAScriptParser extends Parser {
       if(tail) break;
 
       if(do_expression) {
-        //console.log(`parseTemplateLiteral[${i}] ${seed}`, {token: this.next() });
         let node = this.parseAssignmentExpression();
-        //console.log(`parseTemplateLiteral[${i}] ${seed}`, { node });
         expressions.push(node);
         const { lexer } = this;
         //console.log(`lexer.loc`, lexer.loc + '');
         const { start, pos, stateDepth } = lexer;
-        if(lexer.stateDepth >= 2 && lexer.topState() == 'INITIAL') lexer.popState();
+
         if(this.tokens[0].lexeme == '}') {
-          this.tokens.shift();
-          this.next();
+          const topStates = lexer.stateStack.slice(lexer.topState() == 'NOREGEX' ? -3 : -2);
+          console.log(`topStates`, topStates);
+
+          if(topStates.length >= 2 && topStates[0] == 'TEMPLATE') {
+            while(topStates.length > 1) {
+              lexer.popState();
+              topStates.pop();
+            }
+            console.log(`stateStack`, lexer.stateStack);
+
+            this.consume();
+            this.next();
+          }
         }
       }
 
@@ -995,7 +1004,8 @@ export class ECMAScriptParser extends Parser {
       this.lexer.pushState('NOREGEX');
 
       object = this.parsePrimaryExpression();
-      this.lexer.popState('NOREGEX');
+
+      if(this.lexer.topState() == 'NOREGEX') this.lexer.popState();
 
       //console.log('parseNewOrCallOrMemberExpression', { object });
     }
@@ -1101,9 +1111,9 @@ export class ECMAScriptParser extends Parser {
     }
     let { ast, lhs } = result;
 
-    this.lexer.pushState('NOREGEX');
+    // this.lexer.pushState('NOREGEX');
     this.matchPunctuators(punctuators);
-    this.lexer.popState('NOREGEX');
+    //this.lexer.popState('NOREGEX');
 
     let tok = this.token;
     let value = tok.value;
@@ -1178,8 +1188,9 @@ export class ECMAScriptParser extends Parser {
     //LeftHandSideExpression. We'll only know later on during parsing if we
     //come across things that cannot be in LeftHandSideExpression.
     const result = this.parseConditionalExpression();
+    const end = this.matchPunctuators(['}']);
 
-    if(!this.matchPunctuators(['}'])) {
+    if(!end) {
       if(result.lhs) {
         //Once it is determined that the parse result yielded
         //LeftHandSideExpression though, then we can parse the remaining
@@ -1212,6 +1223,7 @@ export class ECMAScriptParser extends Parser {
         }
       }
     }
+
     //console.log(`parseAssignmentExpression`, { result });
     return result.ast;
   }
