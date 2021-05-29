@@ -3,8 +3,8 @@ import Util from '../util.js';
 export let toXML = (o, ...opts) => {
   let [depth, quote, indent] =
     typeof opts[0] == 'object' ? [opts.depth, opts.quote, opts.indent] : opts;
-  depth ??= 10000;
-  quote ??= '"';
+  depth = depth || 10000;
+  quote = quote || '"';
   indent = typeof indent == 'string' ? indent : '  ';
 
   // console.log("toXML", { o,opts,depth,quote,indent});

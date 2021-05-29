@@ -43,6 +43,8 @@ export class Parser {
   nodeTokenMap = new WeakMap();
   debug = () => {};
 
+  static NO_REGEX = 0b1;
+
   constructor(sourceText, fileName, debug) {
     this.tokens = [];
     this.processed = [];
@@ -294,6 +296,22 @@ export class Parser {
       tokens.splice(0, tokens.length);
     }
   }
+
+  setMode(flags) {
+    if(flags & Parser.NO_REGEX) {
+      this.revert();
+      this.lexer.pushState('NOREGEX');
+      this.mode |= Parser.NO_REGEX;
+    }
+  }
+
+  clearMode(flags) {
+    if(flags & this.mode & Parser.NO_REGEX) {
+      this.lexer.popState();
+      this.mode &= ~Parser.NO_REGEX;
+    }
+  }
+
   gettok(state) {
     let token;
 
@@ -829,9 +847,6 @@ export class ECMAScriptParser extends Parser {
       } else if(!(expression instanceof SequenceExpression))
         expression = this.addNode(SequenceExpression, [expression]);
 
-      //    if(parentheses) this.expectPunctuators([')']);
-
-      // if( expression instanceof ArrowFunctionExpression  || parentheses)
       expr = expression;
     } else if(this.matchIdentifier(true)) {
       let id = this.expectIdentifier(true);
@@ -1000,14 +1015,13 @@ export class ECMAScriptParser extends Parser {
         object = this.addNode(NewExpression, result.object, args);
       }
     } else {
-      //  console.log('parseNewOrCallOrMemberExpression', { token: this.next() });
       this.lexer.pushState('NOREGEX');
+      console.log('this.lexer.topState() 1', this.lexer.topState());
 
       object = this.parsePrimaryExpression();
 
+      console.log('this.lexer.topState() 2', this.lexer.topState());
       if(this.lexer.topState() == 'NOREGEX') this.lexer.popState();
-
-      //console.log('parseNewOrCallOrMemberExpression', { object });
     }
     object = this.parseRemainingMemberExpression(object);
     let id = object;
@@ -1155,7 +1169,6 @@ export class ECMAScriptParser extends Parser {
   parseConditionalExpression() {
     //console.log(`parseConditionalExpression`);
     let result = this.parseBinaryExpression(0);
-    //console.log('parseConditionalExpression result:', result); //  if(result.ast == undefined) result = { ast: result, lhs: false };
     let ast = result.ast;
     let lhs = result.lhs;
     if(!ast) {

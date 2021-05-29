@@ -5,11 +5,11 @@ import { EagleNodeList } from './nodeList.js';
 import { EagleElementProxy } from './elementProxy.js';
 import { EagleReference } from './ref.js';
 import { RGBA } from '../color.js';
-import { ImmutableXPath } from '../xml.js';
+import { ImmutableXPath } from '../xml/xpath.js';
 import { ImmutablePath } from '../json.js';
 import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
-import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList, Translation, Polygon, MakePolygon } from '../geom.js';
+import { BBox, Point, Circle, Line, isLine, Rect, TransformationList, Transformation, PointList, Translation, Polygon, MakePolygon } from '../geom.js';
 import { Repeater } from '../repeater/repeater.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -294,7 +294,7 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'children', () =>
         EagleNodeList.create(this.package, this.package.path.down('children'), null)
       );
-    else
+    else if('children' in raw)
       lazyProperty(this, 'children', () =>
         EagleNodeList.create(this, this.path.down('children'), null)
       );
@@ -650,9 +650,9 @@ export class EagleElement extends EagleNode {
       }
       if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = pos.bbox();
       bb.update(pos);*/
-    } else if(this.tagName == 'wire') {
-      let line = this.geometry;
-      bb.updateList(line.toPoints());
+    } else if(['wire', 'pad'].indexOf(this.tagName) != -1) {
+      let geom = this.geometry;
+      bb.updateList(geom.toPoints());
     } else if(this.tagName == 'circle') {
       let circle = this.geometry;
 

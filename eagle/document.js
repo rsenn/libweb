@@ -2,7 +2,6 @@ import parseXML from '../xml/parse.js';
 import tXml from '../tXml.js';
 import Util from '../util.js';
 import * as deep from '../deep.js';
-import fs from 'fs';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
 import { ImmutablePath } from '../json.js';
@@ -15,7 +14,7 @@ import { EagleNodeList } from './nodeList.js';
 import { PathMapper } from '../json/pathMapper.js';
 import { Palette } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
-import { read as fromXML, write as toXML } from 'xml';
+import { read as fromXML, write as toXML } from '../xml.js';
 
 export class EagleDocument extends EagleNode {
   static types = ['brd', 'sch', 'lbr'];
@@ -52,7 +51,7 @@ export class EagleDocument extends EagleNode {
   }
 
   static open(filename, fs) {
-    fs ??= this.fs ?? globalThis.fs;
+    fs = fs || this.fs || globalThis.fs;
 
     let xml = fs.readFileSync(filename, 'utf-8');
 
@@ -190,8 +189,8 @@ export class EagleDocument extends EagleNode {
     if(!file)
       file = this.file;
 
-fs ??= this.fs ?? globalThis.fs;
-fs.writeFileSync(file+'.json', JSON.stringify(this.raw,null,2), true);
+    fs = fs || this.fs || globalThis.fs;
+    fs.writeFileSync(file+'.json', JSON.stringify(this.raw,null,2), true);
 
     console.log('Saving', file, 'data: ',Util.abbreviate(data));
     let ret = fs.writeFileSync(file, data, overwrite);

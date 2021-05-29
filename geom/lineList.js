@@ -29,16 +29,18 @@ export class LineList extends Array {
   }
 
   toSVG(factory, makeGroup) {
-    makeGroup ??= () => ({
-      tagName: 'g',
-      attributes: { stroke: 'black', fill: 'none', 'stroke-width': 0.025 }
-    });
+    makeGroup =
+      makeGroup ||
+      (() => ({
+        tagName: 'g',
+        attributes: { stroke: 'black', fill: 'none', 'stroke-width': 0.025 }
+      }));
     let group,
       lines = this;
     lines = [...lines].map(({ x1, y1, x2, y2 }) => ['line', { x1, y1, x2, y2 }]);
     lines = lines.map(([tag, attrs]) => factory(tag, attrs, group));
 
-    group ??= makeGroup('g', {}, lines);
+    group = group || makeGroup('g', {}, lines);
     group.children = lines;
     return group || lines;
   }

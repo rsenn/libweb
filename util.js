@@ -2353,9 +2353,9 @@ Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => {
 Util.putError = err => {
   let e = Util.isObject(err) && err instanceof Error ? err : Util.exception(err);
   (console.info || console.log)('Util.putError ', e);
-  let s = null; //Util.stack(err.stack);
+  let s = err.stack ? Util.stack(err.stack) : null;
 
-  (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
+  (console.error || console.log)('ERROR:\n' + err.message + (s ? '\nstack:\n' + s.toString() : s));
 };
 Util.putStack = (stack = new Util.stack().slice(3)) => {
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
@@ -2773,7 +2773,7 @@ Util.randStr = (len, charset, rnd = Util.rng) => {
 Util.hex = function(num, numDigits) {
   let v = typeof num == 'number' ? num : parseInt(num);
   let s = v.toString(16);
-  numDigits ??= Math.floor((s.length + 1) / 2) * 2;
+  numDigits = numDigits || Math.floor((s.length + 1) / 2) * 2;
   return ('0'.repeat(numDigits) + s).slice(-numDigits);
 };
 Util.numberParts = (num, base) => {
@@ -2809,7 +2809,7 @@ Util.roundFunction = (prec, digits, type) => {
 };
 Util.roundTo = function(value, prec, digits, type) {
   if(!isFinite(value)) return value;
-  digits = digits ?? Util.roundDigits(prec);
+  digits = digits || Util.roundDigits(prec);
   type = type || 'round';
   const fn = Math[type];
   if(prec == 1) return fn(value);
@@ -4892,7 +4892,7 @@ class AssertionFailed extends Error {
     //this.location = location;
     this.type = 'Assertion failed';
 
-    stack ??= this.stack;
+    stack = stack || this.stack;
 
     this.stack = stack;
   }
@@ -4900,13 +4900,13 @@ class AssertionFailed extends Error {
 
 Util.assert = function assert(val, message) {
   if(typeof val == 'function') {
-    message ??= val + '';
+    message = message || val + '';
     val = val();
   }
-  if(!val) throw new AssertionFailed(message ?? `val == ${val}`);
+  if(!val) throw new AssertionFailed(message || `val == ${val}`);
 };
 Util.assertEqual = function assertEqual(val1, val2, message) {
-  if(val1 != val2) throw new AssertionFailed(message ?? `${val1} != ${val2}`);
+  if(val1 != val2) throw new AssertionFailed(message || `${val1} != ${val2}`);
 };
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
@@ -5835,7 +5835,7 @@ Util.isatty = async fd => {
 Util.ttyGetWinSize = (fd = 1) => {
   let ret;
   if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
-  const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdout'];
+  const stream = process[['stdin', 'stdout', 'stderr'][fd] || 'stdout'];
   return new Promise(stream.cols
       ? (resolve, reject) => resolve([stream.cols, stream.rows])
       : (resolve, reject) => resolve(stream?.getWindowSize?.())
@@ -5844,7 +5844,7 @@ Util.ttyGetWinSize = (fd = 1) => {
 Util.ttySetRaw = (fd = 0, mode = true) => {
   let ret;
   if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttySetRaw(fd));
-  const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdin'];
+  const stream = process[['stdin', 'stdout', 'stderr'][fd] || 'stdin'];
   return stream?.setRawMode?.(mode);
 };
 
@@ -6167,11 +6167,11 @@ Util.colIndexes = line =>
   )[1];
 
 Util.colSplit = (line, indexes) => {
-  indexes ??= Util.colIndexes(line);
+  indexes = indexes || Util.colIndexes(line);
   let ret = [];
   for(let i = 0; i < indexes.length; i++) {
     let col = indexes[i];
-    let next = indexes[i + 1] ?? line.length;
+    let next = indexes[i + 1] || line.length;
 
     ret.push(line.substring(col, next));
   }
@@ -6241,13 +6241,17 @@ Util.instrument = (fn,
 };
 
 Util.trace = (fn, enter, leave, both = () => {}) => {
-  enter ??= (name, args) =>
-    console.log(`function '${name}' (${args.map(arg => inspect(arg)).join(', ')}`);
+  enter =
+    enter ||
+    ((name, args) =>
+      console.log(`function '${name}' (${args.map(arg => inspect(arg)).join(', ')}`));
 
-  leave ??= (name, ret) =>
-    console.log(`function '${name}'` +
-        (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '')
-    );
+  leave =
+    leave ||
+    ((name, ret) =>
+      console.log(`function '${name}'` +
+          (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '')
+      ));
 
   let orig = fn;
 

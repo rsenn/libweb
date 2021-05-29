@@ -3,13 +3,13 @@ import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { dump } from './common.js';
-import * as path from 'path';
+import * as path from '../path.js';
 
 export class EagleProject {
   //basename = null;
 
   constructor(file, fs) {
-    fs ??= this.fs ?? globalThis.fs;
+    fs = fs || this.fs || globalThis.fs;
     //super();
     if(file) {
       if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
@@ -22,7 +22,8 @@ export class EagleProject {
       dir: path.dirname(file),
       documents: {},
       list: [],
-      data: { sch: null, brd: null, lbr: {} }
+      data: { sch: null, brd: null, lbr: {} },
+      fs
     });
     console.log('this.fs', this.fs);
     let libraryPath = [this.dir];
@@ -31,8 +32,7 @@ export class EagleProject {
     this.libraryPath = libraryPath;
     this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
     if(fs.existsSync(file)) this.lazyOpen(file);
-    else this.load();
-    //    if(!this.basename || !this.load()) this.open(file);
+    /*else*/ this.load();
     if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
   }
 
@@ -131,7 +131,7 @@ export class EagleProject {
     }
     let names = Object.getOwnPropertyNames(this.documents);
     const name = names.find(pred);
-    console.log('findDocument', { names, name, pred: pred + '' });
+    //console.log('findDocument', { names, name, pred: pred + '' });
     return this.documents[name];
   }
   getLibrary(name) {

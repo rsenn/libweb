@@ -145,8 +145,8 @@ export function QuickJSFileSystem(std, os) {
     write(fd, data, offset, length) {
       if(!(data instanceof ArrayBuffer)) data = StringToArrayBuffer(data);
 
-      offset ??= 0;
-      length ??= data.byteLength;
+      offset = offset || 0;
+      length = length || data.byteLength;
 
       //console.log("filesystem.write", { data: this.bufferToString(data), offset, length });
 

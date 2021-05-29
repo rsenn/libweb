@@ -402,6 +402,10 @@ PointList.prototype.floor = function(prec) {
 PointList.prototype.toMatrix = function() {
   return Array.prototype.map.call(this, ({ x, y }) => Object.freeze([x, y]));
 };
+
+PointList.prototype.toPoints = function(ctor = Array.of) {
+  return ctor(...this);
+};
 /*if(!Util.isBrowser()) {
   let c = Util.coloring();
   let sym = Symbol.for('nodejs.util.inspect.custom');
