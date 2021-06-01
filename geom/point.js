@@ -232,8 +232,7 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
   const { x, y } = this;
   return x | (y << shl);
 };
-*/ Point.prototype.toString = function(opts = {}
-) {
+*/ Point.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ',', left = '', right = '', pad = 0 } = opts;
   let x = Util.roundTo(this.x, precision);
   let y = Util.roundTo(this.y, precision);

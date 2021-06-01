@@ -650,9 +650,16 @@ export class EagleElement extends EagleNode {
       }
       if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = pos.bbox();
       bb.update(pos);*/
-    } else if(['wire', 'pad'].indexOf(this.tagName) != -1) {
+    } else if(this.geometry &&
+      this.geometry.toPoints /*['wire', 'pad'].indexOf(this.tagName) != -1*/
+    ) {
       let geom = this.geometry;
       bb.updateList(geom.toPoints());
+    } else if(this.geometry &&
+      this.geometry.bbox /*['wire', 'pad'].indexOf(this.tagName) != -1*/
+    ) {
+      let geom = this.geometry;
+      bb.update(geom.bbox());
     } else if(this.tagName == 'circle') {
       let circle = this.geometry;
 
@@ -732,8 +739,7 @@ export class EagleElement extends EagleNode {
 
   position(offset = null) {
     const keys = Object.keys(this.attributes);
-    const makeGetterSetter = k => v =>
-      v === undefined ? +this.handlers[k]() : this.handlers[k](+v);
+    const makeGetterSetter = k => v => v === undefined ? +this.handlers[k]() : this.handlers[k](+v);
 
     if(['x', 'y'].every(prop => keys.includes(prop))) {
       let pos = offset

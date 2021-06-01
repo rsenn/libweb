@@ -472,10 +472,8 @@ export class Element extends Node {
 
   static move(element, point, pos, edges = ['left', 'top']) {
     let [e, ...rest] = [...arguments];
-    let {
-      x = Element.position(element, edges).x,
-      y = Element.position(element, edges).y
-    } = new Point(rest);
+    let { x = Element.position(element, edges).x, y = Element.position(element, edges).y } =
+      new Point(rest);
     let to = { x, y };
     let position = rest.shift() || Element.getCSS(element, 'position') || 'relative';
     let off;

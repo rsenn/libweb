@@ -28,7 +28,9 @@ function mix(...args) {
   let factory = (isFactory(args[args.length - 1]) && args.pop()) || derive;
   superclass = isMixin(superclass) ? superclass.class : derive(superclass);
   if(args.length)
-    factory = (org => superclass => org(args.reduce((s, m) => m.mixin(s), superclass)))(factory);
+    factory = (org => superclass =>
+        org(args.reduce((s, m) => m.mixin(s), superclass))
+    )(factory);
 
   function mixin(superclass) {
     const result = is(superclass, mixin) ? superclass : factory(superclass);
@@ -51,7 +53,9 @@ function mix(...args) {
     mixin: { value: mixin, writable: false },
     class: { value: Class, writable: false },
     interface: {
-      get: (x => () => (x ? x : (x = getInterface(Class.prototype))))()
+      get: (x => () =>
+          x ? x : (x = getInterface(Class.prototype))
+      )()
     }
   });
 }

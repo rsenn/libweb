@@ -702,7 +702,8 @@ let drillMode = {
 // parse drill function
 // takes a parser transform stream and a block string
 let reALTIUM_HINT = /;FILE_FORMAT=(\d):(\d)/;
-let reKI_HINT = /;FORMAT={(.):(.)\/ (absolute|.+)? \/ (metric|inch) \/.+(trailing|leading|decimal|keep)/;
+let reKI_HINT =
+  /;FORMAT={(.):(.)\/ (absolute|.+)? \/ (metric|inch) \/.+(trailing|leading|decimal|keep)/;
 
 let reUNITS$1 = /(INCH|METRIC)(?:,([TL])Z)?/;
 let reTOOL_DEF$1 = /T0*(\d+)[\S]*C([\d.]+)/;

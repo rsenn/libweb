@@ -882,8 +882,7 @@ export class ECMAScriptParser extends Parser {
       const argument = this.parseAssignmentExpression();
 
       return new AwaitExpression((argument.ast && argument.ast) || argument);
-    } else*/ if(this.matchKeywords(unaryKeywords)
-    ) {
+    } else*/ if(this.matchKeywords(unaryKeywords)) {
       const operatorToken = this.expectKeywords(unaryKeywords);
       const argument = this.parseUnaryExpression();
       return {
@@ -1025,8 +1024,7 @@ export class ECMAScriptParser extends Parser {
         get = true;
       }
       return this.parseFunction();
-    } else*/ if(this.matchPunctuators('{')
-    ) {
+    } else*/ if(this.matchPunctuators('{')) {
       return this.parseObject();
     } /*else if(this.matchPunctuators("[")) {
           //return this.parseNewOrCallOrMemberExpression();

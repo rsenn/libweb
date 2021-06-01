@@ -4309,9 +4309,7 @@ ClipperLib.ClipperOffset.prototype.OffsetPoint = function(j, k, jointype) {
 			}
 			//else angle ==> 180 degrees
 		}
-*/ else if(this.m_sinA < -1
-  )
-    this.m_sinA = -1.0;
+*/ else if(this.m_sinA < -1) this.m_sinA = -1.0;
   if(this.m_sinA * this.m_delta < 0) {
     this.m_destPoly.push(new ClipperLib.FPoint2(
         this.m_srcPoly[j].X + this.m_normals[k].X * this.m_delta,

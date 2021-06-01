@@ -196,8 +196,10 @@ const getSize = Util.memoize(rect =>
 );
 
 const getPoint = Util.memoize(rect =>
-  Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v =>
-    v !== undefined ? (rect[k] = v) : rect[k]
+  Util.bindProperties(new Point(0, 0),
+    rect,
+    ['x', 'y'],
+    k => v => v !== undefined ? (rect[k] = v) : rect[k]
   )
 );
 
@@ -509,7 +511,7 @@ Rect.toSource = (rect, opts = {}) => {
 };
 
 Rect.bind = (...args) => {
-  const [o, p, gen = k => v => (v === undefined ? o[k] : (o[k] = v))] =
+  const [o, p, gen = k => v => v === undefined ? o[k] : (o[k] = v)] =
     args[0] instanceof Rect ? [new Rect(), ...args] : args;
 
   const [x, y, width, height] = p || ['x', 'y', 'width', 'height'];

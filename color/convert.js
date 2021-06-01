@@ -123,11 +123,7 @@ export function matrix(params, mats) {
 export const precision = 100000000; /* D50 reference white
 /* ========================================================================== */
 
-export const [wd50X, wd50Y, wd50Z] = [
-  96.42,
-  100,
-  82.49
-]; /* Math Expressions
+export const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49]; /* Math Expressions
 /* ========================================================================== */
 
 export const atan2d = (y, x) => rad2deg(atan2(y, x)); // arc-tangent in degrees
@@ -683,7 +679,8 @@ export function rgb2hex(rgbR, rgbG, rgbB) {
     .slice(1)}`;
 }
 
-const hexColorMatch = /^#?(?:([a-f0-9])([a-f0-9])([a-f0-9])([a-f0-9])?|([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})?)$/i;
+const hexColorMatch =
+  /^#?(?:([a-f0-9])([a-f0-9])([a-f0-9])([a-f0-9])?|([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})?)$/i;
 
 /*
  * concatenated ../../../../../mnt/oldroot/home/roman/Sources/js-color/convert-colors/src/keyword-rgb.js

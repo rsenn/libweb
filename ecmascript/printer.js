@@ -97,9 +97,8 @@ export class Printer {
   }
 
   print(tree) {
-    this.nodes = [
-      ...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)
-    ].map(([node, path]) => [node.position, path.join('.'), node]);
+    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]
+    );
 
     //console.log("comments: ", this.comments);
 

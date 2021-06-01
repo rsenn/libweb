@@ -31,12 +31,15 @@ if(typeof global != 'undefined') {
         return schedule(fn, delay, slice.call(arguments, 2));
       };
 
-      clearInterval = global.clearInterval = clearTimeout = global.clearTimeout = function clearInterval(id
-      ) {
-        ids[id].cancel();
-        timer.purge();
-        delete ids[id];
-      };
+      clearInterval =
+        global.clearInterval =
+        clearTimeout =
+        global.clearTimeout =
+          function clearInterval(id) {
+            ids[id].cancel();
+            timer.purge();
+            delete ids[id];
+          };
 
       function schedule(fn, delay, args, interval) {
         let id = ++counter;

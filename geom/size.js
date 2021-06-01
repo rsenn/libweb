@@ -239,7 +239,7 @@ Size.bind = (...args) => {
   const gen = Util.isFunction(args[args.length - 1]) && args.pop();
   const p = args.length > 1 ? args.pop() : ['width', 'height'];
   const t = args.pop();
-  gen = gen || (k => v => (v === undefined ? t[k] : (t[k] = v)));
+  gen = gen || (k => v => v === undefined ? t[k] : (t[k] = v));
 
   // const [  p = ['width', 'height']  ] = args[0] instanceof Size ? args : [new Size(), ...args];
   console.debug('Size.bind', { args, o, t, p, gen });

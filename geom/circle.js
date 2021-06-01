@@ -147,6 +147,6 @@ Circle.prototype[Util.inspectSymbol] = function(depth, options) {
 
 Circle.bind = (o, p, gen) => {
   const [x, y, radius] = p || ['x', 'y', 'radius'];
-  if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
+  if(!gen) gen = k => v => v === undefined ? o[k] : (o[k] = v);
   return Util.bindProperties(new Circle(0, 0, 0), o, { x, y, radius }, gen);
 };

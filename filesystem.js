@@ -904,9 +904,12 @@ export async function GetPortableFileSystem() {
   try {
     fs = await CreatePortableFileSystem(BrowserFileSystem,
 
-      (await import('./stream/textDecodeStream.js')).TextDecoderStream,
-      (await import('./stream/transformStream.js')).TransformStream,
-      (await import('./stream/writableStream.js')).WritableStream
+      (await import('./stream/textDecodeStream.js')
+      ).TextDecoderStream,
+      (await import('./stream/transformStream.js')
+      ).TransformStream,
+      (await import('./stream/writableStream.js')
+      ).WritableStream
     );
   } catch(error) {
     err = error;

@@ -811,14 +811,8 @@ class BitapSearch {
     }
 
     // Otherwise, use Bitap algorithm
-    const {
-      location,
-      distance,
-      threshold,
-      findAllMatches,
-      minMatchCharLength,
-      ignoreLocation
-    } = this.options;
+    const { location, distance, threshold, findAllMatches, minMatchCharLength, ignoreLocation } =
+      this.options;
 
     let allIndices = [];
     let totalScore = 0;

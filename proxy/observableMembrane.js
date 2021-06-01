@@ -626,13 +626,8 @@ class ReactiveMembrane {
     this.valueIsObservable = defaultValueIsObservable;
     this.objectGraph = new WeakMap();
     if(!isUndefined(options)) {
-      const {
-        valueDistortion,
-        valueMutated,
-        valueObserved,
-        valueIsObservable,
-        tagPropertyKey
-      } = options;
+      const { valueDistortion, valueMutated, valueObserved, valueIsObservable, tagPropertyKey } =
+        options;
       this.valueDistortion = isFunction(valueDistortion) ? valueDistortion : defaultValueDistortion;
       this.valueMutated = isFunction(valueMutated) ? valueMutated : defaultValueMutated;
       this.valueObserved = isFunction(valueObserved) ? valueObserved : defaultValueObserved;

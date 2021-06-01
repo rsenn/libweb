@@ -336,9 +336,7 @@ export default class devpane {
       select().then(e => Util.log('select() = ', e));
     } /* if(e.key == 'g') {
       gettext().then(r => Util.log("gettext() = ", r));
-    } else*/ else if(e.key == 't' &&
-      e.ctrlKey
-    ) {
+    } else*/ else if(e.key == 't' && e.ctrlKey) {
       Util.log('devpane ', this);
       this.renderTranslateLayer();
 

@@ -276,20 +276,22 @@ export class EagleDocument extends EagleNode {
       );
 
       if(measures.length) {
-        if(bbox || geometry || points) measures = measures.map(e => e.geometry);
-
-        if(points)
-          measures = measures
-            .map(l => [...l])
-            .flat()
-            .filter(Util.uniquePred(Point.equals));
-
         if(bbox) {
-          //) measures = measures.map(e=> new Line(e.attributes));
+          measures = measures.map(e =>
+            typeof e.getBounds == 'function' ? e.getBounds() : e.geometry
+          );
           measures = BBox.from(measures);
           //console.log('measures bbox:', measures);
 
           if(!isBBox(measures, v => Number.isFinite(v))) return undefined;
+        } else {
+          if(geometry || points) measures = measures.map(e => e.geometry);
+
+          if(points)
+            measures = measures
+              .map(l => [...l])
+              .flat()
+              .filter(Util.uniquePred(Point.equals));
         }
 
         return measures;

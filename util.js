@@ -2441,8 +2441,9 @@ Util.histogram = (...args) => {
   const t = typeof args[0] == 'function' ? args.shift() : (k, v) => k;
   let [out = false ? {} : new Map(), initVal = () => 0 /* new Set()*/, setVal = v => v] = args;
 
-  const set = /*Util.isObject(out) && typeof out.set == 'function' ? (k, v) => out.set(k, v) :*/ Util.setter(out
-  );
+  const set =
+    /*Util.isObject(out) && typeof out.set == 'function' ? (k, v) => out.set(k, v) :*/ Util.setter(out
+    );
   const get = Util.getOrCreate(out, initVal, set);
   let ctor = Object.getPrototypeOf(out) !== Object.prototype ? out.constructor : null;
   let tmp;
@@ -3474,8 +3475,14 @@ Util.iterateMembers = function* (obj, predicate = (name, depth, obj, proto) => t
   if(proto) yield* Util.iterateMembers(proto, predicate, depth + 1);
 };
 
-Util.and = (...predicates) => (...args) => predicates.every(pred => pred(...args));
-Util.or = (...predicates) => (...args) => predicates.some(pred => pred(...args));
+Util.and =
+  (...predicates) =>
+  (...args) =>
+    predicates.every(pred => pred(...args));
+Util.or =
+  (...predicates) =>
+  (...args) =>
+    predicates.some(pred => pred(...args));
 
 Util.members = Util.curry((pred, obj) =>
   Util.unique([...Util.iterateMembers(obj, Util.tryPredicate(pred))])
@@ -3507,16 +3514,16 @@ Util.getMemberNames = (obj, ...args) => {
 Util.getMemberEntries = (obj, ...args) =>
   Util.getMemberNames(obj, ...args).map(name => [name, obj[name]]);
 
-Util.objectReducer = (filterFn, accFn = (a, m, o) => ({ ...a, [m]: o[m] }), accu = {}) => (obj,
-  ...args
-) =>
-  Util.members(filterFn(...args), obj).reduce(Util.tryFunction(
-      (a, m) => accFn(a, m, obj),
-      (r, a, m) => r,
-      (r, a) => a
-    ),
-    accu
-  );
+Util.objectReducer =
+  (filterFn, accFn = (a, m, o) => ({ ...a, [m]: o[m] }), accu = {}) =>
+  (obj, ...args) =>
+    Util.members(filterFn(...args), obj).reduce(Util.tryFunction(
+        (a, m) => accFn(a, m, obj),
+        (r, a, m) => r,
+        (r, a) => a
+      ),
+      accu
+    );
 Util.incrementer = (incFn = (c, n, self) => (self.count = c + n)) => {
   let self, incr;
   if(typeof incFn == 'number') {
@@ -3613,8 +3620,6 @@ Util.bindMethodsTo = function(dest, obj, methods) {
     return dest;
   }
   let names = Util.getMethodNames(methods);
-  console.log('names:', names);
-
   for(let name of names)
     if(typeof methods[name] == 'function') dest[name] = methods[name].bind(obj);
   return dest;
@@ -4664,8 +4669,7 @@ Util.coloring = (useColor = true) =>
             `rgb(${Util.range(0, 2)
               .map(bitno => Util.getBit(i, bitno) * (i & 0x08 ? 160 : 80))
               .join(',')})`
-        )*/ code(...args
-        ) {
+        )*/ code(...args) {
           let css = '';
           let bold = 0;
           for(let arg of args) {
@@ -4812,7 +4816,7 @@ Util.bindProperties = (proxy, target, props, gen) => {
     ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props]
     : [props, Object.keys(props)];
 
-  if(!gen) gen = p => v => (v === undefined ? target[propMap[p]] : (target[propMap[p]] = v));
+  if(!gen) gen = p => v => v === undefined ? target[propMap[p]] : (target[propMap[p]] = v);
   const propGetSet = propNames
     .map(k => [k, propMap[k]])
 
@@ -4969,7 +4973,7 @@ Util.copyTextToClipboard = (i, t) => {
       let proc = childProcess('xclip', ['-in'], {
         block: false,
         stdio: ['pipe'],
-        env: { DISPLAY: std.getenv('DISPLAY') }
+        env: { DISPLAY: Util.getEnv('DISPLAY') }
       });
       console.log('proc.stdin', proc.stdin);
 
@@ -5336,7 +5340,9 @@ Util.parseXML = function(xmlStr) {
 Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
   let mapper = Util.tryCatch(() => new WeakMap(),
     map => Util.weakMapper((obj, ...args) => Util.merge(...args), map),
-    () => (obj, ...args) => Util.define(obj, ...args)
+    () =>
+      (obj, ...args) =>
+        Util.define(obj, ...args)
   );
   let self = (obj, ...args) => {
     let value = mapper(obj, ...args);
