@@ -3,10 +3,10 @@ const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
 
 export function toString(arrayBuf, encoding = 'utf-8') {
   if(encoding == 'latin1') {
-    var binary = '';
-    var bytes = new Uint8Array(buffer);
-    var len = bytes.byteLength;
-    for(var i = 0; i < len; i++) {
+    let binary = '';
+    let bytes = new Uint8Array(arrayBuf);
+    let len = bytes.byteLength;
+    for(let i = 0; i < len; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
     return binary;
@@ -118,6 +118,15 @@ export function toString(arrayBuf, encoding = 'utf-8') {
 }
 
 export function toArrayBuffer(str, encoding) {
+  if(encoding == 'latin1') {
+    let i,
+      len = str.length;
+    let a = new Uint8Array(len);
+    for(i = 0; i < len; i++) {
+      a[i] = str.charCodeAt(i);
+    }
+    return a.buffer;
+  }
   let offset, length;
   const end = Math.min((length ?? str.length - (offset | 0)) + (offset | 0), str.length);
   console.log('end:', end);
