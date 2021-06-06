@@ -1,12 +1,23 @@
 const UTF8FirstCodeMask = [0x1f, 0xf, 0x7, 0x3, 0x1];
 const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
 
-export function toString(arrayBuf, offset, length) {
-  let a = new Uint8Array(arrayBuf, offset ?? 0, length ?? arrayBuf.byteLength);
+export function toString(arrayBuf, encoding = 'utf-8') {
+  if(encoding == 'latin1') {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for(var i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return binary;
+  }
+
+  let a = new Uint8Array(arrayBuf);
   let p = 0;
   let o = '';
-  for(p = 0; p < a.length; ) {
-    let max_len = a.length - p;
+  let len = a.length;
+  for(p = 0; p < len; ) {
+    let max_len = len - p;
     let l, c, b, i;
 
     c = a[p++];
@@ -106,10 +117,13 @@ export function toString(arrayBuf, offset, length) {
   return o;
 }
 
-export function toArrayBuffer(str,offset,length) {
-  const end = Math.min(length+offset,str.length);
+export function toArrayBuffer(str, encoding) {
+  let offset, length;
+  const end = Math.min((length ?? str.length - (offset | 0)) + (offset | 0), str.length);
+  console.log('end:', end);
+
   const a = [];
-  for(let i = offset; i < end; ) {
+  for(let i = offset | 0; i < end; i++) {
     const c = str.codePointAt(i);
 
     if(c < 0x80) {
@@ -141,5 +155,7 @@ export function toArrayBuffer(str,offset,length) {
       a.push((c & 0x3f) | 0x80);
     }
   }
-  return new Uint8Array(a).buffer;
+  const u8a = Uint8Array.from(a);
+  console.log('toArrayBuffer', { a, u8a });
+  return u8a.buffer;
 }
