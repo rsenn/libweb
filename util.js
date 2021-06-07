@@ -4600,10 +4600,25 @@ Util.immutableClass = (orig, ...proto) => {
   );
   let body = `class ${imName} extends ${name} {\n  constructor(...args) {\n    super(...args);\n    if(new.target === ${imName})\n      return Object.freeze(this);\n  }\n};\n\n${imName}.prototype.constructor = ${imName};\n\nreturn ${imName};`;
   for(let p of initialProto) p(orig);
-  let ctor = new Function(name, body)(orig);
+  let ctor; // = new Function(name, body)(orig);
+
+  let imm = base => {
+    let cls;
+    cls = class extends base {
+      constructor(...args) {
+        super(...args);
+        if(new.target === cls) return Object.freeze(this);
+      }
+    };
+    return cls;
+  };
+  ctor = imm(orig);
+
   //console.log('immutableClass', { initialProto, body }, orig);
   let species = ctor;
-  /* prettier-ignore */ Util.defineGetterSetter(ctor, Symbol.species, () => species, (value) => {species = value; });
+
+  /* prettier-ignore */ //Object.assign(ctor, { [Symbol.species]: ctor });
+
   return ctor;
 };
 

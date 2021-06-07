@@ -1,3 +1,5 @@
+import Util from './util.js';
+
 const UTF8FirstCodeMask = [0x1f, 0xf, 0x7, 0x3, 0x1];
 const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
 
@@ -223,3 +225,72 @@ export function atob(asc) {
   }
   return bin;
 }
+
+export function Location(line, column, pos, file, freeze = true) {
+  let obj = this || new.target.test || this ? this : {};
+
+  /*console.log("obj.constructor:",obj.constructor);
+  //console.log("freeze:",freeze);*/
+  Object.assign(obj, {
+    line,
+    column,
+    pos,
+    file
+  });
+  if(this !== obj) Object.setPrototypeOf(obj, Location.prototype);
+
+  return freeze && obj.constructor === Location ? Object.freeze(obj) : obj;
+}
+
+Location.prototype.clone = function(freeze = false, withFilename = true) {
+  const { line, column, pos, file } = this;
+
+  return new Location(line, column, pos, withFilename ? file : null, freeze);
+};
+Location.prototype[Symbol.toStringTag] = function(n, opts) {
+  const { showFilename = true, colors = false } = opts || {};
+  let c = Util.coloring(colors);
+
+  let v =
+    typeof this.column == 'number' ? [this.file, this.line, this.column] : [this.file, this.line];
+  if((!showFilename || v[0] == undefined) && v.length >= 3) v.shift();
+  v = v.map((f, i) => c.code(...(i == 0 ? [38, 5, 33] || [1, 33] : [1, /*i == 2 ? 35 :*/ 36])) + f);
+  return v.join(c.code(...([1, 30] || [1, 36])) + ':') + c.code(0);
+};
+
+Location.prototype[Symbol.iterator] = function* () {
+  let { file, line, column } = this;
+  let v = file ? [file, line, column] : [line, column];
+  yield* v;
+};
+Location.prototype.toString = function(opts = {}) {
+  return this[Symbol.toStringTag](0, {
+    colors: false,
+    ...opts
+  });
+};
+Location.prototype.valueOf = function() {
+  return this.pos;
+};
+Location.prototype[Symbol.toPrimitive] = function(hint) {
+  if(hint == 'number') return this.pos;
+  if(hint == 'string') return this.toString();
+};
+Location.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
+  return this.toString({ colors: true });
+  return Util.inspect(this, {
+    colors: true,
+    ...opts,
+    toString: Symbol.toStringTag
+  });
+};
+/*
+Location.prototype.valueOf = function() {
+  return this.pos;
+};*/
+
+Util.define(Location.prototype, {
+  get offset() {
+    return this.valueOf();
+  }
+});

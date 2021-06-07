@@ -8,8 +8,7 @@ export { Lexer, SyntaxError, Location, Token } from './lexer.js';
 export { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';*/
 
 import * as deep from '../deep.js';
-import { Stack, StackFrame } from '../../stack.js';
-//import util from 'util';
+import { Stack, StackFrame } from '../stack.js';
 import { TokenList } from './token.js';
 import { Printer } from './printer.js';
 import { ESNode, Program, Expression, ChainExpression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
@@ -83,7 +82,7 @@ export class Parser {
           .slice(1)
           .map(p => (!isNaN(+p) ? +p : p));
         let [fn, file, line] = frame;
-        console.log(`TRACE[${stack.length / 3}]`, // `${fn} @ ${file.replace(/.*\//g, '')}:${line}`.padEnd(50),
+        String.fromCharCode.log(`TRACE[${stack.length / 3}]`, // `${fn} @ ${file.replace(/.*\//g, '')}:${line}`.padEnd(50),
           this.lexer.loc + '',
           ...args,
           this.tokens.map(tok => tok + '')
@@ -106,10 +105,7 @@ export class Parser {
                 let ret = arg;
                 let last = locStack[locStack.length - 1];
                 if(last[0] == name) locStack.pop();
-                console.log(`${symbols.leave}[${locStack.length}]`,
-                  (token ?? lexer).loc + '',
-                  inspect({ name, ret }, { depth: 2, breakLength: Infinity, compact: 10 })
-                );
+                //console.log(`${symbols.leave}[${locStack.length}]`, (token ?? lexer).loc + '', inspect({ name, ret }, { depth: 2, breakLength: Infinity, compact: 10 }) );
               }
               if(what == 'enter') {
                 locStack.push([name, this.lexer.loc]);
@@ -123,10 +119,7 @@ export class Parser {
                     prevStack = st;
                   }
                 }
-                console.log(`${symbols.enter}[${locStack.length}]`,
-                  (token ?? lexer).loc + '',
-                  inspect({ name, arg }, { compact: 10 })
-                );
+                /// console.log(`${symbols.enter}[${locStack.length}]`, (token ?? lexer).loc + '', inspect({ name, arg }, { compact: 10 }) ///);
               }
             }
           );
@@ -626,14 +619,14 @@ export class ECMAScriptParser extends Parser {
 
         if(this.tokens[0].lexeme == '}') {
           const topStates = lexer.stateStack.slice(lexer.topState() == 'NOREGEX' ? -3 : -2);
-          console.log(`topStates`, topStates);
+          // console.log(`topStates`, topStates);
 
           if(topStates.length >= 2 && topStates[0] == 'TEMPLATE') {
             while(topStates.length > 1) {
               lexer.popState();
               topStates.pop();
             }
-            console.log(`stateStack`, lexer.stateStack);
+            // console.log(`stateStack`, lexer.stateStack);
 
             this.consume();
             this.next();
@@ -822,8 +815,8 @@ export class ECMAScriptParser extends Parser {
       let parentheses = this.matchPunctuators(['(']);
 
       if(!this.matchPunctuators([')'])) expression = this.parseExpression(false, true);
-      console.log('expression:', expression);
-      console.log('this.next():', this.next());
+      //console.log('expression:', expression);
+      //console.log('this.next():', this.next());
 
       this.expectPunctuators([')']);
 
@@ -1015,12 +1008,20 @@ export class ECMAScriptParser extends Parser {
         object = this.addNode(NewExpression, result.object, args);
       }
     } else {
-      this.lexer.pushState('NOREGEX');
-      console.log('this.lexer.topState() 1', this.lexer.topState());
+      let n = this.lexer.stateStack.length;
 
+      this.lexer.pushState('NOREGEX');
+      this.lexer.callback = lex => {
+        if(lex.stateStack.length >= n) {
+          while(lex.stateStack.length > n) lex.popState();
+        }
+        //console.log(`(2) stateStack.length = ${lex.stateStack.length}, states = ${lex.stateStack}`);
+        lex.callback = null;
+      };
+
+      //console.log(`(1) stateStack.length = ${this.lexer.stateStack.length}, states = ${this.lexer.stateStack}`);
       object = this.parsePrimaryExpression();
 
-      console.log('this.lexer.topState() 2', this.lexer.topState());
       if(this.lexer.topState() == 'NOREGEX') this.lexer.popState();
     }
     object = this.parseRemainingMemberExpression(object);
@@ -1560,7 +1561,7 @@ export class ECMAScriptParser extends Parser {
 
     function BindingProperty(property, id, initializer) {
       let shorthand = (id ?? property) === property;
-      console.log('BindingProperty', { id, initializer, property, shorthand });
+      // console.log('BindingProperty', { id, initializer, property, shorthand });
       if(initializer &&
         !(initializer instanceof Identifier &&
           property instanceof Identifier &&
