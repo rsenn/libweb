@@ -29,13 +29,15 @@ export function Stack() {
   stack = [...stack];
   //console.log('stack: ', stack);
 
-  let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
+  let maxLen = stack.reduce(
+    (acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
     0
   );
 
   return stack
     .filter(s => s.functionName != 'esfactory')
-    .map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) =>
+    .map(
+      ({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) =>
         `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`
     );
 
@@ -278,7 +280,8 @@ export class Lexer {
   }
 
   get(offset) {
-    return this.getRange(Math.min(this.pos + offset, this.pos),
+    return this.getRange(
+      Math.min(this.pos + offset, this.pos),
       Math.max(this.pos + offset, this.pos)
     );
   }
@@ -369,7 +372,8 @@ export class Lexer {
   addToken(type, props = {}) {
     //if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
-    const token = new Token(type,
+    const token = new Token(
+      type,
       source.substring(start, pos),
       new Range(this.position(this.start), this.pos - this.start),
       this.start
@@ -379,7 +383,7 @@ export class Lexer {
     this.ignore();
   }
 
-  get token() {
+  /* prettier-ignore */ get token() {
     return this.tokens[this.tokens.length - 1];
   }
 
@@ -410,7 +414,8 @@ export class Lexer {
     }
 
     if(isQuoteChar(c))
-      throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`
+      throw this.error(
+        `Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`
       );
 
     const word = this.getRange(this.start, this.pos);
@@ -422,7 +427,7 @@ export class Lexer {
     return this.lexText;
   }
 
-  get columnIndex() {
+  /* prettier-ignore */ get columnIndex() {
     let p;
     for(p = this.pos; p > 0; p--) if(this.source[p - 1] == '\n') break;
     return this.pos - p;
@@ -660,7 +665,8 @@ export class Lexer {
         ++n;
         //console.debug("template", { prevChar,c,escapeEncountered,n});
         if(c === null) {
-          throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
+          throw this.error(
+            `Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
           );
         } else if(!escapeEncountered) {
           if(c == '{' && prevChar == '$') {
@@ -790,7 +796,8 @@ export class Lexer {
   nextToken() {
     if(this.tokenIndex >= this.tokens.length)
       // return null;
-      return new Token(Token.types.eof,
+      return new Token(
+        Token.types.eof,
         null,
         new Range(this.position(this.pos), 0),
         this.source.length
@@ -865,7 +872,8 @@ function isPunctuatorChar(c) {
 function isPunctuator(word) {
   switch (word.length) {
     case 1:
-      return ([
+      return (
+        [
           '=',
           '.',
           '-',
@@ -894,7 +902,8 @@ function isPunctuator(word) {
         ].indexOf(word) >= 0
       );
     case 2:
-      return ([
+      return (
+        [
           '!=',
           '*=',
           '&&',
@@ -922,7 +931,8 @@ function isPunctuator(word) {
       );
 
     case 3:
-      return (['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(
+      return (
+        ['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(
           word
         ) >= 0
       );
@@ -930,7 +940,8 @@ function isPunctuator(word) {
     case 4:
       return ['>>>=', '-->>='].indexOf(word) >= 0;
 
-    default: return false;
+    default:
+      return false;
   }
 }
 
@@ -1046,7 +1057,8 @@ function isKeyword(word) {
       }
       return false;
 
-    default: return false;
+    default:
+      return false;
   }
 }
 

@@ -3,6 +3,38 @@ import Util from './util.js';
 const UTF8FirstCodeMask = [0x1f, 0xf, 0x7, 0x3, 0x1];
 const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
 
+export function extendArray(proto = Array.prototype) {
+  Util.define(proto, {
+    getlast() {
+      return this[this.length - 1];
+    },
+    at(index) {
+      const { length } = this;
+      return this[((index % length) + length) % length];
+    },
+    clear() {
+      this.splice(0, this.length);
+    },
+    findLastIndex(predicate) {
+      for(let i = this.length - 1; i >= 0; --i) {
+        const x = this[i];
+        if(predicate(x, i, this)) return i;
+      }
+      return -1;
+    },
+    findLast(predicate) {
+      let i;
+      if((i = this.findLastIndex(predicate)) == -1) return null;
+      return this[i];
+    },
+    unique() {
+      return [...new Set(this)];
+    },
+    pushUnique(...args) {
+      for(let arg of args) if(this.indexOf(arg) === -1) this.push(arg);
+    }
+  });
+}
 export function toString(arrayBuf, encoding = 'utf-8') {
   if(encoding == 'latin1') {
     let binary = '';
@@ -101,7 +133,8 @@ export function toString(arrayBuf, encoding = 'utf-8') {
       case 0xfd:
         l = 5;
         break;
-      default: return null;
+      default:
+        return null;
     }
     /* check that we have enough characters */
     if(l > max_len - 1) return -1;
@@ -188,7 +221,8 @@ export function btoa(bin) {
     asc = '';
   const pad = bin.length % 3;
   for(let i = 0; i < bin.length; ) {
-    if((c0 = bin.charCodeAt(i++)) > 255 ||
+    if(
+      (c0 = bin.charCodeAt(i++)) > 255 ||
       (c1 = bin.charCodeAt(i++)) > 255 ||
       (c2 = bin.charCodeAt(i++)) > 255
     )
@@ -290,7 +324,7 @@ Location.prototype.valueOf = function() {
 };*/
 
 Util.define(Location.prototype, {
-  get offset() {
+  /* prettier-ignore */ get offset() {
     return this.valueOf();
   }
 });

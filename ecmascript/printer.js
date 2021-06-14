@@ -1,4 +1,23 @@
-import { ESNode, Literal, FunctionLiteral, TemplateLiteral, Property, MethodDefinition, FunctionDeclaration, ArrowFunctionExpression, Identifier, ClassDeclaration, ObjectPattern, SpreadElement, MemberExpression, Statement, ImportDeclaration, ImportSpecifier, BlockStatement, IfStatement } from './estree.js';
+import {
+  ESNode,
+  Literal,
+  FunctionLiteral,
+  TemplateLiteral,
+  Property,
+  MethodDefinition,
+  FunctionDeclaration,
+  ArrowFunctionExpression,
+  Identifier,
+  ClassDeclaration,
+  ObjectPattern,
+  SpreadElement,
+  MemberExpression,
+  Statement,
+  ImportDeclaration,
+  ImportSpecifier,
+  BlockStatement,
+  IfStatement
+} from './estree.js';
 import Util from '../util.js';
 import * as deep from '../deep.js';
 //import util from 'util';
@@ -26,13 +45,15 @@ export class Printer {
 
     Util.define(this, {
       color,
-      colorText: Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({
+      colorText: Object.entries(Printer.colors).reduce(
+        (acc, [key, codes]) => ({
           ...acc,
           [key]: text => color.text(text, ...codes)
         }),
         {}
       ),
-      colorCode: Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({
+      colorCode: Object.entries(Printer.colors).reduce(
+        (acc, [key, codes]) => ({
           ...acc,
           [key]: output => {
             if(typeof output == 'string') {
@@ -50,8 +71,7 @@ export class Printer {
   printNode(node) {
     let name, fn, className;
     try {
-      className = Util.className(node);
-      name = Util.isObject(node) ? className : null;
+      name = (Util.isObject(node) && node instanceof ESNode && Util.className(node)) || node.type;
 
       fn =
         this['print' + name] ||
@@ -81,7 +101,8 @@ export class Printer {
       }
     }
     let code = fn.call(this, node);
-    if((node instanceof Statement || node instanceof ImportDeclaration) &&
+    if(
+      (node instanceof Statement || node instanceof ImportDeclaration) &&
       !(node instanceof FunctionDeclaration || node instanceof BlockStatement)
     )
       if(!code.trimEnd().endsWith(';') && !code.trimEnd().endsWith('}'))
@@ -97,7 +118,8 @@ export class Printer {
   }
 
   print(tree) {
-    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]
+    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(
+      ([node, path]) => [node.position, path.join('.'), node]
     );
 
     //console.log("comments: ", this.comments);
@@ -291,7 +313,8 @@ export class Printer {
     right = this.printNode(property);
 
     //console.log('printMemberExpression', { object, property });
-    if(!(object instanceof Identifier) &&
+    if(
+      !(object instanceof Identifier) &&
       !(object instanceof Literal) &&
       !(object instanceof MemberExpression)
     )
@@ -302,7 +325,8 @@ export class Printer {
 
     if(!computed)
       return left + colorText.punctuators(punctuator) + colorCode.identifiers() + right;
-    return (left +
+    return (
+      left +
       colorCode.punctuators(left) +
       (optional ? '?.' : '') +
       '[' +
@@ -333,7 +357,8 @@ export class Printer {
     let fn = this.printNode(callee);
     if(callee instanceof ArrowFunctionExpression) fn = `(${fn})`;
 
-    return (fn +
+    return (
+      fn +
       this.colorCode.punctuators(fn) +
       (optional ? '?.' : '') +
       '(' +
@@ -415,7 +440,8 @@ export class Printer {
     }
     s = s.trimEnd();
 
-    return (this.colorCode.punctuators() +
+    return (
+      this.colorCode.punctuators() +
       '{' +
       s +
       this.colorCode.punctuators() +
@@ -668,7 +694,8 @@ export class Printer {
 
     const isImportSpecifier = node => Util.isObject(node) && node instanceof ImportSpecifier;
 
-    let list = specifiers.reduce((acc, spec, i) => [
+    let list = specifiers.reduce(
+      (acc, spec, i) => [
         ...acc,
         (isImportSpecifier(specifiers[i - 1]) ^ isImportSpecifier(spec) ? '{ ' : '') +
           this.printNode(spec) +
@@ -886,7 +913,8 @@ export class Printer {
 
       line += value.replace(linebreak, '\n  ');
 
-      if(property.flags &&
+      if(
+        property.flags &&
         !(property instanceof BindingProperty) &&
         !(object_literal instanceof ObjectPattern)
       ) {
@@ -1001,7 +1029,8 @@ export class Printer {
 
       output += ` ${attr}`;
 
-      if(!(value instanceof Literal && value.value === true) &&
+      if(
+        !(value instanceof Literal && value.value === true) &&
         !(value.value == attr && this.format)
       ) {
         output += this.format ? `: ` : `=`;
@@ -1057,7 +1086,8 @@ export class Printer {
       //console.log('printObjectPattern:', { binding_property, output});
     }
     if(/\n/.test(output))
-      return (this.colorText.punctuators('{') +
+      return (
+        this.colorText.punctuators('{') +
         `\n  ${output.replace(linebreak, '\n  ')}\n` +
         this.colorText.punctuators('}')
       );
