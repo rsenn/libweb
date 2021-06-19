@@ -82,7 +82,8 @@ class BaseProxyHandler {
 
   lockShadowTarget(shadowTarget) {
     const { originalTarget } = this;
-    const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget),
+    const targetKeys = ArrayConcat.call(
+      getOwnPropertyNames(originalTarget),
       getOwnPropertySymbols(originalTarget)
     );
     targetKeys.forEach(key => {
@@ -322,12 +323,14 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   }
 
   setPrototypeOf(shadowTarget, prototype) {
-    if(Util.tryCatch(
+    if(
+      Util.tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
     ) {
-      throw new Error(`Invalid setPrototypeOf invocation for reactive proxy ${toString(
+      throw new Error(
+        `Invalid setPrototypeOf invocation for reactive proxy ${toString(
           this.originalTarget
         )}. Prototype of reactive objects cannot be changed.`
       );
@@ -407,13 +410,15 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
     const handler = this;
     const set = function(v) {
-      if(Util.tryCatch(
+      if(
+        Util.tryCatch(
           () => process,
           process => process.env.NODE_ENV !== 'production'
         )
       ) {
         const { originalTarget } = handler;
-        throw new Error(`Invalid mutation: Cannot invoke a setter on "${originalTarget}". "${originalTarget}" is read-only.`
+        throw new Error(
+          `Invalid mutation: Cannot invoke a setter on "${originalTarget}". "${originalTarget}" is read-only.`
         );
       }
     };
@@ -422,13 +427,15 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   set(shadowTarget, key, value) {
-    if(Util.tryCatch(
+    if(
+      Util.tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot set "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      throw new Error(
+        `Invalid mutation: Cannot set "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
       );
     }
 
@@ -436,13 +443,15 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   deleteProperty(shadowTarget, key) {
-    if(Util.tryCatch(
+    if(
+      Util.tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot delete "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      throw new Error(
+        `Invalid mutation: Cannot delete "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
       );
     }
 
@@ -450,25 +459,29 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   setPrototypeOf(shadowTarget, prototype) {
-    if(Util.tryCatch(
+    if(
+      Util.tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read-only.`
+      throw new Error(
+        `Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read-only.`
       );
     }
   }
 
   preventExtensions(shadowTarget) {
-    if(Util.tryCatch(
+    if(
+      Util.tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`
+      throw new Error(
+        `Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`
       );
     }
 
@@ -476,13 +489,15 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   defineProperty(shadowTarget, key, descriptor) {
-    if(Util.tryCatch(
+    if(
+      Util.tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot defineProperty "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      throw new Error(
+        `Invalid mutation: Cannot defineProperty "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
       );
     }
 
@@ -558,7 +573,8 @@ function getGlobal() {
 }
 
 function init() {
-  if(Util.tryCatch(
+  if(
+    Util.tryCatch(
       () => process,
       process => process.env.NODE_ENV === 'production'
     )
@@ -577,7 +593,8 @@ function init() {
   global.devtoolsFormatters = devtoolsFormatters;
 }
 
-if(Util.tryCatch(
+if(
+  Util.tryCatch(
     () => process,
     process => process.env.NODE_ENV !== 'production'
   )
@@ -674,7 +691,7 @@ class ReactiveMembrane {
 
     const membrane = this;
     reactiveState = {
-      get reactive() {
+      /* prettier-ignore */ get reactive() {
         const reactiveHandler = new ReactiveProxyHandler(membrane, distortedValue);
         //caching the reactive proxy after the first time it is accessed
         const proxy = new Proxy(createShadowTarget(distortedValue), reactiveHandler);
@@ -683,7 +700,7 @@ class ReactiveMembrane {
         ObjectDefineProperty(this, 'handler', { value: reactiveHandler });
         return proxy;
       },
-      get readOnly() {
+      /* prettier-ignore */ get readOnly() {
         const readOnlyHandler = new ReadOnlyHandler(membrane, distortedValue);
         //caching the readOnly proxy after the first time it is accessed
         const proxy = new Proxy(createShadowTarget(distortedValue), readOnlyHandler);

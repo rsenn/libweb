@@ -28,7 +28,8 @@ function mix(...args) {
   let factory = (isFactory(args[args.length - 1]) && args.pop()) || derive;
   superclass = isMixin(superclass) ? superclass.class : derive(superclass);
   if(args.length)
-    factory = (org => superclass =>
+    factory = (
+      org => superclass =>
         org(args.reduce((s, m) => m.mixin(s), superclass))
     )(factory);
 
@@ -53,7 +54,8 @@ function mix(...args) {
     mixin: { value: mixin, writable: false },
     class: { value: Class, writable: false },
     interface: {
-      get: (x => () =>
+      get: (
+        x => () =>
           x ? x : (x = getInterface(Class.prototype))
       )()
     }
@@ -111,8 +113,10 @@ function like(x, type) {
   if(is(x, type)) return true;
   const itf = type.interface || (typeof type == 'function' && getInterface(type.prototype));
   const subject = typeof x == 'function' ? x.interface || getInterface(x.prototype) : x;
-  return (itf &&
-    Object.keys(itf).reduce((f, k) => f && (typeof itf[k] == 'function' ? typeof subject[k] == 'function' : k in subject),
+  return (
+    itf &&
+    Object.keys(itf).reduce(
+      (f, k) => f && (typeof itf[k] == 'function' ? typeof subject[k] == 'function' : k in subject),
       true
     )
   );
@@ -140,7 +144,8 @@ function getInterface(proto) {
 function getPropertyNames(proto) {
   const results = [];
   while(proto !== Object.prototype) {
-    Object.getOwnPropertyNames(proto).reduce((arr, k) => (arr.indexOf(k) === -1 ? arr.push(k) && arr : arr),
+    Object.getOwnPropertyNames(proto).reduce(
+      (arr, k) => (arr.indexOf(k) === -1 ? arr.push(k) && arr : arr),
       results
     );
     proto = Object.getPrototypeOf(proto).constructor.prototype;
@@ -155,7 +160,8 @@ function isMixin(x) {
 function isClass(x) {
   if(typeof x != 'function') return false;
   const s = x.toString();
-  return (/^class\s/.test(s) ||
+  return (
+    /^class\s/.test(s) ||
     /^.*classCallCheck\(/.test(s.replace(/^[^{]*{\s*/, '').replace(/\s*}[^}]*$/, ''))
   );
 }

@@ -125,7 +125,8 @@ wru.test([
     name: 'Point.comp()',
     test: () => {
       let point = new Point(50, 50);
-      wru.assert('point.comp().equals(new Point(-50,-50))',
+      wru.assert(
+        'point.comp().equals(new Point(-50,-50))',
         point.comp().equals(new Point(-50, -50))
       );
     }
@@ -221,7 +222,8 @@ wru.test([
       let point = new Point(50, 50);
       let obj = point.toObject();
 
-      wru.assert('Object.getPrototypeOf(obj) == Point.prototype',
+      wru.assert(
+        'Object.getPrototypeOf(obj) == Point.prototype',
         Object.getPrototypeOf(obj) == Point.prototype
       );
     }

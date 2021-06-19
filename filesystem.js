@@ -55,10 +55,10 @@ export function QuickJSFileSystem(std, os) {
     O_EXCL,
     O_TRUNC,
     O_TEXT,
-    get errno() {
+    /* prettier-ignore */ get errno() {
       return errno;
     },
-    get errstr() {
+    /* prettier-ignore */ get errstr() {
       return std.strerror(errno);
     },
     Stats: class Stats {
@@ -136,7 +136,8 @@ export function QuickJSFileSystem(std, os) {
         case 'number':
           ret = os.read(fd, buf, offset, length);
           break;
-        default: ret = fd.read(buf, offset, length);
+        default:
+          ret = fd.read(buf, offset, length);
           break;
       }
       //  console.log("ret:", ret);
@@ -155,7 +156,8 @@ export function QuickJSFileSystem(std, os) {
         case 'number':
           ret = os.write(fd, data, offset, length);
           break;
-        default: ret = fd.write(data, offset, length);
+        default:
+          ret = fd.write(data, offset, length);
           break;
       }
       return numerr(ret);
@@ -236,8 +238,8 @@ export function QuickJSFileSystem(std, os) {
         case 'number':
           ret = os.seek(fd, offset, whence);
           break;
-        default: if (numerr(fd.seek(offset, whence)) == 0)
-            ret = typeof offset == 'bigint' ? fd.tello() : fd.tell();
+        default:
+          if(numerr(fd.seek(offset, whence)) == 0) ret = typeof offset == 'bigint' ? fd.tello() : fd.tell();
           break;
       }
       // console.log('seek:', { offset, whence, ret });
@@ -247,7 +249,8 @@ export function QuickJSFileSystem(std, os) {
       switch (typeof file) {
         case 'number':
           return numerr(os.seek(file, 0, std.SEEK_CUR));
-        default: return file.tell();
+        default:
+          return file.tell();
       }
     },
     size(file) {
@@ -301,16 +304,15 @@ export function QuickJSFileSystem(std, os) {
 
     fileno(file) {
       if(typeof file == 'number') return file;
-      if(typeof file == 'object' && file != null && typeof file.fileno == 'function')
-        return file.fileno();
+      if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
     },
-    get stdin() {
+    /* prettier-ignore */ get stdin() {
       return std.in;
     },
-    get stdout() {
+    /* prettier-ignore */ get stdout() {
       return std.out;
     },
-    get stderr() {
+    /* prettier-ignore */ get stderr() {
       return std.err;
     },
     pipe() {
@@ -437,7 +439,7 @@ export function NodeJSFileSystem(fs, tty, process) {
   }
 
   return {
-    get errno() {
+    /* prettier-ignore */ get errno() {
       return Number(errno);
     },
     buffer(bytes) {
@@ -469,8 +471,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       let ret;
       console.log('fopen', { fd, flags });
       if(flags[0] == 'r') ret = fs.createReadStream(filename, { fd, flags, mode });
-      else if('wa'.indexOf(flags[0]) != -1)
-        ret = fs.createWriteStream(filename, { fd, flags, mode });
+      else if('wa'.indexOf(flags[0]) != -1) ret = fs.createWriteStream(filename, { fd, flags, mode });
       return Object.assign(ret, { fd, flags, mode });
     },
     close(file) {
@@ -594,7 +595,8 @@ export function NodeJSFileSystem(fs, tty, process) {
           case 'number':
             st = fs.fstatSync(fd);
             break;
-          default: st = sizeMap.get(fd);
+          default:
+            st = sizeMap.get(fd);
             break;
         }
         return st.size;
@@ -645,13 +647,13 @@ export function NodeJSFileSystem(fs, tty, process) {
     mkdtemp(prefix) {
       return CatchError(() => fs.mkdtempSync(prefix));
     },
-    get stdin() {
+    /* prettier-ignore */ get stdin() {
       return process.stdin;
     },
-    get stdout() {
+    /* prettier-ignore */ get stdout() {
       return process.stdout;
     },
-    get stderr() {
+    /* prettier-ignore */ get stderr() {
       return process.stderr;
     },
     setReadHandler(st, handler) {
@@ -751,7 +753,8 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
         return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
 
-      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`,
+      const stream = ChunkReader(
+        `this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`,
         4
       ).pipeThrough(new DebugTransformStream());
       /*ew ReadableStream({
@@ -770,7 +773,8 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
         }
       })*/
       //console.log(' stream:', stream);
-      let promise = fetch(send ? '/save' : filename,
+      let promise = fetch(
+        send ? '/save' : filename,
         send
           ? {
               method: 'POST',
@@ -786,9 +790,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
           : {}
       )
         .then(response =>
-          writable
-            ? response.json()
-            : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
+          writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
         )
         .catch(err => (error = err));
       return send ? writable : promise;
@@ -810,10 +812,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       if(typeof ret == 'object' && ret !== null) {
         const { value, done } = ret;
         if(typeof value == 'string')
-          return CopyToArrayBuffer(value,
-            buf || CreateArrayBuffer(value.length + (offset || 0)),
-            offset || 0
-          );
+          return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
       }
       return ret.done ? 0 : -1;
     },
@@ -868,8 +867,7 @@ function StringToArrayBuffer(str, bytes = 1) {
 function CopyToArrayBuffer(str, buf, offset, bytes = 1) {
   // console.log("CopyToArrayBuffer",{str,buf,bytes});
   const view = new CharWidth[bytes](buf);
-  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++)
-    view[i + offset] = str.codePointAt(i);
+  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++) view[i + offset] = str.codePointAt(i);
   return buf;
 }
 function CreateArrayBuffer(bytes) {
@@ -890,7 +888,8 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(NodeJSFileSystem,
+    fs = await CreatePortableFileSystem(
+      NodeJSFileSystem,
       await import('fs'),
       await import('tty'),
       await import('process')
@@ -902,13 +901,17 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(BrowserFileSystem,
+    fs = await CreatePortableFileSystem(
+      BrowserFileSystem,
 
-      (await import('./stream/textDecodeStream.js')
+      (
+        await import('./stream/textDecodeStream.js')
       ).TextDecoderStream,
-      (await import('./stream/transformStream.js')
+      (
+        await import('./stream/transformStream.js')
       ).TransformStream,
-      (await import('./stream/writableStream.js')
+      (
+        await import('./stream/writableStream.js')
       ).WritableStream
     );
   } catch(error) {

@@ -108,7 +108,8 @@
           this.eventListeners[this.eventTypes[i]] = [];
         }
       } else {
-        handleError('log4javascript.EventSupport [' +
+        handleError(
+          'log4javascript.EventSupport [' +
             this +
             ']: setEventTypes: eventTypes parameter must be an Array'
         );
@@ -118,7 +119,8 @@
     addEventListener(eventType, listener) {
       if(typeof listener == 'function') {
         if(!array_contains(this.eventTypes, eventType)) {
-          handleError('log4javascript.EventSupport [' +
+          handleError(
+            'log4javascript.EventSupport [' +
               this +
               "]: addEventListener: no event called '" +
               eventType +
@@ -127,7 +129,8 @@
         }
         this.eventListeners[eventType].push(listener);
       } else {
-        handleError('log4javascript.EventSupport [' +
+        handleError(
+          'log4javascript.EventSupport [' +
             this +
             ']: addEventListener: listener must be a function'
         );
@@ -137,7 +140,8 @@
     removeEventListener(eventType, listener) {
       if(typeof listener == 'function') {
         if(!array_contains(this.eventTypes, eventType)) {
-          handleError('log4javascript.EventSupport [' +
+          handleError(
+            'log4javascript.EventSupport [' +
               this +
               "]: removeEventListener: no event called '" +
               eventType +
@@ -146,7 +150,8 @@
         }
         array_remove(this.eventListeners[eventType], listener);
       } else {
-        handleError('log4javascript.EventSupport [' +
+        handleError(
+          'log4javascript.EventSupport [' +
             this +
             ']: removeEventListener: listener must be a function'
         );
@@ -160,7 +165,8 @@
           listeners[i](this, eventType, eventArgs);
         }
       } else {
-        handleError('log4javascript.EventSupport [' +
+        handleError(
+          'log4javascript.EventSupport [' +
             this +
             "]: dispatchEvent: no event called '" +
             eventType +
@@ -540,7 +546,8 @@
           this.invalidateAppenderCache();
         }
       } else {
-        handleError("Logger.addAppender: appender supplied ('" +
+        handleError(
+          "Logger.addAppender: appender supplied ('" +
             toStr(appender) +
             "') is not a subclass of Appender"
         );
@@ -619,7 +626,8 @@
       } else if(level instanceof Level) {
         loggerLevel = level;
       } else {
-        handleError('Logger.setLevel: level supplied to logger ' +
+        handleError(
+          'Logger.setLevel: level supplied to logger ' +
             this.name +
             ' is not an instance of log4javascript.Level'
         );
@@ -664,7 +672,8 @@
         if(isUndefined(name)) {
           handleError('Logger.time: a name for the timer must be supplied');
         } else if(level && !(level instanceof Level)) {
-          handleError('Logger.time: level supplied to timer ' +
+          handleError(
+            'Logger.time: level supplied to timer ' +
               name +
               ' is not an instance of log4javascript.Level'
           );
@@ -787,7 +796,8 @@
     //Use default logger if loggerName is not specified or invalid
     if(typeof loggerName != 'string') {
       loggerName = anonymousLoggerName;
-      logLog.warn('log4javascript.getLogger: non-string logger name ' +
+      logLog.warn(
+        'log4javascript.getLogger: non-string logger name ' +
           toStr(loggerName) +
           ' supplied, returning anonymous logger'
       );
@@ -1030,7 +1040,8 @@
     if(layout instanceof Layout) {
       this.layout = layout;
     } else {
-      handleError('Appender.setLayout: layout supplied to ' + this.toString() + ' is not a subclass of Layout'
+      handleError(
+        'Appender.setLayout: layout supplied to ' + this.toString() + ' is not a subclass of Layout'
       );
     }
   };
@@ -1043,7 +1054,8 @@
     if(threshold instanceof Level) {
       this.threshold = threshold;
     } else {
-      handleError('Appender.setThreshold: threshold supplied to ' +
+      handleError(
+        'Appender.setThreshold: threshold supplied to ' +
           this.toString() +
           ' is not a subclass of Level'
       );
@@ -1150,7 +1162,8 @@
     let i, len;
     function formatMessage(message) {
       message = typeof message === 'string' ? message : toStr(message);
-      return ('<log4javascript:message><![CDATA[' +
+      return (
+        '<log4javascript:message><![CDATA[' +
         layout.escapeCdata(message) +
         ']]></log4javascript:message>'
       );
@@ -1386,7 +1399,8 @@
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + childExpansion);
           } catch(ex) {
-            childLines.push(childIndentation +
+            childLines.push(
+              childIndentation +
                 'Error formatting array member. Details: ' +
                 getExceptionStringRep(ex) +
                 ''
@@ -1408,7 +1422,8 @@
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + i + ': ' + childExpansion);
           } catch(ex) {
-            childLines.push(childIndentation +
+            childLines.push(
+              childIndentation +
                 i +
                 ': Error formatting property. Details: ' +
                 getExceptionStringRep(ex)
@@ -1491,7 +1506,8 @@
     };
 
     Date.prototype.getUTCTime = function() {
-      return Date.UTC(this.getFullYear(),
+      return Date.UTC(
+        this.getFullYear(),
         this.getMonth(),
         this.getDate(),
         this.getHours(),
@@ -1509,7 +1525,8 @@
       //Using midday avoids any possibility of DST messing things up
       let midday = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 12, 0, 0);
       let previousSunday = new Date(midday.getTime() - this.getDay() * ONE_DAY);
-      return newDateAtMidnight(previousSunday.getFullYear(),
+      return newDateAtMidnight(
+        previousSunday.getFullYear(),
         previousSunday.getMonth(),
         previousSunday.getDate()
       );
@@ -1696,7 +1713,8 @@
               break;
             case MONTH:
               if(numberOfLetters >= 3) {
-                formattedString += formatText(monthNames[rawData],
+                formattedString += formatText(
+                  monthNames[rawData],
                   numberOfLetters,
                   numberOfLetters
                 );
@@ -1780,7 +1798,8 @@
             if(specifier) {
               depth = parseInt(specifier, 10);
               if(isNaN(depth)) {
-                handleError("PatternLayout.format: invalid specifier '" +
+                handleError(
+                  "PatternLayout.format: invalid specifier '" +
                     specifier +
                     "' for conversion character '" +
                     conversionCharacter +
@@ -1838,17 +1857,20 @@
               if(specifier) {
                 fieldIndex = parseInt(specifier, 10);
                 if(isNaN(fieldIndex)) {
-                  handleError("PatternLayout.format: invalid specifier '" +
+                  handleError(
+                    "PatternLayout.format: invalid specifier '" +
                       specifier +
                       "' for conversion character 'f' - should be a number"
                   );
                 } else if(fieldIndex === 0) {
-                  handleError("PatternLayout.format: invalid specifier '" +
+                  handleError(
+                    "PatternLayout.format: invalid specifier '" +
                       specifier +
                       "' for conversion character 'f' - must be greater than zero"
                   );
                 } else if(fieldIndex > this.customFields.length) {
-                  handleError("PatternLayout.format: invalid specifier '" +
+                  handleError(
+                    "PatternLayout.format: invalid specifier '" +
                       specifier +
                       "' for conversion character 'f' - there aren't that many custom fields"
                   );
@@ -1875,7 +1897,8 @@
           case '%': //Literal % sign
             replacement = '%';
             break;
-          default: replacement = matchedString;
+          default:
+            replacement = matchedString;
             break;
         }
         //Format the replacement according to any padding or
@@ -2025,7 +2048,7 @@
     function() {
       return new ActiveXObject('Msxml2.XMLHTTP');
     },
-    function () {
+    function() {
       return new ActiveXObject('Microsoft.XMLHTTP');
     }
   ];
@@ -2054,7 +2077,8 @@
   };
 
   function isHttpRequestSuccessful(xmlHttp) {
-    return (isUndefined(xmlHttp.status) ||
+    return (
+      isUndefined(xmlHttp.status) ||
       xmlHttp.status === 0 ||
       (xmlHttp.status >= 200 && xmlHttp.status < 300) ||
       xmlHttp.status == 1223 /* Fix for IE */
@@ -2093,7 +2117,8 @@
     //direct alteration to the appender configuration properties.
     function checkCanConfigure(configOptionName) {
       if(initialized) {
-        handleError("AjaxAppender: configuration option '" +
+        handleError(
+          "AjaxAppender: configuration option '" +
             configOptionName +
             "' may not be set after the appender has been initialized"
         );
@@ -2166,7 +2191,8 @@
     };
 
     this.setRequestSuccessCallback = function(requestSuccessCallbackParam) {
-      requestSuccessCallback = extractFunctionFromParam(requestSuccessCallbackParam,
+      requestSuccessCallback = extractFunctionFromParam(
+        requestSuccessCallbackParam,
         requestSuccessCallback
       );
     };
@@ -4781,7 +4807,8 @@
     let consoleAppenderIdCounter = 1;
     ConsoleAppender.prototype = new Appender();
 
-    ConsoleAppender.prototype.create = function(inPage,
+    ConsoleAppender.prototype.create = function(
+      inPage,
       container,
       lazyInit,
       initiallyMinimized,
@@ -4803,7 +4830,8 @@
       let consoleAppenderId = consoleAppenderIdCounter++;
 
       //Local variables
-      initiallyMinimized = extractBooleanFromParam(initiallyMinimized,
+      initiallyMinimized = extractBooleanFromParam(
+        initiallyMinimized,
         this.defaults.initiallyMinimized
       );
       lazyInit = extractBooleanFromParam(lazyInit, this.defaults.lazyInit);
@@ -4828,7 +4856,8 @@
       let appenderName = inPage ? 'InPageAppender' : 'PopUpAppender';
       let checkCanConfigure = function(configOptionName) {
         if(consoleWindowCreated) {
-          handleError(appenderName +
+          handleError(
+            appenderName +
               ": configuration option '" +
               configOptionName +
               "' may not be set after the appender has been initialized"
@@ -4924,7 +4953,8 @@
         return commandLineObjectExpansionDepth;
       };
       this.setCommandLineObjectExpansionDepth = function(commandLineObjectExpansionDepthParam) {
-        commandLineObjectExpansionDepth = extractIntFromParam(commandLineObjectExpansionDepthParam,
+        commandLineObjectExpansionDepth = extractIntFromParam(
+          commandLineObjectExpansionDepthParam,
           commandLineObjectExpansionDepth
         );
       };
@@ -5290,9 +5320,11 @@
         };
 
         this.close = function(fromButton) {
-          if(!consoleClosed &&
+          if(
+            !consoleClosed &&
             (!fromButton ||
-              confirm('This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'
+              confirm(
+                'This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'
               ))
           ) {
             iframeContainerDiv.parentNode.removeChild(iframeContainerDiv);
@@ -5402,7 +5434,8 @@
                   }
                   open();
                 } catch(ex) {
-                  handleError("InPageAppender.init: invalid container element '" + container + "' supplied",
+                  handleError(
+                    "InPageAppender.init: invalid container element '" + container + "' supplied",
                     ex
                   );
                 }
@@ -5436,7 +5469,8 @@
 
         safeToAppend = function() {
           if(isSupported && !consoleClosed) {
-            if(consoleWindowCreated &&
+            if(
+              consoleWindowCreated &&
               !consoleWindowLoaded &&
               getConsoleWindow() &&
               isLoaded(getConsoleWindow())
@@ -5567,7 +5601,8 @@
             consoleWindowLoadHandler();
             consoleWindowLoaded = true;
             appendQueuedLoggingEvents();
-            pollConsoleWindow(checkPopUpClosed,
+            pollConsoleWindow(
+              checkPopUpClosed,
               500,
               popUpClosedCallback,
               'PopUpAppender.checkPopUpClosed: error checking pop-up window'
@@ -5593,7 +5628,8 @@
                 if(isLoaded(popUp)) {
                   finalInit();
                 } else {
-                  pollConsoleWindow(popUpLoadedTest,
+                  pollConsoleWindow(
+                    popUpLoadedTest,
                     100,
                     finalInit,
                     'PopUpAppender.init: unable to create console window'
@@ -5602,10 +5638,12 @@
               }
             } else {
               isSupported = false;
-              logLog.warn('PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender'
+              logLog.warn(
+                'PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender'
               );
               if(complainAboutPopUpBlocking) {
-                handleError('log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.'
+                handleError(
+                  'log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.'
                 );
               }
             }
@@ -5656,7 +5694,8 @@
     /* ------------------------------------------------------------------ */
 
     function PopUpAppender(lazyInit, initiallyMinimized, useDocumentWrite, width, height) {
-      this.create(false,
+      this.create(
+        false,
         null,
         lazyInit,
         initiallyMinimized,
@@ -5697,14 +5736,16 @@
 
     /* ------------------------------------------------------------------ */
 
-    function InPageAppender(container,
+    function InPageAppender(
+      container,
       lazyInit,
       initiallyMinimized,
       useDocumentWrite,
       width,
       height
     ) {
-      this.create(true,
+      this.create(
+        true,
         container,
         lazyInit,
         initiallyMinimized,
@@ -5881,7 +5922,8 @@
             for(i = 0, len = rootNode.attributes.length; i < len; i++) {
               let currentAttr = rootNode.attributes[i];
               //Check the attribute is valid.
-              if(!currentAttr.specified ||
+              if(
+                !currentAttr.specified ||
                 currentAttr.nodeValue === null ||
                 currentAttr.nodeName.toLowerCase() === 'style' ||
                 typeof currentAttr.nodeValue !== 'string' ||
@@ -5901,19 +5943,22 @@
                 xhtml += ' style="' + getStyleAttributeValue(rootNode) + '"';
               }
             }
-            if(array_contains(emptyElements, tagName) ||
+            if(
+              array_contains(emptyElements, tagName) ||
               (hasPrefix && !rootNode.hasChildNodes())
             ) {
               xhtml += '/' + gt;
             } else {
               xhtml += gt;
               //Add output for childNodes collection (which doesn't include attribute nodes)
-              let childStartNewLine = !(rootNode.childNodes.length === 1 &&
+              let childStartNewLine = !(
+                rootNode.childNodes.length === 1 &&
                 rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE
               );
               let childPreformatted = array_contains(preFormattedElements, tagName);
               for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
-                xhtml += getXhtml(rootNode.childNodes[i],
+                xhtml += getXhtml(
+                  rootNode.childNodes[i],
                   true,
                   indentation + indentationUnit,
                   childStartNewLine,
@@ -5954,7 +5999,8 @@
               xhtml += getXhtml(rootNode.childNodes[i], true, indentation);
             }
             return xhtml;
-          default: return '';
+          default:
+            return '';
         }
       } else {
         xhtml = '';
@@ -6028,7 +6074,8 @@
           try {
             values.push(args[0][k]);
           } catch(ex) {
-            logLog.warn('values(): Unable to obtain value for key ' +
+            logLog.warn(
+              'values(): Unable to obtain value for key ' +
                 k +
                 '. Details: ' +
                 getExceptionMessage(ex)
@@ -6038,7 +6085,8 @@
         return values;
       });
 
-      ConsoleAppender.addGlobalCommandLineFunction('expansionDepth',
+      ConsoleAppender.addGlobalCommandLineFunction(
+        'expansionDepth',
         (appender, args, returnValue) => {
           let expansionDepth = parseInt(args[0], 10);
           if(isNaN(expansionDepth) || expansionDepth < 0) {

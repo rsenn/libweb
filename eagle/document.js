@@ -22,7 +22,7 @@ export class EagleDocument extends EagleNode {
   file = null;
   type = null;
 
-  get typeName() {
+  /* prettier-ignore */ get typeName() {
     return {
       brd: 'board',
       sch: 'schematic',
@@ -76,17 +76,11 @@ export class EagleDocument extends EagleNode {
     const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
     const [obj2eagle, path2eagle] = [
       Util.mapFunction(raw2element),
-      Util.mapAdapter((key, value) =>
-        value === undefined && key !== undefined ? this.lookup(key) : undefined
-      )
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))
     ];
     const [eagle2path, eagle2obj] = [
-      Util.mapAdapter((key, value) =>
-        value === undefined && key !== undefined ? key.path : undefined
-      ),
-      Util.mapAdapter((key, value) =>
-        value === undefined && key !== undefined ? key.raw : undefined
-      )
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
     ];
 
     // prettier-ignore
@@ -114,7 +108,8 @@ export class EagleDocument extends EagleNode {
     const orig = xml[0];
     Util.define(this, 'orig', orig);
 
-    Util.define(this,
+    Util.define(
+      this,
       'palette',
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
@@ -122,26 +117,24 @@ export class EagleDocument extends EagleNode {
     //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     this.initCache(EagleElement, EagleNodeList.create);
 
-    lazyProperty(this, 'children', () =>
-      EagleNodeList.create(this, ['children'] /*, this.raw.children*/)
-    );
+    lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
   }
 
-  get raw() {
+  /* prettier-ignore */ get raw() {
     return this.xml[0];
   }
-  get filename() {
+  /* prettier-ignore */ get filename() {
     return this.file && this.file.replace(/.*\//g, '');
   }
-  get dirname() {
+  /* prettier-ignore */ get dirname() {
     return this.file && (/\//.test(this.file) ? this.file.replace(/\/[^\/]*\/?$/g, '') : '.');
   }
 
-  get basename() {
+  /* prettier-ignore */ get basename() {
     return this.file && this.filename.replace(/\.[a-z][a-z][a-z]$/i, '');
   }
 
-  get changes() {
+  /* prettier-ignore */ get changes() {
     return deepDiff(this.orig, this.raw);
   }
 
@@ -246,12 +239,14 @@ export class EagleDocument extends EagleNode {
     } else if(this.signals) {
       /*for(let signal of this.signals.list) {
         let bbrect = signal.getBounds();*/
-      bb.update([...project.doc.signals.list]
+      bb.update(
+        [...project.doc.signals.list]
           .map(sig => [...sig.children])
           .flat()
           .filter(c => !!c.geometry)
       );
-      bb.update([...project.doc.elements.list].map(e =>
+      bb.update(
+        [...project.doc.elements.list].map(e =>
           e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())
         )
       );
@@ -272,14 +267,11 @@ export class EagleDocument extends EagleNode {
     if(plain) plain = plain.filter(e => e.tagName == 'wire');
 
     if(plain) {
-      let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1
-      );
+      let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1);
 
       if(measures.length) {
         if(bbox) {
-          measures = measures.map(e =>
-            typeof e.getBounds == 'function' ? e.getBounds() : e.geometry
-          );
+          measures = measures.map(e => (typeof e.getBounds == 'function' ? e.getBounds() : e.geometry));
           measures = BBox.from(measures);
           //console.log('measures bbox:', measures);
 
@@ -299,18 +291,19 @@ export class EagleDocument extends EagleNode {
     }
   }
 
-  get measures() {
+  /* prettier-ignore */ get measures() {
     return this.getMeasures({ points: true, bbox: true });
   }
 
-  get dimensions() {
+  /* prettier-ignore */ get dimensions() {
     let size = new Rect(this.measures).size;
     size.units.width = size.units.height = 'mm';
     return size;
   }
 
   signalMap() {
-    return new Map([...this.signals].map(([name, signal]) => {
+    return new Map(
+      [...this.signals].map(([name, signal]) => {
         let objects = [...signal.children]
           .map(child => [child, child.geometry])
           .filter(([child, geometry]) => !!geometry || child.tagName == 'contactref')
@@ -340,7 +333,7 @@ export class EagleDocument extends EagleNode {
     }
   });
 
-  get mainElement() {
+  /* prettier-ignore */ get mainElement() {
     return this.getMainElement();
   }
 }

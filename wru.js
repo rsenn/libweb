@@ -97,7 +97,8 @@ export const wru = (function (window) {
         current = { name: current[NAME] || 'anonymous', test: current };
       }
       log(OUTPUT_SEPARATOR);
-      log((iHasIt(current, NAME) && current[NAME]) ||
+      log(
+        (iHasIt(current, NAME) && current[NAME]) ||
           (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) ||
           UNKNOWN
       );
@@ -161,7 +162,8 @@ export const wru = (function (window) {
         status = 'fail';
         log(FAILURE + EMPTY + overallFail + ' Failures');
         break;
-      default: status = 'pass';
+      default:
+        status = 'pass';
         log(OK + '      ' + overallPass + ' Passes');
     }
     wru.status = status;
@@ -195,7 +197,8 @@ export const wru = (function (window) {
     } else {
       prefix = OK;
     }
-    log(prefix +
+    log(
+      prefix +
         ' passes: ' +
         pass[LENGTH] +
         ', fails: ' +
@@ -279,7 +282,8 @@ export const wru = (function (window) {
         }
 
         // if in *TIMEOUT* time nothing happens ...
-        timeout = setTimeout(() => {
+        timeout = setTimeout(
+          () => {
             // p is flagged as 0
             p = 0;
 

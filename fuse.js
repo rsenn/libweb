@@ -36,7 +36,8 @@ function isNumber(value) {
 
 // Adapted from: https://github.com/lodash/lodash/blob/master/isBoolean.js
 function isBoolean(value) {
-  return (value === true ||
+  return (
+    value === true ||
     value === false ||
     (isObjectLike(value) && getTag(value) == '[object Boolean]')
   );
@@ -482,7 +483,8 @@ function transformScore(result, data) {
   data.score = result.score;
 }
 
-function computeScore(pattern,
+function computeScore(
+  pattern,
   {
     errors = 0,
     currentLocation = 0,
@@ -537,7 +539,8 @@ function convertMaskToIndices(matchmask = [], minMatchCharLength = Config.minMat
 // Machine word size
 const MAX_BITS = 32;
 
-function search(text,
+function search(
+  text,
   pattern,
   patternAlphabet,
   {
@@ -730,7 +733,9 @@ function createPatternAlphabet(pattern) {
 }
 
 class BitapSearch {
-  constructor(pattern, {
+  constructor(
+    pattern,
+    {
       location = Config.location,
       threshold = Config.threshold,
       distance = Config.distance,
@@ -1028,7 +1033,9 @@ class InverseSuffixExactMatch extends BaseMatch {
 }
 
 class FuzzyMatch extends BaseMatch {
-  constructor(pattern, {
+  constructor(
+    pattern,
+    {
       location = Config.location,
       threshold = Config.threshold,
       distance = Config.distance,
@@ -1198,7 +1205,9 @@ const MultiMatchSet = new Set([FuzzyMatch.type, IncludeMatch.type]);
  * ```
  */
 class ExtendedSearch {
-  constructor(pattern, {
+  constructor(
+    pattern,
+    {
       isCaseSensitive = Config.isCaseSensitive,
       includeMatches = Config.includeMatches,
       minMatchCharLength = Config.minMatchCharLength,
@@ -1603,7 +1612,8 @@ class Fuse {
 
       // Iterate over every key (i.e, path), and fetch the value at that key
       keys.forEach((key, keyIndex) => {
-        matches.push(...this._findMatches({
+        matches.push(
+          ...this._findMatches({
             key,
             value: item[keyIndex],
             searcher
@@ -1670,7 +1680,8 @@ function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
     result.matches.forEach(({ key, norm, score }) => {
       const weight = key ? key.weight : null;
 
-      totalScore *= Math.pow(score === 0 && weight ? Number.EPSILON : score,
+      totalScore *= Math.pow(
+        score === 0 && weight ? Number.EPSILON : score,
         (weight || 1) * (ignoreFieldNorm ? 1 : norm)
       );
     });
@@ -1679,7 +1690,8 @@ function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
   });
 }
 
-function format(results,
+function format(
+  results,
   docs,
   { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}
 ) {

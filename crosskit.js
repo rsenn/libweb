@@ -71,7 +71,8 @@ let vec3 = {
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
   },
   angle(v1, v2) {
-    return Math.acos((v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) /
+    return Math.acos(
+      (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) /
         (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) *
           Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2]))
     );
@@ -100,7 +101,8 @@ let vec3 = {
     if(a === undefined || b === undefined) {
       return false;
     }
-    return (Math.abs(a[0] - b[0]) < epsilon &&
+    return (
+      Math.abs(a[0] - b[0]) < epsilon &&
       Math.abs(a[1] - b[1]) < epsilon &&
       Math.abs(a[2] - b[2]) < epsilon
     );
@@ -294,7 +296,8 @@ let WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
   //Override getContext function with "webgl-2d" enabled version
   canvas.getContext = (function (gl2d) {
     return function(context) {
-      if((gl2d.options.force || context === 'webgl-2d') &&
+      if(
+        (gl2d.options.force || context === 'webgl-2d') &&
         !(canvas.width === 0 || canvas.height === 0)
       ) {
         if(gl2d.gl) {
@@ -612,7 +615,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       result.push(hasAlpha ? alphaChannel : 1.0);
     } else if((match = reHSLAColor.exec(value))) {
       (hasAlpha = match[1]), (alphaChannel = parseFloat(match[5]));
-      result = HSLAToRGBA(match[2],
+      result = HSLAToRGBA(
+        match[2],
         match[3],
         match[4],
         parseFloat(hasAlpha && alphaChannel ? alphaChannel : 1.0)
@@ -641,7 +645,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   }
 
   function colorVecToString(vec4) {
-    return ('rgba(' +
+    return (
+      'rgba(' +
       vec4[0] * 255 +
       ', ' +
       vec4[1] * 255 +
@@ -1130,7 +1135,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor,
+    gl.uniform4f(
+      shaderProgram.uColor,
       drawState.fillStyle[0],
       drawState.fillStyle[1],
       drawState.fillStyle[2],
@@ -1156,7 +1162,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor,
+    gl.uniform4f(
+      shaderProgram.uColor,
       drawState.strokeStyle[0],
       drawState.strokeStyle[1],
       drawState.strokeStyle[2],
@@ -1244,7 +1251,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor,
+    gl.uniform4f(
+      shaderProgram.uColor,
       drawState.fillStyle[0],
       drawState.fillStyle[1],
       drawState.fillStyle[2],
@@ -1278,7 +1286,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor,
+    gl.uniform4f(
+      shaderProgram.uColor,
       drawState.strokeStyle[0],
       drawState.strokeStyle[1],
       drawState.strokeStyle[2],
@@ -1388,7 +1397,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
 
     if(doCrop) {
-      gl.uniform4f(shaderProgram.uCropSource,
+      gl.uniform4f(
+        shaderProgram.uCropSource,
         a / image.width,
         b / image.height,
         c / image.width,
@@ -1451,7 +1461,8 @@ export const WEBGL = 'WEBGL',
   DOM = 'DOM'; //Simple
 
 window.update = function() {
-  return (window.requestAnimationFrame ||
+  return (
+    window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
@@ -1514,7 +1525,8 @@ export const crosskit = {
       board.appendChild(svg_board);
     }
     index++; //Increase Index Of Elements Creation
-    console.info('%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer,
+    console.info(
+      '%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer,
       'background-color: purple; color: white;'
     );
   },
@@ -1945,7 +1957,8 @@ export const crosskit = {
       if(v.pos3[0] > biggest_x) biggest_x = v.pos3[0];
       if(v.pos3[1] > biggest_y) biggest_y = v.pos3[1];
       dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points',
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
+        'points',
         (
           v.pos1[0] +
           ',' +
@@ -1973,7 +1986,8 @@ export const crosskit = {
     }
     if(renderer == SVG) {
       svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('points',
+      svg_shapes[svg_shapes.length - 1].setAttribute(
+        'points',
         (
           v.pos1[0] +
           ',' +
@@ -2024,7 +2038,8 @@ export const crosskit = {
         domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
       }
       dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points',
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
+        'points',
         domvg_polygon_points.toString()
       );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);

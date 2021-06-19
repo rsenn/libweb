@@ -42,7 +42,7 @@ PointList.prototype[Symbol.toStringTag] = 'PointList';
 /*Util.defineGetter(PointList, Symbol.species, () => PointList);
 Util.defineGetter(PointList.prototype, Symbol.species, () => PointList);*/
 Util.define(PointList, {
-  get [Symbol.species]() {
+  /* prettier-ignore */ get [Symbol.species]() {
     return PointList;
   }
 });
@@ -209,11 +209,14 @@ PointList.prototype.avg = function() {
   let ret = PointList.prototype.reduce.call(this, (acc, p) => acc.add(p), new Point());
   return ret.div(PointList.prototype.getLength.call(this));
 };
-PointList.prototype.bbox = function BBox(proto = {
+PointList.prototype.bbox = function BBox(
+  proto = {
     constructor: PointList.prototype.bbox,
     toString() {
-      return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + ''
-      ).padStart(4, ' ')},y2:${(this.y2 + '').padStart(4, ' ')}}`;
+      return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + '').padStart(
+        4,
+        ' '
+      )},y2:${(this.y2 + '').padStart(4, ' ')}}`;
     }
   }
 ) {
@@ -316,15 +319,14 @@ PointList.prototype.lines = function(closed = false) {
   return iterableObj;
 };
 PointList.prototype.sort = function(pred) {
-  return Array.prototype.sort.call(this,
+  return Array.prototype.sort.call(
+    this,
     pred || ((a, b) => Point.prototype.valueOf.call(a) - Point.prototype.valueOf.call(b))
   );
 };
 PointList.prototype.toString = function(sep = ',', prec) {
   return Array.prototype.map
-    .call(this, point =>
-      Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + ''
-    )
+    .call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + ''))
     .join(' ');
 };
 PointList.prototype[Symbol.toStringTag] = function(sep = ',', prec) {
@@ -335,9 +337,7 @@ PointList.prototype[Symbol.toStringTag] = function(sep = ',', prec) {
 };
 PointList.prototype.toPath = function() {
   return Array.prototype.map.call(this, (point, i) => `${i > 0 ? 'L' : 'M'}${point}`).join(' ');
-  return Array.prototype.reduce.call(this,
-    (acc, point, i) => (acc ? acc + ' ' : '') + `${acc ? 'L' : 'M'}${point}`
-  );
+  return Array.prototype.reduce.call(this, (acc, point, i) => (acc ? acc + ' ' : '') + `${acc ? 'L' : 'M'}${point}`);
 };
 PointList.prototype.toSource = function(opts = {}) {
   if(opts.asString) return `new PointList("${this.toString(opts)}")`;
@@ -422,7 +422,8 @@ PointList.prototype.toPoints = function(ctor = Array.of) {
 PointList.prototype[Util.inspectSymbol] = function(depth, options) {
   //const obj = Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   const obj = Array.from(this); //Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
-  return (`\x1b[1;31m${Util.className(this)}\x1b[0m ` +
+  return (
+    `\x1b[1;31m${Util.className(this)}\x1b[0m ` +
     inspect(Object.setPrototypeOf(obj, PointList.prototype), depth, options)
   );
 };

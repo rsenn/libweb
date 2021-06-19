@@ -893,7 +893,8 @@ function flush(parser) {
     parser.drillStash.forEach(data => {
       if(!parser.format.zero && reCOORD$1.test(data.block)) {
         parser.format.zero = 'T';
-        parser.warn('zero suppression missing and not detectable;' + ' assuming trailing suppression'
+        parser.warn(
+          'zero suppression missing and not detectable;' + ' assuming trailing suppression'
         );
       }
       parseBlock(parser, data.block, data.line);

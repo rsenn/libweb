@@ -23,12 +23,7 @@ export function Line(...args) {
   if(Object.getPrototypeOf(obj) !== Line.prototype) Object.setPrototypeOf(obj, Line.prototype);
 
   //if(!('a' in obj) || !('b' in obj)) throw new Error('no a/b prop');
-  if(arg &&
-    arg.x1 !== undefined &&
-    arg.y1 !== undefined &&
-    arg.x2 !== undefined &&
-    arg.y2 !== undefined
-  ) {
+  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x1 = parseFloat(x1);
     obj.y1 = parseFloat(y1);
@@ -232,7 +227,8 @@ Line.prototype.endpointDist = function(point) {
 };
 Line.prototype.matchEndpoints = function(arr) {
   const { a, b } = this;
-  return [...arr.entries()].filter(([i, otherLine]) =>
+  return [...arr.entries()].filter(
+    ([i, otherLine]) =>
       !Line.prototype.equals.call(this, otherLine) &&
       (Point.prototype.equals.call(a, otherLine.a) ||
         Point.prototype.equals.call(b, otherLine.b) ||
@@ -247,9 +243,7 @@ Line.prototype.distanceToPointSquared = function(p) {
   if(l2 === 0) return Point.prototype.distanceSquared.call(p, a);
   let t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
   t = Math.max(0, Math.min(1, t));
-  return Point.prototype.distanceSquared.call(p,
-    new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y))
-  );
+  return Point.prototype.distanceSquared.call(p, new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)));
 };
 Line.prototype.distanceToPoint = function(p) {
   return Math.sqrt(Line.prototype.distanceToPointSquared.call(this, p));
@@ -304,14 +298,16 @@ Line.prototype.toString = function(opts = {}) {
   if(typeof brackets != 'function') brackets = brackets ? s => `[ ${s} ]` : s => s;
 
   const { x1, y1, x2, y2 } = this;
-  return (brackets(
+  return (
+    brackets(
       Point.toString(this.a || Point(x1, y1), {
         ...options,
         /*separator,*/ pad: 0
       })
     ) +
     separator +
-    brackets(Point.toString(this.b || Point(x2, y2), {
+    brackets(
+      Point.toString(this.b || Point(x2, y2), {
         ...options,
         /*separator,*/ pad: 0
       })
@@ -397,10 +393,7 @@ Line.prototype.prod = function(...args) {
   return Line.prototype.mul.call(r, ...args);
 };
 Line.prototype.mul = function(...args) {
-  const o =
-    args.length == 1 && typeof args[0] == 'number'
-      ? { x: args[0], y: args[0] }
-      : new Point(...args);
+  const o = args.length == 1 && typeof args[0] == 'number' ? { x: args[0], y: args[0] } : new Point(...args);
   this.x1 *= o.x;
   this.y1 *= o.y;
   this.x2 *= o.x;
@@ -412,10 +405,7 @@ Line.prototype.quot = function(...args) {
   return Line.prototype.div.call(r, ...args);
 };
 Line.prototype.div = function(...args) {
-  const o =
-    args.length == 1 && typeof args[0] == 'number'
-      ? { x: args[0], y: args[0] }
-      : new Point(...args);
+  const o = args.length == 1 && typeof args[0] == 'number' ? { x: args[0], y: args[0] } : new Point(...args);
   this.x1 /= o.x;
   this.y1 /= o.y;
   this.x2 /= o.x;

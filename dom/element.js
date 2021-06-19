@@ -92,7 +92,8 @@ export class Element extends Node {
       let value = elem;
       let finish = false;
       try {
-        if((pred(
+        if(
+          (pred(
             elem,
             depth,
             v => (value = v),
@@ -203,7 +204,8 @@ export class Element extends Node {
     if(!no_children) {
       l = [...this.childIterator(elem, false)];
       if(predicate) l = l.filter(predicate);
-      l = l.reduce((l, c) => (
+      l = l.reduce(
+        (l, c) => (
           Util.isObject(c) && c.nodeType == 1
             ? l.push(Element.toObject(c, opts))
             : (c.textContent + '').trim() != ''
@@ -256,7 +258,8 @@ export class Element extends Node {
     if(!parent && globalObj.document)
       parent =
         globalObj.document ||
-        Util.tryCatch(() => document,
+        Util.tryCatch(
+          () => document,
           d => d
         );
 
@@ -421,7 +424,8 @@ export class Element extends Node {
     let remove;
     switch (Anchor.horizontal(anchor)) {
       case Anchor.LEFT:
-      default: css.left = Math.round(trbl.left /* - ptrbl.left*/) + unit;
+      default:
+        css.left = Math.round(trbl.left /* - ptrbl.left*/) + unit;
         remove = 'right';
         break;
       case Anchor.RIGHT:
@@ -431,7 +435,8 @@ export class Element extends Node {
     }
     switch (Anchor.vertical(anchor)) {
       case Anchor.TOP:
-      default: css.top = Math.round(trbl.top /* - ptrbl.top*/) + unit;
+      default:
+        css.top = Math.round(trbl.top /* - ptrbl.top*/) + unit;
         remove = 'bottom';
         break;
       case Anchor.BOTTOM:
@@ -510,7 +515,8 @@ export class Element extends Node {
     let e = typeof element == 'string' ? Element.find(element) : element;
     let origin = to
       ? new Point(to)
-      : Object.fromEntries(Object.entries(Element.getCSS(element, edges)).map(([k, v]) => [
+      : Object.fromEntries(
+          Object.entries(Element.getCSS(element, edges)).map(([k, v]) => [
             'xy'[edges.indexOf(k)] || k,
             v ? +v.replace(/[a-z]*$/, '') : 0
           ])
@@ -612,7 +618,8 @@ export class Element extends Node {
   static getTRBL(element, prefix = '') {
     if(typeof element == 'string') element = Element.find(element);
 
-    const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : ''))
+    const names = ['Top', 'Right', 'Bottom', 'Left'].map(
+      pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : ''))
     );
     const getCSS = prefix == '' ? () => ({}) : Util.memoize(() => Element.getCSS(element));
 
@@ -793,7 +800,8 @@ export class Element extends Node {
       return accu;
     }
     str = dumpElem(elem, '');
-    str = Element.walk(elem.firstElementChild,
+    str = Element.walk(
+      elem.firstElementChild,
       (e, a, r, d) => {
         if(e && e.attributes) return dumpElem(e, a + '\n', r, d);
         return null;
@@ -1066,7 +1074,8 @@ export class Element extends Node {
           .writeText(text)
           .then(() => resolve(true))
           .catch(err =>
-            reject(err !== undefined
+            reject(
+              err !== undefined
                 ? err
                 : new DOMException('The request is not allowed', 'NotAllowedError')
             )

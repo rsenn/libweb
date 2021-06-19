@@ -125,8 +125,7 @@ export const create = () => {
     let fn = typeof color === 'string' ? colors[color] : color;
 
     if(typeof fn !== 'function') {
-      throw new TypeError('Expected alias to be the name of an existing color (string) or a function'
-      );
+      throw new TypeError('Expected alias to be the name of an existing color (string) or a function');
     }
 
     if(!fn.stack) {
