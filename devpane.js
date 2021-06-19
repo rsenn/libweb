@@ -183,8 +183,7 @@ export default class devpane {
     if(this.log) {
       let log = this.log();
       if(log) {
-        if(log.parentNode !== this.pane())
-          this.pane().insertBefore(log, this.pane().firstElementChild);
+        if(log.parentNode !== this.pane()) this.pane().insertBefore(log, this.pane().firstElementChild);
         log.insertAdjacentText('beforeend', `${str.trim()}\n`);
         log.scrollTop = log.scrollHeight;
         log.style.height = '4em';
@@ -226,11 +225,7 @@ export default class devpane {
       );
     }
     if(!(svgcircle && svgpath.tagName == 'path')) {
-      svgcircle = SVG.create(
-        'path',
-        { id: 'touch-pos', stroke: '#80ff00', fill: 'none', strokeWidth: 2 },
-        this.svg()
-      );
+      svgcircle = SVG.create('path', { id: 'touch-pos', stroke: '#80ff00', fill: 'none', strokeWidth: 2 }, this.svg());
     }
     if(svgcircle) {
       let str = Polygon.toPath(polygon);
@@ -420,8 +415,7 @@ export default class devpane {
     const fn = `${what}EventListener`;
 
     Util.log(`devpane.handleToggle ${fn}`);
-    const mouseEvents = elem =>
-      ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
+    const mouseEvents = elem => ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
 
     window[`${what}EventListener`]('mousemove', this.mouseMove);
 

@@ -3,6 +3,169 @@ import Util from './util.js';
 const UTF8FirstCodeMask = [0x1f, 0xf, 0x7, 0x3, 0x1];
 const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
 
+const errorSymbols = [
+  0,
+  'EPERM',
+  'ENOENT',
+  'ESRCH',
+  'EINTR',
+  'EIO',
+  'ENXIO',
+  'E2BIG',
+  'ENOEXEC',
+  'EBADF',
+  'ECHILD',
+  'EAGAIN',
+  'ENOMEM',
+  'EACCES',
+  'EFAULT',
+  'ENOTBLK',
+  'EBUSY',
+  'EEXIST',
+  'EXDEV',
+  'ENODEV',
+  'ENOTDIR',
+  'EISDIR',
+  'EINVAL',
+  'ENFILE',
+  'EMFILE',
+  'ENOTTY',
+  'ETXTBSY',
+  'EFBIG',
+  'ENOSPC',
+  'ESPIPE',
+  'EROFS',
+  'EMLINK',
+  'EPIPE',
+  'EDOM',
+  'ERANGE',
+  'EDEADLK',
+  'ENAMETOOLONG',
+  'ENOLCK',
+  'ENOSYS',
+  'ENOTEMPTY',
+  0,
+  0,
+  'ENOMSG',
+  'EIDRM',
+  'ECHRNG',
+  'EL2NSYNC',
+  'EL3HLT',
+  'EL3RST',
+  'ELNRNG',
+  'EUNATCH',
+  'ENOCSI',
+  'EL2HLT',
+  'EBADE',
+  'EBADR',
+  'EXFULL',
+  'ENOANO',
+  'EBADRQC',
+  0,
+  0,
+  'EBFONT',
+  'ENOSTR',
+  'ENODATA',
+  'ETIME',
+  'ENOSR',
+  'ENONET',
+  'ENOPKG',
+  'EREMOTE',
+  'ENOLINK',
+  'EADV',
+  'ESRMNT',
+  'ECOMM',
+  'EPROTO',
+  'EMULTIHOP',
+  'EDOTDOT',
+  'EBADMSG',
+  'EOVERFLOW',
+  'ENOTUNIQ',
+  'EBADFD',
+  'EREMCHG',
+  'ELIBACC',
+  'ELIBBAD',
+  'ELIBSCN',
+  'ELIBMAX',
+  'ELIBEXEC',
+  'EILSEQ',
+  'ERESTART',
+  'ESTRPIPE',
+  'EUSERS',
+  'ENOTSOCK',
+  'EDESTADDRREQ',
+  'EMSGSIZE',
+  'EPROTOTYPE',
+  'ENOPROTOOPT',
+  'EPROTONOSUPPORT',
+  'ESOCKTNOSUPPORT',
+  'EOPNOTSUPP',
+  'EPFNOSUPPORT',
+  'EAFNOSUPPORT',
+  'EADDRINUSE',
+  'EADDRNOTAVAIL',
+  'ENETDOWN',
+  'ENETUNREACH',
+  'ENETRESET',
+  'ECONNABORTED',
+  'ECONNRESET',
+  'ENOBUFS',
+  'EISCONN',
+  'ENOTCONN',
+  'ESHUTDOWN',
+  'ETOOMANYREFS',
+  'ETIMEDOUT',
+  'ECONNREFUSED',
+  'EHOSTDOWN',
+  'EHOSTUNREACH',
+  'EALREADY',
+  'EINPROGRESS',
+  'ESTALE',
+  'EUCLEAN',
+  'ENOTNAM',
+  'ENAVAIL',
+  'EISNAM',
+  'EREMOTEIO',
+  'EDQUOT',
+  'ENOMEDIUM',
+  'EMEDIUMTYPE',
+  'ECANCELED',
+  'ENOKEY',
+  'EKEYEXPIRED',
+  'EKEYREVOKED',
+  'EKEYREJECTED',
+  'EOWNERDEAD',
+  'ENOTRECOVERABLE',
+  'ERFKILL'
+];
+
+export function SyscallError(syscall, errnum) {
+  let obj = new.target ? this : new SyscallError();
+  if(syscall) obj.syscall = syscall;
+  if(errnum != undefined) {
+    if(typeof errnum == 'number') {
+      obj.errno = errnum;
+      obj.code = errorSymbols[errnum];
+    } else {
+      obj.errno = errorSymbols.indexOf(errnum);
+      obj.code = errnum;
+    }
+  }
+  Error.call(obj, `SyscallError: '${obj.syscall}' errno = ${obj.code} (${obj.errno})`);
+  return obj;
+}
+
+SyscallError.prototype = new Error();
+
+Util.define(SyscallError.prototype, {
+  get message() {
+    return `SyscallError: '${this.syscall}' errno = ${this.code} (${this.errno})`;
+  },
+  [Symbol.toStringTag]: 'SyscallError'
+});
+
+globalThis.SyscallError = SyscallError;
+
 export function extendArray(proto = Array.prototype) {
   Util.define(proto, {
     getlast() {

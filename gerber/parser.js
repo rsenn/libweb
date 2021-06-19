@@ -523,10 +523,7 @@ function parseToolDef(parser, block) {
 
   let hole = [];
   if(toolArgs[maxArgs - 1]) {
-    hole = [
-      normalizeCoord(toolArgs[maxArgs - 2], format),
-      normalizeCoord(toolArgs[maxArgs - 1], format)
-    ];
+    hole = [normalizeCoord(toolArgs[maxArgs - 2], format), normalizeCoord(toolArgs[maxArgs - 1], format)];
   } else if(toolArgs[maxArgs - 2]) {
     hole = [normalizeCoord(toolArgs[maxArgs - 2], format)];
   }
@@ -702,8 +699,7 @@ let drillMode = {
 // parse drill function
 // takes a parser transform stream and a block string
 let reALTIUM_HINT = /;FILE_FORMAT=(\d):(\d)/;
-let reKI_HINT =
-  /;FORMAT={(.):(.)\/ (absolute|.+)? \/ (metric|inch) \/.+(trailing|leading|decimal|keep)/;
+let reKI_HINT = /;FORMAT={(.):(.)\/ (absolute|.+)? \/ (metric|inch) \/.+(trailing|leading|decimal|keep)/;
 
 let reUNITS$1 = /(INCH|METRIC)(?:,([TL])Z)?/;
 let reTOOL_DEF$1 = /T0*(\d+)[\S]*C([\d.]+)/;
@@ -893,9 +889,7 @@ function flush(parser) {
     parser.drillStash.forEach(data => {
       if(!parser.format.zero && reCOORD$1.test(data.block)) {
         parser.format.zero = 'T';
-        parser.warn(
-          'zero suppression missing and not detectable;' + ' assuming trailing suppression'
-        );
+        parser.warn('zero suppression missing and not detectable;' + ' assuming trailing suppression');
       }
       parseBlock(parser, data.block, data.line);
     });
@@ -998,9 +992,7 @@ export class Parser {
   transform(chunk, controller) {
     let filetype = this.format.filetype;
 
-    const done = controller
-      ? err => (err ? controller.error(err) : controller.terminate())
-      : () => {};
+    const done = controller ? err => (err ? controller.error(err) : controller.terminate()) : () => {};
     // decode buffer to string
     //chunk = this.decoder.write(chunk);
     // determine filetype within 65535 characters
