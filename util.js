@@ -1306,7 +1306,7 @@ Util.partition = function* (a, size) {
 };
 
 Util.intersect = (a, b) => a.filter(Set.prototype.has, new Set(b));
-Util.difference = (a, b, includes) => {
+Util.difference = (a, b, incicludes) => {
   //console.log('Util.difference', { a, b, includes });
   if(typeof includes != 'function')
     return [a.filter(x => !b.includes(x)), b.filter(x => !a.includes(x))];
@@ -6537,5 +6537,23 @@ Util.codePointsToString = codePoints => {
   return s;
 };
 Util.bufferToString = b => Util.codePointsToString(Util.bytesToUTF8(b));
+
+Util.levenshteinDistance = function levenshteinDistance(a, b) {
+  if(!a || !b) return (a || b).length;
+  var m = [];
+  for(var i = 0; i <= b.length; i++) {
+    m[i] = [i];
+    if(i === 0) continue;
+    for(var j = 0; j <= a.length; j++) {
+      m[0][j] = j;
+      if(j === 0) continue;
+      m[i][j] =
+        b.charAt(i - 1) == a.charAt(j - 1)
+          ? m[i - 1][j - 1]
+          : Math.min(m[i - 1][j - 1] + 1, m[i][j - 1] + 1, m[i - 1][j] + 1);
+    }
+  }
+  return m[b.length][a.length];
+};
 
 export default Util();

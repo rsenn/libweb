@@ -25,7 +25,6 @@ export class EagleProject {
       data: { sch: null, brd: null, lbr: {} },
       fs
     });
-    console.log('this.fs', this.fs);
     let libraryPath = [this.dir];
     let dir = path.join(this.dir, 'lbr');
     if(fs.existsSync(dir)) libraryPath.push(dir);
@@ -45,9 +44,11 @@ export class EagleProject {
   }
 
   lazyOpen(file) {
+    //console.log('EagleProject.lazyOpen', file);
     let index = this.filenames.length;
     this.filenames.push(file);
-    Util.lazyProperty(this.documents,
+    Util.lazyProperty(
+      this.documents,
       path.basename(file),
       () => {
         let doc = EagleDocument.open(file, this.fs);
@@ -60,7 +61,7 @@ export class EagleProject {
   }
 
   addLibraries(libs) {
-    //console.log('EagleProject.addLibraries', libs);
+    console.log('EagleProject.addLibraries', libs);
     for(let lib of libs) {
       let file = this.findLibrary(lib);
       if(file && this.filenames.indexOf(file) == -1) this.lazyOpen(file);
@@ -99,18 +100,20 @@ export class EagleProject {
   }
 
   static determineEaglePath(fs) {
-    let path = Util.tryCatch(() => process.env.PATH,
+    let searchPath = Util.tryCatch(
+      () => process.env.PATH,
       path => path.split(/:/g),
       []
     );
     let bin;
 
-    for(let dir of path) {
+    for(let dir of searchPath) {
       bin = dir + '/eagle';
 
       if(fs.existsSync(bin)) {
         if(!/(eagle)/i.test(dir)) {
-          bin = fs.realpath(bin);
+          //console.log('path', path);
+          bin = path.realpath(bin);
           dir = bin.replace(/\/[^\/]+$/, '');
         }
         dir = dir.replace(/[\\\/]bin$/i, '');
@@ -138,11 +141,23 @@ export class EagleProject {
     return this.findDocument(name + '.lbr');
   }
 
-  get schematic() {return this.findDocument(name => /\.sch$/i.test(name)); }
-  get board() {return this.findDocument(name => /\.brd$/i.test(name)); }
-  get libraries() {return this.list.filter(doc => doc.type == 'lbr'); }
-  get root() { let children = this.list; return { children }; }
-  get children() { let children = this.list; return children; }
+  get schematic() {
+    return this.findDocument(name => /\.sch$/i.test(name));
+  }
+  get board() {
+    return this.findDocument(name => /\.brd$/i.test(name));
+  }
+  get libraries() {
+    return this.list.filter(doc => doc.type == 'lbr');
+  }
+  get root() {
+    let children = this.list;
+    return { children };
+  }
+  get children() {
+    let children = this.list;
+    return children;
+  }
 
   *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
     const project = this;
@@ -180,10 +195,12 @@ export class EagleProject {
   getLibraryNames() {
     let libraryNames = [];
 
-    Util.tryCatch(() => this.schematic.libraries.keys(),
+    Util.tryCatch(
+      () => this.schematic.libraries.keys(),
       names => (libraryNames = libraryNames.concat(names))
     );
-    Util.tryCatch(() => this.board.libraries.keys(),
+    Util.tryCatch(
+      () => this.board.libraries.keys(),
       names => (libraryNames = libraryNames.concat(names))
     );
 
@@ -286,7 +303,8 @@ export class EagleProject {
         name = path.shift();
         doc = this[key][name];
         break;
-      default: break;
+      default:
+        break;
     }
     if(!doc || !doc.index) {
       throw new Error('ERROR: project.index(' + l.join(', ') + ' )');
