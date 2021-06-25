@@ -5617,11 +5617,10 @@ Util.getOpt = (options = {}, args) => {
         let value = arg;
         //console.log('Util.getOpt #3', { param, handler });
         if(typeof handler == 'function')
-          if(typeof handler == 'function')
-            value = Util.tryCatch(
-              () => handler(value, result[opt[0]], options, result),
-              v => v
-            );
+          value = Util.tryCatch(
+            () => handler(value, result[opt[0]], options, result),
+            v => v
+          );
         const name = opt[0];
         //console.log('Util.getOpt #4', { name, value });
         result[opt[0]] = value;
