@@ -1,6 +1,15 @@
 import Util from '../../util.js';
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD } from '../renderUtils.js';
+import {
+  MakeRotation,
+  Alignment,
+  AlignmentAttrs,
+  VERTICAL,
+  HORIZONTAL,
+  log,
+  RAD2DEG,
+  DEG2RAD
+} from '../renderUtils.js';
 import { TransformationList, Rotation, Translation } from '../../geom.js';
 import { Cross } from './cross.js';
 
@@ -18,8 +27,9 @@ export const Text = ({
   ...props
 }) => {
   let { transformation = new TransformationList() } = opts;
-  let parentAngle = Math.round(transformation.slice(transformation.indexOf(transformation.scaling) + 1)
-      .angle * RAD2DEG
+  let parentAngle = Math.round(
+    transformation.slice(transformation.findIndex(item => item.type.startsWith('scal')) + 1).angle *
+      RAD2DEG
   );
   log(`Text.render`, {
     text,
@@ -55,7 +65,9 @@ export const Text = ({
   text = (text + '').replace(/Ω/g, '&#x2126;').replace(/μ/g, '&#xb5;');
 
   return h(Fragment, {}, [
-    h('text', {
+    h(
+      'text',
+      {
         className,
         fill: color,
         stroke: 'none',

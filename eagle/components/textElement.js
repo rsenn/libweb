@@ -15,7 +15,7 @@ export const TextElement = ({
   data = data || props.item;
 
   let { transformation = new TransformationList() } = opts;
-  //  log(`TextElement.render`, { data, transformation });
+   log(`TextElement.render`, { data, transformation });
 
   if(!transformation) Util.putStack();
 
