@@ -640,6 +640,30 @@ Matrix.prototype.init_scale = function(sx, sy) {
   return Matrix.prototype.init.call(this, sx, 0, 0, sy, 0, 0);
 };
 
+Object.defineProperties(Matrix.prototype, {
+  scaling: {
+    get() {
+      const x = Math.sign(this.xx) * Util.roundTo(Math.sqrt(this.xx ** 2 + this.xy ** 2), null, 13);
+      const y = Math.sign(this.yy) * Util.roundTo(Math.sqrt(this.yx ** 2 + this.yy ** 2), null, 13);
+      return { x, y };
+    },
+    configurable: true
+  },
+  rotation: {
+    get() {
+      const { c, a, scaling } = this;
+      return Math.atan2(-c / scaling.y, a / scaling.x);
+    },
+    configurable: true
+  },
+  translation: {
+    get() {
+      return { x: this.e, y: this.f };
+    },
+    configurable: true
+  }
+});
+
 Matrix.prototype.init_rotate = function(angle, deg = false) {
   const rad = deg ? DEG2RAD * angle : angle;
   const s = Math.sin(rad);
