@@ -26,7 +26,8 @@ export class Transformation {
   }
 
   get [Symbol.isConcatSpreadable]() {
-    return (this.constructor === TransformationList ||
+    return (
+      this.constructor === TransformationList ||
       Object.getPrototypeOf(this) == TransformationList.prototype ||
       Object.getPrototypeOf(this).constructor == TransformationList
     );
@@ -57,7 +58,8 @@ export class Transformation {
 
   vector(unit) {
     if(unit === undefined) unit = this.unit;
-    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]
+    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(
+      unit ? axis => this[axis] + unit : axis => this[axis]
     );
   }
 
@@ -234,7 +236,8 @@ export class Rotation extends Transformation {
         return DEG2RAD * angle;
       case 'turn':
         return angle / 360;
-      default: return angle;
+      default:
+        return angle;
     }
   }
 }
@@ -588,7 +591,8 @@ export class TransformationList extends Array {
     let translation = new Translation(vec.x, vec.y);
 
     if(!translation.isZero())
-      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(this,
+      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(
+        this,
         translation
       );
 
@@ -812,7 +816,9 @@ const {
   reduceRight
 } = Array.prototype;
 
-Util.inherit(TransformationList.prototype, {
+Util.inherit(
+  TransformationList.prototype,
+  {
     // concat,
     copyWithin,
     find,
@@ -835,7 +841,8 @@ Util.inherit(TransformationList.prototype, {
   {
     [Symbol.iterator]() {
       return Array.prototype[Symbol.iterator];
-    }, [Symbol.isConcatSpreadable]() {
+    },
+    [Symbol.isConcatSpreadable]() {
       return true;
     }
   }

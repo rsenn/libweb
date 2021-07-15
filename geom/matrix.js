@@ -24,7 +24,8 @@ export function Matrix(...args) {
 
   const isObj = Util.isObject(arg);
 
-  if(isObj &&
+  if(
+    isObj &&
     arg.xx !== undefined &&
     arg.yx !== undefined &&
     arg.xy !== undefined &&
@@ -38,7 +39,8 @@ export function Matrix(...args) {
     ret[3] = arg.yx;
     ret[4] = arg.yy;
     ret[5] = arg.y0;
-  } else if(isObj &&
+  } else if(
+    isObj &&
     arg.a !== undefined &&
     arg.b !== undefined &&
     arg.c !== undefined &&
@@ -136,7 +138,8 @@ Matrix.prototype.get = function(field) {
 };
 
 const MatrixProps = (obj = {}) =>
-  Object.entries(keyIndexes).reduce((acc, [k, i]) => ({
+  Object.entries(keyIndexes).reduce(
+    (acc, [k, i]) => ({
       ...acc,
       [k]: {
         get() {
@@ -213,7 +216,8 @@ Matrix.prototype.round = function(prec = 1e-12, digits = 12) {
   return m;
 };
 Matrix.prototype.roundSelf = function(prec = 1e-12, digits = 12) {
-  Matrix.prototype.init.call(this,
+  Matrix.prototype.init.call(
+    this,
     ...[...this].slice(0, 9).map(n => Util.roundTo(n, prec, digits))
   );
   return this;
@@ -247,7 +251,8 @@ Matrix.prototype.isIdentity = function() {
 };
 
 Matrix.prototype.determinant = function() {
-  return (this[0] * (this[4] * this[8] - this[5] * this[7]) +
+  return (
+    this[0] * (this[4] * this[8] - this[5] * this[7]) +
     this[1] * (this[5] * this[6] - this[3] * this[8]) +
     this[2] * (this[3] * this[7] - this[4] * this[6])
   );
@@ -607,7 +612,8 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
     translate,
     rotate: degrees === true ? Util.roundTo((rotation * 180) / Math.PI, 0.1) : rotation,
     scale,
-    skew: degrees == true
+    skew:
+      degrees == true
         ? {
             x: Util.roundTo((skew.x * 180) / Math.PI, 0.1),
             y: Util.roundTo((skew.y * 180) / Math.PI, 0.1)
@@ -623,7 +629,8 @@ Matrix.prototype.init_identity = function() {
   ]);
 };
 Matrix.prototype.is_identity = function() {
-  return Matrix.prototype.equals.call(this,
+  return Matrix.prototype.equals.call(
+    this,
     [
       [1, 0, 0],
       [0, 1, 0],

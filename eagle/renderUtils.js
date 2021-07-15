@@ -26,7 +26,8 @@ export let log = DEBUG
 export const setDebug = state => {
   DEBUG = state;
   log = state
-    ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console
+    ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(
+        console
       )
     : () => {};
 };
@@ -113,9 +114,13 @@ export const EagleAlignments = {
   'top-right': [1, 1]
 };
 
-export const Alignment = (align, def = 'bottom-left', rot = 0) => {
+export const Alignment = (align, rot = 0, scaling = null, def = 'bottom-left') => {
   let [y, x] = EagleAlignments[align] || EagleAlignments[def];
   let ret = new Point(x, y);
+  if(scaling) {
+    if(scaling.x < 0) ret.x = -ret.x;
+    if(scaling.y < 0) ret.y = -ret.y;
+  }
   if(Math.abs(rot) > 0) ret.rotate((rot * PI) / 180);
   return ret;
 };
@@ -438,7 +443,8 @@ export function MakeCoordTransformer(matrix) {
       coords = { ...coords, x1, y1, x2, y2 };
     }
     let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
-    let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.000001) }),
+    let newCoords = Object.keys(coords).reduce(
+      (acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.000001) }),
       {}
     );
 

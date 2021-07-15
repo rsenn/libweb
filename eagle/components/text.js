@@ -27,10 +27,10 @@ export const Text = ({
   ...props
 }) => {
   let { transformation = new TransformationList() } = opts;
-  let parentAngle = Math.round(
-    transformation.slice(transformation.findIndex(item => item.type.startsWith('scal')) + 1).angle *
-      RAD2DEG
+  let elementTransform = transformation.slice(
+    transformation.findIndex(item => item.type.startsWith('scal')) + 1
   );
+  let parentAngle = Math.round(elementTransform.angle * RAD2DEG);
   log(`Text.render`, {
     text,
     parentAngle,
@@ -53,10 +53,13 @@ export const Text = ({
     //  .concat(transformation.rotation ? [transformation.rotation.invert()] : [])
     .rotate(-realAngle);
 
-  let align = Alignment(alignment);
+  let { scaling } = elementTransform;
+  let align = Alignment(alignment, diffAngle, scaling);
   //log(`Text.render`, { text, parentAngle, rotationAngle, totalAngle, realAngle, diffAngle, transform, align });
+  log(`Text.render`, { alignment, align, scaling, elementTransform });
 
-  align = align.rotate(diffAngle * DEG2RAD).round();
+  //align = align.rotate(diffAngle * DEG2RAD);
+  align = align.round();
 
   //console.log('Text.render', text);
 

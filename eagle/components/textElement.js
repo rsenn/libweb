@@ -15,24 +15,17 @@ export const TextElement = ({
   data = data || props.item;
 
   let { transformation = new TransformationList() } = opts;
-   log(`TextElement.render`, { data, transformation });
+  log(`TextElement.render`, { data, transformation });
 
   if(!transformation) Util.putStack();
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  let {
-    children,
-    text: innerText,
-    align = 'bottom-left',
-    size,
-    font,
-    rot,
-    layer
-  } = data;
+  let { children, text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
   let text =
     innerText ||
-    /* labelText || */ Util.tryCatch(() => children.join('\n'),
+    /* labelText || */ Util.tryCatch(
+      () => children.join('\n'),
       t => t,
       () => ''
     );
@@ -53,8 +46,7 @@ export const TextElement = ({
   // if(data.path !== undefined)
   // attrs['data-path'] = data.path.toString(' ');
   if(rot !== undefined) attrs['data-rot'] = rot;
-  if(layer !== undefined)
-    attrs['data-layer'] = `${layer.number} ${layer.name}`;
+  if(layer !== undefined) attrs['data-layer'] = `${layer.number} ${layer.name}`;
   attrs['data-alignment'] = [...Alignment(align)].join('|');
 
   return h(Text, {
