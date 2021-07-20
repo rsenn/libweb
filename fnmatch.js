@@ -4,67 +4,67 @@ export const PATH_FNM_NOESCAPE = 1 << 1;
 export const PATH_FNM_PERIOD = 1 << 2;
 export const PATH_NOTFIRST = 1 << 8;
 
-export function fnmatch(pattern, string, f = 0, depth = 0) {
+export function fnmatch(p, s, f = 0, depth = 0) {
   let pi = 0,
     si = 0,
-    plen = pattern.length,
-    slen = string.length;
+    pj = p.length,
+    sj = s.length;
   let ret = PATH_FNM_NOMATCH;
   let c = 0;
 
   const pinc = (n = 1) => (pi += n),
     sinc = (n = 1) => (si += n);
-  const pstr = (i = 0) => pattern.substring(pi + i, plen),
-    sstr = (j = 0) => string.substring(si + j, slen);
+  const pstr = (i = 0) => p.substring(pi + i, pj),
+    sstr = (j = 0) => s.substring(si + j, sj);
 
-  let d = (...args) => {} //console.debug(depth, c, 'fnmatch(', inspect(pstr()), ',', inspect(sstr()), ',', f, ')', ...args);
+  let d = (...args) => {}; //console.debug(depth, c, 'fnmatch(', inspect(pstr()), ',', inspect(sstr()), ',', f, ')', ...args);
 
   do {
-    again:
-    ++c;    d();
+    again: ++c;
+    d();
     if(ret === 0) break;
-    if(slen == 0) {
-      while(plen && pattern[pi] == '*') {
+    if(sj == 0) {
+      while(pj && p[pi] == '*') {
         pinc();
       }
-      return plen ? PATH_FNM_NOMATCH : 0;
+      return pj ? PATH_FNM_NOMATCH : 0;
     }
-    if(plen == 0) break;
-    if(string[si] == '.' && pattern[pi] != '.' && f & PATH_FNM_PERIOD) {
+    if(pj == 0) break;
+    if(s[si] == '.' && p[pi] != '.' && f & PATH_FNM_PERIOD) {
       if(!(f & PATH_NOTFIRST)) return PATH_FNM_NOMATCH;
-      if(f & PATH_FNM_PATHNAME && string[si - 1] == '/') return PATH_FNM_NOMATCH;
+      if(f & PATH_FNM_PATHNAME && s[si - 1] == '/') return PATH_FNM_NOMATCH;
     }
     //f |= PATH_NOTFIRST;
-    switch (pattern[pi]) {
+    switch (p[pi]) {
       case '[': {
         let start,
           m = 0;
         pinc();
-        if(string[si] == '/' && f & PATH_FNM_PATHNAME) return PATH_FNM_NOMATCH;
-        m = pattern[pi] == '!';
+        if(s[si] == '/' && f & PATH_FNM_PATHNAME) return PATH_FNM_NOMATCH;
+        m = p[pi] == '!';
         pinc(m);
         start = pi;
-        while(plen) {
+        while(pj) {
           let b = 0;
-          if(pattern[pi] == ']' && pi != start) break;
-          if(pattern[pi] == '[' && pattern[pi + 1] == ':') {
+          if(p[pi] == ']' && pi != start) break;
+          if(p[pi] == '[' && p[pi + 1] == ':') {
           } else {
-            if(pi + 2 < plen && pattern[pi + 1] == '-' && pattern[pi + 2] != ']') {
-              b = string[si] >= pattern[pi] && string[si] <= pattern[pi + 2];
+            if(pi + 2 < pj && p[pi + 1] == '-' && p[pi + 2] != ']') {
+              b = s[si] >= p[pi] && s[si] <= p[pi + 2];
               pinc();
             } else {
-              b = pattern[pi] == string[si];
+              b = p[pi] == s[si];
               pinc();
             }
           }
-          if((b && !m) || (!b && m && pattern[pi] == ']')) {
-            while(pi < plen && pattern[pi] != ']') {
+          if((b && !m) || (!b && m && p[pi] == ']')) {
+            while(pi < pj && p[pi] != ']') {
               pi++;
             }
-            pinc(!!plen);
+            pinc(!!pj);
             sinc();
             break;
-         } else if(b && m) {
+          } else if(b && m) {
             return 0;
           }
         }
@@ -73,25 +73,25 @@ export function fnmatch(pattern, string, f = 0, depth = 0) {
       case '\\': {
         if(!(f & PATH_FNM_NOESCAPE)) {
           pinc();
-          if(plen) break;
+          if(pj) break;
         } else break;
         continue;
       }
       case '*': {
-        if(string[si] == '/' && f & PATH_FNM_PATHNAME) {
+        if(s[si] == '/' && f & PATH_FNM_PATHNAME) {
           pinc();
           continue;
         }
-        for(let i = si + 1; i < slen; i++) {
-          const p = pstr(1),
-            s = string.substring(i, slen);
-          d(`i=`, i, `, p=`, p, `, s=`, s);
-          if(p.length && s.length > 0 && s!='' && p!='' && !fnmatch(p, s, f, depth + 1)) return 0;
+        for(let i = si + 1; i < sj; i++) {
+          const q = p.substring(pi + 1, pj),
+            t = s.substring(i, sj);
+          d(`i=`, i, `, p=`, q, `, s=`, t);
+          if(q.length && t.length > 0 && t != '' && q != '' && !fnmatch(q, t, f, depth + 1)) return 0;
         }
         break;
       }
       case '?': {
-        if(string[si] == '/' && f & PATH_FNM_PATHNAME) break;
+        if(s[si] == '/' && f & PATH_FNM_PATHNAME) break;
         pinc();
         sinc();
         continue;
@@ -100,16 +100,16 @@ export function fnmatch(pattern, string, f = 0, depth = 0) {
         break;
       }
     }
-    if(si >= slen &&pi >= plen) {
+    if(si >= sj && pi >= pj) {
       return 0;
     }
-    if(pattern[pi] != string[si]) {
+    if(p[pi] != s[si]) {
       d(` = PATH_FNM_NOMATCH`);
       return PATH_FNM_NOMATCH;
     }
     pinc();
     sinc();
-  } while(plen && slen);
+  } while(pj && sj);
   d(` = ${ret}`);
   return ret;
 }
