@@ -14,7 +14,9 @@ export function objectToGcode(gcodeObject, args = {}) {
 
   // Validate input to be of type "object"
   if(typeof gcodeObject !== 'object') {
-    throw new Error(`Input argument must be of type "object". ${gcodeObject} is type "${typeof gcodeObject}"`);
+    throw new Error(
+      `Input argument must be of type "object". ${gcodeObject} is type "${typeof gcodeObject}"`
+    );
   }
 
   // Create the gcode string.

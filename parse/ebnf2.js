@@ -60,7 +60,10 @@ function ParseNode(type, buffer, start, end) {
   this.start = start;
   this.end = end;
 
-  log('ParseNode', this.type + ' start=' + this.start + ' end=' + this.end + ' value=.' + this.value() + '.');
+  log(
+    'ParseNode',
+    this.type + ' start=' + this.start + ' end=' + this.end + ' value=.' + this.value() + '.'
+  );
 }
 
 //Class ParseState
@@ -79,7 +82,16 @@ ParseState.prototype.advance = function(n) {
 
 ParseState.prototype.parseNode = function(type) {
   if(this.ruleStart == this.offset) {
-    console.log('parseNode: type=' + type + ' ruleStart=' + this.ruleStart + ' start=' + this.start + ' offset=' + this.offset);
+    console.log(
+      'parseNode: type=' +
+        type +
+        ' ruleStart=' +
+        this.ruleStart +
+        ' start=' +
+        this.start +
+        ' offset=' +
+        this.offset
+    );
     return null;
   }
   return new ParseNode(type, this.buffer, this.ruleStart, this.offset);
@@ -147,7 +159,19 @@ function ParseState(rule, buffer, offset, lineNumber) {
   this.nextToken();
   this.current = buffer.charAt(offset);
 
-  log('ParseState', 'rule=' + this.rule + ' start=' + this.start + ' offset=' + this.offset + ' lineNumber=' + this.lineNumber + ' text=' + buffer.substring(this.offset, this.offset + 20).replace(/(?:\r\n|\r|\n)/g, '\\n'));
+  log(
+    'ParseState',
+    'rule=' +
+      this.rule +
+      ' start=' +
+      this.start +
+      ' offset=' +
+      this.offset +
+      ' lineNumber=' +
+      this.lineNumber +
+      ' text=' +
+      buffer.substring(this.offset, this.offset + 20).replace(/(?:\r\n|\r|\n)/g, '\\n')
+  );
 }
 
 //Class Parser
@@ -177,7 +201,17 @@ Parser.prototype.pushFrame = function(rule) {
 };
 
 Parser.prototype.popFrame = function(rule, pnode) {
-  log('stack', 'pop: rule: ' + rule + ' state: ' + this.state.rule + ' stack: ' + this.stack.length + ' pnode: ' + (pnode == null ? 'null' : pnode.type));
+  log(
+    'stack',
+    'pop: rule: ' +
+      rule +
+      ' state: ' +
+      this.state.rule +
+      ' stack: ' +
+      this.stack.length +
+      ' pnode: ' +
+      (pnode == null ? 'null' : pnode.type)
+  );
   this.stack.pop();
   this.state = this.stack[this.stack.length - 1];
   if(pnode != null && pnode.end > this.maxParseEnd) {
@@ -494,7 +528,14 @@ Parser.prototype.parseGrammar = function() {
       rules.push(prule);
       pstate.advance(prule.nodeLength());
       pstate.nextToken();
-      console.log('pstate: ruleStart=' + pstate.ruleStart + ' start=' + pstate.start + ' offset=' + pstate.offset);
+      console.log(
+        'pstate: ruleStart=' +
+          pstate.ruleStart +
+          ' start=' +
+          pstate.start +
+          ' offset=' +
+          pstate.offset
+      );
     }
   } while(prule != null);
 

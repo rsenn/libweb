@@ -36,7 +36,11 @@ function isNumber(value) {
 
 // Adapted from: https://github.com/lodash/lodash/blob/master/isBoolean.js
 function isBoolean(value) {
-  return value === true || value === false || (isObjectLike(value) && getTag(value) == '[object Boolean]');
+  return (
+    value === true ||
+    value === false ||
+    (isObjectLike(value) && getTag(value) == '[object Boolean]')
+  );
 }
 
 function isObject(value) {
@@ -59,7 +63,11 @@ function isBlank(value) {
 // Gets the `toStringTag` of `value`.
 // Adapted from: https://github.com/lodash/lodash/blob/master/.internal/getTag.js
 function getTag(value) {
-  return value == null ? (value === undefined ? '[object Undefined]' : '[object Null]') : Object.prototype.toString.call(value);
+  return value == null
+    ? value === undefined
+      ? '[object Undefined]'
+      : '[object Null]'
+    : Object.prototype.toString.call(value);
 }
 
 const EXTENDED_SEARCH_UNAVAILABLE = 'Extended search is not available';
@@ -72,7 +80,8 @@ const PATTERN_LENGTH_TOO_LARGE = max => `Pattern length exceeds max of ${max}.`;
 
 const MISSING_KEY_PROPERTY = name => `Missing ${name} property in key`;
 
-const INVALID_KEY_WEIGHT_VALUE = key => `Property 'weight' in key '${key}' must be a positive integer`;
+const INVALID_KEY_WEIGHT_VALUE = key =>
+  `Property 'weight' in key '${key}' must be a positive integer`;
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
@@ -474,7 +483,16 @@ function transformScore(result, data) {
   data.score = result.score;
 }
 
-function computeScore(pattern, { errors = 0, currentLocation = 0, expectedLocation = 0, distance = Config.distance, ignoreLocation = Config.ignoreLocation } = {}) {
+function computeScore(
+  pattern,
+  {
+    errors = 0,
+    currentLocation = 0,
+    expectedLocation = 0,
+    distance = Config.distance,
+    ignoreLocation = Config.ignoreLocation
+  } = {}
+) {
   const accuracy = errors / pattern.length;
 
   if(ignoreLocation) {
@@ -521,7 +539,20 @@ function convertMaskToIndices(matchmask = [], minMatchCharLength = Config.minMat
 // Machine word size
 const MAX_BITS = 32;
 
-function search(text, pattern, patternAlphabet, { location = Config.location, distance = Config.distance, threshold = Config.threshold, findAllMatches = Config.findAllMatches, minMatchCharLength = Config.minMatchCharLength, includeMatches = Config.includeMatches, ignoreLocation = Config.ignoreLocation } = {}) {
+function search(
+  text,
+  pattern,
+  patternAlphabet,
+  {
+    location = Config.location,
+    distance = Config.distance,
+    threshold = Config.threshold,
+    findAllMatches = Config.findAllMatches,
+    minMatchCharLength = Config.minMatchCharLength,
+    includeMatches = Config.includeMatches,
+    ignoreLocation = Config.ignoreLocation
+  } = {}
+) {
   if(pattern.length > MAX_BITS) {
     throw new Error(PATTERN_LENGTH_TOO_LARGE(MAX_BITS));
   }
@@ -603,7 +634,9 @@ function search(text, pattern, patternAlphabet, { location = Config.location, di
     binMax = binMid;
 
     let start = Math.max(1, expectedLocation - binMid + 1);
-    let finish = findAllMatches ? textLen : Math.min(expectedLocation + binMid, textLen) + patternLen;
+    let finish = findAllMatches
+      ? textLen
+      : Math.min(expectedLocation + binMid, textLen) + patternLen;
 
     // Initialize the bit array
     let bitArr = Array(finish + 2);
@@ -700,7 +733,19 @@ function createPatternAlphabet(pattern) {
 }
 
 class BitapSearch {
-  constructor(pattern, { location = Config.location, threshold = Config.threshold, distance = Config.distance, includeMatches = Config.includeMatches, findAllMatches = Config.findAllMatches, minMatchCharLength = Config.minMatchCharLength, isCaseSensitive = Config.isCaseSensitive, ignoreLocation = Config.ignoreLocation } = {}) {
+  constructor(
+    pattern,
+    {
+      location = Config.location,
+      threshold = Config.threshold,
+      distance = Config.distance,
+      includeMatches = Config.includeMatches,
+      findAllMatches = Config.findAllMatches,
+      minMatchCharLength = Config.minMatchCharLength,
+      isCaseSensitive = Config.isCaseSensitive,
+      ignoreLocation = Config.ignoreLocation
+    } = {}
+  ) {
     this.options = {
       location,
       threshold,
@@ -771,7 +816,8 @@ class BitapSearch {
     }
 
     // Otherwise, use Bitap algorithm
-    const { location, distance, threshold, findAllMatches, minMatchCharLength, ignoreLocation } = this.options;
+    const { location, distance, threshold, findAllMatches, minMatchCharLength, ignoreLocation } =
+      this.options;
 
     let allIndices = [];
     let totalScore = 0;
@@ -987,7 +1033,18 @@ class InverseSuffixExactMatch extends BaseMatch {
 }
 
 class FuzzyMatch extends BaseMatch {
-  constructor(pattern, { location = Config.location, threshold = Config.threshold, distance = Config.distance, includeMatches = Config.includeMatches, findAllMatches = Config.findAllMatches, minMatchCharLength = Config.minMatchCharLength, isCaseSensitive = Config.isCaseSensitive } = {}) {
+  constructor(
+    pattern,
+    {
+      location = Config.location,
+      threshold = Config.threshold,
+      distance = Config.distance,
+      includeMatches = Config.includeMatches,
+      findAllMatches = Config.findAllMatches,
+      minMatchCharLength = Config.minMatchCharLength,
+      isCaseSensitive = Config.isCaseSensitive
+    } = {}
+  ) {
     super(pattern);
     this._bitapSearch = new BitapSearch(pattern, {
       location,
@@ -1052,7 +1109,16 @@ class IncludeMatch extends BaseMatch {
 }
 
 // ❗Order is important. DO NOT CHANGE.
-const searchers = [ExactMatch, IncludeMatch, PrefixExactMatch, InversePrefixExactMatch, InverseSuffixExactMatch, SuffixExactMatch, InverseExactMatch, FuzzyMatch];
+const searchers = [
+  ExactMatch,
+  IncludeMatch,
+  PrefixExactMatch,
+  InversePrefixExactMatch,
+  InverseSuffixExactMatch,
+  SuffixExactMatch,
+  InverseExactMatch,
+  FuzzyMatch
+];
 
 const searchersLen = searchers.length;
 
@@ -1139,7 +1205,18 @@ const MultiMatchSet = new Set([FuzzyMatch.type, IncludeMatch.type]);
  * ```
  */
 class ExtendedSearch {
-  constructor(pattern, { isCaseSensitive = Config.isCaseSensitive, includeMatches = Config.includeMatches, minMatchCharLength = Config.minMatchCharLength, findAllMatches = Config.findAllMatches, location = Config.location, threshold = Config.threshold, distance = Config.distance } = {}) {
+  constructor(
+    pattern,
+    {
+      isCaseSensitive = Config.isCaseSensitive,
+      includeMatches = Config.includeMatches,
+      minMatchCharLength = Config.minMatchCharLength,
+      findAllMatches = Config.findAllMatches,
+      location = Config.location,
+      threshold = Config.threshold,
+      distance = Config.distance
+    } = {}
+  ) {
     this.query = null;
     this.options = {
       isCaseSensitive,
@@ -1393,7 +1470,11 @@ class Fuse {
   search(query, { limit = -1 } = {}) {
     const { includeMatches, includeScore, shouldSort, sortFn, ignoreFieldNorm } = this.options;
 
-    let results = isString(query) ? (isString(this._docs[0]) ? this._searchStringList(query) : this._searchObjectList(query)) : this._searchLogical(query);
+    let results = isString(query)
+      ? isString(this._docs[0])
+        ? this._searchStringList(query)
+        : this._searchObjectList(query)
+      : this._searchLogical(query);
 
     computeScore$1(results, { ignoreFieldNorm });
 
@@ -1599,14 +1680,21 @@ function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
     result.matches.forEach(({ key, norm, score }) => {
       const weight = key ? key.weight : null;
 
-      totalScore *= Math.pow(score === 0 && weight ? Number.EPSILON : score, (weight || 1) * (ignoreFieldNorm ? 1 : norm));
+      totalScore *= Math.pow(
+        score === 0 && weight ? Number.EPSILON : score,
+        (weight || 1) * (ignoreFieldNorm ? 1 : norm)
+      );
     });
 
     result.score = totalScore;
   });
 }
 
-function format(results, docs, { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}) {
+function format(
+  results,
+  docs,
+  { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}
+) {
   const transformers = [];
 
   if(includeMatches) transformers.push(transformMatches);

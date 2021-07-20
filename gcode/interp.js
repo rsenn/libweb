@@ -37,7 +37,19 @@ State.prototype.clone = function() {
     program,
     arc
   } = this;
-  return new State({ x: vx, y: vy, z: vz }, e, f, time, { x: rx, y: ry, z: rz }, erel, fp, spindle, tool, program, arc);
+  return new State(
+    { x: vx, y: vy, z: vz },
+    e,
+    f,
+    time,
+    { x: rx, y: ry, z: rz },
+    erel,
+    fp,
+    spindle,
+    tool,
+    program,
+    arc
+  );
 };
 
 function initialState() {
@@ -46,7 +58,12 @@ function initialState() {
 
 function nextState(gcode, prevState, linenum, i) {
   const nextState = prevState.clone();
-  const tokens = typeof gcode == 'string' ? gcode.split(/\s+/g) : typeof gcode.words[0] == 'string' ? [...gcode.words] : gcode;
+  const tokens =
+    typeof gcode == 'string'
+      ? gcode.split(/\s+/g)
+      : typeof gcode.words[0] == 'string'
+      ? [...gcode.words]
+      : gcode;
   //console.debug('tokens', tokens);
 
   const line = (gcode.line && gcode.line) || gcode;
@@ -64,7 +81,16 @@ function nextState(gcode, prevState, linenum, i) {
   if(interp) {
     interp.call(thisObj, prevState, nextState, command, args);
 
-    console.log(`#${i}: cmd:`, command, ' args:', args, ' prevState:', prevState, ' nextState:', nextState);
+    console.log(
+      `#${i}: cmd:`,
+      command,
+      ' args:',
+      args,
+      ' prevState:',
+      prevState,
+      ' nextState:',
+      nextState
+    );
   } else {
     console.error('Unrecognized gcode:', command, args);
 
@@ -102,7 +128,9 @@ function removeInLineComment(line) {
 
 async function parseGCode(fileContent) {
   //split gcode into lines and extract those that are relevent.  Also remove inline comments.
-  const lines = ((Util.isIterator(fileContent) || Util.isIterable(fileContent)) && fileContent) || fileContent.split(/\r\n|\n/);
+  const lines =
+    ((Util.isIterator(fileContent) || Util.isIterable(fileContent)) && fileContent) ||
+    fileContent.split(/\r\n|\n/);
   const gcode = [];
   const linenums = []; //an array of line numbers for each gcode command (numbers will be missing if there are comments/empty space
   let i = 0;

@@ -29,9 +29,17 @@ export function Stack() {
   stack = [...stack];
   //console.log('stack: ', stack);
 
-  let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
+  let maxLen = stack.reduce(
+    (acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
+    0
+  );
 
-  return stack.filter(s => s.functionName != 'esfactory').map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) => `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`);
+  return stack
+    .filter(s => s.functionName != 'esfactory')
+    .map(
+      ({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) =>
+        `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`
+    );
 
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName)g1);
@@ -272,7 +280,10 @@ export class Lexer {
   }
 
   get(offset) {
-    return this.getRange(Math.min(this.pos + offset, this.pos), Math.max(this.pos + offset, this.pos));
+    return this.getRange(
+      Math.min(this.pos + offset, this.pos),
+      Math.max(this.pos + offset, this.pos)
+    );
   }
 
   //Returns the next character in the source code
@@ -361,7 +372,12 @@ export class Lexer {
   addToken(type, props = {}) {
     //if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
-    const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
+    const token = new Token(
+      type,
+      source.substring(start, pos),
+      new Range(this.position(this.start), this.pos - this.start),
+      this.start
+    );
     Object.assign(token, props);
     this.tokens.push(token);
     this.ignore();
@@ -382,7 +398,8 @@ export class Lexer {
 
     //Make sure identifier didn't start with a decimal digit
     const firstChar = this.source[this.start];
-    if(isDecimalDigit(firstChar)) throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`);
+    if(isDecimalDigit(firstChar))
+      throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`);
 
     const c = this.peek();
 
@@ -396,7 +413,10 @@ export class Lexer {
       return this.lexText;
     }
 
-    if(isQuoteChar(c)) throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`);
+    if(isQuoteChar(c))
+      throw this.error(
+        `Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`
+      );
 
     const word = this.getRange(this.start, this.pos);
     if(word === 'true' || word === 'false') this.addToken(Token.types.booleanLiteral);
@@ -442,9 +462,12 @@ export class Lexer {
     let indent = ' '.repeat(lineno.length);
     let column = columnIndex;
 
-    let indicator = indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
+    let indicator =
+      indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
 
-    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
+    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
+      this.accepted.length
+    }\n${indent + source.slice(this.pos, this.pos + 10)}`;
   }
 
   lineRange(start, end) {
@@ -467,18 +490,21 @@ export class Lexer {
         validator = isHexDigit;
 
         //The hex number needs to at least be followed by some digit.
-        if(!this.accept(validator)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+        if(!this.accept(validator))
+          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
       } else if(this.accept(oneOf('oO'))) {
         validator = isOctalDigit;
 
         //The octal number needs to at least be followed by some digit.
-        if(!this.accept(validator)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+        if(!this.accept(validator))
+          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
       }
       //If number starts with 0 followed by an octal digit, then it's an
       //octal number.
       else if(this.accept(isOctalDigit)) validator = isOctalDigit;
       //If a 0 isn't a hex nor an octal number, then it's invalid.
-      else if(this.accept(isDecimalDigit)) throw this.error(`Invalid number: ${this.errorRange()}`);
+      else if(this.accept(isDecimalDigit))
+        throw this.error(`Invalid number: ${this.errorRange()}`);
     }
 
     //Keep on consuming valid digits until it runs out
@@ -491,7 +517,8 @@ export class Lexer {
 
       if(this.accept(oneOf('eE'))) {
         this.accept(oneOf('+-'));
-        if(!this.accept(validator)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+        if(!this.accept(validator))
+          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
 
         this.acceptRun(validator);
       }
@@ -501,7 +528,8 @@ export class Lexer {
     //for identifiers or keywords. It also cannot be immediately followed by
     //a string.
     const c = this.peek();
-    if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+    if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c))
+      throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
 
     this.addToken(Token.types.numericLiteral);
 
@@ -637,7 +665,9 @@ export class Lexer {
         ++n;
         //console.debug("template", { prevChar,c,escapeEncountered,n});
         if(c === null) {
-          throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`);
+          throw this.error(
+            `Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
+          );
         } else if(!escapeEncountered) {
           if(c == '{' && prevChar == '$') {
             this.backup(2);
@@ -674,7 +704,8 @@ export class Lexer {
       do {
         //Keep consuming characters unless we encounter line
         //terminator, \, or the quote char.
-        if(this.acceptRun(not(or(isLineTerminator, oneOf(`\\${quoteChar}`))))) escapeEncountered = false;
+        if(this.acceptRun(not(or(isLineTerminator, oneOf(`\\${quoteChar}`)))))
+          escapeEncountered = false;
         prevChar = c;
         c = this.getc();
         if(c === null) {
@@ -765,7 +796,12 @@ export class Lexer {
   nextToken() {
     if(this.tokenIndex >= this.tokens.length)
       // return null;
-      return new Token(Token.types.eof, null, new Range(this.position(this.pos), 0), this.source.length);
+      return new Token(
+        Token.types.eof,
+        null,
+        new Range(this.position(this.pos), 0),
+        this.source.length
+      );
     const token = this.tokens[this.tokenIndex];
     this.tokenIndex++;
     return token;
@@ -836,12 +872,70 @@ function isPunctuatorChar(c) {
 function isPunctuator(word) {
   switch (word.length) {
     case 1:
-      return ['=', '.', '-', '%', '}', '>', ',', '*', '[', '<', '!', '/', ']', '~', '&', '(', ';', '?', '|', ')', ':', '+', '^', '{', '@'].indexOf(word) >= 0;
+      return (
+        [
+          '=',
+          '.',
+          '-',
+          '%',
+          '}',
+          '>',
+          ',',
+          '*',
+          '[',
+          '<',
+          '!',
+          '/',
+          ']',
+          '~',
+          '&',
+          '(',
+          ';',
+          '?',
+          '|',
+          ')',
+          ':',
+          '+',
+          '^',
+          '{',
+          '@'
+        ].indexOf(word) >= 0
+      );
     case 2:
-      return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${', '?.', '**', '??'].indexOf(word) >= 0;
+      return (
+        [
+          '!=',
+          '*=',
+          '&&',
+          '<<',
+          '/=',
+          '||',
+          '>>',
+          '&=',
+          '==',
+          '++',
+          '|=',
+          '<=',
+          '--',
+          '+=',
+          '^=',
+          '>=',
+          '-=',
+          '%=',
+          '=>',
+          '${',
+          '?.',
+          '**',
+          '??'
+        ].indexOf(word) >= 0
+      );
 
     case 3:
-      return ['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(word) >= 0;
+      return (
+        ['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(
+          word
+        ) >= 0
+      );
 
     case 4:
       return ['>>>=', '-->>='].indexOf(word) >= 0;
@@ -852,7 +946,8 @@ function isPunctuator(word) {
 }
 
 function isAlphaChar(c) {
-  if(typeof c == 'string') return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c.codePointAt(0) > 0xff;
+  if(typeof c == 'string')
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c.codePointAt(0) > 0xff;
 }
 
 function isDecimalDigit(c) {

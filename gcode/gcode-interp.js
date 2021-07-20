@@ -79,7 +79,16 @@ function G90(prevState, nextState, command, args) {
   // Milling: Absolute programming
   // else: Fixed cycle, simple cycle, for roughing (Z-axis emphasis)
   console.info('Absolute programming /  Fixed cycle, simple cycle, for roughing (Z-axis emphasis)');
-  console.log(`#${this.i}: cmd:`, command, ' args:', args, ' prevState:', prevState, ' nextState:', nextState);
+  console.log(
+    `#${this.i}: cmd:`,
+    command,
+    ' args:',
+    args,
+    ' prevState:',
+    prevState,
+    ' nextState:',
+    nextState
+  );
 }
 
 function G91(prevState, nextState, command, args) {
@@ -115,7 +124,16 @@ function M0(prevState, nextState, command, args) {
 }
 function M3(prevState, nextState, command, args, i) {
   if(prevState.spindle !== command) nextState.spindle = command;
-  console.log(`#${this.i}: cmd:`, command, ' args:', args, ' prevState.spindle:', prevState.spindle, ' nextState.spindle:', nextState.spindle);
+  console.log(
+    `#${this.i}: cmd:`,
+    command,
+    ' args:',
+    args,
+    ' prevState.spindle:',
+    prevState.spindle,
+    ' nextState.spindle:',
+    nextState.spindle
+  );
 }
 function M9(prevState, nextState, command, args) {
   if(prevState.coolant !== command) nextState.coolant = command;
