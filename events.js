@@ -12,10 +12,7 @@ export const LogWrap = (globalThis.LogWrap = function LogWrap(log) {
   } else if(!log) {
     log = (...args) => console.log(...args);
   }
-  return value => {
-    log(value);
-    return value;
-  };
+  return value => (log(value), value);
 });
 
 export class EventEmitter {
@@ -111,7 +108,9 @@ export class EventEmitter {
   }
 
   waitFor(type) {
-    return new Promise(async resolve => this.once(type, e => resolve(e)));
+    return new Promise((resolve, reject) => {
+      this.once(type, resolve);
+    });
   }
 
   static [Symbol.hasInstance](obj) {
