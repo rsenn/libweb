@@ -2,7 +2,12 @@ import { fnmatch, PATH_FNM_MULTI } from './fnmatch.js';
 const indexOf = (haystack, needle) => Array.prototype.indexOf.call(haystack, needle);
 
 function define(obj, prop, value) {
-  Object.defineProperty(obj, prop, { value, enumerable: false, writable: true, configurable: true });
+  Object.defineProperty(obj, prop, {
+    value,
+    enumerable: false,
+    writable: true,
+    configurable: true
+  });
 }
 
 export const LogWrap = (globalThis.LogWrap = function LogWrap(log) {
