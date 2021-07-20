@@ -22,6 +22,8 @@ import { Hole } from './components/hole.js';
 import { Dimension } from './components/dimension.js';
 import { SMD } from './components/smd.js';
 import { Via } from './components/via.js';
+import { Instance } from './components/instance.js';
+import { Sheet } from './components/sheet.js';
 
 export const PrimitiveComponents = {
   Wire,
@@ -42,7 +44,9 @@ export const PrimitiveComponents = {
   Hole,
   Dimension,
   Smd: SMD,
-  Via
+  Via,
+  Instance,
+  Sheet
 };
 
 let prevName;
@@ -76,3 +80,5 @@ export { Origin } from './components/origin.js';
 export { WirePath } from './components/wirePath.js';
 export { Package } from './components/package.js';
 export { SchematicSymbol } from './components/symbol.js';
+export { Instance } from './components/instance.js';
+export { Sheet } from './components/sheet.js';

@@ -1,7 +1,8 @@
 import Util from '../util.js';
 import inspect from '../objectInspect.js';
 
-const inspectSymbol = Symbol.for(Util.getPlatform() == 'quickjs' ? 'quickjs.inspect.custom' : 'nodejs.util.inspect.custom'
+const inspectSymbol = Symbol.for(
+  Util.getPlatform() == 'quickjs' ? 'quickjs.inspect.custom' : 'nodejs.util.inspect.custom'
 );
 const linebreak = /\r?\n/g;
 
@@ -26,11 +27,13 @@ export class ESNode {
     const { type, ...props } = Util.getMembers(this);
 
     //  console.log(`ESNode `, text+'');
-    return Object.getOwnPropertyNames(this).reduce((acc, name) => ({ ...acc, [name]: this[name] }),
+    return Object.getOwnPropertyNames(this).reduce(
+      (acc, name) => ({ ...acc, [name]: this[name] }),
       {}
     );
 
-    return ((type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) +
+    return (
+      (type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) +
       ' ' +
       inspect(props, { ...opts, customInspect: false })
     );
@@ -99,7 +102,7 @@ export class ImportDeclaration extends ModuleDeclaration {
  */
 export class ImportSpecifier extends ModuleSpecifier {
   constructor(imported, local) {
-    super('ImportSpecifier', local);
+    super('ImportSpecifier', local ?? imported);
     this.imported = imported;
   }
 }
@@ -154,7 +157,7 @@ export class Identifier extends Pattern {
   }
 
   static string(node) {
-    return node.name;
+    if(node instanceof Identifier) return node.name;
   }
 
   toString(n, opts = {}) {
@@ -900,7 +903,8 @@ export function Factory() {
   self.stack = [];
   self.loc = { pos: -1, column: -1, line: -1 };
   self.callback = node => self.nodes.push(node);
-  self.classes = Object.keys(CTORS).reduce((acc, nodeName) => ({
+  self.classes = Object.keys(CTORS).reduce(
+    (acc, nodeName) => ({
       ...acc,
       [nodeName](...args) {
         return self(nodeName, ...args);

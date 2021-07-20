@@ -4,9 +4,16 @@ import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
 import { Palette } from './common.js';
-import { MakeRotation, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
+import {
+  MakeRotation,
+  LayerAttributes,
+  MakeCoordTransformer,
+  useTransformation,
+  useTransform
+} from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
+import { Sheet } from './components/sheet.js';
 import { h, ReactComponent } from '../dom/preactComponent.js';
 
 export class SchematicRenderer extends EagleSVGRenderer {
@@ -43,17 +50,19 @@ export class SchematicRenderer extends EagleSVGRenderer {
    * @param      {<type>}  [opts={}]  The options
    */
   renderItem(item, parent, options = {}) {
-    const { transform = new TransformationList(), rot, pos, labelText, ...opts } = options;
-    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
-    this.debug(`SchematicRenderer.renderItem`, { item, options });
+    let [transformation, transform, accumulate] = useTransform(options);
 
-    if(!('transformation' in opts)) opts.transformation = this.transform.concat(transform);
+    const { rot, pos, labelText, ...opts } = options;
+    let coordFn = transform ? MakeCoordTransformer(transform.toMatrix()) : i => i;
+    this.debug(`SchematicRenderer.renderItem`, { item, options });
 
     const layer = item.layer;
     const color =
       typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
     const svg = (elem, attr, parent) =>
-      this.create(elem, {
+      this.create(
+        elem,
+        {
           className: item.tagName, //...LayerAttributes(layer),
           'data-path': item.path.toString(' '),
           ...attr
@@ -63,7 +72,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
     switch (item.tagName) {
       case 'junction': {
         const { x, y } = coordFn(item);
-        svg('circle', {
+        svg(
+          'circle',
+          {
             fill: '#4ba54b',
             cx: x,
             cy: y,
@@ -90,7 +101,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
         const l = new Line(pivot, vec.add(pivot));
 
         if(func == 'dot') {
-          svg('circle', {
+          svg(
+            'circle',
+            {
               class: 'pin',
               stroke: '#a54b4b',
               fill: 'none',
@@ -103,7 +116,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
           );
         }
 
-        svg('line', {
+        svg(
+          'line',
+          {
             class: 'pin',
             stroke: '#a54b4b',
             ...l.toObject(),
@@ -112,7 +127,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
           parent
         );
         if(name != '' && visible != 'off')
-          svg('text', {
+          svg(
+            'text',
+            {
               class: 'pin',
               stroke: 'none',
               fill: SchematicRenderer.palette[6],
@@ -130,7 +147,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
         break;
       }
       default: {
-        super.renderItem(item, parent, opts);
+        super.renderItem(item, parent, { ...accumulate(), ...opts });
         break;
       }
     }
@@ -151,11 +168,13 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, transform });
     let instances = sheet.instances;
     this.debug(`SchematicRenderer.renderSheet`, sheet);
-    let netsGroup = this.create('g',
+    let netsGroup = this.create(
+      'g',
       { className: 'nets', transform, 'font-family': 'Fixed' },
       parent
     );
-    let instancesGroup = this.create('g',
+    let instancesGroup = this.create(
+      'g',
       { className: 'instances', transform, 'font-family': 'Fixed' },
       parent
     );
@@ -164,64 +183,6 @@ export class SchematicRenderer extends EagleSVGRenderer {
     );
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
-
-  /*renderInstance(instance, parent, opts = {}) {
-    this.debug(`SchematicRenderer.renderInstance`, { instance, opts });
-    let { x, y, rot, part, symbol } = instance;
-    let { deviceset, name, value } = part;
-    let transform = new TransformationList();
-    transform.translate(x, y);
-    if(rot) {
-      rot = MakeRotation(rot);
-      transform = transform.concat(rot);
-    }
-    let transformStr = transform + '';
-    this.debug(`SchematicRenderer.renderInstance`, { x, y, transform, transformStr });
-    const g = this.create('g',
-      { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform: transformStr },
-      parent
-    );
-    if(!value) value = deviceset.name;
-    opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
-    this.renderCollection(symbol.children, g, {
-      ...opts,
-      transformation: this.transform.concat(transform)
-    });
-    return g;
-  }*/
-
-  /*renderInstances(parent, sheetNo = 0, b) {
-    const { transform } = this;
-    this.debug(`SchematicRenderer.renderInstances`, { transform });
-    let g = this.create('g',
-      {
-        className: 'instances rects',
-        fill: new HSLA(220, 100, 50, 0.5),
-        'stroke-width': 0.2,
-        'stroke-dasharray': '0.25 0.25',
-        stroke: 'none'
-      },
-      parent
-    );
-    for(let instance of this.sheets[sheetNo].instances.list) {
-      let t = new TransformationList();
-      t.translate(+instance.x, +instance.y);
-      let b = instance.getBounds();
-      let br = new Rect(b.rect);
-      br = br.round(0.254, 5);
-      this.create('rect', { ...br.toObject(), 'data-part': instance.part.name }, g);
-      t.rotate(45);
-      this.create('path', {
-          d: `M 0,-1 L 0,1 M -1,0 L 1,0`,
-          transform: t,
-          stroke: new RGBA(255, 255, 0),
-          'stroke-linecap': 'round',
-          'stroke-width': 0.2
-        },
-        g
-      );
-    }
-  }*/
 
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
     //console.log('doc:', doc);

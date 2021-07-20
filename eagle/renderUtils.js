@@ -1,4 +1,4 @@
-import { Point, Line, TransformationList, LineList } from '../geom.js';
+import { Point, Line, TransformationList, ImmutableTransformationList, LineList } from '../geom.js';
 import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
@@ -461,6 +461,26 @@ export const useAttributes = (element, attributeNames) => {
   for(let attr of attributeNames) ret[attr] = useTrkl(element.handlers[attr]);
 
   return ret;
+};
+
+export const useTransformation = transformation => {
+  let list = new ImmutableTransformationList(transformation);
+
+  return list;
+};
+
+export const useTransform = ({ transform, transformation, ...props }) => {
+  transformation = transformation
+    ? new ImmutableTransformationList(transformation)
+    : new ImmutableTransformationList();
+
+  transform = transform ? new TransformationList(transform) : new TransformationList();
+
+  function accumulate(opts = {}) {
+    return { ...opts, transformation: transformation.concat(transform), transform };
+  }
+
+  return [transformation, transform, accumulate];
 };
 
 export const RenderShape = (shape, ro, ri) => {

@@ -8,7 +8,8 @@ import {
   HORIZONTAL,
   log,
   RAD2DEG,
-  DEG2RAD
+  DEG2RAD,
+  useTransformation
 } from '../renderUtils.js';
 import { TransformationList, Rotation, Translation } from '../../geom.js';
 import { Cross } from './cross.js';
@@ -26,6 +27,8 @@ export const Text = ({
   style,
   ...props
 }) => {
+  let transformation2 = useTransformation(props.transformation);
+
   let { transformation = new TransformationList() } = opts;
   let elementTransform = transformation.slice(
     transformation.findIndex(item => item.type.startsWith('scal')) + 1
@@ -34,7 +37,7 @@ export const Text = ({
   log(`Text.render`, {
     text,
     parentAngle,
-    transformation,
+    transformation2,
     x,
     y,
     alignment,

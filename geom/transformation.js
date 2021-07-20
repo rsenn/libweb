@@ -8,9 +8,15 @@ const DEG2RAD = Math.PI / 180;
 export class Transformation {
   //typeName = null;
 
-  constructor(typeName) {
+  constructor(transformation) {
+    if(transformation instanceof Transformation) return transformation;
+    if(transformation instanceof TransformationList) return transformation;
+
+    if(typeof transformation == 'string') return Transformation.fromString(transformation);
     //Util.define(this, { typeName });
     //this.type = type;
+    //
+    throw new TypeError('Transformation');
 
     return this;
   }
@@ -615,8 +621,11 @@ export class TransformationList extends Array {
     if(this.length > 0) {
       tUnit = tUnit || this.translationUnit;
       rUnit = rUnit || this.rotationUnit;
-      let r = this.map(t =>
-        t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)
+      let r = this.map(
+        t =>
+          t &&
+          t.type &&
+          t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)
       ).join(' ');
       return r;
     }
@@ -701,7 +710,7 @@ export class TransformationList extends Array {
   }
 
   get rotation() {
-    return this.findLast(item => item.type.startsWith('rotat'));
+    return this.findLast(item => item && item.type && item.type.startsWith('rotat'));
   }
   set rotation(value) {
     let index = this.findLastIndex(item => item.type.startsWith('rotat'));
@@ -710,7 +719,7 @@ export class TransformationList extends Array {
   }
 
   get scaling() {
-    return this.findLast(item => item.type.startsWith('scal'));
+    return this.findLast(item => item && item.type && item.type.startsWith('scal'));
   }
   set scaling(value) {
     let index = this.findLastIndex(item => item.type.startsWith('scal'));
@@ -719,11 +728,13 @@ export class TransformationList extends Array {
   }
 
   get translation() {
-    return this.findLast(item => typeof item.type == 'string' && item.type.startsWith('translat'));
+    return this.findLast(
+      item => item && item.type && typeof item.type == 'string' && item.type.startsWith('translat')
+    );
   }
 
   set translation(value) {
-    let index = this.findLastIndex(item => item.type.startsWith('transl'));
+    let index = this.findLastIndex(item => item && item.type && item.type.startsWith('transl'));
     value = value instanceof Translation ? value : new Translation(value);
     Array.prototype.splice.call(this, index, 1, value);
   }
@@ -851,4 +862,17 @@ Util.inherit(
 //Object.setPrototypeOf(TransformationList.prototype, Transformation.prototype);
 
 export const ImmutableTransformationList = Util.immutableClass(TransformationList);
+
+ImmutableTransformationList.prototype.rotate = function(...args) {
+  return this.concat([new ImmutableRotation(...args)]);
+};
+
+ImmutableTransformationList.prototype.translate = function(...args) {
+  return this.concat([new ImmutableTranslation(...args)]);
+};
+
+ImmutableTransformationList.prototype.scale = function(...args) {
+  return this.concat([new ImmutableScaling(...args)]);
+};
+
 Util.defineGetter(ImmutableTransformationList, Symbol.species, () => ImmutableTransformationList);
