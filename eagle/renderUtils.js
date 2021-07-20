@@ -19,17 +19,11 @@ export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
 export let DEBUG = false;
 
-export let log = DEBUG
-  ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
-  : () => {};
+export let log = DEBUG ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
 
 export const setDebug = state => {
   DEBUG = state;
-  log = state
-    ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(
-        console
-      )
-    : () => {};
+  log = state ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
 };
 
 export const PinSizes = {
@@ -45,8 +39,7 @@ export const EscapeClassName = name =>
     .replace(/_/g, '%5f')
     .replace(/%([0-9A-Fa-f]{2})/g, '_0x$1_');
 
-export const UnescapeClassName = name =>
-  decodeURIComponent(name.replace(/_0?x?([0-9A-Fa-f]{2})_/g, '%$1'));
+export const UnescapeClassName = name => decodeURIComponent(name.replace(/_0?x?([0-9A-Fa-f]{2})_/g, '%$1'));
 
 export const LayerToClass = layer => {
   let layerName = typeof layer == 'string' ? layer : layer.name;
@@ -356,11 +349,9 @@ export const LinesToPath = (lines, lineFn) => {
         const sweep = (curve || 0) >= 0; //Math.abs(slope.toAngle()) < PI ? 1 : 0;
 
         //if(isFinite(radius))
-        if(debug)
-          Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius }, debug).print(console.log);
+        if(debug) Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius }, debug).print(console.log);
 
-        if(curve !== undefined && isFinite(radius))
-          return RenderArcTo(dist, Math.abs(radius), theta, sweep, p[1]);
+        if(curve !== undefined && isFinite(radius)) return RenderArcTo(dist, Math.abs(radius), theta, sweep, p[1]);
         else if(Point.equals(start, p[1])) return `Z`;
         else return `L ${p[1].x} ${p[1].y}`;
       };
@@ -443,10 +434,7 @@ export function MakeCoordTransformer(matrix) {
       coords = { ...coords, x1, y1, x2, y2 };
     }
     let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
-    let newCoords = Object.keys(coords).reduce(
-      (acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.000001) }),
-      {}
-    );
+    let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.000001) }), {});
 
     //console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
     return { ...newCoords };
@@ -470,9 +458,7 @@ export const useTransformation = transformation => {
 };
 
 export const useTransform = ({ transform, transformation, ...props }) => {
-  transformation = transformation
-    ? new ImmutableTransformationList(transformation)
-    : new ImmutableTransformationList();
+  transformation = transformation ? new ImmutableTransformationList(transformation) : new ImmutableTransformationList();
 
   transform = transform ? new TransformationList(transform) : new TransformationList();
 
@@ -491,9 +477,7 @@ export const RenderShape = (shape, ro, ri) => {
     case 'long': {
       ro = ro * 1.2;
       const w = ro;
-      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${
-        -w * 2
-      } 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
+      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
       break;
     }
     case 'square': {

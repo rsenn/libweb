@@ -4,13 +4,7 @@ import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
 import { Palette } from './common.js';
-import {
-  MakeRotation,
-  LayerAttributes,
-  MakeCoordTransformer,
-  useTransformation,
-  useTransform
-} from './renderUtils.js';
+import { MakeRotation, LayerAttributes, MakeCoordTransformer, useTransformation, useTransform } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
 import { Sheet } from './components/sheet.js';
@@ -35,11 +29,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
   renderCollection(collection, parent, opts) {
     const arr = [...collection];
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
-    for(let item of arr.filter(item => item.tagName != 'text'))
-      this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName != 'text')) this.renderItem(item, parent, opts);
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
-    for(let item of arr.filter(item => item.tagName == 'text'))
-      this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName == 'text')) this.renderItem(item, parent, opts);
   }
 
   /**
@@ -57,8 +49,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.renderItem`, { item, options });
 
     const layer = item.layer;
-    const color =
-      typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
+    const color = typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
     const svg = (elem, attr, parent) =>
       this.create(
         elem,
@@ -168,19 +159,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, transform });
     let instances = sheet.instances;
     this.debug(`SchematicRenderer.renderSheet`, sheet);
-    let netsGroup = this.create(
-      'g',
-      { className: 'nets', transform, 'font-family': 'Fixed' },
-      parent
-    );
-    let instancesGroup = this.create(
-      'g',
-      { className: 'instances', transform, 'font-family': 'Fixed' },
-      parent
-    );
-    instancesGroup.props.children = [...instances.list].map(data =>
-      h(Instance, { data, opts: { transformation: transform } })
-    );
+    let netsGroup = this.create('g', { className: 'nets', transform, 'font-family': 'Fixed' }, parent);
+    let instancesGroup = this.create('g', { className: 'instances', transform, 'font-family': 'Fixed' }, parent);
+    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data, opts: { transformation: transform } }));
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 

@@ -1,38 +1,14 @@
 import Util from '../../util.js';
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import {
-  MakeRotation,
-  Alignment,
-  AlignmentAttrs,
-  VERTICAL,
-  HORIZONTAL,
-  log,
-  RAD2DEG,
-  DEG2RAD,
-  useTransformation
-} from '../renderUtils.js';
+import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD, useTransformation } from '../renderUtils.js';
 import { TransformationList, Rotation, Translation } from '../../geom.js';
 import { Cross } from './cross.js';
 
-export const Text = ({
-  x,
-  y,
-  text,
-  color,
-  alignment,
-  rot,
-  visible,
-  className,
-  opts = {},
-  style,
-  ...props
-}) => {
+export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, ...props }) => {
   let transformation2 = useTransformation(props.transformation);
 
   let { transformation = new TransformationList() } = opts;
-  let elementTransform = transformation.slice(
-    transformation.findIndex(item => item.type.startsWith('scal')) + 1
-  );
+  let elementTransform = transformation.slice(transformation.findIndex(item => item.type.startsWith('scal')) + 1);
   let parentAngle = Math.round(elementTransform.angle * RAD2DEG);
   log(`Text.render`, {
     text,
