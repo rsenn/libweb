@@ -1,96 +1,134 @@
-(function () {
-  function EventEmitter() {}
+const indexOf = (haystack, needle) => Array.prototype.indexOf.call(haystack, needle);
 
-  EventEmitter.prototype.on = function(event, handler) {
-    if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
-    if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
+export class EventEmitter {
+  constructor() {}
 
-    if(!this._events) {
-      this._events = { __proto__: null };
+  on(event, listener) {
+    this.events ??= {};
+    let a = (this.events[event] = this.events[event] ?? []);
+
+    if(a.indexOf(listener) == -1) a.push(listener);
+  }
+
+  removeListener(event, listener) {
+    this.events ??= {};
+    let a = (this.events[event] = this.events[event] ?? []);
+    if(a.length) {
+      let { length } = a;
+      for(let i = length - 1; i >= 0; i--) if(a[i] == listener) a.splice(i, 1);
     }
-    if(!this._events[event]) {
-      this._events[event] = [];
+  }
+
+  emit(event, ...args) {
+    this.events ??= {};
+    let a = (this.events[event] = this.events[event] ?? []);
+    if(a.length) {
+      let { length } = a;
+      for(let i = 0; i < length; i++) a[i].apply(this, args);
     }
+  }
 
-    this._events[event].push(handler);
-    return this;
-  };
-
-  EventEmitter.prototype.once = function(event, handler) {
-    if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
-    if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
-
-    var emitFn = function() {
-      handler.apply(this, arguments);
-      this.off(event, emitFn);
+  once(event, listener) {
+    let callback;
+    callback = e => {
+      this.removeListener(event, callback);
+      listener.call(this, e);
     };
-    emitFn._eventFn = handler;
-    return this.on(event, emitFn);
-  };
+    this.on(event, callback);
+  }
 
-  EventEmitter.prototype.bindEventEmitter = function(target, event) {
-    if(event !== undefined && typeof event !== 'string') {
-      throw new TypeError('The 2nd argument is not a string');
-    }
-    if(!target._events) {
-      target._events = { __proto__: null };
-    }
-
-    this._events = target._events;
-  };
-
-  EventEmitter.prototype.off = function(event, handler) {
-    if(event !== undefined && typeof event !== 'string') {
-      throw new TypeError('The 1st argument is not a string');
-    }
-    if(handler !== undefined && typeof handler !== 'function') {
-      throw new TypeError('The 2nd argument is not a function');
-    }
-    if(!this._events) return this;
-
-    if(event === undefined) {
-      for(let eventName in this._events) {
-        delete this._events[eventName];
+  iterator(type) {
+    return new Repeater(async (push, stop) => {
+      let ret;
+      while((ret = await this.next(type))) {
+        if(!ret || ret.done == true) break;
+        await push(ret.value);
       }
-      return this;
-    } else if(handler === undefined) {
-      delete this._events[event];
-      return this;
-    } else if(this._events[event] instanceof Array) {
-      let allFn = this._events[event];
-
-      for(let i = 0; i < allFn.length; i++) {
-        let fn = allFn[i];
-        if(fn === handler || fn._eventFn === handler) {
-          allFn.splice(i, 1);
-          return this;
-        }
-      }
-    }
-    return this;
-  };
-
-  EventEmitter.prototype.emit = function(event, args) {
-    if(event !== undefined && typeof event !== 'string') {
-      throw new TypeError('The 1st argument is not a string');
-    }
-
-    if(!this._events || !this._events[event]) {
-      return this;
-    }
-    let extra_arguments = Array.prototype.slice.call(arguments, 1);
-    let handlers = this._events[event].slice();
-    handlers.forEach(fn => {
-      fn.apply(this, extra_arguments);
+      await stop();
     });
+  }
+
+  [Symbol.asyncIterator]() {
     return this;
-  };
-  EventEmitter.bindPrototype = function(ctor) {
-    ctor.prototype = Object.create(EventEmitter.prototype);
-  };
-  this.EventEmitter = EventEmitter;
-}.call(
-  (function () {
-    return this;
-  })()
-));
+  }
+
+  next(type) {
+    return new Promise(async resolve => this.once(type, e => resolve({ done: false, value: e })));
+  }
+
+  static [Symbol.hasInstance](obj) {
+    if(typeof obj == 'object' && obj != null) {
+      if(obj instanceof EventEmitter) return true;
+    }
+    if(['on', 'once', 'emit'].every(method => typeof obj[method] == 'function')) return true;
+    return false;
+  }
+}
+
+const PRIVATE = Symbol('EventTarget');
+
+export class EventTarget {
+  /*constructor() {
+    Object.defineProperty(this, PRIVATE, {
+      value: {
+        listeners: new Map()
+      }
+    });
+  }*/
+  #listeners = new Map();
+
+  #typedListeners(type) {
+    const l = this.#listeners;
+    if(!l.has(type)) l.set(type, []);
+    return l.get(type);
+  }
+
+  addEventListener(type, listener) {
+    if(typeof type !== 'string') throw new TypeError('`type` must be a string');
+    if(typeof listener !== 'function') throw new TypeError('`listener` must be a function');
+    this.#typedListeners(type).push(listener);
+  }
+
+  removeEventListener(type, listener) {
+    if(typeof type !== 'string') throw new TypeError('`type` must be a string');
+    if(typeof listener !== 'function') throw new TypeError('`listener` must be a function');
+    const typedListeners = this.#typedListeners(type);
+    for(let i = typedListeners.length; i >= 0; i--) if(typedListeners[i] === listener) typedListeners.splice(i, 1);
+  }
+
+  dispatchEvent(type, event) {
+    const typedListeners = this.#typedListeners(type);
+    if('target' in event || 'detail' in event) event.target = this;
+    const queue = [];
+    for(let i = 0; i < typedListeners.length; i++) queue[i] = typedListeners[i];
+    for(let listener of queue) listener(event);
+    // Also fire if this EventTarget has an `on${EVENT_TYPE}` property
+    // that's a function
+    if(typeof this[`on${type}`] === 'function') this[`on${type}`](event);
+  }
+
+  static [Symbol.hasInstance](obj) {
+    if(typeof obj == 'object' && obj != null) {
+      if(obj instanceof EventTarget) return true;
+    }
+    if(['addEventListener', 'removeEventListener', 'dispatchEvent'].every(method => typeof obj[method] == 'function')) return true;
+    return false;
+  }
+}
+
+const getMethods = obj =>
+  Object.getOwnPropertyNames(obj)
+    .filter(n => n != 'constructor')
+    .reduce((acc, n) => ({ ...acc, [n]: obj[n] }), {});
+
+export const eventify = self => {
+  let methods = getMethods(EventEmitter.prototype);
+  console.log(methods);
+
+  return Object.assign(self, {
+    events: {},
+    ...methods
+  });
+};
+
+export default { EventEmitter, EventTarget, eventify };
