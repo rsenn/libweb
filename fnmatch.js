@@ -2,6 +2,7 @@ export const PATH_FNM_NOMATCH = 1;
 export const PATH_FNM_PATHNAME = 1 << 0;
 export const PATH_FNM_NOESCAPE = 1 << 1;
 export const PATH_FNM_PERIOD = 1 << 2;
+export const PATH_FNM_MULTI = 1 << 3;
 export const PATH_NOTFIRST = 1 << 8;
 
 export function fnmatch(p, s, f = 0, depth = 0) {
@@ -11,6 +12,10 @@ export function fnmatch(p, s, f = 0, depth = 0) {
     sj = s.length;
   let ret = PATH_FNM_NOMATCH;
   let c = 0;
+
+  if(f & PATH_FNM_MULTI) {
+    if(p.split(/;|\n|\|/g).some(pattern => fnmatch(pattern, s, f & ~PATH_FNM_MULTI, depth) == 0)) return 0;
+  }
 
   const pinc = (n = 1) => (pi += n),
     sinc = (n = 1) => (si += n);
@@ -78,17 +83,22 @@ export function fnmatch(p, s, f = 0, depth = 0) {
         continue;
       }
       case '*': {
+        let i, q, t;
         if(s[si] == '/' && f & PATH_FNM_PATHNAME) {
           pinc();
           continue;
         }
-        for(let i = si + 1; i < sj; i++) {
-          const q = p.substring(pi + 1, pj),
-            t = s.substring(i, sj);
+        i = si + 1;
+        q = p.substring(pi + 1);
+        if(pi + 1 == pj) return 0;
+        for(; i < sj; i++) {
+          t = s.substring(i);
           d(`i=`, i, `, p=`, q, `, s=`, t);
-          if(q.length && t.length > 0 && t != '' && q != '' && !fnmatch(q, t, f, depth + 1)) return 0;
+          if(/*t != '' && q != '' &&*/ !fnmatch(q, t, f, depth + 1)) {
+            return 0;
+          }
         }
-        break;
+        continue;
       }
       case '?': {
         if(s[si] == '/' && f & PATH_FNM_PATHNAME) break;

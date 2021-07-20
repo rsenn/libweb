@@ -1,30 +1,62 @@
+import { fnmatch, PATH_FNM_MULTI } from './fnmatch.js';
 const indexOf = (haystack, needle) => Array.prototype.indexOf.call(haystack, needle);
 
+function define(obj, prop, value) {
+  Object.defineProperty(obj, prop, { value, enumerable: false, writable: true, configurable: true });
+}
 export class EventEmitter {
-  constructor() {}
+  events = {};
+
+  constructor() {
+    delete this.events;
+    define(this, 'events', this.events || {});
+  }
 
   on(event, listener) {
-    this.events ??= {};
+    define(this, 'events', this.events || {});
     let a = (this.events[event] = this.events[event] ?? []);
 
     if(a.indexOf(listener) == -1) a.push(listener);
+    return this;
   }
 
   removeListener(event, listener) {
-    this.events ??= {};
+    define(this, 'events', this.events || {});
+
+    if(listener === undefined) return this.removeAllListeners(event);
+
     let a = (this.events[event] = this.events[event] ?? []);
     if(a.length) {
       let { length } = a;
-      for(let i = length - 1; i >= 0; i--) if(a[i] == listener) a.splice(i, 1);
+      for(let i = length - 1; i >= 0; i--) if(listener == undefined || a[i] == listener) a.splice(i, 1);
     }
   }
 
+  removeAllListeners(type) {
+    define(this, { events: this.events ?? {} });
+
+    if(type) delete this.events[type];
+    else this.events = {};
+    return this;
+  }
+
+  off(...args) {
+    return args.length > 1 ? this.removeListener(...args) : this.removeAllListeners(...args);
+  }
+
   emit(event, ...args) {
-    this.events ??= {};
-    let a = (this.events[event] = this.events[event] ?? []);
-    if(a.length) {
-      let { length } = a;
-      for(let i = 0; i < length; i++) a[i].apply(this, args);
+    define(this, { events: this.events ?? {} });
+    for(let pattern in this.events) {
+      let a = this.events[pattern];
+
+      console.log('emit', { pattern, a, event });
+
+      if(fnmatch(pattern, event, PATH_FNM_MULTI)) continue;
+
+      if(a.length) {
+        let { length } = a;
+        for(let i = 0; i < length; i++) a[i].apply(this, args);
+      }
     }
   }
 
@@ -46,6 +78,17 @@ export class EventEmitter {
       }
       await stop();
     });
+  }
+
+  eventNames() {
+    return Object.keys(this.events);
+  }
+  listenerCount(type) {
+    return this.events[type].length;
+  }
+  listeners(type) {
+    return this.events[type];
+    p;
   }
 
   [Symbol.asyncIterator]() {
