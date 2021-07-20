@@ -4,6 +4,20 @@ const indexOf = (haystack, needle) => Array.prototype.indexOf.call(haystack, nee
 function define(obj, prop, value) {
   Object.defineProperty(obj, prop, { value, enumerable: false, writable: true, configurable: true });
 }
+
+export const LogWrap = (globalThis.LogWrap = function LogWrap(log) {
+  if(typeof log == 'string') {
+    let str = log;
+    log = (...args) => console.log(str, ...args);
+  } else if(!log) {
+    log = (...args) => console.log(...args);
+  }
+  return value => {
+    log(value);
+    return value;
+  };
+});
+
 export class EventEmitter {
   events = {};
 
