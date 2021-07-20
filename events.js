@@ -49,13 +49,12 @@ export class EventEmitter {
     for(let pattern in this.events) {
       let a = this.events[pattern];
 
-      console.log('emit', { pattern, a, event });
-
       if(fnmatch(pattern, event, PATH_FNM_MULTI)) continue;
+      //  console.log('emit', { pattern, event });
 
       if(a.length) {
         let { length } = a;
-        for(let i = 0; i < length; i++) a[i].apply(this, args);
+        for(let i = 0; i < length; i++) if(typeof a[i] == 'function') a[i].apply(this, args);
       }
     }
   }
@@ -92,11 +91,13 @@ export class EventEmitter {
   }
 
   [Symbol.asyncIterator]() {
-    return this;
+    return {
+      next: type => new Promise(async resolve => this.once(type, e => resolve({ done: false, value: e })))
+    };
   }
 
-  next(type) {
-    return new Promise(async resolve => this.once(type, e => resolve({ done: false, value: e })));
+  waitFor(type) {
+    return new Promise(async resolve => this.once(type, e => resolve(e)));
   }
 
   static [Symbol.hasInstance](obj) {
