@@ -1,10 +1,13 @@
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
 
 export const FixedMedium = ({ id = 'Fixed-Medium', family = 'Fixed' }) =>
-  h('font', {
+  h(
+    'font',
+    {
       id,
       'horiz-adv-x': '462'
-    }, [
+    },
+    [
       h('font-face', {
         'font-family': family,
         'font-weight': '500',
@@ -77,8 +80,7 @@ export const FixedMedium = ({ id = 'Fixed-Medium', family = 'Fixed' }) =>
       h('glyph', {
         'glyph-name': 'parenleft',
         unicode: '(',
-        d:
-          'M211 -77q-65 92 -97.5 201.5t-32.5 222t32.5 222t97.5 201.5h97q-74 -88 -111 -198.5t-37 -225t37 -225t111 -198.5h-97z'
+        d: 'M211 -77q-65 92 -97.5 201.5t-32.5 222t32.5 222t97.5 201.5h97q-74 -88 -111 -198.5t-37 -225t37 -225t111 -198.5h-97z'
       }),
       h('glyph', {
         'glyph-name': 'parenright',

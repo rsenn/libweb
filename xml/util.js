@@ -3,17 +3,9 @@ import Util from '../util.js';
 import deep from '../deep.js';
 
 export const Object2Array = (xmlObj, flat) => {
-  let entries = [...deep.flatten(xmlObj, new Map()).entries()].map(([k, v]) => [
-    Util.replaceAll({ attributes: 1, tagName: 0, children: 2 }, k),
-    v
-  ]);
+  let entries = [...deep.flatten(xmlObj, new Map()).entries()].map(([k, v]) => [Util.replaceAll({ attributes: 1, tagName: 0, children: 2 }, k), v]);
 
-  if(!flat)
-    entries = entries.reduce((acc, [k, v]) => (
-        /*console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), */ deep.set(acc, k, v), acc
-      ),
-      []
-    );
+  if(!flat) entries = entries.reduce((acc, [k, v]) => (/*console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), */ deep.set(acc, k, v), acc), []);
   return entries;
 };
 
@@ -80,8 +72,7 @@ class XMLObject {
   constructor({ attributes, children, tagName }) {
     Array.prototype.push.call(this, tagName);
     /* prettier-ignore */ Object.assign(this, Object.keys(attributes).reduce((acc, key) => ({ ...acc, [key]: attributes[key] }), {}) );
-    if(Util.isObject(children) && children.length !== undefined)
-      this.children = [].concat(children);
+    if(Util.isObject(children) && children.length !== undefined) this.children = [].concat(children);
   }
 
   static toArray(...args) {
@@ -117,7 +108,8 @@ Util.define(XMLObject.prototype, { get [Symbol.species]() {return XMLObject; } }
 Util.define(XMLObject.prototype, {
   [Symbol.for('nodejs.util.inspect.custom')]() {
     return [this[0], this[1], ...(Util.isArray(this[2]) ? this[2] : [])];
-  }, [Symbol.toStringTag]() {
+  },
+  [Symbol.toStringTag]() {
     return this.toString();
   }
 });

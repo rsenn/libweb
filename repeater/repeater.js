@@ -76,7 +76,8 @@ function __generator(thisArg, body) {
     y,
     t,
     g;
-  return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
+  return (
+    (g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
       (g[Symbol.iterator] = function() {
         return this;
@@ -92,17 +93,7 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1),
-          y &&
-            (t =
-              op[0] & 2
-                ? y.return
-                : op[0]
-                ? y.throw || ((t = y.return) && t.call(y), 0)
-                : y.next) &&
-            !(t = t.call(y, op[1])).done)
-        )
-          return t;
+        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -121,10 +112,8 @@ function __generator(thisArg, body) {
             op = _.ops.pop();
             _.trys.pop();
             continue;
-          default: if (
-              !((t = _.trys), (t = t.length > 0 && t[t.length - 1])) &&
-              (op[0] === 6 || op[0] === 2)
-            ) {
+          default:
+            if(!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
               _ = 0;
               continue;
             }
@@ -205,7 +194,8 @@ function __asyncGenerator(thisArg, _arguments, generator) {
   let g = generator.apply(thisArg, _arguments || []),
     i,
     q = [];
-  return ((i = {}),
+  return (
+    (i = {}),
     verb('next'),
     verb('throw'),
     verb('return'),
@@ -230,9 +220,7 @@ function __asyncGenerator(thisArg, _arguments, generator) {
     }
   }
   function step(r) {
-    r.value instanceof __await
-      ? Promise.resolve(r.value.v).then(fulfill, reject)
-      : settle(q[0][2], r);
+    r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
   }
   function fulfill(value) {
     resume('next', value);
@@ -362,8 +350,7 @@ let RepeaterOverflowError = /** @class */ (function (_super) {
       value: 'RepeaterOverflowError',
       enumerable: false
     });
-    if(typeof Object.setPrototypeOf === 'function')
-      Object.setPrototypeOf(_this, _newTarget.prototype);
+    if(typeof Object.setPrototypeOf === 'function') Object.setPrototypeOf(_this, _newTarget.prototype);
     else _this.__proto__ = _newTarget.prototype;
     if(typeof Error.captureStackTrace === 'function') {
       Error.captureStackTrace(_this, _this.constructor);
@@ -447,7 +434,8 @@ let RepeaterController = /** @class */ (function () {
       return value;
     });
     this.err = undefined;
-    this.execution = execution.then(() => undefined,
+    this.execution = execution.then(
+      () => undefined,
       () => undefined
     );
     return this.pending === undefined ? execution : this.pending.then(() => execution);
@@ -492,15 +480,11 @@ let RepeaterController = /** @class */ (function () {
   RepeaterController.prototype.push = function(value) {
     swallow(value);
     if(this.pushQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError('No more than ' +
-          MAX_QUEUE_LENGTH +
-          ' pending calls to push are allowed on a single repeater.'
-      );
+      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' pending calls to push are allowed on a single repeater.');
     } else if(this.state >= 2 /* Stopped */) {
       return Promise.resolve(undefined);
     }
-    let valueP =
-      this.pending === undefined ? Promise.resolve(value) : this.pending.then(() => value);
+    let valueP = this.pending === undefined ? Promise.resolve(value) : this.pending.then(() => value);
     valueP = valueP.catch(err => {
       if(this.state < 2 /* Stopped */) {
         this.err = err;
@@ -588,8 +572,7 @@ let RepeaterController = /** @class */ (function () {
       try {
         for(var _e = __values(this.pullQueue), _f = _e.next(); !_f.done; _f = _e.next()) {
           let pull = _f.value;
-          let execution =
-            this.pending === undefined ? this.consume() : this.pending.then(() => this.consume());
+          let execution = this.pending === undefined ? this.consume() : this.pending.then(() => this.consume());
           pull.resolve(this.unwrap(execution));
         }
       } catch(e_2_1) {
@@ -608,10 +591,7 @@ let RepeaterController = /** @class */ (function () {
   RepeaterController.prototype.next = function(value) {
     swallow(value);
     if(this.pullQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError('No more than ' +
-          MAX_QUEUE_LENGTH +
-          ' pending calls to Repeater.prototype.next are allowed on a single repeater.'
-      );
+      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' pending calls to Repeater.prototype.next are allowed on a single repeater.');
     }
     if(this.state <= 0 /* Initial */) this.execute();
     this.onnext(value);
@@ -672,20 +652,17 @@ let Repeater = /** @class */ (function () {
   }
   Repeater.prototype.next = function(value) {
     let controller = controllers.get(this);
-    if(controller === undefined)
-      throw new Error('RepeaterController missing from controllers WeakMap');
+    if(controller === undefined) throw new Error('RepeaterController missing from controllers WeakMap');
     return controller.next(value);
   };
   Repeater.prototype.return = function(value) {
     let controller = controllers.get(this);
-    if(controller === undefined)
-      throw new Error('RepeaterController missing from controllers WeakMap');
+    if(controller === undefined) throw new Error('RepeaterController missing from controllers WeakMap');
     return controller.return(value);
   };
   Repeater.prototype.throw = function(err) {
     let controller = controllers.get(this);
-    if(controller === undefined)
-      throw new Error('RepeaterController missing from controllers WeakMap');
+    if(controller === undefined) throw new Error('RepeaterController missing from controllers WeakMap');
 
     return controller.throw(err);
   };
@@ -714,7 +691,8 @@ function asyncIterators(contenders, options) {
       iters.push(contender[Symbol.asyncIterator]());
     } else if(isIterable(contender)) {
       let iter_1 = contender[Symbol.iterator]();
-      iters.push((function syncToAsyncIterator() {
+      iters.push(
+        (function syncToAsyncIterator() {
           return __asyncGenerator(this, arguments, function syncToAsyncIterator_1() {
             let result;
             return __generator(this, _a => {
@@ -747,7 +725,8 @@ function asyncIterators(contenders, options) {
         })()
       );
     } else {
-      iters.push((function valueToAsyncIterator() {
+      iters.push(
+        (function valueToAsyncIterator() {
           return __asyncGenerator(this, arguments, function valueToAsyncIterator_1() {
             return __generator(this, _a => {
               switch (_a.label) {
@@ -774,10 +753,7 @@ function asyncIterators(contenders, options) {
     }
   };
   try {
-    for(var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next();
-      !contenders_1_1.done;
-      contenders_1_1 = contenders_1.next()
-    ) {
+    for(var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next(); !contenders_1_1.done; contenders_1_1 = contenders_1.next()) {
       let contender = contenders_1_1.value;
       _loop_1(contender);
     }
@@ -785,8 +761,7 @@ function asyncIterators(contenders, options) {
     e_3 = { error: e_3_1 };
   } finally {
     try {
-      if(contenders_1_1 && !contenders_1_1.done && (_a = contenders_1.return))
-        _a.call(contenders_1);
+      if(contenders_1_1 && !contenders_1_1.done && (_a = contenders_1.return)) _a.call(contenders_1);
     } finally {
       if(e_3) throw e_3.error;
     }
@@ -816,12 +791,10 @@ function race(contenders) {
             if(stopped) return [3 /*break*/, 6];
             results = iters.map(iter => iter.next());
             try {
-              for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next();
-                !results_1_1.done;
-                results_1_1 = results_1.next()
-              ) {
+              for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next(); !results_1_1.done; results_1_1 = results_1.next()) {
                 result_1 = results_1_1.value;
-                Promise.resolve(result_1).then(result => {
+                Promise.resolve(result_1).then(
+                  result => {
                     if(result.done && !stopped) {
                       stop();
                       stopped = true;
@@ -882,7 +855,8 @@ function merge(contenders) {
             stop.then(() => (stopped = true));
             return [
               4 /*yield*/,
-              Promise.all(iters.map(iter =>
+              Promise.all(
+                iters.map(iter =>
                   __awaiter(this, void 0, void 0, function() {
                     let result, _a;
                     return __generator(this, _b => {
@@ -1024,7 +998,8 @@ function latest(contenders) {
             _a.sent();
             return [
               4 /*yield*/,
-              Promise.all(iters.map((iter, i) =>
+              Promise.all(
+                iters.map((iter, i) =>
                   __awaiter(_this, void 0, void 0, function() {
                     let result;
                     return __generator(this, _a => {
@@ -1074,11 +1049,4 @@ function latest(contenders) {
   );
 }
 
-export {
-  DroppingBuffer,
-  FixedBuffer,
-  MAX_QUEUE_LENGTH,
-  Repeater,
-  RepeaterOverflowError,
-  SlidingBuffer
-};
+export { DroppingBuffer, FixedBuffer, MAX_QUEUE_LENGTH, Repeater, RepeaterOverflowError, SlidingBuffer };

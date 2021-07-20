@@ -13,30 +13,19 @@ export function tlite(getTooltipOpts) {
     if(opts.attrib) {
       let a = opts.attrib;
 
-      if(a instanceof Array ||
-        (typeof a == 'object' && a !== null && typeof a.length == 'number')
-      ) {
+      if(a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
         getTitle = e => {
           let x = a
             .filter(attrName => e.hasAttribute(attrName))
-            .map(attrName => [
-              attrName,
-              (e.hasAttribute(attrName) && e.getAttribute(attrName)) || '',
-              e.hasAttribute(attrName) ? e : null
-            ])
+            .map(attrName => [attrName, (e.hasAttribute(attrName) && e.getAttribute(attrName)) || '', e.hasAttribute(attrName) ? e : null])
             .filter(([attrName, attrVal]) => attrVal != '' && attrVal != null);
           return x[0] || [];
         };
       } else {
-        getTitle = e => [
-          opts.attrib,
-          (e.hasAttribute(opts.attrib) && e.getAttribute(opts.attrib)) || '',
-          e.hasAttribute(opts.attrib) ? e : null
-        ];
+        getTitle = e => [opts.attrib, (e.hasAttribute(opts.attrib) && e.getAttribute(opts.attrib)) || '', e.hasAttribute(opts.attrib) ? e : null];
       }
     }
-    if(!getTitle)
-      getTitle = e => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
+    if(!getTitle) getTitle = e => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
     opts.getTitle = e => {
       let attrName,
         title,
@@ -136,20 +125,7 @@ if(elem)
     let html;
     if(/\t/.test(text)) {
       let cells = text.split(/\n/g).map(row => row.split(/\t/g));
-      html =
-        '<table border="0" cellspacing="0" cellpadding="0" class="tlite-table" style="margin: 0px; padding: 0px; color: white; ">\n' +
-        cells
-          .map((row, j) =>
-              `<tr class="tlite-table tlite-row-${j}">` +
-              row
-                .map((col, i) =>
-                    `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>'
-                )
-                .join('') +
-              '</tr>\n'
-          )
-          .join('') +
-        '</table>';
+      html = '<table border="0" cellspacing="0" cellpadding="0" class="tlite-table" style="margin: 0px; padding: 0px; color: white; ">\n' + cells.map((row, j) => `<tr class="tlite-table tlite-row-${j}">` + row.map((col, i) => `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>').join('') + '</tr>\n').join('') + '</table>';
     } else {
       html = text.replace(/\n/g, '<br />');
     }
@@ -180,20 +156,8 @@ if(elem)
       let centerEl = left + width / 2;
 
       const pos = {
-        top: vertGrav === 's'
-            ? top - tooltipHeight - arrowSize
-            : vertGrav === 'n'
-            ? top + height + arrowSize
-            : top + height / 2 - tooltipHeight / 2,
-        left: horzGrav === 'w'
-            ? left
-            : horzGrav === 'e'
-            ? left + width - tooltipWidth
-            : vertGrav === 'w'
-            ? left + width + arrowSize
-            : vertGrav === 'e'
-            ? left - tooltipWidth - arrowSize
-            : centerEl - tooltipWidth / 2
+        top: vertGrav === 's' ? top - tooltipHeight - arrowSize : vertGrav === 'n' ? top + height + arrowSize : top + height / 2 - tooltipHeight / 2,
+        left: horzGrav === 'w' ? left : horzGrav === 'e' ? left + width - tooltipWidth : vertGrav === 'w' ? left + width + arrowSize : vertGrav === 'e' ? left - tooltipWidth - arrowSize : centerEl - tooltipWidth / 2
       };
 
       if(pos.left < 0) pos.left = 0;

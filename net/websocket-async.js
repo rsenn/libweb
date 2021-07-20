@@ -25,18 +25,21 @@ export class WebSocketClient {
     this.reset();
 
     if(!ctor)
-      ctor = Util.tryCatch(() => Util.isObject(window),
+      ctor = Util.tryCatch(
+        () => Util.isObject(window),
         () => window.WebSocket,
         null
       );
 
-    Object.defineProperties(this,
+    Object.defineProperties(
+      this,
       [
         ['ctor', ctor],
         ['receiveDataQueue', []],
         ['receiveCallbacksQueue', []],
         ['closeEvent', null]
-      ].reduce((acc, [name, value]) => ({
+      ].reduce(
+        (acc, [name, value]) => ({
           ...acc,
           [name]: { value, enumerable: false }
         }),
@@ -87,9 +90,7 @@ export class WebSocketClient {
 
     if(!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
 
-    const receivePromise = new Promise((resolve, reject) =>
-      this.receiveCallbacksQueue.push({ resolve, reject })
-    );
+    const receivePromise = new Promise((resolve, reject) => this.receiveCallbacksQueue.push({ resolve, reject }));
 
     return receivePromise;
   }

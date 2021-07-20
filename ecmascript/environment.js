@@ -35,11 +35,7 @@ function log(...args) {
 
   if(!callers[0].functionName) callers.shift();
 
-  while(callers[0].fileName == '<anonymous>' ||
-    callers[0].methodName == '<anonymous>' ||
-    callers[0].methodName == ''
-  )
-    callers.shift();
+  while(callers[0].fileName == '<anonymous>' || callers[0].methodName == '<anonymous>' || callers[0].methodName == '') callers.shift();
 
   //console.debug('callers\n', ...callers.map((c) => c.functionName || c.methodName || c.toString()).map((n) => `  ${n}\n`));
 
@@ -160,7 +156,8 @@ export class Environment extends EventEmitter {
 
   generateClosure(node) {
     let type = node.type || Util.className(node);
-    let closure = ({
+    let closure = (
+      {
         BinaryExpression: this.generateBinaryExpression,
         ImportDeclaration: this.generateImportDeclaration,
         LogicalExpression: this.generateBinaryExpression,
@@ -462,8 +459,7 @@ export class Environment extends EventEmitter {
     log({ ...memberExpression });
     let obj = this.generateClosure(object);
     let member = this.memberExpressionProperty(node);
-    let str = (s, v = 'node.value') =>
-      (s + '').replace(/\s+/g, ' ').replace(/(node\.value|key)/g, v);
+    let str = (s, v = 'node.value') => (s + '').replace(/\s+/g, ' ').replace(/(node\.value|key)/g, v);
 
     //log({obj: obj+'', member: member+'' }); //obj()      = ', obj() || str(obj,`'${node.object.value}'`), '\n  property() = ', property());
     return function() {
@@ -554,7 +550,8 @@ export class Environment extends EventEmitter {
       case 'object':
         value = node.value;
         break;
-      default: throw new Error(`generateLiteral: no such species '${node.species}'`);
+      default:
+        throw new Error(`generateLiteral: no such species '${node.species}'`);
     }
     // console.debug('generateLiteral', value);
     return function() {
@@ -565,10 +562,7 @@ export class Environment extends EventEmitter {
   generateIdentifier(node) {
     let self = this;
     log(node);
-    let func =
-      node.value == 'this'
-        ? `function thisObj() { return env.currentThis; }`
-        : `function identifier() { return env.getVariableStore('${node.value}')['${node.value}']; }`;
+    let func = node.value == 'this' ? `function thisObj() { return env.currentThis; }` : `function identifier() { return env.getVariableStore('${node.value}')['${node.value}']; }`;
     // console.debug('generateIdentifier', func);
 
     return new Function('env', `return ${func}`)(self);
@@ -614,9 +608,7 @@ export class Environment extends EventEmitter {
     let name = this.generateName(node.left);
     let val = this.generateClosure(node.right);
     return function* () {
-      self.emit('line',
-        (node.left.loc && node.left.loc.start.line) || ESNode.assoc(node.left).position.line
-      );
+      self.emit('line', (node.left.loc && node.left.loc.start.line) || ESNode.assoc(node.left).position.line);
       let v = val();
       if(v !== undefined) {
         if(v.next) {

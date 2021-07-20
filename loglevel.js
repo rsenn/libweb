@@ -16,10 +16,7 @@
   //Slightly dubious tricks to cut down minimized file size
   let noop = function() {};
   let undefinedType = 'undefined';
-  let isIE =
-    typeof window !== undefinedType &&
-    typeof window.navigator !== undefinedType &&
-    /Trident\/|MSIE /.test(window.navigator.userAgent);
+  let isIE = typeof window !== undefinedType && typeof window.navigator !== undefinedType && /Trident\/|MSIE /.test(window.navigator.userAgent);
 
   let logMethods = ['trace', 'debug', 'info', 'warn', 'error'];
 
@@ -228,10 +225,7 @@
 
     let logger = _loggersByName[name];
     if(!logger) {
-      logger = _loggersByName[name] = new Logger(name,
-        defaultLogger.getLevel(),
-        defaultLogger.methodFactory
-      );
+      logger = _loggersByName[name] = new Logger(name, defaultLogger.getLevel(), defaultLogger.methodFactory);
     }
     return logger;
   };

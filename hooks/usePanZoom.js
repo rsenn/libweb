@@ -54,7 +54,8 @@ export const usePanZoom = ({
     return r;
   }, []);
 
-  const setPan = useCallback(f =>
+  const setPan = useCallback(
+    f =>
       setTransform(({ x, y, zoom }) => {
         const newPan = typeof f === 'function' ? f({ x, y }) : f;
 
@@ -67,11 +68,13 @@ export const usePanZoom = ({
     [minX, maxX, minY, maxY]
   );
 
-  const setZoom = useCallback((f, maybeCenter) =>
+  const setZoom = useCallback(
+    (f, maybeCenter) =>
       setTransform(({ x, y, zoom }) => {
         const newZoom = clampZoom(typeof f === 'function' ? f(zoom) : f);
 
-        const center = _.maybe(() => ({
+        const center = _.maybe(
+          () => ({
             x: container.current.offsetWidth / 2,
             y: container.current.offsetHeight / 2
           }),
@@ -87,7 +90,8 @@ export const usePanZoom = ({
     [minX, maxX, minY, maxY, minZoom, maxZoom]
   );
 
-  const startPanZoom = useCallback(pointers => {
+  const startPanZoom = useCallback(
+    pointers => {
       if(enablePan) {
         prev.current = pointers;
 
@@ -95,10 +99,12 @@ export const usePanZoom = ({
 
         onPanStart(pointers);
       }
-    }, [enablePan, onPanStart]
+    },
+    [enablePan, onPanStart]
   );
 
-  const movePanZoom = useCallback(pointers => {
+  const movePanZoom = useCallback(
+    pointers => {
       if(isPanning()) {
         wasPanning.current = true;
 
@@ -123,7 +129,8 @@ export const usePanZoom = ({
 
         onPan({ ...newVal, pointers });
       }
-    }, [isPanning, onPan, minX, maxX, minY, maxY]
+    },
+    [isPanning, onPan, minX, maxX, minY, maxY]
   );
 
   const endPanZoom = useCallback(() => {
@@ -133,24 +140,25 @@ export const usePanZoom = ({
     }
   }, [onPanEnd]);
 
-  const onClickCapture = useCallback(event => {
+  const onClickCapture = useCallback(
+    event => {
       if((preventClickOnPan, wasPanning.current)) {
         wasPanning.current = false;
         event.stopPropagation();
       }
-    }, [preventClickOnPan]
+    },
+    [preventClickOnPan]
   );
 
-  const onWheel = useCallback(event => {
+  const onWheel = useCallback(
+    event => {
       if(enableZoom && container.current) {
         event.preventDefault();
         if(!requireCtrlToZoom || event.ctrlKey) {
           const { pageX, pageY, deltaY } = event;
           const pointerPosition = _.getPositionOnElement(container.current)(pageX, pageY);
 
-          let newVal = setZoom(zoom => zoom * Math.pow(1 - zoomSensitivity, deltaY),
-            pointerPosition
-          );
+          let newVal = setZoom(zoom => zoom * Math.pow(1 - zoomSensitivity, deltaY), pointerPosition);
 
           onZoom(newVal);
         } else {
@@ -161,7 +169,8 @@ export const usePanZoom = ({
           }));
         }
       }
-    }, [enableZoom, onZoom, minX, maxX, minY, maxY, minZoom, maxZoom, scrollPanSensitivity, setPan]
+    },
+    [enableZoom, onZoom, minX, maxX, minY, maxY, minZoom, maxZoom, scrollPanSensitivity, setPan]
   );
 
   const onGestureStart = useCallback(event => {
@@ -212,10 +221,8 @@ export const usePanZoom = ({
     }
   }, []);
 
-  const onTouchStart = ({ touches }) =>
-    startPanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
-  const onTouchMove = ({ touches }) =>
-    movePanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
+  const onTouchStart = ({ touches }) => startPanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
+  const onTouchMove = ({ touches }) => movePanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
   const onTouchEnd = () => endPanZoom();
   const onTouchCancel = () => endPanZoom();
   const onMouseDown = ({ pageX, pageY }) => startPanZoom([{ x: pageX, y: pageY }]);

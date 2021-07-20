@@ -12,8 +12,7 @@ export class EagleProject {
     fs = fs || this.fs || globalThis.fs;
     //super();
     if(file) {
-      if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
-        this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
+      if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file)) this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
     }
     this.filenames = [];
 
@@ -316,10 +315,7 @@ export class EagleProject {
 
   saveTo(dir = '.', overwrite = false) {
     return new Promise((resolve, reject) => {
-      let promises = this.list.map(doc => [
-        doc.basename,
-        doc.saveTo([dir, doc.basename].join('/'), overwrite, this.fs)
-      ]);
+      let promises = this.list.map(doc => [doc.basename, doc.saveTo([dir, doc.basename].join('/'), overwrite, this.fs)]);
 
       return Promise.all(promises).then(result => {
         console.log('result:', result);

@@ -62,14 +62,7 @@ export {
   WhileStatement,
   WithStatement
 } from './ecmascript/estree.js';
-export {
-  Parser,
-  ECMAScriptParser,
-  Lexer,
-  Token,
-  SyntaxError,
-  Location
-} from './ecmascript/parser.js';
+export { Parser, ECMAScriptParser, Lexer, Token, SyntaxError, Location } from './ecmascript/parser.js';
 export { Printer } from './ecmascript/printer.js';
 export { ECMAScriptInterpreter } from './ecmascript/interpreter.js';
 export { Environment } from './ecmascript/environment.js';

@@ -31,7 +31,8 @@ function G0(prevState, nextState, command, args, i) {
           nextState.fp = 0;
         }
         break;
-      default: throw new Error('error I do not understand this arguement' + '<' + arg + '>');
+      default:
+        throw new Error('error I do not understand this arguement' + '<' + arg + '>');
         break;
     }
   }
@@ -56,7 +57,8 @@ function G92(prevState, nextState, command, args) {
         case 'e':
           nextState.erel = prevState.e - parseFloat(args[j].slice(1));
           break;
-        default: throw new Error('error I do not understand this arguement' + '<' + args[j] + '>');
+        default:
+          throw new Error('error I do not understand this arguement' + '<' + args[j] + '>');
           break;
       }
     }
@@ -77,15 +79,7 @@ function G90(prevState, nextState, command, args) {
   // Milling: Absolute programming
   // else: Fixed cycle, simple cycle, for roughing (Z-axis emphasis)
   console.info('Absolute programming /  Fixed cycle, simple cycle, for roughing (Z-axis emphasis)');
-  console.log(`#${this.i}: cmd:`,
-    command,
-    ' args:',
-    args,
-    ' prevState:',
-    prevState,
-    ' nextState:',
-    nextState
-  );
+  console.log(`#${this.i}: cmd:`, command, ' args:', args, ' prevState:', prevState, ' nextState:', nextState);
 }
 
 function G91(prevState, nextState, command, args) {
@@ -121,15 +115,7 @@ function M0(prevState, nextState, command, args) {
 }
 function M3(prevState, nextState, command, args, i) {
   if(prevState.spindle !== command) nextState.spindle = command;
-  console.log(`#${this.i}: cmd:`,
-    command,
-    ' args:',
-    args,
-    ' prevState.spindle:',
-    prevState.spindle,
-    ' nextState.spindle:',
-    nextState.spindle
-  );
+  console.log(`#${this.i}: cmd:`, command, ' args:', args, ' prevState.spindle:', prevState.spindle, ' nextState.spindle:', nextState.spindle);
 }
 function M9(prevState, nextState, command, args) {
   if(prevState.coolant !== command) nextState.coolant = command;

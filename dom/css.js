@@ -3,7 +3,8 @@ import { Element } from './element.js';
 
 const getStyleMap = (obj, key) => {
   let rule = Util.find(obj, item => item.selectorText == key);
-  return Util.adapter(rule,
+  return Util.adapter(
+    rule,
     obj => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
     (obj, i) => [...obj.styleMap.keys()][i],
     (obj, key) =>
@@ -14,11 +15,10 @@ const getStyleMap = (obj, key) => {
   );
 };
 const getStyleSheet = (obj, key) => {
-  let sheet = obj.cssRules
-    ? obj
-    : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
+  let sheet = obj.cssRules ? obj : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
-  return Util.adapter(sheet.rules,
+  return Util.adapter(
+    sheet.rules,
     obj => (obj && obj.length !== undefined ? obj.length : 0),
     (obj, i) => obj[i].selectorText,
     getStyleMap
@@ -31,14 +31,16 @@ export class CSS {
   }
 
   static getDocument = Util.memoize(() =>
-    Util.tryCatch(() => window.document,
+    Util.tryCatch(
+      () => window.document,
       d => (console.log('document:', d), d)
     )
   );
 
   static list = Util.memoize(doc => {
     if(!doc) doc = this.document;
-    let adapter = Util.adapter([...doc.styleSheets],
+    let adapter = Util.adapter(
+      [...doc.styleSheets],
       obj => obj.length,
       (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
       getStyleSheet
@@ -50,14 +52,10 @@ export class CSS {
   static styles(stylesheet) {
     let ret;
 
-    if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined)
-      ret = getStyleSheet(stylesheet);
+    if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined) ret = getStyleSheet(stylesheet);
     else {
       ret = [...CSS.list()];
-      ret =
-        typeof stylesheet == 'number'
-          ? ret[stylesheet]
-          : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
+      ret = typeof stylesheet == 'number' ? ret[stylesheet] : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
 
       if(ret) ret = ret.stylesheet;
     }
@@ -74,7 +72,8 @@ export class CSS {
   }
 
   static classes(selector = '*') {
-    return Util.unique([...Element.findAll(selector)]
+    return Util.unique(
+      [...Element.findAll(selector)]
         .filter(e => e.classList.length)
         .map(e => [...e.classList])
         .flat()
@@ -96,9 +95,7 @@ export class CSS {
       selectors = selectors.split(/,\s*/g).map(s => s.trim());
       let rule = new Map();
 
-      for(let [wholeDeclaration, name, value] of Util.matchAll(/([^:]*)\s*:\s*([^;]*);?/gm,
-        body
-      )) {
+      for(let [wholeDeclaration, name, value] of Util.matchAll(/([^:]*)\s*:\s*([^;]*);?/gm, body)) {
         rule.set(name.trim(), value.trim());
       }
       css.set(selectors, rule);
@@ -110,8 +107,7 @@ export class CSS {
     if(typeof selector == 'string') selector = selector.split(/\s+/g);
     let ret = new Map();
     for(let [selectors, rule] of stylesheet) {
-      if(typeof selectors == 'string')
-        selectors = selectors.split(/,\s*/g).map(s => s.trim().split(/\s+/g));
+      if(typeof selectors == 'string') selectors = selectors.split(/,\s*/g).map(s => s.trim().split(/\s+/g));
 
       if(selectors.some(s => Util.equals(s, selector))) ret = Util.merge(ret, rule);
       //       ret.push([selectors,rule]);

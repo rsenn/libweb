@@ -41,11 +41,7 @@ function normalizeStringPosix(path, allowAboveRoot) {
       if(lastSlash === i - 1 || dots === 1) {
         // NOOP
       } else if(lastSlash !== i - 1 && dots === 2) {
-        if(res.length < 2 ||
-          lastSegmentLength !== 2 ||
-          res.charCodeAt(res.length - 1) !== 46 /*.*/ ||
-          res.charCodeAt(res.length - 2) !== 46 /*.*/
-        ) {
+        if(res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== 46 /*.*/ || res.charCodeAt(res.length - 2) !== 46 /*.*/) {
           if(res.length > 2) {
             let lastSlashIndex = res.lastIndexOf('/');
             if(lastSlashIndex !== res.length - 1) {
@@ -305,8 +301,7 @@ export const posix = {
   },
 
   basename(path, ext) {
-    if(ext !== undefined && !(typeof ext == 'string' || ext instanceof RegExp))
-      throw new TypeError('"ext" argument must be a string or RegExp');
+    if(ext !== undefined && !(typeof ext == 'string' || ext instanceof RegExp)) throw new TypeError('"ext" argument must be a string or RegExp');
     assertPath(path);
 
     let start = 0;
@@ -314,9 +309,7 @@ export const posix = {
     let matchedSlash = true;
     let i;
 
-    if(ext !==
-      undefined /* && typeof ext == 'string' && ext.length > 0 && ext.length <= path.length*/
-    ) {
+    if(ext !== undefined /* && typeof ext == 'string' && ext.length > 0 && ext.length <= path.length*/) {
       if(typeof ext == 'string') if (ext.length === path.length && ext === path) return '';
 
       let extIdx = ext.length - 1;
@@ -427,7 +420,8 @@ export const posix = {
       }
     }
 
-    if(startDot === -1 ||
+    if(
+      startDot === -1 ||
       end === -1 ||
       // We saw a non-dot character immediately before the dot
       preDotState === 0 ||
@@ -441,8 +435,7 @@ export const posix = {
 
   format(pathObject) {
     if(pathObject === null || typeof pathObject !== 'object') {
-      throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject
-      );
+      throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject);
     }
     return _format('/', pathObject);
   },
@@ -500,7 +493,8 @@ export const posix = {
       }
     }
 
-    if(startDot === -1 ||
+    if(
+      startDot === -1 ||
       end === -1 ||
       // We saw a non-dot character immediately before the dot
       preDotState === 0 ||

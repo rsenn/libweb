@@ -13,8 +13,7 @@ let { Request, Response, Headers } = globalThis;
 // Remove in fetch v2
 
 const requires = (i, args) => {
-  if(args.length < i)
-    throw new TypeError(`${i} argument required, but only ${args.length} present.`);
+  if(args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);
 };
 
 const isReq = req => req && req[Symbol.toStringTag] === 'Request';
@@ -86,17 +85,14 @@ export class Cache {
     for(let req of requests) {
       req = new Request(req);
 
-      if(!/^((http|https):\/\/)/.test(req.url))
-        throw new TypeError(`Add/AddAll does not support schemes other than "http" or "https"`);
+      if(!/^((http|https):\/\/)/.test(req.url)) throw new TypeError(`Add/AddAll does not support schemes other than "http" or "https"`);
 
-      if(req.method !== 'GET')
-        throw new TypeError(`Add/AddAll only supports the GET request method`);
+      if(req.method !== 'GET') throw new TypeError(`Add/AddAll only supports the GET request method`);
 
       let clone = req.clone();
 
       await fetch(req).then(res => {
-        if(res.status === 206)
-          throw new TypeError('Partial response (status code 206) is unsupported');
+        if(res.status === 206) throw new TypeError('Partial response (status code 206) is unsupported');
 
         if(!res.ok) throw new TypeError('Request failed');
 
@@ -119,13 +115,11 @@ export class Cache {
 
     req = isReq(req) ? req : new Request(req);
 
-    if(!/^((http|https):\/\/)/.test(req.url))
-      throw new TypeError(`Request scheme '${req.url.split(':')[0]}' is unsupported`);
+    if(!/^((http|https):\/\/)/.test(req.url)) throw new TypeError(`Request scheme '${req.url.split(':')[0]}' is unsupported`);
 
     if(req.method !== 'GET') throw new TypeError(`Request method '${req.method}' is unsupported`);
 
-    if(res.status === 206)
-      throw new TypeError('Partial response (status code 206) is unsupported');
+    if(res.status === 206) throw new TypeError('Partial response (status code 206) is unsupported');
 
     const varyHeaders = res.headers.get('Vary');
 
@@ -202,9 +196,7 @@ export class Cache {
             });
 
     return new Promise((resolve, reject) => {
-      fs.readdir(folder, (err, files) =>
-        err ? reject(err) : resolve(search(files).map(file => new Request(base64ToStr(file))))
-      );
+      fs.readdir(folder, (err, files) => (err ? reject(err) : resolve(search(files).map(file => new Request(base64ToStr(file))))));
     });
   }
 }

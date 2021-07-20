@@ -49,7 +49,8 @@ class _Map {
 
 export class MultiBiMap {
   constructor(opts = {}) {
-    this.opts = Object.assign({
+    this.opts = Object.assign(
+      {
         iterableKey: false,
         iterableValue: false
       },
@@ -68,7 +69,8 @@ export class MultiBiMap {
   }
 
   add(k, v, opts = {}) {
-    opts = Object.assign({
+    opts = Object.assign(
+      {
         iterableKey: this.opts.iterableKey,
         iterableValue: this.opts.iterableValue
       },

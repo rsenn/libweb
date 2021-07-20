@@ -191,7 +191,8 @@ Lexer.prototype.addStateRule = function(states, expression, action) {
   }
 
   // do not allow to add rules into not registered states
-  var notRegisteredStates = states.reduce(function (acc, state) {
+  var notRegisteredStates = states.reduce(
+    function(acc, state) {
       if(!this.states[state]) {
         acc.push(state);
       }
@@ -200,8 +201,7 @@ Lexer.prototype.addStateRule = function(states, expression, action) {
     []
   );
   if(notRegisteredStates.length) {
-    throw new Error('Unable to register rule within unregistered state(s): ' + notRegisteredStates.join(', ')
-    );
+    throw new Error('Unable to register rule within unregistered state(s): ' + notRegisteredStates.join(', '));
   }
 
   var source;
@@ -623,28 +623,14 @@ Lexer.prototype.scan = function() {
  * @private
  */
 Lexer.prototype.logAccept = function(state, expression, value) {
-  console.log(' - [' +
-      state +
-      '] accepting rule' +
-      ' /' +
-      this.encodeString(expression.source) +
-      '/' +
-      ' ("' +
-      this.encodeString(value) +
-      '")'
-  );
+  console.log(' - [' + state + '] accepting rule' + ' /' + this.encodeString(expression.source) + '/' + ' ("' + this.encodeString(value) + '")');
 };
 
 /**
  * @private
  */
 Lexer.prototype.encodeString = function(s) {
-  return s
-    .replace(/\r/g, '\\r')
-    .replace(/\n/g, '\\n')
-    .replace(/\t/g, '\\t')
-    .replace(/\f/g, '\\f')
-    .replace(/\0/g, '\\0');
+  return s.replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t').replace(/\f/g, '\\f').replace(/\0/g, '\\0');
 };
 
 /**

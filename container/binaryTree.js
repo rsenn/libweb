@@ -25,9 +25,7 @@ Node.prototype.isLeaf = function() {
 Node.prototype.toSource = function() {
   const { value, left, right } = this;
   if(this.isLeaf()) return `new BinaryTree.Node(${Util.toSource(value)})`;
-  return `new BinaryTree.Node(${Util.toSource(value)}, ${left && left.toSource()}, ${
-    right && right.toSource()
-  })`;
+  return `new BinaryTree.Node(${Util.toSource(value)}, ${left && left.toSource()}, ${right && right.toSource()})`;
 };
 
 export class BinaryTree {

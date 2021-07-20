@@ -24,14 +24,14 @@ export function abstract_declarator(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = direct_abstract_declarator(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = pointer(token_stream, arrow);
       if(child_1) {
@@ -101,7 +101,7 @@ export function additive_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -114,7 +114,7 @@ export function additive_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -183,7 +183,7 @@ export function and_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -252,7 +252,7 @@ export function argument_expr_list_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -292,7 +292,7 @@ export function assignment_expr(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = conditional_expr(token_stream, arrow);
       if(child_1) {
@@ -335,70 +335,70 @@ export function assignment_operator(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'MUL_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'DIV_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'MOD_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'ADD_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'SUB_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'LEFT_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'RIGHT_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'AND_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'XOR_ASSIGN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'OR_ASSIGN');
       if(child_1) {
@@ -464,7 +464,7 @@ export function block_item_list_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -498,7 +498,7 @@ export function block_item(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = declaration(token_stream, arrow);
       if(child_1) {
@@ -541,7 +541,7 @@ export function cast_expr(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = unary_expr(token_stream, arrow);
       if(child_1) {
@@ -581,7 +581,7 @@ export function compound_stmt(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, '{');
@@ -630,7 +630,7 @@ export function conditional_expr(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = logical_or_expr(token_stream, arrow);
       if(child_1) {
@@ -697,7 +697,7 @@ export function declaration(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = declaration_specifiers(token_stream, arrow);
@@ -707,7 +707,7 @@ export function declaration(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -779,7 +779,7 @@ export function declaration_list_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -822,14 +822,14 @@ export function declaration_specifiers(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = storage_class_specifier(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = type_specifier(token_stream, arrow);
@@ -839,14 +839,14 @@ export function declaration_specifiers(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = type_specifier(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = type_qualifier(token_stream, arrow);
@@ -856,14 +856,14 @@ export function declaration_specifiers(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = type_qualifier(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = function_specifier(token_stream, arrow);
@@ -873,7 +873,7 @@ export function declaration_specifiers(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = function_specifier(token_stream, arrow);
       if(child_1) {
@@ -910,7 +910,7 @@ export function declarator(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = direct_declarator(token_stream, arrow);
       if(child_1) {
@@ -1005,7 +1005,7 @@ export function designator_list_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -1045,7 +1045,7 @@ export function designator(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, '.');
@@ -1095,7 +1095,7 @@ export function direct_abstract_declarator(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1108,7 +1108,7 @@ export function direct_abstract_declarator(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1124,7 +1124,7 @@ export function direct_abstract_declarator(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1140,7 +1140,7 @@ export function direct_abstract_declarator(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1153,7 +1153,7 @@ export function direct_abstract_declarator(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1206,7 +1206,7 @@ export function direct_abstract_declarator_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1222,7 +1222,7 @@ export function direct_abstract_declarator_p(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1238,7 +1238,7 @@ export function direct_abstract_declarator_p(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1251,7 +1251,7 @@ export function direct_abstract_declarator_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1267,7 +1267,7 @@ export function direct_abstract_declarator_p(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -1304,7 +1304,7 @@ export function direct_declarator(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1370,7 +1370,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       // '[' type_qualifier_list ']' direct_declarator_p
       var child_1 = null;
       var child_2 = null;
@@ -1387,7 +1387,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       // '[' assignment_expr ']' direct_declarator_p
       var child_1 = null;
       var child_2 = null;
@@ -1404,7 +1404,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       // '[' STATIC type_qualifier_list assignment_expr ']' direct_declarator_p
       var child_1 = null;
       var child_2 = null;
@@ -1427,7 +1427,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_6);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       // '[' type_qualifier_list STATIC assignment_expr ']' direct_declarator_p
       var child_1 = null;
       var child_2 = null;
@@ -1450,7 +1450,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_6);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       // '[' type_qualifier_list '*' ']' direct_declarator_p
       var child_1 = null;
       var child_2 = null;
@@ -1470,7 +1470,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       // '[' '*' ']' direct_declarator_p
       var child_1 = null;
       var child_2 = null;
@@ -1487,7 +1487,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1502,7 +1502,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1518,7 +1518,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1534,7 +1534,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1547,7 +1547,7 @@ var direct_declarator_p = function(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -1596,7 +1596,7 @@ export function enum_specifier(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1612,7 +1612,7 @@ export function enum_specifier(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1634,7 +1634,7 @@ export function enum_specifier(token_stream, arrow) {
         node['children'].push(child_6);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1653,7 +1653,7 @@ export function enum_specifier(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'ENUM');
@@ -1696,7 +1696,7 @@ export function enumerator(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'IDENTIFIER');
       if(child_1) {
@@ -1765,7 +1765,7 @@ export function enumerator_list_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -1835,7 +1835,7 @@ export function equality_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -1848,7 +1848,7 @@ export function equality_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -1917,7 +1917,7 @@ export function exclusive_or_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -1986,7 +1986,7 @@ export function expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -2020,7 +2020,7 @@ export function expression_stmt(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = expr(token_stream, arrow);
@@ -2099,7 +2099,7 @@ export function function_definition(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2200,7 +2200,7 @@ export function identifier_list_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -2269,7 +2269,7 @@ export function inclusive_or_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -2309,7 +2309,7 @@ export function init_declarator(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = declarator(token_stream, arrow);
       if(child_1) {
@@ -2378,7 +2378,7 @@ export function init_declarator_list_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -2413,7 +2413,7 @@ export function initializer(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2426,7 +2426,7 @@ export function initializer(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2472,7 +2472,7 @@ export function initializer_list(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2519,7 +2519,7 @@ export function initializer_list_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2535,7 +2535,7 @@ export function initializer_list_p(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -2585,7 +2585,7 @@ export function iteration_stmt(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2610,7 +2610,7 @@ export function iteration_stmt(token_stream, arrow) {
         node['children'].push(child_7);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2632,7 +2632,7 @@ export function iteration_stmt(token_stream, arrow) {
         node['children'].push(child_6);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2657,7 +2657,7 @@ export function iteration_stmt(token_stream, arrow) {
         node['children'].push(child_7);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2679,7 +2679,7 @@ export function iteration_stmt(token_stream, arrow) {
         node['children'].push(child_6);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2740,7 +2740,7 @@ export function jump_stmt(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'CONTINUE');
@@ -2750,7 +2750,7 @@ export function jump_stmt(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'BREAK');
@@ -2760,7 +2760,7 @@ export function jump_stmt(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'RETURN');
@@ -2770,7 +2770,7 @@ export function jump_stmt(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2817,7 +2817,7 @@ export function labeled_stmt(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2833,7 +2833,7 @@ export function labeled_stmt(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -2908,7 +2908,7 @@ export function logical_and_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -2977,7 +2977,7 @@ export function logical_or_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -3048,7 +3048,7 @@ var multiplicative_expr_p = function(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3061,7 +3061,7 @@ var multiplicative_expr_p = function(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3074,7 +3074,7 @@ var multiplicative_expr_p = function(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -3112,7 +3112,7 @@ export function parameter_declaration(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = declaration_specifiers(token_stream, arrow);
@@ -3122,7 +3122,7 @@ export function parameter_declaration(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = declaration_specifiers(token_stream, arrow);
       if(child_1) {
@@ -3191,7 +3191,7 @@ export function parameter_list_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -3231,7 +3231,7 @@ export function parameter_type_list(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = parameter_list(token_stream, arrow);
       if(child_1) {
@@ -3271,7 +3271,7 @@ export function parameter_list_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -3313,7 +3313,7 @@ export function pointer(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, '*');
@@ -3323,7 +3323,7 @@ export function pointer(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, '*');
@@ -3333,7 +3333,7 @@ export function pointer(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, '*');
       if(child_1) {
@@ -3371,7 +3371,7 @@ export function postfix_expr(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3396,7 +3396,7 @@ export function postfix_expr(token_stream, arrow) {
         node['children'].push(child_7);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3466,7 +3466,7 @@ export function postfix_expr_p(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3479,7 +3479,7 @@ export function postfix_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3495,7 +3495,7 @@ export function postfix_expr_p(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3508,7 +3508,7 @@ export function postfix_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3521,7 +3521,7 @@ export function postfix_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'INC_OP');
@@ -3531,7 +3531,7 @@ export function postfix_expr_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'DEC_OP');
@@ -3541,7 +3541,7 @@ export function postfix_expr_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -3577,21 +3577,21 @@ export function primary_expr(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'CONSTANT');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'STRING_LITERAL');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3669,7 +3669,7 @@ export function relational_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3682,7 +3682,7 @@ export function relational_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3695,7 +3695,7 @@ export function relational_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3708,7 +3708,7 @@ export function relational_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -3761,7 +3761,7 @@ export function selection_stmt(token_stream, arrow) {
         node['children'].push(child_7);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3780,7 +3780,7 @@ export function selection_stmt(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3862,7 +3862,7 @@ export function shift_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -3875,7 +3875,7 @@ export function shift_expr_p(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -3914,14 +3914,14 @@ export function specifier_qualifier_list(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = type_specifier(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = type_qualifier(token_stream, arrow);
@@ -3931,7 +3931,7 @@ export function specifier_qualifier_list(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = type_qualifier(token_stream, arrow);
       if(child_1) {
@@ -3969,35 +3969,35 @@ export function stmt(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = compound_stmt(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = expression_stmt(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = selection_stmt(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = iteration_stmt(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = jump_stmt(token_stream, arrow);
       if(child_1) {
@@ -4034,28 +4034,28 @@ export function storage_class_specifier(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'EXTERN');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'STATIC');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'AUTO');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'REGISTER');
       if(child_1) {
@@ -4153,7 +4153,7 @@ export function struct_declaration_list_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -4194,7 +4194,7 @@ export function struct_declarator(token_stream, arrow) {
         node['children'].push(child_3);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, ':');
@@ -4204,7 +4204,7 @@ export function struct_declarator(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = declarator(token_stream, arrow);
       if(child_1) {
@@ -4270,7 +4270,7 @@ export function struct_declarator_list_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -4304,7 +4304,7 @@ export function struct_or_union(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'UNION');
       if(child_1) {
@@ -4351,7 +4351,7 @@ export function struct_or_union_specifier(token_stream, arrow) {
         node['children'].push(child_5);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -4367,7 +4367,7 @@ export function struct_or_union_specifier(token_stream, arrow) {
         node['children'].push(child_4);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = struct_or_union(token_stream, arrow);
@@ -4431,7 +4431,7 @@ export function translation_unit_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -4472,14 +4472,14 @@ export function type_name(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = specifier_qualifier_list(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -4491,7 +4491,7 @@ export function type_name(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'IDENTIFIER');
       if(child_1) {
@@ -4526,14 +4526,14 @@ export function type_qualifier(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'VOLATILE');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'RESTRICT');
       if(child_1) {
@@ -4601,7 +4601,7 @@ export function type_qualifier_list_p(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = EPSILON(token_stream, arrow);
       if(child_1) {
@@ -4648,91 +4648,91 @@ export function type_specifier(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'CHAR');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'SHORT');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'INT');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'LONG');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'FLOAT');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'DOUBLE');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'SIGNED');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'UNSIGNED');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'BOOL');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'COMPLEX');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, 'IMAGINARY');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = struct_or_union_specifier(token_stream, arrow);
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = enum_specifier(token_stream, arrow);
       if(child_1) {
@@ -4770,7 +4770,7 @@ export function unary_expr(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'INC_OP');
@@ -4780,7 +4780,7 @@ export function unary_expr(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'DEC_OP');
@@ -4790,7 +4790,7 @@ export function unary_expr(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = unary_operator(token_stream, arrow);
@@ -4800,7 +4800,7 @@ export function unary_expr(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       child_1 = TERMINAL(token_stream, arrow, 'SIZEOF');
@@ -4810,7 +4810,7 @@ export function unary_expr(token_stream, arrow) {
         node['children'].push(child_2);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       var child_2 = null;
       var child_3 = null;
@@ -4857,35 +4857,35 @@ export function unary_operator(token_stream, arrow) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, '*');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, '+');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, '-');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, '~');
       if(child_1) {
         node['children'].push(child_1);
       }
     },
-    function (token_stream, arrow, node) {
+    function(token_stream, arrow, node) {
       var child_1 = null;
       child_1 = TERMINAL(token_stream, arrow, '!');
       if(child_1) {

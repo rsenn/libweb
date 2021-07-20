@@ -83,7 +83,8 @@ EventEmitter.prototype.emit = function(...argList) {
         handler.call(this, argList[1], argList[2]);
         break;
       // slower
-      default: args = Array.prototype.slice.call(argList, 1);
+      default:
+        args = Array.prototype.slice.call(argList, 1);
         handler.apply(this, args);
     }
   } else if(isObject(handler)) {
@@ -105,11 +106,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
 
   // To avoid recursion in the case that type === "newListener"! Before
   // adding it to the listeners, first emit "newListener".
-  if(this.events.newListener)
-    this.emit('newListener',
-      type,
-      Util.isFunction(listener.listener) ? listener.listener : listener
-    );
+  if(this.events.newListener) this.emit('newListener', type, Util.isFunction(listener.listener) ? listener.listener : listener);
   //console.debug('this.events:', this.events);
 
   //  if(this.events[type]) console.debug('Util.keys(this.events[type]):', Util.getMemberNames(this.events[type], Infinity, 0));
@@ -133,11 +130,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
 
     if(m && m > 0 && this.events[type].length > m) {
       this.events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-          'leak detected. %d listeners added. ' +
-          'Use emitter.setMaxListeners() to increase limit.',
-        this.events[type].length
-      );
+      console.error('(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.', this.events[type].length);
       if(typeof console.trace === 'function') {
         // not supported in IE 10
         console.trace();

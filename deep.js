@@ -68,9 +68,7 @@ export const select = (root, filter, path) => {
   path = typeof path == 'string' ? path.split(/\.\//) : path;
   if(!path) path = [];
   if(filter(root, path)) selected.push({ path, value: root });
-  else if(Util.isObject(root))
-    for(k in root)
-      selected = selected.concat(select(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
+  else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
   return selected;
 };
 
@@ -102,8 +100,7 @@ export const forEach = function(...args) {
 
   fn(value, path, root);
 
-  if(Util.isObject(value))
-    for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+  if(Util.isObject(value)) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -114,16 +111,11 @@ export const iterate = function* (...args) {
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)
     if(Util.isObject(value)) {
-      for(let k in value)
-        yield* iterate(value[k], filter, path.concat([isNaN(+k) ? k : +k]), root);
+      for(let k in value) yield* iterate(value[k], filter, path.concat([isNaN(+k) ? k : +k]), root);
     }
 };
 
-export const flatten = (iter,
-  dst = {},
-  filter = (v, p) => typeof v != 'object' && v != null,
-  map = (p, v) => [p.join('.'), v]
-) => {
+export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 

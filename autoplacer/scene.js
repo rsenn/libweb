@@ -51,7 +51,8 @@ window.onload = function() {
       bodies[i].move = body.fix;
     }
 
-    physics.layout({
+    physics.layout(
+      {
         pushCenter: [SCENE_W / 2, SCENE_H / 2]
       },
       bodies,

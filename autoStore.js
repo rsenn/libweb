@@ -31,7 +31,8 @@ export const makeLocalStorage = () => {
 
   if(w && w.localStorage)
     return new LocalStore({
-      get: Util.tryFunction(name => JSON.parse(w.localStorage.getItem(name)),
+      get: Util.tryFunction(
+        name => JSON.parse(w.localStorage.getItem(name)),
         v => v,
         (err, name) => (w.localStorage.removeItem(name), undefined)
       ),

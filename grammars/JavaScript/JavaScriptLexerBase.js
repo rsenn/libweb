@@ -39,25 +39,16 @@ JavaScriptLexerBase.prototype.nextToken = function() {
 };
 
 JavaScriptLexerBase.prototype.ProcessOpenBrace = function() {
-  this.useStrictCurrent =
-    this.scopeStrictModes.length > 0 && this.scopeStrictModes[0]
-      ? true
-      : this.useStrictDefault;
+  this.useStrictCurrent = this.scopeStrictModes.length > 0 && this.scopeStrictModes[0] ? true : this.useStrictDefault;
   this.scopeStrictModes.push(this.useStrictCurrent);
 };
 
 JavaScriptLexerBase.prototype.ProcessCloseBrace = function() {
-  this.useStrictCurrent =
-    this.scopeStrictModes.length > 0
-      ? this.scopeStrictModes.pop()
-      : this.useStrictDefault;
+  this.useStrictCurrent = this.scopeStrictModes.length > 0 ? this.scopeStrictModes.pop() : this.useStrictDefault;
 };
 
 JavaScriptLexerBase.prototype.ProcessStringLiteral = function() {
-  if(this.lastToken !== undefined &&
-    (this.lastToken === null ||
-      this.lastToken.type === JavaScriptLexer.OpenBrace)
-  ) {
+  if(this.lastToken !== undefined && (this.lastToken === null || this.lastToken.type === JavaScriptLexer.OpenBrace)) {
     const text = this._input.strdata.slice(0, 'use strict'.length);
     if(text === '"use strict"' || text === "'use strict'") {
       if(this.scopeStrictModes.length > 0) {
@@ -88,7 +79,8 @@ JavaScriptLexerBase.prototype.IsRegexPossible = function() {
     case JavaScriptLexer.PlusPlus:
     case JavaScriptLexer.MinusMinus:
       return false;
-    default: return true;
+    default:
+      return true;
   }
 };
 

@@ -31,7 +31,8 @@ export function guardian(overrides) {
     assert = o.assert || d.assert,
     complete = o.complete || d.complete;
 
-  var guard = Object.freeze(Object.create({
+  var guard = Object.freeze(
+    Object.create({
       assert: function(pass) {
         var result = assert.bind(this)(pass);
         complete.bind(this)(result);
@@ -51,8 +52,9 @@ guardian.defaults = function(tests) {
     complete: function(result) {
       tests.push(result);
     },
-    assert: function (pass) {
-      return Object.freeze(Object.create(this, {
+    assert: function(pass) {
+      return Object.freeze(
+        Object.create(this, {
           pass: {
             value: pass,
             enumerable: true

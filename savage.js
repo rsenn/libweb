@@ -17,7 +17,7 @@
     each = function(o, f) {
       for(let k in o) if(o.hasOwnProperty(k)) f(o[k], k);
     },
-    attr = function (e, a) {
+    attr = function(e, a) {
       each(a, (v, k) => {
         e.setAttribute(k, v);
       });
@@ -64,19 +64,7 @@
   /**
    * shortcut functions for all the shapes
    */
-  [
-    'circle',
-    'ellipse',
-    'image',
-    'line',
-    'marker',
-    'path',
-    'polygon',
-    'radialGradient',
-    'rect',
-    'text',
-    'tspan'
-  ].forEach(t => {
+  ['circle', 'ellipse', 'image', 'line', 'marker', 'path', 'polygon', 'radialGradient', 'rect', 'text', 'tspan'].forEach(t => {
     P[t] = function(a) {
       return this.draw(t, a);
     };

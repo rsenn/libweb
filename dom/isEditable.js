@@ -21,10 +21,7 @@ function isContentEditable(element) {
   if(element.contentEditable && element.contentEditable.toLowerCase() === 'true') {
     return true;
   }
-  if(element.contentEditable &&
-    element.contentEditable.toLowerCase() === 'inherit' &&
-    element.parentNode
-  ) {
+  if(element.contentEditable && element.contentEditable.toLowerCase() === 'inherit' && element.parentNode) {
     return isContentEditable(element.parentNode);
   }
   return false;
@@ -44,6 +41,7 @@ function isEditableInput(input) {
       return true;
     case 'url':
       return true;
-    default: return false;
+    default:
+      return false;
   }
 }

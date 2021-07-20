@@ -36,10 +36,7 @@ peg$SyntaxError.buildMessage = function(expected, found) {
         i;
 
       for(i = 0; i < expectation.parts.length; i++) {
-        escapedParts +=
-          expectation.parts[i] instanceof Array
-            ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1])
-            : classEscape(expectation.parts[i]);
+        escapedParts += expectation.parts[i] instanceof Array ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1]) : classEscape(expectation.parts[i]);
       }
 
       return '[' + (expectation.inverted ? '^' : '') + escapedParts + ']';
@@ -117,9 +114,8 @@ peg$SyntaxError.buildMessage = function(expected, found) {
       case 2:
         return descriptions[0] + ' or ' + descriptions[1];
 
-      default: return (
-          descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1]
-        );
+      default:
+        return descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1];
     }
   }
 
@@ -147,7 +143,7 @@ function peg$parse(input, options) {
       }
       return cmds;
     },
-    peg$c1 = function (first, more) {
+    peg$c1 = function(first, more) {
       return merge(first, more);
     },
     peg$c2 = /^[Mm]/,
@@ -170,14 +166,16 @@ function peg$parse(input, options) {
     peg$c11 = /^[Hh]/,
     peg$c12 = peg$classExpectation(['H', 'h'], false, false),
     peg$c13 = function(c, args) {
-      return commands(c,
+      return commands(
+        c,
         args.map(x => ({ x }))
       );
     },
     peg$c14 = /^[Vv]/,
     peg$c15 = peg$classExpectation(['V', 'v'], false, false),
     peg$c16 = function(c, args) {
-      return commands(c,
+      return commands(
+        c,
         args.map(y => ({ y }))
       );
     },
@@ -211,13 +209,13 @@ function peg$parse(input, options) {
         y: xy.y
       };
     },
-    peg$c31 = function (x, y) {
+    peg$c31 = function(x, y) {
       return { x, y };
     },
-    peg$c32 = function (n) {
+    peg$c32 = function(n) {
       return n * 1;
     },
-    peg$c33 = function (parts) {
+    peg$c33 = function(parts) {
       return parts.join('') * 1;
     },
     peg$c34 = /^[01]/,
@@ -225,7 +223,7 @@ function peg$parse(input, options) {
     peg$c36 = function(bit) {
       return bit == '1';
     },
-    peg$c37 = function () {
+    peg$c37 = function() {
       return '';
     },
     peg$c38 = ',',
@@ -273,10 +271,7 @@ function peg$parse(input, options) {
   function expected(description, location) {
     location = location !== void 0 ? location : peg$computeLocation(peg$savedPos, peg$currPos);
 
-    throw peg$buildStructuredError([peg$otherExpectation(description)],
-      input.substring(peg$savedPos, peg$currPos),
-      location
-    );
+    throw peg$buildStructuredError([peg$otherExpectation(description)], input.substring(peg$savedPos, peg$currPos), location);
   }
 
   function error(message, location) {
@@ -379,11 +374,7 @@ function peg$parse(input, options) {
   }
 
   function peg$buildStructuredError(expected, found, location) {
-    return new peg$SyntaxError(peg$SyntaxError.buildMessage(expected, found),
-      expected,
-      found,
-      location
-    );
+    return new peg$SyntaxError(peg$SyntaxError.buildMessage(expected, found), expected, found, location);
   }
 
   function peg$parsesvg_path() {
@@ -2142,12 +2133,7 @@ function peg$parse(input, options) {
     peg$fail(peg$endExpectation());
   }
 
-  throw peg$buildStructuredError(peg$maxFailExpected,
-    peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null,
-    peg$maxFailPos < input.length
-      ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1)
-      : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
-  );
+  throw peg$buildStructuredError(peg$maxFailExpected, peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null, peg$maxFailPos < input.length ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1) : peg$computeLocation(peg$maxFailPos, peg$maxFailPos));
 }
 
 export const SyntaxError = peg$SyntaxError;

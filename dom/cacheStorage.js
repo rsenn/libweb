@@ -5,8 +5,7 @@ import { Cache } from './cache.js';
 const strToBase64 = str => new Buffer(str).toString('base64');
 const base64ToStr = hex => new Buffer(hex, 'base64').toString();
 const requires = (i, args) => {
-  if(args.length < i)
-    throw new TypeError(`${i} argument required, but only ${args.length} present.`);
+  if(args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);
 };
 
 export class CacheStorage {
@@ -51,7 +50,8 @@ export class CacheStorage {
       fs.readdir(tmpDir, (err, files) =>
         err
           ? reject(err)
-          : Promise.all(files.map(
+          : Promise.all(
+              files.map(
                 file =>
                   new Promise(resolve =>
                     fs.stat(tmpDir + file, (_, stats) => {
@@ -93,9 +93,7 @@ export class CacheStorage {
     let b64 = strToBase64(cacheName);
     let folder = tmpDir + b64;
 
-    return new Promise((resolve, reject) =>
-      fs.mkdirs(folder, err => (err ? reject(err) : resolve(new Cache(cacheName, folder + '/'))))
-    );
+    return new Promise((resolve, reject) => fs.mkdirs(folder, err => (err ? reject(err) : resolve(new Cache(cacheName, folder + '/')))));
   }
 
   /**

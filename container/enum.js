@@ -104,8 +104,7 @@ export class Enum {
     }
 
     if(Array.isArray(extra) && extra.length !== Object.keys(items).length) {
-      throw new InvalidArgumentException('Extra params should be an array of the same length as enum has or null'
-      );
+      throw new InvalidArgumentException('Extra params should be an array of the same length as enum has or null');
     }
 
     let newEnum = class extends this {};
@@ -115,8 +114,7 @@ export class Enum {
     Object.keys(items).map((/** string */ name, index) => {
       let propertyName = getValidPropertyName(name.toUpperCase());
       if(newEnum.hasOwnProperty(propertyName)) {
-        throw new InvalidArgumentException('Some names turn to be the same after making them valid JS IdentifierName'
-        );
+        throw new InvalidArgumentException('Some names turn to be the same after making them valid JS IdentifierName');
       }
 
       let value = items[name];

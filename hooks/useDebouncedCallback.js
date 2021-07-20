@@ -30,7 +30,8 @@ export default function useDebouncedCallback(callback, delay, options) {
       isComponentUnmounted.current = true;
     };
   }, []);
-  var debouncedCallback = useCallback(function () {
+  var debouncedCallback = useCallback(
+    function() {
       var args = [];
       for(var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
@@ -63,16 +64,19 @@ export default function useDebouncedCallback(callback, delay, options) {
           }
         }, maxWait);
       }
-    }, [maxWait, delay, cancelDebouncedCallback, leading, trailing]
+    },
+    [maxWait, delay, cancelDebouncedCallback, leading, trailing]
   );
-  var callPending = useCallback(function () {
+  var callPending = useCallback(
+    function() {
       // Call pending callback only if we have anything in our queue
       if(!functionTimeoutHandler.current) {
         return;
       }
       debouncedFunction.current.apply(null, maxWaitArgs.current);
       cancelDebouncedCallback();
-    }, [cancelDebouncedCallback]
+    },
+    [cancelDebouncedCallback]
   );
   // At the moment, we use 3 args array so that we save backward compatibility
   return [debouncedCallback, cancelDebouncedCallback, callPending];

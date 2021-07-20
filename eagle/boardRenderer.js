@@ -36,7 +36,9 @@ export class BoardRenderer extends EagleSVGRenderer {
     const color = typeof item.getColor == 'function' ? item.getColor() : BoardRenderer.palette[16];
 
     const svg = (elem, attr, parent) =>
-      this.create(elem, {
+      this.create(
+        elem,
+        {
           class: ElementToClass(item),
           'data-path': item.path.toString(' '),
           ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
@@ -63,7 +65,9 @@ export class BoardRenderer extends EagleSVGRenderer {
         const padColor = item.getColor() || this.palette[2];
 
         let data = RenderShape(shape, ro, ri);
-        svg('path', {
+        svg(
+          'path',
+          {
             fill: padColor,
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
@@ -74,7 +78,9 @@ export class BoardRenderer extends EagleSVGRenderer {
         this.debug('name:', name);
         if(name) {
           let t = RotateTransformation(opts.rot, -1);
-          svg('tspan', {
+          svg(
+            'tspan',
+            {
               children: name,
               ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL)
             },
@@ -110,16 +116,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const {
-      predicate = i => i.tagName != 'description',
-      transformation,
-      pos,
-      rot,
-      name,
-      layer,
-      props = {},
-      flat
-    } = opts;
+    const { predicate = i => i.tagName != 'description', transformation, pos, rot, name, layer, props = {}, flat } = opts;
     //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
     this.debug(`BoardRenderer.renderCollection`, {
       coll,
@@ -153,17 +150,16 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(predicate(item)) other.push(item);
     }
 
-    for(let item of other)
-      if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
+    for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
 
-    for(let item of other)
-      if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
+    for(let item of other) if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
 
     for(let [layerId, wires] of wireMap) {
       let classList = (parent && parent.classList) || [];
       if([...classList].indexOf('plain') != -1) continue;
 
-      let lines = new LineList(wires.map(wire => {
+      let lines = new LineList(
+        wires.map(wire => {
           let line = new Line(coordFn(wire)).round(0.0127, 6);
           line.element = wire;
           if(wire.curve !== undefined) line.curve = wire.curve;
@@ -189,7 +185,8 @@ export class BoardRenderer extends EagleSVGRenderer {
         //  if(name == 'D2') window.lines = lines.map(l => l.clone());
         let lines2 = lines.map(l => new Line(l));
 
-        let cmds = LinesToPath(lines.map(l => {
+        let cmds = LinesToPath(
+          lines.map(l => {
             let ret = new Line(l);
             if(l.curve !== undefined) ret.curve = l.curve;
             if(l.element !== undefined) ret.element = l.element;
@@ -202,7 +199,9 @@ export class BoardRenderer extends EagleSVGRenderer {
 
         this.debug('layerId:', layerId, 'width:', width);
 
-        this.create(WirePath, {
+        this.create(
+          WirePath,
+          {
             class: classNames(addClass, ElementToClass(wires[0], layer.name)),
             cmds,
             color,
@@ -217,7 +216,9 @@ export class BoardRenderer extends EagleSVGRenderer {
         window.lines = lines.slice();
         // lines.ordered();
         LinesToPath(lines).map(cmds =>
-          this.create(WirePath, {
+          this.create(
+            WirePath,
+            {
               class: classNames(addClass, ElementToClass(wires[0], layer.name)),
               cmds,
               color,
@@ -252,7 +253,8 @@ export class BoardRenderer extends EagleSVGRenderer {
     transform = transform.concat(rotation);
     let elementName = EscapeClassName(name);
 
-    const g = this.create('g',
+    const g = this.create(
+      'g',
       {
         //&id: `element.${elementName}`,
         class: ElementToClass(element),
@@ -311,8 +313,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     let props = {};
     if('layer' in options) {
       let layer = options.layer ? this.doc.layers[options.layer] : null;
-      children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via'
-      );
+      children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via');
       if(layer) {
         children = children.filter(child => child.layer.number == layer.number);
         this.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
@@ -323,11 +324,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(children.length > 0) {
       const className = ElementToClass(signal);
-      const id = `signal-${EscapeClassName(signal.name)}${
-        typeof options.layer == 'string' && options.layer != ''
-          ? '-' + options.layer.toLowerCase()
-          : ''
-      }`;
+      const id = `signal-${EscapeClassName(signal.name)}${typeof options.layer == 'string' && options.layer != '' ? '-' + options.layer.toLowerCase() : ''}`;
       props = {
         ...props,
         class: className,
@@ -365,13 +362,13 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.transform.unshift(new Translation(0, rect.height));
 
-    if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0)
-      this.transform.unshift(new Translation(-rect.x, rect.y));
+    if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
 
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);
     let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
-    let signalsGroup = this.create('g',
+    let signalsGroup = this.create(
+      'g',
       {
         id: 'signals',
         'stroke-linecap': 'round',
@@ -381,10 +378,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    let elementsGroup = this.create('g',
-      { id: 'elements', transform, 'font-family': 'Fixed' },
-      parent
-    );
+    let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
     this.debug('bounds: ', bounds);
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

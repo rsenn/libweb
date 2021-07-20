@@ -79,10 +79,7 @@ Indexed.Renderer = function(canvas_id, width, height, scale, forcecanvas) {
     this.context.imageSmoothingEnabled = false;
   } else {
     this.gl = twgl.getWebGLContext(this.canvas);
-    this.programInfo = twgl.createProgramInfo(this.gl, [
-      Indexed.indexed_vert,
-      Indexed.indexed_frag
-    ]);
+    this.programInfo = twgl.createProgramInfo(this.gl, [Indexed.indexed_vert, Indexed.indexed_frag]);
 
     //2 triangles
     this.bufferInfo = twgl.createBufferInfoFromArrays(this.gl, {
@@ -132,46 +129,28 @@ Indexed.Renderer.prototype = {
   setCursor: function(cursor) {
     this.canvas.style.cursor = cursor;
   },
-  clear: function (color) {
+  clear: function(color) {
     this.fb.set(color);
   },
-  setPalette: function (pal) {
+  setPalette: function(pal) {
     if(pal instanceof Indexed.Palette) this.palette = pal;
     else this.palette.fromString(pal);
     this.updatePalette();
   },
-  updatePalette: function () {
+  updatePalette: function() {
     if(!this.gl) return;
 
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures.pal);
     //		twgl.setTextureFromArray(this.gl, this.textures.pal, this.palette.data, {width: this.palette.length, height: 1, format: this.gl.RGB, type: this.gl.UNSIGNED_BYTE, update:true});
     this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
-    this.gl.texSubImage2D(this.gl.TEXTURE_2D,
-      0,
-      0,
-      0,
-      this.palette.length,
-      1,
-      this.gl.RGBA,
-      this.gl.UNSIGNED_BYTE,
-      this.palette.data8
-    );
+    this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, 0, this.palette.length, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.palette.data8);
   },
-  flip: function () {
+  flip: function() {
     if(this.gl) {
       this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures.fb);
       //twgl.setTextureFromArray(this.gl, this.textures.fb, this.fb.data, {format: this.gl.LUMINANCE, width: this.width, height: this.height, type: this.gl.UNSIGNED_BYTE, update: true});
       this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
-      this.gl.texSubImage2D(this.gl.TEXTURE_2D,
-        0,
-        0,
-        0,
-        this.width,
-        this.height,
-        this.gl.LUMINANCE,
-        this.gl.UNSIGNED_BYTE,
-        this.fb.data
-      );
+      this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, 0, this.width, this.height, this.gl.LUMINANCE, this.gl.UNSIGNED_BYTE, this.fb.data);
 
       this.gl.useProgram(this.programInfo.program);
       twgl.setBuffersAndAttributes(this.gl, this.programInfo, this.bufferInfo);
@@ -223,7 +202,7 @@ Indexed.Palette.prototype = {
       this.data8[i * 4 + 3] = 255;
     }
   },
-  fromString: function (str) {
+  fromString: function(str) {
     var lines = str.split('\n');
     if(lines[0].trim() == 'JASC-PAL') {
       var size = parseInt(lines[2]);
@@ -242,14 +221,14 @@ Indexed.Palette.prototype = {
       }
     }
   },
-  initGrayscale: function (size) {
+  initGrayscale: function(size) {
     if(size !== undefined && this.length !== size) this.init(size);
     this.makeGradient(0, this.length - 1, [0, 0, 0], [255, 255, 255]);
   },
-  setTransparent: function (idx) {
+  setTransparent: function(idx) {
     this.TRANSPARENT = Math.min(this.length, Math.max(0, idx));
   },
-  makeGradient: function (start, end, colorstart, colorend) {
+  makeGradient: function(start, end, colorstart, colorend) {
     var steps = end - start;
     var dr = (colorend[0] - colorstart[0]) / steps;
     var dg = (colorend[1] - colorstart[1]) / steps;
@@ -265,7 +244,7 @@ Indexed.Palette.prototype = {
       colorstart[2] += db;
     }
   },
-  cycle: function (start, end, direction) {
+  cycle: function(start, end, direction) {
     if(direction < 0) {
       var aux = start;
       start = end;
@@ -279,7 +258,7 @@ Indexed.Palette.prototype = {
     }
     this.data32[end] = this.data32[start];
   },
-  getColorIndex: function (r, g, b) {
+  getColorIndex: function(r, g, b) {
     var col = 0xff000000 | (b << 16) | (g << 8) | r;
     for(var i = 0, len = this.data32.length; i < len; i++) {
       if(this.data32[i] == col) {
@@ -288,10 +267,10 @@ Indexed.Palette.prototype = {
     }
     return this.TRANSPARENT;
   },
-  setRGB: function (i, r, g, b) {
+  setRGB: function(i, r, g, b) {
     this.data32[i] = 0xff000000 | (b << 16) | (g << 8) | r;
   },
-  shiftRGB: function (i, r, g, b) {
+  shiftRGB: function(i, r, g, b) {
     this.data[i * 3 + 0] = (this.data[i * 3 + 0] + r) | 0;
     this.data[i * 3 + 1] = (this.data[i * 3 + 1] + g) | 0;
     this.data[i * 3 + 2] = (this.data[i * 3 + 2] + b) | 0;
@@ -338,17 +317,17 @@ Indexed.Buffer.prototype = {
     }
     this.palette = pal;
   },
-  fromPCX: function (img, readpalette) {
+  fromPCX: function(img, readpalette) {
     var pcx = Indexed.PCXread(img, readpalette);
     this.width = pcx.width;
     this.height = pcx.height;
     this.data = pcx.data;
     this.palette = pcx.palette;
   },
-  set: function (color) {
+  set: function(color) {
     for(var i = 0, len = this.data.length; i < len; i++) this.data[i] = color;
   },
-  replaceValues: function (repl) {
+  replaceValues: function(repl) {
     //repl is an object {fromValue1:toValue1 .. fromValueN:toValueN}
     for(var i = 0, len = this.data.length; i < len; i++) {
       var r = repl[this.data[i]];
@@ -356,7 +335,7 @@ Indexed.Buffer.prototype = {
       this.data[i] = r;
     }
   },
-  getSubBuffer: function (x, y, w, h, copypal) {
+  getSubBuffer: function(x, y, w, h, copypal) {
     if(arguments.length == 0) {
       x = 0;
       y = 0;
@@ -386,7 +365,7 @@ Indexed.Buffer.prototype = {
     if(copypal) b.palette = this.palette;
     return b;
   },
-  drawBuffer: function (buffer, x, y) {
+  drawBuffer: function(buffer, x, y) {
     var j = (y | 0) * this.width + (x | 0);
     var c;
     for(var i = 0, len = buffer.data.length; i < len; ) {
@@ -399,7 +378,7 @@ Indexed.Buffer.prototype = {
       else j++;
     }
   },
-  drawSubBuffer: function (buffer, bx, by, bw, bh, x, y) {
+  drawSubBuffer: function(buffer, bx, by, bw, bh, x, y) {
     var i, j;
     var bx2 = bx + bw,
       by2 = by + bh;
@@ -421,13 +400,13 @@ Indexed.Buffer.prototype = {
       }
     }
   },
-  putPixel: function (col, x, y) {
+  putPixel: function(col, x, y) {
     this.data[y * this.width + x] = col;
   },
-  getPixel: function (x, y) {
+  getPixel: function(x, y) {
     return this.data[y * this.width + x];
   },
-  drawRect: function (col, x, y, w, h, empty) {
+  drawRect: function(col, x, y, w, h, empty) {
     var i, j;
     var x2 = x + w,
       y2 = y + h;
@@ -450,7 +429,7 @@ Indexed.Buffer.prototype = {
       }
     }
   },
-  drawLine: function (col, x0, y0, x1, y1) {
+  drawLine: function(col, x0, y0, x1, y1) {
     var W = this.width;
     var dx = Math.abs(x1 - x0);
     var dy = Math.abs(y1 - y0);
@@ -530,14 +509,9 @@ if(window.PLAYGROUND) {
   PLAYGROUND.Renderer.plugin = true;
   PLAYGROUND.Renderer.prototype = {
     create: function(data) {
-      this.app.layer = new Indexed.Renderer(this.app.container,
-        this.app.width,
-        this.app.height,
-        this.app.scale,
-        this.app.forcecanvas
-      );
+      this.app.layer = new Indexed.Renderer(this.app.container, this.app.width, this.app.height, this.app.scale, this.app.forcecanvas);
     },
-    postrender: function () {
+    postrender: function() {
       this.app.layer.flip();
     }
   };

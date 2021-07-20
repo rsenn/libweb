@@ -8,7 +8,9 @@ export class Polygon extends PointList {
     super(...args);
   }
 
-  get [Symbol.toStringTag]() { return 'Polygon'; }
+  get [Symbol.toStringTag]() {
+    return 'Polygon';
+  }
 }
 
 Polygon.area = polygon => {
@@ -126,7 +128,8 @@ Polygon.pointInside = function(polygon, point) {
 export function MakePolygon(n = 8, r = 1.27, start = 0) {
   const $2pi = Math.PI * 2;
   const step = $2pi / n;
-  return new Polygon(Util.range(0, n - 1)
+  return new Polygon(
+    Util.range(0, n - 1)
       .map(i => ($2pi * i) / n)
       .map(a => Point.fromAngle(a + step * start, r))
   );

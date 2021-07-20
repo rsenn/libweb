@@ -8,10 +8,7 @@ function shim(props, propName, componentName, location, propFullName, secret) {
   if(secret === ReactPropTypesSecret) {
     return;
   }
-  let err = new Error('Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
-      'Use PropTypes.checkPropTypes() to call them. ' +
-      'Read more at http://fb.me/use-check-prop-types'
-  );
+  let err = new Error('Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
   err.name = 'Invariant Violation';
   throw err;
 }
@@ -57,43 +54,17 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
 
         try {
           if(typeof typeSpecs[typeSpecName] !== 'function') {
-            let err = Error((componentName || 'React class') +
-                ': ' +
-                location +
-                ' type `' +
-                typeSpecName +
-                '` is invalid; ' +
-                'it must be a function, usually from the `prop-types` package, but received `' +
-                typeof typeSpecs[typeSpecName] +
-                '`.' +
-                'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.'
-            );
+            let err = Error((componentName || 'React class') + ': ' + location + ' type `' + typeSpecName + '` is invalid; ' + 'it must be a function, usually from the `prop-types` package, but received `' + typeof typeSpecs[typeSpecName] + '`.' + 'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.');
             err.name = 'Invariant Violation';
             throw err;
           }
-          error = typeSpecs[typeSpecName](values,
-            typeSpecName,
-            componentName,
-            location,
-            null,
-            ReactPropTypesSecret
-          );
+          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
         } catch(ex) {
           error = ex;
         }
         if(error && !(error instanceof Error)) {
-          printWarning((componentName || 'React class') +
-              ': type specification of ' +
-              location +
-              ' `' +
-              typeSpecName +
-              '` is invalid; the type checker ' +
-              'function must return `null` or an `Error` but returned a ' +
-              typeof error +
-              '. ' +
-              'You may have forgotten to pass an argument to the type checker ' +
-              'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' +
-              'shape all require an argument).'
+          printWarning(
+            (componentName || 'React class') + ': type specification of ' + location + ' `' + typeSpecName + '` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a ' + typeof error + '. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).'
           );
         }
         if(error instanceof Error && !(error.message in loggedTypeFailures)) {
@@ -101,8 +72,7 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
 
           let stack = getStack ? getStack() : '';
 
-          printWarning('Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
-          );
+          printWarning('Failed ' + location + ' type: ' + error.message + (stack != null ? stack : ''));
         }
       }
     }

@@ -9,7 +9,8 @@ export function useDebounce(value, delay, options) {
   var _a = useState(value),
     state = _a[0],
     dispatch = _a[1];
-  var _b = useDebouncedCallback(useCallback(function (value) {
+  var _b = useDebouncedCallback(
+      useCallback(function (value) {
         return dispatch(value);
       }, []),
       delay,
@@ -19,13 +20,15 @@ export function useDebounce(value, delay, options) {
     cancel = _b[1],
     callPending = _b[2];
   var previousValue = useRef(value);
-  useEffect(function () {
+  useEffect(
+    function() {
       // We need to use this condition otherwise we will run debounce timer for the first render (including maxWait option)
       if(!eq(previousValue.current, value)) {
         callback(value);
         previousValue.current = value;
       }
-    }, [value, callback, eq]
+    },
+    [value, callback, eq]
   );
   return [state, cancel, callPending];
 }

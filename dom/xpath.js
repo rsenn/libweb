@@ -6,13 +6,12 @@ export class XPath {
           return 'http://www.w3.org/2000/svg';
         case 'xhtml':
           return 'http://www.w3.org/1999/xhtml';
-        default: return 'http://www.w3.org/1999/xhtml';
+        default:
+          return 'http://www.w3.org/1999/xhtml';
       }
     });
 
-    let result = expression.evaluate(context,
-      resultType || XPathResult.ORDERED_NODE_SNAPSHOT_TYPE || XPathResult.ORDERED_NODE_ITERATOR_TYPE
-    );
+    let result = expression.evaluate(context, resultType || XPathResult.ORDERED_NODE_SNAPSHOT_TYPE || XPathResult.ORDERED_NODE_ITERATOR_TYPE);
     let ret;
     switch (result.resultType) {
       case XPathResult.NUMBER_TYPE:

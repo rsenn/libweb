@@ -58,8 +58,7 @@ function supportsStorage() {
     this.cachedStorage = true;
   } catch(e) {
     // If we hit the limit, and we don't have an empty localStorage then it means we have support
-    if(Implementations.localStorage.supported() /*isOutOfSpace.call(this, e) && localStorage.length*/
-    ) {
+    if(Implementations.localStorage.supported() /*isOutOfSpace.call(this, e) && localStorage.length*/) {
       this.cachedStorage = true; // just maxed it out and even the set test failed.
     } else {
       this.cachedStorage = false;
@@ -70,11 +69,7 @@ function supportsStorage() {
 
 // Check to set if the error is us dealing with being out of space
 function isOutOfSpace(e) {
-  return (e &&
-    (e.name === 'QUOTA_EXCEEDED_ERR' ||
-      e.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
-      e.name === 'QuotaExceededError')
-  );
+  return e && (e.name === 'QUOTA_EXCEEDED_ERR' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.name === 'QuotaExceededError');
 }
 
 // Determines if native JSON (de-)serialization is supported in the browser.
@@ -128,8 +123,7 @@ const Implementations = {
       if(clone && Util.isObject(result) && typeof result.clone == 'function') {
         try {
           tmp = result.clone();
-          if(!tmp)
-            tmp = Object.create(Object.getPrototypeOf(result), Object.getOwnPropertyDescriptors());
+          if(!tmp) tmp = Object.create(Object.getPrototypeOf(result), Object.getOwnPropertyDescriptors());
 
           if(!tmp) throw new Error('clone failed');
           result = tmp;
@@ -140,8 +134,7 @@ const Implementations = {
     },
 
     request(obj) {
-      if(obj instanceof Request || (Util.isObject(obj) && typeof obj.url == 'string'))
-        obj = obj.url;
+      if(obj instanceof Request || (Util.isObject(obj) && typeof obj.url == 'string')) obj = obj.url;
       return obj;
     },
 
@@ -236,8 +229,7 @@ const Implementations = {
 
     eachKey(fn) {
       const { obj } = this;
-      let prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters(obj.cacheBucket) + '(.*)'
-      );
+      let prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters(obj.cacheBucket) + '(.*)');
       // Loop in reverse as removing items will change indices of tail
       for(let i = localStorage.length - 1; i >= 0; --i) {
         let key = localStorage.key(i);
@@ -377,12 +369,7 @@ export class BaseCache {
 
     //if(!this.supportsJSON) return false;
     try {
-      value =
-        typeof value == 'string'
-          ? value
-          : value instanceof Response
-          ? value
-          : JSON.stringify(value);
+      value = typeof value == 'string' ? value : value instanceof Response ? value : JSON.stringify(value);
     } catch(e) {
       // Sometimes we can't stringify due to circular refs
       // in complex objects, so we won't bother storing then.
@@ -425,10 +412,7 @@ export class BaseCache {
           impl.setItem.call(this, key, value);
         } catch(e) {
           // value may be larger than total quota
-          impl.warn.call(this,
-            "Could not add item with key '" + key + "', perhaps it's too big?",
-            e
-          );
+          impl.warn.call(this, "Could not add item with key '" + key + "', perhaps it's too big?", e);
           return false;
         }
       } else {
@@ -440,10 +424,7 @@ export class BaseCache {
 
     // If a time is specified, store expiration info in localStorage
     if(time) {
-      impl.setItem.call(this,
-        expirationKey(key),
-        (currentTime.call(this) + time).toString(EXPIRY_RADIX)
-      );
+      impl.setItem.call(this, expirationKey(key), (currentTime.call(this) + time).toString(EXPIRY_RADIX));
     } else {
       //console.log('impl.removeItem', impl.removeItem);
       // In case they previously set a time, remove that info from localStorage.

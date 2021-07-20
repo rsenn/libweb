@@ -67,12 +67,9 @@ export class BBox {
       } else if(isBBox(arg.objects)) {
         this.updateList(Object.values(arg.objects), offset);
       } else {
-        if(arg.x2 !== undefined && arg.y2 != undefined)
-          this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
-        if(arg.x1 !== undefined && arg.y1 != undefined)
-          this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
-        if(arg.x !== undefined && arg.y != undefined)
-          this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
+        if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
+        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
+        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
       }
     }
 
@@ -160,7 +157,7 @@ export class BBox {
 
   get size() {
     const { x1, y1, x2, y2 } = this;
-    return new Size(x2-x1, y2-y1);
+    return new Size(x2 - x1, y2 - y1);
   }
 
   toRect(proto) {
@@ -238,7 +235,6 @@ export class BBox {
     for(let prop of [x1, x2, y1, y2]) yield prop;
   }
 }
-export const isBBox = (bbox, testFn = (prop, name, obj) => name in obj) =>
-  Util.isObject(bbox) && ['x1', 'y1', 'x2', 'y2'].every(n => testFn(bbox[n], n, bbox));
+export const isBBox = (bbox, testFn = (prop, name, obj) => name in obj) => Util.isObject(bbox) && ['x1', 'y1', 'x2', 'y2'].every(n => testFn(bbox[n], n, bbox));
 
 export default BBox;

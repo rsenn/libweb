@@ -18,19 +18,19 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
   window.accumulateClasses = () => {
     let st = storage('dev');
     let classes = st.get('classes') || [];
-    let newClasses = dom.Element.walk(document.body,
+    let newClasses = dom.Element.walk(
+      document.body,
       (e, acc) => {
         acc.push(e.getAttribute('class'));
         return acc;
-      }, []
+      },
+      []
     )
       .join(' ')
       .split(/\s+/g)
       .unique()
       .match(/bp3/);
-    dom.Element.findAll('*[class~=bp3]').forEach(e =>
-      newClasses.concat(String(e.class).split(/ /g))
-    );
+    dom.Element.findAll('*[class~=bp3]').forEach(e => newClasses.concat(String(e.class).split(/ /g)));
     newClasses = newClasses.filter(i => classes.indexOf(i) == -1);
     if(newClasses.length) {
       st.set('classes', (classes = Util.unique(classes.concat(newClasses))));
@@ -50,12 +50,13 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
 
 if(!Array.prototype.back) {
   try {
-    Util.defineGetterSetter(Array.prototype,
+    Util.defineGetterSetter(
+      Array.prototype,
       'back',
       function() {
         return this.length > 0 ? this[this.length - 1] : undefined;
       },
-      function (value) {
+      function(value) {
         if(this.length > 0) this[this.length - 1] = value;
         else this.push(value);
         return this;
@@ -67,12 +68,13 @@ if(!Array.prototype.back) {
 
 if(!Array.prototype.front) {
   try {
-    Util.defineGetterSetter(Array.prototype,
+    Util.defineGetterSetter(
+      Array.prototype,
       'front',
       function() {
         return this.length > 0 ? this[0] : undefined;
       },
-      function (value) {
+      function(value) {
         if(this.length > 0) this[this.length - 1] = value;
         else this.push(value);
         return this;
@@ -131,10 +133,7 @@ export const colors = (() => {
       //Util.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
 
       f('div', {
-        innerHTML: `<div class="colors-text" style="opacity:0;">${((typeof key == 'number' ? key.toFixed(2) : key) +
-          ': ' +
-          c.toString()
-        ).replace(/ /g, '&nbsp;')}</div>`,
+        innerHTML: `<div class="colors-text" style="opacity:0;">${((typeof key == 'number' ? key.toFixed(2) : key) + ': ' + c.toString()).replace(/ /g, '&nbsp;')}</div>`,
         class: 'colors-item',
         style: {
           margin: 'auto',
@@ -192,7 +191,9 @@ export async function getStars() {
     this.paths.forEach(e => e.parentElement.removeChild(e));
 
     return (this.stars = this.circles.map(c =>
-      dom.SVG.create('circle', {
+      dom.SVG.create(
+        'circle',
+        {
           cx: c.position.x.toFixed(3),
           cy: c.position.y.toFixed(3),
           r: c.radius.toFixed(3),
@@ -236,8 +237,7 @@ export function gradient(element) {
     element,
     steps: nodes.map(e => {
       const offset = Element.attr(e, 'offset');
-      const color = RGBA.fromHex(e.getAttribute('stopColor') || e.getAttribute('stop-color') || '#00000000'
-      );
+      const color = RGBA.fromHex(e.getAttribute('stopColor') || e.getAttribute('stop-color') || '#00000000');
       return {
         color,
         offset,
@@ -247,9 +247,9 @@ export function gradient(element) {
       };
     }),
     toString() {
-      return (Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map(s => s.toString()).join(', ') + ');'
-      );
-    }, [Symbol.iterator]: () =>
+      return Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map(s => s.toString()).join(', ') + ');';
+    },
+    [Symbol.iterator]: () =>
       new (class GradientIterator {
         index = 0;
         next() {
@@ -589,10 +589,8 @@ export async function img(name, arg = {}) {
 
   let list = root.images
     ? root.images
-    : (root.images = new HashList(obj =>
-          (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/,
-            '$1XX$2'
-          ),
+    : (root.images = new HashList(
+        obj => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
         function(arg) {
           let e = Element.find(arg);
           let svg = Element.find('svg', e);
@@ -761,7 +759,8 @@ export function walk(element) {
     return e;
   });
 
-  let texts = new HashList(obj => {
+  let texts = new HashList(
+    obj => {
       const xpath = Element.xpath(obj.e, obj.e.parentNode);
       //if(obj.name.indexOf("#") != -1) return obj.name;
 
@@ -837,14 +836,11 @@ export function walk(element) {
       let strs = line.map(text => `"${text.text}"`);
       if(strs.length == 2) str = strs.join(': ');
       else str = strs.join('\n  ');
-      let rect = texts
-        .at(key)
-        .reduce((acc, it) => Rect.union(acc, Element.rect(it.e)), this[name][0].r);
+      let rect = texts.at(key).reduce((acc, it) => Rect.union(acc, Element.rect(it.e)), this[name][0].r);
       let rstr = Rect.toString(rect);
 
       if(strs.length != 2 && strs.length > 0 && str.length) {
-        global.lines[1].push('  ' + str + ' '.repeat(Math.max(0, 80 - str.length)) + `/* ${key} */`
-        );
+        global.lines[1].push('  ' + str + ' '.repeat(Math.max(0, 80 - str.length)) + `/* ${key} */`);
       }
       //str = (line.length != 2 ? `/* ${key} */\n/* ${rstr} */\n` : "") + str;
       else if(Rect.area(rect)) global.lines[0].push(str);
@@ -871,9 +867,7 @@ export async function measure(element) {
 
 export function trackElements() {
   const elements = Element.findAll.apply(this, arguments);
-  const rects = elements.map(e =>
-    rect(e, 'none', '#' + Util.hex(Math.round(Math.random() * 0xfff)), e)
-  );
+  const rects = elements.map(e => rect(e, 'none', '#' + Util.hex(Math.round(Math.random() * 0xfff)), e));
 
   window.trackingRects = rects;
 
@@ -894,7 +888,8 @@ export function polyline(points, closed = false) {
   if(typeof points == 'object' && points.toPoints) points = points.toPoints();
 
   if(!window.svg)
-    window.svg = SVG.create('svg',
+    window.svg = SVG.create(
+      'svg',
       {
         width,
         height,
@@ -903,7 +898,9 @@ export function polyline(points, closed = false) {
       },
       document.body
     );
-  SVG.create(closed ? 'polygon' : 'polyline', {
+  SVG.create(
+    closed ? 'polygon' : 'polyline',
+    {
       points: points.toString(3),
       fill: 'none',
       stroke: 'red',
@@ -918,7 +915,8 @@ export function circle(point, radius = 10) {
   const height = window.innerHeight;
 
   if(!window.svg)
-    window.svg = SVG.create('svg',
+    window.svg = SVG.create(
+      'svg',
       {
         width,
         height,
@@ -927,7 +925,9 @@ export function circle(point, radius = 10) {
       },
       document.body
     );
-  SVG.create('circle', {
+  SVG.create(
+    'circle',
+    {
       cx: point.x,
       cy: point.y,
       r: radius,
@@ -948,8 +948,7 @@ export function rect(...args) {
 
   while(args.length > 0) {
     if(args[0] instanceof Rect) r = args.shift();
-    else if(isElement(args[0]) || (typeof args[0] == 'string' && (e = Element.find(args[0]))))
-      r = Element.rect(args.shift());
+    else if(isElement(args[0]) || (typeof args[0] == 'string' && (e = Element.find(args[0])))) r = Element.rect(args.shift());
     else r = new Rect(args);
 
     // console.log('r:', r);
@@ -981,8 +980,7 @@ export function rect(...args) {
     parent = parent || args.shift() || body;
     if(typeof parent == 'string') parent = Element.find(parent);
 
-    if(parent != body && parent.style && !parent.style.position)
-      parent.style.setProperty('position', 'relative');
+    if(parent != body && parent.style && !parent.style.position) parent.style.setProperty('position', 'relative');
 
     let e = Element.create('div', { class: 'devtools rectangle', parent });
     //console.log('backgroundColor', color, color.toString());
@@ -1050,7 +1048,8 @@ export function storage(name) {
   });
 
   Util.defineGetterSetter(self, 'name', () => name);
-  Util.defineGetterSetter(self,
+  Util.defineGetterSetter(
+    self,
     'value',
     () => self(),
     value => self(value)

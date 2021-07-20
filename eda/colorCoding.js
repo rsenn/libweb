@@ -45,7 +45,8 @@ export function ValueToNumber(value) {
   return man * 10 ** exp;
 }
 
-export function NumberToValue(value,
+export function NumberToValue(
+  value,
   suffixes = [
     [1e3, 'k'],
     [1e6, 'M'],

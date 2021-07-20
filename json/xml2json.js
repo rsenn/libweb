@@ -23,7 +23,8 @@ function xml2json_translator() {
 
       let o = {};
 
-      if(!parent || //no parent = root element = first step in recursion
+      if(
+        !parent || //no parent = root element = first step in recursion
         parent instanceof Array
       ) {
         //if parent is an Array, we cannot add attributes to it, so handle it with similar extra step as a root element
@@ -40,9 +41,7 @@ function xml2json_translator() {
 
         if(xml.attributes.length)
           //element with attributes  ..
-          for(let i = 0; i < xml.attributes.length; i++)
-            parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] =
-              xml.attributes[i].nodeValue;
+          for(let i = 0; i < xml.attributes.length; i++) parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
 
         if(xml.firstChild) {
           //element has child nodes. Figure out some properties of it's structure, to guide us later.
@@ -79,8 +78,7 @@ function xml2json_translator() {
                 o['#cdata'] = X.escape(n.nodeValue);
               else if(o[n.nodeName]) {
                 //multiple occurence of element ..
-                if(o[n.nodeName] instanceof Array)
-                  o[n.nodeName][o[n.nodeName].length] = X.toObj(n, o);
+                if(o[n.nodeName] instanceof Array) o[n.nodeName][o[n.nodeName].length] = X.toObj(n, o);
                 else o[n.nodeName] = [o[n.nodeName], X.toObj(n, o)];
               } //first occurence of element..
               else o[n.nodeName] = X.toObj(n, o);
@@ -160,13 +158,7 @@ function xml2json_translator() {
           let s = '';
           if(n.nodeType == 1) {
             s += '<' + n.nodeName;
-            for(let i = 0; i < n.attributes.length; i++)
-              s +=
-                ' ' +
-                n.attributes[i].nodeName +
-                '="' +
-                (n.attributes[i].nodeValue || '').toString() +
-                '"';
+            for(let i = 0; i < n.attributes.length; i++) s += ' ' + n.attributes[i].nodeName + '="' + (n.attributes[i].nodeValue || '').toString() + '"';
             if(n.firstChild) {
               s += '>';
               for(let c = n.firstChild; c; c = c.nextSibling) s += asXml(c);
@@ -181,11 +173,7 @@ function xml2json_translator() {
       return s;
     },
     escape(txt) {
-      return txt
-        .replace(/[\\]/g, '\\\\')
-        .replace(/[\"]/g, '\\"')
-        .replace(/[\n]/g, '\\n')
-        .replace(/[\r]/g, '\\r');
+      return txt.replace(/[\\]/g, '\\\\').replace(/[\"]/g, '\\"').replace(/[\n]/g, '\\n').replace(/[\r]/g, '\\r');
     },
     removeWhite(e) {
       e.normalize();

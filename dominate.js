@@ -4,7 +4,8 @@
  * @format
  */
 
-DOMinate = function dom(array, //Array containing the DOM fragment in JsonML
+DOMinate = function dom(
+  array, //Array containing the DOM fragment in JsonML
   namespace, //Namespace
   returnObject
 ) {

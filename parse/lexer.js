@@ -241,10 +241,7 @@ export class Lexer {
       lexer.lexWhile(/[ \n\r\t]$/);
       if(lexer.start < lexer.pos) return Lexer.tokens.WHITESPACE;
       if(!(lexer.start < lexer.pos)) {
-        console.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${
-            lexer.pos
-          } len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`
-        );
+        console.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`);
         return 0;
       }
     }
@@ -273,9 +270,7 @@ export class Lexer {
   clone() {
     const { file, source, pos, start, tokIndex, len } = this;
 
-    return Object.setPrototypeOf({ file, source, pos, start, tokIndex, len },
-      Object.getPrototypeOf(this)
-    );
+    return Object.setPrototypeOf({ file, source, pos, start, tokIndex, len }, Object.getPrototypeOf(this));
   }
 
   peek(start = 0, num = 1) {

@@ -71,8 +71,7 @@ export class Parser {
       };
       parser.token = { tok, str };
       parser.tokens = add(parser.tokens, parser.token);
-      if(tokIndex > parser.prevTok)
-        console.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`, parser.token);
+      if(tokIndex > parser.prevTok) console.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`, parser.token);
       return Util.define({ ...parser.token }, { unget });
     }
     return null;
@@ -105,7 +104,8 @@ export class Parser {
     //console.log('token:', token);
 
     if(!r)
-      throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.inspect(s, {
+      throw new Error(
+        `Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.inspect(s, {
           multiline: false,
           colors: false
         })})  ${Lexer.tokenName(token.tok)}, ${Util.inspect(token.str)}`

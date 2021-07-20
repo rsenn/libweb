@@ -11,17 +11,7 @@ export const useGrid = data => {
     const f = factors[unit];
     return value * f;
   };
-  const {
-    distance,
-    unitdist,
-    unit,
-    style,
-    multiple,
-    display,
-    altdistance,
-    altunitdist,
-    altunit
-  } = useAttributes(data);
+  const { distance, unitdist, unit, style, multiple, display, altdistance, altunitdist, altunit } = useAttributes(data);
   //log('useGrid:', { distance, unitdist, unit });
   let result = {
     distance: calcDist(+distance, unitdist || unit),
@@ -33,12 +23,7 @@ export const useGrid = data => {
   return result;
 };
 
-export const Pattern = ({
-  data,
-  id = 'pattern',
-  attrs = { color: '#0000aa', width: 0.01 },
-  ...props
-}) => {
+export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', width: 0.01 }, ...props }) => {
   log('Pattern.render ', { data, id, attrs, props });
   data =
     useValue(async function* () {
@@ -47,8 +32,7 @@ export const Pattern = ({
         yield change;
       }
     }) || data;
-  const { distance = 0.1, style, multiple = 1, display, altdistance } = useGrid(data
-  );
+  const { distance = 0.1, style, multiple = 1, display, altdistance } = useGrid(data);
 
   //log('Pattern.render:', { distance, style, multiple, display, altdistance });
   let pattern = useTrkl(attrs);
@@ -71,7 +55,8 @@ export const Pattern = ({
   const size = distance * multiple;
   log('Pattern.render ', { width, color, size });
 
-  return h('pattern',
+  return h(
+    'pattern',
     { id, width: size, height: size, patternUnits: 'userSpaceOnUse' },
     h('path', {
       ref,
@@ -85,14 +70,7 @@ export const Pattern = ({
   );
 };
 
-export const Grid = ({
-  data,
-  rect,
-  id,
-  attrs = { visible: true },
-  opts = {},
-  ...props
-}) => {
+export const Grid = ({ data, rect, id, attrs = { visible: true }, opts = {}, ...props }) => {
   let { transform = new TransformationList() } = opts;
   const { distance, style, multiple, display, altdistance } = useGrid(data);
   log('Grid.render:', { data, rect, attrs, opts, props });

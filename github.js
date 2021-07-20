@@ -38,29 +38,14 @@ export async function GithubRepositories(user, f = fetch) {
       .filter(url => fetched.indexOf(url) == -1 && !/page=1/.test(url));
     url = hrefs[hrefs.length - 1];
     //console.debug('hrefs:', hrefs);
-    let tags = indexes
-      .map(index => [index, html.indexOf('</li>', index)])
-      .map(([s, e]) => html.substring(s, e));
+    let tags = indexes.map(index => [index, html.indexOf('</li>', index)]).map(([s, e]) => html.substring(s, e));
     let data = tags.map(Util.stripHTML);
-    ret = ret.concat(data.map(a =>
-        a
-          .slice(0, 2)
-          .map(p =>
-            ['0', 'Forked from', 'Updated'].indexOf(p) != -1 || Util.isNumeric(p) ? '' : p
-          )
-      )
-    );
+    ret = ret.concat(data.map(a => a.slice(0, 2).map(p => (['0', 'Forked from', 'Updated'].indexOf(p) != -1 || Util.isNumeric(p) ? '' : p))));
     i++;
   } while(url);
-  return new Map(ret.map(([name, description]) => [`https://github.com/${user}/${name}`, description])
-  );
-  return new Map(ret.map(([name, description]) => [
-      name,
-      { url: `https://github.com/${user}/${name}`, description }
-    ])
-  );
-  return new Map(ret.map(([name, ...rest]) => [name, [`https://github.com/${user}/${name}`, ...rest]])
-  );
+  return new Map(ret.map(([name, description]) => [`https://github.com/${user}/${name}`, description]));
+  return new Map(ret.map(([name, description]) => [name, { url: `https://github.com/${user}/${name}`, description }]));
+  return new Map(ret.map(([name, ...rest]) => [name, [`https://github.com/${user}/${name}`, ...rest]]));
 }
 
 export const GithubListContents = async (owner, repo, dir, filter, opts = {}) => {
@@ -107,10 +92,10 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
     if(!/:\/\//.test(url)) url = base_url + '/' + url;
     return url;
   };
-  return Object.assign(files.map((file, i) => {
+  return Object.assign(
+    files.map((file, i) => {
       file.toString = () => at(i);
-      if(file.type == 'dir')
-        file.list = async (f = filter) => await GithubListContents(at(i), null, null, f, {});
+      if(file.type == 'dir') file.list = async (f = filter) => await GithubListContents(at(i), null, null, f, {});
       else {
         let getter = async function() {
           let data = await fetch(at(i), {});
@@ -139,10 +124,10 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
         return await fetch(url, {});
       },
       get files() {
-        return files.filter((item) => item.type != 'dir');
+        return files.filter(item => item.type != 'dir');
       },
       get dirs() {
-        return files.filter((item) => item.type == 'dir');
+        return files.filter(item => item.type == 'dir');
       }
     }
   );
@@ -158,7 +143,8 @@ export async function ListGithubRepoServer(owner, repo, dir, filter, f = fetch) 
       body: JSON.stringify(request)
     });
   } catch(err) {}
-  let ret = Util.tryCatch(() => JSON.parse(response),
+  let ret = Util.tryCatch(
+    () => JSON.parse(response),
     response => response,
     error => ({ error, response })
   );

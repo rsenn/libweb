@@ -6,9 +6,7 @@ import Util from '../util.js';
 export class EagleElementProxy {
   constructor(element, matrix) {
     this.element = element;
-    this.matrix = matrix
-      ? new Matrix(typeof matrix.toMatrix == 'function' ? matrix.toMatrix() : matrix)
-      : null;
+    this.matrix = matrix ? new Matrix(typeof matrix.toMatrix == 'function' ? matrix.toMatrix() : matrix) : null;
     this.invmatrix = matrix ? this.matrix.invert() : null;
   }
 

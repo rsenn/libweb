@@ -1,8 +1,6 @@
 export class HashList {
   constructor(keyfn, ctor) {
-    this.keyfn = keyfn
-      ? keyfn
-      : item => (item.toString !== undefined ? item.toString() : String(item));
+    this.keyfn = keyfn ? keyfn : item => (item.toString !== undefined ? item.toString() : String(item));
     this.ctor = ctor ? ctor : item => item;
     this.width = 0;
     this.keys = [];
@@ -70,23 +68,13 @@ export class HashList {
   }
 
   find(a) {
-    return this.method('find',
-      typeof a === 'function'
-        ? (arg, i, arr) => a(arg, arg.name, this)
-        : (arg, i, arr) =>
-            (a && arr[i] && a == arr[i].e) ||
-            (a instanceof RegExp &&
-              (key.match(a) ||
-                String(arr[i]).match(a) ||
-                arr[i].id == a ||
-                arr[i].e == a ||
-                Rect.equals(arr[i].rect, arr[i].rect)))
-    );
+    return this.method('find', typeof a === 'function' ? (arg, i, arr) => a(arg, arg.name, this) : (arg, i, arr) => (a && arr[i] && a == arr[i].e) || (a instanceof RegExp && (key.match(a) || String(arr[i]).match(a) || arr[i].id == a || arr[i].e == a || Rect.equals(arr[i].rect, arr[i].rect))));
   }
 
   remap(fn) {
     const arr = this.toArray();
-    let ret = new HashList(obj => obj.key || obj.id,
+    let ret = new HashList(
+      obj => obj.key || obj.id,
       obj => obj
     );
     for(let i = 0; i < arr.length; i++) {

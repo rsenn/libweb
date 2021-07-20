@@ -53,9 +53,13 @@ export class MultiKeyMap {
     this._root = { neighbors: new Map() };
   }
 
-  get size() { return this._keys.length; }
+  get size() {
+    return this._keys.length;
+  }
 
-  get [Symbol.toStringTag]() { return 'MultiKeyMap'; }
+  get [Symbol.toStringTag]() {
+    return 'MultiKeyMap';
+  }
 
   static get [Symbol.species]() {
     return MultiKeyMap;
@@ -66,8 +70,7 @@ export class MultiKeyMap {
   }
 
   _assertCallback(callback) {
-    if(typeof callback !== 'function')
-      throw new TypeError('Argument "calback" must be a function');
+    if(typeof callback !== 'function') throw new TypeError('Argument "calback" must be a function');
   }
 
   clear() {

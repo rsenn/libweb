@@ -79,7 +79,8 @@ export function Lexer(defunct) {
               case '[object Array]':
                 tokens = token.slice(1);
                 token = token[0];
-              default: if (length) remove = 0;
+              default:
+                if(length) remove = 0;
                 return token;
             }
           }

@@ -181,9 +181,7 @@ const getSize = Util.memoize(rect =>
   })
 );
 
-const getPoint = Util.memoize(rect =>
-  Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => v !== undefined ? (rect[k] = v) : rect[k])
-);
+const getPoint = Util.memoize(rect => Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => v !== undefined ? (rect[k] = v) : rect[k]));
 
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
@@ -339,10 +337,7 @@ Rect.prototype.toPoints = function(...args) {
     : points => Array.from(points);
   let num = typeof args[0] == 'number' ? args.shift() : 4;
   const { x, y, width, height } = this;
-  let a =
-    num == 2
-      ? [new Point(x, y), new Point(x + width, y + height)]
-      : [new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)];
+  let a = num == 2 ? [new Point(x, y), new Point(x + width, y + height)] : [new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)];
   return ctor(a);
 };
 Rect.prototype.toLines = function(ctor = lines => Array.from(lines, points => new Line(...points))) {
@@ -440,8 +435,7 @@ Rect.bind = rect => {
   let obj = new Rect();
 };
 
-Rect.inside = (rect, point) =>
-  point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+Rect.inside = (rect, point) => point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 Rect.from = function(obj) {
   //const { x1,y1,x2,y2 } = obj;
   const fn = (v1, v2) => [Math.min(v1, v2), Math.max(v1, v2)];
@@ -485,8 +479,7 @@ Rect.toSource = (rect, opts = {}) => {
 };
 
 Rect.bind = (...args) => {
-  const [o, p, gen = k => v => v === undefined ? o[k] : (o[k] = v)] =
-    args[0] instanceof Rect ? [new Rect(), ...args] : args;
+  const [o, p, gen = k => v => v === undefined ? o[k] : (o[k] = v)] = args[0] instanceof Rect ? [new Rect(), ...args] : args;
 
   const [x, y, width, height] = p || ['x', 'y', 'width', 'height'];
   let pt = Point.bind(o, ['x', 'y'], gen);
@@ -510,8 +503,7 @@ for(let f of ['scale', 'resize', 'translate']) {
   };
 }
 
-export const isRect = (rect, testFn = (prop, name, obj) => name in obj) =>
-  Util.isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
+export const isRect = (rect, testFn = (prop, name, obj) => name in obj) => Util.isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
 
 Util.defineGetter(Rect, Symbol.species, function() {
   return this;

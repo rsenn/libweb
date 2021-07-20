@@ -18,7 +18,8 @@ export class CompositeMap {
           this.keyLength = entries.keyLength;
           this.data = entries.data;
           break;
-        default: throw new Error(`Unrecognized copy method '${copyMethod}'`);
+        default:
+          throw new Error(`Unrecognized copy method '${copyMethod}'`);
       }
     } else {
       this.keyLength = (options && options.keyLength) || 0;
@@ -185,8 +186,7 @@ export class CompositeMap {
           } else if(level < lastLevel) {
             key[level] = result.value[0];
             level++;
-            levelIterator =
-              level === lastLevel ? result.value[1].keys() : result.value[1].entries();
+            levelIterator = level === lastLevel ? result.value[1].keys() : result.value[1].entries();
             levelIterators[level] = levelIterator;
           } else {
             const key2 = key.slice();

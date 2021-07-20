@@ -601,10 +601,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     }
 
     if(num90 > 0) {
-      angle = util.findAngleOrientedVectors2({ x: bez90.p0[axes.re], y: bez90.p0[axes.im] },
-        cs,
-        that.clockwise === false
-      );
+      angle = util.findAngleOrientedVectors2({ x: bez90.p0[axes.re], y: bez90.p0[axes.im] }, cs, that.clockwise === false);
 
       for(i = 0; i < num90; i++) {
         arcs.push(util.copyObject(bez90));
@@ -616,10 +613,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     }
 
     if(numSmall > 0) {
-      angle = util.findAngleOrientedVectors2({ x: bezSmall.p0[axes.re], y: bezSmall.p0[axes.im] },
-        cs,
-        that.clockwise === false
-      );
+      angle = util.findAngleOrientedVectors2({ x: bezSmall.p0[axes.re], y: bezSmall.p0[axes.im] }, cs, that.clockwise === false);
 
       if(num90 !== 0) {
         angle += num90 * 1.570796326794897 * sign;
@@ -779,7 +773,8 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     angle = Math.acos(lSE / (2 * r));
     l = r / lSE;
     util.scaleAndRotation(start, end, center, angle, l, axes.re, axes.im);
-    aCSCE = util.findAngleVectors2({
+    aCSCE = util.findAngleVectors2(
+      {
         x: start[axes.re] - center[axes.re],
         y: start[axes.im] - center[axes.im]
       },
@@ -831,9 +826,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
       distCenterEnd = Math.pow(center[axes.re] - end[axes.re], 2);
       distCenterEnd += Math.pow(center[axes.im] - end[axes.im], 2);
 
-      if(util.nearlyEqual(distCenterStart, 0) === true ||
-        util.nearlyEqual(distCenterEnd, 0) === true
-      ) {
+      if(util.nearlyEqual(distCenterStart, 0) === true || util.nearlyEqual(distCenterEnd, 0) === true) {
         return false;
       }
 
@@ -852,10 +845,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
 
   function axeCutArc(reValue, imValue, angleBezier, cs) {
     //Find the angle in the same orientation than the Bézier's angle
-    let a = util.findAngleOrientedVectors2(cs,
-      { x: reValue, y: imValue },
-      that.clockwise === false
-    );
+    let a = util.findAngleOrientedVectors2(cs, { x: reValue, y: imValue }, that.clockwise === false);
     return util.isInclude(a, 0, angleBezier) === true;
   }
 
@@ -918,13 +908,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     that.start = { x: start.x, y: start.y, z: start.z };
     that.end = end;
     that.clockwise = parsedCommand.type === 'G2';
-    that.center = findCenter(start,
-      that.end,
-      parsedCommand,
-      that.clockwise,
-      settings.crossAxe,
-      settings.inMm
-    );
+    that.center = findCenter(start, that.end, parsedCommand, that.clockwise, settings.crossAxe, settings.inMm);
     that.crossAxe = settings.crossAxe;
     if(parsedCommand.f === undefined) {
       that.feedrate = settings.feedrate;
@@ -977,7 +961,7 @@ let GParser = (function () {
       peg$c3 = function(num, words) {
         return { N: num, words };
       },
-      peg$c4 = function (word, value) {
+      peg$c4 = function(word, value) {
         return [word, value];
       },
       peg$c5 = 'N',
@@ -1008,7 +992,7 @@ let GParser = (function () {
       peg$c24 = function(left, right) {
         return { op: 'ATAN', left, right };
       },
-      peg$c25 = function (op, expr) {
+      peg$c25 = function(op, expr) {
         return { op, right: expr };
       },
       peg$c26 = '#',
@@ -1016,10 +1000,10 @@ let GParser = (function () {
       peg$c28 = function(expr) {
         return { op: '#', right: expr };
       },
-      peg$c29 = function (first, rest) {
+      peg$c29 = function(first, rest) {
         return buildTree(first, rest);
       },
-      peg$c30 = function (first, rest) {
+      peg$c30 = function(first, rest) {
         return buildTree(first, rest);
       },
       peg$c31 = '**',
@@ -1245,10 +1229,7 @@ let GParser = (function () {
           expectedDescs[i] = expected[i].description;
         }
 
-        expectedDesc =
-          expected.length > 1
-            ? expectedDescs.slice(0, -1).join(', ') + ' or ' + expectedDescs[expected.length - 1]
-            : expectedDescs[0];
+        expectedDesc = expected.length > 1 ? expectedDescs.slice(0, -1).join(', ') + ' or ' + expectedDescs[expected.length - 1] : expectedDescs[0];
 
         foundDesc = found ? '"' + stringEscape(found) + '"' : 'end of input';
 
@@ -1262,13 +1243,7 @@ let GParser = (function () {
         cleanupExpected(expected);
       }
 
-      return new SyntaxError(message !== null ? message : buildMessage(expected, found),
-        expected,
-        found,
-        pos,
-        posDetails.line,
-        posDetails.column
-      );
+      return new SyntaxError(message !== null ? message : buildMessage(expected, found), expected, found, pos, posDetails.line, posDetails.column);
     }
 
     function peg$parsestart() {
@@ -2511,12 +2486,7 @@ export default function parse(code) {
     }
 
     if(consideredFeedrate < 0) {
-      errorList.push(createError(
-          line,
-          '(warning) Cannot use a negative feed rate ' + '(the absolute value is used).',
-          false
-        )
-      );
+      errorList.push(createError(line, '(warning) Cannot use a negative feed rate ' + '(the absolute value is used).', false));
       c.f = Math.abs(consideredFeedrate);
       return false;
     }
@@ -2636,20 +2606,13 @@ export default function parse(code) {
       errorList.push(createError(line, '(warning) Some parameters are wrong.', false));
     }
 
-    if(command.r === undefined &&
-      command.i === undefined &&
-      command.j === undefined &&
-      command.k === undefined
-    ) {
+    if(command.r === undefined && command.i === undefined && command.j === undefined && command.k === undefined) {
       errorList.push(createError(line, '(error) No parameter R, I, J or K.', true));
       return false;
     }
 
-    if(command.r !== undefined &&
-      (command.i !== undefined || command.j !== undefined || command.k !== undefined)
-    ) {
-      errorList.push(createError(line, '(error) Cannot use R and I, J or K at the same time.', true)
-      );
+    if(command.r !== undefined && (command.i !== undefined || command.j !== undefined || command.k !== undefined)) {
+      errorList.push(createError(line, '(error) Cannot use R and I, J or K at the same time.', true));
       return false;
     }
 
@@ -2701,8 +2664,7 @@ export default function parse(code) {
       lines.push(temp);
       settings.position = util.copyObject(line.end);
     } else {
-      errorList.push(createError(lineNumber, '(error) Physically impossible to do with those values.', true)
-      );
+      errorList.push(createError(lineNumber, '(error) Physically impossible to do with those values.', true));
     }
   }
 
@@ -2731,13 +2693,9 @@ export default function parse(code) {
       }
     } else if(command.type === 'G0' && checkG0(command, errorList, lineNumber) === true) {
       manageG0G1(command, settings, lineNumber, lines, totalSize);
-    } else if(command.type === 'G1' &&
-      checkG1(command, errorList, lineNumber, settings) === true
-    ) {
+    } else if(command.type === 'G1' && checkG1(command, errorList, lineNumber, settings) === true) {
       manageG0G1(command, settings, lineNumber, lines, totalSize);
-    } else if((command.type === 'G2' || command.type === 'G3') &&
-      checkG2G3(command, errorList, lineNumber, settings) === true
-    ) {
+    } else if((command.type === 'G2' || command.type === 'G3') && checkG2G3(command, errorList, lineNumber, settings) === true) {
       manageG2G3(command, settings, lineNumber, lines, totalSize, errorList);
     } else if(command.type === 'G17') {
       settings.crossAxe = 'z';

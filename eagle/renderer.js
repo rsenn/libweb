@@ -21,7 +21,8 @@ export function Renderer(doc, factory, debug) {
     case 'lbr':
       ret = new LibraryRenderer(doc, factory);
       break;
-    default: throw new Error('No such document type: ' + doc.type);
+    default:
+      throw new Error('No such document type: ' + doc.type);
   }
 
   setDebug(debug);

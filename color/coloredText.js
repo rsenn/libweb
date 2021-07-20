@@ -200,7 +200,8 @@ export class ColoredText extends Array {
         this[0] = s + this[0];
         if(v.length) Array.prototype.splice.call(this, 1, 0, ...v);
         return this;
-      }, [INSPECT]() {
+      },
+      [INSPECT]() {
         return [...this]; //.reduce((a,p) => a ? [...a, ' ', p] : [p], []);
       },
       toConsole(c = console) {
@@ -246,9 +247,11 @@ export class ColoredText extends Array {
           }
         }
         return this;
-      }, [INSPECT]() {
+      },
+      [INSPECT]() {
         return [this[TO_STRING]()];
-      }, [TO_STRING]() {
+      },
+      [TO_STRING]() {
         let s = '';
         for(let p of [...this]) s += partToStr(p);
         return s + `\x1b[0m`;

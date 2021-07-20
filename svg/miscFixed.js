@@ -1,11 +1,14 @@
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
 
 export const MiscFixedSC613 = props =>
-  h('font', {
+  h(
+    'font',
+    {
       xmlns: 'http://www.w3.org/2000/svg',
       id: 'MiscFixedSC613',
       'horiz-adv-x': '500'
-    }, [
+    },
+    [
       h('font-face', {
         'font-family': 'MiscFixedSC613',
         'font-weight': '400',

@@ -6,7 +6,8 @@ import Util from './util.js';
 export const httpClient = (() => {
   const client = axios.create({ withCredentials: true });
 
-  client.interceptors.response.use(res => {
+  client.interceptors.response.use(
+    res => {
       const { data, status, statusText, headers, config, request } = res;
       //console.error("axios SUCCESS:", { status, statusText, data });
 

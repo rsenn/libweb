@@ -208,16 +208,7 @@ function renderComponent(component) {
     var commitQueue = [];
     var oldVNode = assign({}, vnode);
     oldVNode.__v = vnode.__v + 1;
-    var newDom = diff(parentDom,
-      vnode,
-      oldVNode,
-      component.__n,
-      parentDom.ownerSVGElement !== undefined,
-      vnode.__h != null ? [oldDom] : null,
-      commitQueue,
-      oldDom == null ? getDomSibling(vnode) : oldDom,
-      vnode.__h
-    );
+    var newDom = diff(parentDom, vnode, oldVNode, component.__n, parentDom.ownerSVGElement !== undefined, vnode.__h != null ? [oldDom] : null, commitQueue, oldDom == null ? getDomSibling(vnode) : oldDom, vnode.__h);
     commitRoot(commitQueue, vnode);
 
     if(newDom != oldDom) {
@@ -243,14 +234,11 @@ function updateParentDomPointers(vnode) {
   }
 }
 var rerenderQueue = [];
-var defer =
-  typeof Promise == 'function' ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout;
+var defer = typeof Promise == 'function' ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout;
 var prevDebounce;
 
 function enqueueRender(c) {
-  if((!c.__d && (c.__d = true) && rerenderQueue.push(c) && !process.__r++) ||
-    prevDebounce !== options.debounceRendering
-  ) {
+  if((!c.__d && (c.__d = true) && rerenderQueue.push(c) && !process.__r++) || prevDebounce !== options.debounceRendering) {
     prevDebounce = options.debounceRendering;
     (prevDebounce || defer)(process);
   }
@@ -275,17 +263,7 @@ function process() {
 }
 process.__r = 0;
 
-function diffChildren(parentDom,
-  renderResult,
-  newParentVNode,
-  oldParentVNode,
-  globalContext,
-  isSvg,
-  excessDomChildren,
-  commitQueue,
-  oldDom,
-  isHydrating
-) {
+function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating) {
   var i, j, oldVNode, childVNode, newDom, firstChildDom, refs;
   var oldChildren = (oldParentVNode && oldParentVNode.__k) || EMPTY_ARR;
   var oldChildrenLength = oldChildren.length;
@@ -310,19 +288,9 @@ function diffChildren(parentDom,
     } else if(typeof childVNode == 'string' || typeof childVNode == 'number') {
       childVNode = newParentVNode.__k[i] = createVNode(null, childVNode, null, null, childVNode);
     } else if(Array.isArray(childVNode)) {
-      childVNode = newParentVNode.__k[i] = createVNode(Fragment,
-        { children: childVNode },
-        null,
-        null,
-        null
-      );
+      childVNode = newParentVNode.__k[i] = createVNode(Fragment, { children: childVNode }, null, null, null);
     } else if(childVNode.__e != null || childVNode.__c != null) {
-      childVNode = newParentVNode.__k[i] = createVNode(childVNode.type,
-        childVNode.props,
-        childVNode.key,
-        null,
-        childVNode.__v
-      );
+      childVNode = newParentVNode.__k[i] = createVNode(childVNode.type, childVNode.props, childVNode.key, null, childVNode.__v);
     } else {
       childVNode = newParentVNode.__k[i] = childVNode;
     }
@@ -335,9 +303,7 @@ function diffChildren(parentDom,
     childVNode.__b = newParentVNode.__b + 1;
     oldVNode = oldChildren[i];
 
-    if(oldVNode === null ||
-      (oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type)
-    ) {
+    if(oldVNode === null || (oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type)) {
       oldChildren[i] = undefined;
     } else {
       for(j = 0; j < oldChildrenLength; j++) {
@@ -353,16 +319,7 @@ function diffChildren(parentDom,
     }
 
     oldVNode = oldVNode || EMPTY_OBJ;
-    newDom = diff(parentDom,
-      childVNode,
-      oldVNode,
-      globalContext,
-      isSvg,
-      excessDomChildren,
-      commitQueue,
-      oldDom,
-      isHydrating
-    );
+    newDom = diff(parentDom, childVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
 
     if((j = childVNode.ref) && oldVNode.ref != j) {
       if(!refs) {
@@ -381,14 +338,7 @@ function diffChildren(parentDom,
         firstChildDom = newDom;
       }
 
-      oldDom = placeChild(parentDom,
-        childVNode,
-        oldVNode,
-        oldChildren,
-        excessDomChildren,
-        newDom,
-        oldDom
-      );
+      oldDom = placeChild(parentDom, childVNode, oldVNode, oldChildren, excessDomChildren, newDom, oldDom);
 
       if(!isHydrating && newParentVNode.type == 'option') {
         parentDom.value = '';
@@ -438,14 +388,7 @@ function toChildArray(children, out) {
   return out;
 }
 
-function placeChild(parentDom,
-  childVNode,
-  oldVNode,
-  oldChildren,
-  excessDomChildren,
-  newDom,
-  oldDom
-) {
+function placeChild(parentDom, childVNode, oldVNode, oldChildren, excessDomChildren, newDom, oldDom) {
   var nextDom;
 
   if(childVNode.__d !== undefined) {
@@ -456,10 +399,7 @@ function placeChild(parentDom,
       parentDom.appendChild(newDom);
       nextDom = null;
     } else {
-      for(var sibDom = oldDom, j = 0;
-        (sibDom = sibDom.nextSibling) && j < oldChildren.length;
-        j += 2
-      ) {
+      for(var sibDom = oldDom, j = 0; (sibDom = sibDom.nextSibling) && j < oldChildren.length; j += 2) {
         if(sibDom == newDom) {
           break outer;
         }
@@ -489,13 +429,7 @@ function diffProps(dom, newProps, oldProps, isSvg, hydrate) {
   }
 
   for(i in newProps) {
-    if((!hydrate || typeof newProps[i] == 'function') &&
-      i !== 'children' &&
-      i !== 'key' &&
-      i !== 'value' &&
-      i !== 'checked' &&
-      oldProps[i] !== newProps[i]
-    ) {
+    if((!hydrate || typeof newProps[i] == 'function') && i !== 'children' && i !== 'key' && i !== 'value' && i !== 'checked' && oldProps[i] !== newProps[i]) {
       setProperty(dom, i, newProps[i], oldProps[i], isSvg);
     }
   }
@@ -568,16 +502,7 @@ function setProperty(dom, name, value, oldValue, isSvg) {
     } else {
       dom.removeEventListener(name, proxy, useCapture);
     }
-  } else if(name !== 'list' &&
-    name !== 'tagName' &&
-    name !== 'form' &&
-    name !== 'type' &&
-    name !== 'size' &&
-    name !== 'download' &&
-    name !== 'href' &&
-    !isSvg &&
-    name in dom
-  ) {
+  } else if(name !== 'list' && name !== 'tagName' && name !== 'form' && name !== 'type' && name !== 'size' && name !== 'download' && name !== 'href' && !isSvg && name in dom) {
     dom[name] = value == null ? '' : value;
   } else if(typeof value != 'function' && name !== 'dangerouslySetInnerHTML') {
     if(name !== (name = name.replace(/xlink:?/, ''))) {
@@ -624,16 +549,7 @@ function reorderChildren(newVNode, oldDom, parentDom) {
   }
 }
 
-function diff(parentDom,
-  newVNode,
-  oldVNode,
-  globalContext,
-  isSvg,
-  excessDomChildren,
-  commitQueue,
-  oldDom,
-  isHydrating
-) {
+function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating) {
   var tmp,
     newType = newVNode.type;
 
@@ -712,18 +628,11 @@ function diff(parentDom,
           c.__h.push(c.componentDidMount);
         }
       } else {
-        if(newType.getDerivedStateFromProps == null &&
-          newProps !== oldProps &&
-          c.componentWillReceiveProps != null
-        ) {
+        if(newType.getDerivedStateFromProps == null && newProps !== oldProps && c.componentWillReceiveProps != null) {
           c.componentWillReceiveProps(newProps, componentContext);
         }
 
-        if((!c.__e &&
-            c.shouldComponentUpdate != null &&
-            c.shouldComponentUpdate(newProps, c.__s, componentContext) === false) ||
-          newVNode.__v === oldVNode.__v
-        ) {
+        if((!c.__e && c.shouldComponentUpdate != null && c.shouldComponentUpdate(newProps, c.__s, componentContext) === false) || newVNode.__v === oldVNode.__v) {
           c.props = newProps;
           c.state = c.__s;
 
@@ -778,17 +687,7 @@ function diff(parentDom,
 
       var isTopLevelFragment = tmp != null && tmp.type == Fragment && tmp.key == null;
       var renderResult = isTopLevelFragment ? tmp.props.children : tmp;
-      diffChildren(parentDom,
-        Array.isArray(renderResult) ? renderResult : [renderResult],
-        newVNode,
-        oldVNode,
-        globalContext,
-        isSvg,
-        excessDomChildren,
-        commitQueue,
-        oldDom,
-        isHydrating
-      );
+      diffChildren(parentDom, Array.isArray(renderResult) ? renderResult : [renderResult], newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
       c.base = newVNode.__e;
       newVNode.__h = null;
 
@@ -805,15 +704,7 @@ function diff(parentDom,
       newVNode.__k = oldVNode.__k;
       newVNode.__e = oldVNode.__e;
     } else {
-      newVNode.__e = diffElementNodes(oldVNode.__e,
-        newVNode,
-        oldVNode,
-        globalContext,
-        isSvg,
-        excessDomChildren,
-        commitQueue,
-        isHydrating
-      );
+      newVNode.__e = diffElementNodes(oldVNode.__e, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, isHydrating);
     }
 
     if((tmp = options.diffed)) {
@@ -853,15 +744,7 @@ function commitRoot(commitQueue, root) {
   });
 }
 
-function diffElementNodes(dom,
-  newVNode,
-  oldVNode,
-  globalContext,
-  isSvg,
-  excessDomChildren,
-  commitQueue,
-  isHydrating
-) {
+function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, isHydrating) {
   var i;
   var oldProps = oldVNode.props;
   var newProps = newVNode.props;
@@ -871,10 +754,7 @@ function diffElementNodes(dom,
     for(i = 0; i < excessDomChildren.length; i++) {
       var child = excessDomChildren[i];
 
-      if(child != null &&
-        ((newVNode.type === null ? child.nodeType === 3 : child.localName === newVNode.type) ||
-          dom == child)
-      ) {
+      if(child != null && ((newVNode.type === null ? child.nodeType === 3 : child.localName === newVNode.type) || dom == child)) {
         dom = child;
         excessDomChildren[i] = null;
         break;
@@ -887,9 +767,7 @@ function diffElementNodes(dom,
       return document.createTextNode(newProps);
     }
 
-    dom = isSvg
-      ? document.createElementNS('http://www.w3.org/2000/svg', newVNode.type)
-      : document.createElement(newVNode.type, newProps.is && { is: newProps.is });
+    dom = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', newVNode.type) : document.createElement(newVNode.type, newProps.is && { is: newProps.is });
     excessDomChildren = null;
     isHydrating = false;
   }
@@ -917,9 +795,7 @@ function diffElementNodes(dom,
       }
 
       if(newHtml || oldHtml) {
-        if(!newHtml ||
-          ((!oldHtml || newHtml.__html != oldHtml.__html) && newHtml.__html !== dom.innerHTML)
-        ) {
+        if(!newHtml || ((!oldHtml || newHtml.__html != oldHtml.__html) && newHtml.__html !== dom.innerHTML)) {
           dom.innerHTML = (newHtml && newHtml.__html) || '';
         }
       }
@@ -931,24 +807,11 @@ function diffElementNodes(dom,
       newVNode.__k = [];
     } else {
       i = newVNode.props.children;
-      diffChildren(dom,
-        Array.isArray(i) ? i : [i],
-        newVNode,
-        oldVNode,
-        globalContext,
-        newVNode.type === 'foreignObject' ? false : isSvg,
-        excessDomChildren,
-        commitQueue,
-        EMPTY_OBJ,
-        isHydrating
-      );
+      diffChildren(dom, Array.isArray(i) ? i : [i], newVNode, oldVNode, globalContext, newVNode.type === 'foreignObject' ? false : isSvg, excessDomChildren, commitQueue, EMPTY_OBJ, isHydrating);
     }
 
     if(!isHydrating) {
-      if('value' in newProps &&
-        (i = newProps.value) !== undefined &&
-        (i !== dom.value || (newVNode.type === 'progress' && !i))
-      ) {
+      if('value' in newProps && (i = newProps.value) !== undefined && (i !== dom.value || (newVNode.type === 'progress' && !i))) {
         setProperty(dom, 'value', i, oldProps.value, false);
       }
 
@@ -1033,23 +896,7 @@ function render(vnode, parentDom, replaceNode) {
   var oldVNode = isHydrating ? null : (replaceNode && replaceNode.__k) || parentDom.__k;
   vnode = createElement(Fragment, null, [vnode]);
   var commitQueue = [];
-  diff(parentDom,
-    ((isHydrating ? parentDom : replaceNode || parentDom).__k =
-      (vnode,
-      oldVNode || EMPTY_OBJ,
-      EMPTY_OBJ,
-      parentDom.ownerSVGElement !== undefined,
-      replaceNode && !isHydrating
-        ? [replaceNode]
-        : oldVNode
-        ? null
-        : parentDom.childNodes.length
-        ? EMPTY_ARR.slice.call(parentDom.childNodes)
-        : null,
-      commitQueue,
-      replaceNode || EMPTY_OBJ,
-      isHydrating))
-  );
+  diff(parentDom, ((isHydrating ? parentDom : replaceNode || parentDom).__k = (vnode, oldVNode || EMPTY_OBJ, EMPTY_OBJ, parentDom.ownerSVGElement !== undefined, replaceNode && !isHydrating ? [replaceNode] : oldVNode ? null : parentDom.childNodes.length ? EMPTY_ARR.slice.call(parentDom.childNodes) : null, commitQueue, replaceNode || EMPTY_OBJ, isHydrating)));
   commitRoot(commitQueue, vnode);
 }
 
@@ -1262,7 +1109,7 @@ function useReducer(reducer, initialState, init) {
   if(!hookState.__c) {
     hookState.__ = [
       !init ? invokeOrReturn(undefined, initialState) : init(initialState),
-      function (action) {
+      function(action) {
         var nextValue = hookState._reducer(hookState.__[0], action);
 
         if(hookState.__[0] !== nextValue) {
@@ -1309,7 +1156,8 @@ function useRef(initialValue) {
 function useImperativeHandle(ref, createHandle, args) {
   currentHook = 6;
 
-  useLayoutEffect(function () {
+  useLayoutEffect(
+    function() {
       if(typeof ref == 'function') {
         ref(createHandle());
       } else if(ref) {
@@ -1448,7 +1296,8 @@ function invokeEffect(hook) {
 }
 
 function argsChanged(oldArgs, newArgs) {
-  return (!oldArgs ||
+  return (
+    !oldArgs ||
     oldArgs.length !== newArgs.length ||
     newArgs.some(function (arg, index) {
       return arg !== oldArgs[index];
@@ -1596,11 +1445,7 @@ export const build = function(statics) {
     } else if(mode >= MODE_PROP_SET) {
       if(MINI) {
         if(mode === MODE_PROP_SET) {
-          (current[2] = current[2] || {})[propName] = field
-            ? buffer
-              ? buffer + fields[field]
-              : fields[field]
-            : buffer;
+          (current[2] = current[2] || {})[propName] = field ? (buffer ? buffer + fields[field] : fields[field]) : buffer;
           mode = MODE_PROP_APPEND;
         } else if(field || buffer) {
           current[2][propName] += field ? buffer + fields[field] : buffer;
@@ -1723,11 +1568,7 @@ const regular = function(statics) {
     CACHES.set(this, tmp);
   }
 
-  tmp = evaluate(this,
-    tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp),
-    arguments,
-    []
-  );
+  tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp), arguments, []);
   return tmp.length > 1 ? tmp : tmp[0];
 };
 //export default MINI ? build : regular;

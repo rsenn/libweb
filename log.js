@@ -13,8 +13,9 @@ export var LogJS = {
 
   version: 'LogJS v1.2.2',
   get window_() {
-    return Util.tryCatch(() => global,
-      (g) => g.window,
+    return Util.tryCatch(
+      () => global,
+      g => g.window,
       () => globalThis
     );
   }
@@ -29,10 +30,7 @@ let log = function(type, message, url, lineNumber) {
 
   if(message instanceof Error) {
     if(message.stack) {
-      message =
-        message.message && message.stack.indexOf(message.message) === -1
-          ? message.message + '\n' + message.stack
-          : message.stack;
+      message = message.message && message.stack.indexOf(message.message) === -1 ? message.message + '\n' + message.stack : message.stack;
     } else if(message.sourceURL) {
       message = message.message;
       url = message.sourceURL;

@@ -11,7 +11,8 @@
     let utilsExports = utilsFactory();
     let contextValueEmitterExports = contextValueEmitterFactory();
     return contextFactory(tslib, preact, contextValueEmitterExports, utilsExports);
-  })((tslib, preact, contextValueEmitter, utils) => {
+  })(
+    (tslib, preact, contextValueEmitter, utils) => {
       let __extends = tslib.__extends,
         h = preact.h,
         Component = preact.Component,
@@ -62,10 +63,7 @@
             let _this = _super.call(this, props, ctx) || this;
             _this._updateContext = function(value, bitmask) {
               let unstable_observedBits = _this.props.unstable_observedBits;
-              let observed =
-                unstable_observedBits === undefined || unstable_observedBits === null
-                  ? MAX_SIGNED_31_BIT_INT
-                  : unstable_observedBits;
+              let observed = unstable_observedBits === undefined || unstable_observedBits === null ? MAX_SIGNED_31_BIT_INT : unstable_observedBits;
               observed = observed | 0;
               if((observed & bitmask) === 0) {
                 return;
@@ -79,9 +77,7 @@
             this._getEmitter().register(this._updateContext);
           };
           Consumer.prototype.shouldComponentUpdate = function(nextProps, nextState) {
-            return (this.state.value !== nextState.value ||
-              getRenderer(this.props) !== getRenderer(nextProps)
-            );
+            return this.state.value !== nextState.value || getRenderer(this.props) !== getRenderer(nextProps);
           };
           Consumer.prototype.componentWillUnmount = function() {
             this._getEmitter().unregister(this._updateContext);
@@ -98,14 +94,12 @@
             let render = 'render' in this.props && this.props.render;
             let r = getRenderer(this.props);
             if(render && render !== r) {
-              console.warn('Both children and a render function are defined. Children will be used'
-              );
+              console.warn('Both children and a render function are defined. Children will be used');
             }
             if(typeof r === 'function') {
               return r(this.state.value);
             }
-            console.warn("Consumer is expecting a function as one and only child but didn't find any"
-            );
+            console.warn("Consumer is expecting a function as one and only child but didn't find any");
           };
           Consumer.prototype._getEmitter = function() {
             return this.context[key] || noopEmitter;
