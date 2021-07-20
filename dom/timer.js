@@ -1,4 +1,4 @@
-function Timer(timeout, fn, props = {}, { create = setInterval, destroy = clearInterval }) {
+export function Timer(timeout, fn, props = {}, { create = setInterval, destroy = clearInterval }) {
   let t;
 
   t = {

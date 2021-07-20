@@ -178,7 +178,7 @@ export { Polyline } from './geom/polyline.js';
 export { Matrix, isMatrix } from './geom/matrix.js';
 export { BBox } from './geom/bbox.js';
 export { TRBL } from './geom/trbl.js';
-export { default as Timer } from './dom/timer.js';
+export { Timer } from './dom/timer.js';
 export { Tree } from './dom/tree.js';
 export { Node } from './dom/node.js';
 export { XPath } from './dom/xpath.js';
