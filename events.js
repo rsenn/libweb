@@ -17,7 +17,7 @@ export const LogWrap = (globalThis.LogWrap = function LogWrap(log) {
   } else if(!log) {
     log = (...args) => console.log(...args);
   }
-  return value => (log(value), value);
+  return (value, ...args) => (log(value, ...args), value);
 });
 
 export class EventEmitter {
