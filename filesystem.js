@@ -162,7 +162,7 @@ export function QuickJSFileSystem(std, os) {
       }
       return numerr(ret);
     },
-    readFile(filename, encoding = 'utf-8') {
+    readFileSync(filename, encoding = 'utf-8') {
       if(encoding == 'utf-8') return std.loadFile(filename);
 
       let data,
@@ -226,7 +226,7 @@ export function QuickJSFileSystem(std, os) {
     flush(file) {
       if(typeof file != 'number') return file.flush();
     },
-    exists(path) {
+    existsSync(path) {
       let file = std.open(path, 'r');
       let res = file != null;
       if(file) file.close();
