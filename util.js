@@ -5960,7 +5960,7 @@ Util.instrument = (
       }
     : (args, ret) => {
         let t = now();
-        console.log('doLog', { passed: t - last, logInterval });
+        //console.log('doLog', { passed: t - last, logInterval });
         if(t - last >= logInterval) {
           log(duration / times, name, args, ret);
           duration = times = 0;
