@@ -405,6 +405,14 @@ export function atob(asc) {
   return bin;
 }
 
+export function weakAssign(obj, ...args) {
+  for(let other of args) {
+    for(let key in other)
+      if(obj[key] === undefined && other[key] !== undefined) obj[key] = other[key];
+  }
+  return obj;
+}
+
 export function Location(line, column, pos, file, freeze = true) {
   let obj = this || new.target.test || this ? this : {};
 
