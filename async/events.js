@@ -1,9 +1,9 @@
 // Generate a Promise that listens only once for an event
 export function once(emitter, ...events) {
   return new Promise(resolve => {
-    events.forEach(type => emitter.addEventListener(type, handler));
+    events.forEach(type => emitter.addEventListener(type, handler, { passive: true }));
     function handler(event) {
-      events.forEach(type => emitter.removeEventListener(type, handler));
+      events.forEach(type => emitter.removeEventListener(type, handler, { passive: true }));
       resolve(event);
     }
   });
