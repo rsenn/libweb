@@ -10,7 +10,6 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
   data = data || props.item;
 
   let { transformation = new TransformationList() } = opts;
-  log(`TextElement.render`, { data, transformation });
 
   if(!transformation) Util.putStack();
 
@@ -18,13 +17,14 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
 
   let { children, text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
   let text =
-    innerText ||
+    (innerText ||
     /* labelText || */ Util.tryCatch(
-      () => children.join('\n'),
+      () => children.map(t => (t+'').trim()).join('\n'),
       t => t,
       () => ''
-    );
-  let { x, y } = coordFn(data);
+    )).trim();
+   log(`TextElement.render`, { text, transformation, align,size,font,rot,layer });
+ let { x, y } = coordFn(data);
   const color = data.getColor();
   let className = ElementToClass(data);
 

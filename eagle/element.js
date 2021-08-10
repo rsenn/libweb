@@ -524,7 +524,7 @@ export class EagleElement extends EagleNode {
       let pkg = library.packages[raw.attributes.package];
       bb = pkg.getBounds();
       bb.move(this.x, this.y);
-      bb = bb.round(v => Util.roundTo(v, 1.27));
+    //  bb = bb.round(v => Util.roundTo(v, 1.27));
     } else if(this.tagName == 'instance') {
       const { part, gate, rot, x, y } = this;
       const { symbol } = gate;
