@@ -460,7 +460,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       if(typeof file == 'object' && file !== null && 'fd' in file) return file.fd;
       if(typeof file == 'number') return file;
     },
-    fopen(filename, flags = 'r', mode = 0o644) {
+    openSync(filename, flags = 'r', mode = 0o644) {
       let fd = -1;
       try {
         fd = fs.openSync(filename, flags, mode);
@@ -477,7 +477,7 @@ export function NodeJSFileSystem(fs, tty, process) {
         ret = fs.createWriteStream(filename, { fd, flags, mode });
       return Object.assign(ret, { fd, flags, mode });
     },
-    close(file) {
+    closeSync(file) {
       let fd = this.fileno(file);
       if(typeof file == 'object') dataMap.delete(file);
 
@@ -490,7 +490,7 @@ export function NodeJSFileSystem(fs, tty, process) {
         return 0;
       });
     },
-    read(file, buf, offset, length) {
+    readSync(file, buf, offset, length) {
       let pos;
 
       //     file = this.fileno(file);
@@ -521,7 +521,7 @@ export function NodeJSFileSystem(fs, tty, process) {
         return ret;
       });
     },
-    write(file, data, offset, length) {
+    writeSync(file, data, offset, length) {
       let ret;
       let fd = this.fileno(file);
 
@@ -529,11 +529,11 @@ export function NodeJSFileSystem(fs, tty, process) {
 
       return CatchError(() => fs.writeSync(fd, data, offset, length));
     },
-    readFile(filename, encoding = 'utf-8') {
+    readFileSync(filename, encoding = 'utf-8') {
       console.log('readFile', { filename, encoding });
       return CatchError(() => fs.readFileSync(filename, { encoding }));
     },
-    writeFile(filename, data, overwrite = true) {
+    writeFileSync(filename, data, overwrite = true) {
       return CatchError(() => {
         let fd, ret;
         fd = fs.openSync(filename, overwrite ? 'w' : 'wx');
@@ -544,12 +544,12 @@ export function NodeJSFileSystem(fs, tty, process) {
       return ret;
     },
     puts(file, str) {
-      return file.write(str);
+      return this.writeSync(file, typeof str == 'string' ? this.bufferFrom(str) : str);
     },
-    flush(file) {
+    flushSync(file) {
       return file.uncork();
     },
-    exists(path) {
+    existsSync(path) {
       return CatchError(() => fs.existsSync(path));
     },
     realpath(path) {
@@ -627,12 +627,12 @@ export function NodeJSFileSystem(fs, tty, process) {
       return CatchError(() => {
         fs.renameSync(filename, to);
 
-        if(this.exists(filename)) throw new Error(`${filename} still exists`);
-        if(!this.exists(to)) throw new Error(`${to} doesn't exist`);
+        if(this.existsSync(filename)) throw new Error(`${filename} still exists`);
+        if(!this.existsSync(to)) throw new Error(`${to} doesn't exist`);
       });
     },
     unlink(path) {
-      if(!this.exists(path)) return -1;
+      if(!this.existsSync(path)) return -1;
       try {
         let st = this.lstat(path);
         if(st.isDirectory()) fs.rmdirSync(path);
@@ -640,7 +640,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       } catch(err) {
         return err;
       }
-      return this.exists(path) ? -1 : 0;
+      return this.existsSync(path) ? -1 : 0;
     },
     isatty(file) {
       let fd = this.fileno(file);
@@ -830,7 +830,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       return fetch(filename).then(async resp => await resp.text());
     },
     writeFile(filename, data, overwrite = true) {},
-    exists(filename) {},
+    existsSync(filename) {},
     realpath(filename) {},
     size(filename) {},
     stat(filename, dereference = false) {},

@@ -3,7 +3,8 @@ import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { dump } from './common.js';
-import * as path from '../path.js';
+import path from '../path.js';
+import * as fs from '../filesystem.js';
 
 export class EagleProject {
   //basename = null;
@@ -18,20 +19,22 @@ export class EagleProject {
 
     Util.define(this, {
       file,
-      dir: path.dirname(file),
+      ...(file ? { dir: path.dirname(file) } : {}),
       documents: {},
       list: [],
       data: { sch: null, brd: null, lbr: {} },
       fs
     });
-    let libraryPath = [this.dir];
-    let dir = path.join(this.dir, 'lbr');
-    if(fs.existsSync(dir)) libraryPath.push(dir);
-    this.libraryPath = libraryPath;
-    this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
-    if(fs.existsSync(file)) this.lazyOpen(file);
-    /*else*/ this.load();
-    if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
+    if(file) {
+      let libraryPath = [this.dir];
+      let dir = path.join(this.dir, 'lbr');
+      if(fs.existsSync(dir)) libraryPath.push(dir);
+      this.libraryPath = libraryPath;
+      this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
+      if(fs.existsSync(file)) this.lazyOpen(file);
+      /*else*/ this.load();
+      if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
+    }
   }
 
   load() {
@@ -112,7 +115,7 @@ export class EagleProject {
       if(fs.existsSync(bin)) {
         if(!/(eagle)/i.test(dir)) {
           //console.log('path', path);
-          bin = path.realpath(bin);
+          bin = fs.realpath(bin);
           dir = bin.replace(/\/[^\/]+$/, '');
         }
         dir = dir.replace(/[\\\/]bin$/i, '');

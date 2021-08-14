@@ -6044,12 +6044,14 @@ Util.ttyGetWinSize = (fd = 1) => {
       : (resolve, reject) => resolve(stream?.getWindowSize?.())
   );
 };
-Util.ttySetRaw = (fd = 0, mode = true) => {
-  let ret;
-  if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttySetRaw(fd));
-  const stream = process[['stdin', 'stdout', 'stderr'][fd] || 'stdin'];
-  return stream?.setRawMode?.(mode);
-};
+Util.ttySetRaw = globalThis.os
+  ? os.ttySetRaw
+  : (fd = 0, mode = true) => {
+      let ret;
+      const stream =
+        typeof fd == 'number' ? process[['stdin', 'stdout', 'stderr'][fd] || 'stdin'] : fd;
+      return stream?.setRawMode?.(mode);
+    };
 
 Util.signal = (num, act) => {
   //console.log('Util.signal', { num, act });
@@ -6554,5 +6556,30 @@ Util.levenshteinDistance = function levenshteinDistance(a, b) {
   }
   return m[b.length][a.length];
 };
+
+Util.padTrunc = (...args) => {
+  let [len, s] = args;
+  const end = len >= 0;
+  len = Math.abs(len);
+  if(args.length < 2) {
+    return (s, pad = ' ') => {
+      s = s + '';
+      len ??= s.length;
+      return s.length > len ? s.slice(0, len) : s['pad' + (end ? 'End' : 'Start')](len, pad);
+    };
+  } else {
+    s = s + '';
+    len ??= s.length;
+    return s.length > len ? s.slice(0, len) : s['pad' + (end ? 'End' : 'Start')](len, ' ');
+  }
+};
+
+Util.setReadHandler =
+  Util.getPlatform() == 'quickjs'
+    ? os.setReadHandler()
+    : (fd, handler) => {
+        //console.log('setReadHandler',{fd,handler: handler+''});
+        return fd.on('data', handler);
+      };
 
 export default Util();
