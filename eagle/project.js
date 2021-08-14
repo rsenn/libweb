@@ -12,29 +12,43 @@ export class EagleProject {
   constructor(file, fs) {
     fs = fs || this.fs || globalThis.fs;
     //super();
-    if(file) {
-      if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file)) this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
-    }
+
     this.filenames = [];
 
     Util.define(this, {
       file,
-      ...(file ? { dir: path.dirname(file) } : {}),
+      //  ...(file ? { dir: path.dirname(file) } : {}),
       documents: {},
       list: [],
       data: { sch: null, brd: null, lbr: {} },
       fs
     });
-    if(file) {
-      let libraryPath = [this.dir];
-      let dir = path.join(this.dir, 'lbr');
+
+    const loadFile = file => {
+      if(typeof file == 'string') {
+        if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file)) this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
+      }
+
+      let dir = path.dirname(file);
+      let libraryPath = [dir];
+      dir = path.join(dir, 'lbr');
       if(fs.existsSync(dir)) libraryPath.push(dir);
       this.libraryPath = libraryPath;
-      this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
+      console.log('loadFile', file, this.basename);
       if(fs.existsSync(file)) this.lazyOpen(file);
       /*else*/ this.load();
-      if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
-    }
+    };
+
+    EagleProject.determineEaglePath(fs).then(eaglePath => {
+      this.eaglePath = eaglePath;
+      console.log('EagleProject.constructor', { file }, this.eaglePath);
+
+      if(file) {
+        if(Array.isArray(file)) file.forEach(loadFile);
+        else loadFile(file);
+        if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
+      }
+    });
   }
 
   load() {
@@ -63,7 +77,6 @@ export class EagleProject {
   }
 
   addLibraries(libs) {
-    console.log('EagleProject.addLibraries', libs);
     for(let lib of libs) {
       let file = this.findLibrary(lib);
       if(file && this.filenames.indexOf(file) == -1) this.lazyOpen(file);
@@ -89,7 +102,7 @@ export class EagleProject {
       console.log('ERROR:', err);
     }
     if(doc) {
-      console.log('Opened document', file, doc);
+      console.log('Opened document', file);
       this.filenames.push(file);
       this.list[path.basename(file)] = doc;
     } else throw new Error(`EagleProject: error opening '${file}': ${err}`);
@@ -101,28 +114,22 @@ export class EagleProject {
     return doc;
   }
 
-  static determineEaglePath(fs) {
-    let searchPath = Util.tryCatch(
-      () => process.env.PATH,
-      path => path.split(/:/g),
-      []
-    );
-    let bin;
+  static async determineEaglePath(fs) {
+    const envVar = await Util.getEnv('PATH');
+    // console.log('envVar', { envVar });
 
+    let searchPath = envVar.split(/:/g);
+    let bin;
     for(let dir of searchPath) {
       bin = dir + '/eagle';
-
-      if(fs.existsSync(bin)) {
-        if(!/(eagle)/i.test(dir)) {
-          //console.log('path', path);
-          bin = fs.realpath(bin);
-          dir = bin.replace(/\/[^\/]+$/, '');
-        }
-        dir = dir.replace(/[\\\/]bin$/i, '');
-        //console.log('dir:', dir, bin);
-
-        return dir;
+      if(!fs.existsSync(bin)) continue;
+      if(!/(eagle)/i.test(dir)) {
+        bin = fs.realpath(bin);
+        dir = bin.replace(/\/[^\/]+$/, '');
       }
+      dir = dir.replace(/[\\\/]bin$/i, '');
+      console.log('dir:', dir, bin);
+      return dir;
     }
   }
 
@@ -210,6 +217,8 @@ export class EagleProject {
   }
 
   findLibrary(name, dirs = this.libraryPath) {
+    dirs ??= this.getLibraryPath();
+
     for(let dir of dirs) {
       const file = `${dir}/${name}.lbr`;
       if(this.fs.existsSync(file)) return file;
