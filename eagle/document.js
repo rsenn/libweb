@@ -59,7 +59,7 @@ export class EagleDocument extends EagleNode {
   }
 
   constructor(xmlStr, project, filename, type, fs) {
-  console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
+    console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
 
     const xml = fromXML(xmlStr); //parseXML(xmlStr);
 
