@@ -7,6 +7,10 @@ export class EagleNodeMap {
     //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
     this.list = list;
+
+    if(Array.isArray(key)) key = key[key.length - 1];
+
+    // console.log('EagleNodeMap.constructor', { key });
     this.key = key;
   }
 
@@ -82,34 +86,19 @@ Object.defineProperties(EagleNodeMap.prototype, {
         let index;
         if(typeof prop != 'symbol') {
           let item = instance.get(prop) || instance.list.item(prop);
-          if(item) {
-            // console.log("EagleNodeMap.get", {prop, item});
-            return item;
-          }
+          if(item) return item;
         }
-        /* if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
-          return instance.list.item(+prop);
-        } else */ if(typeof prop == 'string') {
+        if(typeof prop == 'string') {
           if(prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
           if(prop == 'instance') return instance;
-
-          /*          if(prop == 'length' || prop == 'size') return (instance.list.raw || instance.list).length;
-          if(prop == 'entries') return instance.entries;*/
           if(prop == 'length') return instance.size();
         }
-        //if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
-
-        //        if((index = [...instance.keys()].indexOf(prop)) != -1) return instance.list[index];
-        if(typeof instance[prop] == 'function') return instance[prop] /*.bind(instance)*/;
-
+        if(typeof instance[prop] == 'function') return instance[prop];
         if(typeof instance.list[prop] == 'function') {
           if(typeof prop == 'symbol') return instance.list[prop];
-
           return instance.list[prop].bind(instance.list);
         }
-
         if(instance.list[prop]) return instance.list[prop];
-
         return Reflect.get(target, prop, receiver);
       },
       getPrototypeOf(target) {
