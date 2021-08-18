@@ -49,6 +49,11 @@ export class EagleSVGRenderer {
       }
       return ret;
     };
+
+    if(!doc.layers.tOrigins) doc.layers.raw.push(EagleElement.create('layer', { name: 'tOrigins', number: '23', color: '15', fill: '1', visible: 'yes', active: 'yes' }));
+    if(!doc.layers.bOrigins) doc.layers.raw.push(EagleElement.create('layer', { name: 'bOrigins', number: '24', color: '15', fill: '1', visible: 'yes', active: 'yes' }));
+
+    this.layers = Object.fromEntries([...doc.layers].map(([n, l]) => [l.name, l]));
   }
 
   get maps() {

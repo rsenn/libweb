@@ -8,7 +8,7 @@ export class EagleNodeMap {
     if(!list) throw new Error('List=' + list);
     this.list = list;
 
-    if(Array.isArray(key)) key = key[key.length - 1];
+    //  if(Array.isArray(key)) key = key[key.length - 1];
 
     // console.log('EagleNodeMap.constructor', { key });
     this.key = key;
@@ -62,7 +62,9 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
 
   *[Symbol.iterator](keyAttr = this.key) {
-    const fn = keyAttr == 'tagName' ? item => item.tagName : item => item.attributes[keyAttr];
+    const A0 = a => (Array.isArray(a) ? a[0] : a);
+
+    const fn = keyAttr == 'tagName' ? item => item.tagName : item => item.attributes[A0(keyAttr)];
     for(let item of this.list) yield [fn(item), item];
   }
 

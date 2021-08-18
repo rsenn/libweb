@@ -1,5 +1,29 @@
 import Util from './util.js';
 
+export const RETURN_VALUE_PATH = 0;
+export const RETURN_PATH = 1 << 24;
+export const RETURN_VALUE = 2 << 24;
+export const RETURN_PATH_VALUE = 3 << 24;
+export const RETURN_MASK = 7 << 24;
+export const PATH_AS_STRING = 1 << 28;
+export const NO_THROW = 1 << 29;
+export const MAXDEPTH_MASK = 0xffffff;
+
+function ReturnValuePath(value, path, flags) {
+  if(flags & PATH_AS_STRING) path = path.join('.');
+
+  switch (flags & RETURN_MASK) {
+    case RETURN_VALUE_PATH:
+      return [value, path];
+    case RETURN_PATH_VALUE:
+      return [path, value];
+    case RETURN_PATH:
+      return path;
+    case RETURN_VALUE:
+      return value;
+  }
+}
+
 export const isPlainObject = obj => {
   if((obj != null ? obj.constructor : void 0) == null) return false;
   return obj.constructor.name === 'Object';
@@ -60,31 +84,31 @@ export const extend = (...args) => {
   return destination;
 };
 
-export const select = (root, filter, path) => {
+export const select = (root, filter, flags = 0) => {
   let elementPath,
     k,
     selected = [],
     v;
-  path = typeof path == 'string' ? path.split(/\.\//) : path;
-  if(!path) path = [];
-  if(filter(root, path)) selected.push({ path, value: root });
+  /*path = typeof path == 'string' ? path.split(/\.\//) : path;
+  if(!path)*/ let path = [];
+  if(filter(root, path)) selected.push(ReturnValuePath(root, path, flags));
   else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
   return selected;
 };
 
-export const find = (node, filter, path, root) => {
+export const find = (node, filter, flags = 0, root) => {
   let k,
     ret,
     result = null;
-  path = (typeof path == 'string' ? path.split(/[\.\/]/) : path) || [];
+  let path = /*(typeof path == 'string' ? path.split(/[\.\/]/) : path) ||*/ [];
   if(!root) {
     root = node;
-    result = { path: null, value: null };
+    result = ReturnValuePath(null, null, flags);
   }
   ret = filter(node, path, root);
 
   if(ret === -1) return -1;
-  else if(ret) result = { path, value: node };
+  else if(ret) result = ReturnValuePath(node, path, flags);
   else if(typeof node == 'object' && node != null) {
     for(k in node) {
       result = find(node[k], filter, [...path, k], root);

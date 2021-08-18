@@ -16,15 +16,16 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
   let { children, text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
-  let text =
-    (innerText ||
+  let text = (
+    innerText ||
     /* labelText || */ Util.tryCatch(
-      () => children.map(t => (t+'').trim()).join('\n'),
+      () => children.map(t => (t + '').trim()).join('\n'),
       t => t,
       () => ''
-    )).trim();
-   log(`TextElement.render`, { text, transformation, align,size,font,rot,layer });
- let { x, y } = coordFn(data);
+    )
+  ).trim();
+  log(`TextElement.render`, { text, transformation, align, size, font, rot, layer });
+  let { x, y } = coordFn(data);
   const color = data.getColor();
   let className = ElementToClass(data);
 

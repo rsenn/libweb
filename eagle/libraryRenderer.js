@@ -60,7 +60,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
         children
       );
 
-    let devicesets = [...this.doc.getAll(e => e.attributes && e.attributes[item.tagName] == item.name)]
+    let devicesets = [...this.doc.getAll(e => e && e.attributes && e.attributes[item.tagName] == item.name)]
       .map(e => [e, e.scope().deviceset])
       .map(([e, deviceset]) => deviceset)
       .filter(deviceset => !!deviceset);

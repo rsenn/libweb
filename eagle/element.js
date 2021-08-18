@@ -588,6 +588,7 @@ export class EagleElement extends EagleNode {
       /*    if(['wire','text','rectangle'].indexOf(this.tagName) == -1)
       throw new Error(`No getBounds() for '${this.tagName}'`);*/
       bb.update(super.getBounds(pred));
+      //console.log("bb", this, bb);
 
       if(['x1', 'y1', 'x2', 'y2'].some(n => bb[n] === undefined)) throw new Error(`No getBounds() for '${this.tagName}': ${bb}`);
     }

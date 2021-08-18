@@ -95,8 +95,7 @@ export class Printer {
 
   print(tree) {
     let it = deep.iterate(tree, node => Util.isObject(node) && 'position' in node, deep.RETURN_VALUE_PATH);
-       console.log("it:",it[Symbol.iterator]);
-
+    console.log('it:', it[Symbol.iterator]);
 
     this.nodes = [...it].map(([node, path]) => [node.position, path.join('.'), node]);
 

@@ -316,14 +316,14 @@ Rect.prototype.toCSS = function() {
   };
 };
 
- Rect.prototype.toSVG = function(factory, attrs = { stroke: '#000', fill: 'none' }, parent = null, prec) {
-     const { x, y, width, height } = this;
- if(!factory) factory = SVG.factory(document.body);
+Rect.prototype.toSVG = function(factory, attrs = { stroke: '#000', fill: 'none' }, parent = null, prec) {
+  const { x, y, width, height } = this;
+  if(!factory) factory = SVG.factory(document.body);
 
-    console.log('Rect.toSVG', factory);
+  console.log('Rect.toSVG', factory);
 
-    return factory('rect', { ...attrs , x, y, width, height }, parent, prec);
-  }
+  return factory('rect', { ...attrs, x, y, width, height }, parent, prec);
+};
 
 Rect.prototype.toTRBL = function() {
   return {

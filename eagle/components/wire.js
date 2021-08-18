@@ -5,8 +5,7 @@ import { useValue } from '../../repeater/react-hooks.js';
 import { TransformationList } from '../../geom.js';
 
 export const Wire = ({ data, opts = {}, ...props }) => {
-  //log('Wire.render ', { data, opts });
-
+  //
   let wire =
     useValue(async function* () {
       // log('data.repeater:', data.repeater);
@@ -22,7 +21,11 @@ export const Wire = ({ data, opts = {}, ...props }) => {
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(wire);
+  const { width, curve = '', x1, y1, x2, y2 } = coordFn(wire);
+  let layerId =  isNaN(+wire.attributes.layer) ? wire.attributes.layer :  +wire.attributes.layer;
+  let layer = wire.document.layers[layerId] ?? wire.layer;
+
+  log('Wire.render ', { layerId, wire });
   const color = wire.getColor();
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
