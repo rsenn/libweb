@@ -4,8 +4,8 @@ import inspect from '../objectInspect.js';
 import { Lexer, SyntaxError, Location, Token } from './lexer.js';
 export { Lexer, SyntaxError, Location, Token } from './lexer.js';
 
-/*import { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';
-export { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/lib/jslexer.js';*/
+/*import { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/lib/jslexer.js';
+export { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/lib/jslexer.js';*/
 
 import * as deep from '../deep.js';
 import { Stack, StackFrame } from '../stack.js';

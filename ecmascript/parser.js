@@ -3,7 +3,7 @@ import Util from '../util.js';
 import { Lexer, SyntaxError, Location, Token } from './lexer.js';
 export { Lexer, SyntaxError, Location, Token, PathReplacer } from './lexer.js';
 
-//import { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/tests/jslexer.js'; export { Lexer, SyntaxError, Location, Token } from '../../quickjs/modules/tests/jslexer.js';
+//import { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/tests/jslexer.js'; export { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/tests/jslexer.js';
 
 import deep from '../deep.js';
 //import util from 'util';
