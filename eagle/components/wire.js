@@ -22,7 +22,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
   const { width, curve = '', x1, y1, x2, y2 } = coordFn(wire);
-  let layerId =  isNaN(+wire.attributes.layer) ? wire.attributes.layer :  +wire.attributes.layer;
+  let layerId = isNaN(+wire.attributes.layer) ? wire.attributes.layer : +wire.attributes.layer;
   let layer = wire.document.layers[layerId] ?? wire.layer;
 
   log('Wire.render ', { layerId, wire });
