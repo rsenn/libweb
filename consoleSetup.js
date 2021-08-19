@@ -130,8 +130,6 @@ export async function ConsoleSetup(opts = {}) {
       () => {}
     );
 
-  console.log('ret', ret);
-
   if(ret) globalThis.console = addMissingMethods(ret);
 }
 
