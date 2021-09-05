@@ -54,7 +54,7 @@ Size.prototype.height = NaN;
 Size.prototype.units = null;
 Size.prototype[Symbol.toStringTag] = 'Size';
 
-Size.prototype.convertUnits = function(w = 'window' in global ? window : null) {
+Size.prototype.convertUnits = function(w = 'window' in globalThis ? window : null) {
   if(w === null) return this;
   const view = {
     vw: w.innerWidth,
