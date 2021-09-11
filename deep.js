@@ -24,6 +24,19 @@ function ReturnValuePath(value, path, flags) {
   }
 }
 
+function ReturnValuePathFunction( flags) {
+  switch (flags & RETURN_MASK) {
+    case RETURN_VALUE_PATH:
+      return (value,path) => [value, path];
+    case RETURN_PATH_VALUE:
+      return(value,path) =>  [path, value];
+    case RETURN_PATH:
+      return (value,path) => path;
+    case RETURN_VALUE:
+      return (value,path) => value;
+  }
+}
+
 export const isPlainObject = obj => {
   if((obj != null ? obj.constructor : void 0) == null) return false;
   return obj.constructor.name === 'Object';
@@ -85,15 +98,19 @@ export const extend = (...args) => {
 };
 
 export const select = (root, filter, flags = 0) => {
-  let elementPath,
-    k,
-    selected = [],
-    v;
-  /*path = typeof path == 'string' ? path.split(/\.\//) : path;
-  if(!path)*/ let path = [];
-  if(filter(root, path)) selected.push(ReturnValuePath(root, path, flags));
-  else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
+    let fn = ReturnValuePathFunction(flags);
+
+  //path = typeof path == 'string' ? path.split(/\.\//) : path;
+  //if(!path) let path = [];
+
+function SelectFunction(root,filter,path=[]) {
+  let   k,  selected = [];
+  if(filter(root, path)) selected.push(fn(root, path));
+  else if(Util.isObject(root)) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
   return selected;
+}
+
+return SelectFunction(root,filter);
 };
 
 export const find = (node, filter, flags = 0, root) => {
@@ -257,5 +274,9 @@ export default {
   iterate,
   flatten,
   unflatten,
-  unset
+  unset,
+  RETURN_PATH,
+  RETURN_VALUE,
+  RETURN_PATH_VALUE,
+  RETURN_VALUE_PATH
 };

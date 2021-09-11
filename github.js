@@ -1,3 +1,6 @@
+import * as deep from './deep.js';
+import {tXml} from './xml.js';
+
 export async function* GithubListRepositories(user, f = fetch) {
   let url = `/github/${user}?tab=repositories`;
   let fetched = [];
@@ -46,6 +49,12 @@ export async function GithubRepositories(user, f = fetch) {
   return new Map(ret.map(([name, description]) => [`https://github.com/${user}/${name}`, description]));
   return new Map(ret.map(([name, description]) => [name, { url: `https://github.com/${user}/${name}`, description }]));
   return new Map(ret.map(([name, ...rest]) => [name, [`https://github.com/${user}/${name}`, ...rest]]));
+}
+
+export const GithubListFiles = async (owner, repo, dir, filter, opts = {}) => {
+  const url = `https://github.com/${owner}/${repo}/contents/${dir}`;
+
+
 }
 
 export const GithubListContents = async (owner, repo, dir, filter, opts = {}) => {
