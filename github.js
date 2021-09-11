@@ -1,5 +1,19 @@
 import * as deep from './deep.js';
-import {tXml} from './xml.js';
+import { tXml } from './xml.js';
+import { NormalizeResponse, ResponseData, FetchCached, FetchURL } from './fetch.js';
+
+export async function FetchAndParseXML(url) {
+  let data = await fetch(url).then(ResponseData);
+  return tXml(data);
+}
+
+export const GithubListFiles = async (owner, repo, dir, opts = {}) => {
+  const url = `${opts.proxy ?? 'https://github.com'}/${owner}/${repo}/contents${dir ? '/' + dir : ''}`;
+
+  const xml = await FetchAndParseXML(url);
+
+  return deep.select(data, e => e && e.tagName == 'a', deep.RETURN_VALUE).map(e => [e.attributes.href, e.children]);
+};
 
 export async function* GithubListRepositories(user, f = fetch) {
   let url = `/github/${user}?tab=repositories`;
@@ -49,12 +63,6 @@ export async function GithubRepositories(user, f = fetch) {
   return new Map(ret.map(([name, description]) => [`https://github.com/${user}/${name}`, description]));
   return new Map(ret.map(([name, description]) => [name, { url: `https://github.com/${user}/${name}`, description }]));
   return new Map(ret.map(([name, ...rest]) => [name, [`https://github.com/${user}/${name}`, ...rest]]));
-}
-
-export const GithubListFiles = async (owner, repo, dir, filter, opts = {}) => {
-  const url = `https://github.com/${owner}/${repo}/contents/${dir}`;
-
-
 }
 
 export const GithubListContents = async (owner, repo, dir, filter, opts = {}) => {
@@ -172,5 +180,6 @@ export default {
   ListRepositories: GithubListRepositories,
   Repositories: GithubRepositories,
   ListContents: GithubListContents,
-  ListRepoServer: ListGithubRepoServer
+  ListRepoServer: ListGithubRepoServer,
+  ListFiles: GithubListFiles
 };
