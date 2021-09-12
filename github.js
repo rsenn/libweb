@@ -61,8 +61,8 @@ export async function GithubRepositories(user, f = fetch) {
     i++;
   } while(url);
   return new Map(ret.map(([name, description]) => [`https://github.com/${user}/${name}`, description]));
-  return new Map(ret.map(([name, description]) => [name, { url: `https://github.com/${user}/${name}`, description }]));
-  return new Map(ret.map(([name, ...rest]) => [name, [`https://github.com/${user}/${name}`, ...rest]]));
+  //return new Map(ret.map(([name, description]) => [name, { url: `https://github.com/${user}/${name}`, description }]));
+  //return new Map(ret.map(([name, ...rest]) => [name, [`https://github.com/${user}/${name}`, ...rest]]));
 }
 
 export const GithubListContents = async (owner, repo, dir, filter, opts = {}) => {

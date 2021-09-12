@@ -201,15 +201,13 @@ export class Parser {
     }
     const colSizes = [12, 8, 4, 16, 32, 10, 0];
 
-    this.printTok =
-      this.debug < 2
-        ? () => {} : (tok, ...prefix) => std.puts(prefix[0].padEnd(10)+(tok.id+'').padEnd(5)+(tok.type+'').padEnd(20)+`'${tok.lexeme.replace(/\n/g,'\\n')}'`.padEnd(32)+(tok.loc+'')+'\n')
-       /* : (tok, ...prefix) => {
+    this.printTok = this.debug < 1 ? () => {} : (tok, ...prefix) => std.puts((prefix[0] + `(${this.lexer.stateStack.length})`).padEnd(15) + (tok.id + '').padEnd(5) + (tok.type + '').padEnd(20) + `'${tok.lexeme.replace(/\n/g, '\\n')}'`.padEnd(32) + (tok.loc + '') + '\n');
+    /* : (tok, ...prefix) => {
             const range = tok.charRange;
             const colSizes = [12, 8, 4, 16, 32, 10, 0];
             const cols = [...prefix, `tok[${tok.byteLength}]`, tok.id, tok.type, tok.lexeme, tok.lexeme.length, tok.loc];
             console.log(...cols.map((col, i) => (col + '').replaceAll('\n', '\\n').padEnd(colSizes[i])));
-          }*/;
+          }*/
     this.trace ??= function debug(...args) {};
   }
 
@@ -335,7 +333,8 @@ export class Parser {
     if(done) return null;
 
     if(typeof value == 'object' && value != null) {
-      this.printTok(value, this.lexer.topState());
+      if(this.debug >= 1)
+        this.printTok(value, this.lexer.topState());
     }
 
     return value;
@@ -362,13 +361,16 @@ export class Parser {
     return token;
   }
 
-  revert() {
-    const { lexer, tokens } = this;
-    let to;
-    if((to = tokens[0])) {
-      lexer.back(to.loc);
+clearTokens() {
+    const { tokens } = this;
+        tokens.splice(0, tokens.length);
+}
 
-      tokens.splice(0, tokens.length);
+  revert(to) {
+    const { lexer, tokens } = this;
+    to ??= tokens[0];
+    if(to) {
+      lexer.back('loc' in to ? to.loc : to);
     }
   }
 
@@ -638,14 +640,14 @@ export class ECMAScriptParser extends Parser {
 
   parseTemplateLiteral() {
     this.trace('parseTemplateLiteral');
-    let i = 0,
+    let done,i = 0,
       expressions = [],
       quasis = [];
     let loc = (this.tokens[0] || this.lexer).loc;
     let seed = Util.randInt(0, 0xffffffff);
     this.templateLevel = this.templateLevel || 0;
     this.templateLevel++;
-    while(true) {
+    while(!done) {
       let token = this.consume();
       const tail = (i > 0 || token.lexeme.length > 1) && token.lexeme.endsWith('`');
       const do_expression = token.lexeme.endsWith('${');
@@ -660,40 +662,41 @@ export class ECMAScriptParser extends Parser {
         const { lexer } = this;
         const { start, pos, stateDepth } = lexer;
         const { tokens } = this;
-
-        let token = this.gettok();
+        console.log('node',node);
+        /*console.log('tokens.length', tokens.length);
+        console.log('tokens', tokens.map(tok => tok.lexeme));*/
+        let token = this.tokens[0] ?? this.gettok();
         console.log('tokens[0]', token);
 
         if(token.lexeme == '}') {
-          /*   console.log('tokens.length', tokens.length);
-          console.log(
-            'tokens',
-            tokens.map(tok => tok.lexeme)
-          );*/
+                    this.revert();
 
-          this.revert();
-          lexer.pushState('TEMPLATE');
-          /*while(tokens.length && tokens[tokens.length-1].lexeme != '}') {
-          lexer.back(tokens[tokens.length-1]);
-          tokens.pop();
-        }*/
-          console.log('lexer.topState()', lexer.topState());
-          //lexer.pushState('TEMPLATE');
+while(lexer.topState() != 'TEMPLATE')
+                   lexer.popState();
 
+                  this.revert();
+
+
+ token = this.gettok();
+          console.log('token 1', token); 
+token = this.gettok();
+          
+          console.log('token 2', token); 
+    console.log('lexer.topState()', lexer.topState());
           const stateStack = [...lexer.stateStack];
-          console.log('lexer.stateStack', stateStack);
-          /*  const topStates = stateStack.slice(lexer.topState() == 'NOREGEX' ? -3 : -2);
-          console.log('topStates', topStates);*/
+ 
           if(token.lexeme.endsWith('`')) {
             if(stateStack.indexOf('TEMPLATE') != -1) {
               while(lexer.topState() != 'TEMPLATE') lexer.popState();
               console.log('lexer.topState', lexer.topState());
               lexer.popState();
-
-              this.consume();
-              this.next();
+              console.log('lexer.topState', lexer.topState());
+              done=true;
             }
           }
+
+          this.consume();
+          this.next();
         }
       }
       i++;
@@ -1481,7 +1484,7 @@ export class ECMAScriptParser extends Parser {
           kind = member.name;
           member = null;
         }
-        let memberCtor = (id, value, _, kind) => this.addNode(Property, id, value, kind, value instanceof FunctionLiteral, id.name && value.name && id.name === value.name, !(id instanceof Identifier));
+        let memberCtor = (id, value, _, kind) => this.addNode(Property, id, value, kind, value instanceof FunctionLiteral, id && id.name && value && value.name && id.name === value.name, !(id instanceof Identifier));
         if(ctor === ObjectPattern) memberCtor = (id, value, element) => new BindingProperty(id, element, value);
         else if(/*!(value instanceof FunctionDeclaration) && */ isClass) memberCtor = (id, value, _, kind) => this.addNode(MethodDefinition, id, value, kind, false, _static);
         if(spread) member = this.addNode(SpreadElement, value);
