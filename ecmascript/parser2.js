@@ -201,7 +201,7 @@ export class Parser {
     }
     const colSizes = [12, 8, 4, 16, 32, 10, 0];
 
-    this.printTok = this.debug < 1 ? () => {} : (tok, ...prefix) => std.puts((prefix[0] + `(${this.lexer.stateStack.length})`).padEnd(15) + (tok.id + '').padEnd(5) + (tok.type + '').padEnd(20) + `'${tok.lexeme.replace(/\n/g, '\\n')}'`.padEnd(32) + (tok.loc + '') + '\n');
+    this.printTok = this.debug < 1 ? () => {} : (tok, ...prefix) => std.puts((prefix[0] + `(${this.lexer.stateStack.length})`).padEnd(15) + ('#' + tok.seq).padEnd(6) + (tok.id + '').padEnd(5) + (tok.type + '').padEnd(20) + `'${tok.lexeme.replace(/\n/g, '\\n')}'`.padEnd(32) + (tok.loc + '') + '\n');
     /* : (tok, ...prefix) => {
             const range = tok.charRange;
             const colSizes = [12, 8, 4, 16, 32, 10, 0];
@@ -333,8 +333,7 @@ export class Parser {
     if(done) return null;
 
     if(typeof value == 'object' && value != null) {
-      if(this.debug >= 1)
-        this.printTok(value, this.lexer.topState());
+      if(this.debug >= 1) this.printTok(value, this.lexer.topState());
     }
 
     return value;
@@ -361,10 +360,10 @@ export class Parser {
     return token;
   }
 
-clearTokens() {
+  clearTokens() {
     const { tokens } = this;
-        tokens.splice(0, tokens.length);
-}
+    tokens.splice(0, tokens.length);
+  }
 
   revert(to) {
     const { lexer, tokens } = this;
@@ -640,7 +639,8 @@ export class ECMAScriptParser extends Parser {
 
   parseTemplateLiteral() {
     this.trace('parseTemplateLiteral');
-    let done,i = 0,
+    let done,
+      i = 0,
       expressions = [],
       quasis = [];
     let loc = (this.tokens[0] || this.lexer).loc;
@@ -662,36 +662,35 @@ export class ECMAScriptParser extends Parser {
         const { lexer } = this;
         const { start, pos, stateDepth } = lexer;
         const { tokens } = this;
-        console.log('node',node);
+        // console.log('node', node);
         /*console.log('tokens.length', tokens.length);
         console.log('tokens', tokens.map(tok => tok.lexeme));*/
         let token = this.tokens[0] ?? this.gettok();
-        console.log('tokens[0]', token);
-
+        if(this.debug >= 2) this.printTok(token, 'tokens[0]');
         if(token.lexeme == '}') {
-                    this.revert();
-
-while(lexer.topState() != 'TEMPLATE')
-                   lexer.popState();
-
-                  this.revert();
-
-
- token = this.gettok();
-          console.log('token 1', token); 
-token = this.gettok();
-          
-          console.log('token 2', token); 
-    console.log('lexer.topState()', lexer.topState());
+          this.revert();
+          if(this.debug >= 2) console.log('lexer.stateStack', lexer.stateStack);
+          if(lexer.topState() == 'INITIAL') {
+            lexer.pushState('TEMPLATE');
+          } else if(lexer.topState() == 'NESTED') {
+            lexer.popState();
+          } else {
+            while(lexer.topState() != 'TEMPLATE') lexer.popState();
+          }
+          this.revert();
+          token = this.gettok();
+          if(this.debug >= 2) this.printTok(token, 'tok@1');
+          token = this.gettok();
+          if(this.debug >= 2) this.printTok(token, 'tok@1');
+          //console.log('lexer.stateStack', lexer.stateStack);
           const stateStack = [...lexer.stateStack];
- 
           if(token.lexeme.endsWith('`')) {
             if(stateStack.indexOf('TEMPLATE') != -1) {
               while(lexer.topState() != 'TEMPLATE') lexer.popState();
-              console.log('lexer.topState', lexer.topState());
+              // console.log('lexer.stateStack', lexer.stateStack);
               lexer.popState();
-              console.log('lexer.topState', lexer.topState());
-              done=true;
+              //console.log('lexer.stateStack', lexer.stateStack);
+              done = true;
             }
           }
 
@@ -1028,10 +1027,11 @@ token = this.gettok();
         object = this.addNode(NewExpression, result.object, args);
       }
     } else {
-      let n = this.lexer.stateStack.length;
+      const { lexer } = this;
+      let n = lexer.stateStack.length;
 
-      this.lexer.pushState('NOREGEX');
-      this.lexer.callback = lex => {
+      if(lexer.topState() != 'NESTED') lexer.pushState('NOREGEX');
+      lexer.callback = lex => {
         if(lex.stateStack.length >= n) {
           while(lex.stateStack.length > n) lex.popState();
         }

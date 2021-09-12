@@ -95,24 +95,14 @@ export class Printer {
 
   print(tree) {
     let it = deep.iterate(tree, node => Util.isObject(node) && 'position' in node, deep.RETURN_VALUE_PATH);
-    console.log('it:', it[Symbol.iterator]);
-
     this.nodes = [...it].map(([node, path]) => [node.position, path.join('.'), node]);
-
-    //console.log("comments: ", this.comments);
-
-    //console.log("nodes: ", this.nodes);
     this.adjacent = this.comments.map(({ text, pos, len }) => ({
       start: pos,
       end: pos + len,
       text,
       nodes: this.nodes.slice(this.nodes.findIndex(([position, path]) => position > pos + len) - 1).slice(0, 2)
     }));
-
-    //console.log("adjacent: ", this.adjacent);
-
     let output = this.printNode(tree);
-
     return output;
   }
 
