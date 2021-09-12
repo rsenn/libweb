@@ -8,7 +8,7 @@ export async function FetchAndParseXML(url) {
 }
 
 export const GithubListFiles = async (owner, repo, dir, opts = {}) => {
-  const url = `${opts.proxy ?? 'https://github.com'}/${owner}/${repo}/contents${dir ? '/' + dir : ''}`;
+  const url = (opts.proxy ? opts.proxy : 'https://github.com') + `/${owner}/${repo}/contents${dir ? '/' + dir : ''}`;
 
   const xml = await FetchAndParseXML(url);
 
