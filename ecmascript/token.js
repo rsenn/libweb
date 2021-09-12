@@ -45,6 +45,9 @@ export class Token {
     };*/
   }
 
+  get loc() {
+    return this.position;
+  }
   get length() {
     return this.position.length;
   }

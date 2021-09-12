@@ -565,7 +565,7 @@ export class ECMAScriptParser extends Parser {
 
     if(token.type != 'nullLiteral')
       if(!(token.type === 'identifier' || (private_id && token.type === 'privateIdentifier') || (no_keyword && token.type == 'keyword'))) {
-        throw new Error(`Expecting <Identifier> but got <${token.type}> with value '${token.value}'`);
+        throw new Error(`Expecting <Identifier> but got <${token.type}> with value '${token.value}' at ${token.loc}`);
       }
     //this.log(`expectIdentifier2(no_keyword=${no_keyword})`);
 
