@@ -69,12 +69,7 @@ class KeyboardEvent {
    * Represents the key combination with a string in the format `["Ctrl+"]["Alt+"]["Shift+"]key.name`. For example: `"b"`, `"B"`, `"Ctrl+e"`, `"Ctrl+Shift+home"`, `"+"`.
    */
   toString() {
-    return (
-      (this.ctrl ? 'Ctrl+' : '') +
-      (this.alt ? 'Alt+' : '') +
-      (this.shift ? 'Shift+' : '') +
-      this.name
-    );
+    return (this.ctrl ? 'Ctrl+' : '') + (this.alt ? 'Alt+' : '') + (this.shift ? 'Shift+' : '') + this.name;
   }
 }
 
@@ -213,11 +208,7 @@ class Terminal extends EventEmitter {
    * @param {WritableStream} output The output stream for activating mouse support and bracketed paste mode. (Normally stdout.) Optional.
    * @param {TermOptions} options
    */
-  constructor(
-    input = process.stdin,
-    output,
-    { escKeyTimeout = 500, timeout = escKeyTimeout, encoding } = {}
-  ) {
+  constructor(input = process.stdin, output, { escKeyTimeout = 500, timeout = escKeyTimeout, encoding } = {}) {
     super();
 
     const stringDecoder = new StringDecoder(encoding),
@@ -749,13 +740,7 @@ function* emitKeys(term) {
         // We buffered enough data.
         const seq = s.slice(seqStart);
         // CSI sequences might not represent a key.
-        if(
-          (seq[0] === '<' && (ch === 'M' || ch === 'm')) ||
-          (seq[0] === '<' && (ch === 'T' || ch === 't')) ||
-          ch === 'I' ||
-          ch === 'O' ||
-          seq === '200~'
-        ) {
+        if((seq[0] === '<' && (ch === 'M' || ch === 'm')) || (seq[0] === '<' && (ch === 'T' || ch === 't')) || ch === 'I' || ch === 'O' || seq === '200~') {
           /* These sequences should not be preceded with an extra ESC.
            * If that happens, it's probably because the Esc key was pressed.
            */
