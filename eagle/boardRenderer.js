@@ -287,7 +287,11 @@ export class BoardRenderer extends EagleSVGRenderer {
           break;
       }
 
-      let number = ValueToNumber(value.replace(re, ''));
+      let number;
+
+try {
+      number = ValueToNumber(value.replace(re, ''));
+    }catch(e) {}
 
       //      console.log('Element.render name:', name, ' number:', number, ' value:', value);
     }
