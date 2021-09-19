@@ -518,14 +518,14 @@ export class ECMAScriptParser extends Parser {
     const { loc } = token;
     // console.log(`expectPunctuators(2)`, { token, loc });
     if(token.type !== 'punctuator') {
-      throw new ParseError(`Expecting Punctuator([ ${punctuators.map(p => `'${p}'`).join(', ')} ]), but got ${token.type} with value '${token.value}'`, ast, loc);
+      throw new  Error(`${loc}: Expecting Punctuator([ ${punctuators.map(p => `'${p}'`).join(', ')} ]), but got ${token.type} with value '${token.value}'`/*, loc.file,loc.line*/);
     }
     if(Array.isArray(punctuators)) {
       if(punctuators.indexOf(token.value) < 0) {
-        throw new Error(`Expected: ${punctuators.join(' ')}    Actual: ${token.value}`, ast, loc);
+        throw new Error(`${loc}: Expected: ${punctuators.join(' ')}    Actual: ${token.value}`/*, loc.file,loc.line*/);
       }
     } else if(punctuators !== token.lexeme) {
-      throw ParseError(`Expected: ${punctuators} Actual: ${token.lexeme}`, ast, loc);
+      throw new  Error(`${loc}: Expected: ${punctuators} Actual: ${token.lexeme}`/*, loc.file,loc.line*/);
     }
     //console.log(`expectPunctuators(3)`, { token, punctuators });
     return token;
