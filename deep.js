@@ -100,14 +100,17 @@ export const extend = (...args) => {
 export const select = (root, filter, flags = 0) => {
   let fn = ReturnValuePathFunction(flags);
 
-  //path = typeof path == 'string' ? path.split(/\.\//) : path;
-  //if(!path) let path = [];
-
   function SelectFunction(root, filter, path = []) {
     let k,
       selected = [];
+      try {
     if(filter(root, path)) selected.push(fn(root, path));
-    else if(Util.isObject(root)) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
+  }catch(e) {}
+      if(root !== null && ({ object: true }[typeof root]))
+      for(k in root)
+        selected = selected.concat(
+          SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k]))
+        );
     return selected;
   }
   console.log('deep.select', [filter + '', flags]);
@@ -142,7 +145,8 @@ export const forEach = function(...args) {
 
   fn(value, path, root);
 
-  if(Util.isObject(value)) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+  if(Util.isObject(value))
+    for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -157,11 +161,17 @@ export const iterate = function* (...args) {
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)
     if(Util.isObject(value)) {
-      for(let k in value) yield* iterate(value[k], filter, flags, path.concat([isNaN(+k) ? k : +k]), root);
+      for(let k in value)
+        yield* iterate(value[k], filter, flags, path.concat([isNaN(+k) ? k : +k]), root);
     }
 };
 
-export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
+export const flatten = (
+  iter,
+  dst = {},
+  filter = (v, p) => typeof v != 'object' && v != null,
+  map = (p, v) => [p.join('.'), v]
+) => {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
