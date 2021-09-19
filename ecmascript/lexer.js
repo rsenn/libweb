@@ -64,6 +64,10 @@ export class SyntaxError extends Error {
     Util.removeIf(this.stack, frame => frame.functionName == 'esfactory');
     //console.log("pos:", Util.inspect(pos, { depth: 10 }));
   }
+
+  get loc() {
+    return this.pos;
+  }
 }
 
 SyntaxError.prototype.toString = function() {

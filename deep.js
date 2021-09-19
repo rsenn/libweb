@@ -146,14 +146,18 @@ export const forEach = function(...args) {
 };
 
 export const iterate = function* (...args) {
-  const [value, filter = v => true, path = []] = args;
+  let [value, filter = v => true, flags] = args;
+  const path = Array.isArray(flags) ? flags : [];
+
+  if(typeof flags != 'number') flags = args[3] ?? RETURN_VALUE_PATH;
+
   let root = args[3] ?? value,
     r;
 
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)
     if(Util.isObject(value)) {
-      for(let k in value) yield* iterate(value[k], filter, path.concat([isNaN(+k) ? k : +k]), root);
+      for(let k in value) yield* iterate(value[k], filter, flags, path.concat([isNaN(+k) ? k : +k]), root);
     }
 };
 

@@ -124,7 +124,7 @@ export class EagleProject {
       bin = dir + '/eagle';
       if(!fs.existsSync(bin)) continue;
       if(!/(eagle)/i.test(dir)) {
-        bin = fs.realpath(bin);
+        bin = fs.realpathSync(bin);
         dir = bin.replace(/\/[^\/]+$/, '');
       }
       dir = dir.replace(/[\\\/]bin$/i, '');

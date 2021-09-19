@@ -7,88 +7,7 @@ import * as deep from '../deep.js';
 import { Stack, StackFrame } from '../stack.js';
 import { TokenList } from './token.js';
 import { Printer } from './printer.js';
-import {
-  ESNode,
-  Program,
-  Expression,
-  ChainExpression,
-  FunctionLiteral,
-  RegExpLiteral,
-  FunctionBody,
-  Identifier,
-  Super,
-  Literal,
-  TemplateLiteral,
-  TaggedTemplateExpression,
-  TemplateElement,
-  ThisExpression,
-  UnaryExpression,
-  UpdateExpression,
-  BinaryExpression,
-  AssignmentExpression,
-  LogicalExpression,
-  MemberExpression,
-  ConditionalExpression,
-  CallExpression,
-  DecoratorExpression,
-  NewExpression,
-  SequenceExpression,
-  Statement,
-  BlockStatement,
-  StatementList,
-  EmptyStatement,
-  LabeledStatement,
-  ExpressionStatement,
-  ReturnStatement,
-  ContinueStatement,
-  BreakStatement,
-  IfStatement,
-  SwitchStatement,
-  SwitchCase,
-  WhileStatement,
-  DoWhileStatement,
-  ForStatement,
-  ForInStatement,
-  ForOfStatement,
-  WithStatement,
-  TryStatement,
-  CatchClause,
-  ThrowStatement,
-  YieldExpression,
-  ImportDeclaration,
-  ImportSpecifier,
-  ImportDefaultSpecifier,
-  ImportNamespaceSpecifier,
-  ExportNamedDeclaration,
-  ExportAllDeclaration,
-  ExportSpecifier,
-  AnonymousDefaultExportedFunctionDeclaration,
-  AnonymousDefaultExportedClassDeclaration,
-  ExportDefaultDeclaration,
-  Declaration,
-  ClassDeclaration,
-  ClassBody,
-  MetaProperty,
-  FunctionDeclaration,
-  ArrowFunctionExpression,
-  VariableDeclaration,
-  VariableDeclarator,
-  ObjectExpression,
-  Property,
-  MethodDefinition,
-  ArrayExpression,
-  JSXLiteral,
-  Pattern,
-  ArrayPattern,
-  ObjectPattern,
-  AssignmentProperty,
-  AssignmentPattern,
-  AwaitExpression,
-  RestElement,
-  SpreadElement,
-  CTORS,
-  Factory
-} from './estree.js';
+import { ESNode, Program, Expression, ChainExpression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportAllDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 const symbols = {
   enter: '⬊',
@@ -587,19 +506,26 @@ export class ECMAScriptParser extends Parser {
     return token;
   }
 
+ class ParseError extends Error {
+  constructor(msg, ast, loc) {
+    super(loc+': '+msg, loc.file, loc.line, loc.column);
+  }
+};
+ 
   expectPunctuators(punctuators, ast) {
     //console.log(`expectPunctuators(1)`, { punctuators });
     const token = this.consume();
-    //console.log(`expectPunctuators(2)`, { token });
+const {loc}=token;
+    console.log(`expectPunctuators(2)`, { token,loc });
     if(token.type !== 'punctuator') {
-      throw new Error(`Expecting Punctuator([ ${punctuators.map(p => `'${p}'`).join(', ')} ]), but got ${token.type} with value '${token.value}'`, ast);
+      throw new ParseError(`Expecting Punctuator([ ${punctuators.map(p => `'${p}'`).join(', ')} ]), but got ${token.type} with value '${token.value}'`, ast, loc);
     }
     if(Array.isArray(punctuators)) {
       if(punctuators.indexOf(token.value) < 0) {
-        throw new Error(`Expected: ${punctuators.join(' ')}    Actual: ${token.value}`, ast);
+        throw new Error(`Expected: ${punctuators.join(' ')}    Actual: ${token.value}`, ast, loc);
       }
     } else if(punctuators !== token.lexeme) {
-      throw new Error(`Expected: ${punctuators} Actual: ${token.lexeme}`, ast);
+      throw ParseError(`Expected: ${punctuators} Actual: ${token.lexeme}`, ast, loc);
     }
     //console.log(`expectPunctuators(3)`, { token, punctuators });
     return token;

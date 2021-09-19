@@ -10,6 +10,8 @@ export var LogJS = {
   ERROR: 'ERROR',
   WARN: 'WARN',
   INFO: 'INFO',
+  VERBOSE: 'VERBOSE',
+  DEBUG: 'DEBUG',
 
   version: 'LogJS v1.2.2',
   get window_() {
@@ -74,6 +76,14 @@ LogJS.warn = function(message, url, lineNumber) {
 
 LogJS.info = function(message, url, lineNumber) {
   log(LogJS.INFO, message, url, lineNumber);
+};
+
+LogJS.verbose = function(message, url, lineNumber) {
+  log(LogJS.VERBOSE, message, url, lineNumber);
+};
+
+LogJS.debug = function(message, url, lineNumber) {
+  log(LogJS.DEBUG, message, url, lineNumber);
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -155,7 +165,7 @@ if(typeof angular !== 'undefined') {
 
     this.$get = function() {
       let angularLogJS = {};
-      ['error', 'info', 'debug', 'log', 'warn'].forEach(e => {
+      ['error', 'info', 'verbose', 'debug', 'log', 'warn'].forEach(e => {
         let method = LogJS.info;
         if(LogJS[e]) {
           method = LogJS[e];

@@ -5306,17 +5306,12 @@ Util.callMain = async (fn, trapExceptions) =>
     async (...args) => {
       Util.callMain.handlers = [];
       const { handlers } = Util.callMain;
-
       const callExitHandlers = (Util.callExitHandlers = Util.once(async ret => {
         if(handlers) for(const handler of handlers) await handler(ret);
         // Util.exit(ret);
       }));
-      Util.trapExit = Util.once(() => {
-        Util.signal(15, callExitHandlers);
-      });
-
+      Util.trapExit = Util.once(() => Util.signal(15, callExitHandlers));
       if(Util.getPlatform() == 'quickjs') await import('std').then(module => module.gc());
-
       let ret = await fn(...args);
       await callExitHandlers(ret);
     },
@@ -5330,18 +5325,7 @@ Util.callMain = async (fn, trapExceptions) =>
               () => process.argv[1],
               argv1 => argv1.replace(/\/[^\/]*$/g, '')
             );
-
-            console.log(
-              'main Exception:',
-              message,
-              '\nSTACK:' +
-                (
-                  stack.toString({
-                    colors: true,
-                    stripUrl: `file://${scriptDir}/`
-                  }) + ''
-                ).replace(/(^|\n)/g, '\n  ')
-            );
+            console.log('Exception:', message, '\nStack:' + (stack.toString({colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  '));
             Util.exit(1);
           })
   )(...Util.getArgs().slice(1));

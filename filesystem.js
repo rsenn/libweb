@@ -270,7 +270,7 @@ export function QuickJSFileSystem(std, os) {
       return err ? strerr([st, err]) : new this.Stats(st);
     },
 
-    realpath(path) {
+    realpathSync(path) {
       return strerr(os.realpath(path));
     },
     readlink(path) {
@@ -551,7 +551,7 @@ export function NodeJSFileSystem(fs, tty, process) {
     existsSync(path) {
       return CatchError(() => fs.existsSync(path));
     },
-    realpath(path) {
+    realpathSync(path) {
       return CatchError(() => fs.realpathSync(path));
     },
     symlink(target, path) {
@@ -819,7 +819,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
     },
     writeFile(filename, data, overwrite = true) {},
     existsSync(filename) {},
-    realpath(filename) {},
+    realpathSync(filename) {},
     size(filename) {},
     stat(filename, dereference = false) {},
     readdir(dir) {},
