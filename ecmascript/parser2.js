@@ -22,6 +22,12 @@ const inspectOptions = {
   breakLength: 80
 };
 
+class ParseError extends Error {
+  constructor(msg, ast, loc) {
+    super(loc + ': ' + msg, loc.file, loc.line, loc.column);
+  }
+}
+
 function GetStack(stack, cond, max = Infinity) {
   stack ??= new Error().stack;
   let st = (stack + '').split(/\n/g);
@@ -506,17 +512,11 @@ export class ECMAScriptParser extends Parser {
     return token;
   }
 
- class ParseError extends Error {
-  constructor(msg, ast, loc) {
-    super(loc+': '+msg, loc.file, loc.line, loc.column);
-  }
-};
- 
   expectPunctuators(punctuators, ast) {
     //console.log(`expectPunctuators(1)`, { punctuators });
     const token = this.consume();
-const {loc}=token;
-    console.log(`expectPunctuators(2)`, { token,loc });
+    const { loc } = token;
+    console.log(`expectPunctuators(2)`, { token, loc });
     if(token.type !== 'punctuator') {
       throw new ParseError(`Expecting Punctuator([ ${punctuators.map(p => `'${p}'`).join(', ')} ]), but got ${token.type} with value '${token.value}'`, ast, loc);
     }
