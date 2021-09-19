@@ -182,7 +182,7 @@ export function QuickJSFileSystem(std, os) {
       }
       return numerr(-res.errno);
     },
-    writeFile(filename, data, overwrite = true) {
+    writeFileSync(filename, data, overwrite = true) {
       let buf,
         bytes,
         res = { errno: 0 };
@@ -817,7 +817,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
     readFile(filename) {
       return fetch(filename).then(async resp => await resp.text());
     },
-    writeFile(filename, data, overwrite = true) {},
+    writeFileSync(filename, data, overwrite = true) {},
     existsSync(filename) {},
     realpathSync(filename) {},
     size(filename) {},

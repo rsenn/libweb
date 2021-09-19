@@ -516,7 +516,7 @@ export class ECMAScriptParser extends Parser {
     //console.log(`expectPunctuators(1)`, { punctuators });
     const token = this.consume();
     const { loc } = token;
-    console.log(`expectPunctuators(2)`, { token, loc });
+    // console.log(`expectPunctuators(2)`, { token, loc });
     if(token.type !== 'punctuator') {
       throw new ParseError(`Expecting Punctuator([ ${punctuators.map(p => `'${p}'`).join(', ')} ]), but got ${token.type} with value '${token.value}'`, ast, loc);
     }

@@ -110,7 +110,7 @@ export const select = (root, filter, flags = 0) => {
     else if(Util.isObject(root)) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
     return selected;
   }
-
+  console.log('deep.select', [filter + '', flags]);
   return SelectFunction(root, filter);
 };
 
@@ -175,12 +175,12 @@ export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' 
 };
 
 export const get = (root, path) => {
-  let len;
-  path = typeof path == 'string' ? path.split(/[\.\/]/) : path;
-  path = Util.clone(path);
-  for(let j = 0, len = path.length; j < len; j++) {
-    let pathElement = path[j];
-    root = root[pathElement];
+  //console.log("deep.get", /*console.config({ depth:1}),*/{ root,path });
+  let j, len;
+  path = typeof path == 'string' ? path.split(/[\.\/]/) : [...path];
+  for(j = 0, len = path.length; j < len; j++) {
+    let k = path[j];
+    root = root[k];
   }
   return root;
 };
