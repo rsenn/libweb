@@ -109,7 +109,7 @@ export const select = (root, filter, flags = 0) => {
     if(root !== null && { object: true }[typeof root]) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
     return selected;
   }
-  console.log('deep.select', [filter + '', flags]);
+  //console.log('deep.select', [filter + '', flags]);
   return SelectFunction(root, filter);
 };
 

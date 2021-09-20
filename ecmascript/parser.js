@@ -58,7 +58,7 @@ export class Parser {
     const pos = this.position();
     console.error('error: ' + errorMessage);
 
-    return new SyntaxError('parse', pos.toString() + ': ' + errorMessage, astNode, pos);
+    return new SyntaxError(pos.toString() + ': parse ' + errorMessage/*, astNode, pos*/);
   }
 
   handleComment(comment, start, end) {
@@ -248,6 +248,18 @@ export class Parser {
     let pos = tok?.position ?? this.lexer.pos;
     //console.log("position",pos);
     return this.lexer.position(pos);
+  }
+  
+  addNode(ctor, ...args) {
+    let node = new ctor(...args);
+    /*let { processedIndex = 0 } = this;
+    console.log('node:',
+      Util.className(node).padEnd(30),
+      'processed:',
+      this.processed.slice(processedIndex).map(tok => tok.lexeme)
+    );
+    this.processedIndex = this.processed.length;*/
+    return node;
   }
 }
 
@@ -539,11 +551,13 @@ export class ECMAScriptParser extends Parser {
     return this.matchMemberExpression(...arguments);
   }
 
+  
   /*
    * Actual recursive descent part of things
    */
 
   parsePrimaryExpression() {
+    this.trace('parsePrimaryExpression');
     let is_async = false,
       rest_of = false;
     let expr = null;
@@ -553,48 +567,45 @@ export class ECMAScriptParser extends Parser {
     } else if(this.matchIdentifier() && this.token.value == 'async') {
       is_async = true;
       this.expectIdentifier();
-    } else if(this.matchPunctuators('...')) {
+    } else if(this.matchPunctuators(['...'])) {
       rest_of = true;
-      this.expectPunctuators('...');
+      this.expectPunctuators(['...']);
     }
 
     if(!is_async && this.matchKeywords('this')) {
       this.expectKeywords('this');
-      expr = new ThisExpression();
+      expr = this.addNode(ThisExpression);
     } else if(this.matchKeywords('class')) {
       expr = this.parseClass();
     } else if(/*is_async && */ this.matchKeywords('function')) {
       expr = this.parseFunction(false, is_async);
-    } else if(this.matchPunctuators('{')) {
+    } else if(this.matchPunctuators(['{'])) {
       expr = this.parseObject();
-    } else if(this.matchPunctuators('[')) {
+    } else if(this.matchPunctuators(['['])) {
       expr = this.parseArray();
-    } else if(!is_async && this.matchPunctuators('<')) {
+    } else if(!is_async && this.matchPunctuators(['<'])) {
       expr = this.parseJSX();
-    } else if(!is_async && this.matchLiteral()) {
+    } else if(!is_async && (this.matchLiteral() || this.matchTemplateLiteral())) {
       if(this.matchTemplateLiteral()) expr = this.parseTemplateLiteral();
       else expr = this.expectLiteral();
-
-      /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
-      this.expectIdentifier("super");
-      expr = new Identifier("super");*/
     } else if(this.matchKeywords('super')) {
       this.expectKeywords('super');
-      expr = new Super();
+      expr = this.addNode(Super);
     } else if(this.matchKeywords('import')) {
       expr = this.parseImportDeclaration(false);
-    } else if(this.matchPunctuators('(')) {
-      this.expectPunctuators('(');
+    } else if(this.matchPunctuators(['('])) {
+      this.expectPunctuators(['(']);
 
       let expression = [];
-      let parentheses = this.matchPunctuators('(');
-      // if(parentheses) this.expectPunctuators('(');
+      let parentheses = this.matchPunctuators(['(']);
 
-      if(!this.matchPunctuators(')')) expression = this.parseExpression(false, true);
+      if(!this.matchPunctuators([')'])) expression = this.parseExpression(false, true);
+      //console.log('expression:', expression);
+      //console.log('this.next():', this.next());
 
-      this.expectPunctuators(')');
+      this.expectPunctuators([')']);
 
-      if(this.matchPunctuators('=>')) {
+      if(this.matchPunctuators(['=>'])) {
         //console.debug('expression args:', expression);
         let args = expression.expressions || expression || [];
         for(let i = 0; i < args.length; i++) {
@@ -610,29 +621,28 @@ export class ECMAScriptParser extends Parser {
 
         //console.debug(`${this.position()} args:`, expression);
         expression = this.parseArrowFunction(args, is_async);
-        //expression = new SequenceExpression([expression]);
-      } else if(!(expression instanceof SequenceExpression)) expression = new SequenceExpression([expression]);
+        //expression = this.addNode(SequenceExpression, [expression]);
+      } else if(!(expression instanceof SequenceExpression)) expression = this.addNode(SequenceExpression, [expression]);
 
-      //    if(parentheses) this.expectPunctuators(')');
-
-      // if( expression instanceof ArrowFunctionExpression  || parentheses)
       expr = expression;
     } else if(this.matchIdentifier(true)) {
       let id = this.expectIdentifier(true);
 
-      if(this.matchPunctuators('=>')) {
+      if(this.matchPunctuators(['=>'])) {
         id = this.parseArrowFunction([id], is_async);
-        id = new SequenceExpression([id]);
+        id = this.addNode(SequenceExpression, [id]);
       }
 
       expr = id;
     } else if(is_async) {
       expr = new Identifier('async');
     } else {
-      this.error(`${this.token.position}: Unexpected token '${this.token}'`);
+      //console.log('parsePrimaryExpression', this.tokens.map(tok => tok + ''));
+
+      throw new Error(`${this.token.loc ?? this.position ?? this.lexer.loc}: Unexpected token '${this.token}'`);
     }
     if(rest_of) {
-      expr = new RestElement(expr);
+      expr = this.addNode(RestElement, expr);
     }
     return expr;
   }
@@ -918,58 +928,38 @@ export class ECMAScriptParser extends Parser {
     return { ast, lhs };
   }
 
-  parseAssignmentExpression() {
-    this.log(`parseAssignmentExpression()`);
+ parseAssignmentExpression() {
+    this.trace('parseAssignmentExpression');
+    //console.log(`parseAssignmentExpression`, {tokens: this.tokens.map(t => t + '') });
 
-    /*   if(this.matchKeywords(['function', 'get'])) {
-      let get = false;
-      if(this.matchKeywords('get')) {
-        this.expectKeywords('get');
-        get = true;
-      }
-      return this.parseFunction();
-    } else*/ if(this.matchPunctuators('{')) {
+    if(this.matchPunctuators(['{'])) {
       return this.parseObject();
-    } /*else if(this.matchPunctuators("[")) {
-          //return this.parseNewOrCallOrMemberExpression();
-      let object = this.parseArray();
-      if(this.matchPunctuators(".")) {
-        object = this.parseRemainingMemberExpression(object);
-      }
-      if(this.matchPunctuators("(")) {
-        object = this.parseRemainingCallExpression(object);
-      }
-      return object;
-    }*/
-
+    }
     //Won't know immediately whether to parse as ConditionalExpression or
     //LeftHandSideExpression. We'll only know later on during parsing if we
     //come across things that cannot be in LeftHandSideExpression.
     const result = this.parseConditionalExpression();
+    const end = this.matchPunctuators(['}']);
 
-    //console.log('parseAssignmentExpression:', { result, token: this.token.value });
-
-    if(this.matchPunctuators('}')) {
-      return result.ast;
-      //throw new Error(`${this.position()}`);
-    }
-
-    if(result.lhs) {
-      //Once it is determined that the parse result yielded
-      //LeftHandSideExpression though, then we can parse the remaining
-      //AssignmentExpression with that knowledge
-      const assignmentOperators = ['=', '*=', '/=', '%=', '+=', '-=', '<<=', '>>=', '>>>=', '-->>=', '&=', '^=', '|='];
-      if(this.matchPunctuators(assignmentOperators) || assignmentOperators.indexOf(this.token.value) != -1) {
-        const left = result.ast;
-        const operatorToken = this.expectPunctuators(assignmentOperators);
-        const right = this.parseExpression();
-        return new AssignmentExpression(operatorToken.value, left, right);
+    if(!end) {
+      if(result.lhs) {
+        //Once it is determined that the parse result yielded
+        //LeftHandSideExpression though, then we can parse the remaining
+        //AssignmentExpression with that knowledge
+        const assignmentOperators = ['=', '*=', '/=', '%=', '+=', '-=', '<<=', '>>=', '>>>=', '-->>=', '&=', '^=', '|=', '??=', '||=', '&&='];
+        if(this.matchPunctuators(assignmentOperators) || assignmentOperators.indexOf(this.token.value) != -1) {
+          const left = result.ast;
+          const operatorToken = this.expectPunctuators(assignmentOperators);
+          const right = this.parseExpression();
+          result.ast = this.addNode(AssignmentExpression, operatorToken.value, left, right);
+        }
       }
-      //console.log('result.ast', result.ast, { token: this.token });
-      return result.ast;
     }
+
+    //console.log(`parseAssignmentExpression`, { result });
     return result.ast;
   }
+
 
   parseExpression(optional, sequence = true) {
     //this.log(`parseExpression()`);

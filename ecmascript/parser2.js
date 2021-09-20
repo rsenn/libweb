@@ -400,16 +400,13 @@ export class Parser {
 
   addNode(ctor, ...args) {
     let node = new ctor(...args);
-
     /*let { processedIndex = 0 } = this;
     console.log('node:',
       Util.className(node).padEnd(30),
       'processed:',
       this.processed.slice(processedIndex).map(tok => tok.lexeme)
     );
-
     this.processedIndex = this.processed.length;*/
-
     return node;
   }
 }
