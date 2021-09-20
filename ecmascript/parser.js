@@ -58,7 +58,7 @@ export class Parser {
     const pos = this.position();
     console.error('error: ' + errorMessage);
 
-    return new SyntaxError(pos.toString() + ': parse ' + errorMessage/*, astNode, pos*/);
+    return new SyntaxError(pos.toString() + ': parse ' + errorMessage /*, astNode, pos*/);
   }
 
   handleComment(comment, start, end) {
@@ -249,7 +249,7 @@ export class Parser {
     //console.log("position",pos);
     return this.lexer.position(pos);
   }
-  
+
   addNode(ctor, ...args) {
     let node = new ctor(...args);
     /*let { processedIndex = 0 } = this;
@@ -551,7 +551,6 @@ export class ECMAScriptParser extends Parser {
     return this.matchMemberExpression(...arguments);
   }
 
-  
   /*
    * Actual recursive descent part of things
    */
@@ -928,7 +927,7 @@ export class ECMAScriptParser extends Parser {
     return { ast, lhs };
   }
 
- parseAssignmentExpression() {
+  parseAssignmentExpression() {
     this.trace('parseAssignmentExpression');
     //console.log(`parseAssignmentExpression`, {tokens: this.tokens.map(t => t + '') });
 
@@ -959,7 +958,6 @@ export class ECMAScriptParser extends Parser {
     //console.log(`parseAssignmentExpression`, { result });
     return result.ast;
   }
-
 
   parseExpression(optional, sequence = true) {
     //this.log(`parseExpression()`);

@@ -199,7 +199,7 @@ export class Lexer {
   error(errorMessage, astNode) {
     const pos = this.position();
 
-    return new SyntaxError(pos.toString()+': scan '+errorMessage/*, astNode, pos*/);
+    return new SyntaxError(pos.toString() + ': scan ' + errorMessage /*, astNode, pos*/);
   }
 
   /*
