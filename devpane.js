@@ -13,7 +13,7 @@ import SvgPath from './svg/path.js';
 
 if(global.window) {
   window.addEventListener('load', () => {
-    Util.log('New cookie: ', document.cookie);
+    console.log('New cookie: ', document.cookie);
   });
 }
 
@@ -114,7 +114,7 @@ export default class devpane {
 
     this.parent = Element.find(node);
     this.observe = Element.find(observe);
-    this.factory = Element.factory(this.parent);
+    this.factory = Element.factory({}, this.parent);
     this.rect = Rect(0, 0, 0, 0);
     //Util.log('devpane.constructor: ', { factory: Object.keys(this.factory) });
     window.addEventListener('keydown', this.handleKeypress.bind(this));
@@ -412,7 +412,7 @@ export default class devpane {
     const what = checked ? 'add' : 'remove';
     const fn = `${what}EventListener`;
 
-    Util.log(`devpane.handleToggle ${fn}`);
+    console.log(`devpane.handleToggle ${fn}`);
     const mouseEvents = elem => ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
 
     window[`${what}EventListener`]('mousemove', this.mouseMove);

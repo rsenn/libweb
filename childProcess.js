@@ -203,7 +203,7 @@ export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
   switch (Util.getPlatform()) {
     case "quickjs":
       try {
-        a = [await PortableFileSystem(), await import("std"), await import("os")];
+        a = [await PortableFileSystem(), await import("std").catch(() => {}), await import("os").catch(() => {})];
         fs = await CreatePortableChildProcess(QuickJSChildProcess, ...a);
       } catch (error) {
         err = error;
