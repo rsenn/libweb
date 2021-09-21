@@ -99,7 +99,7 @@ Polygon.fromLine = (arg, offset, steps = 3) => {
   const step = Util.range(0, steps - 1).map(i => (i * Math.PI) / (steps - 1));
   const a = line.angle();
   let vl = new PointList();
-  //Util.log('step:', step);
+  //console.log('step:', step);
   vl = vl.concat(step.map(va => Point.fromAngle(a - PI2 - va, offset).sum(line.a)));
   vl = vl.concat(step.map(va => Point.fromAngle(a + PI2 - va, offset).sum(line.b)));
   return vl;

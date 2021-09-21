@@ -200,46 +200,38 @@ export async function CreatePortableChildProcess(ctor, ...args) {
 export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
   let fs, err;
   let a = [];
-  switch (Util.getPlatform()) {
-    case 'quickjs':
-      try {
-        a = [await PortableFileSystem(), await import('std'), await import('os')];
-        fs = await CreatePortableChildProcess(QuickJSChildProcess, ...a);
-      } catch(error) {
-        err = error;
-      }
-      if(fs && !err) {
-        set(fs, ...a);
-        return fs;
-      }
-      err = null;
-      break;
-    case 'node':
-      try {
-        a = [await import('fs'), await import('tty'), await import('child_process')];
-        fs = await CreatePortableChildProcess(NodeJSChildProcess, ...a);
-      } catch(error) {
-        err = error;
-      }
+  try {
+    a = [await PortableFileSystem(), await import('std'), await import('os')];
+    fs = await CreatePortableChildProcess(QuickJSChildProcess, ...a);
+  } catch(error) {
+    err = error;
+  }
+  if(fs && !err) {
+    set(fs, ...a);
+    return fs;
+  }
+  err = null;
+  try {
+    a = [await import('fs'), await import('tty'), await import('child_process')];
+    fs = await CreatePortableChildProcess(NodeJSChildProcess, ...a);
+  } catch(error) {
+    err = error;
+  }
 
-      if(fs && !err) {
-        set(fs, ...a);
-        return fs;
-      }
-      err = null;
-      break;
-    default:
-      try {
-        fs = await CreatePortableChildProcess(BrowserChildProcess);
-      } catch(error) {
-        err = error;
-      }
+  if(fs && !err) {
+    set(fs, ...a);
+    return fs;
+  }
+  err = null;
+  try {
+    fs = await CreatePortableChildProcess(BrowserChildProcess);
+  } catch(error) {
+    err = error;
+  }
 
-      if(fs && !err) {
-        set(fs, ...a);
-        return fs;
-      }
-      break;
+  if(fs && !err) {
+    set(fs, ...a);
+    return fs;
   }
 }
 

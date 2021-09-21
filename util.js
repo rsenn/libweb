@@ -4729,7 +4729,7 @@ Util.transformer = (a, ...l) =>
     a
   );
 
-Util.copyTextToClipboard = (i, t) => {
+/* XXX Util.copyTextToClipboard = (i, t) => {
   if(!Util.isBrowser()) {
     return import('./childProcess.js').then(async module => {
       let fs, std;
@@ -4783,7 +4783,7 @@ Util.copyTextToClipboard = (i, t) => {
     prev.focus();
   }
   return isSuccess;
-};
+};*/
 
 Util.toPlainObject = obj => Util.toPlainObjectT(obj, v => (Util.isObject(v) ? Util.toPlainObject(v) : v));
 
@@ -5216,37 +5216,36 @@ Util.getEnv = async varName =>
   Util.tryCatch(
     () => process.env,
     async e => e[varName],
-    () => (globalThis.std ? std.getenv(varName) : Util.tryCatch(async () => await import('std').then(std => std.getenv(varName))))
+    () => false /* XXX (globalThis.std ? std.getenv(varName) : Util.tryCatch(async () => await import('std').then(std => std.getenv(varName)))) */
   );
 Util.getEnvVars = async () =>
   Util.tryCatch(
     () => process.env,
     async e => e,
-    () =>
-      Util.tryCatch(
-        async () =>
-          await import('./childProcess.js').then(async ({ PortableChildProcess }) => {
-            let childProcess = await PortableChildProcess();
-            (await import('./filesystem.js')).default(fs => (Util.globalThis().filesystem = fs));
-            let proc = childProcess('env', [], {
-              block: false,
-              stdio: [null, 'pipe']
-            });
-            let data = '\n';
-            for await(let output of await filesystem.asyncReader(proc.stdout)) data += filesystem.bufferToString(output);
-            let matches = [...Util.matchAll(/(^|\n)[A-Za-z_][A-Za-z0-9_]*=.*/gm, data)];
-            let indexes = matches.map(match => match.index);
-            let ranges = indexes.reduce((acc, idx, i, a) => [...acc, [idx + 1, a[i + 1]]], []);
-            let vars = ranges
-              .map(r => data.substring(...r))
-              .map(line => {
-                let eqPos = line.indexOf('=');
-                return [line.substring(0, eqPos), line.substring(eqPos + 1)];
-              });
-            //for(let [name, value] of vars) console.log(`${name}=${value}`);
-            return Object.fromEntries(vars);
-          })
-      )
+    () => false
+    // XXX     Util.tryCatch(
+    //        async () =>
+    //          await import('./childProcess.js').then(async ({ PortableChildProcess }) => {
+    //            let childProcess = await PortableChildProcess();
+    //            (await import('./filesystem.js')).default(fs => (Util.globalThis().filesystem = fs));
+    //            let proc = childProcess('env', [], {
+    //              block: false,
+    //              stdio: [null, 'pipe']
+    //            });
+    //            let data = '\n';
+    //            for await(let output of await filesystem.asyncReader(proc.stdout)) data += filesystem.bufferToString(output);
+    //            let matches = [...Util.matchAll(/(^|\n)[A-Za-z_][A-Za-z0-9_]*=.*/gm, data)];
+    //            let indexes = matches.map(match => match.index);
+    //            let ranges = indexes.reduce((acc, idx, i, a) => [...acc, [idx + 1, a[i + 1]]], []);
+    //            let vars = ranges
+    //              .map(r => data.substring(...r))
+    //              .map(line => {
+    //                let eqPos = line.indexOf('=');
+    //                return [line.substring(0, eqPos), line.substring(eqPos + 1)];
+    //              });
+    //            return Object.fromEntries(vars);
+    //          })
+    //      )
   );
 
 Util.safeFunction = (fn, trapExceptions, thisObj) => {
@@ -5286,15 +5285,14 @@ Util.exit = exitCode => {
     std.exit(exitCode);
   };
   if(globalThis.std) return stdExit(globalThis.std);
-  return import('std')
+  return;
+  /* XXX import('std')
     .then(stdExit)
-    .catch(() =>
-      Util.tryCatch(
-        () => [process, process.exit],
-        ([obj, exit]) => exit.call(obj, exitCode),
-        () => false
-      )
-    );
+    .catch(() =>*/ Util.tryCatch(
+    () => [process, process.exit],
+    ([obj, exit]) => exit.call(obj, exitCode),
+    () => false
+  );
 };
 Util.atexit = handler => {
   const { handlers } = Util.callMain;
@@ -5311,7 +5309,7 @@ Util.callMain = async (fn, trapExceptions) =>
         // Util.exit(ret);
       }));
       Util.trapExit = Util.once(() => Util.signal(15, callExitHandlers));
-      if(Util.getPlatform() == 'quickjs') await import('std').then(module => module.gc());
+      /* XXX if(Util.getPlatform() == 'quickjs') await import('std').then(module => module.gc()); */
       let ret = await fn(...args);
       await callExitHandlers(ret);
     },
@@ -5325,7 +5323,7 @@ Util.callMain = async (fn, trapExceptions) =>
               () => process.argv[1],
               argv1 => argv1.replace(/\/[^\/]*$/g, '')
             );
-            console.log('Exception:', message, '\nStack:' + (stack.toString({colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  '));
+            console.log('Exception:', message, '\nStack:' + (stack.toString({ colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  '));
             Util.exit(1);
           })
   )(...Util.getArgs().slice(1));
@@ -5848,12 +5846,13 @@ Util.lazyProperty(
       console.log('STACK:', Util.getCallerStack());
 
       performanceNow = async function(clock = CLOCK_MONOTONIC_RAW) {
+        /* XXX 
         if(!gettime) {
           const { dlsym, RTLD_DEFAULT, define, call } = await import('ffi.so');
           const clock_gettime = dlsym(RTLD_DEFAULT, 'clock_gettime');
           define('clock_gettime', clock_gettime, null, 'int', 'int', 'void *');
           gettime = (clk_id, tp) => call('clock_gettime', clk_id, tp);
-        }
+        }*/
         let data = new ArrayBuffer(16);
 
         gettime(clock, data);
