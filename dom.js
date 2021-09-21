@@ -107,7 +107,7 @@ export const CSSTransformSetters = element => ({
   },
   updateTransformation() {
     const t = this.transformation.toString();
-    Util.log('CSSTransformSetters.updateTransformation', t);
+    console.log('CSSTransformSetters.updateTransformation', t);
     this.style.transform = t;
   }
 });

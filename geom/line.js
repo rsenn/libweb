@@ -61,7 +61,7 @@ export function Line(...args) {
     });
 
   if(!isLine(obj)) {
-    //Util.log('ERROR: is not a line: ', Util.inspect(arg), Util.inspect(obj));
+    //console.log('ERROR: is not a line: ', Util.inspect(arg), Util.inspect(obj));
   }
 
   if(!['x1', 'y1', 'x2', 'y2'].every(prop => !isNaN(+obj[prop]))) return null;
@@ -215,9 +215,9 @@ Line.prototype.angle = function() {
 Line.prototype.getLength = function() {
   const { a, b } = this;
   const { x1, y1, x2, y2 } = this;
-  //Util.log("a:",a, " b:",b);
-  //Util.log('a:', a, ' b:', b);
-  //Util.log('this:', this);
+  //console.log("a:",a, " b:",b);
+  //console.log('a:', a, ' b:', b);
+  //console.log('this:', this);
   return Point.prototype.distance.call(a, b);
 };
 Line.prototype.endpointDist = function(point) {

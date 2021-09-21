@@ -1369,7 +1369,7 @@ class Parser {
     } catch(err) {
       err.token = this.cur_token;
       console.error('ERROR:', err);
-      Util.log('ERROR:', err);
+      console.log('ERROR:', err);
       throw err;
     }
   }

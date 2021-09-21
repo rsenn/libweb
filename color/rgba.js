@@ -15,7 +15,7 @@ export function RGBA(...args) {
   let c = [];
 
   if(args.length == 1 && Util.isArray(args[0]) && args[0].length >= 3) args = args[0];
-  //Util.log('RGBA(', args, ')');
+  //console.log('RGBA(', args, ')');
 
   if(args.length >= 3) {
     const [r = 0, g = 0, b = 0, a = 255] = args;
@@ -33,7 +33,7 @@ export function RGBA(...args) {
 
         let mul = arg.length >= 7 ? 1 : 17;
 
-        //Util.log('RGBA match:', c, ' mul:', mul);
+        //console.log('RGBA match:', c, ' mul:', mul);
 
         ret.r = parseInt(c[1], 16) * mul;
         ret.g = parseInt(c[2], 16) * mul;
@@ -68,7 +68,7 @@ export function RGBA(...args) {
   if(ret.a !== undefined && isNaN(+ret.a)) ret.a = 255;
   if(isNaN(ret.a)) ret.a = 255;
 
-  //Util.log('RGBA ', ret);
+  //console.log('RGBA ', ret);
   if(!(ret instanceof RGBA)) return ret; //Object.setPrototypeOf(ret, RGBA.prototype);
 }
 
@@ -161,7 +161,7 @@ RGBA.fromHex = (hex, alpha = 255) => {
   let mul = hex.length >= 7 ? 1 : 17;
 
   const [r, g, b, a] = [...matches].slice(1).map(x => parseInt(x, 16) * mul);
-  //Util.log('RGBA.fromHex', { hex, matches, r, g, b, a });
+  //console.log('RGBA.fromHex', { hex, matches, r, g, b, a });
   return new RGBA(r, g, b, matches.length > 3 && !isNaN(a) ? a : alpha);
 };
 
@@ -333,7 +333,7 @@ RGBA.prototype.toHSLA = function() {
   s *= 100;
   l *= 100;
 
-  //Util.log("RGBA.toHSLA ", { h, s, l, a });
+  //console.log("RGBA.toHSLA ", { h, s, l, a });
 
   return new (Object.isFrozen(this) ? ImmutableHSLA : HSLA)(Math.round(h), Util.roundTo(s, 100 / 255), Util.roundTo(l, 100 / 255), Util.roundTo(a, 1 / 255));
 };

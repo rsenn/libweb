@@ -34,7 +34,7 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
     newClasses = newClasses.filter(i => classes.indexOf(i) == -1);
     if(newClasses.length) {
       st.set('classes', (classes = Util.unique(classes.concat(newClasses))));
-      Util.log('dev.classes ', newClasses);
+      console.log('dev.classes ', newClasses);
     }
     return newClasses;
   };
@@ -42,7 +42,7 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
   /*
   window.addEventListener('load', () => {
     Timer.once(3000, () => {
-      Util.log('running accumulateClasses');
+      console.log('running accumulateClasses');
       accumulateClasses();
     });
   });*/
@@ -86,11 +86,11 @@ if(!Array.prototype.front) {
 
 export function stylesheets() {
   let r = Util.map(document.styleSheets, (s, i) => {
-    Util.log('i: ', i, ' s: ', s);
+    console.log('i: ', i, ' s: ', s);
 
     [...s.cssRules].map(r => r.cssText);
   });
-  Util.log('Util.stylesheets() ', r);
+  console.log('Util.stylesheets() ', r);
   return r;
 }
 
@@ -104,7 +104,7 @@ export const colors = (() => {
     opts = opts || { height: 322, width: 80 };
 
     let count = args.length;
-    Util.log('colors map(', args, ')');
+    console.log('colors map(', args, ')');
     const left = elements.length ? Element.rect(elements[0]).x2 + stepX : stepX;
 
     let dim = Element.rect('.item-box-size') || new Rect(opts);
@@ -130,7 +130,7 @@ export const colors = (() => {
       prev = key;
       const c = new RGBA(color.r, color.g, color.b, color.a);
 
-      //Util.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
+      //console.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
 
       f('div', {
         innerHTML: `<div class="colors-text" style="opacity:0;">${((typeof key == 'number' ? key.toFixed(2) : key) + ': ' + c.toString()).replace(/ /g, '&nbsp;')}</div>`,
@@ -173,7 +173,7 @@ export async function getStars() {
     let matrix = new dom.Matrix(e.getAttribute('transform'));
     let rect = dom.SVG.bbox(e);
     rect = matrix.transform_rect(rect);
-    Util.log('getRect: ', { matrix, rect });
+    console.log('getRect: ', { matrix, rect });
     return rect;
   }
   r.paths = dom.Element.findAll('path', r.svg).filter(e => getRect(e).isSquare());
@@ -220,7 +220,7 @@ export async function getStars() {
     e.setAttribute('stop-color', color.toString(255));
     e.setAttribute('stop-opacity', (color.a/255).toFixed(3));
 
-    Util.log('offset:',step.offset, ' color:',color, ' element: ', e);
+    console.log('offset:',step.offset, ' color:',color, ' element: ', e);
   });
 
 
@@ -267,7 +267,7 @@ export function gradient(element) {
       }));
     }
   };
-  Util.log('obj: ', obj);
+  console.log('obj: ', obj);
   arr.push(obj);
   return obj;
   //linear-gradient(0deg, #d70518 0%, #be071b 100%);
@@ -319,9 +319,9 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
       [1, '#edd455']
     ]
   });
-  Util.log('PointList: ', { d, g });
+  console.log('PointList: ', { d, g });
   //f.root.parentElement.removeChild(f.root);
-  Util.log('path: ', path.str());
+  console.log('path: ', path.str());
   let p = f('path', {
     d: path.str(),
     stroke: '#000',
@@ -329,10 +329,10 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
     fill: '#ff0',
     transform: 'translate(150,150)'
   });
-  //Util.log('c: ', c);
+  //console.log('c: ', c);
 
   c.appendChild(f.root);
-  Util.log(p);
+  console.log(p);
 
   return points;
 }
@@ -344,7 +344,7 @@ export function stores(stores) {
   if(!stores) stores = ['RootStore', 'UserStore'];
   for(let i = 0; i < stores.length; i++) {
     const st = stores[i];
-    Util.log('store: ', { st, AllStores });
+    console.log('store: ', { st, AllStores });
     const store = AllStores[st];
     while(args.length) {
       const prop = args.shift();
@@ -369,7 +369,7 @@ export function gettext(elem, done) {
   };
   return new Promise((resolve, reject) => {
     let e = elem;
-    Util.log('gettext ', { e });
+    console.log('gettext ', { e });
     let text = [];
     let prevParent;
     Element.walk(e, (node, root) => {
@@ -392,7 +392,7 @@ export function gettext(elem, done) {
       prevParent = parent;
     });
     const res = text.join('\n');
-    Util.log('gettext\n', res);
+    console.log('gettext\n', res);
     resolve(res);
   });
 }
@@ -411,7 +411,7 @@ export function select() {
       };
       const click = event => {
         event.preventDefault();
-        Util.log('selected element ', event.target);
+        console.log('selected element ', event.target);
         select.element = event.target;
         resolve(event.target);
         abortsel();
@@ -428,7 +428,7 @@ export function select() {
 export function maxZindex(root = 'body') {
   return Element.findAll('*[style*=z-index]', root).reduce((accu, e) => {
     const z = +e.style.zIndex;
-    //Util.log(Element.xpath(elem, body));
+    //console.log(Element.xpath(elem, body));
     return !isNaN(z) && z > accu ? z : accu;
   }, 0);
 }
@@ -445,7 +445,7 @@ export function boxes(state) {
       parent: body
     });
     let cr = Element.rect(page);
-    //Util.log('container Rect: ', cr);
+    //console.log('container Rect: ', cr);
     Element.setCSS(boxes, {
       backgroundImage: 'url(/static/img/boxes-480.svg)',
       backgroundPosition: 'upperLeft',
@@ -458,8 +458,8 @@ export function boxes(state) {
     cr.h = 800;
     Element.setCSS(boxes, Rect.toCSS(cr));
     let rect = Element.rect(boxes);
-    //Util.log('boxes Rect: ', rect);
-    //Util.log('boxes CSS: ', Element.getCSS(boxes));
+    //console.log('boxes Rect: ', rect);
+    //console.log('boxes CSS: ', Element.getCSS(boxes));
   }
 }
 
@@ -471,7 +471,7 @@ export function res(width, height) {
   let page = Element.find('.page');
   let rect = Element.rect(page);
   let a = Size.aspect(rect);
-  //Util.log('a: ', a);
+  //console.log('a: ', a);
   rect.left = rect.top = '0px';
   rect.height = height || width / a;
   rect.width = width;
@@ -518,19 +518,19 @@ export function ws(cmd = 'send', filename, data) {
     }
     ws.onclose = function(event) {
       ws.close();
-      Util.log('ws: onclose ', { event });
+      console.log('ws: onclose ', { event });
     };
     ws.onerror = function(event) {
       reject(event);
-      Util.log('ws: onerror');
+      console.log('ws: onerror');
     };
 
     /*ws.onmessage = function(msg) {
     if(!(typeof(msg.data) == 'object' && msg.data.cmd))
-      Util.log(`ws.ondata '`, msg.data, "'");
+      console.log(`ws.ondata '`, msg.data, "'");
   }ch*/
     ws.onopen = function(event) {
-      Util.log('ws.onopen ', { event });
+      console.log('ws.onopen ', { event });
       if(cmd == 'send' || cmd == 'recv') {
         let json = {
           cmd,
@@ -538,17 +538,17 @@ export function ws(cmd = 'send', filename, data) {
           data: data ? window.btoa(encodeURIComponent(data)) : null
         };
         ws.send(JSON.toString(json) + '\r\n');
-        Util.log('ws.send ', json);
+        console.log('ws.send ', json);
         if(cmd == 'recv') {
           ws.onmessage = msg => {
-            Util.log('ws.msg ', msg);
+            console.log('ws.msg ', msg);
             if(msg.data == '') return;
             let x = msg.data.charAt(0) != '{' ? decodeBase64(msg.data) : msg.data;
             if(x.charAt(0) == '{') {
               x = JSON.parse(x);
               if(x.cmd == 'recv') return;
             }
-            Util.log('ws.data ', x);
+            console.log('ws.data ', x);
             if(typeof data === 'function') data(x);
             ws.close();
             resolve(x);
@@ -571,7 +571,7 @@ export function settext(en, fa) {
   const nl = '\r\n';
   ws({ recv: filename }).then(x => {
     const d = x.data;
-    Util.log('settext: ', obj);
+    console.log('settext: ', obj);
     ws({
       send: filename,
       data: JSON.toString({ ...x, ...obj })
@@ -605,7 +605,7 @@ export async function img(name, arg = {}) {
           /*  r.x += width;
         this.width = width;*/
           Element.setRect(e, r);
-          //Util.log("HashList ctor ", { width, r, id });
+          //console.log("HashList ctor ", { width, r, id });
           return e;
           //return { e, r, id, xpath, svg };
         }
@@ -624,7 +624,7 @@ export async function img(name, arg = {}) {
 
     if(await res) {
       /*      .then(res => {
-       */ Util.log('Loading image: ', { path, res });
+       */ console.log('Loading image: ', { path, res });
       let e = Element.create('div', {
         path,
         parent: body,
@@ -648,7 +648,7 @@ export async function img(name, arg = {}) {
       while(svg.viewBox === undefined) svg = svg.nextElementSibling;
       const bbox = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
       let r = Rect(av ? av : bbox);
-      Util.log('r = ', r, ' bbox = ', bbox);
+      console.log('r = ', r, ' bbox = ', bbox);
       let pr = Element.rect('.page');
       let pos = Point.sum(Rect.corners(pr)[1], Point(0, 0));
 
@@ -661,7 +661,7 @@ export async function img(name, arg = {}) {
       const arr = list.add(e);
       if(arr.length == 2) {
         Timer.once(1333, () => {
-          Util.log('walk(', arr[0].e, ', ', arr[1].e, ')');
+          console.log('walk(', arr[0].e, ', ', arr[1].e, ')');
           walk(arr[0].e, arr[1].e);
         });
       }
@@ -683,7 +683,7 @@ l = new dom.Line(dom.Element.toObject(gr));
 matrix = new dom.Matrix(gr.getAttribute('gradientTransform'));
 rg = dom.Element.find('radialGradient', svg);
 obj = dom.Element.toObject(rg);
-Util.log(dom.Element.toObject(rg));
+console.log(dom.Element.toObject(rg));
 layer = createsvg(['100vw','100vh'], true);
 createsvg(obj, layer);
 });
@@ -696,7 +696,7 @@ export function createsvg(wh, fixed = false) {
       delete args[0].tagName;
       args.unshift(tagName);
     }
-    Util.log('createsvg ', ...args);
+    console.log('createsvg ', ...args);
     let e = createsvg.factory(...args);
     createsvg.last_element = e;
     return e;
@@ -704,7 +704,7 @@ export function createsvg(wh, fixed = false) {
   let body = Element.find('body');
   let rect = fixed ? Size(window.innerWidth, window.innerHeight) : Element.rect(body);
   const size = Size(args) || new Size(rect);
-  Util.log('svg size: ', size);
+  console.log('svg size: ', size);
   createsvg.factory = SVG.factory(body, Size.convertUnits(size));
   let e = createsvg.factory('polygon', {
     points: '0,100 100,0 0,0 100,100',
@@ -713,26 +713,26 @@ export function createsvg(wh, fixed = false) {
   });
   let pl = PointList(e.getAttribute('points'));
   let svg = e.parentElement;
-  //Util.log('pl: ', pl);
-  //Util.log('parentNode: ', svg);
+  //console.log('pl: ', pl);
+  //console.log('parentNode: ', svg);
   Element.setCSS(svg, { zIndex: 500, ...Size.toCSS(size) });
   Element.move(svg, [0, 0], fixed ? 'fixed' : 'absolute');
   let svgrect = Element.rect(svg);
-  //Util.log('svgrect: ', svgrect);
-  //Util.log('svg: ', Element.dump(svg));
+  //console.log('svgrect: ', svgrect);
+  //console.log('svg: ', Element.dump(svg));
   return (createsvg.element = svg);
 }
 
 export function setpos(element) {
   let e = Element.find(element);
-  //Util.log('e: ', Element.dump(e));
+  //console.log('e: ', Element.dump(e));
   if(e) {
     window.onmousemove = function(event) {
       let rect = Element.rect(e);
       let pos = Point(event.clientX, event.clientY);
-      //Util.log('mouse pos: ', pos);
-      //Util.log('rect: ', rect);
-      //Util.log('rect corners: ', Rect.corners(rect));
+      //console.log('mouse pos: ', pos);
+      //console.log('rect: ', rect);
+      //console.log('rect corners: ', Rect.corners(rect));
       Element.move(e, pos);
     };
     window.onclick = function(event) {
@@ -814,7 +814,7 @@ export function walk(element) {
         if(text.length > 0 && !(key.startsWith('style') || key.startsWith('script'))) {
           const ch = text.charCodeAt(0);
           let line = texts.add({ e, id, lang, key, text, rect });
-          Util.log('Text ', line[line.length - 1]);
+          console.log('Text ', line[line.length - 1]);
         }
       }
     })
@@ -851,8 +851,8 @@ export function walk(element) {
   ws({ send: 'extract.txt', data: out });
 
   window.output_accu = out;
-  Util.log('walk output:\n' + window.output_accu);
-  //reduceTexts((acc,text) => Util.log("text " + text.index));
+  console.log('walk output:\n' + window.output_accu);
+  //reduceTexts((acc,text) => console.log("text " + text.index));
 }
 
 export async function measure(element) {
@@ -860,9 +860,9 @@ export async function measure(element) {
   let e = Element.find(element);
   let r = Element.rect(e);
 
-  Util.log('Element ', Element.xpath(e));
-  Util.log('    rect: ', r);
-  Util.log('     css: ', Element.getCSS(e));
+  console.log('Element ', Element.xpath(e));
+  console.log('    rect: ', r);
+  console.log('     css: ', Element.getCSS(e));
 }
 
 export function trackElements() {
@@ -993,12 +993,12 @@ export function rect(...args) {
       pointerEvents: 'none'
     });
 
-    //Util.log("__rect ", rect, color);
+    //console.log("__rect ", rect, color);
 
     Element.setRect(e, rect.round(1), 'absolute');
 
     let computed = Element.getRect(e);
-    //Util.log("rect: ", rect, " computed: ", computed);
+    //console.log("rect: ", rect, " computed: ", computed);
     const proxy = new ElementRectProxy(e);
     ElementXYProps(e, proxy);
     ElementSizeProps(e, proxy);
@@ -1031,7 +1031,7 @@ export function borders(element) {
 
   if(!b.padding.null()) rect(rects.border, 'rgba(0,80,255,0.5)', 'blue');
 
-  Util.log('e: ', e, ' b: ', b);
+  console.log('e: ', e, ' b: ', b);
 }
 
 export function storage(name) {

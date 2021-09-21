@@ -38,7 +38,7 @@ export function TRBL(arg) {
     Object.defineProperty(ret, name, { enumerable: true, value: TRBL.prototype[name] })
   ); */
 
-  //Util.log('ret: ', ret);
+  //console.log('ret: ', ret);
 
   if(!this || this === TRBL) return Object.assign(ret, TRBL.prototype);
 }
