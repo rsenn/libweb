@@ -5223,29 +5223,29 @@ Util.getEnvVars = async () =>
     () => process.env,
     async e => e,
     () => false
-// XXX     Util.tryCatch(
-//        async () =>
-//          await import('./childProcess.js').then(async ({ PortableChildProcess }) => {
-//            let childProcess = await PortableChildProcess();
-//            (await import('./filesystem.js')).default(fs => (Util.globalThis().filesystem = fs));
-//            let proc = childProcess('env', [], {
-//              block: false,
-//              stdio: [null, 'pipe']
-//            });
-//            let data = '\n';
-//            for await(let output of await filesystem.asyncReader(proc.stdout)) data += filesystem.bufferToString(output);
-//            let matches = [...Util.matchAll(/(^|\n)[A-Za-z_][A-Za-z0-9_]*=.*/gm, data)];
-//            let indexes = matches.map(match => match.index);
-//            let ranges = indexes.reduce((acc, idx, i, a) => [...acc, [idx + 1, a[i + 1]]], []);
-//            let vars = ranges
-//              .map(r => data.substring(...r))
-//              .map(line => {
-//                let eqPos = line.indexOf('=');
-//                return [line.substring(0, eqPos), line.substring(eqPos + 1)];
-//              });
-//            return Object.fromEntries(vars);
-//          })
-//      )
+    // XXX     Util.tryCatch(
+    //        async () =>
+    //          await import('./childProcess.js').then(async ({ PortableChildProcess }) => {
+    //            let childProcess = await PortableChildProcess();
+    //            (await import('./filesystem.js')).default(fs => (Util.globalThis().filesystem = fs));
+    //            let proc = childProcess('env', [], {
+    //              block: false,
+    //              stdio: [null, 'pipe']
+    //            });
+    //            let data = '\n';
+    //            for await(let output of await filesystem.asyncReader(proc.stdout)) data += filesystem.bufferToString(output);
+    //            let matches = [...Util.matchAll(/(^|\n)[A-Za-z_][A-Za-z0-9_]*=.*/gm, data)];
+    //            let indexes = matches.map(match => match.index);
+    //            let ranges = indexes.reduce((acc, idx, i, a) => [...acc, [idx + 1, a[i + 1]]], []);
+    //            let vars = ranges
+    //              .map(r => data.substring(...r))
+    //              .map(line => {
+    //                let eqPos = line.indexOf('=');
+    //                return [line.substring(0, eqPos), line.substring(eqPos + 1)];
+    //              });
+    //            return Object.fromEntries(vars);
+    //          })
+    //      )
   );
 
 Util.safeFunction = (fn, trapExceptions, thisObj) => {
@@ -5285,15 +5285,14 @@ Util.exit = exitCode => {
     std.exit(exitCode);
   };
   if(globalThis.std) return stdExit(globalThis.std);
-  return /* XXX import('std')
+  return;
+  /* XXX import('std')
     .then(stdExit)
-    .catch(() =>*/(
-      Util.tryCatch(
-        () => [process, process.exit],
-        ([obj, exit]) => exit.call(obj, exitCode),
-        () => false
-      )
-    );
+    .catch(() =>*/ Util.tryCatch(
+    () => [process, process.exit],
+    ([obj, exit]) => exit.call(obj, exitCode),
+    () => false
+  );
 };
 Util.atexit = handler => {
   const { handlers } = Util.callMain;
@@ -5324,7 +5323,7 @@ Util.callMain = async (fn, trapExceptions) =>
               () => process.argv[1],
               argv1 => argv1.replace(/\/[^\/]*$/g, '')
             );
-            console.log('Exception:', message, '\nStack:' + (stack.toString({colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  '));
+            console.log('Exception:', message, '\nStack:' + (stack.toString({ colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  '));
             Util.exit(1);
           })
   )(...Util.getArgs().slice(1));
