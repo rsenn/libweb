@@ -428,7 +428,7 @@ Rect.prototype[Symbol.iterator] = function* () {
 };
 Rect.prototype[Util.inspectSymbol] = function(depth, options) {
   const { x, y, width, height } = this;
-  return Object.setPrototypeOf({ x, y, width, height }, Rect.prototype);
+  return /*Object.setPrototypeOf*/({ x, y, width, height }/*, { [Symbol.toStringTag]: 'Rect' }*/);
 };
 Rect.isBBox = rect => !(rect instanceof Rect) && ['x1', 'x2', 'y1', 'y2'].every(prop => prop in rect);
 Rect.assign = (to, rect) => Object.assign(to, new Rect(rect).toObject(Rect.isBBox(to)));

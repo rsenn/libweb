@@ -88,6 +88,7 @@ export class Graph {
     let args = [...arguments];
     let ids = [];
     if(!(e instanceof Edge)) {
+    console.log('addEdge', args);
       e = new Edge(args[0], args[1]);
       ids = [this.nodes.indexOf(args[0]), this.nodes.indexOf(args[1])];
     }
@@ -388,17 +389,17 @@ export class Node extends Point {
   }
 }
 
-export class Edge extends Line {
+export class Edge  {
   a = null;
   b = null;
 
   constructor(node_a, node_b) {
-    super();
+   // super();
     if(node_a) this.a = node_a instanceof Node ? node_a : Node.clone(node_a);
     if(node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
     if(!(node_a && node_b)) {
-      throw new Error('Edge requires 2 nodes');
+      throw new Error('Edge requires 2 nodes\n'+new Error().stack);
     }
 
     this.draggable = false;
@@ -440,6 +441,12 @@ export class Edge extends Line {
   }
 
   draw(ctx) {}
+
+  get [Symbol.toStringTag]() {return 'Edge'; }
+
+  [Symbol.for('nodejs.util.inspect.custom')](options= {}) {
+
+  }
 }
 
 const fdgraph = { Graph, GraphEdge: Edge, GraphNode: Node };

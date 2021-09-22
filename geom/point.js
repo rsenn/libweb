@@ -342,7 +342,7 @@ Point.isPoint = isPoint;
 
 Point.prototype[Util.inspectSymbol] = function(depth, options) {
   const { x, y } = this;
-  return Object.setPrototypeOf({ x, y }, Point.prototype);
+  return /*Object.setPrototypeOf*/({ x, y }/*, Point.prototype*/);
 };
 
 Point.bind = (...args) => {

@@ -281,7 +281,7 @@ Line.prototype.points = function() {
 
 Line.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, options = {}) {
   const { x1, y1, x2, y2 } = this;
-  return 'Line ' + Util.inspect({ x1, y1, x2, y2 }, options) + ' }';
+  return this[Symbol.toStringTag]+' '+Util.inspect({ x1, y1, x2, y2 }, options) + ' }';
 };
 Line.prototype.toString = function(opts = {}) {
   let { separator = ', ', brackets, pad = 6, ...options } = opts;

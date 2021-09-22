@@ -15,8 +15,10 @@ export const httpClient = (() => {
     },
     async err => {
       const { code, config, request } = await err;
-      const { url, method, data } = (await config) || {};
-      console.error('axios ERROR:', { code, url, method, data });
+      const cfg = (await config) || {};
+      const { url, method, data } = cfg;
+          Error.stackTraceLimit = 100;
+      console.error('axios ERROR:', { code, url, method, data }, /*cfg,*/ new Error().stack);
       //throw new Error(err.response.data.message);
     }
   );
