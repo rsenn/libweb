@@ -21,7 +21,20 @@ import Util from './util.js';
 
 export class Graph {
   constructor(options = {}) {
-    let { origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => true, onUpdateEdge = edge => true, onRenderGraph = graph => true } = options;
+    let {
+      origin = new Point(0, 0),
+      size = new Size(1000, 1000),
+      prng = Math.random,
+      gravitate_to_origin = true,
+      charge = 100,
+      mass = 240,
+      spacing = 3,
+      timestep = 150,
+      damping = 0.000005,
+      onUpdateNode = node => true,
+      onUpdateEdge = edge => true,
+      onRenderGraph = graph => true
+    } = options;
 
     console.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
@@ -32,7 +45,8 @@ export class Graph {
     this.damping = damping;
     this.timestep = timestep;
 
-    this.gravitate_to_origin = typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
+    this.gravitate_to_origin =
+      typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
 
@@ -88,7 +102,7 @@ export class Graph {
     let args = [...arguments];
     let ids = [];
     if(!(e instanceof Edge)) {
-    console.log('addEdge', args);
+      console.log('addEdge', args);
       e = new Edge(args[0], args[1]);
       ids = [this.nodes.indexOf(args[0]), this.nodes.indexOf(args[1])];
     }
@@ -370,7 +384,10 @@ export class Node extends Point {
     let distance = this.distance(n);
     let force = scale * Math.max(distance + 200, 1);
 
-    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
+    this.netforce.move(
+      force * Math.sin((n.x - this.x) / distance),
+      force * Math.sin((n.y - this.y) / distance)
+    );
   }
 
   applyRepulsiveForce(n, scale = 1) {
@@ -382,24 +399,27 @@ export class Node extends Point {
   }
 
   toJS() {
-    let ret = Util.filterKeys(this, key => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1);
+    let ret = Util.filterKeys(
+      this,
+      key => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1
+    );
     if(this.node && this.node.id !== undefined) ret.id = this.node.id;
     Point.round(ret, 0.001);
     return ret;
   }
 }
 
-export class Edge  {
+export class Edge {
   a = null;
   b = null;
 
   constructor(node_a, node_b) {
-   // super();
+    // super();
     if(node_a) this.a = node_a instanceof Node ? node_a : Node.clone(node_a);
     if(node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
     if(!(node_a && node_b)) {
-      throw new Error('Edge requires 2 nodes\n'+new Error().stack);
+      throw new Error('Edge requires 2 nodes\n' + new Error().stack);
     }
 
     this.draggable = false;
@@ -442,11 +462,11 @@ export class Edge  {
 
   draw(ctx) {}
 
-  get [Symbol.toStringTag]() {return 'Edge'; }
-
-  [Symbol.for('nodejs.util.inspect.custom')](options= {}) {
-
+  get [Symbol.toStringTag]() {
+    return 'Edge';
   }
+
+  [Symbol.for('nodejs.util.inspect.custom')](options = {}) {}
 }
 
 const fdgraph = { Graph, GraphEdge: Edge, GraphNode: Node };

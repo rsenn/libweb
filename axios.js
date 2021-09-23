@@ -17,7 +17,7 @@ export const httpClient = (() => {
       const { code, config, request } = await err;
       const cfg = (await config) || {};
       const { url, method, data } = cfg;
-          Error.stackTraceLimit = 100;
+      Error.stackTraceLimit = 100;
       console.error('axios ERROR:', { code, url, method, data }, /*cfg,*/ new Error().stack);
       //throw new Error(err.response.data.message);
     }
