@@ -95,7 +95,13 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
+        if(
+          ((f = 1),
+          y &&
+            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
+            !(t = t.call(y, op[1])).done)
+        )
+          return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -239,7 +245,9 @@ function delay(wait) {
                     timer = new Timer(wait);
                     timers.add(timer);
                     if(timers.size > MAX_QUEUE_LENGTH) {
-                      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' calls to next are allowed on a single delay repeater.');
+                      throw new RepeaterOverflowError(
+                        'No more than ' + MAX_QUEUE_LENGTH + ' calls to next are allowed on a single delay repeater.'
+                      );
                     }
                     timer.run(() => {
                       timers.delete(timer);
@@ -263,7 +271,11 @@ function delay(wait) {
             return [3 /*break*/, 6];
           case 5:
             try {
-              for(timers_1 = __values(timers), timers_1_1 = timers_1.next(); !timers_1_1.done; timers_1_1 = timers_1.next()) {
+              for(
+                timers_1 = __values(timers), timers_1_1 = timers_1.next();
+                !timers_1_1.done;
+                timers_1_1 = timers_1.next()
+              ) {
                 timer = timers_1_1.value;
                 timer.clear();
               }

@@ -1,8 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { Point, Element, SVG } from "../dom.js";
-import { trkl } from "../trkl.js";
-import { lazyInitializer } from "../lazyInitializer.js";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Point, Element, SVG } from '../dom.js';
+import { trkl } from '../trkl.js';
+import { lazyInitializer } from '../lazyInitializer.js';
 
 export function SvgPathTracer(path) {
   let bbox = SVG.bbox(path);

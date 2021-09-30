@@ -87,7 +87,8 @@ Object.defineProperties(Stack, {
   }
 });
 
-for(let method of ['slice', 'splice', 'indexOf', 'lastIndexOf', 'find', 'findIndex', 'findLastIndex', 'entries', 'values', 'filter', 'reverse', 'shift', 'unshift', 'push', 'pop']) Stack.prototype[method] = Array.prototype[method];
+for(let method of ['slice', 'splice', 'indexOf', 'lastIndexOf', 'find', 'findIndex', 'findLastIndex', 'entries', 'values', 'filter', 'reverse', 'shift', 'unshift', 'push', 'pop'])
+  Stack.prototype[method] = Array.prototype[method];
 
 export class StackFrame {
   constructor(obj) {

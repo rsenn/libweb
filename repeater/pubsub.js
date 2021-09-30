@@ -73,7 +73,13 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
+        if(
+          ((f = 1),
+          y &&
+            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
+            !(t = t.call(y, op[1])).done)
+        )
+          return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -148,7 +154,11 @@ let InMemoryPubSub = /** @class */ (function () {
     let publishers = this.publishers[topic];
     if(publishers != null) {
       try {
-        for(var publishers_1 = __values(publishers), publishers_1_1 = publishers_1.next(); !publishers_1_1.done; publishers_1_1 = publishers_1.next()) {
+        for(
+          var publishers_1 = __values(publishers), publishers_1_1 = publishers_1.next();
+          !publishers_1_1.done;
+          publishers_1_1 = publishers_1.next()
+        ) {
           let _b = publishers_1_1.value,
             push = _b.push,
             stop_1 = _b.stop;
@@ -177,7 +187,11 @@ let InMemoryPubSub = /** @class */ (function () {
       return;
     }
     try {
-      for(var publishers_2 = __values(publishers), publishers_2_1 = publishers_2.next(); !publishers_2_1.done; publishers_2_1 = publishers_2.next()) {
+      for(
+        var publishers_2 = __values(publishers), publishers_2_1 = publishers_2.next();
+        !publishers_2_1.done;
+        publishers_2_1 = publishers_2.next()
+      ) {
         let stop_2 = publishers_2_1.value.stop;
         stop_2(reason);
       }

@@ -143,7 +143,9 @@ export class MutableXPath extends MutablePath {
   }
 
   static parse(l) {
-    l = Util.isArray(l) ? l : l.split(new RegExp(`\\s?[.\\/${this.CHILDREN_GLYPH}]\\s?`, 'g')).map(p => (isNaN(+p) ? p : +p));
+    l = Util.isArray(l)
+      ? l
+      : l.split(new RegExp(`\\s?[.\\/${this.CHILDREN_GLYPH}]\\s?`, 'g')).map(p => (isNaN(+p) ? p : +p));
     //console.log('MutableXPath.parse', { l });
     if(l[0] == '') l.shift();
     if(l.indexOf('children') != -1) {
@@ -262,7 +264,9 @@ export class MutableXPath extends MutablePath {
         part = `find(${ImmutableXPath.partMatcher(part)})`;
       } else if(part.tagName) {
         const cond = `tagName=='${part.tagName}'`;
-        const attrs = part.attributes ? Object.entries(part.attributes).map(([k, v]) => `attributes.${k} == '${v}'`) : [];
+        const attrs = part.attributes
+          ? Object.entries(part.attributes).map(([k, v]) => `attributes.${k} == '${v}'`)
+          : [];
         const pred = `({tagName${attrs.length ? ',attributes' : ''}}) => ${[cond, ...attrs].join(' & ')}`;
         part = `find(${pred})`;
       }

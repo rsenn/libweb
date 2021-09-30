@@ -93,7 +93,13 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
+        if(
+          ((f = 1),
+          y &&
+            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
+            !(t = t.call(y, op[1])).done)
+        )
+          return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -480,7 +486,9 @@ let RepeaterController = /** @class */ (function () {
   RepeaterController.prototype.push = function(value) {
     swallow(value);
     if(this.pushQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' pending calls to push are allowed on a single repeater.');
+      throw new RepeaterOverflowError(
+        'No more than ' + MAX_QUEUE_LENGTH + ' pending calls to push are allowed on a single repeater.'
+      );
     } else if(this.state >= 2 /* Stopped */) {
       return Promise.resolve(undefined);
     }
@@ -591,7 +599,11 @@ let RepeaterController = /** @class */ (function () {
   RepeaterController.prototype.next = function(value) {
     swallow(value);
     if(this.pullQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' pending calls to Repeater.prototype.next are allowed on a single repeater.');
+      throw new RepeaterOverflowError(
+        'No more than ' +
+          MAX_QUEUE_LENGTH +
+          ' pending calls to Repeater.prototype.next are allowed on a single repeater.'
+      );
     }
     if(this.state <= 0 /* Initial */) this.execute();
     this.onnext(value);
@@ -753,7 +765,11 @@ function asyncIterators(contenders, options) {
     }
   };
   try {
-    for(var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next(); !contenders_1_1.done; contenders_1_1 = contenders_1.next()) {
+    for(
+      var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next();
+      !contenders_1_1.done;
+      contenders_1_1 = contenders_1.next()
+    ) {
       let contender = contenders_1_1.value;
       _loop_1(contender);
     }
@@ -791,7 +807,11 @@ function race(contenders) {
             if(stopped) return [3 /*break*/, 6];
             results = iters.map(iter => iter.next());
             try {
-              for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next(); !results_1_1.done; results_1_1 = results_1.next()) {
+              for(
+                results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next();
+                !results_1_1.done;
+                results_1_1 = results_1.next()
+              ) {
                 result_1 = results_1_1.value;
                 Promise.resolve(result_1).then(
                   result => {

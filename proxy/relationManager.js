@@ -124,7 +124,9 @@ function addRelations(instance, specs) {
       //stopping set when value already in place prevents infinite recursion
       if(set.value !== subject) {
         if(subject && !(subject instanceof subjectSpec.class)) {
-          throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name);
+          throw new TypeError(
+            subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name
+          );
         }
         let oldvalue = set.value;
         set.value = subject;

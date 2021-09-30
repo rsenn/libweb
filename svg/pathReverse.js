@@ -324,7 +324,14 @@ export function reverseNormalizedPath(normalized) {
       var pre = terms.slice(Math.max(t - 3, 0), 3).join(' ');
       post = terms.slice(t + 1, Math.min(t + 4, tlen1)).join(' ');
       range = pre + ' [' + term + '] ' + post;
-      throw 'Error while trying to reverse normalized SVG path, at position ' + t + ' (' + range + ').\n' + "Either the path is not normalised, or it's malformed.";
+      throw (
+        'Error while trying to reverse normalized SVG path, at position ' +
+        t +
+        ' (' +
+        range +
+        ').\n' +
+        "Either the path is not normalised, or it's malformed."
+      );
     }
   }
 

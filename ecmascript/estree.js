@@ -1,7 +1,9 @@
 import Util from '../util.js';
 import inspect from '../objectInspect.js';
 
-const inspectSymbol = Symbol.for(Util.getPlatform() == 'quickjs' ? 'quickjs.inspect.custom' : 'nodejs.util.inspect.custom');
+const inspectSymbol = Symbol.for(
+  Util.getPlatform() == 'quickjs' ? 'quickjs.inspect.custom' : 'nodejs.util.inspect.custom'
+);
 const linebreak = /\r?\n/g;
 
 export class ESNode {
@@ -27,7 +29,11 @@ export class ESNode {
     //  console.log(`ESNode `, text+'');
     return Object.getOwnPropertyNames(this).reduce((acc, name) => ({ ...acc, [name]: this[name] }), {});
 
-    return (type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) + ' ' + inspect(props, { ...opts, customInspect: false });
+    return (
+      (type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) +
+      ' ' +
+      inspect(props, { ...opts, customInspect: false })
+    );
   }
 
   /* toJSON() {
@@ -179,7 +185,9 @@ export class Literal extends Expression {
   }
 
   static string(node) {
-    return Util.isObject(node) && typeof node.value == 'string' ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n') : undefined;
+    return Util.isObject(node) && typeof node.value == 'string'
+      ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n')
+      : undefined;
   }
 
   /*[inspectSymbol](n, opts = {}) {
