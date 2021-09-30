@@ -103,7 +103,9 @@ const JSONPatcherProxy = (function () {
     if(newValue && typeof newValue == 'object' && !instance._treeMetadataMap.has(newValue)) {
       if(isNonSerializableArrayProperty) {
         //This happens in Vue 1-2 (should not happen in Vue 3). See: https://github.com/vuejs/vue/issues/427, https://github.com/vuejs/vue/issues/9259
-        console.warn(`JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch. The value is an object, but it was not proxified, because it would not be addressable in JSON-Pointer`);
+        console.warn(
+          `JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch. The value is an object, but it was not proxified, because it would not be addressable in JSON-Pointer`
+        );
         warnedAboutNonIntegrerArrayProp = true;
       } else {
         instance._parenthoodMap.set(newValue, { parent: tree, key });
@@ -155,7 +157,9 @@ const JSONPatcherProxy = (function () {
       if(isNonSerializableArrayProperty) {
         /* array props (as opposed to indices) don't emit any patches, to avoid needless `length` patches */
         if(key != 'length' && !warnedAboutNonIntegrerArrayProp) {
-          console.warn(`JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch`);
+          console.warn(
+            `JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch`
+          );
         }
         return reflectionResult;
       }
@@ -336,7 +340,8 @@ const JSONPatcherProxy = (function () {
    */
   JSONPatcherProxy.prototype._disableTrapsForTreeMetadata = function(treeMetadata) {
     if(this._showDetachedWarning) {
-      const message = "You're accessing an object that is detached from the observedObject tree, see https://github.com/Palindrom/JSONPatcherProxy#detached-objects";
+      const message =
+        "You're accessing an object that is detached from the observedObject tree, see https://github.com/Palindrom/JSONPatcherProxy#detached-objects";
 
       treeMetadata.handler.set = (parent, key, newValue) => {
         console.warn(message);

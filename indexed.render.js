@@ -143,14 +143,34 @@ Indexed.Renderer.prototype = {
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures.pal);
     //		twgl.setTextureFromArray(this.gl, this.textures.pal, this.palette.data, {width: this.palette.length, height: 1, format: this.gl.RGB, type: this.gl.UNSIGNED_BYTE, update:true});
     this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
-    this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, 0, this.palette.length, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.palette.data8);
+    this.gl.texSubImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      0,
+      0,
+      this.palette.length,
+      1,
+      this.gl.RGBA,
+      this.gl.UNSIGNED_BYTE,
+      this.palette.data8
+    );
   },
   flip: function() {
     if(this.gl) {
       this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures.fb);
       //twgl.setTextureFromArray(this.gl, this.textures.fb, this.fb.data, {format: this.gl.LUMINANCE, width: this.width, height: this.height, type: this.gl.UNSIGNED_BYTE, update: true});
       this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
-      this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, 0, this.width, this.height, this.gl.LUMINANCE, this.gl.UNSIGNED_BYTE, this.fb.data);
+      this.gl.texSubImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        0,
+        0,
+        this.width,
+        this.height,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        this.fb.data
+      );
 
       this.gl.useProgram(this.programInfo.program);
       twgl.setBuffersAndAttributes(this.gl, this.programInfo, this.bufferInfo);
@@ -509,7 +529,13 @@ if(window.PLAYGROUND) {
   PLAYGROUND.Renderer.plugin = true;
   PLAYGROUND.Renderer.prototype = {
     create: function(data) {
-      this.app.layer = new Indexed.Renderer(this.app.container, this.app.width, this.app.height, this.app.scale, this.app.forcecanvas);
+      this.app.layer = new Indexed.Renderer(
+        this.app.container,
+        this.app.width,
+        this.app.height,
+        this.app.scale,
+        this.app.forcecanvas
+      );
     },
     postrender: function() {
       this.app.layer.flip();

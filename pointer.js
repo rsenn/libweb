@@ -10,7 +10,10 @@ export function DereferenceError(object, member, pos, prev, locator) {
       if(method) method = (frame.typeName || Util.className(frame.thisObj)) + '.' + method;
       else method = frame.getFunctionName();
 
-      return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
+      return `${('' + frame.getFileName()).replace(
+        /.*plot-cv\//,
+        ''
+      )}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
     });
   //console.log('member:', member);
   return Object.assign(
@@ -18,7 +21,12 @@ export function DereferenceError(object, member, pos, prev, locator) {
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${Util.className(object)} @ ${Pointer.prototype.toString.call(locator, '/', Pointer.partToString, 'children')}
+        `Error dereferencing ${Util.className(object)} @ ${Pointer.prototype.toString.call(
+          locator,
+          '/',
+          Pointer.partToString,
+          'children'
+        )}
 xml: ${Util.abbreviate(toXML(locator.root || object))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.inspect(prev, {
           depth: 2,
