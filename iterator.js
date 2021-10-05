@@ -1,8 +1,10 @@
 import Util from './util.js';
 
-export const isIterator = arg => typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
+export const isIterator = arg =>
+  typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
 
-export const isIterable = arg => typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
+export const isIterable = arg =>
+  typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
 
 export class IterableInterface {
   [Symbol.iterator]() {
@@ -64,7 +66,10 @@ export class Iterator extends IterableInterface {
     } else if(typeof arg == 'function') {
       ret = this;
       ret.next = arg;
-    } else if(((typeof arg == 'object' && arg !== null) || typeof arg == 'string') && arg.length !== undefined) {
+    } else if(
+      ((typeof arg == 'object' && arg !== null) || typeof arg == 'string') &&
+      arg.length !== undefined
+    ) {
       ret = (function* () {
         for(let i = 0; i < arg.length; i++) yield arg[i];
       })();

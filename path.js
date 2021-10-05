@@ -315,7 +315,10 @@ export const posix = {
     let matchedSlash = true;
     let i;
 
-    if(ext !== undefined /* && typeof ext == 'string' && ext.length > 0 && ext.length <= path.length*/) {
+    if(
+      ext !==
+      undefined /* && typeof ext == 'string' && ext.length > 0 && ext.length <= path.length*/
+    ) {
       if(typeof ext == 'string') if (ext.length === path.length && ext === path) return '';
 
       let extIdx = ext.length - 1;
@@ -441,7 +444,9 @@ export const posix = {
 
   format(pathObject) {
     if(pathObject === null || typeof pathObject !== 'object') {
-      throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject);
+      throw new TypeError(
+        'The "pathObject" argument must be of type Object. Received type ' + typeof pathObject
+      );
     }
     return _format('/', pathObject);
   },

@@ -119,7 +119,11 @@ let QRCode;
         this.setupTypeNumber(test);
       }
       if(this.dataCache == null) {
-        this.dataCache = QRCodeModel.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+        this.dataCache = QRCodeModel.createData(
+          this.typeNumber,
+          this.errorCorrectLevel,
+          this.dataList
+        );
       }
       this.mapData(this.dataCache, maskPattern);
     },
@@ -297,7 +301,9 @@ let QRCode;
       totalDataCount += rsBlocks[i].dataCount;
     }
     if(buffer.getLengthInBits() > totalDataCount * 8) {
-      throw new Error('code length overflow. (' + buffer.getLengthInBits() + '>' + totalDataCount * 8 + ')');
+      throw new Error(
+        'code length overflow. (' + buffer.getLengthInBits() + '>' + totalDataCount * 8 + ')'
+      );
     }
     if(buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
       buffer.put(0, 4);
@@ -632,7 +638,10 @@ let QRCode;
   }
   for(var i = 8; i < 256; i++) {
     QRMath.EXP_TABLE[i] =
-      QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
+      QRMath.EXP_TABLE[i - 4] ^
+      QRMath.EXP_TABLE[i - 5] ^
+      QRMath.EXP_TABLE[i - 6] ^
+      QRMath.EXP_TABLE[i - 8];
   }
   for(var i = 0; i < 255; i++) {
     QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
@@ -850,7 +859,9 @@ let QRCode;
   QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
     let rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
     if(rsBlock == undefined) {
-      throw new Error('bad rs block @ typeNumber:' + typeNumber + '/errorCorrectLevel:' + errorCorrectLevel);
+      throw new Error(
+        'bad rs block @ typeNumber:' + typeNumber + '/errorCorrectLevel:' + errorCorrectLevel
+      );
     }
     let length = rsBlock.length / 3;
     let list = [];
@@ -998,7 +1009,11 @@ let QRCode;
         height: '100%',
         fill: _htOption.colorLight
       });
-      svg.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', 'http://www.w3.org/1999/xlink');
+      svg.setAttributeNS(
+        'http://www.w3.org/2000/xmlns/',
+        'xmlns:xlink',
+        'http://www.w3.org/1999/xlink'
+      );
       _el.appendChild(svg);
 
       svg.appendChild(
@@ -1111,7 +1126,17 @@ let QRCode;
         if(this._android && this._android <= 2.1) {
           let factor = 1 / window.devicePixelRatio;
           let drawImage = CanvasRenderingContext2D.prototype.drawImage;
-          CanvasRenderingContext2D.prototype.drawImage = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+          CanvasRenderingContext2D.prototype.drawImage = function(
+            image,
+            sx,
+            sy,
+            sw,
+            sh,
+            dx,
+            dy,
+            dw,
+            dh
+          ) {
             if('nodeName' in image && /img/i.test(image.nodeName)) {
               for(let i = arguments.length - 1; i >= 1; i--) {
                 arguments[i] = arguments[i] * factor;
@@ -1227,9 +1252,19 @@ let QRCode;
               _oContext.fillRect(nLeft, nTop, nWidth, nHeight);
 
               //안티 앨리어싱 방지 처리
-              _oContext.strokeRect(Math.floor(nLeft) + 0.5, Math.floor(nTop) + 0.5, nRoundedWidth, nRoundedHeight);
+              _oContext.strokeRect(
+                Math.floor(nLeft) + 0.5,
+                Math.floor(nTop) + 0.5,
+                nRoundedWidth,
+                nRoundedHeight
+              );
 
-              _oContext.strokeRect(Math.ceil(nLeft) - 0.5, Math.ceil(nTop) - 0.5, nRoundedWidth, nRoundedHeight);
+              _oContext.strokeRect(
+                Math.ceil(nLeft) - 0.5,
+                Math.ceil(nTop) - 0.5,
+                nRoundedWidth,
+                nRoundedHeight
+              );
             }
           }
 
@@ -1400,7 +1435,10 @@ let QRCode;
    * @param {String} sText link data
    */
   QRCode.prototype.makeCode = function(sText) {
-    this._oQRCode = new QRCodeModel(_getTypeNumber(sText, this._htOption.correctLevel), this._htOption.correctLevel);
+    this._oQRCode = new QRCodeModel(
+      _getTypeNumber(sText, this._htOption.correctLevel),
+      this._htOption.correctLevel
+    );
     this._oQRCode.addData(sText);
     this._oQRCode.make();
     this._el.title = sText;

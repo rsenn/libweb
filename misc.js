@@ -3,141 +3,7 @@ import Util from './util.js';
 const UTF8FirstCodeMask = [0x1f, 0xf, 0x7, 0x3, 0x1];
 const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
 
-const errorSymbols = [
-  0,
-  'EPERM',
-  'ENOENT',
-  'ESRCH',
-  'EINTR',
-  'EIO',
-  'ENXIO',
-  'E2BIG',
-  'ENOEXEC',
-  'EBADF',
-  'ECHILD',
-  'EAGAIN',
-  'ENOMEM',
-  'EACCES',
-  'EFAULT',
-  'ENOTBLK',
-  'EBUSY',
-  'EEXIST',
-  'EXDEV',
-  'ENODEV',
-  'ENOTDIR',
-  'EISDIR',
-  'EINVAL',
-  'ENFILE',
-  'EMFILE',
-  'ENOTTY',
-  'ETXTBSY',
-  'EFBIG',
-  'ENOSPC',
-  'ESPIPE',
-  'EROFS',
-  'EMLINK',
-  'EPIPE',
-  'EDOM',
-  'ERANGE',
-  'EDEADLK',
-  'ENAMETOOLONG',
-  'ENOLCK',
-  'ENOSYS',
-  'ENOTEMPTY',
-  0,
-  0,
-  'ENOMSG',
-  'EIDRM',
-  'ECHRNG',
-  'EL2NSYNC',
-  'EL3HLT',
-  'EL3RST',
-  'ELNRNG',
-  'EUNATCH',
-  'ENOCSI',
-  'EL2HLT',
-  'EBADE',
-  'EBADR',
-  'EXFULL',
-  'ENOANO',
-  'EBADRQC',
-  0,
-  0,
-  'EBFONT',
-  'ENOSTR',
-  'ENODATA',
-  'ETIME',
-  'ENOSR',
-  'ENONET',
-  'ENOPKG',
-  'EREMOTE',
-  'ENOLINK',
-  'EADV',
-  'ESRMNT',
-  'ECOMM',
-  'EPROTO',
-  'EMULTIHOP',
-  'EDOTDOT',
-  'EBADMSG',
-  'EOVERFLOW',
-  'ENOTUNIQ',
-  'EBADFD',
-  'EREMCHG',
-  'ELIBACC',
-  'ELIBBAD',
-  'ELIBSCN',
-  'ELIBMAX',
-  'ELIBEXEC',
-  'EILSEQ',
-  'ERESTART',
-  'ESTRPIPE',
-  'EUSERS',
-  'ENOTSOCK',
-  'EDESTADDRREQ',
-  'EMSGSIZE',
-  'EPROTOTYPE',
-  'ENOPROTOOPT',
-  'EPROTONOSUPPORT',
-  'ESOCKTNOSUPPORT',
-  'EOPNOTSUPP',
-  'EPFNOSUPPORT',
-  'EAFNOSUPPORT',
-  'EADDRINUSE',
-  'EADDRNOTAVAIL',
-  'ENETDOWN',
-  'ENETUNREACH',
-  'ENETRESET',
-  'ECONNABORTED',
-  'ECONNRESET',
-  'ENOBUFS',
-  'EISCONN',
-  'ENOTCONN',
-  'ESHUTDOWN',
-  'ETOOMANYREFS',
-  'ETIMEDOUT',
-  'ECONNREFUSED',
-  'EHOSTDOWN',
-  'EHOSTUNREACH',
-  'EALREADY',
-  'EINPROGRESS',
-  'ESTALE',
-  'EUCLEAN',
-  'ENOTNAM',
-  'ENAVAIL',
-  'EISNAM',
-  'EREMOTEIO',
-  'EDQUOT',
-  'ENOMEDIUM',
-  'EMEDIUMTYPE',
-  'ECANCELED',
-  'ENOKEY',
-  'EKEYEXPIRED',
-  'EKEYREVOKED',
-  'EKEYREJECTED',
-  'EOWNERDEAD',
-  'ENOTRECOVERABLE',
-  'ERFKILL'
-];
+/* prettier-ignore */ const errorSymbols = [ 0, 'EPERM', 'ENOENT', 'ESRCH', 'EINTR', 'EIO', 'ENXIO', 'E2BIG', 'ENOEXEC', 'EBADF', 'ECHILD', 'EAGAIN', 'ENOMEM', 'EACCES', 'EFAULT', 'ENOTBLK', 'EBUSY', 'EEXIST', 'EXDEV', 'ENODEV', 'ENOTDIR', 'EISDIR', 'EINVAL', 'ENFILE', 'EMFILE', 'ENOTTY', 'ETXTBSY', 'EFBIG', 'ENOSPC', 'ESPIPE', 'EROFS', 'EMLINK', 'EPIPE', 'EDOM', 'ERANGE', 'EDEADLK', 'ENAMETOOLONG', 'ENOLCK', 'ENOSYS', 'ENOTEMPTY', 0, 0, 'ENOMSG', 'EIDRM', 'ECHRNG', 'EL2NSYNC', 'EL3HLT', 'EL3RST', 'ELNRNG', 'EUNATCH', 'ENOCSI', 'EL2HLT', 'EBADE', 'EBADR', 'EXFULL', 'ENOANO', 'EBADRQC', 0, 0, 'EBFONT', 'ENOSTR', 'ENODATA', 'ETIME', 'ENOSR', 'ENONET', 'ENOPKG', 'EREMOTE', 'ENOLINK', 'EADV', 'ESRMNT', 'ECOMM', 'EPROTO', 'EMULTIHOP', 'EDOTDOT', 'EBADMSG', 'EOVERFLOW', 'ENOTUNIQ', 'EBADFD', 'EREMCHG', 'ELIBACC', 'ELIBBAD', 'ELIBSCN', 'ELIBMAX', 'ELIBEXEC', 'EILSEQ', 'ERESTART', 'ESTRPIPE', 'EUSERS', 'ENOTSOCK', 'EDESTADDRREQ', 'EMSGSIZE', 'EPROTOTYPE', 'ENOPROTOOPT', 'EPROTONOSUPPORT', 'ESOCKTNOSUPPORT', 'EOPNOTSUPP', 'EPFNOSUPPORT', 'EAFNOSUPPORT', 'EADDRINUSE', 'EADDRNOTAVAIL', 'ENETDOWN', 'ENETUNREACH', 'ENETRESET', 'ECONNABORTED', 'ECONNRESET', 'ENOBUFS', 'EISCONN', 'ENOTCONN', 'ESHUTDOWN', 'ETOOMANYREFS', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTDOWN', 'EHOSTUNREACH', 'EALREADY', 'EINPROGRESS', 'ESTALE', 'EUCLEAN', 'ENOTNAM', 'ENAVAIL', 'EISNAM', 'EREMOTEIO', 'EDQUOT', 'ENOMEDIUM', 'EMEDIUMTYPE', 'ECANCELED', 'ENOKEY', 'EKEYEXPIRED', 'EKEYREVOKED', 'EKEYREJECTED', 'EOWNERDEAD', 'ENOTRECOVERABLE', 'ERFKILL' ];
 
 export function SyscallError(syscall, errnum) {
   let obj = new.target ? this : new SyscallError();
@@ -198,7 +64,13 @@ export function extendArray(proto = Array.prototype) {
     }
   });
 }
+
 export function toString(arrayBuf, encoding = 'utf-8') {
+  if(globalThis.TextDecoder) {
+    let dec = new TextDecoder(encoding);
+    return dec.decode(arrayBuf);
+  }
+
   if(encoding == 'latin1') {
     let binary = '';
     let bytes = new Uint8Array(arrayBuf);
@@ -315,7 +187,12 @@ export function toString(arrayBuf, encoding = 'utf-8') {
   return o;
 }
 
-export function toArrayBuffer(str, encoding) {
+export function toArrayBuffer(str, encoding = 'utf-8') {
+  if(globalThis.TextDecoder && encoding == 'utf-8') {
+    let enc = new TextEncoder();
+    return enc.encode(str).buffer;
+  }
+
   if(encoding == 'latin1') {
     let i,
       len = str.length;
@@ -384,13 +261,22 @@ export function btoa(bin) {
     asc = '';
   const pad = bin.length % 3;
   for(let i = 0; i < bin.length; ) {
-    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255)
+    if(
+      (c0 = bin.charCodeAt(i++)) > 255 ||
+      (c1 = bin.charCodeAt(i++)) > 255 ||
+      (c2 = bin.charCodeAt(i++)) > 255
+    )
       throw new TypeError('invalid character found');
     u32 = (c0 << 16) | (c1 << 8) | c2;
-    asc += b64chs[(u32 >> 18) & 63] + b64chs[(u32 >> 12) & 63] + b64chs[(u32 >> 6) & 63] + b64chs[u32 & 63];
+    asc +=
+      b64chs[(u32 >> 18) & 63] +
+      b64chs[(u32 >> 12) & 63] +
+      b64chs[(u32 >> 6) & 63] +
+      b64chs[u32 & 63];
   }
   return pad ? asc.slice(0, pad - 3) + '==='.substring(pad) : asc;
 }
+
 export function atob(asc) {
   asc = asc.replace(/\s+/g, '');
   if(!b64re.test(asc)) throw new TypeError('malformed base64.');
@@ -420,9 +306,39 @@ export function weakAssign(obj, ...args) {
   for(let other of args) {
     let otherDesc = Object.getOwnPropertyDescriptors(other);
     for(let key in otherDesc)
-      if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
+      if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined)
+        desc[key] = otherDesc[key];
   }
   return Object.defineProperties(obj, desc);
+}
+
+export function define(obj, ...args) {
+  for(let props of args) {
+    let desc = Object.getOwnPropertyDescriptors(props);
+    for(let prop in desc) {
+      const { value } = desc[prop];
+      desc[prop].enumerable = false;
+      if(typeof value == 'function') desc[prop].writable = false;
+    }
+    Object.defineProperties(obj, desc);
+  }
+  return obj;
+}
+
+export function escape(str) {
+  const table = {
+    ['\n']: 'n',
+    ['\r']: 'r',
+    ['\t']: 't',
+    ['\v']: 'v',
+    ['\b']: 'b'
+  };
+  let s = '';
+  for(let ch of str) {
+    if(table[ch]) s += '\\' + table[ch];
+    else s += ch;
+  }
+  return s;
 }
 
 export function Location(line, column, pos, file, freeze = true) {
@@ -446,15 +362,18 @@ Location.prototype.clone = function(freeze = false, withFilename = true) {
 
   return new Location(line, column, pos, withFilename ? file : null, freeze);
 };
-Location.prototype[Symbol.toStringTag] = function(n, opts) {
+Location.prototype[Symbol.toStringTag] = 'Location';
+
+/*function(n, opts) {
   const { showFilename = true, colors = false } = opts || {};
   let c = Util.coloring(colors);
 
-  let v = typeof this.column == 'number' ? [this.file, this.line, this.column] : [this.file, this.line];
+  let v =
+    typeof this.column == 'number' ? [this.file, this.line, this.column] : [this.file, this.line];
   if((!showFilename || v[0] == undefined) && v.length >= 3) v.shift();
-  v = v.map((f, i) => c.code(...(i == 0 ? [38, 5, 33] || [1, 33] : [1, /*i == 2 ? 35 :*/ 36])) + f);
+  v = v.map((f, i) => c.code(...(i == 0 ? [38, 5, 33] || [1, 33] : [1,  36])) + f);
   return v.join(c.code(...([1, 30] || [1, 36])) + ':') + c.code(0);
-};
+};*/
 
 Location.prototype[Symbol.iterator] = function* () {
   let { file, line, column } = this;
@@ -462,10 +381,8 @@ Location.prototype[Symbol.iterator] = function* () {
   yield* v;
 };
 Location.prototype.toString = function(opts = {}) {
-  return this[Symbol.toStringTag](0, {
-    colors: false,
-    ...opts
-  });
+  const { line, column, file } = this;
+  return file + ':' + line + ':' + column;
 };
 Location.prototype.valueOf = function() {
   return this.pos;

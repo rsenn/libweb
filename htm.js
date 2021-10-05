@@ -207,7 +207,12 @@ var regular = function(statics) {
     CACHES.set(this, tmp);
   }
 
-  tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp), arguments, []);
+  tmp = evaluate(
+    this,
+    tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp),
+    arguments,
+    []
+  );
   return tmp.length > 1 ? tmp : tmp[0];
 };
 

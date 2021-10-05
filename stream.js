@@ -1,6 +1,11 @@
 import { TextDecodeTransformer, TextDecoderStream } from './stream/textDecodeStream.js';
 import { TextEncodeTransformer, TextEncoderStream } from './stream/textEncodeStream.js';
-import { TransformStreamSink, TransformStreamSource, TransformStreamDefaultController, TransformStream } from './stream/transformStream.js';
+import {
+  TransformStreamSink,
+  TransformStreamSource,
+  TransformStreamDefaultController,
+  TransformStream
+} from './stream/transformStream.js';
 import {
   isStream,
   AcquireReader,
@@ -33,7 +38,12 @@ import { WritableStream } from './stream/writableStream.js';
 export { TextDecodeTransformer, TextDecoderStream } from './stream/textDecodeStream.js';
 export { TextEncodeTransformer, TextEncoderStream } from './stream/textEncodeStream.js';
 
-export { TransformStreamSink, TransformStreamSource, TransformStreamDefaultController, TransformStream } from './stream/transformStream.js';
+export {
+  TransformStreamSink,
+  TransformStreamSource,
+  TransformStreamDefaultController,
+  TransformStream
+} from './stream/transformStream.js';
 export {
   isStream,
   AcquireReader,

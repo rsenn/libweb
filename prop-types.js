@@ -73,7 +73,14 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
             err.name = 'Invariant Violation';
             throw err;
           }
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
+          error = typeSpecs[typeSpecName](
+            values,
+            typeSpecName,
+            componentName,
+            location,
+            null,
+            ReactPropTypesSecret
+          );
         } catch(ex) {
           error = ex;
         }
@@ -98,7 +105,9 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
 
           let stack = getStack ? getStack() : '';
 
-          printWarning('Failed ' + location + ' type: ' + error.message + (stack != null ? stack : ''));
+          printWarning(
+            'Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
+          );
         }
       }
     }

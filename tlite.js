@@ -13,7 +13,10 @@ export function tlite(getTooltipOpts) {
     if(opts.attrib) {
       let a = opts.attrib;
 
-      if(a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
+      if(
+        a instanceof Array ||
+        (typeof a == 'object' && a !== null && typeof a.length == 'number')
+      ) {
         getTitle = e => {
           let x = a
             .filter(attrName => e.hasAttribute(attrName))
@@ -33,7 +36,8 @@ export function tlite(getTooltipOpts) {
         ];
       }
     }
-    if(!getTitle) getTitle = e => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
+    if(!getTitle)
+      getTitle = e => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
     opts.getTitle = e => {
       let attrName,
         title,
@@ -139,7 +143,12 @@ if(elem)
           .map(
             (row, j) =>
               `<tr class="tlite-table tlite-row-${j}">` +
-              row.map((col, i) => `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>').join('') +
+              row
+                .map(
+                  (col, i) =>
+                    `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>'
+                )
+                .join('') +
               '</tr>\n'
           )
           .join('') +

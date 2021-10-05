@@ -1,5 +1,7 @@
 export function isJpeg(buf) {
-  return typeof buf == 'object' && buf !== null && buf.length >= 10 ? buf.readUInt32LE(6) == 0x4649464a : false;
+  return typeof buf == 'object' && buf !== null && buf.length >= 10
+    ? buf.readUInt32LE(6) == 0x4649464a
+    : false;
 }
 
 export const jpegProps = data => {

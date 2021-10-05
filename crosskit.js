@@ -71,10 +71,18 @@ let vec3 = {
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
   },
   angle(v1, v2) {
-    return Math.acos((v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2])));
+    return Math.acos(
+      (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) /
+        (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) *
+          Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2]))
+    );
   },
   cross(vectA, vectB) {
-    return [vectA[1] * vectB[2] - vectB[1] * vectA[2], vectA[2] * vectB[0] - vectB[2] * vectA[0], vectA[0] * vectB[1] - vectB[0] * vectA[1]];
+    return [
+      vectA[1] * vectB[2] - vectB[1] * vectA[2],
+      vectA[2] * vectB[0] - vectB[2] * vectA[0],
+      vectA[0] * vectB[1] - vectB[0] * vectA[1]
+    ];
   },
   multiply(vectA, constB) {
     return [vectA[0] * constB, vectA[1] * constB, vectA[2] * constB];
@@ -93,7 +101,11 @@ let vec3 = {
     if(a === undefined || b === undefined) {
       return false;
     }
-    return Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon && Math.abs(a[2] - b[2]) < epsilon;
+    return (
+      Math.abs(a[0] - b[0]) < epsilon &&
+      Math.abs(a[1] - b[1]) < epsilon &&
+      Math.abs(a[2] - b[2]) < epsilon
+    );
   }
 };
 
@@ -284,7 +296,10 @@ let WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
   //Override getContext function with "webgl-2d" enabled version
   canvas.getContext = (function (gl2d) {
     return function(context) {
-      if((gl2d.options.force || context === 'webgl-2d') && !(canvas.width === 0 || canvas.height === 0)) {
+      if(
+        (gl2d.options.force || context === 'webgl-2d') &&
+        !(canvas.width === 0 || canvas.height === 0)
+      ) {
         if(gl2d.gl) {
           return gl2d.gl;
         }
@@ -516,8 +531,10 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   textCanvas.height = gl2d.canvas.height;
   let textCtx = textCanvas.getContext('2d');
 
-  let reRGBAColor = /^rgb(a)?\(\s*(-?[\d]+)(%)?\s*,\s*(-?[\d]+)(%)?\s*,\s*(-?[\d]+)(%)?\s*,?\s*(-?[\d\.]+)?\s*\)$/;
-  let reHSLAColor = /^hsl(a)?\(\s*(-?[\d\.]+)\s*,\s*(-?[\d\.]+)%\s*,\s*(-?[\d\.]+)%\s*,?\s*(-?[\d\.]+)?\s*\)$/;
+  let reRGBAColor =
+    /^rgb(a)?\(\s*(-?[\d]+)(%)?\s*,\s*(-?[\d]+)(%)?\s*,\s*(-?[\d]+)(%)?\s*,?\s*(-?[\d\.]+)?\s*\)$/;
+  let reHSLAColor =
+    /^hsl(a)?\(\s*(-?[\d\.]+)\s*,\s*(-?[\d\.]+)%\s*,\s*(-?[\d\.]+)%\s*,?\s*(-?[\d\.]+)?\s*\)$/;
   let reHex6Color = /^#([0-9A-Fa-f]{6})$/;
   let reHex3Color = /^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/;
 
@@ -598,10 +615,20 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       result.push(hasAlpha ? alphaChannel : 1.0);
     } else if((match = reHSLAColor.exec(value))) {
       (hasAlpha = match[1]), (alphaChannel = parseFloat(match[5]));
-      result = HSLAToRGBA(match[2], match[3], match[4], parseFloat(hasAlpha && alphaChannel ? alphaChannel : 1.0));
+      result = HSLAToRGBA(
+        match[2],
+        match[3],
+        match[4],
+        parseFloat(hasAlpha && alphaChannel ? alphaChannel : 1.0)
+      );
     } else if((match = reHex6Color.exec(value))) {
       let colorInt = parseInt(match[1], 16);
-      result = [((colorInt & 0xff0000) >> 16) / 255, ((colorInt & 0x00ff00) >> 8) / 255, (colorInt & 0x0000ff) / 255, 1.0];
+      result = [
+        ((colorInt & 0xff0000) >> 16) / 255,
+        ((colorInt & 0x00ff00) >> 8) / 255,
+        (colorInt & 0x0000ff) / 255,
+        1.0
+      ];
     } else if((match = reHex3Color.exec(value))) {
       let hexString = '#' + [match[1], match[1], match[2], match[2], match[3], match[3]].join('');
       result = colorStringToVec4(hexString);
@@ -618,7 +645,17 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   }
 
   function colorVecToString(vec4) {
-    return 'rgba(' + vec4[0] * 255 + ', ' + vec4[1] * 255 + ', ' + vec4[2] * 255 + ', ' + parseFloat(vec4[3]) + ')';
+    return (
+      'rgba(' +
+      vec4[0] * 255 +
+      ', ' +
+      vec4[1] * 255 +
+      ', ' +
+      vec4[2] * 255 +
+      ', ' +
+      parseFloat(vec4[3]) +
+      ')'
+    );
   }
 
   var colorKeywords = {
@@ -782,8 +819,18 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   function saveDrawState() {
     let bakedDrawState = {
-      fillStyle: [drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]],
-      strokeStyle: [drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]],
+      fillStyle: [
+        drawState.fillStyle[0],
+        drawState.fillStyle[1],
+        drawState.fillStyle[2],
+        drawState.fillStyle[3]
+      ],
+      strokeStyle: [
+        drawState.strokeStyle[0],
+        drawState.strokeStyle[1],
+        drawState.strokeStyle[2],
+        drawState.strokeStyle[3]
+      ],
       globalAlpha: drawState.globalAlpha,
       globalCompositeOperation: drawState.globalCompositeOperation,
       lineCap: drawState.lineCap,
@@ -1088,7 +1135,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.fillStyle[0],
+      drawState.fillStyle[1],
+      drawState.fillStyle[2],
+      drawState.fillStyle[3]
+    );
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
@@ -1109,7 +1162,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.strokeStyle[0],
+      drawState.strokeStyle[1],
+      drawState.strokeStyle[2],
+      drawState.strokeStyle[3]
+    );
 
     gl.drawArrays(gl.LINE_LOOP, 0, 4);
 
@@ -1192,7 +1251,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.fillStyle[0],
+      drawState.fillStyle[1],
+      drawState.fillStyle[2],
+      drawState.fillStyle[3]
+    );
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verts.length / 4);
 
@@ -1221,7 +1286,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.strokeStyle[0],
+      drawState.strokeStyle[1],
+      drawState.strokeStyle[2],
+      drawState.strokeStyle[3]
+    );
 
     if(subPath.closed) {
       gl.drawArrays(gl.LINE_LOOP, 0, verts.length / 4);
@@ -1326,7 +1397,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
 
     if(doCrop) {
-      gl.uniform4f(shaderProgram.uCropSource, a / image.width, b / image.height, c / image.width, d / image.height);
+      gl.uniform4f(
+        shaderProgram.uCropSource,
+        a / image.width,
+        b / image.height,
+        c / image.width,
+        d / image.height
+      );
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
@@ -1448,7 +1525,10 @@ export const crosskit = {
       board.appendChild(svg_board);
     }
     index++; //Increase Index Of Elements Creation
-    console.info('%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer, 'background-color: purple; color: white;');
+    console.info(
+      '%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer,
+      'background-color: purple; color: white;'
+    );
   },
   line(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
@@ -1777,7 +1857,8 @@ export const crosskit = {
       cakepen.rotate(v.angle / 50);
       images.push(new Image(v.w, v.h));
       images[images.length - 1].src = v.img;
-      images[images.length - 1].onload = () => cakepen.drawImage(images[images.length - 1], v.x, v.y, v.w, v.h);
+      images[images.length - 1].onload = () =>
+        cakepen.drawImage(images[images.length - 1], v.x, v.y, v.w, v.h);
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
@@ -1876,7 +1957,26 @@ export const crosskit = {
       if(v.pos3[0] > biggest_x) biggest_x = v.pos3[0];
       if(v.pos3[1] > biggest_y) biggest_y = v.pos3[1];
       dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points', (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
+        'points',
+        (
+          v.pos1[0] +
+          ',' +
+          v.pos1[1] +
+          ' ' +
+          v.pos2[0] +
+          ',' +
+          v.pos2[1] +
+          ' ' +
+          v.pos3[0] +
+          ',' +
+          v.pos3[1] +
+          ' ' +
+          v.pos1[0] +
+          ',' +
+          v.pos1[1]
+        ).toString()
+      );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
@@ -1886,7 +1986,26 @@ export const crosskit = {
     }
     if(renderer == SVG) {
       svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('points', (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute(
+        'points',
+        (
+          v.pos1[0] +
+          ',' +
+          v.pos1[1] +
+          ' ' +
+          v.pos2[0] +
+          ',' +
+          v.pos2[1] +
+          ' ' +
+          v.pos3[0] +
+          ',' +
+          v.pos3[1] +
+          ' ' +
+          v.pos1[0] +
+          ',' +
+          v.pos1[1]
+        ).toString()
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
@@ -1919,7 +2038,10 @@ export const crosskit = {
         domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
       }
       dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points', domvg_polygon_points.toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
+        'points',
+        domvg_polygon_points.toString()
+      );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
@@ -1930,7 +2052,8 @@ export const crosskit = {
       svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
       domvg_polygon_points = '';
       domvg_polygon_points += v.points[0][0] + ',' + v.points[0][1] + ' ';
-      for(var i = 0; i < v.points.length; i++) domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
+      for(var i = 0; i < v.points.length; i++)
+        domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
       svg_shapes[svg_shapes.length - 1].setAttribute('points', domvg_polygon_points.toString());
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
@@ -1966,7 +2089,8 @@ export const crosskit = {
     }
   },
   bgcolor(c) {
-    if(renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM) cakecanvas.style.backgroundColor = c;
+    if(renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM)
+      cakecanvas.style.backgroundColor = c;
     if(renderer == DOM) svg_board.style.backgroundColor = c;
   },
   bgimg(v) {
@@ -1974,7 +2098,8 @@ export const crosskit = {
     cakecanvas.style.opacity = v.a;
   },
   animate(v) {
-    if(renderer == CANVAS || renderer == WEBGL || renderer == DOM) window.requestAnimationFrame(v.frame);
+    if(renderer == CANVAS || renderer == WEBGL || renderer == DOM)
+      window.requestAnimationFrame(v.frame);
     if(renderer == SVG) {
       svg_anims.push(document.createElementNS('http://www.w3.org/2000/svg', 'animate'));
       svg_anims[svg_anims.length - 1].setAttribute('attributeType', 'XML');
@@ -2002,8 +2127,10 @@ export const crosskit = {
     return window.update(f, t);
   },
   pause(v) {
-    if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.cancelAnimationFrame(v.frame);
-    if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.clearInterval(v.interval);
+    if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
+      window.cancelAnimationFrame(v.frame);
+    if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
+      window.clearInterval(v.interval);
   }
 };
 let rgb = function(v) {

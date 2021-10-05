@@ -415,5 +415,7 @@ function getAttrs(string) {
 }
 
 function makeJSX(JSXNode) {
-  return JSXNode.length === 1 && JSXNode[0].type === '#jsx' ? JSXNode[0] : { type: '#jsx', nodeValue: JSXNode };
+  return JSXNode.length === 1 && JSXNode[0].type === '#jsx'
+    ? JSXNode[0]
+    : { type: '#jsx', nodeValue: JSXNode };
 }
