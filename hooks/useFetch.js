@@ -1,10 +1,16 @@
 import { useState, useEffect, useRef } from '../dom/preactComponent.js';
 
-export function useFetch(url) {
+export function useFetch(url, cb = resp => resp.text()) {
   const [data, setData] = useState(null);
   useEffect(() => {
     fetch(url)
-      .then(response => response.json())
+      .then(
+        cb /*|| async response => {
+       console.log('response', await response.text());
+       console.log('response', response.json);
+        return response.json();
+      }*/
+      )
       .then(json => setData(json));
   }, [url]);
 
