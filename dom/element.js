@@ -53,16 +53,17 @@ export class Element extends Node {
 
   static create(...args) {
     if(args.length == 2 && typeof args[0] == 'string' && isElement(args[1])) {
-       let ret= document.createTextNode(args[0]);
-args[1].appendChild(ret);
+      let ret = document.createTextNode(args[0]);
+      args[1].appendChild(ret);
 
- return ret;  }
-    
+      return ret;
+    }
+
     let { tagName, ns, children, ...props } = typeof args[0] == 'object' ? args.shift() : { tagName: args.shift(), ...args.shift() };
     let parent = args.shift();
     parent = typeof parent == 'string' ? Element.find(parent) : parent;
- 
- //console.log('Element.create ', { tagName, props, parent, ns });
+
+    //console.log('Element.create ', { tagName, props, parent, ns });
 
     let d = document || window.document;
     let e = ns ? d.createElementNS(ns, tagName) : d.createElement(tagName);
@@ -73,20 +74,21 @@ args[1].appendChild(ret);
         continue;
       } else if(k == 'className') k = 'class';
       if(k == 'style' && typeof value === 'object') Element.setCSS(e, value);
-      else if(k == 'innerText') e.appendChild(document.createTextNode(value)); 
+      else if(k == 'innerText') e.appendChild(document.createTextNode(value));
       else if(k.startsWith('on') || k.startsWith('inner')) e[k] = value;
       else {
         //        ns ? e.setAttributeNS(ns || null, k, value) : e.setAttribute(k,value);
         e.setAttribute(k, value);
       }
     }
-    if(children && children.length) children.forEach(obj => {
-      Element.create(obj, e);
-    });
+    if(children && children.length)
+      children.forEach(obj => {
+        Element.create(obj, e);
+      });
 
     if(parent && parent.appendChild) parent.appendChild(e);
- // console.log('Element.create ', e);
-   return e;
+    // console.log('Element.create ', e);
+    return e;
   }
 
   static walkUp(elem, pred = e => true) {

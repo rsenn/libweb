@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from '../dom/preactComponent.js';
 
-export default function useDebouncedCallback(callback, delay, options) {
+export function useDebouncedCallback(callback, delay, options) {
   if(options === void 0) {
     options = {};
   }
@@ -81,3 +81,5 @@ export default function useDebouncedCallback(callback, delay, options) {
   // At the moment, we use 3 args array so that we save backward compatibility
   return [debouncedCallback, cancelDebouncedCallback, callPending];
 }
+
+export default useDebouncedCallback;

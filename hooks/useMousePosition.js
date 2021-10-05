@@ -1,4 +1,5 @@
 import { Component, useState, useMemo } from '../dom/preactComponent.js';
+
 export function useMousePosition() {
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
