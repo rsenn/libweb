@@ -2284,8 +2284,8 @@ Util.encodeQuery = function(data) {
 };
 Util.parseURL = function(href = this.getURL()) {
   //console.debug('href:', href);
-  const matches = new RegExp('^([^:]+://)?([^/:]*)(:[0-9]*)?(/?.*)?', 'g').exec(href);
-  const [all, proto, host, port, location = ''] = matches;
+  const matches = new RegExp('^([^:]+://)?([^/:]*)(:[0-9]*)?(/?[^#]*)?(#.*)?', 'g').exec(href);
+  const [all, proto, host, port, location = '', fragment] = matches;
   //console.debug('matches:', matches);
   if(!matches) return null;
   const argstr =
@@ -2328,7 +2328,7 @@ Util.parseURL = function(href = this.getURL()) {
   if(typeof port === 'string') ret.port = parseInt(port.substring(1));
   else if(ret.protocol == 'https') ret.port = 443;
   else if(ret.protocol == 'http') ret.port = 80;
-
+if(fragment)ret.fragment = fragment;
   return ret;
 };
 Util.makeURL = function(...args) {
