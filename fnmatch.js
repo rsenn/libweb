@@ -14,8 +14,7 @@ export function fnmatch(p, s, f = 0, depth = 0) {
   let c = 0;
 
   if(f & PATH_FNM_MULTI) {
-    if(p.split(/;|\n|\|/g).some(pattern => fnmatch(pattern, s, f & ~PATH_FNM_MULTI, depth) == 0))
-      return 0;
+    if(p.split(/;|\n|\|/g).some(pattern => fnmatch(pattern, s, f & ~PATH_FNM_MULTI, depth) == 0)) return 0;
   }
 
   const pinc = (n = 1) => (pi += n),

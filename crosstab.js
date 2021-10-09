@@ -29,9 +29,7 @@
     //--- Handle Support ---
     //See: http://detectmobilebrowsers.com/about
     let useragent =
-      (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) ||
-      window.opera ||
-      'none';
+      (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) || window.opera || 'none';
     let isMobile =
       /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
         useragent

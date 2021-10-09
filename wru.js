@@ -98,9 +98,7 @@ export const wru = (function (window) {
       }
       log(OUTPUT_SEPARATOR);
       log(
-        (iHasIt(current, NAME) && current[NAME]) ||
-          (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) ||
-          UNKNOWN
+        (iHasIt(current, NAME) && current[NAME]) || (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) || UNKNOWN
       );
       pass = [];
       fail = [];
@@ -197,15 +195,7 @@ export const wru = (function (window) {
     } else {
       prefix = OK;
     }
-    log(
-      prefix +
-        ' passes: ' +
-        pass[LENGTH] +
-        ', fails: ' +
-        fail[LENGTH] +
-        ', errors: ' +
-        fatal[LENGTH]
-    );
+    log(prefix + ' passes: ' + pass[LENGTH] + ', fails: ' + fail[LENGTH] + ', errors: ' + fatal[LENGTH]);
     ci = 0;
     prefix = EMPTY;
     isGonnaBeLegen();

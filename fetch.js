@@ -8,8 +8,7 @@ export async function NormalizeResponse(resp) {
     let disp = headers.get('Content-Disposition');
     let type = headers.get('Content-Type');
     if(ok) {
-      if(!disp && /json/.test(type) && typeof resp.json == 'function')
-        resp = { data: await resp.json() };
+      if(!disp && /json/.test(type) && typeof resp.json == 'function') resp = { data: await resp.json() };
       else if(typeof resp.text == 'function') resp = { data: await resp.text() };
       if(disp && !resp.file) resp.file = disp.replace(/.*['"]([^"]+)['"].*/, '$1');
       if(disp && type) resp.type = type;

@@ -228,11 +228,7 @@
 
     let logger = _loggersByName[name];
     if(!logger) {
-      logger = _loggersByName[name] = new Logger(
-        name,
-        defaultLogger.getLevel(),
-        defaultLogger.methodFactory
-      );
+      logger = _loggersByName[name] = new Logger(name, defaultLogger.getLevel(), defaultLogger.methodFactory);
     }
     return logger;
   };

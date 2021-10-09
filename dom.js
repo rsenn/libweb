@@ -41,17 +41,8 @@ export function dom() {
   const extend = (e, functions) => {
     const keys = [...Util.members(functions)].filter(
       key =>
-        [
-          'callee',
-          'caller',
-          'arguments',
-          'call',
-          'bind',
-          'apply',
-          'prototype',
-          'constructor',
-          'length'
-        ].indexOf(key) == -1 && typeof functions[key] == 'function'
+        ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) ==
+          -1 && typeof functions[key] == 'function'
     );
     for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };

@@ -195,10 +195,7 @@ export const Behave = function(userOpts) {
             len,
             endRange;
 
-          if(
-            typeof textAreaElement.selectionStart == 'number' &&
-            typeof textAreaElement.selectionEnd == 'number'
-          ) {
+          if(typeof textAreaElement.selectionStart == 'number' && typeof textAreaElement.selectionEnd == 'number') {
             start = textAreaElement.selectionStart;
             end = textAreaElement.selectionEnd;
           } else {
@@ -307,11 +304,7 @@ export const Behave = function(userOpts) {
           if(charSettings.keyMap[i].canBreak) {
             for(j in quoteMap) {
               toDecrement +=
-                left
-                  .split(quoteMap[j])
-                  .filter(utils.isEven)
-                  .join('')
-                  .split(charSettings.keyMap[i].open).length - 1;
+                left.split(quoteMap[j]).filter(utils.isEven).join('').split(charSettings.keyMap[i].open).length - 1;
             }
           }
         }
@@ -322,11 +315,7 @@ export const Behave = function(userOpts) {
       },
       deepExtend(destination, source) {
         for(let property in source) {
-          if(
-            source[property] &&
-            source[property].constructor &&
-            source[property].constructor === Object
-          ) {
+          if(source[property] && source[property].constructor && source[property].constructor === Object) {
             destination[property] = destination[property] || {};
             utils.deepExtend(destination[property], source[property]);
           } else {
@@ -394,9 +383,7 @@ export const Behave = function(userOpts) {
               }
               toIndent = lines.join('\n');
 
-              utils.editor.set(
-                val.substring(0, selection.start) + toIndent + val.substring(selection.end)
-              );
+              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end));
               utils.cursor.set(selection.start, selection.start + toIndent.length);
             } else {
               for(i in lines) {
@@ -404,9 +391,7 @@ export const Behave = function(userOpts) {
               }
               toIndent = lines.join('\n');
 
-              utils.editor.set(
-                val.substring(0, selection.start) + toIndent + val.substring(selection.end)
-              );
+              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end));
               utils.cursor.set(selection.start, selection.start + toIndent.length);
             }
           } else {
@@ -460,22 +445,14 @@ export const Behave = function(userOpts) {
             finalCursorPos = ourIndent.length + 1;
 
             for(i = 0; i < charSettings.keyMap.length; i++) {
-              if(
-                charSettings.keyMap[i].open == leftChar &&
-                charSettings.keyMap[i].close == rightChar
-              ) {
+              if(charSettings.keyMap[i].open == leftChar && charSettings.keyMap[i].close == rightChar) {
                 closingBreak = newLine;
               }
             }
           }
 
           let edited =
-            left +
-            newLine +
-            ourIndent +
-            closingBreak +
-            ourIndent.substring(0, ourIndent.length - tab.length) +
-            right;
+            left + newLine + ourIndent + closingBreak + ourIndent.substring(0, ourIndent.length - tab.length) + right;
           utils.editor.set(edited);
           utils.cursor.set(pos + finalCursorPos);
           utils._callHook('enter:after');
@@ -501,10 +478,7 @@ export const Behave = function(userOpts) {
 
           if(utils.cursor.selection() === false) {
             for(i = 0; i < charSettings.keyMap.length; i++) {
-              if(
-                charSettings.keyMap[i].open == leftChar &&
-                charSettings.keyMap[i].close == rightChar
-              ) {
+              if(charSettings.keyMap[i].open == leftChar && charSettings.keyMap[i].close == rightChar) {
                 var edited = val.substring(0, pos - 1) + val.substring(pos + 1);
                 utils.editor.set(edited);
                 utils.cursor.set(pos - 1);

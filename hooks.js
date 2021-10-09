@@ -15,7 +15,25 @@ export { useHover } from './hooks/useHover.js';
 export { useMousePosition } from './hooks/useMousePosition.js';
 export { useToggleButtonGroupState } from './hooks/useToggleButtonGroupState.js';
 export { useTrkl } from './hooks/useTrkl.js';
-export { clamp, identity, noop, compose, maybe, snd, toPair, getOffset, getPositionOnElement, isChildOf } from './hooks/utils.js';
+export {
+  clamp,
+  identity,
+  noop,
+  compose,
+  maybe,
+  snd,
+  toPair,
+  getOffset,
+  getPositionOnElement,
+  isChildOf
+} from './hooks/utils.js';
 export { useFetch } from './hooks/useFetch.js';
 export { usePanZoom } from './hooks/usePanZoom.js';
+export { useGenerator } from './hooks/useGenerator.js';
 export { useRecognizers, useDrag, useGesture, useMove, usePinch, useScroll, useWheel } from './hooks/useGesture.js';
+
+export { useAsyncGenerator } from './hooks/useAsyncGenerator.js';
+export { useAsyncIterable } from './hooks/useAsyncIterable.js';
+export { useAsyncIterator } from './hooks/useAsyncIterator.js';
+export { useIterator } from './hooks/useIterator.js';
+export { useIterable } from './hooks/useIterable.js';

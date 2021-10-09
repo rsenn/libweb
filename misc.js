@@ -31,10 +31,9 @@ Util.define(SyscallError.prototype, {
 });
 
 globalThis.SyscallError = SyscallError;
-
 export function extendArray(proto = Array.prototype) {
   Util.define(proto, {
-    getlast() {
+    get last() {
       return this[this.length - 1];
     },
     at(index) {
@@ -261,7 +260,8 @@ export function btoa(bin) {
     asc = '';
   const pad = bin.length % 3;
   for(let i = 0; i < bin.length; ) {
-    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255) throw new TypeError('invalid character found');
+    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255)
+      throw new TypeError('invalid character found');
     u32 = (c0 << 16) | (c1 << 8) | c2;
     asc += b64chs[(u32 >> 18) & 63] + b64chs[(u32 >> 12) & 63] + b64chs[(u32 >> 6) & 63] + b64chs[u32 & 63];
   }
@@ -277,17 +277,45 @@ export function atob(asc) {
     r1,
     r2;
   for(let i = 0; i < asc.length; ) {
-    u24 = (b64tab[asc.charAt(i++)] << 18) | (b64tab[asc.charAt(i++)] << 12) | ((r1 = b64tab[asc.charAt(i++)]) << 6) | (r2 = b64tab[asc.charAt(i++)]);
-    bin += r1 === 64 ? String.fromCharCode((u24 >> 16) & 255) : r2 === 64 ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255) : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
+    u24 =
+      (b64tab[asc.charAt(i++)] << 18) |
+      (b64tab[asc.charAt(i++)] << 12) |
+      ((r1 = b64tab[asc.charAt(i++)]) << 6) |
+      (r2 = b64tab[asc.charAt(i++)]);
+    bin +=
+      r1 === 64
+        ? String.fromCharCode((u24 >> 16) & 255)
+        : r2 === 64
+        ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255)
+        : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
   }
   return bin;
+}
+export function assert(actual, expected, message) {
+  if(arguments.length == 1) expected = true;
+
+  if(actual === expected) return;
+
+  if(
+    actual !== null &&
+    expected !== null &&
+    typeof actual == 'object' &&
+    typeof expected == 'object' &&
+    actual.toString() === expected.toString()
+  )
+    return;
+
+  throw Error(
+    'assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : '')
+  );
 }
 
 export function weakAssign(obj, ...args) {
   let desc = {};
   for(let other of args) {
     let otherDesc = Object.getOwnPropertyDescriptors(other);
-    for(let key in otherDesc) if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
+    for(let key in otherDesc)
+      if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
   }
   return Object.defineProperties(obj, desc);
 }
@@ -362,7 +390,7 @@ Location.prototype[Symbol.iterator] = function* () {
 };
 Location.prototype.toString = function(opts = {}) {
   const { line, column, file } = this;
-  return file + ':' + line + ':' + column;
+  return (file ? file + ':' : '') + line + ':' + column;
 };
 Location.prototype.valueOf = function() {
   return this.pos;

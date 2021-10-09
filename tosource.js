@@ -44,15 +44,11 @@ export default function toSource(object, replacer = a => a, indent = '  ', start
     seen.push(object);
 
     function join(elements) {
-      return (
-        indent.slice(1) + elements.join(',' + (indent && '\n') + nextIndent) + (indent ? ' ' : '')
-      );
+      return indent.slice(1) + elements.join(',' + (indent && '\n') + nextIndent) + (indent ? ' ' : '');
     }
 
     if(Array.isArray(object)) {
-      return `[${join(
-        object.map(element => walk(element, replacer, indent, nextIndent, seen.slice()))
-      )}]`;
+      return `[${join(object.map(element => walk(element, replacer, indent, nextIndent, seen.slice())))}]`;
     }
     const keys = Object.keys(object);
     if(keys.length) {

@@ -107,11 +107,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
   // To avoid recursion in the case that type === "newListener"! Before
   // adding it to the listeners, first emit "newListener".
   if(this.events.newListener)
-    this.emit(
-      'newListener',
-      type,
-      Util.isFunction(listener.listener) ? listener.listener : listener
-    );
+    this.emit('newListener', type, Util.isFunction(listener.listener) ? listener.listener : listener);
   //console.debug('this.events:', this.events);
 
   //  if(this.events[type]) console.debug('Util.keys(this.events[type]):', Util.getMemberNames(this.events[type], Infinity, 0));

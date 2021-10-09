@@ -239,8 +239,7 @@ export function QuickJSFileSystem(std, os) {
           ret = os.seek(fd, offset, whence);
           break;
         default:
-          if(numerr(fd.seek(offset, whence)) == 0)
-            ret = typeof offset == 'bigint' ? fd.tello() : fd.tell();
+          if(numerr(fd.seek(offset, whence)) == 0) ret = typeof offset == 'bigint' ? fd.tello() : fd.tell();
           break;
       }
       // console.log('seek:', { offset, whence, ret });
@@ -305,8 +304,7 @@ export function QuickJSFileSystem(std, os) {
 
     fileno(file) {
       if(typeof file == 'number') return file;
-      if(typeof file == 'object' && file != null && typeof file.fileno == 'function')
-        return file.fileno();
+      if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
     },
     /* prettier-ignore */ get stdin() {
       return std.in;
@@ -473,8 +471,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       let ret;
       console.log('fopen', { fd, flags });
       if(flags[0] == 'r') ret = fs.createReadStream(filename, { fd, flags, mode });
-      else if('wa'.indexOf(flags[0]) != -1)
-        ret = fs.createWriteStream(filename, { fd, flags, mode });
+      else if('wa'.indexOf(flags[0]) != -1) ret = fs.createWriteStream(filename, { fd, flags, mode });
       return Object.assign(ret, { fd, flags, mode });
     },
     closeSync(file) {
@@ -796,9 +793,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
           : {}
       )
         .then(response =>
-          writable
-            ? response.json()
-            : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
+          writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
         )
         .catch(err => (error = err));
       return send ? writable : promise;
@@ -820,11 +815,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       if(typeof ret == 'object' && ret !== null) {
         const { value, done } = ret;
         if(typeof value == 'string')
-          return CopyToArrayBuffer(
-            value,
-            buf || CreateArrayBuffer(value.length + (offset || 0)),
-            offset || 0
-          );
+          return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
       }
       return ret.done ? 0 : -1;
     },
@@ -879,8 +870,7 @@ function StringToArrayBuffer(str, bytes = 1) {
 function CopyToArrayBuffer(str, buf, offset, bytes = 1) {
   // console.log("CopyToArrayBuffer",{str,buf,bytes});
   const view = new CharWidth[bytes](buf);
-  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++)
-    view[i + offset] = str.codePointAt(i);
+  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++) view[i + offset] = str.codePointAt(i);
   return buf;
 }
 function CreateArrayBuffer(bytes) {

@@ -44,8 +44,7 @@ export class EventEmitter {
     let a = (this.events[event] = this.events[event] ?? []);
     if(a.length) {
       let { length } = a;
-      for(let i = length - 1; i >= 0; i--)
-        if(listener == undefined || a[i] == listener) a.splice(i, 1);
+      for(let i = length - 1; i >= 0; i--) if(listener == undefined || a[i] == listener) a.splice(i, 1);
     }
   }
 
@@ -105,8 +104,7 @@ export class EventEmitter {
 
   [Symbol.asyncIterator]() {
     return {
-      next: type =>
-        new Promise(async resolve => this.once(type, e => resolve({ done: false, value: e })))
+      next: type => new Promise(async resolve => this.once(type, e => resolve({ done: false, value: e })))
     };
   }
 
@@ -153,8 +151,7 @@ export class EventTarget {
     if(typeof type !== 'string') throw new TypeError('`type` must be a string');
     if(typeof listener !== 'function') throw new TypeError('`listener` must be a function');
     const typedListeners = this.#typedListeners(type);
-    for(let i = typedListeners.length; i >= 0; i--)
-      if(typedListeners[i] === listener) typedListeners.splice(i, 1);
+    for(let i = typedListeners.length; i >= 0; i--) if(typedListeners[i] === listener) typedListeners.splice(i, 1);
   }
 
   dispatchEvent(type, event) {
@@ -172,11 +169,7 @@ export class EventTarget {
     if(typeof obj == 'object' && obj != null) {
       if(obj instanceof EventTarget) return true;
     }
-    if(
-      ['addEventListener', 'removeEventListener', 'dispatchEvent'].every(
-        method => typeof obj[method] == 'function'
-      )
-    )
+    if(['addEventListener', 'removeEventListener', 'dispatchEvent'].every(method => typeof obj[method] == 'function'))
       return true;
     return false;
   }

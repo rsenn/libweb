@@ -131,11 +131,7 @@ function getOrderIndependentHash(object) {
     for(let key in object) {
       if(object.hasOwnProperty(key)) {
         let keyValueString =
-          '[ type: object, key: ' +
-          key +
-          ', value hash: ' +
-          getOrderIndependentHash(object[key]) +
-          ']';
+          '[ type: object, key: ' + key + ', value hash: ' + getOrderIndependentHash(object[key]) + ']';
         accum += hashThisString(keyValueString);
       }
     }
@@ -241,31 +237,13 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
             deepDiff(lhs[k], rhs[k], changes, prefilter, currentPath, k, stack, orderIndependent);
             pkeys[other] = null;
           } else {
-            deepDiff(
-              lhs[k],
-              undefined,
-              changes,
-              prefilter,
-              currentPath,
-              k,
-              stack,
-              orderIndependent
-            );
+            deepDiff(lhs[k], undefined, changes, prefilter, currentPath, k, stack, orderIndependent);
           }
         }
         for(i = 0; i < pkeys.length; ++i) {
           k = pkeys[i];
           if(k) {
-            deepDiff(
-              undefined,
-              rhs[k],
-              changes,
-              prefilter,
-              currentPath,
-              k,
-              stack,
-              orderIndependent
-            );
+            deepDiff(undefined, rhs[k], changes, prefilter, currentPath, k, stack, orderIndependent);
           }
         }
       }
@@ -368,9 +346,7 @@ function applyChange(target, source, change) {
     while(++i < last) {
       if(typeof it[change.path[i]] === 'undefined') {
         it[change.path[i]] =
-          typeof change.path[i + 1] !== 'undefined' && typeof change.path[i + 1] === 'number'
-            ? []
-            : {};
+          typeof change.path[i + 1] !== 'undefined' && typeof change.path[i + 1] === 'number' ? [] : {};
       }
       it = it[change.path[i]];
     }

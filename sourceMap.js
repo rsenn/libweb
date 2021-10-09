@@ -56,9 +56,7 @@ export class SourceMap {
 
     addProperty(key, value) {
       if(this.sourcemap.hasOwnProperty(key))
-        throw new Error(
-          'property "' + key + '" already exists on the sourcemap, use set property instead'
-        );
+        throw new Error('property "' + key + '" already exists on the sourcemap, use set property instead');
       return this.setProperty(key, value);
     }
 
@@ -85,11 +83,7 @@ export class SourceMap {
     });
 
   static fromMapFileComment = (comment, dir, filesystem) =>
-    new this.Converter(
-      comment,
-      { commentFileDir: dir, isFileComment: true, isJSON: true },
-      filesystem
-    );
+    new this.Converter(comment, { commentFileDir: dir, isFileComment: true, isJSON: true }, filesystem);
 
   // Finds last sourcemap comment in file or returns null if none was found
   static fromSource = content => {
@@ -134,8 +128,6 @@ function readFromFileMap(sm, dir, filesystem) {
   try {
     return filesystem.readFile(filepath, 'utf8');
   } catch(e) {
-    throw new Error(
-      'An error occurred while trying to read the map file at ' + filepath + '\n' + e
-    );
+    throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
   }
 }

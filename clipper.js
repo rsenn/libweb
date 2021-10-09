@@ -58,23 +58,14 @@ export default class Shape {
   }
 
   offset(offset, options = {}) {
-    const {
-      jointType = 'jtSquare',
-      endType = 'etClosedPolygon',
-      miterLimit = 2.0,
-      roundPrecision = 0.25
-    } = options;
+    const { jointType = 'jtSquare', endType = 'etClosedPolygon', miterLimit = 2.0, roundPrecision = 0.25 } = options;
 
     CLIPPER_OFFSET.Clear();
     CLIPPER_OFFSET.ArcTolerance = roundPrecision;
     CLIPPER_OFFSET.MiterLimit = miterLimit;
 
     const offsetPaths = new ClipperLib.Paths();
-    CLIPPER_OFFSET.AddPaths(
-      this.paths,
-      ClipperLib.JoinType[jointType],
-      ClipperLib.EndType[endType]
-    );
+    CLIPPER_OFFSET.AddPaths(this.paths, ClipperLib.JoinType[jointType], ClipperLib.EndType[endType]);
     CLIPPER_OFFSET.Execute(offsetPaths, offset);
 
     return new Shape(offsetPaths, true);
@@ -233,10 +224,7 @@ export default class Shape {
 
   simplify(fillType) {
     if(this.closed) {
-      const shape = ClipperLib.Clipper.SimplifyPolygons(
-        this.paths,
-        ClipperLib.PolyFillType[fillType]
-      );
+      const shape = ClipperLib.Clipper.SimplifyPolygons(this.paths, ClipperLib.PolyFillType[fillType]);
       return new Shape(shape, true);
     }
     return this;

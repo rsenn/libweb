@@ -44,10 +44,7 @@ class FetchInterceptor {
    * @private
    */
   updateInterceptors() {
-    this.reversedInterceptors = this.interceptors.reduce(
-      (array, interceptor) => [interceptor].concat(array),
-      []
-    );
+    this.reversedInterceptors = this.interceptors.reduce((array, interceptor) => [interceptor].concat(array), []);
   }
 
   /**
@@ -99,15 +96,7 @@ class FetchQL extends FetchInterceptor {
    * @param {Boolean=} options.omitEmptyVariables - remove null props(null or '') from the variables
    * @param {Object=} options.requestOptions - addition options to fetch request(refer to fetch api)
    */
-  constructor({
-    url,
-    interceptors,
-    headers,
-    onStart,
-    onEnd,
-    omitEmptyVariables = false,
-    requestOptions = {}
-  }) {
+  constructor({ url, interceptors, headers, onStart, onEnd, omitEmptyVariables = false, requestOptions = {} }) {
     super();
 
     this.requestObject = Object.assign(
@@ -361,11 +350,7 @@ class FetchQL extends FetchInterceptor {
     const nonEmptyObj = {};
     Object.keys(input).map(key => {
       const value = input[key];
-      if(
-        (typeof value === 'string' && value.length === 0) ||
-        value === null ||
-        value === undefined
-      ) {
+      if((typeof value === 'string' && value.length === 0) || value === null || value === undefined) {
         return key;
       } else if(value instanceof Object) {
         nonEmptyObj[key] = this.doOmitEmptyVariables(value);
