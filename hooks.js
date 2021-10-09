@@ -15,18 +15,7 @@ export { useHover } from './hooks/useHover.js';
 export { useMousePosition } from './hooks/useMousePosition.js';
 export { useToggleButtonGroupState } from './hooks/useToggleButtonGroupState.js';
 export { useTrkl } from './hooks/useTrkl.js';
-export {
-  clamp,
-  identity,
-  noop,
-  compose,
-  maybe,
-  snd,
-  toPair,
-  getOffset,
-  getPositionOnElement,
-  isChildOf
-} from './hooks/utils.js';
+export { clamp, identity, noop, compose, maybe, snd, toPair, getOffset, getPositionOnElement, isChildOf } from './hooks/utils.js';
 export { useFetch } from './hooks/useFetch.js';
 export { usePanZoom } from './hooks/usePanZoom.js';
 export { useGenerator } from './hooks/useGenerator.js';
