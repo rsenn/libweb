@@ -5,19 +5,25 @@ export const useTrkl = fn => {
   if(Util.platform != 'browser') return fn();
 
   const [value, setValue] = useState(fn());
-  //console.debug('useTrkl fn =', fn, ' value =', value);
+ // console.debug('useTrkl fn =', fn, ' value =', value);
 
   useEffect(() => {
-    let updateValue = v => {
+    console.log('updated', fn.id, fn());
+ let updateValue = v => {
+  v ??= fn();
+
       if(v !== undefined) {
         /*  if(v === 'yes') v = true;
         else if(v === 'no') v = false;*/
-        //console.debug('useTrkl updateValue(', v, ')');
+        console.log('useTrkl setValue(', v, ')');
         setValue(v);
       }
     };
 
     fn.subscribe(updateValue);
+
+ //console.log('useTrkl updateValue =', typeof updateValue, ' value =', value);
+
     return () => fn.unsubscribe(updateValue);
   });
   return value;
