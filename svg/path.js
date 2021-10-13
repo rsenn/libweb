@@ -177,10 +177,11 @@ SvgPath.prototype.cmd = function(command, ...args) {
  * String representation of command chain
  * @returns {string}
  */
-SvgPath.prototype.str = function(digits, lineSep = ' ') {
+SvgPath.prototype.str = function(digits, lineSep = ' ', numSep = ',') {
+  //console.log('SvgPath.str', { lineSep, numSep });
   return this.commands
     .map(command => {
-      let str = Command.prototype.toString.call(command, digits) || command + '';
+      let str = Command.prototype.toString.call(command, digits, numSep) || command + '';
 
       return str;
     })
@@ -226,12 +227,12 @@ function Command(name, ...args) {
  * String representation of a command
  * @returns {string}
  */
-Command.prototype.toString = function(digits) {
+Command.prototype.toString = function(digits, sep = ' ') {
   let { name, args = [] } = this;
 
-  if(digits !== undefined) args = args.map(a => +a.toFixed(digits));
+  if(typeof digits == 'number') args = args.map(a => +a.toFixed(digits));
 
-  return name + args.reduce((acc, arg) => acc + ` ${arg}`, '');
+  return args.reduce((acc, arg, i) => acc + (i ? sep : '') + arg, name);
 };
 
 SvgPath.prototype.toRelative = function() {
