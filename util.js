@@ -3910,6 +3910,11 @@ Util.getFunctionName = () => {
   const frame = Util.getCallerStack(2)[0];
   return frame.getFunctionName() || frame.getMethodName();
 };
+Util.getFunctionArguments = fn => {
+ let head=(fn+'').replace(/(=>|{\n).*/g, '').replace(/^function\s*/, '');
+let args = head.replace(/^\((.*)\)\s*$/g, "$1").split(/,\s*/g);
+ return args;
+};
 
 Util.scriptDir = () =>
   Util.tryCatch(
