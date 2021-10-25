@@ -354,7 +354,6 @@ export function quote(str, q = '"') {
   return q + escape(str, [q]) + q;
 }
 
-
 export function memoize(fn) {
   let cache = {};
   return (n, ...rest) => {
