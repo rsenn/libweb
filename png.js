@@ -1,4 +1,4 @@
-import * as fs from './lib/filesystem.js';
+import * as fs from './filesystem.js';
 
 export function PngReadHeader(filename) {
   let file = fs.openSync(filename, 'rb');
@@ -10,6 +10,14 @@ export function PngReadHeader(filename) {
   return buf;
 }
 
+export function isPng(buffer) {
+  if(typeof buffer == 'string') buffer = PngReadHeader(buffer);
+
+  let a = new Uint8Array(buffer);
+
+  return a[1] == 0x50 && a[2] == 0x4e && a[3] == 0x47;
+}
+
 export function PngSize(buffer) {
   if(typeof buffer == 'string') buffer = PngReadHeader(buffer);
 
@@ -17,3 +25,5 @@ export function PngSize(buffer) {
 
   return [dv.getUint32(0), dv.getUint32(4)];
 }
+
+export default PngSize;
