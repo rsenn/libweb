@@ -354,6 +354,30 @@ export function quote(str, q = '"') {
   return q + escape(str, [q]) + q;
 }
 
+
+export function memoize(fn) {
+  let cache = {};
+  return (n, ...rest) => {
+    if(n in cache) return cache[n];
+    return (cache[n] = fn(n, ...rest));
+  };
+}
+
+export function once(fn, thisArg, memoFn) {
+  let ret,
+    ran = false;
+
+  return function(...args) {
+    if(!ran) {
+      ran = true;
+      ret = fn.apply(thisArg || this, args);
+    } else if(typeof memoFn == 'function') {
+      ret = memoFn(ret);
+    }
+    return ret;
+  };
+}
+
 export function Location(line, column, pos, file, freeze = true) {
   let obj = this || new.target.test || this ? this : {};
 
