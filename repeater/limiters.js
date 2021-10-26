@@ -1,5 +1,5 @@
-import { Repeater, FixedBuffer } from '@repeaterjs/repeater';
-import { delay } from '@repeaterjs/timers';
+import { Repeater, FixedBuffer } from './repeater.js';
+import { delay } from './timers.js';
 
 function semaphore(limit) {
   if(limit < 1) {

@@ -1,4 +1,4 @@
-import { Repeater } from '@repeaterjs/repeater';
+import { Repeater } from './repeater.js';
 
 class InMemoryPubSub {
   constructor() {
