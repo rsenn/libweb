@@ -3911,9 +3911,9 @@ Util.getFunctionName = () => {
   return frame.getFunctionName() || frame.getMethodName();
 };
 Util.getFunctionArguments = fn => {
- let head=(fn+'').replace(/(=>|{\n).*/g, '').replace(/^function\s*/, '');
-let args = head.replace(/^\((.*)\)\s*$/g, "$1").split(/,\s*/g);
- return args;
+  let head = (fn + '').replace(/(=>|{\n).*/g, '').replace(/^function\s*/, '');
+  let args = head.replace(/^\((.*)\)\s*$/g, '$1').split(/,\s*/g);
+  return args;
 };
 
 Util.scriptDir = () =>
