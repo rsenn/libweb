@@ -609,8 +609,8 @@ var records = new WeakMap();
 var Repeater = /** @class */ (function () {
   function Repeater(executor, buffer) {
     records.set(this, {
-      executor: executor,
-      buffer: buffer,
+      executor,
+      buffer,
       err: undefined,
       state: Initial,
       pushes: [],
