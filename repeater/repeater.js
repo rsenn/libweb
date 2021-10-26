@@ -1,16 +1,17 @@
+/// <reference types="./repeater.d.ts" />
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
@@ -22,7 +23,7 @@ var extendStatics = function(d, b) {
         d.__proto__ = b;
       }) ||
     function(d, b) {
-      for(let p in b) if(b.hasOwnProperty(p)) d[p] = b[p];
+      for(var p in b) if(b.hasOwnProperty(p)) d[p] = b[p];
     };
   return extendStatics(d, b);
 };
@@ -36,7 +37,14 @@ function __extends(d, b) {
 }
 
 function __awaiter(thisArg, _arguments, P, generator) {
-  return new (P || (P = Promise))((resolve, reject) => {
+  function adopt(value) {
+    return value instanceof P
+      ? value
+      : new P(function (resolve) {
+          resolve(value);
+        });
+  }
+  return new (P || (P = Promise))(function (resolve, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -46,26 +54,22 @@ function __awaiter(thisArg, _arguments, P, generator) {
     }
     function rejected(value) {
       try {
-        step(generator.throw(value));
+        step(generator['throw'](value));
       } catch(e) {
         reject(e);
       }
     }
     function step(result) {
-      result.done
-        ? resolve(result.value)
-        : new P(resolve => {
-            resolve(result.value);
-          }).then(fulfilled, rejected);
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 }
 
 function __generator(thisArg, body) {
-  let _ = {
+  var _ = {
       label: 0,
-      sent() {
+      sent: function() {
         if(t[0] & 1) throw t[1];
         return t[1];
       },
@@ -96,7 +100,7 @@ function __generator(thisArg, body) {
         if(
           ((f = 1),
           y &&
-            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
+            (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) &&
             !(t = t.call(y, op[1])).done)
         )
           return t;
@@ -154,41 +158,18 @@ function __generator(thisArg, body) {
 }
 
 function __values(o) {
-  let m = typeof Symbol === 'function' && o[Symbol.iterator],
+  var s = typeof Symbol === 'function' && Symbol.iterator,
+    m = s && o[s],
     i = 0;
   if(m) return m.call(o);
-  return {
-    next() {
-      if(o && i >= o.length) o = void 0;
-      return { value: o && o[i++], done: !o };
-    }
-  };
-}
-
-function __read(o, n) {
-  let m = typeof Symbol === 'function' && o[Symbol.iterator];
-  if(!m) return o;
-  let i = m.call(o),
-    r,
-    ar = [],
-    e;
-  try {
-    while((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-  } catch(error) {
-    e = { error };
-  } finally {
-    try {
-      if(r && !r.done && (m = i.return)) m.call(i);
-    } finally {
-      if(e) throw e.error;
-    }
-  }
-  return ar;
-}
-
-function __spread() {
-  for(var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-  return ar;
+  if(o && typeof o.length === 'number')
+    return {
+      next: function() {
+        if(o && i >= o.length) o = void 0;
+        return { value: o && o[i++], done: !o };
+      }
+    };
+  throw new TypeError(s ? 'Object is not iterable.' : 'Symbol.iterator is not defined.');
 }
 
 function __await(v) {
@@ -197,7 +178,7 @@ function __await(v) {
 
 function __asyncGenerator(thisArg, _arguments, generator) {
   if(!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
-  let g = generator.apply(thisArg, _arguments || []),
+  var g = generator.apply(thisArg, _arguments || []),
     i,
     q = [];
   return (
@@ -213,7 +194,7 @@ function __asyncGenerator(thisArg, _arguments, generator) {
   function verb(n) {
     if(g[n])
       i[n] = function(v) {
-        return new Promise((a, b) => {
+        return new Promise(function (a, b) {
           q.push([n, v, a, b]) > 1 || resume(n, v);
         });
       };
@@ -239,125 +220,20 @@ function __asyncGenerator(thisArg, _arguments, generator) {
   }
 }
 
-let FixedBuffer = /** @class */ (function () {
-  function FixedBuffer(capacity) {
-    this.capacity = capacity;
-    this.arr = [];
-    if(capacity < 0) {
-      throw new RangeError('FixedBuffer capacity cannot be less than zero');
-    }
-  }
-  Object.defineProperty(FixedBuffer.prototype, 'empty', {
-    get() {
-      return this.arr.length === 0;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(FixedBuffer.prototype, 'full', {
-    get() {
-      return this.arr.length >= this.capacity;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  FixedBuffer.prototype.add = function(value) {
-    if(this.full) {
-      throw new Error('Buffer full');
-    } else {
-      this.arr.push(value);
-    }
-  };
-  FixedBuffer.prototype.remove = function() {
-    if(this.empty) {
-      throw new Error('Buffer empty');
-    }
-    return this.arr.shift();
-  };
-  return FixedBuffer;
-})();
-// TODO: use a circular buffer here
-let SlidingBuffer = /** @class */ (function () {
-  function SlidingBuffer(capacity) {
-    this.capacity = capacity;
-    this.arr = [];
-    this.full = false;
-    if(capacity <= 0) {
-      throw new RangeError('SlidingBuffer capacity cannot be less than or equal to zero');
-    }
-  }
-  Object.defineProperty(SlidingBuffer.prototype, 'empty', {
-    get() {
-      return this.arr.length === 0;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  SlidingBuffer.prototype.add = function(value) {
-    while(this.arr.length >= this.capacity) {
-      this.arr.shift();
-    }
-    this.arr.push(value);
-  };
-  SlidingBuffer.prototype.remove = function() {
-    if(this.empty) {
-      throw new Error('Buffer empty');
-    }
-    return this.arr.shift();
-  };
-  return SlidingBuffer;
-})();
-let DroppingBuffer = /** @class */ (function () {
-  function DroppingBuffer(capacity) {
-    this.capacity = capacity;
-    this.arr = [];
-    this.full = false;
-    if(capacity <= 0) {
-      throw new RangeError('DroppingBuffer capacity cannot be less than or equal to zero');
-    }
-  }
-  Object.defineProperty(DroppingBuffer.prototype, 'empty', {
-    get() {
-      return this.arr.length === 0;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  DroppingBuffer.prototype.add = function(value) {
-    if(this.arr.length < this.capacity) {
-      this.arr.push(value);
-    }
-  };
-  DroppingBuffer.prototype.remove = function() {
-    if(this.empty) {
-      throw new Error('Buffer empty');
-    }
-    return this.arr.shift();
-  };
-  return DroppingBuffer;
-})();
-
-let MAX_QUEUE_LENGTH = 1024;
-let NOOP = function() {};
-function isPromiseLike(value) {
-  return value != null && typeof value.then === 'function';
-}
-function swallow(value) {
-  if(isPromiseLike(value)) {
-    Promise.resolve(value).catch(NOOP);
-  }
-}
-let RepeaterOverflowError = /** @class */ (function (_super) {
+/** An error subclass which is thrown when there are too many pending push or next operations on a single repeater. */
+var RepeaterOverflowError = /** @class */ (function (_super) {
   __extends(RepeaterOverflowError, _super);
   function RepeaterOverflowError(message) {
-    let _newTarget = this.constructor;
-    let _this = _super.call(this, message) || this;
+    var _this = _super.call(this, message) || this;
     Object.defineProperty(_this, 'name', {
       value: 'RepeaterOverflowError',
       enumerable: false
     });
-    if(typeof Object.setPrototypeOf === 'function') Object.setPrototypeOf(_this, _newTarget.prototype);
-    else _this.__proto__ = _newTarget.prototype;
+    if(typeof Object.setPrototypeOf === 'function') {
+      Object.setPrototypeOf(_this, _this.constructor.prototype);
+    } else {
+      _this.__proto__ = _this.constructor.prototype;
+    }
     if(typeof Error.captureStackTrace === 'function') {
       Error.captureStackTrace(_this, _this.constructor);
     }
@@ -365,394 +241,486 @@ let RepeaterOverflowError = /** @class */ (function (_super) {
   }
   return RepeaterOverflowError;
 })(Error);
-
-/**
- * The functionality for repeaters is implemented in this helper class and
- * hidden using a private WeakMap to make repeaters themselves opaque and
- * maximally compatible with async generators.
- */
-let RepeaterController = /** @class */ (function () {
-  function RepeaterController(executor, buffer) {
-    this.executor = executor;
-    this.buffer = buffer;
-    this.state = 0 /* Initial */;
-    // pushQueue and pullQueue will never both contain operations at the same time.
-    this.pushQueue = [];
-    this.pullQueue = [];
-    this.onnext = NOOP;
-    this.onstop = NOOP;
+/** A buffer which allows you to push a set amount of values to the repeater without pushes waiting or throwing errors. */
+var FixedBuffer = /** @class */ (function () {
+  function FixedBuffer(capacity) {
+    if(capacity < 0) {
+      throw new RangeError('Capacity may not be less than 0');
+    }
+    this._c = capacity;
+    this._q = [];
   }
-
-  /**
-   * This method runs synchronously the first time next is called.
-   *
-   * Advances state to RepeaterState.Started
-   */
-  RepeaterController.prototype.execute = function() {
-    if(this.state >= 1 /* Started */) return;
-    this.state = 1 /* Started */;
-    let push = this.push.bind(this);
-    let stop = this.stop.bind(this);
-    {
-      let stopP = new Promise(resolve => (this.onstop = resolve));
-      stop.then = stopP.then.bind(stopP);
-      stop.catch = stopP.catch.bind(stopP);
-      stop.finally = stopP.finally.bind(stopP);
-    }
-    try {
-      this.execution = Promise.resolve(this.executor(push, stop));
-    } catch(err) {
-      // sync err in executor
-      this.execution = Promise.reject(err);
-    }
-    // We don’t have to call this.stop with the error because all that does is
-    // reassign this.execution with the rejection.
-    this.execution.catch(() => this.stop());
-  };
-
-  /**
-   * A helper method which builds IteratorResult objects from values.  This
-   * method prevents types of Repeater<Promise<any>>, where the value property
-   * is a promise, and mimics the promise unwrapping behavior of async
-   * generators, where yield is equivalent to yield await.
-   */
-  RepeaterController.prototype.unwrap = function(value) {
-    let done = this.state >= 3; /* Finished */
-    return Promise.resolve(value).then(value => {
-      if(!done && this.state >= 4 /* Rejected */) {
-        return this.consume().then(value => ({ value, done: true }));
-      }
-      return { value, done };
-    });
-  };
-
-  /**
-   * A helper method used to mimic the behavior of async generators where the
-   * final result or any error are consumed, so that further calls to next,
-   * return or throw return { value: undefined, done: true }.
-   */
-  RepeaterController.prototype.consume = function() {
-    let err = this.err;
-    let execution = Promise.resolve(this.execution).then(value => {
-      if(err != null) {
-        throw err;
-      }
-      return value;
-    });
-    this.err = undefined;
-    this.execution = execution.then(
-      () => undefined,
-      () => undefined
-    );
-    return this.pending === undefined ? execution : this.pending.then(() => execution);
-  };
-
-  /**
-   * The difference between stopping a repeater vs finishing a repeater is that
-   * stopping a repeater allows next to continue to drain values from the
-   * pushQueue and buffer, while finishing a repeater will clear all pending
-   * values and end iteration immediately. Once, a repeater is finished, all
-   * results will have the done property set to true.
-   *
-   * Advances state to RepeaterState.Finished
-   */
-  RepeaterController.prototype.finish = function() {
-    if(this.state >= 3 /* Finished */) {
-      return;
-    }
-    if(this.state < 2 /* Stopped */) {
-      this.stop();
-    }
-    this.state = 3 /* Finished */;
-    this.pushQueue = [];
-    this.buffer = new FixedBuffer(0);
-  };
-
-  /**
-   * Called when a promise passed to push rejects, or when a push call is
-   * unhandled.
-   *
-   * Advances state to RepeaterState.Rejected
-   */
-  RepeaterController.prototype.reject = function() {
-    if(this.state >= 4 /* Rejected */) return;
-    if(this.state < 3 /* Finished */) this.finish();
-    this.state = 4 /* Rejected */;
-  };
-
-  /**
-   * This method is bound and passed to the executor as the push argument.
-   */
-  RepeaterController.prototype.push = function(value) {
-    swallow(value);
-    if(this.pushQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError(
-        'No more than ' + MAX_QUEUE_LENGTH + ' pending calls to push are allowed on a single repeater.'
-      );
-    } else if(this.state >= 2 /* Stopped */) {
-      return Promise.resolve(undefined);
-    }
-    let valueP = this.pending === undefined ? Promise.resolve(value) : this.pending.then(() => value);
-    valueP = valueP.catch(err => {
-      if(this.state < 2 /* Stopped */) {
-        this.err = err;
-      }
-      this.reject();
-      // Explicitly return undefined to avoid typescript’s horrible void type
-      return undefined;
-    });
-    let next;
-    if(this.pullQueue.length) {
-      let pull = this.pullQueue.shift();
-      pull.resolve(this.unwrap(valueP));
-      if(this.pullQueue.length) {
-        next = Promise.resolve(this.pullQueue[0].value);
-      } else {
-        next = new Promise(resolve => (this.onnext = resolve));
-      }
-    } else if(!this.buffer.full) {
-      this.buffer.add(valueP);
-      next = Promise.resolve(undefined);
+  Object.defineProperty(FixedBuffer.prototype, 'empty', {
+    get: function() {
+      return this._q.length === 0;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(FixedBuffer.prototype, 'full', {
+    get: function() {
+      return this._q.length >= this._c;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  FixedBuffer.prototype.add = function(value) {
+    if(this.full) {
+      throw new Error('Buffer full');
     } else {
-      next = new Promise(resolve => {
-        this.pushQueue.push({ resolve, value: valueP });
+      this._q.push(value);
+    }
+  };
+  FixedBuffer.prototype.remove = function() {
+    if(this.empty) {
+      throw new Error('Buffer empty');
+    }
+    return this._q.shift();
+  };
+  return FixedBuffer;
+})();
+// TODO: Use a circular buffer here.
+/** Sliding buffers allow you to push a set amount of values to the repeater without pushes waiting or throwing errors. If the number of values exceeds the capacity set in the constructor, the buffer will discard the earliest values added. */
+var SlidingBuffer = /** @class */ (function () {
+  function SlidingBuffer(capacity) {
+    if(capacity < 1) {
+      throw new RangeError('Capacity may not be less than 1');
+    }
+    this._c = capacity;
+    this._q = [];
+  }
+  Object.defineProperty(SlidingBuffer.prototype, 'empty', {
+    get: function() {
+      return this._q.length === 0;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(SlidingBuffer.prototype, 'full', {
+    get: function() {
+      return false;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  SlidingBuffer.prototype.add = function(value) {
+    while(this._q.length >= this._c) {
+      this._q.shift();
+    }
+    this._q.push(value);
+  };
+  SlidingBuffer.prototype.remove = function() {
+    if(this.empty) {
+      throw new Error('Buffer empty');
+    }
+    return this._q.shift();
+  };
+  return SlidingBuffer;
+})();
+/** Dropping buffers allow you to push a set amount of values to the repeater without the push function waiting or throwing errors. If the number of values exceeds the capacity set in the constructor, the buffer will discard the latest values added. */
+var DroppingBuffer = /** @class */ (function () {
+  function DroppingBuffer(capacity) {
+    if(capacity < 1) {
+      throw new RangeError('Capacity may not be less than 1');
+    }
+    this._c = capacity;
+    this._q = [];
+  }
+  Object.defineProperty(DroppingBuffer.prototype, 'empty', {
+    get: function() {
+      return this._q.length === 0;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(DroppingBuffer.prototype, 'full', {
+    get: function() {
+      return false;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  DroppingBuffer.prototype.add = function(value) {
+    if(this._q.length < this._c) {
+      this._q.push(value);
+    }
+  };
+  DroppingBuffer.prototype.remove = function() {
+    if(this.empty) {
+      throw new Error('Buffer empty');
+    }
+    return this._q.shift();
+  };
+  return DroppingBuffer;
+})();
+/** Makes sure promise-likes don’t cause unhandled rejections. */
+function swallow(value) {
+  if(value != null && typeof value.then === 'function') {
+    value.then(NOOP, NOOP);
+  }
+}
+/*** REPEATER STATES ***/
+/** The following is an enumeration of all possible repeater states. These states are ordered, and a repeater may only advance to higher states. */
+/** The initial state of the repeater. */
+var Initial = 0;
+/** Repeaters advance to this state the first time the next method is called on the repeater. */
+var Started = 1;
+/** Repeaters advance to this state when the stop function is called. */
+var Stopped = 2;
+/** Repeaters advance to this state when there are no values left to be pulled from the repeater. */
+var Done = 3;
+/** Repeaters advance to this state if an error is thrown into the repeater. */
+var Rejected = 4;
+/** The maximum number of push or next operations which may exist on a single repeater. */
+var MAX_QUEUE_LENGTH = 1024;
+var NOOP = function() {};
+/** A helper function used to mimic the behavior of async generators where the final iteration is consumed. */
+function consumeExecution(r) {
+  var err = r.err;
+  var execution = Promise.resolve(r.execution).then(function (value) {
+    if(err != null) {
+      throw err;
+    }
+    return value;
+  });
+  r.err = undefined;
+  r.execution = execution.then(
+    function() {
+      return undefined;
+    },
+    function() {
+      return undefined;
+    }
+  );
+  return r.pending === undefined
+    ? execution
+    : r.pending.then(function () {
+        return execution;
+      });
+}
+/** A helper function for building iterations from values. Promises are unwrapped, so that iterations never have their value property set to a promise. */
+function createIteration(r, value) {
+  var done = r.state >= Done;
+  return Promise.resolve(value).then(function (value) {
+    if(!done && r.state >= Rejected) {
+      return consumeExecution(r).then(function (value) {
+        return {
+          value: value,
+          done: true
+        };
       });
     }
-    // This method of catching unhandled rejections is adapted from
-    // https://stackoverflow.com/a/57792542/1825413
-    let floating = true;
-    let err;
-    let unhandled = next.catch(err1 => {
-      if(floating) {
-        err = err1;
-      }
-      // Explicitly return undefined to avoid typescript’s horrible void type
-      return undefined;
-    });
-    next.then = function(onFulfilled, onRejected) {
-      floating = false;
-      return Promise.prototype.then.call(this, onFulfilled, onRejected);
-    };
-    this.pending = valueP
-      .then(() => unhandled)
-      .then(() => {
-        if(err != null) {
-          this.err = err;
-          this.reject();
-        }
-        // Explicitly return undefined to avoid typescript’s horrible void type
-        return undefined;
-      });
-    return next;
-  };
-
-  /**
-   * This method is bound and passed to the executor as the stop argument.
-   *
-   * Advances state to RepeaterState.Stopped
-   */
-  RepeaterController.prototype.stop = function(err) {
-    let e_1, _a, e_2, _b;
-    if(this.state >= 2 /* Stopped */) return;
-    this.state = 2 /* Stopped */;
-    this.onnext();
-    this.onstop();
-    if(this.err == null) this.err = err;
+    return { value: value, done: done };
+  });
+}
+/**
+ * This function is bound and passed to the executor as the stop argument.
+ *
+ * Advances state to Stopped.
+ */
+function stop(r, err) {
+  var e_1, _a;
+  if(r.state >= Stopped) {
+    return;
+  }
+  r.state = Stopped;
+  r.onnext();
+  r.onstop();
+  if(r.err == null) {
+    r.err = err;
+  }
+  if(r.pushes.length === 0 && (typeof r.buffer === 'undefined' || r.buffer.empty)) {
+    finish(r);
+  } else {
     try {
-      for(var _c = __values(this.pushQueue), _d = _c.next(); !_d.done; _d = _c.next()) {
-        let push = _d.value;
-        push.resolve();
+      for(var _b = __values(r.pushes), _d = _b.next(); !_d.done; _d = _b.next()) {
+        var push_1 = _d.value;
+        push_1.resolve();
       }
     } catch(e_1_1) {
       e_1 = { error: e_1_1 };
     } finally {
       try {
-        if(_d && !_d.done && (_a = _c.return)) _a.call(_c);
+        if(_d && !_d.done && (_a = _b.return)) _a.call(_b);
       } finally {
         if(e_1) throw e_1.error;
       }
     }
-    // If the pullQueue contains operations, the pushQueue and buffer are both
-    // necessarily empty, so we don‘t have to worry about this.finish clearing
-    // the pushQueue or buffer.
-    if(this.pullQueue.length) {
-      this.finish();
-      try {
-        for(var _e = __values(this.pullQueue), _f = _e.next(); !_f.done; _f = _e.next()) {
-          let pull = _f.value;
-          let execution = this.pending === undefined ? this.consume() : this.pending.then(() => this.consume());
-          pull.resolve(this.unwrap(execution));
-        }
-      } catch(e_2_1) {
-        e_2 = { error: e_2_1 };
-      } finally {
-        try {
-          if(_f && !_f.done && (_b = _e.return)) _b.call(_e);
-        } finally {
-          if(e_2) throw e_2.error;
-        }
-      }
+  }
+}
+/**
+ * The difference between stopping a repeater vs finishing a repeater is that stopping a repeater allows next to continue to drain values from the push queue and buffer, while finishing a repeater will clear all pending values and end iteration immediately. Once, a repeater is finished, all iterations will have the done property set to true.
+ *
+ * Advances state to Done.
+ */
+function finish(r) {
+  var e_2, _a;
+  if(r.state >= Done) {
+    return;
+  }
+  if(r.state < Stopped) {
+    stop(r);
+  }
+  r.state = Done;
+  r.buffer = undefined;
+  try {
+    for(var _b = __values(r.nexts), _d = _b.next(); !_d.done; _d = _b.next()) {
+      var next = _d.value;
+      var execution =
+        r.pending === undefined
+          ? consumeExecution(r)
+          : r.pending.then(function () {
+              return consumeExecution(r);
+            });
+      next.resolve(createIteration(r, execution));
     }
-    this.pullQueue = [];
-  };
-
-  RepeaterController.prototype.next = function(value) {
-    swallow(value);
-    if(this.pullQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError(
-        'No more than ' +
-          MAX_QUEUE_LENGTH +
-          ' pending calls to Repeater.prototype.next are allowed on a single repeater.'
-      );
+  } catch(e_2_1) {
+    e_2 = { error: e_2_1 };
+  } finally {
+    try {
+      if(_d && !_d.done && (_a = _b.return)) _a.call(_b);
+    } finally {
+      if(e_2) throw e_2.error;
     }
-    if(this.state <= 0 /* Initial */) this.execute();
-    this.onnext(value);
-    if(!this.buffer.empty) {
-      let result = this.unwrap(this.buffer.remove());
-      if(this.pushQueue.length) {
-        var push = this.pushQueue.shift();
-        this.buffer.add(push.value);
-        this.onnext = push.resolve;
-      }
-      return result;
-    } else if(this.pushQueue.length) {
-      var push = this.pushQueue.shift();
-      this.onnext = push.resolve;
-      return this.unwrap(push.value);
-    } else if(this.state >= 2 /* Stopped */) {
-      this.finish();
-      return this.unwrap(this.consume());
+  }
+  r.pushes = [];
+  r.nexts = [];
+}
+/**
+ * Called when a promise passed to push rejects, or when a push call is unhandled.
+ *
+ * Advances state to Rejected.
+ */
+function reject(r) {
+  if(r.state >= Rejected) {
+    return;
+  }
+  if(r.state < Done) {
+    finish(r);
+  }
+  r.state = Rejected;
+}
+/** This function is bound and passed to the executor as the push argument. */
+function push(r, value) {
+  swallow(value);
+  if(r.pushes.length >= MAX_QUEUE_LENGTH) {
+    throw new RepeaterOverflowError(
+      'No more than ' + MAX_QUEUE_LENGTH + ' pending calls to push are allowed on a single repeater.'
+    );
+  } else if(r.state >= Stopped) {
+    return Promise.resolve(undefined);
+  }
+  var valueP =
+    r.pending === undefined
+      ? Promise.resolve(value)
+      : r.pending.then(function () {
+          return value;
+        });
+  valueP = valueP.catch(function (err) {
+    if(r.state < Stopped) {
+      r.err = err;
     }
-    return new Promise(resolve => this.pullQueue.push({ resolve, value }));
-  };
-
-  RepeaterController.prototype.return = function(value) {
-    swallow(value);
-    this.finish();
-    this.execution = Promise.resolve(this.execution).then(() => value);
-    return this.unwrap(this.consume());
-  };
-
-  RepeaterController.prototype.throw = function(err) {
-    if(this.state <= 0 /* Initial */ || this.state >= 2 /* Stopped */ || !this.buffer.empty) {
-      this.finish();
-      if(this.err == null) {
-        this.err = err;
-      }
-      return this.unwrap(this.consume());
+    reject(r);
+    return undefined; // void :(
+  });
+  var nextP;
+  if(r.nexts.length) {
+    var next_1 = r.nexts.shift();
+    next_1.resolve(createIteration(r, valueP));
+    if(r.nexts.length) {
+      nextP = Promise.resolve(r.nexts[0].value);
+    } else {
+      nextP = new Promise(function (resolve) {
+        return (r.onnext = resolve);
+      });
     }
-    return this.next(Promise.reject(err));
+  } else if(typeof r.buffer !== 'undefined' && !r.buffer.full) {
+    r.buffer.add(valueP);
+    nextP = Promise.resolve(undefined);
+  } else {
+    nextP = new Promise(function (resolve) {
+      return r.pushes.push({ resolve: resolve, value: valueP });
+    });
+  }
+  // If an error is thrown into the repeater via the next or throw methods, we give the repeater a chance to handle this by rejecting the promise returned from push. If the push call is not immediately handled we throw the next iteration of the repeater.
+  // To check that the promise returned from push is floating, we modify the then and catch methods of the returned promise so that they flip the floating flag. The push function actually does not return a promise, because modern engines do not call the then and catch methods on native promises. By making next a plain old javascript object, we ensure that the then and catch methods will be called.
+  var floating = true;
+  var next = {};
+  var unhandled = nextP.catch(function (err) {
+    if(floating) {
+      throw err;
+    }
+    return undefined; // void :(
+  });
+  next.then = function(onfulfilled, onrejected) {
+    floating = false;
+    return Promise.prototype.then.call(nextP, onfulfilled, onrejected);
   };
-  RepeaterController.prototype[Symbol.asyncIterator] = function() {
-    return this;
+  next.catch = function(onrejected) {
+    floating = false;
+    return Promise.prototype.catch.call(nextP, onrejected);
   };
-  return RepeaterController;
-})();
-let controllers = new WeakMap();
-// We do not export any types which use >=3.6 IteratorResult, AsyncIterator or
-// AsyncGenerator types. This allows the code to be used with older versions of
-// typescript. We cannot implement `AsyncIterator` or `AsyncIterableIterator`
-// here because the default types are busted as hell.
-//
-// TODO: use typesVersions to ship stricter types.
-let Repeater = /** @class */ (function () {
+  next.finally = nextP.finally.bind(nextP);
+  r.pending = valueP
+    .then(function () {
+      return unhandled;
+    })
+    .catch(function (err) {
+      r.err = err;
+      reject(r);
+    });
+  return next;
+}
+/**
+ * Creates the stop callable promise which is passed to the executor
+ */
+function createStop(r) {
+  var stop1 = stop.bind(null, r);
+  var stopP = new Promise(function (resolve) {
+    return (r.onstop = resolve);
+  });
+  stop1.then = stopP.then.bind(stopP);
+  stop1.catch = stopP.catch.bind(stopP);
+  stop1.finally = stopP.finally.bind(stopP);
+  return stop1;
+}
+/**
+ * Calls the executor passed into the constructor. This function is called the first time the next method is called on the repeater.
+ *
+ * Advances state to Started.
+ */
+function execute(r) {
+  if(r.state >= Started) {
+    return;
+  }
+  r.state = Started;
+  var push1 = push.bind(null, r);
+  var stop1 = createStop(r);
+  r.execution = new Promise(function (resolve) {
+    return resolve(r.executor(push1, stop1));
+  });
+  // TODO: We should consider stopping all repeaters when the executor settles.
+  r.execution.catch(function () {
+    return stop(r);
+  });
+}
+var records = new WeakMap();
+// NOTE: While repeaters implement and are assignable to the AsyncGenerator interface, and you can use the types interchangeably, we don’t use typescript’s implements syntax here because this would make supporting earlier versions of typescript trickier. This is because TypeScript version 3.6 changed the iterator types by adding the TReturn and TNext type parameters.
+var Repeater = /** @class */ (function () {
   function Repeater(executor, buffer) {
-    if(buffer === void 0) {
-      buffer = new FixedBuffer(0);
-    }
-    controllers.set(this, new RepeaterController(executor, buffer));
+    records.set(this, {
+      executor: executor,
+      buffer: buffer,
+      err: undefined,
+      state: Initial,
+      pushes: [],
+      nexts: [],
+      pending: undefined,
+      execution: undefined,
+      onnext: NOOP,
+      onstop: NOOP
+    });
   }
   Repeater.prototype.next = function(value) {
-    let controller = controllers.get(this);
-    if(controller === undefined) throw new Error('RepeaterController missing from controllers WeakMap');
-    return controller.next(value);
+    swallow(value);
+    var r = records.get(this);
+    if(r === undefined) {
+      throw new Error('WeakMap error');
+    }
+    if(r.nexts.length >= MAX_QUEUE_LENGTH) {
+      throw new RepeaterOverflowError(
+        'No more than ' + MAX_QUEUE_LENGTH + ' pending calls to next are allowed on a single repeater.'
+      );
+    }
+    if(r.state <= Initial) {
+      execute(r);
+    }
+    r.onnext(value);
+    if(typeof r.buffer !== 'undefined' && !r.buffer.empty) {
+      var result = createIteration(r, r.buffer.remove());
+      if(r.pushes.length) {
+        var push_2 = r.pushes.shift();
+        r.buffer.add(push_2.value);
+        r.onnext = push_2.resolve;
+      }
+      return result;
+    } else if(r.pushes.length) {
+      var push_3 = r.pushes.shift();
+      r.onnext = push_3.resolve;
+      return createIteration(r, push_3.value);
+    } else if(r.state >= Stopped) {
+      finish(r);
+      return createIteration(r, consumeExecution(r));
+    }
+    return new Promise(function (resolve) {
+      return r.nexts.push({ resolve: resolve, value: value });
+    });
   };
   Repeater.prototype.return = function(value) {
-    let controller = controllers.get(this);
-    if(controller === undefined) throw new Error('RepeaterController missing from controllers WeakMap');
-    return controller.return(value);
+    swallow(value);
+    var r = records.get(this);
+    if(r === undefined) {
+      throw new Error('WeakMap error');
+    }
+    finish(r);
+    // We override the execution because return should always return the value passed in.
+    r.execution = Promise.resolve(r.execution).then(function () {
+      return value;
+    });
+    return createIteration(r, consumeExecution(r));
   };
   Repeater.prototype.throw = function(err) {
-    let controller = controllers.get(this);
-    if(controller === undefined) throw new Error('RepeaterController missing from controllers WeakMap');
-
-    return controller.throw(err);
+    var r = records.get(this);
+    if(r === undefined) {
+      throw new Error('WeakMap error');
+    }
+    if(r.state <= Initial || r.state >= Stopped || (typeof r.buffer !== 'undefined' && !r.buffer.empty)) {
+      finish(r);
+      // If r.err is already set, that mean the repeater has already produced an error, so we throw that error rather than the error passed in, because doing so might be more informative for the caller.
+      if(r.err == null) {
+        r.err = err;
+      }
+      return createIteration(r, consumeExecution(r));
+    }
+    return this.next(Promise.reject(err));
   };
   Repeater.prototype[Symbol.asyncIterator] = function() {
     return this;
   };
+  // TODO: Remove these static methods from the class.
   Repeater.race = race;
   Repeater.merge = merge;
   Repeater.zip = zip;
   Repeater.latest = latest;
   return Repeater;
 })();
-function isAsyncIterable(value) {
-  return value != null && typeof value[Symbol.asyncIterator] === 'function';
-}
-function isIterable(value) {
-  return value != null && typeof value[Symbol.iterator] === 'function';
-}
-function asyncIterators(contenders, options) {
-  let e_3, _a;
-  let yieldValues = options.yieldValues,
-    returnValues = options.returnValues;
-  let iters = [];
-  let _loop_1 = function(contender) {
-    if(isAsyncIterable(contender)) {
-      iters.push(contender[Symbol.asyncIterator]());
-    } else if(isIterable(contender)) {
-      let iter_1 = contender[Symbol.iterator]();
-      iters.push(
-        (function syncToAsyncIterator() {
-          return __asyncGenerator(this, arguments, function syncToAsyncIterator_1() {
-            let result;
-            return __generator(this, _a => {
-              switch (_a.label) {
-                case 0:
-                  _a.trys.push([0, undefined, 6, 7]);
-                  result = iter_1.next();
-                  _a.label = 1;
-                case 1:
-                  if(result.done) return [3 /*break*/, 4];
-                  return [4 /*yield*/, __await(result.value)];
-                case 2:
-                  return [4 /*yield*/, _a.sent()];
-                case 3:
-                  _a.sent();
-                  result = iter_1.next();
-                  return [3 /*break*/, 1];
-                case 4:
-                  return [4 /*yield*/, __await(result.value)];
-                case 5:
-                  return [2 /*return*/, _a.sent()];
-                case 6:
-                  iter_1.return && iter_1.return();
-                  return [7 /*endfinally*/];
-                case 7:
-                  return [2 /*return*/];
-              }
-            });
-          });
-        })()
-      );
+/*** COMBINATOR FUNCTIONS ***/
+// TODO: move these combinators to their own file.
+function getIterators(values, options) {
+  var e_3, _a;
+  var iters = [];
+  var _loop_1 = function(value) {
+    if(value != null && typeof value[Symbol.asyncIterator] === 'function') {
+      iters.push(value[Symbol.asyncIterator]());
+    } else if(value != null && typeof value[Symbol.iterator] === 'function') {
+      iters.push(value[Symbol.iterator]());
     } else {
       iters.push(
         (function valueToAsyncIterator() {
           return __asyncGenerator(this, arguments, function valueToAsyncIterator_1() {
-            return __generator(this, _a => {
+            return __generator(this, function(_a) {
               switch (_a.label) {
                 case 0:
-                  if(!yieldValues) return [3 /*break*/, 3];
-                  return [4 /*yield*/, __await(contender)];
+                  if(!options.yieldValues) return [3 /*break*/, 3];
+                  return [4 /*yield*/, __await(value)];
                 case 1:
                   return [4 /*yield*/, _a.sent()];
                 case 2:
                   _a.sent();
                   _a.label = 3;
                 case 3:
-                  if(!returnValues) return [3 /*break*/, 5];
-                  return [4 /*yield*/, __await(contender)];
+                  if(!options.returnValues) return [3 /*break*/, 5];
+                  return [4 /*yield*/, __await(value)];
                 case 4:
                   return [2 /*return*/, _a.sent()];
                 case 5:
@@ -766,105 +734,32 @@ function asyncIterators(contenders, options) {
   };
   try {
     for(
-      var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next();
-      !contenders_1_1.done;
-      contenders_1_1 = contenders_1.next()
+      var values_1 = __values(values), values_1_1 = values_1.next();
+      !values_1_1.done;
+      values_1_1 = values_1.next()
     ) {
-      let contender = contenders_1_1.value;
-      _loop_1(contender);
+      var value = values_1_1.value;
+      _loop_1(value);
     }
   } catch(e_3_1) {
     e_3 = { error: e_3_1 };
   } finally {
     try {
-      if(contenders_1_1 && !contenders_1_1.done && (_a = contenders_1.return)) _a.call(contenders_1);
+      if(values_1_1 && !values_1_1.done && (_a = values_1.return)) _a.call(values_1);
     } finally {
       if(e_3) throw e_3.error;
     }
   }
   return iters;
 }
+// NOTE: whenever you see any variables called `advance` or `advances`, know that it is a hack to get around the fact that `Promise.race` leaks memory. These variables are intended to be set to the resolve function of a promise which is constructed and awaited as an alternative to Promise.race. For more information, see this comment in the Node.js issue tracker: https://github.com/nodejs/node/issues/17469#issuecomment-685216777.
 function race(contenders) {
-  let iters = asyncIterators(contenders, { returnValues: true });
-  return new Repeater((push, stop) =>
-    __awaiter(this, void 0, void 0, function() {
-      let stopped, returned, results, results_1, results_1_1, result_1, result;
-      let e_4, _a;
-      return __generator(this, _b => {
-        switch (_b.label) {
-          case 0:
-            if(!iters.length) {
-              stop();
-              return [2 /*return*/];
-            }
-            stopped = false;
-            stop.then(() => (stopped = true));
-            _b.label = 1;
-          case 1:
-            _b.trys.push([1, undefined, 7, 9]);
-            _b.label = 2;
-          case 2:
-            if(stopped) return [3 /*break*/, 6];
-            results = iters.map(iter => iter.next());
-            try {
-              for(
-                results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next();
-                !results_1_1.done;
-                results_1_1 = results_1.next()
-              ) {
-                result_1 = results_1_1.value;
-                Promise.resolve(result_1).then(
-                  result => {
-                    if(result.done && !stopped) {
-                      stop();
-                      stopped = true;
-                      returned = result.value;
-                    }
-                  },
-                  err => stop(err)
-                );
-              }
-            } catch(e_4_1) {
-              e_4 = { error: e_4_1 };
-            } finally {
-              try {
-                if(results_1_1 && !results_1_1.done && (_a = results_1.return)) _a.call(results_1);
-              } finally {
-                if(e_4) throw e_4.error;
-              }
-            }
-            return [4 /*yield*/, Promise.race(__spread([stop], results))];
-          case 3:
-            result = _b.sent();
-            if(!(result !== undefined && !result.done)) return [3 /*break*/, 5];
-            return [4 /*yield*/, push(result.value)];
-          case 4:
-            _b.sent();
-            _b.label = 5;
-          case 5:
-            return [3 /*break*/, 2];
-          case 6:
-            return [2 /*return*/, returned];
-          case 7:
-            stop();
-            return [4 /*yield*/, Promise.race(iters.map(iter => iter.return && iter.return()))];
-          case 8:
-            _b.sent();
-            return [7 /*endfinally*/];
-          case 9:
-            return [2 /*return*/];
-        }
-      });
-    })
-  );
-}
-
-function merge(contenders) {
-  let iters = asyncIterators(contenders, { yieldValues: true });
-  return new Repeater((push, stop) =>
-    __awaiter(this, void 0, void 0, function() {
-      let stopped, returned;
-      return __generator(this, _a => {
+  var _this = this;
+  var iters = getIterators(contenders, { returnValues: true });
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function() {
+      var advance, stopped, finalIteration, iteration, i_1, _loop_2;
+      return __generator(this, function(_a) {
         switch (_a.label) {
           case 0:
             if(!iters.length) {
@@ -872,29 +767,179 @@ function merge(contenders) {
               return [2 /*return*/];
             }
             stopped = false;
-            stop.then(() => (stopped = true));
+            stop.then(function () {
+              advance();
+              stopped = true;
+            });
+            _a.label = 1;
+          case 1:
+            _a.trys.push([1, , 5, 7]);
+            iteration = void 0;
+            i_1 = 0;
+            _loop_2 = function() {
+              var j, iters_1, iters_1_1, iter;
+              var e_4, _a;
+              return __generator(this, function(_b) {
+                switch (_b.label) {
+                  case 0:
+                    j = i_1;
+                    try {
+                      for(
+                        iters_1 = ((e_4 = void 0), __values(iters)), iters_1_1 = iters_1.next();
+                        !iters_1_1.done;
+                        iters_1_1 = iters_1.next()
+                      ) {
+                        iter = iters_1_1.value;
+                        Promise.resolve(iter.next()).then(
+                          function(iteration) {
+                            if(iteration.done) {
+                              stop();
+                              if(finalIteration === undefined) {
+                                finalIteration = iteration;
+                              }
+                            } else if(i_1 === j) {
+                              // This iterator has won, advance i and resolve the promise.
+                              i_1++;
+                              advance(iteration);
+                            }
+                          },
+                          function(err) {
+                            return stop(err);
+                          }
+                        );
+                      }
+                    } catch(e_4_1) {
+                      e_4 = { error: e_4_1 };
+                    } finally {
+                      try {
+                        if(iters_1_1 && !iters_1_1.done && (_a = iters_1.return)) _a.call(iters_1);
+                      } finally {
+                        if(e_4) throw e_4.error;
+                      }
+                    }
+                    return [
+                      4 /*yield*/,
+                      new Promise(function (resolve) {
+                        return (advance = resolve);
+                      })
+                    ];
+                  case 1:
+                    iteration = _b.sent();
+                    if(!(iteration !== undefined)) return [3 /*break*/, 3];
+                    return [4 /*yield*/, push(iteration.value)];
+                  case 2:
+                    _b.sent();
+                    _b.label = 3;
+                  case 3:
+                    return [2 /*return*/];
+                }
+              });
+            };
+            _a.label = 2;
+          case 2:
+            if(!!stopped) return [3 /*break*/, 4];
+            return [5 /*yield**/, _loop_2()];
+          case 3:
+            _a.sent();
+            return [3 /*break*/, 2];
+          case 4:
+            return [2 /*return*/, finalIteration && finalIteration.value];
+          case 5:
+            stop();
+            return [
+              4 /*yield*/,
+              Promise.race(
+                iters.map(function (iter) {
+                  return iter.return && iter.return();
+                })
+              )
+            ];
+          case 6:
+            _a.sent();
+            return [7 /*endfinally*/];
+          case 7:
+            return [2 /*return*/];
+        }
+      });
+    });
+  });
+}
+function merge(contenders) {
+  var _this = this;
+  var iters = getIterators(contenders, { yieldValues: true });
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function() {
+      var advances, stopped, finalIteration;
+      var _this = this;
+      return __generator(this, function(_a) {
+        switch (_a.label) {
+          case 0:
+            if(!iters.length) {
+              stop();
+              return [2 /*return*/];
+            }
+            advances = [];
+            stopped = false;
+            stop.then(function () {
+              var e_5, _a;
+              stopped = true;
+              try {
+                for(
+                  var advances_1 = __values(advances), advances_1_1 = advances_1.next();
+                  !advances_1_1.done;
+                  advances_1_1 = advances_1.next()
+                ) {
+                  var advance = advances_1_1.value;
+                  advance();
+                }
+              } catch(e_5_1) {
+                e_5 = { error: e_5_1 };
+              } finally {
+                try {
+                  if(advances_1_1 && !advances_1_1.done && (_a = advances_1.return)) _a.call(advances_1);
+                } finally {
+                  if(e_5) throw e_5.error;
+                }
+              }
+            });
+            _a.label = 1;
+          case 1:
+            _a.trys.push([1, , 3, 4]);
             return [
               4 /*yield*/,
               Promise.all(
-                iters.map(iter =>
-                  __awaiter(this, void 0, void 0, function() {
-                    let result, _a;
-                    return __generator(this, _b => {
+                iters.map(function (iter, i) {
+                  return __awaiter(_this, void 0, void 0, function() {
+                    var iteration, _a;
+                    return __generator(this, function(_b) {
                       switch (_b.label) {
                         case 0:
-                          _b.trys.push([0, undefined, 6, 9]);
+                          _b.trys.push([0, , 6, 9]);
                           _b.label = 1;
                         case 1:
-                          if(stopped) return [3 /*break*/, 5];
-                          return [4 /*yield*/, Promise.race([iter.next(), stop])];
+                          if(!!stopped) return [3 /*break*/, 5];
+                          Promise.resolve(iter.next()).then(
+                            function(iteration) {
+                              return advances[i](iteration);
+                            },
+                            function(err) {
+                              return stop(err);
+                            }
+                          );
+                          return [
+                            4 /*yield*/,
+                            new Promise(function (resolve) {
+                              advances[i] = resolve;
+                            })
+                          ];
                         case 2:
-                          result = _b.sent();
-                          if(!(result !== undefined)) return [3 /*break*/, 4];
-                          if(result.done) {
-                            returned = result.value;
+                          iteration = _b.sent();
+                          if(!(iteration !== undefined)) return [3 /*break*/, 4];
+                          if(iteration.done) {
+                            finalIteration = iteration;
                             return [2 /*return*/];
                           }
-                          return [4 /*yield*/, push(result.value)];
+                          return [4 /*yield*/, push(iteration.value)];
                         case 3:
                           _b.sent();
                           _b.label = 4;
@@ -915,26 +960,30 @@ function merge(contenders) {
                           return [2 /*return*/];
                       }
                     });
-                  })
-                )
+                  });
+                })
               )
             ];
-          case 1:
+          case 2:
             _a.sent();
+            return [2 /*return*/, finalIteration && finalIteration.value];
+          case 3:
             stop();
-            return [2 /*return*/, returned];
+            return [7 /*endfinally*/];
+          case 4:
+            return [2 /*return*/];
         }
       });
-    })
-  );
+    });
+  });
 }
-
 function zip(contenders) {
-  let iters = asyncIterators(contenders, { returnValues: true });
-  return new Repeater((push, stop) =>
-    __awaiter(this, void 0, void 0, function() {
-      let stopped, resultsP, results, values;
-      return __generator(this, _a => {
+  var _this = this;
+  var iters = getIterators(contenders, { returnValues: true });
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function() {
+      var advance, stopped, iterations, values;
+      return __generator(this, function(_a) {
         switch (_a.label) {
           case 0:
             if(!iters.length) {
@@ -942,22 +991,47 @@ function zip(contenders) {
               return [2 /*return*/, []];
             }
             stopped = false;
-            stop.then(() => (stopped = true));
+            stop.then(function () {
+              advance();
+              stopped = true;
+            });
             _a.label = 1;
           case 1:
-            _a.trys.push([1, undefined, 6, 8]);
+            _a.trys.push([1, , 6, 8]);
             _a.label = 2;
           case 2:
-            if(stopped) return [3 /*break*/, 5];
-            resultsP = Promise.all(iters.map(iter => iter.next()));
-            return [4 /*yield*/, Promise.race([stop, resultsP])];
+            if(!!stopped) return [3 /*break*/, 5];
+            Promise.all(
+              iters.map(function (iter) {
+                return iter.next();
+              })
+            ).then(
+              function(iterations) {
+                return advance(iterations);
+              },
+              function(err) {
+                return stop(err);
+              }
+            );
+            return [
+              4 /*yield*/,
+              new Promise(function (resolve) {
+                return (advance = resolve);
+              })
+            ];
           case 3:
-            results = _a.sent();
-            if(results === undefined) {
+            iterations = _a.sent();
+            if(iterations === undefined) {
               return [2 /*return*/];
             }
-            values = results.map(result => result.value);
-            if(results.some(result => result.done)) {
+            values = iterations.map(function (iteration) {
+              return iteration.value;
+            });
+            if(
+              iterations.some(function (iteration) {
+                return iteration.done;
+              })
+            ) {
               return [2 /*return*/, values];
             }
             return [4 /*yield*/, push(values)];
@@ -968,7 +1042,14 @@ function zip(contenders) {
             return [3 /*break*/, 8];
           case 6:
             stop();
-            return [4 /*yield*/, Promise.all(iters.map(iter => iter.return && iter.return()))];
+            return [
+              4 /*yield*/,
+              Promise.all(
+                iters.map(function (iter) {
+                  return iter.return && iter.return();
+                })
+              )
+            ];
           case 7:
             _a.sent();
             return [7 /*endfinally*/];
@@ -976,88 +1057,153 @@ function zip(contenders) {
             return [2 /*return*/];
         }
       });
-    })
-  );
+    });
+  });
 }
-
 function latest(contenders) {
-  let _this = this;
-  let iters = asyncIterators(contenders, {
+  var _this = this;
+  var iters = getIterators(contenders, {
     yieldValues: true,
     returnValues: true
   });
-  return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function() {
-      let stopped, resultsP, results_2, values_1;
-      let _this = this;
-      return __generator(this, _a => {
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function() {
+      var advance, advances, stopped, iterations_1, values_2;
+      var _this = this;
+      return __generator(this, function(_a) {
         switch (_a.label) {
           case 0:
             if(!iters.length) {
               stop();
               return [2 /*return*/, []];
             }
+            advances = [];
             stopped = false;
-            stop.then(() => (stopped = true));
+            stop.then(function () {
+              var e_6, _a;
+              advance();
+              try {
+                for(
+                  var advances_2 = __values(advances), advances_2_1 = advances_2.next();
+                  !advances_2_1.done;
+                  advances_2_1 = advances_2.next()
+                ) {
+                  var advance1 = advances_2_1.value;
+                  advance1();
+                }
+              } catch(e_6_1) {
+                e_6 = { error: e_6_1 };
+              } finally {
+                try {
+                  if(advances_2_1 && !advances_2_1.done && (_a = advances_2.return)) _a.call(advances_2);
+                } finally {
+                  if(e_6) throw e_6.error;
+                }
+              }
+              stopped = true;
+            });
             _a.label = 1;
           case 1:
-            _a.trys.push([1, undefined, 5, 7]);
-            resultsP = Promise.all(iters.map(iter => iter.next()));
-            return [4 /*yield*/, Promise.race([stop, resultsP])];
+            _a.trys.push([1, , 5, 7]);
+            Promise.all(
+              iters.map(function (iter) {
+                return iter.next();
+              })
+            ).then(
+              function(iterations) {
+                return advance(iterations);
+              },
+              function(err) {
+                return stop(err);
+              }
+            );
+            return [
+              4 /*yield*/,
+              new Promise(function (resolve) {
+                return (advance = resolve);
+              })
+            ];
           case 2:
-            results_2 = _a.sent();
-            if(results_2 === undefined) {
+            iterations_1 = _a.sent();
+            if(iterations_1 === undefined) {
               return [2 /*return*/];
             }
-            values_1 = results_2.map(result => result.value);
-            if(results_2.every(result => result.done)) {
-              return [2 /*return*/, values_1];
+            values_2 = iterations_1.map(function (iteration) {
+              return iteration.value;
+            });
+            if(
+              iterations_1.every(function (iteration) {
+                return iteration.done;
+              })
+            ) {
+              return [2 /*return*/, values_2];
             }
-            return [4 /*yield*/, push(values_1.slice())];
+            // We continuously yield and mutate the same values array so we shallow copy it each time it is pushed.
+            return [4 /*yield*/, push(values_2.slice())];
           case 3:
+            // We continuously yield and mutate the same values array so we shallow copy it each time it is pushed.
             _a.sent();
             return [
               4 /*yield*/,
               Promise.all(
-                iters.map((iter, i) =>
-                  __awaiter(_this, void 0, void 0, function() {
-                    let result;
-                    return __generator(this, _a => {
+                iters.map(function (iter, i) {
+                  return __awaiter(_this, void 0, void 0, function() {
+                    var iteration;
+                    return __generator(this, function(_a) {
                       switch (_a.label) {
                         case 0:
-                          if(results_2[i].done) {
-                            return [2 /*return*/, results_2[i].value];
+                          if(iterations_1[i].done) {
+                            return [2 /*return*/, iterations_1[i].value];
                           }
                           _a.label = 1;
                         case 1:
-                          if(stopped) return [3 /*break*/, 5];
-                          return [4 /*yield*/, Promise.race([stop, iter.next()])];
+                          if(!!stopped) return [3 /*break*/, 4];
+                          Promise.resolve(iter.next()).then(
+                            function(iteration) {
+                              return advances[i](iteration);
+                            },
+                            function(err) {
+                              return stop(err);
+                            }
+                          );
+                          return [
+                            4 /*yield*/,
+                            new Promise(function (resolve) {
+                              return (advances[i] = resolve);
+                            })
+                          ];
                         case 2:
-                          result = _a.sent();
-                          if(!(result !== undefined)) return [3 /*break*/, 4];
-                          if(result.done) {
-                            return [2 /*return*/, result.value];
+                          iteration = _a.sent();
+                          if(iteration === undefined) {
+                            return [2 /*return*/, iterations_1[i].value];
+                          } else if(iteration.done) {
+                            return [2 /*return*/, iteration.value];
                           }
-                          values_1[i] = result.value;
-                          return [4 /*yield*/, push(values_1.slice())];
+                          values_2[i] = iteration.value;
+                          return [4 /*yield*/, push(values_2.slice())];
                         case 3:
                           _a.sent();
-                          _a.label = 4;
-                        case 4:
                           return [3 /*break*/, 1];
-                        case 5:
+                        case 4:
                           return [2 /*return*/];
                       }
                     });
-                  })
-                )
+                  });
+                })
               )
             ];
           case 4:
             return [2 /*return*/, _a.sent()];
           case 5:
             stop();
-            return [4 /*yield*/, Promise.all(iters.map(iter => iter.return && iter.return()))];
+            return [
+              4 /*yield*/,
+              Promise.all(
+                iters.map(function (iter) {
+                  return iter.return && iter.return();
+                })
+              )
+            ];
           case 6:
             _a.sent();
             return [7 /*endfinally*/];
@@ -1065,8 +1211,9 @@ function latest(contenders) {
             return [2 /*return*/];
         }
       });
-    })
-  );
+    });
+  });
 }
 
 export { DroppingBuffer, FixedBuffer, MAX_QUEUE_LENGTH, Repeater, RepeaterOverflowError, SlidingBuffer };
+//# sourceMappingURL=repeater.js.map

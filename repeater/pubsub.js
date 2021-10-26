@@ -1,22 +1,29 @@
-import { Repeater } from './repeater.js';
+import { Repeater } from '@repeaterjs/repeater';
 
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
 function __awaiter(thisArg, _arguments, P, generator) {
-  return new (P || (P = Promise))((resolve, reject) => {
+  function adopt(value) {
+    return value instanceof P
+      ? value
+      : new P(function (resolve) {
+          resolve(value);
+        });
+  }
+  return new (P || (P = Promise))(function (resolve, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -26,26 +33,22 @@ function __awaiter(thisArg, _arguments, P, generator) {
     }
     function rejected(value) {
       try {
-        step(generator.throw(value));
+        step(generator['throw'](value));
       } catch(e) {
         reject(e);
       }
     }
     function step(result) {
-      result.done
-        ? resolve(result.value)
-        : new P(resolve => {
-            resolve(result.value);
-          }).then(fulfilled, rejected);
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 }
 
 function __generator(thisArg, body) {
-  let _ = {
+  var _ = {
       label: 0,
-      sent() {
+      sent: function() {
         if(t[0] & 1) throw t[1];
         return t[1];
       },
@@ -76,7 +79,7 @@ function __generator(thisArg, body) {
         if(
           ((f = 1),
           y &&
-            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
+            (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) &&
             !(t = t.call(y, op[1])).done)
         )
           return t;
@@ -134,24 +137,27 @@ function __generator(thisArg, body) {
 }
 
 function __values(o) {
-  let m = typeof Symbol === 'function' && o[Symbol.iterator],
+  var s = typeof Symbol === 'function' && Symbol.iterator,
+    m = s && o[s],
     i = 0;
   if(m) return m.call(o);
-  return {
-    next() {
-      if(o && i >= o.length) o = void 0;
-      return { value: o && o[i++], done: !o };
-    }
-  };
+  if(o && typeof o.length === 'number')
+    return {
+      next: function() {
+        if(o && i >= o.length) o = void 0;
+        return { value: o && o[i++], done: !o };
+      }
+    };
+  throw new TypeError(s ? 'Object is not iterable.' : 'Symbol.iterator is not defined.');
 }
 
-let InMemoryPubSub = /** @class */ (function () {
+var InMemoryPubSub = /** @class */ (function () {
   function InMemoryPubSub() {
     this.publishers = {};
   }
   InMemoryPubSub.prototype.publish = function(topic, value) {
-    let e_1, _a;
-    let publishers = this.publishers[topic];
+    var e_1, _a;
+    var publishers = this.publishers[topic];
     if(publishers != null) {
       try {
         for(
@@ -159,7 +165,7 @@ let InMemoryPubSub = /** @class */ (function () {
           !publishers_1_1.done;
           publishers_1_1 = publishers_1.next()
         ) {
-          let _b = publishers_1_1.value,
+          var _b = publishers_1_1.value,
             push = _b.push,
             stop_1 = _b.stop;
           try {
@@ -181,8 +187,8 @@ let InMemoryPubSub = /** @class */ (function () {
     }
   };
   InMemoryPubSub.prototype.unpublish = function(topic, reason) {
-    let e_2, _a;
-    let publishers = this.publishers[topic];
+    var e_2, _a;
+    var publishers = this.publishers[topic];
     if(publishers == null) {
       return;
     }
@@ -192,7 +198,7 @@ let InMemoryPubSub = /** @class */ (function () {
         !publishers_2_1.done;
         publishers_2_1 = publishers_2.next()
       ) {
-        let stop_2 = publishers_2_1.value.stop;
+        var stop_2 = publishers_2_1.value.stop;
         stop_2(reason);
       }
     } catch(e_2_1) {
@@ -207,35 +213,33 @@ let InMemoryPubSub = /** @class */ (function () {
     publishers.clear();
   };
   InMemoryPubSub.prototype.subscribe = function(topic, buffer) {
-    let _this = this;
+    var _this = this;
     if(this.publishers[topic] == null) {
       this.publishers[topic] = new Set();
     }
-    return new Repeater(
-      (push, stop) =>
-        __awaiter(_this, void 0, void 0, function() {
-          let publisher;
-          return __generator(this, function(_a) {
-            switch (_a.label) {
-              case 0:
-                publisher = { push, stop };
-                this.publishers[topic].add(publisher);
-                return [4 /*yield*/, stop];
-              case 1:
-                _a.sent();
-                this.publishers[topic].delete(publisher);
-                return [2 /*return*/];
-            }
-          });
-        }),
-      buffer
-    );
+    return new Repeater(function (push, stop) {
+      return __awaiter(_this, void 0, void 0, function() {
+        var publisher;
+        return __generator(this, function(_a) {
+          switch (_a.label) {
+            case 0:
+              publisher = { push: push, stop: stop };
+              this.publishers[topic].add(publisher);
+              return [4 /*yield*/, stop];
+            case 1:
+              _a.sent();
+              this.publishers[topic].delete(publisher);
+              return [2 /*return*/];
+          }
+        });
+      });
+    }, buffer);
   };
   InMemoryPubSub.prototype.close = function(reason) {
-    let e_3, _a;
+    var e_3, _a;
     try {
       for(var _b = __values(Object.keys(this.publishers)), _c = _b.next(); !_c.done; _c = _b.next()) {
-        let topic = _c.value;
+        var topic = _c.value;
         this.unpublish(topic, reason);
       }
     } catch(e_3_1) {

@@ -1,19 +1,19 @@
-import { Repeater, FixedBuffer } from './repeater.js';
-import { delay } from './timers.js';
+import { Repeater, FixedBuffer } from '@repeaterjs/repeater';
+import { delay } from '@repeaterjs/timers';
 
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
 var __assign = function() {
@@ -22,7 +22,7 @@ var __assign = function() {
     function __assign(t) {
       for(var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
-        for(let p in s) if(Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        for(var p in s) if(Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
       }
       return t;
     };
@@ -30,7 +30,14 @@ var __assign = function() {
 };
 
 function __awaiter(thisArg, _arguments, P, generator) {
-  return new (P || (P = Promise))((resolve, reject) => {
+  function adopt(value) {
+    return value instanceof P
+      ? value
+      : new P(function (resolve) {
+          resolve(value);
+        });
+  }
+  return new (P || (P = Promise))(function (resolve, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -40,26 +47,22 @@ function __awaiter(thisArg, _arguments, P, generator) {
     }
     function rejected(value) {
       try {
-        step(generator.throw(value));
+        step(generator['throw'](value));
       } catch(e) {
         reject(e);
       }
     }
     function step(result) {
-      result.done
-        ? resolve(result.value)
-        : new P(resolve => {
-            resolve(result.value);
-          }).then(fulfilled, rejected);
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 }
 
 function __generator(thisArg, body) {
-  let _ = {
+  var _ = {
       label: 0,
-      sent() {
+      sent: function() {
         if(t[0] & 1) throw t[1];
         return t[1];
       },
@@ -90,7 +93,7 @@ function __generator(thisArg, body) {
         if(
           ((f = 1),
           y &&
-            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
+            (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) &&
             !(t = t.call(y, op[1])).done)
         )
           return t;
@@ -148,20 +151,23 @@ function __generator(thisArg, body) {
 }
 
 function __values(o) {
-  let m = typeof Symbol === 'function' && o[Symbol.iterator],
+  var s = typeof Symbol === 'function' && Symbol.iterator,
+    m = s && o[s],
     i = 0;
   if(m) return m.call(o);
-  return {
-    next() {
-      if(o && i >= o.length) o = void 0;
-      return { value: o && o[i++], done: !o };
-    }
-  };
+  if(o && typeof o.length === 'number')
+    return {
+      next: function() {
+        if(o && i >= o.length) o = void 0;
+        return { value: o && o[i++], done: !o };
+      }
+    };
+  throw new TypeError(s ? 'Object is not iterable.' : 'Symbol.iterator is not defined.');
 }
 
 function __asyncValues(o) {
   if(!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
-  let m = o[Symbol.asyncIterator],
+  var m = o[Symbol.asyncIterator],
     i;
   return m
     ? m.call(o)
@@ -178,59 +184,58 @@ function __asyncValues(o) {
     i[n] =
       o[n] &&
       function(v) {
-        return new Promise((resolve, reject) => {
+        return new Promise(function (resolve, reject) {
           (v = o[n](v)), settle(resolve, reject, v.done, v.value);
         });
       };
   }
   function settle(resolve, reject, d, v) {
-    Promise.resolve(v).then(v => {
+    Promise.resolve(v).then(function (v) {
       resolve({ value: v, done: d });
     }, reject);
   }
 }
 
 function semaphore(limit) {
-  let _this = this;
+  var _this = this;
   if(limit < 1) {
     throw new RangeError('limit cannot be less than 1');
   }
-  let remaining = limit;
-  let tokens = {};
-  let bucket = new Repeater(push => {
-    let nextId = 0;
+  var remaining = limit;
+  var tokens = {};
+  var bucket = new Repeater(function (push) {
+    var nextId = 0;
     function release(id) {
       if(tokens[id] != null) {
-        let id1 = nextId++;
-        let token = __assign(__assign({}, tokens[id]), {
-          id: id1,
-          release: release.bind(null, id1)
-        });
+        var id1 = nextId++;
+        var token = __assign(__assign({}, tokens[id]), { id: id1, release: release.bind(null, id1) });
         push(token);
         delete tokens[id];
         remaining++;
       }
     }
-    for(let i = 0; i < limit; i++) {
-      let id = nextId++;
-      let token = {
-        id,
-        limit,
-        remaining,
+    for(var i = 0; i < limit; i++) {
+      var id = nextId++;
+      var token = {
+        id: id,
+        limit: limit,
+        remaining: remaining,
         release: release.bind(null, id)
       };
       push(token);
     }
   }, new FixedBuffer(limit));
-  return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function() {
-      let stopped, _a, _b, token, e_1_1;
-      let e_1, _c;
-      return __generator(this, _d => {
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function() {
+      var stopped, _a, _b, token, e_1_1;
+      var e_1, _c;
+      return __generator(this, function(_d) {
         switch (_d.label) {
           case 0:
             stopped = false;
-            stop.then(() => (stopped = true));
+            stop.then(function () {
+              return (stopped = true);
+            });
             _d.label = 1;
           case 1:
             _d.trys.push([1, 7, 8, 13]);
@@ -245,7 +250,7 @@ function semaphore(limit) {
               return [3 /*break*/, 6];
             }
             remaining--;
-            token = __assign(__assign({}, token), { remaining });
+            token = __assign(__assign({}, token), { remaining: remaining });
             tokens[token.id] = token;
             return [4 /*yield*/, push(token)];
           case 4:
@@ -260,7 +265,7 @@ function semaphore(limit) {
             e_1 = { error: e_1_1 };
             return [3 /*break*/, 13];
           case 8:
-            _d.trys.push([8, undefined, 11, 12]);
+            _d.trys.push([8, , 11, 12]);
             if(!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 10];
             return [4 /*yield*/, _c.call(_a)];
           case 9:
@@ -277,28 +282,28 @@ function semaphore(limit) {
             return [2 /*return*/];
         }
       });
-    })
-  );
+    });
+  });
 }
 function throttler(wait, options) {
-  let _this = this;
+  var _this = this;
   if(options === void 0) {
     options = {};
   }
-  let _a = options.limit,
+  var _a = options.limit,
     limit = _a === void 0 ? 1 : _a,
     _b = options.cooldown,
     cooldown = _b === void 0 ? false : _b;
   if(limit < 1) {
     throw new RangeError('options.limit cannot be less than 1');
   }
-  return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function() {
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function() {
       function leak() {
         return __awaiter(this, void 0, void 0, function() {
-          let tokens_1, tokens_1_1, token;
-          let e_3, _a;
-          return __generator(this, _b => {
+          var tokens_1, tokens_1_1, token;
+          var e_3, _a;
+          return __generator(this, function(_b) {
             switch (_b.label) {
               case 0:
                 if(leaking != null) {
@@ -334,16 +339,18 @@ function throttler(wait, options) {
           });
         });
       }
-      let timer, tokens, start, leaking, stopped, _a, _b, token, token1, e_2_1;
-      let e_2, _c;
-      return __generator(this, _d => {
+      var timer, tokens, start, leaking, stopped, _a, _b, token, token1, e_2_1;
+      var e_2, _c;
+      return __generator(this, function(_d) {
         switch (_d.label) {
           case 0:
             timer = delay(wait);
             tokens = new Set();
             start = Date.now();
             stopped = false;
-            stop.then(() => (stopped = true));
+            stop.then(function () {
+              return (stopped = true);
+            });
             _d.label = 1;
           case 1:
             _d.trys.push([1, 9, 10, 15]);
@@ -380,7 +387,7 @@ function throttler(wait, options) {
             e_2 = { error: e_2_1 };
             return [3 /*break*/, 15];
           case 10:
-            _d.trys.push([10, undefined, 13, 14]);
+            _d.trys.push([10, , 13, 14]);
             if(!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 12];
             return [4 /*yield*/, _c.call(_a)];
           case 11:
@@ -401,8 +408,8 @@ function throttler(wait, options) {
             return [2 /*return*/];
         }
       });
-    })
-  );
+    });
+  });
 }
 
 export { semaphore, throttler };
