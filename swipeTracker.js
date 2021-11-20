@@ -27,7 +27,7 @@ export class SwipeTracker {
     this.createSwipeEvent = this.createSwipeEvent.bind(this);
     this.updateSwipeRectangle = this.updateSwipeRectangle.bind(this);
 
-    if(global.window) {
+    if(globalThis.window) {
       const mouseObserver = trkl.from(observable => {
         window.addEventListener('mousemove', e => {
           const pos = {

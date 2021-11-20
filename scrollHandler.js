@@ -72,7 +72,7 @@ export function ScrollListener(handler) {
 export function ScrollDisabler(disabledfn = () => true, element) {
   const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
   try {
-    element = element || global.window;
+    element = element || globalThis.window;
   } catch(err) {}
   let listen = ScrollHandler(event => {
     let disabled = disabledfn();

@@ -2,8 +2,8 @@
 
 //A simple SVG library by denys.seguret@gmail.com
 let hu = (function () {
-  let document = global.window ? global.window.document : null;
-  let window = global.window ? global.window : null;
+  let document = globalThis.window ? globalThis.window.document : null;
+  let window = globalThis.window ? globalThis.window : null;
 
   let nn = 1, //counter for dynamically generated def id
     U = function(n) {

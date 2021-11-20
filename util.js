@@ -448,7 +448,7 @@ Util.getGlobalObject = Util.memoize(arg => {
   const retfn = typeof arg == 'function' ? arg : typeof arg == 'string' ? g => g[arg] : g => g;
 
   return Util.tryCatch(
-    () => global,
+    () => globalThis,
     retfn,
     err =>
       Util.tryCatch(
@@ -1122,7 +1122,7 @@ Util.adapter = function(
 };
 Util.adapter.localStorage = function(s) {
   s = Util.tryCatch(
-    () => !s && global.window,
+    () => !s && globalThis.window,
     w => w.localStorage,
     () => s
   );
@@ -1605,7 +1605,7 @@ Util.dump = function(name, props) {
     args.push(props[key]);
   }
   const w = Util.tryCatch(
-    () => global.window,
+    () => globalThis.window,
     w => w,
     () => null
   );
@@ -2022,7 +2022,7 @@ Util.clearCookies = function(c) {
 };
 Util.deleteCookie = function(name) {
   const w = Util.tryCatch(
-    () => global.window,
+    () => globalThis.window,
     w => w,
     () => null
   );
@@ -2172,8 +2172,8 @@ Util.getURL = Util.memoize((req = {}) =>
             process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === 'production' ? 443 : null
           ) || 3000;
         let host =
-          Util.tryCatch(() => global.ip) ||
-          Util.tryCatch(() => global.host) ||
+          Util.tryCatch(() => globalThis.ip) ||
+          Util.tryCatch(() => globalThis.host) ||
           Util.tryCatch(() => window.location.host.replace(/:.*/g, '')) ||
           'localhost';
         if(req && req.headers && req.headers.host !== undefined) host = req.headers.host.replace(/:.*/, '');
@@ -2356,7 +2356,7 @@ Util.isBrowser = function() {
     () => {}
   );
   return ret;
-  //return !!(global.window && global.window.document);
+  //return !!(globalThis.window && globalThis.window.document);
 };
 
 Util.waitFor = async function waitFor(msecs) {

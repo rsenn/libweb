@@ -10,7 +10,7 @@ import { trkl } from './trkl.js';
 import HashList from './container/hashList.js';
 import { makeLocalStorage } from './autoStore.js';
 
-//var root = global.window ? window : global;
+//var root = globalThis.window ? window : global;
 
 const env = 'development';
 

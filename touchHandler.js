@@ -398,7 +398,7 @@ export function SelectionRenderer() {
     element: null,
     create(rect) {
       //console.log("SelectionListener.create(", rect, ")");
-      this.element = Element.create('div', { id: `selection-rect` }, global.window ? window.document.body : null);
+      this.element = Element.create('div', { id: `selection-rect` }, globalThis.window ? window.document.body : null);
       Element.setCSS(this.element, {
         position: 'fixed',
         border: '3px dashed white',
@@ -491,7 +491,7 @@ export const TouchHandler = (handle, options) => {
       handle.start(event);
     } else if(type.endsWith('move')) {
       try {
-        if(global.window) {
+        if(globalThis.window) {
           window.touchEvent = event;
           window.touchNativeEvent = nativeEvent;
         }

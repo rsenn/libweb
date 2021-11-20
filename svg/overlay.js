@@ -64,7 +64,7 @@ export function SvgPathTracer(path) {
 
     const { svgRef } = this.props;
 
-    if(global.window) {
+    if(globalThis.window) {
       window.svgOverlay = this;
     }
   }
@@ -125,7 +125,7 @@ export function SvgPathTracer(path) {
   };
 
   render() {
-    if(global.window) this.createPaths();
+    if(globalThis.window) this.createPaths();
 
     return (<div
         className={'svg-overlay'}

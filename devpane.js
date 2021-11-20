@@ -11,7 +11,7 @@ import { lazyInitializer } from './lazyInitializer.js';
 
 import SvgPath from './svg/path.js';
 
-if(global.window) {
+if(globalThis.window) {
   window.addEventListener('load', () => {
     console.log('New cookie: ', document.cookie);
   });
@@ -140,7 +140,7 @@ export default class devpane {
     if(this.pane()) this.pane().style.display = this.open ? 'inline-block' : 'none';
     if(this.open) {
       //this.pane.style.display = 'inline-block';
-      //if(global.window)  this.rectList = this.buildRectList(document.body);
+      //if(globalThis.window)  this.rectList = this.buildRectList(document.body);
       this.root();
       this.pane();
     }

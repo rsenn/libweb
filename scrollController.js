@@ -20,7 +20,7 @@ export class ScrollController {
   }
 
   constructor(element) {
-    this.element = element || global.window;
+    this.element = element || globalThis.window;
     this.disabled = false;
 
     this.disable = this.disable.bind(this);
