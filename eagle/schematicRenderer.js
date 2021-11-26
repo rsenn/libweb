@@ -168,7 +168,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
     //console.log('doc:', doc);
 
-    const sheets = Util.isObject(doc) && doc.find ? doc.find('sheets').children : [];
+    const sheetsElem = Util.isObject(doc) && doc.find && doc.find('sheets');
+    const sheets = sheetsElem?.children ?? [];
 
     //console.log('doc.sheets:',sheets);
 

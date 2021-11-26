@@ -542,7 +542,8 @@ export class EagleElement extends EagleNode {
       bb.move(x, y);
     } else if(this.tagName == 'sheet' || this.tagName == 'board') {
       const plain = this.find('plain');
-      let list = [...plain.children].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');
+
+      let list = [...(plain?.children ?? [])].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');
       /*      if(list.length <= 0)*/ list = list.concat([...(this.tagName == 'sheet' ? this.instances.list : this.elements.list)]);
 
       bb.updateList(
