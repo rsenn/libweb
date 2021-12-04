@@ -3,6 +3,7 @@ const asynciterify = (emitter, event, options = {}) => {
   const offMethod = options.isEmitter ? 'off' : 'removeEventListener';
   const pullQueue = [];
   const pushQueue = [];
+  const events = Array.isArray(event) ? event : [event];
   let done = false;
 
   const pushValue = async args => {
@@ -15,20 +16,20 @@ const asynciterify = (emitter, event, options = {}) => {
   };
 
   const pullValue = () =>
-    new Promise(resolve => {
-      if(pushQueue.length !== 0) {
-        const args = pushQueue.shift();
-        resolve(...args);
-      } else {
-        pullQueue.push(resolve);
-      }
-    });
+  new Promise(resolve => {
+    if(pushQueue.length !== 0) {
+      const args = pushQueue.shift();
+      resolve(...args);
+    } else {
+      pullQueue.push(resolve);
+    }
+  });
 
   const handler = (...args) => {
     pushValue(args);
   };
 
-  emitter[onMethod](event, handler);
+  events.forEach(event => emitter[onMethod](event, handler));
   return {
     [Symbol.asyncIterator]() {
       return this;
@@ -39,7 +40,7 @@ const asynciterify = (emitter, event, options = {}) => {
     }),
     return: () => {
       done = true;
-      emitter[offMethod](event, handler);
+      events.forEach(event => emitter[offMethod](event, handler));
       return { done };
     },
     throw: error => {

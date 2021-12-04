@@ -37,14 +37,16 @@ WebSocket.prototype[Symbol.asyncIterator] = async function* () {
 };
 
 // Generate a Promise that listens only once for an event
-export const oncePromise = (emitter, event) =>
-  new Promise(resolve => {
+export const oncePromise = (emitter, event) => {
+  let events = Array.isArray(event) ? event : [event];
+ return new Promise(resolve => {
     var handler = (...args) => {
-      emitter.removeEventListener(event, handler);
+      events.forEach(event => emitter.removeEventListener(event, handler));
       resolve(...args);
     };
-    emitter.addEventListener(event, handler);
+    events.forEach(event => emitter.addEventListener(event, handler));
   });
+}
 
 // Turn any event emitter into a stream
 export const streamify = async function* (event, element) {
