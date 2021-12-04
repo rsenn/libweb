@@ -1,5 +1,5 @@
-import { h, options, html, render, Component, createContext,  createRef, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.mjs';
-export { h, options, html, render, Component, createContext,  createRef, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.mjs';
+import { h, options, html, render, Component, createContext,  createRef, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.m.js';
+export { h, options, html, render, Component, createContext,  createRef, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.m.js';
 import { forwardRef } from '../preact/forwardRef.js';
 export { forwardRef } from '../preact/forwardRef.js';
 /*export { isValidElement } from '../compat.mjs';
