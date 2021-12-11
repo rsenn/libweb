@@ -16,20 +16,7 @@ import { Polygon, MakePolygon } from './geom/polygon.js';
 import { isRect, Rect, ImmutableRect } from './geom/rect.js';
 import { isSize, Size, ImmutableSize } from './geom/size.js';
 import { SweepLineClass } from './geom/sweepLine.js';
-import {
-  MatrixTransformation,
-  Rotation,
-  Scaling,
-  Transformation,
-  TransformationList,
-  Translation,
-  ImmutableMatrixTransformation,
-  ImmutableRotation,
-  ImmutableScaling,
-  ImmutableTransformation,
-  ImmutableTransformationList,
-  ImmutableTranslation
-} from './geom/transformation.js';
+import { MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation } from './geom/transformation.js';
 export default {
   Align,
   AlignToString,
@@ -105,20 +92,7 @@ export { PolygonFinder } from './geom/polygonFinder.js';
 export { isRect, Rect } from './geom/rect.js';
 export { isSize, Size } from './geom/size.js';
 export { SweepLineClass } from './geom/sweepLine.js';
-export {
-  MatrixTransformation,
-  Rotation,
-  Scaling,
-  Transformation,
-  TransformationList,
-  Translation,
-  ImmutableMatrixTransformation,
-  ImmutableRotation,
-  ImmutableScaling,
-  ImmutableTransformation,
-  ImmutableTransformationList,
-  ImmutableTranslation
-} from './geom/transformation.js';
+export { MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation } from './geom/transformation.js';
 export { isTRBL, TRBL } from './geom/trbl.js';
 export { Vector } from './geom/vector.js';
 export { Voronoi } from './geom/voronoi.js';

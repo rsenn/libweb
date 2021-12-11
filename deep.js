@@ -106,8 +106,7 @@ export const select = (root, filter, flags = 0) => {
     try {
       if(filter(root, path)) selected.push(fn(root, path));
     } catch(e) {}
-    if(root !== null && { object: true }[typeof root])
-      for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
+    if(root !== null && { object: true }[typeof root]) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
     return selected;
   }
   //console.log('deep.select', [filter + '', flags]);
@@ -161,12 +160,7 @@ export const iterate = function* (...args) {
     }
 };
 
-export const flatten = (
-  iter,
-  dst = {},
-  filter = (v, p) => typeof v != 'object' && v != null,
-  map = (p, v) => [p.join('.'), v]
-) => {
+export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 

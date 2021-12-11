@@ -415,8 +415,7 @@ export class Functional {
 
   static converge = this.curry3var(function () {
     let after, ar, fn, fs, q;
-    (fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])),
-      (after = arguments[q++]);
+    (fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (after = arguments[q++]);
     fs = this._pliftall(fs);
     after = this.plift(after);
     ar = this.apply(Math.max)(this.map(fs, arityof));
@@ -997,8 +996,7 @@ export class Functional {
 
   static zipwith = this.curry3var(function () {
     let as, f, i, ml, n, q, ref, results, u;
-    (as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])),
-      (f = arguments[q++]);
+    (as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (f = arguments[q++]);
     ml = Functional.apply(min)(Functional.map(as, len));
     results = [];
     for(i = u = 0, ref = ml; u < ref; i = u += 1) {
@@ -1130,121 +1128,7 @@ export class Functional {
     };
   })();
 }
-const {
-  I,
-  builtin,
-  shallow,
-  clone,
-  isplain,
-  isdef,
-  type,
-  head,
-  tail,
-  last,
-  arity,
-  binary,
-  _defprop,
-  ncurry,
-  curry2,
-  curry2var,
-  curry3,
-  curry3var,
-  curry,
-  _uncurry,
-  partial,
-  partialr,
-  flip,
-  compose,
-  pipe,
-  converge,
-  typeis,
-  tap,
-  call,
-  apply,
-  unapply,
-  iif,
-  maybe,
-  always,
-  nth,
-  once,
-  at,
-  cond,
-  all,
-  any,
-  contains,
-  concat,
-  each,
-  filter,
-  _filter,
-  _fold,
-  _foldr,
-  fold,
-  fold1,
-  foldr,
-  foldr1,
-  index,
-  indexfn,
-  firstfn,
-  lastfn,
-  join,
-  map,
-  reverse,
-  sort,
-  uniqfn,
-  uniq,
-  merge,
-  mixin,
-  plift,
-  pfail,
-  _ispfail,
-  pall,
-  has,
-  get,
-  set,
-  keys,
-  values,
-  ofilter,
-  omap,
-  evolve,
-  pick,
-  keyval,
-  split,
-  match,
-  replace,
-  search,
-  trim,
-  ucase,
-  lcase,
-  slice,
-  drop,
-  take,
-  len,
-  add,
-  sub,
-  mul,
-  div,
-  mod,
-  min,
-  max,
-  gt,
-  gte,
-  lt,
-  lte,
-  eq,
-  aand,
-  oor,
-  nnot,
-  both,
-  either,
-  comp,
-  zipwith,
-  zip,
-  zipobj,
-  eql,
-  exports,
-  asprop,
-  expose
-} = Functional;
+const { I, builtin, shallow, clone, isplain, isdef, type, head, tail, last, arity, binary, _defprop, ncurry, curry2, curry2var, curry3, curry3var, curry, _uncurry, partial, partialr, flip, compose, pipe, converge, typeis, tap, call, apply, unapply, iif, maybe, always, nth, once, at, cond, all, any, contains, concat, each, filter, _filter, _fold, _foldr, fold, fold1, foldr, foldr1, index, indexfn, firstfn, lastfn, join, map, reverse, sort, uniqfn, uniq, merge, mixin, plift, pfail, _ispfail, pall, has, get, set, keys, values, ofilter, omap, evolve, pick, keyval, split, match, replace, search, trim, ucase, lcase, slice, drop, take, len, add, sub, mul, div, mod, min, max, gt, gte, lt, lte, eq, aand, oor, nnot, both, either, comp, zipwith, zip, zipobj, eql, exports, asprop, expose } = Functional;
 
 export default {
   I,

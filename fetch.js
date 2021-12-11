@@ -39,15 +39,7 @@ export const FetchCached = Util.cachedFetch({
   debug: true,
   print({ cached, ok, status, redirected, statusText, type, url }, fn, ...args) {
     console.debug(
-      `FetchCached(${args
-        .map((a, i) =>
-          typeof a == 'string'
-            ? '"' + a + '"'
-            : i == 1
-            ? Util.toSource({ ...this.opts, ...a }, { colors: false, multiline: false })
-            : a
-        )
-        .join(', ')}) =`,
+      `FetchCached(${args.map((a, i) => (typeof a == 'string' ? '"' + a + '"' : i == 1 ? Util.toSource({ ...this.opts, ...a }, { colors: false, multiline: false }) : a)).join(', ')}) =`,
       {
         cached,
         ok,
