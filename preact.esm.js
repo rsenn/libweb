@@ -894,4 +894,10 @@ var htm = MINI ? build : regular;
  */
 var html = htm.bind(h);
 
+export const Fragment = props => props.children;
+
+export function createRef() {
+  return { current: null };
+}
+
 export { h, html, O as render, n as options, d as Component, B as createContext, m$1 as useState, p$1 as useReducer, y$1 as useEffect, l$1 as useLayoutEffect, h$1 as useRef, s$1 as useImperativeHandle, _$1 as useMemo, A$1 as useCallback, F as useContext, T$1 as useDebugValue };
