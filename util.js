@@ -3872,8 +3872,6 @@ Object.defineProperty(Util.stack.prototype, Symbol.iterator, {
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(opts = {}) {
-    console.log('Util.stack.prototype.toString', Object.getOwnPropertyNames(this));
-
     const { colors = false, stripUrl = Util.makeURL({ location: '/' }) } = opts;
     const { columnWidths } = this;
     let a = [];

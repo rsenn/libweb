@@ -51,7 +51,7 @@ export class EagleElement extends EagleNode {
     const { pathMapper, raw2element } = doc;
     let insert = Util.inserter(pathMapper);
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
-    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
+   if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
     let inst = doc.raw2element(raw, owner, ref);
