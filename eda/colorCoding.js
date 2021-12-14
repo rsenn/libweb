@@ -99,14 +99,12 @@ export function GetFactor(num) {
 }
 
 export function GetColorBands(value, precision = 2) {
-
-
   let f = GetFactor(value);
   let fx = f + (2 - precision);
   let multipliers = GetMultipliers();
   let x = value / (multipliers[f]??GetMultiplier(f));
   let r = [];
- console.log('GetColorBands(', value, ',', precision, ') =', { f, fx, multipliers, x, r });
+// console.log('GetColorBands(', value, ',', precision, ') =', { f, fx, multipliers, x, r });
 
   for(let i = 0; i < precision; i++) {
     let digit = Math.floor(x);
