@@ -5659,7 +5659,6 @@ Util.lazyProperty = (obj, name, getter, opts = {}) => {
   const replaceProperty = value => {
     delete obj[name];
     Object.defineProperty(obj, name, { value, ...opts });
-    //    obj[name] = value;
     return value;
   };
   const isAsync = Util.isAsync(getter);

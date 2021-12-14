@@ -1,12 +1,16 @@
 import { log } from '../renderUtils.js';
-import { h, Component, toChildArray } from '../../dom/preactComponent.js';
+import { h, Component, toChildArray, useState } from '../../dom/preactComponent.js';
 import { Rect } from '../../geom.js';
 import { Grid, Pattern } from './grid.js';
 import { SVG } from './svg.js';
 import { Background } from './background.js';
+import { useValue } from '../../repeater/react-hooks.js';
+import { useTrkl } from '../../hooks/useTrkl.js';
 
-export const Drawing = ({ rect, bounds, attrs, grid, nodefs, transform, styles, children, style, ...props }) => {
-  let viewBox = new Rect(rect);
+export const Drawing = ({ viewBox, rect, bounds, attrs, grid, nodefs, transform, styles, children, style, ...props }) => {
+  viewBox =   useTrkl(viewBox ?? rect);
+/*l(viewBox),  'object':  typeof viewBox
+  let viewBox = new Rect(rect);*/
   //viewBox.y = bounds.y1;
   //
   const id = 'grid'; //grid-'+Util.randStr(8, '0123456789ABCDEF'.toLowerCase());

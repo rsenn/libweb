@@ -1,4 +1,164 @@
 import Util from './util.js';
+//export { types } from  '../quickjs/qjs-modules/lib/util.js';
+
+
+const slice = (x, s, e) => (typeof x == 'object' ? (isArrayBuffer(x) ? dupArrayBuffer(x, s, e) : Array.isArray(x) ? Array.prototype.slice.call(x, s, e) : x.slice(s, e)) : String.prototype.slice.call(x, s, e));
+const stringify = v => `${v}`;
+const protoOf = Object.getPrototypeOf;
+const formatNumber = n => (n === -0 ? '-0' : `${n}`);
+const isNative = fn => /\[native\scode\]/.test(stringify(fn));
+
+/*export default*/ function util() {
+  return util;
+}
+
+util.prototype.constructor = util;
+
+const AsyncFunction = async function x() {}.constructor;
+const GeneratorFunction = function* () {}.constructor;
+const AsyncGeneratorFunction = async function* () {}.constructor;
+const TypedArray = protoOf(protoOf(new Uint16Array(10))).constructor;
+
+const SetIteratorPrototype = protoOf(new Set().values());
+const MapIteratorPrototype = protoOf(new Map().entries());
+//const GeneratorPrototype = protoOf((function* () {})());
+
+
+// prettier-ignore
+export const errors = [null, 'EPERM', 'ENOENT', 'ESRCH', 'EINTR', 'EIO', 'ENXIO', 'E2BIG', 'ENOEXEC', 'EBADF', 'ECHILD', 'EAGAIN', 'ENOMEM', 'EACCES', 'EFAULT', 'ENOTBLK', 'EBUSY', 'EEXIST', 'EXDEV', 'ENODEV', 'ENOTDIR', 'EISDIR', 'EINVAL', 'ENFILE', 'EMFILE', 'ENOTTY', 'ETXTBSY', 'EFBIG', 'ENOSPC', 'ESPIPE', 'EROFS', 'EMLINK', 'EPIPE', 'EDOM', 'ERANGE', 'EDEADLK', 'ENAMETOOLONG', 'ENOLCK', 'ENOSYS', 'ENOTEMPTY', null, null, 'ENOMSG', 'EIDRM', 'ECHRNG', 'EL2NSYNC', 'EL3HLT', 'EL3RST', 'ELNRNG', 'EUNATCH', 'ENOCSI', 'EL2HLT', 'EBADE', 'EBADR', 'EXFULL', 'ENOANO', 'EBADRQC', null, '', 'EBFONT', 'ENOSTR', 'ENODATA', 'ETIME', 'ENOSR', 'ENONET', 'ENOPKG', 'EREMOTE', 'ENOLINK', 'EADV', 'ESRMNT', 'ECOMM', 'EPROTO', 'EMULTIHOP', 'EDOTDOT', 'EBADMSG', 'EOVERFLOW', 'ENOTUNIQ', 'EBADFD', 'EREMCHG', 'ELIBACC', 'ELIBBAD', 'ELIBSCN', 'ELIBMAX', 'ELIBEXEC', 'EILSEQ', 'ERESTART', 'ESTRPIPE', 'EUSERS', 'ENOTSOCK', 'EDESTADDRREQ', 'EMSGSIZE', 'EPROTOTYPE', 'ENOPROTOOPT', 'EPROTONOSUPPORT', 'ESOCKTNOSUPPORT', 'EOPNOTSUPP', 'EPFNOSUPPORT', 'EAFNOSUPPORT', 'EADDRINUSE', 'EADDRNOTAVAIL', 'ENETDOWN', 'ENETUNREACH', 'ENETRESET', 'ECONNABORTED', 'ECONNRESET', 'ENOBUFS', 'EISCONN', 'ENOTCONN', 'ESHUTDOWN', 'ETOOMANYREFS', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTDOWN', 'EHOSTUNREACH', 'EALREADY', 'EINPROGRESS', 'ESTALE', 'EUCLEAN', 'ENOTNAM', 'ENAVAIL', 'EISNAM', 'EREMOTEIO', 'EDQUOT', 'ENOMEDIUM', 'EMEDIUMTYPE', 'ECANCELED', 'ENOKEY', 'EKEYEXPIRED', 'EKEYREVOKED', 'EKEYREJECTED', 'EOWNERDEAD', 'ENOTRECOVERABLE', 'ERFKILL'];
+
+export const types = {
+  isAnyArrayBuffer(v) {
+    return isObject(v) && (v instanceof ArrayBuffer || v instanceof SharedArrayBuffer);
+  },
+  isArrayBuffer(v) {
+    return isObject(v) && v instanceof ArrayBuffer;
+  },
+  isBigInt64Array(v) {
+    return isObject(v) && v instanceof BigInt64Array;
+  },
+  isBigUint64Array(v) {
+    return isObject(v) && v instanceof BigUint64Array;
+  },
+  isDate(v) {
+    return isObject(v) && v instanceof Date;
+  },
+  isFloat32Array(v) {
+    return isObject(v) && v instanceof Float32Array;
+  },
+  isFloat64Array(v) {
+    return isObject(v) && v instanceof Float64Array;
+  },
+  isInt8Array(v) {
+    return isObject(v) && v instanceof Int8Array;
+  },
+  isInt16Array(v) {
+    return isObject(v) && v instanceof Int16Array;
+  },
+  isInt32Array(v) {
+    return isObject(v) && v instanceof Int32Array;
+  },
+  isMap(v) {
+    return isObject(v) && v instanceof Map;
+  },
+  isPromise(v) {
+    return isObject(v) && v instanceof Promise;
+  },
+  isProxy(v) {
+    return isObject(v) && v instanceof Proxy;
+  },
+  isRegExp(v) {
+    return isObject(v) && v instanceof RegExp;
+  },
+  isSet(v) {
+    return isObject(v) && v instanceof Set;
+  },
+  isSharedArrayBuffer(v) {
+    return isObject(v) && v instanceof SharedArrayBuffer;
+  },
+  isUint8Array(v) {
+    return isObject(v) && v instanceof Uint8Array;
+  },
+  isUint8ClampedArray(v) {
+    return isObject(v) && v instanceof Uint8ClampedArray;
+  },
+  isUint16Array(v) {
+    return isObject(v) && v instanceof Uint16Array;
+  },
+  isUint32Array(v) {
+    return isObject(v) && v instanceof Uint32Array;
+  },
+  isWeakMap(v) {
+    return isObject(v) && v instanceof WeakMap;
+  },
+  isWeakSet(v) {
+    return isObject(v) && v instanceof WeakSet;
+  },
+  isDataView(v) {
+    return isObject(v) && v instanceof DataView;
+  },
+  isBooleanObject(v) {
+    return isObject(v) && v instanceof Boolean;
+  },
+  isAsyncFunction(v) {
+    return isObject(v) && v instanceof AsyncFunction;
+  },
+  isGeneratorFunction(v) {
+    return isObject(v) && v instanceof GeneratorFunction;
+  },
+  isAsyncGeneratorFunction(v) {
+    return isObject(v) && v instanceof AsyncGeneratorFunction;
+  },
+  isNumberObject(v) {
+    return isObject(v) && v instanceof Number;
+  },
+  isBigIntObject(v) {
+    return isObject(v) && v instanceof BigInt;
+  },
+  isSymbolObject(v) {
+    return v && v instanceof Symbol;
+  },
+  isNativeError(v) {
+    return isObject(v) && v instanceof Error && isNative(v.constructor);
+  },
+  isMapIterator(v) {
+    return isObject(v) && protoOf(v) == MapIteratorPrototype;
+  },
+  isSetIterator(v) {
+    return isObject(v) && protoOf(v) == SetIteratorPrototype;
+  },
+  isStringObject(v) {
+    return isObject(v) && v instanceof String;
+  },
+  isArrayBufferView(v) {
+    return isObject(v) && ArrayBuffer.isView(v);
+  },
+  isArgumentsObject(v) {
+    return Object.prototype.toString.call(v) == '[object Arguments]';
+  },
+
+  /* isExternal(v) {
+    return isObject(v) && v instanceof External;
+  },*/
+
+  isBoxedPrimitive(v) {
+    return isObject(v) && [Number, String, Boolean, BigInt, Symbol].some(ctor => v instanceof ctor);
+  },
+
+  isGeneratorObject(v) {
+    return isObject(v) && protoOf(v) == GeneratorPrototype;
+  },
+  isTypedArray(v) {
+    return isObject(v) && v instanceof TypedArray;
+  },
+  isModuleNamespaceObject(v) {
+    return isObject(v) && v[Symbol.toStringTag] == 'Module';
+  }
+};
+
+export function isObject(arg) {
+  return typeof arg == 'object' && arg !== null;
+}
 
 const UTF8FirstCodeMask = [0x1f, 0xf, 0x7, 0x3, 0x1];
 const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
@@ -259,7 +419,7 @@ export function btoa(bin) {
     c2,
     asc = '';
   const pad = bin.length % 3;
-  for(let i = 0; i < bin.length; ) {
+  for(let i = 0; i < bin.length; i += 0) {
     if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255) throw new TypeError('invalid character found');
     u32 = (c0 << 16) | (c1 << 8) | c2;
     asc += b64chs[(u32 >> 18) & 63] + b64chs[(u32 >> 12) & 63] + b64chs[(u32 >> 6) & 63] + b64chs[u32 & 63];
@@ -275,7 +435,7 @@ export function atob(asc) {
     bin = '',
     r1,
     r2;
-  for(let i = 0; i < asc.length; ) {
+  for(let i = 0; i < asc.length; i += 0) {
     u24 = (b64tab[asc.charAt(i++)] << 18) | (b64tab[asc.charAt(i++)] << 12) | ((r1 = b64tab[asc.charAt(i++)]) << 6) | (r2 = b64tab[asc.charAt(i++)]);
     bin += r1 === 64 ? String.fromCharCode((u24 >> 16) & 255) : r2 === 64 ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255) : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
   }
@@ -356,6 +516,8 @@ export function once(fn, thisArg, memoFn) {
     return ret;
   };
 }
+
+export const unique = (arr, cmp) => arr.filter(typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i : (el, i, arr) => arr.indexOf(el) == i);
 
 export function Location(line, column, pos, file, freeze = true) {
   let obj = this || new.target.test || this ? this : {};

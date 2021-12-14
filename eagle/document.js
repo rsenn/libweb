@@ -62,7 +62,7 @@ export class EagleDocument extends EagleNode {
     console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
 
     const xml = fromXML(xmlStr); //parseXML(xmlStr);
- console.log('EagleDocument.constructor', { xml });
+// console.log('EagleDocument.constructor', { xml });
 
     let xmlObj = deep.clone(xml[0]);
     super(project, EagleRef(xmlObj, []), xmlObj);
@@ -197,7 +197,7 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
+   // console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
 
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
