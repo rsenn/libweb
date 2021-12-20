@@ -1,7 +1,6 @@
 import Util from './util.js';
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
 
-
 const slice = (x, s, e) => (typeof x == 'object' ? (isArrayBuffer(x) ? dupArrayBuffer(x, s, e) : Array.isArray(x) ? Array.prototype.slice.call(x, s, e) : x.slice(s, e)) : String.prototype.slice.call(x, s, e));
 const stringify = v => `${v}`;
 const protoOf = Object.getPrototypeOf;
@@ -22,7 +21,6 @@ const TypedArray = protoOf(protoOf(new Uint16Array(10))).constructor;
 const SetIteratorPrototype = protoOf(new Set().values());
 const MapIteratorPrototype = protoOf(new Map().entries());
 //const GeneratorPrototype = protoOf((function* () {})());
-
 
 // prettier-ignore
 export const errors = [null, 'EPERM', 'ENOENT', 'ESRCH', 'EINTR', 'EIO', 'ENXIO', 'E2BIG', 'ENOEXEC', 'EBADF', 'ECHILD', 'EAGAIN', 'ENOMEM', 'EACCES', 'EFAULT', 'ENOTBLK', 'EBUSY', 'EEXIST', 'EXDEV', 'ENODEV', 'ENOTDIR', 'EISDIR', 'EINVAL', 'ENFILE', 'EMFILE', 'ENOTTY', 'ETXTBSY', 'EFBIG', 'ENOSPC', 'ESPIPE', 'EROFS', 'EMLINK', 'EPIPE', 'EDOM', 'ERANGE', 'EDEADLK', 'ENAMETOOLONG', 'ENOLCK', 'ENOSYS', 'ENOTEMPTY', null, null, 'ENOMSG', 'EIDRM', 'ECHRNG', 'EL2NSYNC', 'EL3HLT', 'EL3RST', 'ELNRNG', 'EUNATCH', 'ENOCSI', 'EL2HLT', 'EBADE', 'EBADR', 'EXFULL', 'ENOANO', 'EBADRQC', null, '', 'EBFONT', 'ENOSTR', 'ENODATA', 'ETIME', 'ENOSR', 'ENONET', 'ENOPKG', 'EREMOTE', 'ENOLINK', 'EADV', 'ESRMNT', 'ECOMM', 'EPROTO', 'EMULTIHOP', 'EDOTDOT', 'EBADMSG', 'EOVERFLOW', 'ENOTUNIQ', 'EBADFD', 'EREMCHG', 'ELIBACC', 'ELIBBAD', 'ELIBSCN', 'ELIBMAX', 'ELIBEXEC', 'EILSEQ', 'ERESTART', 'ESTRPIPE', 'EUSERS', 'ENOTSOCK', 'EDESTADDRREQ', 'EMSGSIZE', 'EPROTOTYPE', 'ENOPROTOOPT', 'EPROTONOSUPPORT', 'ESOCKTNOSUPPORT', 'EOPNOTSUPP', 'EPFNOSUPPORT', 'EAFNOSUPPORT', 'EADDRINUSE', 'EADDRNOTAVAIL', 'ENETDOWN', 'ENETUNREACH', 'ENETRESET', 'ECONNABORTED', 'ECONNRESET', 'ENOBUFS', 'EISCONN', 'ENOTCONN', 'ESHUTDOWN', 'ETOOMANYREFS', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTDOWN', 'EHOSTUNREACH', 'EALREADY', 'EINPROGRESS', 'ESTALE', 'EUCLEAN', 'ENOTNAM', 'ENAVAIL', 'EISNAM', 'EREMOTEIO', 'EDQUOT', 'ENOMEDIUM', 'EMEDIUMTYPE', 'ECANCELED', 'ENOKEY', 'EKEYEXPIRED', 'EKEYREVOKED', 'EKEYREJECTED', 'EOWNERDEAD', 'ENOTRECOVERABLE', 'ERFKILL'];
@@ -518,6 +516,42 @@ export function once(fn, thisArg, memoFn) {
 }
 
 export const unique = (arr, cmp) => arr.filter(typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i : (el, i, arr) => arr.indexOf(el) == i);
+
+const atexit_functions = [];
+const atexit_install = once(callback => {
+  // attach user callback to the process event emitter
+  // if no callback, it will still exit gracefully on Ctrl-C
+  callback = callback || noOp;
+  process.on('cleanup', callback);
+
+  // do app specific cleaning before exiting
+  process.on('exit', function() {
+    process.emit('cleanup');
+  });
+
+  // catch ctrl+c event and exit normally
+  process.on('SIGINT', function() {
+    console.log('Ctrl-C...');
+    process.exit(2);
+  });
+
+  //catch uncaught exceptions, trace, then exit normally
+  process.on('uncaughtException', function(e) {
+    console.log('Uncaught Exception...');
+    console.log(e.stack);
+    process.exit(99);
+  });
+});
+
+export function atexit(fn) {
+  atexit_functions.push(fn);
+
+  if(globalThis.process && 'on' in process) {
+    atexit_install(() => {
+      for(let fn of atexit_functions) fn();
+    });
+  }
+}
 
 export function Location(line, column, pos, file, freeze = true) {
   let obj = this || new.target.test || this ? this : {};
