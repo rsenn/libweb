@@ -3,7 +3,7 @@ import { RGBA, HSLA } from '../color.js';
 export function GetExponent(value) {
   const suffix = value.replace(/\/.*/g, '').replace(/[^KkMmnpuμ\u03bc]/g, '');
   let exp = 0;
- // if(suffix.length > 1) throw new Error(`Suffix '${suffix}' of '${value}' length > 1`);
+  // if(suffix.length > 1) throw new Error(`Suffix '${suffix}' of '${value}' length > 1`);
   switch (suffix) {
     case 'M':
       exp = 6;
@@ -82,9 +82,8 @@ export function GetMultipliers() {
   };
 }
 
-
-export function GetMultiplier(exponent, base=10) {
-  return  Math.pow(base, exponent);
+export function GetMultiplier(exponent, base = 10) {
+  return Math.pow(base, exponent);
 }
 
 export function GetFactor(num) {
@@ -102,9 +101,9 @@ export function GetColorBands(value, precision = 2) {
   let f = GetFactor(value);
   let fx = f + (2 - precision);
   let multipliers = GetMultipliers();
-  let x = value / (multipliers[f]??GetMultiplier(f));
+  let x = value / (multipliers[f] ?? GetMultiplier(f));
   let r = [];
-// console.log('GetColorBands(', value, ',', precision, ') =', { f, fx, multipliers, x, r });
+  // console.log('GetColorBands(', value, ',', precision, ') =', { f, fx, multipliers, x, r });
 
   for(let i = 0; i < precision; i++) {
     let digit = Math.floor(x);
@@ -118,27 +117,27 @@ export function GetColorBands(value, precision = 2) {
 
 export const BG = Symbol.for('BG');
 
- export const PartScales={
+export const PartScales = {
   C: 1e12,
   R: 1,
-  L: 1e6,
- }
+  L: 1e6
+};
 
 export const digit2color = {
   rgb: {
-//[BG]: '#ebce9d',[0]: '#000000', [1]: '#8b572a', [2]: '#d0021b', [3]: '#f5a623', //[4]: '#f8e71c', [5]: '#7ed321', [6]: '#4a90e2', [7]: '#9013fe', [8]: '#999999', [9]: '#ffffff'
- [BG]: [...new HSLA({h: 48, s: 49, l:  0, a: 1}).toRGBA()].slice(0,3) ,
- [0]: [ 0x00, 0x00, 0x00 ] ,
- [1]: [ 0x8b, 0x57, 0x2a ] ,
- [2]: [ 0xd0, 0x02, 0x1b ] ,
- [3]: [ 0xf5, 0xa6, 0x23 ] ,
- [4]: [ 0xf8, 0xe7, 0x1c ] ,
- [5]: [ 0x7e, 0xd3, 0x21 ] ,
- [6]: [ 0x4a, 0x90, 0xe2 ] ,
- [7]: [ 0x90, 0x13, 0xfe ] ,
- [8]: [ 0x99, 0x99, 0x99 ] ,
- [9]: [ 0xff, 0xff, 0xff ] ,
- } /*.map(c => RGBA.fromHex(c))*/,
+    //[BG]: '#ebce9d',[0]: '#000000', [1]: '#8b572a', [2]: '#d0021b', [3]: '#f5a623', //[4]: '#f8e71c', [5]: '#7ed321', [6]: '#4a90e2', [7]: '#9013fe', [8]: '#999999', [9]: '#ffffff'
+    [BG]: [...new HSLA({ h: 48, s: 49, l: 0, a: 1 }).toRGBA()].slice(0, 3),
+    [0]: [0x00, 0x00, 0x00],
+    [1]: [0x8b, 0x57, 0x2a],
+    [2]: [0xd0, 0x02, 0x1b],
+    [3]: [0xf5, 0xa6, 0x23],
+    [4]: [0xf8, 0xe7, 0x1c],
+    [5]: [0x7e, 0xd3, 0x21],
+    [6]: [0x4a, 0x90, 0xe2],
+    [7]: [0x90, 0x13, 0xfe],
+    [8]: [0x99, 0x99, 0x99],
+    [9]: [0xff, 0xff, 0xff]
+  } /*.map(c => RGBA.fromHex(c))*/,
   ansi: {
     [BG]: [48, 5, 223], // base color (skin)
     [-2]: [48, 5, 249], // silver

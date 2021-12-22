@@ -3470,8 +3470,9 @@ Util.inherits =
           ctor.prototype.constructor = ctor;
         }
       };
-Util.bindMethods = (obj, methods) => Util.bindMethodsTo({}, obj, methods || obj);
-Util.bindMethodsTo = function(dest, obj, methods) {
+//Util.bindMethods = (obj, methods, dest = {}) => Util.bindMethodsTo(obj, methods ?? obj, dest);
+Util.bindMethods = (obj, methods, dest) => {
+  dest ??= obj;
   if(Util.isArray(methods)) {
     for(let name of methods) if(typeof obj[name] == 'function') dest[name] = obj[name].bind(obj);
     return dest;
