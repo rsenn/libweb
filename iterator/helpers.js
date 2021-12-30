@@ -1,84 +1,160 @@
 export function* concat(...streams) {
-  for(let s of streams) yield* s;
-}
+  for(let iterator of streams) {
+    let ret;
+    while((ret = iterator.next(...args))) {
+      const { done, value } = ret;
 
-export function consume(it, fn = a => console.log(`consume =`, a)) {
-  for(let n of it) fn(n);
-}
+      if(done) break;
 
-export function every(it, fn) {
-  return reduce((acc, n, i) => acc && fn(n, i, it), true);
-}
-
-export function* filter(it, predicate = n => {}) {
-  let i = 0;
-  for(let n of it) {
-    if(predicate(n, i++, it)) yield n;
+      yield value;
+    }
   }
 }
 
-export function find(it, predicate = n => {}) {
-  let i = 0;
-  for(let n of it) if(predicate(n, i++, it)) return n;
+export function consume(iterator, fn = a => console.log(`consume =`, a)) {
+  let ret;
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+
+    fn(value);
+  }
 }
 
-export function findIndex(it, predicate = n => {}) {
-  let i = 0;
-  for(let n of it) if(predicate(n, i++, it)) return i;
+export function every(iterator, fn) {
+  return reduce((acc, n, i) => acc && fn(n, i, iterator), true);
+}
+
+export function* filter(iterator, predicate = n => {}) {
+  let ret,
+    i = 0;
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+
+    if(predicate(value, i++, iterator)) yield value;
+  }
+}
+
+export function find(iterator, predicate = n => {}) {
+  let ret,
+    i = 0;
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    if(predicate(value, i++, iterator)) return value;
+  }
+}
+
+export function findIndex(iterator, predicate = n => {}) {
+  let ret,
+    i = 0;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    if(predicate(value, i++, iterator)) return i;
+  }
   return -1;
 }
 
-export function forEach(it, fn = n => {}) {
-  let i = 0;
-  for(let n of it) fn(n, i++, it);
+export function forEach(iterator, fn = n => {}) {
+  let ret,
+    i = 0;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    fn(value, i++, iterator);
+  }
 }
-export function* from(it, transform = (e, i) => e) {
-  for(let n of it) yield transform(n);
+export function* from(iterator, transform = (e, i) => e) {
+  let ret;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    yield transform(value);
+  }
 }
 
-export function includes(it, searchElement, fromIndex = -1) {
+export function includes(iterator, searchElement, fromIndex = -1) {
   let i = 0;
-  for(let n of it) {
-    if(i++ >= fromIndex && n === searchElement) return true;
+  let ret;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    if(i++ >= fromIndex && value === searchElement) return true;
   }
   return false;
 }
 
-export function indexOf(it, searchElement, fromIndex = -1) {
-  let i = 0;
-  for(let n of it) {
-    if(i >= fromIndex && n === searchElement) return i;
+export function indexOf(iterator, searchElement, fromIndex = -1) {
+  let ret,
+    i = 0;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    if(i >= fromIndex && value === searchElement) return i;
     i++;
   }
   return -1;
 }
 
-export function lastIndexOf(it, searchElement, fromIndex = -1) {
-  let i = 0,
+export function lastIndexOf(iterator, searchElement, fromIndex = -1) {
+  let ret,
+    i = 0,
     j = -1;
-  for(let n of it) {
-    if(i >= fromIndex && n === searchElement) j = i;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    if(i >= fromIndex && value === searchElement) j = i;
     i++;
   }
+
   return j;
 }
 
-export function* map(it, transform = a => a) {
-  for(let n of it) {
-    yield transform(n);
+export function* map(iterator, ...args) {
+  let ret;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    yield value;
   }
 }
 
-export function reduce(it, fn, accu) {
-  let i = 0;
-  for(let n of it) accu = fn(accu, n, i++, it);
+export function reduce(iterator, fn, accu) {
+  let ret,
+    i = 0;
+
+  while((ret = iterator.next(...args))) {
+    const { done, value } = ret;
+
+    if(done) break;
+    accu = fn(accu, n, i++, iterator);
+  }
   return accu;
 }
 
-export function some(it, fn) {
-  return reduce((acc, n, i) => acc || fn(n, i, it), false);
+export function some(iterator, fn) {
+  return reduce((acc, n, i) => acc || fn(n, i, iterator), false);
 }
 
-export function accumulate(it, accu) {
-  return consume(it, a => accu.push(a)), accu;
+export function accumulate(iterator, accu) {
+  return consume(iterator, a => accu.push(a)), accu;
 }

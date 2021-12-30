@@ -60,7 +60,7 @@ export class EagleSVGRenderer {
     const { path2component, component2path } = this;
     return [path2component.map, component2path];
   }
-/*
+  /*
   pushTransform(transform) {
     transform = this.transform.concat(transform);
 
@@ -83,8 +83,8 @@ export class EagleSVGRenderer {
     palette = palette.reduce((acc, color, i) => ({ ...acc, [i + '']: color }), {
       length: trkl(ncolors)
     });
- 
-    palette =   trkl.bind(Util.define({}, { handlers: palette }), palette);
+
+    palette = trkl.bind(Util.define({}, { handlers: palette }), palette);
     Object.setPrototypeOf(
       palette,
       Object.defineProperties(
