@@ -1,7 +1,7 @@
 import Util from '../util.js';
 
-import { Lexer, SyntaxError, Location, Token } from './lexer.js';
-export { Lexer, SyntaxError, Location, Token, PathReplacer } from './lexer.js';
+import { Lexer, Location, Token } from './lexer.js';
+export { Lexer, Location, Token, PathReplacer } from './lexer.js';
 
 //import { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/tests/jslexer.js'; export { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/tests/jslexer.js';
 

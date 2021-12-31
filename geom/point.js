@@ -1,8 +1,10 @@
 import Util from '../util.js';
+
 const SymSpecies = Util.tryCatch(
   () => Symbol,
   sym => sym.species
 );
+
 const CTOR = obj => {
   if(obj[SymSpecies]) return obj[SymSpecies];
   let p = Object.getPrototypeOf(obj);

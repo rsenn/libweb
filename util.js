@@ -840,12 +840,12 @@ Util.abbreviate = function(str, max = 40, suffix = '...') {
   return str;
 };
 Util.trim = function(str, charset) {
-  const r1 = RegExp('^['+charset+']*');
-  const r2 = RegExp('['+charset+']*$');
+  const r1 = RegExp('^[' + charset + ']*');
+  const r2 = RegExp('[' + charset + ']*$');
   return str.replace(r1, '').replace(r2, '');
 };
 Util.trimRight = function(str, charset) {
-  const r2 = RegExp('['+charset+']*$');
+  const r2 = RegExp('[' + charset + ']*$');
   return str.replace(r2, '');
 };
 Util.indent = (text, space = '  ') => {
@@ -1577,8 +1577,8 @@ Util.camelize = (text, sep = '') =>
 Util.decamelize = function(str, separator = '-') {
   return /.[A-Z]/.test(str)
     ? str
-        .replace(/([a-z\d])([A-Z])/g, '$1'+separator+'$2')
-        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1'+separator+'$2')
+        .replace(/([a-z\d])([A-Z])/g, '$1' + separator + '$2')
+        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + separator + '$2')
         .toLowerCase()
     : str;
 };
@@ -1868,7 +1868,7 @@ Util.logOutClearStorage = function() {
 };
 //Take the cookies
 Util.getCookie = function(cookie, name) {
-  let arr = cookie.match(new RegExp('(^| )'+name+'=([^;]*)(;|$)'));
+  let arr = cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
   if(arr != null) return unescape(arr[2]);
   return null;
 };
@@ -3299,7 +3299,7 @@ Util.mapCombinator = (forward, backward) => {
 
 Util.predicate = (fn_or_regex, pred) => {
   let fn = fn_or_regex;
-  if(typeof fn_or_regex == 'string') fn_or_regex = new RegExp('^'+fn_or_regex+'$');
+  if(typeof fn_or_regex == 'string') fn_or_regex = new RegExp('^' + fn_or_regex + '$');
   if(fn_or_regex instanceof RegExp) {
     fn = arg => fn_or_regex.test(arg + '');
     fn.valueOf = function() {

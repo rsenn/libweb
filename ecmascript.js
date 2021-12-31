@@ -1,6 +1,6 @@
 export { CTORS, default as estree, Factory, ESNode, ArrayPattern, ArrayExpression, ArrowFunctionExpression, AssignmentExpression, AwaitExpression, BinaryExpression, Pattern, LabeledStatement, BlockStatement, BreakStatement, CallExpression, ClassDeclaration, ConditionalExpression, ContinueStatement, Declaration, DecoratorExpression, DoWhileStatement, EmptyStatement, Expression, ExpressionStatement, ForInStatement, ForStatement, FunctionLiteral, FunctionDeclaration, Identifier, IfStatement, ImportSpecifier, SwitchStatement, SwitchCase, ImportDeclaration, ExportNamedDeclaration, ExportDefaultDeclaration, JSXLiteral, Literal, TemplateLiteral, LogicalExpression, MemberExpression, NewExpression, ObjectPattern, ObjectExpression, Property, MethodDefinition, Program, RestElement, ReturnStatement, SequenceExpression, SpreadElement, Statement, StatementList, ThisExpression, ThrowStatement, YieldExpression, TryStatement, UnaryExpression, UpdateExpression, VariableDeclaration, VariableDeclarator, WhileStatement, WithStatement } from './ecmascript/estree.js';
 export { Parser, ECMAScriptParser } from './ecmascript/parser.js';
-export { Lexer, Token, SyntaxError, Location } from './ecmascript/lexer.js';
+export { Lexer, Token, Location } from './ecmascript/lexer.js';
 export { Printer } from './ecmascript/printer.js';
 export { ECMAScriptInterpreter } from './ecmascript/interpreter.js';
 export { Environment } from './ecmascript/environment.js';

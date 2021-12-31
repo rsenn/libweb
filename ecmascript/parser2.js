@@ -1,7 +1,7 @@
 import Util from '../util.js';
 import inspect from '../objectInspect.js';
 
-import { Lexer, SyntaxError, Location, Token } from './lexer.js';
+import { Lexer, Location, Token } from './lexer.js';
 
 import * as deep from '../deep.js';
 import { Stack, StackFrame } from '../stack.js';
