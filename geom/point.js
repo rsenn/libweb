@@ -342,15 +342,15 @@ Point.isPoint = isPoint;
 
 Point.prototype[Util.inspectSymbol] = function(depth, options) {
   const { x, y } = this;
-  return /*Object.setPrototypeOf*/({ x, y }/*, Point.prototype*/);
+  return /*Object.setPrototypeOf*/ { x, y } /*, Point.prototype*/;
 };
 
 Point.bind = (...args) => {
   const keys = ['x', 'y'];
   let [o, p] = args;
   if(p == null) p = keys;
-  //console.debug('Point.bind', { keys, o, p });
   const { x, y } = (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
+  //console.debug('Point.bind', { keys, o, p, x, y });
   return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
 export default Point;

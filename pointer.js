@@ -10,7 +10,7 @@ export function DereferenceError(object, member, pos, prev, locator) {
       if(method) method = (frame.typeName || Util.className(frame.thisObj)) + '.' + method;
       else method = frame.getFunctionName();
 
-      return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
+      return ('' + frame.getFileName()).replace(new RegExp('.*plot-cv/'), '') + ':' + frame.getLineNumber() + ':' + frame.getColumnNumber() + ' ' + method;
     });
   //console.log('member:', member);
   return Object.assign(
