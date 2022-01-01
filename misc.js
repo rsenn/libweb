@@ -181,7 +181,7 @@ export function SyscallError(syscall, errnum) {
 
 SyscallError.prototype = new Error();
 
-Util.define(SyscallError.prototype, {
+define(SyscallError.prototype, {
   get message() {
     return `SyscallError: '${this.syscall}' errno = ${this.code} (${this.errno})`;
   },
@@ -190,7 +190,7 @@ Util.define(SyscallError.prototype, {
 
 globalThis.SyscallError = SyscallError;
 export function extendArray(proto = Array.prototype) {
-  Util.define(proto, {
+  define(proto, {
     get last() {
       return this[this.length - 1];
     },
@@ -448,29 +448,7 @@ export function assert(actual, expected, message) {
 
   throw Error('assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : ''));
 }
-
-export function weakAssign(obj, ...args) {
-  let desc = {};
-  for(let other of args) {
-    let otherDesc = Object.getOwnPropertyDescriptors(other);
-    for(let key in otherDesc) if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
-  }
-  return Object.defineProperties(obj, desc);
-}
-
-export function define(obj, ...args) {
-  for(let props of args) {
-    let desc = Object.getOwnPropertyDescriptors(props);
-    for(let prop in desc) {
-      const { value } = desc[prop];
-      desc[prop].enumerable = false;
-      if(typeof value == 'function') desc[prop].writable = false;
-    }
-    Object.defineProperties(obj, desc);
-  }
-  return obj;
-}
-
+ 
 export function escape(str, chars = []) {
   const table = {
     ['\n']: 'n',
@@ -515,8 +493,6 @@ export function once(fn, thisArg, memoFn) {
   };
 }
 
-export const unique = (arr, cmp) => arr.filter(typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i : (el, i, arr) => arr.indexOf(el) == i);
-
 const atexit_functions = [];
 const atexit_install = once(callback => {
   // attach user callback to the process event emitter
@@ -552,6 +528,502 @@ export function atexit(fn) {
     });
   }
 }
+
+
+export function waitFor(ms) {
+  return new Promise(resolve => os.setTimeout(resolve, ms));
+}
+
+export function define(obj, ...args) {
+  for(let props of args) {
+    let desc = Object.getOwnPropertyDescriptors(props);
+    for(let prop in desc) {
+      const { value } = desc[prop];
+      desc[prop].enumerable = false;
+      if(typeof value == 'function') desc[prop].writable = false;
+    }
+    Object.defineProperties(obj, desc);
+  }
+  return obj;
+}
+
+export function weakAssign(obj, ...args) {
+  let desc = {};
+  for(let other of args) {
+    let otherDesc = Object.getOwnPropertyDescriptors(other);
+    for(let key in otherDesc) if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
+  }
+  return Object.defineProperties(obj, desc);
+}
+
+export function getConstructorChain(obj) {
+  let ret = [];
+  let chain = getPrototypeChain(obj);
+  if(obj.constructor && obj.constructor != chain[0].constructor) chain.unshift(obj);
+  for(let proto of chain) ret.push(proto.constructor);
+  return ret;
+}
+
+export function hasPrototype(obj, proto) {
+  return getPrototypeChain(obj).indexOf(proto) != -1;
+}
+
+export function filter(seq, pred, thisArg) {
+  if(isObject(pred) && pred instanceof RegExp) {
+    let re = pred;
+    pred = (el, i) => re.test(el);
+  }
+  let r = [],
+    i = 0;
+  for(let el of seq) {
+    if(pred.call(thisArg, el, i++, seq)) r.push(el);
+  }
+  return r;
+}
+
+export const curry =
+  (f, arr = [], length = f.length) =>
+  (...args) =>
+    (a => (a.length === length ? f(...a) : curry(f, a)))([...arr, ...args]);
+
+export function* split(buf, ...points) {
+  points.sort();
+  const splitAt = (b, pos, len) => {
+    let r = pos < b.byteLength ? [slice(b, 0, pos), slice(b, pos)] : [null, b];
+    return r;
+  };
+  let prev,
+    len = 0;
+  for(let offset of points) {
+    let at = offset - len;
+    [prev, buf] = splitAt(buf, at, len);
+    if(prev) {
+      yield prev;
+      len = offset;
+    }
+  }
+  if(buf) yield buf;
+}
+
+export const unique = (arr, cmp) => arr.filter(typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i : (el, i, arr) => arr.indexOf(el) == i);
+
+export const getFunctionArguments = fn =>
+  (fn + '')
+    .replace(/\n.*/g, '')
+    .replace(/(=>|{|\n).*/g, '')
+    .replace(/^function\s*/, '')
+    .replace(/^\((.*)\)\s*$/g, '$1')
+    .split(/,\s*/g);
+
+const ANSI_BACKGROUND_OFFSET = 10;
+
+const wrapAnsi16 =
+  (offset = 0) =>
+  code =>
+    `\x1b[${code + offset}m`;
+
+const wrapAnsi256 =
+  (offset = 0) =>
+  code =>
+    `\x1b[${38 + offset};5;${code}m`;
+
+const wrapAnsi16m =
+  (offset = 0) =>
+  (red, green, blue) =>
+    `\x1b[${38 + offset};2;${red};${green};${blue}m`;
+
+function getAnsiStyles() {
+  const codes = new Map();
+  const styles = {
+    modifier: {
+      reset: [0, 0],
+      // 21 isn't widely supported and 22 does the same thing
+      bold: [1, 22],
+      dim: [2, 22],
+      italic: [3, 23],
+      underline: [4, 24],
+      overline: [53, 55],
+      inverse: [7, 27],
+      hidden: [8, 28],
+      strikethrough: [9, 29]
+    },
+    color: {
+      black: [30, 39],
+      red: [31, 39],
+      green: [32, 39],
+      yellow: [33, 39],
+      blue: [34, 39],
+      magenta: [35, 39],
+      cyan: [36, 39],
+      white: [37, 39],
+
+      // Bright color
+      blackBright: [90, 39],
+      redBright: [91, 39],
+      greenBright: [92, 39],
+      yellowBright: [93, 39],
+      blueBright: [94, 39],
+      magentaBright: [95, 39],
+      cyanBright: [96, 39],
+      whiteBright: [97, 39]
+    },
+    bgColor: {
+      bgBlack: [40, 49],
+      bgRed: [41, 49],
+      bgGreen: [42, 49],
+      bgYellow: [43, 49],
+      bgBlue: [44, 49],
+      bgMagenta: [45, 49],
+      bgCyan: [46, 49],
+      bgWhite: [47, 49],
+
+      // Bright color
+      bgBlackBright: [100, 49],
+      bgRedBright: [101, 49],
+      bgGreenBright: [102, 49],
+      bgYellowBright: [103, 49],
+      bgBlueBright: [104, 49],
+      bgMagentaBright: [105, 49],
+      bgCyanBright: [106, 49],
+      bgWhiteBright: [107, 49]
+    }
+  };
+
+  // Alias bright black as gray (and grey)
+  styles.color.gray = styles.color.blackBright;
+  styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
+  styles.color.grey = styles.color.blackBright;
+  styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
+
+  for(const [groupName, group] of Object.entries(styles)) {
+    for(const [styleName, style] of Object.entries(group)) {
+      styles[styleName] = {
+        open: `\u001B[${style[0]}m`,
+        close: `\u001B[${style[1]}m`
+      };
+
+      group[styleName] = styles[styleName];
+
+      codes.set(style[0], style[1]);
+    }
+
+    Object.defineProperty(styles, groupName, {
+      value: group,
+      enumerable: false
+    });
+  }
+
+  Object.defineProperty(styles, 'codes', {
+    value: codes,
+    enumerable: false
+  });
+
+  styles.color.close = '\u001B[39m';
+  styles.bgColor.close = '\u001B[49m';
+
+  styles.color.ansi = wrapAnsi16();
+  styles.color.ansi256 = wrapAnsi256();
+  styles.color.ansi16m = wrapAnsi16m();
+  styles.bgColor.ansi = wrapAnsi16(ANSI_BACKGROUND_OFFSET);
+  styles.bgColor.ansi256 = wrapAnsi256(ANSI_BACKGROUND_OFFSET);
+  styles.bgColor.ansi16m = wrapAnsi16m(ANSI_BACKGROUND_OFFSET);
+
+  // From https://github.com/Qix-/color-convert/blob/3f0e0d4e92e235796ccb17f6e85c72094a651f49/conversions.js
+  Object.defineProperties(styles, {
+    rgbToAnsi256: {
+      value: (red, green, blue) => {
+        // We use the extended greyscale palette here, with the exception of
+        // black and white. normal palette only has 4 greyscale shades.
+        if(red === green && green === blue) {
+          if(red < 8) {
+            return 16;
+          }
+
+          if(red > 248) {
+            return 231;
+          }
+
+          return Math.round(((red - 8) / 247) * 24) + 232;
+        }
+        const c = [red, green, blue].map(c => (c / 255) * 5);
+        return 16 + 36 * c[0] + 6 * c[1] + c[2];
+      },
+      enumerable: false
+    },
+    hexToRgb: {
+      value: hex => {
+        const matches = /(?<colorString>[a-f\d]{6}|[a-f\d]{3})/i.exec(hex.toString(16));
+        if(!matches) {
+          return [0, 0, 0];
+        }
+
+        let { colorString } = matches.groups;
+
+        if(colorString.length === 3) {
+          colorString = colorString
+            .split('')
+            .map(character => character + character)
+            .join('');
+        }
+
+        const integer = Number.parseInt(colorString, 16);
+
+        return [(integer >> 16) & 0xff, (integer >> 8) & 0xff, integer & 0xff];
+      },
+      enumerable: false
+    },
+    hexToAnsi256: {
+      value: hex => styles.rgbToAnsi256(...styles.hexToRgb(hex)),
+      enumerable: false
+    },
+    ansi256ToAnsi: {
+      value: code => {
+        if(code < 8) {
+          return 30 + code;
+        }
+
+        if(code < 16) {
+          return 90 + (code - 8);
+        }
+
+        let red;
+        let green;
+        let blue;
+
+        if(code >= 232) {
+          red = ((code - 232) * 10 + 8) / 255;
+          green = red;
+          blue = red;
+        } else {
+          code -= 16;
+
+          const remainder = code % 36;
+
+          red = Math.floor(code / 36) * 0.2;
+          green = Math.floor(remainder / 6) * 0.2;
+          blue = (remainder % 6) * 0.2;
+        }
+
+        const value = Math.max(red, green, blue) * 2;
+
+        if(value === 0) {
+          return 30;
+        }
+
+        let result = 30 + ((Math.round(blue) << 2) | (Math.round(green) << 1) | Math.round(red));
+
+        if(value === 2) {
+          result += 60;
+        }
+
+        return result;
+      },
+      enumerable: false
+    },
+    rgbToAnsi: {
+      value: (red, green, blue) => styles.ansi256ToAnsi(styles.rgbToAnsi256(red, green, blue)),
+      enumerable: false
+    },
+    hexToAnsi: {
+      value: hex => styles.ansi256ToAnsi(styles.hexToAnsi256(hex)),
+      enumerable: false
+    }
+  });
+
+  return styles;
+}
+
+export function randInt(...args) {
+  let range = args.splice(0, 2);
+  let rng = args.shift() ?? Math.random;
+  if(range.length < 2) range.unshift(0);
+  return Math.round(misc.rand(range[1] - range[0] + 1) + range[0]);
+}
+
+export function randFloat(min, max, rng = Math.random) {
+  return rng() * (max - min) + min;
+}
+
+export function randStr(n, set = '_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', rng = Math.random) {
+  let o = '';
+
+  while(--n >= 0) o += set[Math.round(rng() * (set.length - 1))];
+  return o;
+}
+
+export function toBigInt(arg) {
+  if(types.isArrayBuffer(arg)) {
+    const bits = misc.bits(arg).join('');
+    return eval(`0b${bits}n`);
+  }
+  return BigInt(arg);
+}
+
+export function lazyProperty(obj, name, getter, opts = {}) {
+  return Object.defineProperty(obj, name, {
+    get: types.isAsyncFunction(getter)
+      ? async function() {
+          return replaceProperty(await getter.call(obj, name));
+        }
+      : function() {
+          const value = getter.call(obj, name);
+          if(types.isPromise(value)) {
+            value.then(v => {
+              replaceProperty(v);
+              console.log(`util.lazyProperty resolved `, obj[name]);
+              return v;
+            });
+            return value;
+          }
+          return replaceProperty(value);
+        },
+    configurable: true,
+    ...opts
+  });
+
+  function replaceProperty(value) {
+    delete obj[name];
+    Object.defineProperty(obj, name, { value, ...opts });
+    return value;
+  }
+}
+
+export function lazyProperties(obj, gettersObj, opts = {}) {
+  opts = { enumerable: false, ...opts };
+  for(let prop of Object.getOwnPropertyNames(gettersObj)) lazyProperty(obj, prop, gettersObj[prop], opts);
+  return obj;
+}
+
+export function getOpt(options = {}, args) {
+  let short, long;
+  let result = {};
+  let positional = (result['@'] = []);
+  if(!(options instanceof Array)) options = Object.entries(options);
+  const findOpt = arg => options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
+  let [, params] = options.find(opt => opt[0] == '@') || [];
+  if(typeof params == 'string') params = params.split(',');
+  for(let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    let opt;
+    if(arg[0] == '-') {
+      let name, value, start, end;
+      if(arg[1] == '-') long = true;
+      else short = true;
+      start = short ? 1 : 2;
+      if(short) end = 2;
+      else if((end = arg.indexOf('=')) == -1) end = arg.length;
+      name = arg.substring(start, end);
+      if((opt = findOpt(name))) {
+        const [has_arg, handler] = opt[1];
+        if(has_arg) {
+          if(arg.length > end) value = arg.substring(end + (arg[end] == '='));
+          else value = args[++i];
+        } else {
+          value = true;
+        }
+        try {
+          value = handler(value, result[opt[0]], options, result);
+        } catch(e) {}
+        result[opt[0]] = value;
+        continue;
+      }
+    }
+    if(params.length) {
+      const param = params.shift();
+      if((opt = findOpt(param))) {
+        const [, [, handler]] = opt;
+        let value = arg;
+        if(typeof handler == 'function') {
+          try {
+            value = handler(value, result[opt[0]], options, result);
+          } catch(e) {}
+        }
+        const name = opt[0];
+        result[opt[0]] = value;
+        continue;
+      }
+    }
+    result['@'] = [...(result['@'] ?? []), arg];
+  }
+  return result;
+}
+
+export function toUnixTime(dateObj, utc = false) {
+  if(!(dateObj instanceof Date)) dateObj = new Date(dateObj);
+  let epoch = Math.floor(dateObj.getTime() / 1000);
+  if(utc) epoch += dateObj.getTimezoneOffset() * 60;
+  return epoch;
+}
+
+export function unixTime(utc = false) {
+  return toUnixTime(new Date(), utc);
+}
+
+export function fromUnixTime(epoch, utc = false) {
+  let t = parseInt(epoch);
+  let d = new Date(0);
+  utc ? d.setUTCSeconds(t) : d.setSeconds(t);
+  return d;
+}
+
+export function range(...args) {
+  let [start, end, step = 1] = args;
+  let ret;
+  start /= step;
+  end /= step;
+  if(start > end) {
+    ret = [];
+    while(start >= end) ret.push(start--);
+  } else {
+    ret = Array.from({ length: end - start + 1 }, (v, k) => k + start);
+  }
+  if(step != 1) {
+    ret = ret.map(n => n * step);
+  }
+  return ret;
+}
+
+export function repeater(n, what) {
+  if(typeof what == 'function')
+    return (function* () {
+      for(let i = 0; i < n; i++) yield what();
+    })();
+  return (function* () {
+    for(let i = 0; i < n; i++) yield what;
+  })();
+}
+
+export function repeat(n, what) {
+  return [...repeater(n, what)];
+}
+
+export function chunkArray(arr, size) {
+  const fn = (a, v, i) => {
+    const j = i % size;
+    if(j == 0) a.push([]);
+    a[a.length - 1].push(v);
+    return a;
+  };
+
+  return arr.reduce(fn, []);
+}
+
+export function camelize(str, delim = '') {
+  return str.replace(/^([A-Z])|[\s-_]+(\w)/g, (match, p1, p2, offset) => {
+    if(p2) return delim + p2.toUpperCase();
+    return p1.toLowerCase();
+  });
+}
+
+export function decamelize(str, delim = '-') {
+  return /.[A-Z]/.test(str)
+    ? str
+        .replace(/([a-z\d])([A-Z])/g, '$1' + delim + '$2')
+        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + delim + '$2')
+        .toLowerCase()
+    : str;
+}
+
 
 export function Location(line, column, pos, file, freeze = true) {
   let obj = this || new.target.test || this ? this : {};
@@ -616,7 +1088,7 @@ Location.prototype.valueOf = function() {
   return this.pos;
 };*/
 
-Util.define(Location.prototype, {
+define(Location.prototype, {
   /* prettier-ignore */ get offset() {
     return this.valueOf();
   }

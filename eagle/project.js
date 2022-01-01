@@ -41,7 +41,7 @@ export class EagleProject {
 
     EagleProject.determineEaglePath(fs).then(eaglePath => {
       this.eaglePath = eaglePath;
-      console.log('EagleProject.constructor', { file }, this.eaglePath);
+      //console.log('EagleProject.constructor', { file }, this.eaglePath);
 
       if(file) {
         if(Array.isArray(file)) file.forEach(loadFile);
@@ -128,7 +128,7 @@ export class EagleProject {
         dir = bin.replace(/\/[^\/]+$/, '');
       }
       dir = dir.replace(/[\\\/]bin$/i, '');
-      console.log('dir:', dir, bin);
+      //console.log('dir:', dir, bin);
       return dir;
     }
   }
@@ -327,7 +327,10 @@ export class EagleProject {
 
   saveTo(dir = '.', overwrite = false) {
     return new Promise((resolve, reject) => {
-      let promises = this.list.map(doc => [doc.basename, doc.saveTo([dir, doc.basename].join('/'), overwrite, this.fs)]);
+      let promises = this.list.map(doc => [
+        doc.basename,
+        doc.saveTo([dir, doc.basename].join('/'), overwrite, this.fs)
+      ]);
 
       return Promise.all(promises).then(result => {
         console.log('result:', result);
