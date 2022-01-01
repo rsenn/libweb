@@ -448,7 +448,7 @@ export function assert(actual, expected, message) {
 
   throw Error('assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : ''));
 }
- 
+
 export function escape(str, chars = []) {
   const table = {
     ['\n']: 'n',
@@ -528,7 +528,6 @@ export function atexit(fn) {
     });
   }
 }
-
 
 export function waitFor(ms) {
   return new Promise(resolve => os.setTimeout(resolve, ms));
@@ -1023,7 +1022,6 @@ export function decamelize(str, delim = '-') {
         .toLowerCase()
     : str;
 }
-
 
 export function Location(line, column, pos, file, freeze = true) {
   let obj = this || new.target.test || this ? this : {};
