@@ -207,7 +207,13 @@ export class Parser {
     }
     const colSizes = [12, 8, 4, 16, 32, 10, 0];
 
-    this.printTok = this.debug < 1 ? () => {} : (tok, ...prefix) => std.puts((prefix[0] + `(${this.lexer.stateStack.length})`).padEnd(15) + ('#' + tok.seq).padEnd(6) + (tok.id + '').padEnd(5) + (tok.type + '').padEnd(20) + `'${tok.lexeme.replace(/\n/g, '\\n')}'`.padEnd(32) + (tok.loc + '') + '\n');
+    this.printTok =
+      this.debug < 1
+        ? () => {}
+        : (tok, ...prefix) =>
+            std.puts(
+              (prefix[0] + `(${this.lexer.stateStack.length})`).padEnd(15) + ('#' + tok.seq).padEnd(6) + (tok.id + '').padEnd(5) + (tok.type + '').padEnd(20) + `'${tok.lexeme.replace(/\n/g, '\\n')}'`.padEnd(32) + (tok.loc + '') + '\n'
+            );
     /* : (tok, ...prefix) => {
             const range = tok.charRange;
             const colSizes = [12, 8, 4, 16, 32, 10, 0];
@@ -755,7 +761,11 @@ export class ECMAScriptParser extends Parser {
 
   matchStatement() {
     this.trace('matchStatement');
-    return this.matchPunctuators([';']) || this.matchKeywords(['if', 'var', 'let', 'const', 'with', 'while', 'do', 'for', 'continue', 'break', 'return', 'switch', 'import', 'export', 'try', 'throw', 'class', 'yield']) || this.matchAssignmentExpression();
+    return (
+      this.matchPunctuators([';']) ||
+      this.matchKeywords(['if', 'var', 'let', 'const', 'with', 'while', 'do', 'for', 'continue', 'break', 'return', 'switch', 'import', 'export', 'try', 'throw', 'class', 'yield']) ||
+      this.matchAssignmentExpression()
+    );
   }
 
   matchPrimaryExpression() {
@@ -2439,7 +2449,9 @@ const quoteArg = a => a.map(i => (Util.isObject(i) && i.value !== undefined ? i.
 const quoteStr = s => s.replace(linebreak, '\\n');
 
 Parser.prototype.trace = function() {
-  return this.stack.map(frame => `${(frame.tokenIndex + '').padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(' ')}`).join('\n');
+  return this.stack
+    .map(frame => `${(frame.tokenIndex + '').padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(' ')}`)
+    .join('\n');
 };
 
 Parser.prototype.onToken = function(tok) {
