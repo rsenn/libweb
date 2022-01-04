@@ -1,4 +1,5 @@
 import Util from '../util.js';
+
 export class Graph {
   constructor() {
     this.nodes = [];
@@ -103,7 +104,7 @@ export class Graph {
       return;
     }
 
-    let newConnection = new Graph.Connection(node1Matches[0], node2Matches[0]);
+    let newConnection = new Graph.Edge(node1Matches[0], node2Matches[0]);
 
     let duplicateConnections = this.connections.filter(connection => connection.equals(newConnection));
 
@@ -309,7 +310,7 @@ export class Graph {
   }
 }
 
-Graph.Node = class {
+export class Node {
   constructor(point, connections) {
     this.point = point;
   }
@@ -317,9 +318,9 @@ Graph.Node = class {
   equals(node) {
     return Point.equals(node.point, this.point);
   }
-};
+}
 
-Graph.Connection = class {
+export class Edge {
   constructor(node1, node2) {
     this.node1 = node1;
     this.node2 = node2;
@@ -328,4 +329,7 @@ Graph.Connection = class {
   equals(connection) {
     return (this.node1.equals(connection.node1) && this.node2.equals(connection.node2)) || (this.node2.equals(connection.node1) && this.node1.equals(connection.node2));
   }
-};
+}
+
+Graph.Node = Node;
+Graph.Edge = Edge;
