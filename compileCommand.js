@@ -1,117 +1,198 @@
-import inspect from 'inspect';
-
+import inspect from './objectInspect.js';
+import * as util from './misc.js';
 
 export class CompileCommand extends Array {
-  constructor(arg) {
+  constructor(a) {
     super();
-    if(typeof arg == 'string') arg = arg.split(/\s+/g);
-    if(Array.isArray(arg)) this.splice(0, this.length, ...arg);
+    if(typeof a == 'string') a = a.split(/\s+/g);
+    if(Array.isArray(a)) this.splice(0, this.length, ...a);
   }
 
-  get program() {
-    return this.toObject().program;
+  static argumentType = ArgumentType;
+
+  static [Symbol.species] = Array;
+
+  /* prettier-ignore */ get program() { return this.toObject().program; }
+  /* prettier-ignore */ set program(arg) { this[0] = arg; }
+  /* prettier-ignore */ get output() { return this.toObject().output; }
+  set output(arg) {
+    let i = this.findIndex(a => /^-o($|)/.test(a));
+    if(this[i] == '-o') i++;
+    this[i] = arg;
+  }
+  /* prettier-ignore */ get includes() { return this.toObject().includes; }
+  /* prettier-ignore */ get defines() { return this.toObject().defines; }
+  /* prettier-ignore */ get flags() { let { flags, includes, defines } = this.toObject(); return (includes ?? []) .map(inc => '-I' + inc) .concat((defines ?? []).map(def => '-D' + def)) .concat(flags); }
+  /* prettier-ignore */ get args() { return this.toObject().args; }
+  /* prettier-ignore */ get sources() { return this.toObject().args.filter(arg => arg != this.output); }
+  set sources(arg) {
+    let { sources } = this;
+    let idx = this.indexOf(sources[0]);
+
+    if(!Array.isArray(arg)) arg = [arg];
+    this.remove(...sources);
+
+    this.splice(idx, 0, ...arg);
   }
 
-  get output() {
-    return this.toObject().output;
+  get source() {
+    let { sources } = this;
+    if(sources.length > 1) throw new Error(`CompileCommand has more than 1 source`);
+    return sources[0];
+  }
+  set source(arg) {
+    this.sources = [arg];
   }
 
-  get includes() {
-    return this.toObject().includes;
+  typeFlags(type) {
+    const { flags } = this;
+    let p = typeof type == 'string' ? f => ArgumentType(f) == type : f => type.test(ArgumentType(f));
+    return flags.filter(p);
   }
 
-  get defines() {
-    return this.toObject().defines;
-  }
+  /* prettier-ignore */ get warnFlags() { return this.typeFlags('warning'); }
+  /* prettier-ignore */ get debugFlags() { return this.typeFlags('debug'); }
+  /* prettier-ignore */ get optFlags() { return this.typeFlags(/^opt/); }
+  /* prettier-ignore */ get depFlags() { return this.typeFlags(/^dep/); }
+  /* prettier-ignore */ get modeFlags() { return this.typeFlags('mode'); }
 
-  get flags() {
-    return this.toObject().flags;
-  }
-
-  get args() {
-    return this.toObject().args;
-  }
-
-  get  warnFlags() {
-    return this.flags.filter(f => /^-w/i.test(f));
-  }
-
-  get  debugFlags() {
-    return this.flags.filter(f => /^-g/i.test(f));
-  }
-
-  get  optFlags() {
-    return this.flags.filter(f => /^-O/.test(f));
-  }
-
-  isCompile() {
-    return this.flags.indexOf('-c') != -1;
-  }
-
-  isPreprocess() {
-    return this.flags.indexOf('-E') != -1;
-  }
-
-  isAssemble() {
-    return this.flags.indexOf('-S') != -1;
-  }
-
-  isLink() {
-    return !this.isCompile() && !this.isPreprocess() && !this.isAssemble();
-  }
+  /* prettier-ignore */ isCompile() { const { type } = this; return type == 'compile'; }
+  /* prettier-ignore */ isPreprocess() { const { type } = this; return type == 'preprocess'; }
+  /* prettier-ignore */ isAssemble() { const { type } = this; return type == 'assemble'; }
+  /* prettier-ignore */ isLink() { const { type } = this; return type == 'link'; }
 
   get type() {
-    if(this.isCompile()) return 'compile';
-    if(this.isPreprocess()) return 'preproc';
-    if(this.isAssemble()) return 'assemble';
-    if(this.isLink()) return 'link';
+    const { modeFlags } = this;
+    const last = modeFlags[modeFlags.length - 1];
+
+    switch (last[1]) {
+      case 'c':
+        return 'compile';
+      case 'E':
+        return 'preproc';
+      case 'S':
+        return 'assemble';
+      default:
+        return 'link';
+    }
   }
 
-  toString(sep) {
-    return this.join(sep ? sep : ' ');
+  toString(delim) {
+    return this.join(delim ? delim : ' ');
   }
 
   toObject() {
-    let program,
-      prev,
+    let r = {},
+      program,
+      p,
       includes = [],
       defines = [],
       flags = [],
       i = 0,
       output,
       args = [];
-    for(let arg of this) {
-      if(i == 0) program = arg;
-      else if(prev == '-I') includes.push(arg);
-      else if(arg.startsWith('-I') && arg.length > 2) includes.push(arg.slice(2));
-      else if(prev == '-D') defines.push(arg);
-      else if(arg.startsWith('-D') && arg.length > 2) defines.push(arg.slice(2));
-      else if(prev == '-o') {
+    for(let s of this) {
+      if(i == 0) program = s;
+      else if(p == '-I') includes.push(s);
+      else if(s.startsWith('-I') && s.length > 2) includes.push(s.slice(2));
+      else if(p == '-D') defines.push(s);
+      else if(s.startsWith('-D') && s.length > 2) defines.push(s.slice(2));
+      else if(p == '-o') {
         if(flags[flags.length - 1] == '-o') flags.pop();
-        output = arg;
-      } else if(arg.startsWith('-o') && arg.length > 2) output = arg.slice(2);
-      else if(arg.startsWith('-')) flags.push(arg);
-      else args.push(arg);
-      prev = arg;
+        output = s;
+      } else if(s.startsWith('-o') && s.length > 2) output = s.slice(2);
+      else if(s.startsWith('-')) flags.push(s);
+      else args.push(s);
+      p = s;
       i++;
     }
-    return { program, output, includes, defines, flags, args };
+    if(program) r.program = program;
+    if(output) r.output = output;
+    if(includes && includes.length) r.includes = includes;
+    if(defines && defines.length) r.defines = defines;
+    if(flags && flags.length) r.flags = flags;
+    if(args && args.length) r.args = args;
+    return r;
   }
 
-  [Symbol.inspect]() {
-    const { program, output, includes, defines, flags, args } = this;
-    return inspect(
-      { program, output, includes, defines, flags, args },
-      {
-        colors: true,
-        compact: 1,
-        maxStringLength: Infinity,
-        maxArrayLength: Infinity,
-        stringBreakNewline: false,
-        breakLength: std.getenv()
-      }
-    );
+  toArray() {
+    return Array.from(this);
   }
+
+  remove(...args) {
+    let r = [];
+    for(let a of args) {
+      let i;
+      while((i = this.indexOf(a)) != -1) {
+        let a = this.splice(i, 1);
+        r = r.concat(a);
+      }
+    }
+    return r;
+  }
+
+  [Symbol.inspect /*?? Symbol.for('nodejs.util.inspect.custom')*/]() {
+    return inspect(this.toObject(), {
+      colors: true,
+      compact: false,
+      maxStringLength: Infinity,
+      maxArrayLength: Infinity
+    });
+  }
+}
+
+export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
+  if(arg[0] == '-') {
+    let c = arg[1];
+    switch (c) {
+      case 'v':
+        return 'verbose';
+      case 'x':
+        return 'language';
+      case 'X': {
+        if(/^-X(linker|assembler|preprocessor)/.test(arg)) return arg.substring(2);
+        break;
+      }
+      case 'I':
+        return 'include';
+      case 'B':
+        return 'search';
+      case 'D':
+        return 'define';
+      case 'U':
+        return 'undef';
+      case 'l':
+        return 'library';
+      case 'L':
+        return 'libpath';
+      case 'S':
+      case 'E':
+      case 'c':
+        return 'mode';
+      case 'g':
+      case 'G':
+        return 'debug';
+      case 'w':
+      case 'W':
+        if(/^-W[apl],/.test(arg)) return { a: 'assembler', p: 'preprocessor', l: 'linker' }[arg[2]];
+        return 'warning';
+      case 'm':
+        return 'machine';
+      case 'M':
+        return 'dependency';
+      case 'O':
+        return 'optimization';
+      case 'o':
+        return 'output';
+      case 's': {
+        if(/^-std/.test(arg)) return 'standard';
+        if(/^-(shared|pie)/.test(arg)) return 'linker';
+      }
+    }
+    if(/^-dump/.test(arg)) return 'dump';
+    if(/^-print/.test(arg)) return 'print';
+    return 'default(' + c + ')';
+  } else if(i === 0) return 'program';
 }
 
 export default CompileCommand;
