@@ -163,9 +163,7 @@ function m(n, l, u, i, t, o, r, c, s, h) {
           w = null;
         }
       }
-      (g = $(n, k, (w = w || f), t, o, r, c, s, h)),
-        (d = k.ref) && w.ref != d && (b || (b = []), w.ref && b.push(w.ref, null, k), b.push(d, k.__c || g, k)),
-        null != g ? (null == m && (m = g), (s = x(n, k, w, A, r, g, s)), h || 'option' != u.type ? 'function' == typeof u.type && (u.__d = s) : (n.value = '')) : s && w.__e == s && s.parentNode != n && (s = _(w));
+      (g = $(n, k, (w = w || f), t, o, r, c, s, h)), (d = k.ref) && w.ref != d && (b || (b = []), w.ref && b.push(w.ref, null, k), b.push(d, k.__c || g, k)), null != g ? (null == m && (m = g), (s = x(n, k, w, A, r, g, s)), h || 'option' != u.type ? 'function' == typeof u.type && (u.__d = s) : (n.value = '')) : s && w.__e == s && s.parentNode != n && (s = _(w));
     }
   }
 
@@ -240,19 +238,7 @@ function C(n, l, u, i, t) {
       }
     }
   } else {
-    'o' === l[0] && 'n' === l[1]
-      ? ((o = l !== (l = l.replace(/Capture$/, ''))), (r = l.toLowerCase()) in n && (l = r), (l = l.slice(2)), n.l || (n.l = {}), (n.l[l + o] = u), (f = o ? N : z), u ? i || n.addEventListener(l, f, o) : n.removeEventListener(l, f, o))
-      : 'list' !== l && 'tagName' !== l && 'form' !== l && 'type' !== l && 'size' !== l && 'download' !== l && 'href' !== l && !t && l in n
-      ? (n[l] = null == u ? '' : u)
-      : 'function' != typeof u &&
-        'dangerouslySetInnerHTML' !== l &&
-        (l !== (l = l.replace(/xlink:?/, ''))
-          ? null == u || !1 === u
-            ? n.removeAttributeNS('http://www.w3.org/1999/xlink', l.toLowerCase())
-            : n.setAttributeNS('http://www.w3.org/1999/xlink', l.toLowerCase(), u)
-          : null == u || (!1 === u && !/^ar/.test(l))
-          ? n.removeAttribute(l)
-          : n.setAttribute(l, u));
+    'o' === l[0] && 'n' === l[1] ? ((o = l !== (l = l.replace(/Capture$/, ''))), (r = l.toLowerCase()) in n && (l = r), (l = l.slice(2)), n.l || (n.l = {}), (n.l[l + o] = u), (f = o ? N : z), u ? i || n.addEventListener(l, f, o) : n.removeEventListener(l, f, o)) : 'list' !== l && 'tagName' !== l && 'form' !== l && 'type' !== l && 'size' !== l && 'download' !== l && 'href' !== l && !t && l in n ? (n[l] = null == u ? '' : u) : 'function' != typeof u && 'dangerouslySetInnerHTML' !== l && (l !== (l = l.replace(/xlink:?/, '')) ? (null == u || !1 === u ? n.removeAttributeNS('http://www.w3.org/1999/xlink', l.toLowerCase()) : n.setAttributeNS('http://www.w3.org/1999/xlink', l.toLowerCase(), u)) : null == u || (!1 === u && !/^ar/.test(l)) ? n.removeAttribute(l) : n.setAttribute(l, u));
   }
 }
 
@@ -293,32 +279,10 @@ function $(l, u, i, t, o, r, f, e, c) {
 
   try {
     n: if('function' == typeof P) {
-      if(
-        ((g = u.props),
-        (b = (a = P.contextType) && t[a.__c]),
-        (x = a ? (b ? b.props.value : a.__) : t),
-        i.__c
-          ? (k = (h = u.__c = i.__c).__ = h.__E)
-          : ('prototype' in P && P.prototype.render ? (u.__c = h = new P(g, x)) : ((u.__c = h = new d(g, x)), (h.constructor = P), (h.render = M)),
-            b && b.sub(h),
-            (h.props = g),
-            h.state || (h.state = {}),
-            (h.context = x),
-            (h.__n = t),
-            (v = h.__d = !0),
-            (h.__h = [])),
-        null == h.__s && (h.__s = h.state),
-        null != P.getDerivedStateFromProps && (h.__s == h.state && (h.__s = s({}, h.__s)), s(h.__s, P.getDerivedStateFromProps(g, h.__s))),
-        (y = h.props),
-        (_ = h.state),
-        v)
-      ) {
+      if(((g = u.props), (b = (a = P.contextType) && t[a.__c]), (x = a ? (b ? b.props.value : a.__) : t), i.__c ? (k = (h = u.__c = i.__c).__ = h.__E) : ('prototype' in P && P.prototype.render ? (u.__c = h = new P(g, x)) : ((u.__c = h = new d(g, x)), (h.constructor = P), (h.render = M)), b && b.sub(h), (h.props = g), h.state || (h.state = {}), (h.context = x), (h.__n = t), (v = h.__d = !0), (h.__h = [])), null == h.__s && (h.__s = h.state), null != P.getDerivedStateFromProps && (h.__s == h.state && (h.__s = s({}, h.__s)), s(h.__s, P.getDerivedStateFromProps(g, h.__s))), (y = h.props), (_ = h.state), v)) {
         null == P.getDerivedStateFromProps && null != h.componentWillMount && h.componentWillMount(), null != h.componentDidMount && h.__h.push(h.componentDidMount);
       } else {
-        if(
-          (null == P.getDerivedStateFromProps && g !== y && null != h.componentWillReceiveProps && h.componentWillReceiveProps(g, x),
-          (!h.__e && null != h.shouldComponentUpdate && !1 === h.shouldComponentUpdate(g, h.__s, x)) || u.__v === i.__v)
-        ) {
+        if((null == P.getDerivedStateFromProps && g !== y && null != h.componentWillReceiveProps && h.componentWillReceiveProps(g, x), (!h.__e && null != h.shouldComponentUpdate && !1 === h.shouldComponentUpdate(g, h.__s, x)) || u.__v === i.__v)) {
           (h.props = g), (h.state = h.__s), u.__v !== i.__v && (h.__d = !1), (h.__v = u), (u.__e = i.__e), (u.__k = i.__k), h.__h.length && f.push(h), T(u, e, l);
           break n;
         }
@@ -329,24 +293,7 @@ function $(l, u, i, t, o, r, f, e, c) {
               h.componentDidUpdate(y, _, w);
             });
       }
-      (h.context = x),
-        (h.props = g),
-        (h.state = h.__s),
-        (a = n.__r) && a(u),
-        (h.__d = !1),
-        (h.__v = u),
-        (h.__P = l),
-        (a = h.render(h.props, h.state, h.context)),
-        (h.state = h.__s),
-        null != h.getChildContext && (t = s(s({}, t), h.getChildContext())),
-        v || null == h.getSnapshotBeforeUpdate || (w = h.getSnapshotBeforeUpdate(y, _)),
-        (A = null != a && a.type == p && null == a.key ? a.props.children : a),
-        m(l, Array.isArray(A) ? A : [A], u, i, t, o, r, f, e, c),
-        (h.base = u.__e),
-        (u.__h = null),
-        h.__h.length && f.push(h),
-        k && (h.__E = h.__ = null),
-        (h.__e = !1);
+      (h.context = x), (h.props = g), (h.state = h.__s), (a = n.__r) && a(u), (h.__d = !1), (h.__v = u), (h.__P = l), (a = h.render(h.props, h.state, h.context)), (h.state = h.__s), null != h.getChildContext && (t = s(s({}, t), h.getChildContext())), v || null == h.getSnapshotBeforeUpdate || (w = h.getSnapshotBeforeUpdate(y, _)), (A = null != a && a.type == p && null == a.key ? a.props.children : a), m(l, Array.isArray(A) ? A : [A], u, i, t, o, r, f, e, c), (h.base = u.__e), (u.__h = null), h.__h.length && f.push(h), k && (h.__E = h.__ = null), (h.__e = !1);
     } else {
       null == r && u.__v === i.__v ? ((u.__k = i.__k), (u.__e = i.__e)) : (u.__e = H(i.__e, u, i, t, o, r, f, c));
     }
@@ -419,10 +366,7 @@ function H(n, l, u, i, t, o, r, c) {
       (v || h) && ((v && ((h && v.__html == h.__html) || v.__html === n.innerHTML)) || (n.innerHTML = (v && v.__html) || ''));
     }
 
-    A(n, d, p, t, c),
-      v ? (l.__k = []) : ((s = l.props.children), m(n, Array.isArray(s) ? s : [s], l, u, i, 'foreignObject' !== l.type && t, o, r, f, c)),
-      c ||
-        ('value' in d && void 0 !== (s = d.value) && (s !== n.value || ('progress' === l.type && !s)) && C(n, 'value', s, p.value, !1), 'checked' in d && void 0 !== (s = d.checked) && s !== n.checked && C(n, 'checked', s, p.checked, !1));
+    A(n, d, p, t, c), v ? (l.__k = []) : ((s = l.props.children), m(n, Array.isArray(s) ? s : [s], l, u, i, 'foreignObject' !== l.type && t, o, r, f, c)), c || ('value' in d && void 0 !== (s = d.value) && (s !== n.value || ('progress' === l.type && !s)) && C(n, 'value', s, p.value, !1), 'checked' in d && void 0 !== (s = d.checked) && s !== n.checked && C(n, 'checked', s, p.checked, !1));
   }
   return n;
 }
@@ -463,12 +407,7 @@ function M(n, l, u) {
 
 function O(l, u, i) {
   var t, r, c;
-  n.__ && n.__(l, u),
-    (r = (t = i === o) ? null : (i && i.__k) || u.__k),
-    (l = h(p, null, [l])),
-    (c = []),
-    $(u, ((t ? u : i || u).__k = l), r || f, f, void 0 !== u.ownerSVGElement, i && !t ? [i] : r ? null : u.childNodes.length ? e.slice.call(u.childNodes) : null, c, i || f, t),
-    j(c, l);
+  n.__ && n.__(l, u), (r = (t = i === o) ? null : (i && i.__k) || u.__k), (l = h(p, null, [l])), (c = []), $(u, ((t ? u : i || u).__k = l), r || f, f, void 0 !== u.ownerSVGElement, i && !t ? [i] : r ? null : u.childNodes.length ? e.slice.call(u.childNodes) : null, c, i || f, t), j(c, l);
 }
 
 function B(n, l) {
@@ -959,21 +898,4 @@ export function createRef() {
   return { current: null };
 }
 
-export {
-  h,
-  html,
-  O as render,
-  n as options,
-  d as Component,
-  B as createContext,
-  m$1 as useState,
-  p$1 as useReducer,
-  y$1 as useEffect,
-  l$1 as useLayoutEffect,
-  h$1 as useRef,
-  s$1 as useImperativeHandle,
-  _$1 as useMemo,
-  A$1 as useCallback,
-  F as useContext,
-  T$1 as useDebugValue
-};
+export { h, html, O as render, n as options, d as Component, B as createContext, m$1 as useState, p$1 as useReducer, y$1 as useEffect, l$1 as useLayoutEffect, h$1 as useRef, s$1 as useImperativeHandle, _$1 as useMemo, A$1 as useCallback, F as useContext, T$1 as useDebugValue };

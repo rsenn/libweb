@@ -150,7 +150,7 @@ operator
     : '/' ws      # goodOperator
     | Comma ws    # goodOperator
     | Space ws    # goodOperator
-    | '=' ws      # badOperator  // IE filter and DXImageTransform function
+    | '=' ws      # badOperator  // IE filter and DXImageTransform func
     ;
 
 property
@@ -193,21 +193,21 @@ term
     | String ws              # knownTerm
     | UnicodeRange ws        # knownTerm
     | ident ws               # knownTerm
-    | var                    # knownTerm
+    | variable                    # knownTerm
     | Uri ws                 # knownTerm
     | hexcolor               # knownTerm
     | calc                   # knownTerm
-    | function               # knownTerm
+    | func               # knownTerm
     | unknownDimension ws    # unknownTerm
     | dxImageTransform       # badTerm
     ;
 
-function
+func
     : Function ws expr ')' ws
     ;
 
 dxImageTransform
-    : DxImageTransform ws expr ')' ws    // IE DXImageTransform function
+    : DxImageTransform ws expr ')' ws    // IE DXImageTransform func
     ;
 
 hexcolor
@@ -328,7 +328,7 @@ generalEnclosed
 
 // Variable
 // https://www.w3.org/TR/css-variables-1
-var
+variable
     : Var ws Variable ws ')' ws
     ;
 
@@ -959,7 +959,7 @@ Variable
     ;
 
 Var
-    : 'var('
+    : 'variable('
     ;
 
 // Give Ident least priority so that more specific rules matches first
