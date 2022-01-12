@@ -1,11 +1,17 @@
 import inspect from './objectInspect.js';
 import * as util from './misc.js';
+import * as path from './path.js';
+
 
 export class CompileCommand extends Array {
-  constructor(a) {
+  constructor(a, workDir = '.') {
     super();
+    this.workDir = path.absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
-    if(Array.isArray(a)) this.splice(0, this.length, ...a);
+    if(Array.isArray(a)) {
+      this.splice(0, this.length);
+      for(let item of a) this.pushUnique(item);
+    }
   }
 
   static argumentType = ArgumentType;
@@ -20,11 +26,12 @@ export class CompileCommand extends Array {
     if(this[i] == '-o') i++;
     this[i] = arg;
   }
-  /* prettier-ignore */ get includes() { return this.toObject().includes; }
+  /* prettier-ignore */ get includes() { return  this.toObject().includes; }
   /* prettier-ignore */ get defines() { return this.toObject().defines; }
-  /* prettier-ignore */ get flags() { let { flags, includes, defines } = this.toObject(); return (includes ?? []) .map(inc => '-I' + inc) .concat((defines ?? []).map(def => '-D' + def)) .concat(flags); }
+  /* prettier-ignore */ get cflags() { let { flags, includes, defines } = this.toObject(); return (includes ?? []) .map(inc => '-I' + inc) .concat((defines ?? []).map(def => '-D' + def)) .concat(flags); }
+  /* prettier-ignore */ get flags() {return this.toObject().flags; }
   /* prettier-ignore */ get args() { return this.toObject().args; }
-  /* prettier-ignore */ get sources() { return this.toObject().args.filter(arg => arg != this.output); }
+  /* prettier-ignore */ get sources() { return (this.toObject().args ?? []).filter(arg => arg != this.output); }
   set sources(arg) {
     let { sources } = this;
     let idx = this.indexOf(sources[0]);
@@ -108,7 +115,7 @@ export class CompileCommand extends Array {
     }
     if(program) r.program = program;
     if(output) r.output = output;
-    if(includes && includes.length) r.includes = includes;
+    if(includes && includes.length) r.includes = includes/*.map(inc => path.relative(inc, this.workDir))*/;
     if(defines && defines.length) r.defines = defines;
     if(flags && flags.length) r.flags = flags;
     if(args && args.length) r.args = args;
@@ -193,6 +200,14 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
     if(/^-print/.test(arg)) return 'print';
     return 'default(' + c + ')';
   } else if(i === 0) return 'program';
+}
+
+util.extendArray(CompileCommand.prototype);
+
+export function NinjaRule(command) {
+ /* if(!new.target) return new NinjaRule(command);*/
+
+  
 }
 
 export default CompileCommand;
