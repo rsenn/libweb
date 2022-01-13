@@ -222,6 +222,7 @@ export class EagleDocument extends EagleNode {
       return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
     } else if(this.elements) {
       for(let element of this.elements.list) {
+        // console.log(Util.className(this) + '.getBounds', element.path + '', `<${element.tagName}>`);
         let bbrect = element.getBounds();
         bb.update(bbrect);
       }

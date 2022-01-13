@@ -47,11 +47,13 @@ export class EagleElement extends EagleNode {
   static makeTransparent = new RGBA(255, 255, 255).toAlpha();
 
   static get(owner, ref, raw) {
-    console.log('EagleElement.get',console.config({depth:1}), {owner,ref,raw});
-    {
-      const {path,root}=ref;
-          console.log('EagleElement.get',console.config({depth:1}), {path,root});
+    if(ref.length === 0 || raw === undefined) {
+      let root = 'root' in ref ? ref.root : null;
+      let path = 'path' in ref ? ref.path : ref;
 
+      if(owner instanceof EagleDocument && root == null && path.length === 0) throw new Error('EagleElement.get');
+
+      console.log('EagleElement.get', { owner, root, path, raw } /*, Util.getCallerStack()*/);
     }
     let root = ref.root || owner.raw ? owner.raw : owner;
     let doc = owner.document;
@@ -92,8 +94,13 @@ export class EagleElement extends EagleNode {
     }
     if(raw === null || typeof raw != 'object') throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
     let { tagName, attributes, children = [] } = raw;
-    this.tagName = tagName;
+    //this.tagName = tagName;
     Util.define(this, 'attrMap', {});
+    Object.defineProperty(this, 'tagName', {
+      get() {
+        return this.raw.tagName;
+      }
+    });
     let doc = this.getDocument();
     let elem = this;
     const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
@@ -180,10 +187,10 @@ export class EagleElement extends EagleNode {
           let fn;
           if(key == 'package') {
             fn = value => {
-              const libName = elem.handlers.library();
+              const libName = elem.attributes.library;
               const pkgName = elem.handlers.package();
-              const library = doc.libraries[libName]; //(e => e.tagName == 'library' && e.attributes['name'] == libName);
-              //   console.log(this.tagName, { libName, pkgName, library, key });
+              const library = project.doc.get(e => e.tagName == 'library' && e.attributes.name == libName);
+              console.log(this.tagName, { libName, pkgName, library, key });
 
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
@@ -529,6 +536,7 @@ export class EagleElement extends EagleNode {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
       let library = document.libraries[libName];
+      console.log(Util.className(this) + '.getBounds', path + '', `<${this.tagName}>`, { libName, library });
       let pkg = library.packages[raw.attributes.package];
       bb = pkg.getBounds();
       bb.move(this.x, this.y);

@@ -145,13 +145,12 @@ export const forEach = function(...args) {
 };
 
 export const iterate = function* (...args) {
-  let [value, filter = v => true, flags] = args;
-  const path = Array.isArray(flags) ? flags : [];
+  let [value, filter = v => true, flags = RETURN_VALUE_PATH, path = []] = args;
+  //const path = Array.isArray(flags) ? flags : [];
 
-  if(typeof flags != 'number') flags = args[3] ?? RETURN_VALUE_PATH;
+  //if(typeof flags != 'number') flags = typeof args[3] == 'number' ? args[3] ?? RETURN_VALUE_PATH;
 
-  let root = args[3] ?? value,
-    r;
+  let root = args[4] ?? value;
 
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)

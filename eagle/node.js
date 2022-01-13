@@ -214,8 +214,8 @@ export class EagleNode {
     let ctor = this[Symbol.species];
     transform = transform || ((...args) => args);
     let cond = pred;
-    for(let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
-      yield transform(v, p, this.document || this);
+    for(let [v, p] of deep.iterate(this.raw, cond /*, deep.RETURN_VALUE_PATH*/)) {
+      yield transform(v, [...this.path, ...p], this.document ?? this.root);
     }
   }
 
