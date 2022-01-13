@@ -7,7 +7,14 @@ const props = {
   y2: 4
 };
 
+export const DOTS = 1;
+export const SMALL_GRID = 2;
+export const VOLTS = 4;
+export const POWER = 8;
+export const SHOW_VALUES = 16;
+
 export function Element(el) {
+  if(el instanceof Element) return el;
   const makeGetterSetter = key => v => v === undefined ? +el[key] : (el[key] = +v);
 
   Util.lazyProperties(el, {
@@ -49,6 +56,9 @@ export function Element(el) {
 Element.prototype = new Array();
 Element.prototype[Symbol.toStringTag] = 'CircuitJSElement';
 Element.prototype.constructor = Element;
+Element.prototype.toString = function() {
+  return this.join(' ');
+};
 
 export class CircuitJS {
   static load(file) {
@@ -56,11 +66,11 @@ export class CircuitJS {
     return CircuitJS.parse(data);
   }
 
-  static parse(text) {
-    let lines = text.split(/\n/g);
-    const instance = lines.filter(line => !/^\s*$/.test(line)).map(line => line.split(/\s+/g).map((s, i) => (i == 0 || isNaN(+s) ? s : +s)));
+  constructor(options = [1, 0.000015625, 10.20027730826997, 50, 5]) {
+    return CircuitJS.create([['$'].concat(options)]);
+  }
 
-    //console.log('lines', lines);
+  static create(instance = []) {
     return new Proxy(instance.map(Element), {
       get(target, prop, receiver) {
         if(Reflect.has(target, prop)) return target[prop];
@@ -82,7 +92,31 @@ export class CircuitJS {
       }
     });
   }
+
+  static parse(text) {
+    let lines = text.split(/\n/g);
+    const instance = lines.filter(line => !/^\s*$/.test(line)).map(line => line.split(/\s+/g).map((s, i) => (i == 0 || isNaN(+s) ? s : +s)));
+
+    //console.log('lines', lines);
+    return CircuitJS.create(instance);
+  }
+
+  write() {
+    return this.reduce((acc, element) => acc + element.toString() + '\n', '');
+  }
+
+  save(filename) {
+    let data = this.write();
+    return fs.writeFileSync(filename, data);
+  }
+  add(...args) {
+    if(args.length > 1 && typeof args[0] == 'string') args = [args];
+    for(let el of args) this.push(Element(el));
+    return this;
+  }
+
   static types = {
+    ['$']: 'Options',
     150: 'AndGate',
     151: 'NandGate',
     152: 'OrGate',
@@ -284,6 +318,7 @@ export class CircuitJS {
   };
 
   static params = {
+    Options: ['flags', 'maxTimeStep', 'speed', 'current', 'voltageRange', 'power', 'minTimeStep'],
     AnalogSwitch: ['r_on', 'r_off'],
     Box: ['x', 'y', 'x2', 'y2'],
     Capacitor: ['capacitance', 'voltdiff'],
