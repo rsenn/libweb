@@ -1,3 +1,4 @@
+import {define} from '../misc.js';
 import Util from '../util.js';
 import { toXML } from './util.js';
 
@@ -646,6 +647,8 @@ export class MutablePath extends Array {
   }
 }
 //Util.define(MutablePath.prototype,specialFields', []);
+
+define(MutablePath.prototype, { deref: MutablePath.prototype.apply  });
 
 Util.defineGetter(MutablePath, Symbol.species, () => MutablePath);
 

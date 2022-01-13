@@ -45,7 +45,14 @@ export class EagleElement extends EagleNode {
   static currentElement = null;
 
   static makeTransparent = new RGBA(255, 255, 255).toAlpha();
+
   static get(owner, ref, raw) {
+    console.log('EagleElement.get',console.config({depth:1}), {owner,ref,raw});
+    {
+      const {path,root}=ref;
+          console.log('EagleElement.get',console.config({depth:1}), {path,root});
+
+    }
     let root = ref.root || owner.raw ? owner.raw : owner;
     let doc = owner.document;
     const { pathMapper, raw2element } = doc;
@@ -59,6 +66,7 @@ export class EagleElement extends EagleNode {
     EagleElement.currentElement = inst;
     return inst;
   }
+
   static create(tagName, attributes = {}, children = []) {
     for(let name in attributes) {
       attributes[name] = attributes[name] + '';

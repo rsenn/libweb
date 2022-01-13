@@ -1,4 +1,3 @@
-
 export function GetExponent(value) {
   const suffix = value.replace(/\/.*/g, '').replace(/[^KkMmnpuμ\u03bc]/g, '');
   let exp = 0;

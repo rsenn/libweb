@@ -4590,6 +4590,7 @@ Util.immutable = args => {
   };
   return new Proxy(args, handler);
 };
+
 Util.immutableClass = (orig, ...proto) => {
   let name = Util.fnName(orig).replace(/Mutable/g, '');
   let imName = 'Immutable' + name;

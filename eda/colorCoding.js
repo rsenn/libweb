@@ -1,5 +1,6 @@
 import { RGBA, HSLA } from '../color.js';
-import { GetExponent, GetMantissa, ValueToNumber, NumberToValue } from './values.js'
+import { GetExponent, GetMantissa, ValueToNumber, NumberToValue } from './values.js';
+export { GetExponent, GetMantissa, ValueToNumber, NumberToValue } from './values.js';
 
 export function GetMultipliers() {
   return {

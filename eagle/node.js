@@ -1,6 +1,7 @@
 import { EagleRef, EagleReference } from './ref.js';
 import Util from '../util.js';
 import * as deep from '../deep.js';
+import { define } from '../misc.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';
@@ -89,21 +90,20 @@ export class EagleNode {
   }
 
   get node() {
-    let node = this.path.apply(this.root.raw);
+    let node = this.path.deref(this.root.raw);
     return node;
   }
 
-  getRaw = Util.memoize(() => {
-    const { owner, ref, document } = this;
-    let r = ref.path.apply(owner.raw, true);
-    if(!r) {
-      r = ref.path.apply(ref.root) || ref.path.apply(owner);
-      if(!r) r = document.mapper.at(ref.path);
-    }
-    return r;
-  });
-
   get raw() {
+    const { ref, path, root } = this;
+    if(ref)
+      try {
+        return ref.derefence();
+      } catch(e) {}
+    if(path && root)
+      try {
+        return path.deref(root.raw);
+      } catch(e) {}
     return this.getRaw();
   }
 
@@ -149,7 +149,7 @@ export class EagleNode {
         let key = xpath[xpath.length - 1];
         let path = new ImmutableXPath(xpath).concat(['children']);
         lazy[key] = () => this.lookup(xpath, true);
-        if(!path.apply(raw, true)) {
+        if(!path.deref(raw, true)) {
           //   console.warn('path not found', path + '');
           continue;
         }
@@ -347,7 +347,7 @@ export class EagleNode {
 
     let path = new ImmutablePath(xpath);
     //console.log('EagleNode.lookup  xpath:', xpath, ' path:', path);
-    let value = path.apply(this.raw, true);
+    let value = path.deref(this.raw, true);
     let ret = t(this, path, value);
     //console.log('EagleNode.lookup =', toXML(ret, 1));
     return ret;
@@ -449,3 +449,15 @@ export class EagleNode {
     return (l.trim() ? l + '  ' : '') + ret.join(' ') + text('', 0);
   };
 }
+
+define(EagleNode.prototype, {
+  getRaw: Util.memoize(function () {
+    const { owner, ref, document } = this;
+    let r = ref.path.deref(owner.raw, true);
+    if(!r) {
+      r = ref.path.deref(ref.root) || ref.path.deref(owner);
+      if(!r) r = document.mapper.at(ref.path);
+    }
+    return r;
+  })
+});

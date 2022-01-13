@@ -113,4 +113,4 @@ export const EagleRef = function EagleRef(root, path) {
   return Object.freeze(obj);
 };
 
-Object.assign(EagleReference.prototype, {});
+Object.assign(EagleReference.prototype, { deref: EagleReference.prototype.dereference });
