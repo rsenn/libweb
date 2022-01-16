@@ -150,7 +150,8 @@ export const iterate = function* (...args) {
 
   //if(typeof flags != 'number') flags = typeof args[3] == 'number' ? args[3] ?? RETURN_VALUE_PATH;
 
-  let r,root = args[4] ?? value;
+  let r,
+    root = args[4] ?? value;
 
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)
