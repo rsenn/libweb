@@ -1,7 +1,7 @@
 import Util from '../util.js';
 import inspect from '../objectInspect.js';
 
-import { Lexer, Location, Token } from './lexer.js';
+import { default as Lexer, Location, Token } from './lexer.js';
 
 import * as deep from '../deep.js';
 import { Stack, StackFrame } from '../stack.js';
@@ -137,6 +137,8 @@ export class Parser {
     this.tokens = [];
     this.processed = [];
     this.lexer = new Lexer(sourceText, fileName, (c, s, e) => this.handleComment(c, s, e));
+    this.rules = this.lexer.rules;
+
     this.stack = [];
     this.prefix = fileName ? ` ${fileName}: ` : '';
     this.comments = [];
@@ -334,15 +336,15 @@ export class Parser {
   }
 
   lex() {
-    let { done, value } = this.lexer.next();
+    let tokId = this.lexer.next();
 
-    if(done) return null;
+    if(tokId < 0) return null;
 
-    if(typeof value == 'object' && value != null) {
-      if(this.debug >= 1) this.printTok(value, this.lexer.topState());
+    /*  if(typeof tokId == 'object' && tokId != null)*/ {
+      if(this.debug >= 1) this.printTok(this.lexer.token, this.lexer.topState());
     }
 
-    return value;
+    return tokId;
   }
 
   /*
@@ -396,21 +398,30 @@ export class Parser {
 
   gettok(state) {
     let token;
+    const { rules, lexer } = this;
 
     for(;;) {
       token = this.lex(state);
-      if(token) {
+      //console.log('token', token, lexer.ruleNames[token], `'${lexer.lexeme}'`);
+      if(token >= 0) {
         // this.trace('token:', token);
-        if(token.type == 'whitespace') continue;
-        if(token.type == 'comment') continue;
-        Object.defineProperty(token, 'stack', {
-          value: new Stack(null, (fr, i) => !/esfactory/.test(fr) && i > 2),
-          enumerable: false
-        });
+        if(token == rules['whitespace']) continue;
+        if(token == rules['comment']) continue;
+
+        token = lexer.token;
+
+        if(this.debug) {
+          Object.defineProperty(token, 'stack', {
+            value: new Stack(null, (fr, i) => !/esfactory/.test(fr) && i > 2),
+            enumerable: false
+          });
+        }
+      } else {
+        //Util.putStack();
+        token = { type: 'eof', value: null, id: -1 };
       }
       break;
     }
-    if(!token) return token;
     this.tokens.push(token);
     return token;
   }
@@ -508,7 +519,7 @@ function isLiteral({ type }) {
 }
 
 function isTemplateLiteral({ type }) {
-  return type === 'templateLiteral';
+  return type.startsWith('templateLiteral');
 }
 
 function toStr(a) {
@@ -653,6 +664,7 @@ export class ECMAScriptParser extends Parser {
     this.templateLevel++;
     while(!done) {
       let token = this.consume();
+      console.log('parseTemplateLiteral', { token });
       const tail = (i > 0 || token.lexeme.length > 1) && token.lexeme.endsWith('`');
       const do_expression = token.lexeme.endsWith('${');
       let raw = do_expression ? token.lexeme.slice(0, -2) : token.lexeme;
@@ -667,12 +679,15 @@ export class ECMAScriptParser extends Parser {
         const { start, pos, stateDepth } = lexer;
         const { tokens } = this;
         // console.log('node', node);
-        /*console.log('tokens.length', tokens.length);
-        console.log('tokens', tokens.map(tok => tok.lexeme));*/
+        /*console.log('tokens.length', tokens.length);*/
+        // console.log('tokens', tokens.map(tok => tok.lexeme));
+        // tokens.shift();
+        //this.consume();
         let token = this.tokens[0] ?? this.gettok();
         if(this.debug >= 2) this.printTok(token, 'tokens[0]');
+        console.log('parseTemplateLiteral2', { token });
         if(token.lexeme == '}') {
-          this.revert();
+          //  this.revert();
           if(this.debug >= 2) console.log('lexer.stateStack', lexer.stateStack);
           if(lexer.topState() == 'INITIAL') {
             lexer.pushState('TEMPLATE');
@@ -681,8 +696,9 @@ export class ECMAScriptParser extends Parser {
           } else {
             while(lexer.topState() != 'TEMPLATE') lexer.popState();
           }
-          this.revert();
+          // this.revert();
           token = this.gettok();
+          console.log('parseTemplateLiteral3', { token });
           if(this.debug >= 2) this.printTok(token, 'tok@1');
           token = this.gettok();
           if(this.debug >= 2) this.printTok(token, 'tok@1');
@@ -2406,6 +2422,7 @@ export class ECMAScriptParser extends Parser {
     const { tokens } = this;
 
     if(tokens[0] && tokens[0].type !== 'eof') {
+      console.log('tokens[0]', tokens[0]);
       throw new Error(`Didn't consume all tokens: ${tokens[0].loc ?? inspect(tokens[0], inspectOptions)}`);
     }
 

@@ -50,7 +50,7 @@ export class EagleElement extends EagleNode {
     if(ref.length === 0 || raw === undefined) {
       let root = 'root' in ref ? ref.root : null;
       let path = 'path' in ref ? ref.path : ref;
-globalThis.tmp= { owner, root, path, raw,ref } ;
+      globalThis.tmp = { owner, root, path, raw, ref };
       if(owner instanceof EagleDocument && root == null && path.length === 0) throw new Error('EagleElement.get');
 
       //console.log('EagleElement.get',globalThis.tmp/*, Util.getCallerStack()*/);

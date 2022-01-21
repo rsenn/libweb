@@ -193,7 +193,7 @@ export class Printer {
 
   printTemplateLiteral(template_literal) {
     const { quasis, expressions } = template_literal;
-    let s = '';
+    let s = '`';
     //console.log('template_literal:', template_literal);
 
     for(let i = 0; i < quasis.length; i++) {
@@ -202,6 +202,7 @@ export class Printer {
 
       if(expressions[i]) s += '${' + this.printNode(expressions[i]) + '}';
     }
+    s += '`';
     return this.colorText.templates(s);
   }
 
@@ -816,7 +817,7 @@ export class Printer {
     let prop,
       isFunction = false;
     prop = value ? this.printNode(value) : '';
-    //console.log('printProperty', { value, prop });
+    if(kind == 'get') console.log('printProperty', { value, name, prop, shorthand, s });
     if(value instanceof FunctionDeclaration)
       if(/function[\s\(]/.test(prop)) {
         prop = prop.replace(/function\s*/, '');
@@ -835,7 +836,7 @@ export class Printer {
       prop = prop.replace(name, '');
       s += prop;
     } else if(!(shorthand || name == prop)) {
-      if(name != '' && s != '') s += this.colorText.punctuators(': ');
+      if(name != '' && s != '' && !isFunction) s += this.colorText.punctuators(': ');
       s += prop;
     }
     if(prefix) s = prefix + s;
