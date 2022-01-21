@@ -664,7 +664,6 @@ export class ECMAScriptParser extends Parser {
     this.templateLevel++;
     while(!done) {
       let token = this.consume();
-      console.log('parseTemplateLiteral', { token });
       const tail = (i > 0 || token.lexeme.length > 1) && token.lexeme.endsWith('`');
       const do_expression = token.lexeme.endsWith('${');
       let raw = do_expression ? token.lexeme.slice(0, -2) : token.lexeme;
@@ -678,14 +677,8 @@ export class ECMAScriptParser extends Parser {
         const { lexer } = this;
         const { start, pos, stateDepth } = lexer;
         const { tokens } = this;
-        // console.log('node', node);
-        /*console.log('tokens.length', tokens.length);*/
-        // console.log('tokens', tokens.map(tok => tok.lexeme));
-        // tokens.shift();
-        //this.consume();
         let token = this.tokens[0] ?? this.gettok();
         if(this.debug >= 2) this.printTok(token, 'tokens[0]');
-        console.log('parseTemplateLiteral2', { token });
         if(token.lexeme == '}') {
           //  this.revert();
           if(this.debug >= 2) console.log('lexer.stateStack', lexer.stateStack);
@@ -698,7 +691,6 @@ export class ECMAScriptParser extends Parser {
           }
           // this.revert();
           token = this.gettok();
-          console.log('parseTemplateLiteral3', { token });
           if(this.debug >= 2) this.printTok(token, 'tok@1');
           token = this.gettok();
           if(this.debug >= 2) this.printTok(token, 'tok@1');
