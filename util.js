@@ -1,3 +1,20 @@
+// ==UserScript==
+
+// @name         util.js
+// @namespace    util
+// @version      0.2
+// @description  geom.js, align.js, bbox.js, util.js, graph.js, intersection.js, point.js, line.js, lineList.js, element.js, node.js, trbl.js, rect.js, size.js, iterator.js, pointList.js, matrix.js, circle.js, polygonFinder.js, polygon.js, sweepLine.js, transformation.js, vector.js, simplify.js
+// @author       You
+// @match        *://*/*
+// @exclude      *://127.0.0.1*/*
+// @updateURL    http://127.0.0.1:9000/lib/util.js
+// @grant        none
+// @run-at       document-end
+// ==/UserScript==
+
+/* jshint esversion: 6 */
+/* jshint ignore:start */
+
 /**
  * Class for utility.
  *

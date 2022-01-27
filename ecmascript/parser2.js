@@ -1040,7 +1040,7 @@ export class ECMAScriptParser extends Parser {
       }
     } else {
       const { lexer } = this;
-      let n = lexer.stateStack.length;
+      let n = lexer.stateStack ? lexer.stateStack.length : 0;
 
       if(lexer.topState() != 'NESTED') lexer.pushState('NOREGEX');
       lexer.callback = lex => {
@@ -2448,7 +2448,7 @@ const quoteArg = a => a.map(i => (Util.isObject(i) && i.value !== undefined ? i.
 const quoteStr = s => s.replace(linebreak, '\\n');
 
 Parser.prototype.trace = function() {
-  return this.stack.map(frame => `${(frame.tokenIndex + '').padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(' ')}`).join('\n');
+  return this.stack.map(frame => `${(frame.tokenIndex + '').padStart(5)} ${(frame.position ? frame.position.toString() : '').padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(' ')}`).join('\n');
 };
 
 Parser.prototype.onToken = function(tok) {

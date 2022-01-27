@@ -157,7 +157,7 @@ export class StackFrame {
 
   equals(other) {
     for(let name of props) {
-      if(!(name in other) && !(name in this)) continue;
+      if(!(typeof other == 'object' && other != null && (name in other || name in this))) continue;
       if(other[name] != this[name]) return false;
     }
     return true;
