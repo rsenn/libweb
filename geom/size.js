@@ -47,7 +47,8 @@ export function Size(arg) {
   if(isNaN(obj.height)) obj.height = undefined;
   if(!(obj instanceof Size)) return obj;
 }
-const getOther = args => (/*console.debug('getOther', ...args), */ typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
+
+Size.getOther = args => (/*console.debug('getOther', ...args), */ typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
 
 Size.prototype.width = NaN;
 Size.prototype.height = NaN;
@@ -115,7 +116,7 @@ Size.prototype.sum = function(other) {
   return new Size(this.width + other.width, this.height + other.height);
 };
 Size.prototype.add = function(...args) {
-  for(let other of getOther(args)) {
+  for(let other of Size.getOther(args)) {
     this.width += other.width;
     this.height += other.height;
   }
@@ -125,7 +126,7 @@ Size.prototype.diff = function(other) {
   return new Size(this.width - other.width, this.height - other.height);
 };
 Size.prototype.sub = function(...args) {
-  for(let other of getOther(args)) {
+  for(let other of Size.getOther(args)) {
     this.width -= other.width;
     this.height -= other.height;
   }
@@ -140,7 +141,7 @@ Size.prototype.prod = function(...args) {
   return Size.prototype.clone.call(this).mul(...args);
 };
 Size.prototype.mul = function(...args) {
-  for(let f of getOther(args)) {
+  for(let f of Size.getOther(args)) {
     const o = isSize(f) ? f : isPoint(f) ? { width: f.x, height: f.y } : { width: f, height: f };
     this.width *= o.width;
     this.height *= o.height;
@@ -154,7 +155,7 @@ Size.prototype.inverse = function(other) {
   return new Size(1 / this.width, 1 / this.height);
 };
 Size.prototype.div = function(...args) {
-  for(let f of getOther(args)) {
+  for(let f of Size.getOther(args)) {
     this.width /= f;
     this.height /= f;
   }

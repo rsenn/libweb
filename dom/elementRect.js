@@ -1,4 +1,4 @@
-import Util from '../util.js';
+import { Util } from '../util.js';
 import { Element } from './element.js';
 import { Point } from '../geom/point.js';
 import { Size } from '../geom/size.js';

@@ -1,7 +1,6 @@
-import React from 'react';
-
+import { Util } from '../util.js';
 import { Element } from './element.js';
-import Util from '../util.js';
+import React from 'react';
 
 export class ReactComponent {
   static create(...args) {

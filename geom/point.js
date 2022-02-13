@@ -56,7 +56,8 @@ export function Point(...args) {
     return p;
   }
 }
-const getOther = args => (console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
+
+Point.getOther = args => (console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
 
 Object.defineProperties(Point.prototype, {
   X: {

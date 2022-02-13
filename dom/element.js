@@ -1,3 +1,4 @@
+import { Util } from '../util.js';
 import { Node } from './node.js';
 import { TRBL } from '../geom/trbl.js';
 import { Point } from '../geom/point.js';
@@ -5,7 +6,6 @@ import { Rect, isRect } from '../geom/rect.js';
 import { Size } from '../geom/size.js';
 import { Anchor } from '../geom/align.js';
 import { iterator } from './iterator.js';
-import Util from '../util.js';
 
 /**
  * Class for element.

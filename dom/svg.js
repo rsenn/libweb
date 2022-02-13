@@ -1,3 +1,4 @@
+import { Util } from '../util.js';
 import { Element, isElement } from './element.js';
 import { Size, isSize } from '../geom/size.js';
 import { Point } from '../geom/point.js';
@@ -5,7 +6,6 @@ import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
 import { parseSVG, makeAbsolute } from '../svg/path-parser.js';
 import SvgPath from '../svg/path.js';
-import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
 
 export class SVG extends Element {
