@@ -756,7 +756,10 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
         return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
 
-      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`, 4).pipeThrough(new DebugTransformStream());
+      const stream = ChunkReader(
+        `this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`,
+        4
+      ).pipeThrough(new DebugTransformStream());
       /*ew ReadableStream({
         async start(controller) {
           await wait(1000);
@@ -789,7 +792,9 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
             }
           : {}
       )
-        .then(response => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
+        .then(response =>
+          writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
+        )
         .catch(err => (error = err));
       return send ? writable : promise;
     },
@@ -809,7 +814,8 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       }
       if(typeof ret == 'object' && ret !== null) {
         const { value, done } = ret;
-        if(typeof value == 'string') return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
+        if(typeof value == 'string')
+          return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
       }
       return ret.done ? 0 : -1;
     },
@@ -885,7 +891,12 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(NodeJSFileSystem, await import('fs'), await import('tty'), await import('process'));
+    fs = await CreatePortableFileSystem(
+      NodeJSFileSystem,
+      await import('fs'),
+      await import('tty'),
+      await import('process')
+    );
   } catch(error) {
     err = error;
   }

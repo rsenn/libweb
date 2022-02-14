@@ -31,8 +31,20 @@ export async function ConsoleSetup(opts = {}) {
     const size = await Util.ttyGetWinSize(fd);
     return Array.isArray(size) ? size[0] : undefined;
   };
-  const defaultBreakLength = (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) || proc.env.COLUMNS || (await consoleWidth()) || 80; // Infinity;
-  const { depth = Infinity, colors = await Util.isatty(1), breakLength = defaultBreakLength, maxArrayLength = Infinity, compact = 1, customInspect = true, ...options } = opts;
+  const defaultBreakLength =
+    (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) ||
+    proc.env.COLUMNS ||
+    (await consoleWidth()) ||
+    80; // Infinity;
+  const {
+    depth = Infinity,
+    colors = await Util.isatty(1),
+    breakLength = defaultBreakLength,
+    maxArrayLength = Infinity,
+    compact = 1,
+    customInspect = true,
+    ...options
+  } = opts;
 
   let inspectOptions = new ConsoleOptions({
     depth,
@@ -120,7 +132,9 @@ export async function ConsoleSetup(opts = {}) {
             await import('util').then(module => (globalThis.inspect = inspectFunction = module.inspect));
             break;
           default:
-            await import('./objectInspect.js').then(module => (globalThis.inspect = inspectFunction = module.inspectFunction));
+            await import('./objectInspect.js').then(
+              module => (globalThis.inspect = inspectFunction = module.inspectFunction)
+            );
             break;
         }
 

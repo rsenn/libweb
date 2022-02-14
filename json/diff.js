@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * jsondiff
  *   - simple hierarchical diff between two JSON files

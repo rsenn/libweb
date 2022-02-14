@@ -57,7 +57,11 @@ export async function GithubRepositories(user, f = fetch) {
     //console.debug('hrefs:', hrefs);
     let tags = indexes.map(index => [index, html.indexOf('</li>', index)]).map(([s, e]) => html.substring(s, e));
     let data = tags.map(Util.stripHTML);
-    ret = ret.concat(data.map(a => a.slice(0, 2).map(p => (['0', 'Forked from', 'Updated'].indexOf(p) != -1 || Util.isNumeric(p) ? '' : p))));
+    ret = ret.concat(
+      data.map(a =>
+        a.slice(0, 2).map(p => (['0', 'Forked from', 'Updated'].indexOf(p) != -1 || Util.isNumeric(p) ? '' : p))
+      )
+    );
     i++;
   } while(url);
   return new Map(ret.map(([name, description]) => [`https://github.com/${user}/${name}`, description]));

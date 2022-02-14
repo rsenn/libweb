@@ -619,7 +619,16 @@ export function cparse(src, options) {
     var pos = getPos();
     var _curr = JSON.stringify(src.slice(index, index + 10) || 'EOF');
 
-    var msg = [pos.file, ':', pos.line, ': Expecting ', JSON.stringify(expected), ' got ', _curr, ` (src = '${src.slice(0, index)}', index = ${index})`].join('');
+    var msg = [
+      pos.file,
+      ':',
+      pos.line,
+      ': Expecting ',
+      JSON.stringify(expected),
+      ' got ',
+      _curr,
+      ` (src = '${src.slice(0, index)}', index = ${index})`
+    ].join('');
     throw new Error(msg);
   }
 

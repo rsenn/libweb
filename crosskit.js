@@ -71,10 +71,18 @@ let vec3 = {
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
   },
   angle(v1, v2) {
-    return Math.acos((v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2])));
+    return Math.acos(
+      (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) /
+        (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) *
+          Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2]))
+    );
   },
   cross(vectA, vectB) {
-    return [vectA[1] * vectB[2] - vectB[1] * vectA[2], vectA[2] * vectB[0] - vectB[2] * vectA[0], vectA[0] * vectB[1] - vectB[0] * vectA[1]];
+    return [
+      vectA[1] * vectB[2] - vectB[1] * vectA[2],
+      vectA[2] * vectB[0] - vectB[2] * vectA[0],
+      vectA[0] * vectB[1] - vectB[0] * vectA[1]
+    ];
   },
   multiply(vectA, constB) {
     return [vectA[0] * constB, vectA[1] * constB, vectA[2] * constB];
@@ -339,7 +347,32 @@ let shaderMask = {
 
 //Fragment shader source
 WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMask) {
-  let fsSource = ['#ifdef GL_ES', 'precision highp float;', '#endif', '#define hasTexture ' + (sMask & shaderMask.texture ? '1' : '0'), '#define hasCrop ' + (sMask & shaderMask.crop ? '1' : '0'), 'varying vec4 vColor;', '#if hasTexture', 'varying vec2 vTextureCoord;', 'uniform sampler2D uSampler;', '#if hasCrop', 'uniform vec4 uCropSource;', '#endif', '#endif', 'void main(void) {', '#if hasTexture', '#if hasCrop', 'gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x * uCropSource.z, vTextureCoord.y * uCropSource.w) + uCropSource.xy);', '#else', 'gl_FragColor = texture2D(uSampler, vTextureCoord);', '#endif', '#else', 'gl_FragColor = vColor;', '#endif', '}'].join('\n');
+  let fsSource = [
+    '#ifdef GL_ES',
+    'precision highp float;',
+    '#endif',
+    '#define hasTexture ' + (sMask & shaderMask.texture ? '1' : '0'),
+    '#define hasCrop ' + (sMask & shaderMask.crop ? '1' : '0'),
+    'varying vec4 vColor;',
+    '#if hasTexture',
+    'varying vec2 vTextureCoord;',
+    'uniform sampler2D uSampler;',
+    '#if hasCrop',
+    'uniform vec4 uCropSource;',
+    '#endif',
+    '#endif',
+    'void main(void) {',
+    '#if hasTexture',
+    '#if hasCrop',
+    'gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x * uCropSource.z, vTextureCoord.y * uCropSource.w) + uCropSource.xy);',
+    '#else',
+    'gl_FragColor = texture2D(uSampler, vTextureCoord);',
+    '#endif',
+    '#else',
+    'gl_FragColor = vColor;',
+    '#endif',
+    '}'
+  ].join('\n');
 
   return fsSource;
 };
@@ -350,7 +383,32 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDe
 
   stackDepth = stackDepth || 1;
 
-  let vsSource = ['#define hasTexture ' + (sMask & shaderMask.texture ? '1' : '0'), 'attribute vec4 aVertexPosition;', '#if hasTexture', 'varying vec2 vTextureCoord;', '#endif', 'uniform vec4 uColor;', 'uniform mat3 uTransforms[' + stackDepth + '];', 'varying vec4 vColor;', 'const mat4 pMatrix = mat4(' + w + ',0,0,0, 0,' + h + ',0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);', 'mat3 crunchStack(void) {', 'mat3 result = uTransforms[0];', 'for (int i = 1; i < ' + stackDepth + '; ++i) {', 'result = uTransforms[i] * result;', '}', 'return result;', '}', 'void main(void) {', 'vec3 position = crunchStack() * vec3(aVertexPosition.x, aVertexPosition.y, 1.0);', 'gl_Position = pMatrix * vec4(position, 1.0);', 'vColor = uColor;', '#if hasTexture', 'vTextureCoord = aVertexPosition.zw;', '#endif', '}'].join('\n');
+  let vsSource = [
+    '#define hasTexture ' + (sMask & shaderMask.texture ? '1' : '0'),
+    'attribute vec4 aVertexPosition;',
+    '#if hasTexture',
+    'varying vec2 vTextureCoord;',
+    '#endif',
+    'uniform vec4 uColor;',
+    'uniform mat3 uTransforms[' + stackDepth + '];',
+    'varying vec4 vColor;',
+    'const mat4 pMatrix = mat4(' + w + ',0,0,0, 0,' + h + ',0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);',
+    'mat3 crunchStack(void) {',
+    'mat3 result = uTransforms[0];',
+    'for (int i = 1; i < ' + stackDepth + '; ++i) {',
+    'result = uTransforms[i] * result;',
+    '}',
+    'return result;',
+    '}',
+    'void main(void) {',
+    'vec3 position = crunchStack() * vec3(aVertexPosition.x, aVertexPosition.y, 1.0);',
+    'gl_Position = pMatrix * vec4(position, 1.0);',
+    'vColor = uColor;',
+    '#if hasTexture',
+    'vTextureCoord = aVertexPosition.zw;',
+    '#endif',
+    '}'
+  ].join('\n');
   return vsSource;
 };
 
@@ -541,7 +599,12 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       result = HSLAToRGBA(match[2], match[3], match[4], parseFloat(hasAlpha && alphaChannel ? alphaChannel : 1.0));
     } else if((match = reHex6Color.exec(value))) {
       let colorInt = parseInt(match[1], 16);
-      result = [((colorInt & 0xff0000) >> 16) / 255, ((colorInt & 0x00ff00) >> 8) / 255, (colorInt & 0x0000ff) / 255, 1.0];
+      result = [
+        ((colorInt & 0xff0000) >> 16) / 255,
+        ((colorInt & 0x00ff00) >> 8) / 255,
+        (colorInt & 0x0000ff) / 255,
+        1.0
+      ];
     } else if((match = reHex3Color.exec(value))) {
       let hexString = '#' + [match[1], match[1], match[2], match[2], match[3], match[3]].join('');
       result = colorStringToVec4(hexString);
@@ -723,7 +786,12 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   function saveDrawState() {
     let bakedDrawState = {
       fillStyle: [drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]],
-      strokeStyle: [drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]],
+      strokeStyle: [
+        drawState.strokeStyle[0],
+        drawState.strokeStyle[1],
+        drawState.strokeStyle[2],
+        drawState.strokeStyle[3]
+      ],
       globalAlpha: drawState.globalAlpha,
       globalCompositeOperation: drawState.globalCompositeOperation,
       lineCap: drawState.lineCap,
@@ -1028,7 +1096,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.fillStyle[0],
+      drawState.fillStyle[1],
+      drawState.fillStyle[2],
+      drawState.fillStyle[3]
+    );
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
@@ -1049,7 +1123,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.strokeStyle[0],
+      drawState.strokeStyle[1],
+      drawState.strokeStyle[2],
+      drawState.strokeStyle[3]
+    );
 
     gl.drawArrays(gl.LINE_LOOP, 0, 4);
 
@@ -1132,7 +1212,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.fillStyle[0],
+      drawState.fillStyle[1],
+      drawState.fillStyle[2],
+      drawState.fillStyle[3]
+    );
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verts.length / 4);
 
@@ -1161,7 +1247,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(shaderProgram.uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]);
+    gl.uniform4f(
+      shaderProgram.uColor,
+      drawState.strokeStyle[0],
+      drawState.strokeStyle[1],
+      drawState.strokeStyle[2],
+      drawState.strokeStyle[3]
+    );
 
     if(subPath.closed) {
       gl.drawArrays(gl.LINE_LOOP, 0, verts.length / 4);
@@ -1388,7 +1480,10 @@ export const crosskit = {
       board.appendChild(svg_board);
     }
     index++; //Increase Index Of Elements Creation
-    console.info('%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer, 'background-color: purple; color: white;');
+    console.info(
+      '%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer,
+      'background-color: purple; color: white;'
+    );
   },
   line(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
@@ -1816,7 +1911,26 @@ export const crosskit = {
       if(v.pos3[0] > biggest_x) biggest_x = v.pos3[0];
       if(v.pos3[1] > biggest_y) biggest_y = v.pos3[1];
       dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points', (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
+        'points',
+        (
+          v.pos1[0] +
+          ',' +
+          v.pos1[1] +
+          ' ' +
+          v.pos2[0] +
+          ',' +
+          v.pos2[1] +
+          ' ' +
+          v.pos3[0] +
+          ',' +
+          v.pos3[1] +
+          ' ' +
+          v.pos1[0] +
+          ',' +
+          v.pos1[1]
+        ).toString()
+      );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
@@ -1826,7 +1940,26 @@ export const crosskit = {
     }
     if(renderer == SVG) {
       svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('points', (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute(
+        'points',
+        (
+          v.pos1[0] +
+          ',' +
+          v.pos1[1] +
+          ' ' +
+          v.pos2[0] +
+          ',' +
+          v.pos2[1] +
+          ' ' +
+          v.pos3[0] +
+          ',' +
+          v.pos3[1] +
+          ' ' +
+          v.pos1[0] +
+          ',' +
+          v.pos1[1]
+        ).toString()
+      );
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
@@ -1906,7 +2039,8 @@ export const crosskit = {
     }
   },
   bgcolor(c) {
-    if(renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM) cakecanvas.style.backgroundColor = c;
+    if(renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM)
+      cakecanvas.style.backgroundColor = c;
     if(renderer == DOM) svg_board.style.backgroundColor = c;
   },
   bgimg(v) {
@@ -1942,8 +2076,10 @@ export const crosskit = {
     return window.update(f, t);
   },
   pause(v) {
-    if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.cancelAnimationFrame(v.frame);
-    if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.clearInterval(v.interval);
+    if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
+      window.cancelAnimationFrame(v.frame);
+    if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
+      window.clearInterval(v.interval);
   }
 };
 let rgb = function(v) {
