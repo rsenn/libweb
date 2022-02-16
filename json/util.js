@@ -41,7 +41,7 @@ export let toXML = (o, ...opts) => {
         tagName[0] != '?' ? newline + indent : newline;
       if(textChildren) {
         let t = a.join('\n').replace(/\n[ \t]*$/, '');
-        s += t + `${/\n/.test(t) ? newline : ''}</${tagName}>`;
+        s += t + (/\n/.test(t) ? newline : '') + '</' + tagName + `>`;
       } else if(depth > 0) {
         for(let child of a)
           s += nl + toString(child, depth > 0 ? depth - 1 : depth, nl) /*.replace(/>\n/g, '>' + nl)*/;

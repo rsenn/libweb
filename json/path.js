@@ -1,4 +1,4 @@
-import {define} from '../misc.js';
+import { define } from '../misc.js';
 import Util from '../util.js';
 import { toXML } from './util.js';
 
@@ -11,10 +11,15 @@ export function DereferenceError(object, member, pos, prev, locator) {
       if(method) method = (frame.typeName || Util.className(frame.thisObj)) + '.' + method;
       else method = frame.getFunctionName();
 
-      return `${('' + frame.getFileName()).replace(
-        /.*plot-cv\//,
-        ''
-      )}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
+      return (
+        ('' + frame.getFileName()).replace(/.*plot-cv\//, '') +
+        ':' +
+        frame.getLineNumber() +
+        ':' +
+        frame.getColumnNumber() +
+        ' ' +
+        method
+      );
     });
   //console.log('member:', member);
   return Object.assign(
@@ -119,7 +124,7 @@ export class MutablePath extends Array {
     const len = path.length;
     if(typeof path != 'number') {
       if(typeof path == 'string') {
-        path = path.replace(/[./]\[/g, '[');
+        path = path.replace(new RegExp('[./]\\[', 'g'), '[');
         path = path.split(/[./ ]/g);
       }
       const len = path.length;
@@ -648,7 +653,7 @@ export class MutablePath extends Array {
 }
 //Util.define(MutablePath.prototype,specialFields', []);
 
-define(MutablePath.prototype, { deref: MutablePath.prototype.apply  });
+define(MutablePath.prototype, { deref: MutablePath.prototype.apply });
 
 Util.defineGetter(MutablePath, Symbol.species, () => MutablePath);
 
