@@ -215,25 +215,24 @@ Util.getter = target => {
   return self;
 };
 Util.setter = target => {
-  let self;
-  if(typeof target.set == 'function') self = target.set;
-  else
-    self = function(key, value) {
+  if(typeof target.set == 'function') return target.set;
+  let set;
+    set = function(key, value) {
       if(!target) {
-        if(this !== self && this) target = this;
-        self.target = target;
+        if(this !== set && this) target = this;
+        set.target = target;
       }
       let obj = target;
-      if(!self.fn) {
+      if(!set.fn) {
         if(typeof obj == 'object' && obj !== null) {
-          if(typeof obj.set == 'function') self.fn = (key, value) => obj.set(key, value);
+          if(typeof obj.set == 'function') set.fn = (key, value) => obj.set(key, value);
         }
       }
-      if(!self.fn) self.fn = (key, value) => ((obj[key] = value), obj);
-      return self.fn(key, value);
+      if(!set.fn) set.fn = (key, value) => ((obj[key] = value), obj);
+      return set.fn(key, value);
     };
-  if(target !== undefined) self.target = target;
-  return self;
+  if(target !== undefined) set.target = target;
+  return set;
 };
 Util.remover = target =>
   typeof target == 'object' && target !== null
