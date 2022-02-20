@@ -161,9 +161,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.renderSheet`, sheet);
     let netsGroup = this.create('g', { className: 'nets', transform, 'font-family': 'Fixed' }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform, 'font-family': 'Fixed' }, parent);
-    instancesGroup.props.children = [...instances.list].map(data =>
-      h(Instance, { data, opts: { transformation: transform } })
-    );
+    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data, opts: { transformation: transform } }));
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 

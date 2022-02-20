@@ -13,14 +13,7 @@ export class MIDIFile {
     var stream = new MIDIStream();
     this.writeBytes(stream);
 
-    var string =
-      '[MIDI File - Type ' +
-      this.type +
-      ', ' +
-      this.tracks.length +
-      ' tracks, ' +
-      this.timeDivision +
-      ' delta ticks per quarter note]\r\n';
+    var string = '[MIDI File - Type ' + this.type + ', ' + this.tracks.length + ' tracks, ' + this.timeDivision + ' delta ticks per quarter note]\r\n';
     for(var i = 0; i < this.tracks.length; i++) string += this.tracks[i].toString();
 
     return string;
@@ -73,5 +66,7 @@ function writeHeader(stream) {
   stream.writeShort(this.tracks.length);
   stream.writeShort(this.timeDivision);
 }
+
+Object.defineProperty(MIDIFile.prototype, Symbol.toStringTag, { value: 'MIDIFile', enumerable: false });
 
 export default MIDIFile;

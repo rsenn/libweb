@@ -1,5 +1,4 @@
 export class MIDIControlEvent {
-
   static NOTE_OFF = 0x80;
   static NOTE_ON = 0x90;
   static AFTERTOUCH = 0xa0;
@@ -8,7 +7,7 @@ export class MIDIControlEvent {
   static CHANNEL_AFTERTOUCH = 0xd0;
   static PITCH_BEND = 0xe0;
 
-    constructor(type, param1, param2, channel) {
+  constructor(type, param1, param2, channel) {
     this.type = type ? type : null;
     this.param1 = param1 ? param1 : 0;
     this.param2 = param2 ? param2 : 0;
@@ -59,6 +58,7 @@ export class MIDIControlEvent {
   }
 
   readBytes(stream, status) {
+    console.log('MIDIControlEvent.readBytes', { stream, status });
     var running = false;
     var hibyte;
     var paramCount = 0;
@@ -68,6 +68,8 @@ export class MIDIControlEvent {
     this.channel = b & 0x0f;
 
     if(this.channel > 15) throw new Error('Invalid channel number ' + this.channel);
+
+    console.log('MIDIControlEvent.readBytes', { b, hibyte }, status.length);
 
     if(hibyte < 0x80) {
       if(status.length != 2) throw new Error('Invalid running status');
@@ -142,7 +144,8 @@ export class MIDIControlEvent {
     if(arguments.length > 0) this.param2 = arguments[0];
     else return this.param2;
   }
-
 }
+
+Object.defineProperty(MIDIControlEvent.prototype, Symbol.toStringTag, { value: 'MIDIControlEvent', enumerable: false });
 
 export default MIDIControlEvent;

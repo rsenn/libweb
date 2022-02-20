@@ -2,17 +2,7 @@ import { EagleElement } from './element.js';
 import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
-import {
-  MakeRotation,
-  VERTICAL,
-  HORIZONTAL,
-  HORIZONTAL_VERTICAL,
-  ClampAngle,
-  AlignmentAngle,
-  LayerAttributes,
-  MakeCoordTransformer,
-  LayerToClass
-} from './renderUtils.js';
+import { MakeRotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
 import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
 import trkl from '../trkl.js';
 import { h, Component } from '../dom/preactComponent.js';
@@ -162,11 +152,7 @@ export class EagleSVGRenderer {
   layerOf(element) {
     let layer;
     do {
-      layer =
-        element.getAttribute('data-layer') ||
-        element.getAttribute('data-layer-id') ||
-        element.getAttribute('data-layer-name') ||
-        element.getAttribute('layer');
+      layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
       if(layer) {
         const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];

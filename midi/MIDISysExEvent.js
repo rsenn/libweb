@@ -22,4 +22,6 @@ export class MIDISysExEvent {
   }
 }
 
+Object.defineProperty(MIDISysExEvent.prototype, Symbol.toStringTag, { value: 'MIDISysExEvent', enumerable: false });
+
 export default MIDISysExEvent;

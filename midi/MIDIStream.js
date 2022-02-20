@@ -1,7 +1,6 @@
 export class MIDIStream {
   constructor(buffer) {
-
-  	console.log('MIDIStream.constructor', buffer);
+    console.log('MIDIStream.constructor', { size: buffer.byteLength });
     this.write = null;
 
     if(!buffer) {
@@ -112,5 +111,7 @@ export class MIDIStream {
     return 'data:audio/midi;base64,' + b64;
   }
 }
+
+Object.defineProperty(MIDIStream.prototype, Symbol.toStringTag, { value: 'MIDIStream', enumerable: false });
 
 export default MIDIStream;

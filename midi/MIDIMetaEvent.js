@@ -252,4 +252,6 @@ export class MIDIMetaEvent {
   }
 }
 
+Object.defineProperty(MIDIMetaEvent.prototype, Symbol.toStringTag, { value: 'MIDIMetaEvent', enumerable: false });
+
 export default MIDIMetaEvent;
