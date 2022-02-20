@@ -76,13 +76,26 @@ export class EagleDocument extends EagleNode {
     const { pathMapper, raw2element } = this;
 
     const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
-    const [obj2eagle, path2eagle] = [Util.mapFunction(raw2element), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))];
-    const [eagle2path, eagle2obj] = [Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))];
+    const [obj2eagle, path2eagle] = [
+      Util.mapFunction(raw2element),
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))
+    ];
+    const [eagle2path, eagle2obj] = [
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
+    ];
 
     // prettier-ignore
     this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
 
-    type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
+    type =
+      type || /<library>/.test(xmlStr)
+        ? 'lbr'
+        : /(<element\ |<board)/.test(xmlStr)
+        ? 'brd'
+        : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr)
+        ? 'sch'
+        : null;
 
     if(filename) {
       this.file = filename;
@@ -104,7 +117,7 @@ export class EagleDocument extends EagleNode {
     );
 
     //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
-   // this.initCache(EagleElement, EagleNodeList.create);
+    // this.initCache(EagleElement, EagleNodeList.create);
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
   }
@@ -235,7 +248,11 @@ export class EagleDocument extends EagleNode {
           .flat()
           .filter(c => !!c.geometry)
       );
-      bb.update([...project.doc.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())));
+      bb.update(
+        [...project.doc.elements.list].map(e =>
+          e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())
+        )
+      );
 
       /*      }*/
     }
@@ -301,7 +318,7 @@ export class EagleDocument extends EagleNode {
   }
 
   getLayer(id) {
-/*    let path=deep.find(this.doc.raw, 
+    /*    let path=deep.find(this.doc.raw, 
       e => e.tagName=='layer' && (e.attributes.id==id ||e.attributes.name==name),
       deep.RETURN_PATH);
 

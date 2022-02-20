@@ -151,7 +151,6 @@ var initialState = {
   loading: false
 };
 
-
 export function useAsyncIterator(asyncIterator) {
   var _a = useReducer(reducer, initialState),
     result = _a[0],
@@ -237,5 +236,5 @@ export function useAsyncIterator(asyncIterator) {
     [result, next, return_, throw_]
   );
 }
- 
+
 export default useAsyncIterator;

@@ -95,7 +95,9 @@ export class CircuitJS {
 
   static parse(text) {
     let lines = text.split(/\n/g);
-    const instance = lines.filter(line => !/^\s*$/.test(line)).map(line => line.split(/\s+/g).map((s, i) => (i == 0 || isNaN(+s) ? s : +s)));
+    const instance = lines
+      .filter(line => !/^\s*$/.test(line))
+      .map(line => line.split(/\s+/g).map((s, i) => (i == 0 || isNaN(+s) ? s : +s)));
 
     //console.log('lines', lines);
     return CircuitJS.create(instance);

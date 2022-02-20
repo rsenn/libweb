@@ -26,7 +26,8 @@ export class EagleNode {
 
   constructor(owner, ref, raw) {
     //if(!owner) owner = new EagleReference(ref.root, []).dereference();
-    if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
+    if(!(ref instanceof EagleReference))
+      ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
     if(!raw) raw = ref.dereference();
     //console.log("EagleNode.constructor",{owner,ref,raw});
     //Object.assign(this, { ref, owner });
@@ -59,7 +60,12 @@ export class EagleNode {
           let value = p.apply(owner.raw, true);
 
           if(i == 0) ignore();
-          if(!value || !value.attributes || !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)) ignore();
+          if(
+            !value ||
+            !value.attributes ||
+            !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)
+          )
+            ignore();
 
           return p.up(2);
         }),
@@ -155,7 +161,20 @@ export class EagleNode {
         }
         path = this.ref.path.down(...path);
         lists[key] = () => listCtor(owner, path);
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), ['board', 'schematic', 'library'].indexOf(key) != -1 ? 'tagName' : key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
+        maps[key] =
+          ['sheets', 'connects', 'plain'].indexOf(key) != -1
+            ? lists[key]
+            : () =>
+                EagleNodeMap.create(
+                  lists[key](),
+                  ['board', 'schematic', 'library'].indexOf(key) != -1
+                    ? 'tagName'
+                    : key == 'instances'
+                    ? 'part'
+                    : key == 'layers'
+                    ? ['number', 'name']
+                    : 'name'
+                );
       }
       Util.defineGettersSetters(this.lists, lists);
       Util.defineGettersSetters(this.cache, lazy);
@@ -202,7 +221,8 @@ export class EagleNode {
       let keys = Util.isArray(pred) ? pred : Object.keys(pred);
       let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
 
-      pred = (v, p, o) => keys.every((key, i) => (key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]));
+      pred = (v, p, o) =>
+        keys.every((key, i) => (key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]));
     }
     return pred;
   }
@@ -248,7 +268,12 @@ export class EagleNode {
     return null;
   }
 
-  getByName(element, name, attr = 'name', t = ([v, l, d]) => makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)) {
+  getByName(
+    element,
+    name,
+    attr = 'name',
+    t = ([v, l, d]) => makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)
+  ) {
     for(let [v, l, d] of this.iterator([], it => it)) {
       if(typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
         if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
@@ -318,7 +343,23 @@ export class EagleNode {
       for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];
     };
     if(true) {
-      attrs = attributeList.filter(name => getAttr(name) !== undefined).reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(attr) ? text(getAttr(attr), 1, 36) : text("'" + getAttr(attr) + "'", 1, 32)), attrs);
+      attrs = attributeList
+        .filter(name => getAttr(name) !== undefined)
+        .reduce(
+          (attrs, attr) =>
+            concat(
+              attrs,
+              ' ',
+              text(attr, 1, 33),
+              text(':', 1, 36),
+              /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(
+                attr
+              )
+                ? text(getAttr(attr), 1, 36)
+                : text("'" + getAttr(attr) + "'", 1, 32)
+            ),
+          attrs
+        );
     }
     let numChildren = children ? children.length : 0;
     let ret = [''];
@@ -407,12 +448,21 @@ export class EagleNode {
   *iterator(...args) {
     let predicate = typeof args[0] == 'function' ? args.shift() : arg => true;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
-    let t = typeof args[0] == 'function' ? args.shift() : ([v, l, d]) => [typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l) : v, l, d];
+    let t =
+      typeof args[0] == 'function'
+        ? args.shift()
+        : ([v, l, d]) => [
+            typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l) : v,
+            l,
+            d
+          ];
     let owner = Util.isObject(this) && 'owner' in this ? this.owner : this;
     let root = this.root || (owner.xml && owner.xml[0]);
     let node = root;
     if(path.length > 0) node = deep.get(node, path);
-    for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true))) {
+    for(let [v, l] of deep.iterate(node, (v, p) =>
+      predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true
+    )) {
       if(!(l instanceof ImmutablePath)) l = new ImmutablePath(l);
       if(typeof v == 'object' && v !== null && 'tagName' in v) if (predicate(v, l, owner)) yield t([v, l, owner]);
     }
@@ -437,7 +487,9 @@ export class EagleNode {
     } catch(err) {}
     let s = '⏐';
     x = x.substring(x.indexOf('tagName') + 14);
-    x = Object.entries((r && r.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+    x = Object.entries((r && r.attributes) || {}).map(
+      ([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36)
+    );
     x.unshift(r.tagName);
     let [p, ...arr] = x;
     p = text(`〔`, 1, 37) + text(p, 38, 5, 199);

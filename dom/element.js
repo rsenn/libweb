@@ -59,7 +59,8 @@ export class Element extends Node {
       return ret;
     }
 
-    let { tagName, ns, children, ...props } = typeof args[0] == 'object' ? args.shift() : { tagName: args.shift(), ...args.shift() };
+    let { tagName, ns, children, ...props } =
+      typeof args[0] == 'object' ? args.shift() : { tagName: args.shift(), ...args.shift() };
     let parent = args.shift();
     parent = typeof parent == 'string' ? Element.find(parent) : parent;
 
@@ -213,10 +214,21 @@ export class Element extends Node {
     if(!no_children) {
       l = [...this.childIterator(elem, false)];
       if(predicate) l = l.filter(predicate);
-      l = l.reduce((l, c) => (Util.isObject(c) && c.nodeType == 1 ? l.push(Element.toObject(c, opts)) : (c.textContent + '').trim() != '' ? l.push(c.textContent) : undefined, l), []);
+      l = l.reduce(
+        (l, c) => (
+          Util.isObject(c) && c.nodeType == 1
+            ? l.push(Element.toObject(c, opts))
+            : (c.textContent + '').trim() != ''
+            ? l.push(c.textContent)
+            : undefined,
+          l
+        ),
+        []
+      );
     }
 
-    let attributes = (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI ? { ns: elem.namespaceURI } : {};
+    let attributes =
+      (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI ? { ns: elem.namespaceURI } : {};
     let a = 'length' in elem.attributes ? Element.attr(elem) : elem.attributes;
     for(let key in a) attributes[key] = '' + a[key];
     return {
@@ -237,7 +249,8 @@ export class Element extends Node {
       .join(', ');
     s = '' + cmd + '(' + tagName + ', {' + s + '';
     let c = elem.children;
-    if(c.length >= 1) s = '' + s + ', [\n  ' + c.map(e => Element.toCommand(e, opts).replace(/\n/g, '\n  ')).join(',\n  ') + '\n]';
+    if(c.length >= 1)
+      s = '' + s + ', [\n  ' + c.map(e => Element.toCommand(e, opts).replace(/\n/g, '\n  ')).join(',\n  ') + '\n]';
     s += parent ? ', ' + parent : '';
     if(elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
@@ -298,7 +311,8 @@ export class Element extends Node {
       attrs_or_name = elem.getAttributeNames();
     } else {
       attrs_or_name = [];
-      if(Util.isObject(elem) && Util.isArray(elem.attributes)) for(let i = 0; i < elem.attributes.length; i++) attrs_or_name.push(elem.attributes[i].name);
+      if(Util.isObject(elem) && Util.isArray(elem.attributes))
+        for(let i = 0; i < elem.attributes.length; i++) attrs_or_name.push(elem.attributes[i].name);
     }
     let ret = attrs_or_name.reduce((acc, name) => {
       const key = /*Util.camelize*/ name;
@@ -340,7 +354,14 @@ export class Element extends Node {
   static rect(...args) {
     let [element, options = {}] = args;
     if(args.length > 1 && (isRect(args.slice(1)) || isRect(args[1]))) return Element.setRect(...args);
-    let { round = true, relative_to = null, relative = false, scroll_offset = true, border = true, margin = false } = options;
+    let {
+      round = true,
+      relative_to = null,
+      relative = false,
+      scroll_offset = true,
+      border = true,
+      margin = false
+    } = options;
     const e = typeof element === 'string' ? Element.find(element) : element;
     if(!e || !e.getBoundingClientRect) return null; //new Rect(0, 0, 0, 0);
 
@@ -443,7 +464,9 @@ export class Element extends Node {
     if(rect) {
       //if(typeof element == 'string') element = Element.find(element);
       const trbl = rect.toTRBL();
-      const [x, y] = edges.map(e => (e == 'right' ? window.innerWidth - trbl[e] : e == 'bottom' ? window.innerHeight - trbl[e] : trbl[e]));
+      const [x, y] = edges.map(e =>
+        e == 'right' ? window.innerWidth - trbl[e] : e == 'bottom' ? window.innerHeight - trbl[e] : trbl[e]
+      );
       return new Point({ x, y });
     }
   }
@@ -485,7 +508,14 @@ export class Element extends Node {
 
   static moveRelative(element, to, edges = ['left', 'top'], callback) {
     let e = typeof element == 'string' ? Element.find(element) : element;
-    let origin = to ? new Point(to) : Object.fromEntries(Object.entries(Element.getCSS(element, edges)).map(([k, v]) => ['xy'[edges.indexOf(k)] || k, v ? +v.replace(/[a-z]*$/, '') : 0]));
+    let origin = to
+      ? new Point(to)
+      : Object.fromEntries(
+          Object.entries(Element.getCSS(element, edges)).map(([k, v]) => [
+            'xy'[edges.indexOf(k)] || k,
+            v ? +v.replace(/[a-z]*$/, '') : 0
+          ])
+        );
     const f = [edges[0] == 'left' ? 1 : -1, edges[1] == 'top' ? 1 : -1];
     //console.log('moveRelative', { e, to, edges, f, origin });
     function move(x, y) {
@@ -583,12 +613,20 @@ export class Element extends Node {
   static getTRBL(element, prefix = '') {
     if(typeof element == 'string') element = Element.find(element);
 
-    const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
+    const names = ['Top', 'Right', 'Bottom', 'Left'].map(
+      pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : ''))
+    );
     const getCSS = prefix == '' ? () => ({}) : Util.memoize(() => Element.getCSS(element));
 
-    let entries = names.map(prop => [Util.decamelize(prop).split('-'), element.style.getPropertyValue(prop) || getCSS()[prop]]);
+    let entries = names.map(prop => [
+      Util.decamelize(prop).split('-'),
+      element.style.getPropertyValue(prop) || getCSS()[prop]
+    ]);
     //console.log('getTRBL', { names, entries });
-    entries = entries.map(([prop, value]) => [prop[1] || prop[0], typeof value == 'string' ? +value.replace(/px$/, '') : value]);
+    entries = entries.map(([prop, value]) => [
+      prop[1] || prop[0],
+      typeof value == 'string' ? +value.replace(/px$/, '') : value
+    ]);
 
     return /*new TRBL*/ Object.fromEntries(entries);
   }
@@ -642,9 +680,17 @@ export class Element extends Node {
 
     let style;
 
-    let estyle = Util.tryCatch(() => (Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)));
+    let estyle = Util.tryCatch(() =>
+      Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)
+    );
     if(property == undefined) {
-      let pstyle = Util.tryCatch(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}));
+      let pstyle = Util.tryCatch(() =>
+        parent && parent.tagName
+          ? /*Util.toHash*/ w && w.getComputedStyle
+            ? w.getComputedStyle(parent)
+            : d.getComputedStyle(parent)
+          : {}
+      );
 
       if(!estyle || !pstyle) return null;
       //let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
@@ -703,7 +749,8 @@ export class Element extends Node {
     let doc = elt.ownerDocument || document;
     let ns = doc.lookupNamespaceURI('');
 
-    for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement))) path = '/' + (e.namespaceURI != ns ? e.namespaceURI.replace(/.*\//g, '') + ':' : '') + Element.unique(e) + path;
+    for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement)))
+      path = '/' + (e.namespaceURI != ns ? e.namespaceURI.replace(/.*\//g, '') + ':' : '') + Element.unique(e) + path;
 
     return path;
   }
@@ -990,7 +1037,16 @@ export class Element extends Node {
       .map(([name, value]) => ` ${name}="${value}"`)
       .join('');
     s += children.length ? `>` : ` />`;
-    if(children.length) s += newline + children.map(e => (typeof e == 'string' ? i + indent + e + newline : Element.toString(e, { ...opts, depth: depth + 1 }))).join('') + i + `</${tagName}>`;
+    if(children.length)
+      s +=
+        newline +
+        children
+          .map(e =>
+            typeof e == 'string' ? i + indent + e + newline : Element.toString(e, { ...opts, depth: depth + 1 })
+          )
+          .join('') +
+        i +
+        `</${tagName}>`;
     s += newline;
     return s;
   }
@@ -1001,7 +1057,9 @@ export class Element extends Node {
         return navigator.clipboard
           .writeText(text)
           .then(() => resolve(true))
-          .catch(err => reject(err !== undefined ? err : new DOMException('The request is not allowed', 'NotAllowedError')));
+          .catch(err =>
+            reject(err !== undefined ? err : new DOMException('The request is not allowed', 'NotAllowedError'))
+          );
       }
       let ok = false;
       try {

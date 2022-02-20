@@ -2,7 +2,6 @@ import inspect from './objectInspect.js';
 import * as util from './misc.js';
 import * as path from './path.js';
 
-
 export class CompileCommand extends Array {
   constructor(a, workDir = '.') {
     super();
@@ -115,7 +114,7 @@ export class CompileCommand extends Array {
     }
     if(program) r.program = program;
     if(output) r.output = output;
-    if(includes && includes.length) r.includes = includes/*.map(inc => path.relative(inc, this.workDir))*/;
+    if(includes && includes.length) r.includes = includes /*.map(inc => path.relative(inc, this.workDir))*/;
     if(defines && defines.length) r.defines = defines;
     if(flags && flags.length) r.flags = flags;
     if(args && args.length) r.args = args;
@@ -205,9 +204,7 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
 util.extendArray(CompileCommand.prototype);
 
 export function NinjaRule(command) {
- /* if(!new.target) return new NinjaRule(command);*/
-
-  
+  /* if(!new.target) return new NinjaRule(command);*/
 }
 
 export default CompileCommand;

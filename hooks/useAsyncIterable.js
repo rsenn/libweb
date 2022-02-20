@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from '../dom/preactComponent.js';
 import { useAsyncIterator } from './useAsyncIterator.js';
 
-export function useAsyncIterable (iterable) {
+export function useAsyncIterable(iterable) {
   var iterator = useMemo(
     function() {
       return iterable[Symbol.asyncIterator]();
@@ -9,6 +9,6 @@ export function useAsyncIterable (iterable) {
     [iterable]
   );
   return useAsyncIterator(iterator);
-};
+}
 
 export default useAsyncIterable;

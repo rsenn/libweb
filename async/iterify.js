@@ -16,14 +16,14 @@ const asynciterify = (emitter, event, options = {}) => {
   };
 
   const pullValue = () =>
-  new Promise(resolve => {
-    if(pushQueue.length !== 0) {
-      const args = pushQueue.shift();
-      resolve(...args);
-    } else {
-      pullQueue.push(resolve);
-    }
-  });
+    new Promise(resolve => {
+      if(pushQueue.length !== 0) {
+        const args = pushQueue.shift();
+        resolve(...args);
+      } else {
+        pullQueue.push(resolve);
+      }
+    });
 
   const handler = (...args) => {
     pushValue(args);

@@ -69,7 +69,11 @@ export class Graph {
   }
 
   isConnected(node1, node2) {
-    return this.connections.some(connection => (connection.node1 === node1 && connection.node2 === node2) || (connection.node2 === node1 && connection.node1 === node2));
+    return this.connections.some(
+      connection =>
+        (connection.node1 === node1 && connection.node2 === node2) ||
+        (connection.node2 === node1 && connection.node1 === node2)
+    );
   }
 
   addConnection(node1, node2) {
@@ -137,7 +141,9 @@ export class Graph {
       let path = [adjacencyListSourceIndex];
       let startingNeighborIndex = neighbors[i];
       let tmpAdjacencyList = { ...adjacencyList };
-      tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(nodeIndex => nodeIndex !== adjacencyListSourceIndex);
+      tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(
+        nodeIndex => nodeIndex !== adjacencyListSourceIndex
+      );
       path = path.concat(Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, adjacencyListSourceIndex));
       paths.push(path);
     }
@@ -232,7 +238,9 @@ export class Graph {
           let path = [i];
           let startingNeighborIndex = neighbors[j];
           let tmpAdjacencyList = { ...leftoverAdjacencyList };
-          tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(nodeIndex => nodeIndex !== i);
+          tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(
+            nodeIndex => nodeIndex !== i
+          );
           path = path.concat(Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, i));
           extraPaths.push(path);
         }
@@ -327,7 +335,10 @@ export class Edge {
   }
 
   equals(connection) {
-    return (this.node1.equals(connection.node1) && this.node2.equals(connection.node2)) || (this.node2.equals(connection.node1) && this.node1.equals(connection.node2));
+    return (
+      (this.node1.equals(connection.node1) && this.node2.equals(connection.node2)) ||
+      (this.node2.equals(connection.node1) && this.node1.equals(connection.node2))
+    );
   }
 }
 
