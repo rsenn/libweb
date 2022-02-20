@@ -1,4 +1,4 @@
-var MIDITrack = (function() {
+export const MIDITrack = (function() {
 	
 	var MTrk		= 0x4D54726B;
 	var trackEnd	= 0x00FF2F00;
@@ -97,3 +97,5 @@ var MIDITrack = (function() {
 	return MIDITrack;
 
 })();
+
+export default MIDITrack;

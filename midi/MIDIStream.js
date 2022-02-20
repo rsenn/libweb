@@ -1,4 +1,4 @@
-function MIDIStream(buffer)
+export function MIDIStream(buffer)
 {
 	this.write = null;
 
@@ -132,3 +132,5 @@ MIDIStream.prototype.toDataURL = function()
 	var b64 = _arrayBufferToBase64(arrayBuffer);
 	return "data:audio/midi;base64," + b64;
 }
+
+export default MIDIStream;

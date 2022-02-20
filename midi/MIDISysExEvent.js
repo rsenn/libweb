@@ -1,4 +1,4 @@
-function MIDISysExEvent(auth)
+export function MIDISysExEvent(auth)
 {
 	this.unknownLength = 0;
 	this.unknownBytes = [];
@@ -25,3 +25,5 @@ MIDISysExEvent.prototype.writeBytes = function(stream)
 	for(var i = 0; i < this.unknownLength; i++)
 		stream.writeByte(this.unknownBytes[i]);
 }
+
+export default MIDISysExEvent;

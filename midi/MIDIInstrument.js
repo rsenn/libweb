@@ -1,4 +1,4 @@
-var MIDIInstrument = (function() {
+export const MIDIInstrument = (function() {
 	
 	var instruments = {
 		ACOUSTIC_GRAND_PIANO:0,
@@ -141,3 +141,6 @@ var MIDIInstrument = (function() {
 	return instruments;
 	
 })();
+
+
+export default MIDIInstrument;

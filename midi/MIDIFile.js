@@ -1,4 +1,4 @@
-var MIDIFile = (function() {
+export const MIDIFile = (function() {
 	var MThd = 0x4D546864;
 	
 	function MIDIFile()
@@ -80,3 +80,5 @@ var MIDIFile = (function() {
 	
 	return MIDIFile;
 })();
+
+export default MIDIFile;

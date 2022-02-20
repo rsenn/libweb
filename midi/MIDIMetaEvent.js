@@ -1,4 +1,4 @@
-function MIDIMetaEvent(type, param1, param2, text)
+export function MIDIMetaEvent(type, param1, param2, text)
 {
 	this.type = (type ? type : null);
 
@@ -263,3 +263,5 @@ MIDIMetaEvent.TIME_SIGNATURE		= 0x58;
 MIDIMetaEvent.KEY_SIGNATURE			= 0x59;
 
 MIDIMetaEvent.SEQUENCER_SPECIFIC	= 0x7F;
+
+export default MIDIMetaEvent;

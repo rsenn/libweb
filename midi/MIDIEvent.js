@@ -1,4 +1,4 @@
-var MIDIEvent = {
+export const MIDIEvent = {
 	TYPE_CONTROL: 0,
 	TYPE_SYSEX: 0xF0,
 	TYPE_AUTHORIZATION_SYSEX: 0xF7,
@@ -37,3 +37,5 @@ var MIDIEvent = {
 		return result;
 	}
 };
+
+export default MIDIEvent;

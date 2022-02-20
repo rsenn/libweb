@@ -1,4 +1,4 @@
-function MIDIControlEvent(type, param1, param2, channel)
+export function MIDIControlEvent(type, param1, param2, channel)
 {
 	this.type = (type ? type : null);
 	this.param1 = (param1 ? param1 : 0);
@@ -162,3 +162,5 @@ MIDIControlEvent.CONTROLLER			= 0xB0;
 MIDIControlEvent.PROGRAM_CHANGE		= 0xC0;
 MIDIControlEvent.CHANNEL_AFTERTOUCH	= 0xD0;
 MIDIControlEvent.PITCH_BEND			= 0xE0;
+
+export default MIDIControlEvent;
