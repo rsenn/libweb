@@ -1,5 +1,14 @@
 export class MIDIControlEvent {
-  constructor(type, param1, param2, channel) {
+
+  static NOTE_OFF = 0x80;
+  static NOTE_ON = 0x90;
+  static AFTERTOUCH = 0xa0;
+  static CONTROLLER = 0xb0;
+  static PROGRAM_CHANGE = 0xc0;
+  static CHANNEL_AFTERTOUCH = 0xd0;
+  static PITCH_BEND = 0xe0;
+
+    constructor(type, param1, param2, channel) {
     this.type = type ? type : null;
     this.param1 = param1 ? param1 : 0;
     this.param2 = param2 ? param2 : 0;
@@ -134,13 +143,6 @@ export class MIDIControlEvent {
     else return this.param2;
   }
 
-  static NOTE_OFF = 0x80;
-  static NOTE_ON = 0x90;
-  static AFTERTOUCH = 0xa0;
-  static CONTROLLER = 0xb0;
-  static PROGRAM_CHANGE = 0xc0;
-  static CHANNEL_AFTERTOUCH = 0xd0;
-  static PITCH_BEND = 0xe0;
 }
 
 export default MIDIControlEvent;

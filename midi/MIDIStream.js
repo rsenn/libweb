@@ -1,5 +1,7 @@
 export class MIDIStream {
   constructor(buffer) {
+
+  	console.log('MIDIStream.constructor', buffer);
     this.write = null;
 
     if(!buffer) {

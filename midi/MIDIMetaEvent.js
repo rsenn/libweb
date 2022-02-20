@@ -1,6 +1,26 @@
-import { MIDIEvent } from './MIDIEvent.js';
+const TYPE_META = 0xff;
 
 export class MIDIMetaEvent {
+  static SEQUENCE_NUMBER = 0x00;
+  static TEXT = 0x01;
+  static COPYRIGHT = 0x02;
+  static TRACK_NAME = 0x03;
+  static INSTRUMENT_NAME = 0x04;
+  static LYRIC = 0x05;
+  static MARKER = 0x06;
+  static CUE_POINT = 0x07;
+
+  static CHANNEL_PREFIX = 0x20;
+  static PORT_PREFIX = 0x21;
+
+  static END_OF_TRACK = 0x2f;
+  static SET_TEMPO = 0x51;
+  static SMPTE_OFFSET = 0x54;
+  static TIME_SIGNATURE = 0x58;
+  static KEY_SIGNATURE = 0x59;
+
+  static SEQUENCER_SPECIFIC = 0x7f;
+
   constructor(type, param1, param2, text) {
     this.type = type ? type : null;
 
@@ -91,7 +111,7 @@ export class MIDIMetaEvent {
 
   writeBytes(stream) {
     stream.writeVLV(this.delta);
-    stream.writeByte(MIDIEvent.TYPE_META);
+    stream.writeByte(TYPE_META);
     stream.writeByte(this.type);
 
     switch (this.type) {
@@ -230,26 +250,6 @@ export class MIDIMetaEvent {
     result += ']';
     return result;
   }
-
-  static SEQUENCE_NUMBER = 0x00;
-  static TEXT = 0x01;
-  static COPYRIGHT = 0x02;
-  static TRACK_NAME = 0x03;
-  static INSTRUMENT_NAME = 0x04;
-  static LYRIC = 0x05;
-  static MARKER = 0x06;
-  static CUE_POINT = 0x07;
-
-  static CHANNEL_PREFIX = 0x20;
-  static PORT_PREFIX = 0x21;
-
-  static END_OF_TRACK = 0x2f;
-  static SET_TEMPO = 0x51;
-  static SMPTE_OFFSET = 0x54;
-  static TIME_SIGNATURE = 0x58;
-  static KEY_SIGNATURE = 0x59;
-
-  static SEQUENCER_SPECIFIC = 0x7f;
 }
 
 export default MIDIMetaEvent;

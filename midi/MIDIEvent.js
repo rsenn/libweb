@@ -40,4 +40,8 @@ export const MIDIEvent = {
   }
 };
 
+export { MIDIControlEvent } from './MIDIControlEvent.js';
+export { MIDIMetaEvent } from './MIDIMetaEvent.js';
+import { MIDISysExEvent } from './MIDISysExEvent.js';
+
 export default MIDIEvent;
