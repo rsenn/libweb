@@ -1072,6 +1072,115 @@ export function Location(line, column, pos, file, freeze = true) {
   return freeze && obj.constructor === Location ? Object.freeze(obj) : obj;
 }
 
+export function format(...args) {
+  return formatWithOptionsInternal({ hideKeys: ['constructor'] }, args);
+}
+
+export function formatWithOptions(opts, ...args) {
+  if(!isObject(opts)) throw new TypeError(`options argument is not an object`);
+  return formatWithOptionsInternal(opts, args);
+}
+
+function formatWithOptionsInternal(o, v) {
+  const x = v[0];
+  let a = 0;
+  let s = '';
+  let j = '';
+  if(typeof x === 'string') {
+    if(v.length === 1) return x;
+    let t;
+    let p = 0;
+    for(let i = 0; i < x.length - 1; i++) {
+      if(x[i] == '%') {
+        let f = '';
+        while('sjxdOoifc%'.indexOf(x[i + 1]) == -1) {
+          f += x[i + 1];
+          ++i;
+        }
+        if(p < i) s += slice(x, p, i);
+        p = i + 1;
+
+        const c = String.prototype.charCodeAt.call(x, ++i);
+        if(a + 1 !== v.length) {
+          switch (c) {
+            case 115: // %s
+              const y = v[++a];
+              if(typeof y === 'number') t = formatNumber(y);
+              else if(typeof y === 'bigint') t = `${y}n`;
+              else if(typeof y !== 'object' || y === null || !hasBuiltIn(y, 'toString')) t = String(y);
+              else t = inspect(y, { ...o, compact: 3, colors: false, depth: 0 });
+              break;
+            case 106: // %j
+              t = stringify(v[++a]);
+              break;
+            case 120: // %x
+            case 100: // %d
+              const n = v[++a];
+              if(typeof n === 'bigint') t = `${n}n`;
+              else if(typeof n === 'symbol') t = 'NaN';
+              else t = formatNumber(c == 120 ? Number(n).toString(16) : Number(n));
+              break;
+            case 79: // %O
+              t = inspect(v[++a], o);
+              break;
+            case 111: // %o
+              t = /*v[++a]+'' ?? */ inspect(v[++a], {
+                ...o,
+                showHidden: true,
+                showProxy: true,
+                depth: 1,
+                protoChain: false
+              });
+              break;
+            case 105: // %i
+              const k = v[++a];
+              if(typeof k === 'bigint') t = `${k}`;
+              else if(typeof k === 'symbol') t = 'NaN';
+              else t = formatNumber(parseInt(k));
+              break;
+            case 102: // %f
+              const d = v[++a];
+              if(typeof d === 'symbol') t = 'NaN';
+              else t = formatNumber(parseFloat(d));
+              break;
+            case 99: // %c
+              a += 1;
+              t = '';
+              break;
+            case 37: // %%
+              s += slice(x, p, i);
+              p = i + 1;
+              continue;
+            default:
+              continue;
+          }
+          if(p !== i - 1) s += slice(x, p, i - 1);
+          let pad = parseInt(f);
+          if(Math.abs(pad) > 0) t = t['pad' + (pad < 0 ? 'End' : 'Start')](Math.abs(pad), /^-?0/.test(f) ? '0' : ' ');
+          s += t;
+          p = i + 1;
+        } else if(c === 37) {
+          s += slice(x, p, i);
+          p = i + 1;
+        }
+      }
+    }
+    if(p !== 0) {
+      a++;
+      j = ' ';
+      if(p < x.length) s += slice(x, p);
+    }
+  }
+  while(a < v.length) {
+    const y = v[a];
+    s += j;
+    s += typeof y !== 'string' ? inspect(y, o) : y;
+    j = ' ';
+    a++;
+  }
+  return s;
+}
+
 Location.prototype.clone = function(freeze = false, withFilename = true) {
   const { line, column, pos, file } = this;
 
