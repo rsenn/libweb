@@ -58,7 +58,7 @@ export class MIDIControlEvent {
   }
 
   readBytes(stream, status) {
-    console.log('MIDIControlEvent.readBytes', { stream, status });
+    //console.log('MIDIControlEvent.readBytes', { stream, status });
     var running = false;
     var hibyte;
     var paramCount = 0;
@@ -68,8 +68,6 @@ export class MIDIControlEvent {
     this.channel = b & 0x0f;
 
     if(this.channel > 15) throw new Error('Invalid channel number ' + this.channel);
-
-    console.log('MIDIControlEvent.readBytes', { b, hibyte }, status.length);
 
     if(hibyte < 0x80) {
       if(status.length != 2) throw new Error('Invalid running status');
@@ -101,6 +99,7 @@ export class MIDIControlEvent {
         return false;
         break;
     }
+    //console.log('MIDIControlEvent.readBytes', { b, hibyte, paramCount }, status.length);
 
     if(paramCount > 0) {
       if(running) this.param1 = b;
