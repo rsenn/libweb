@@ -5000,7 +5000,7 @@ Util.transformer = (a, ...l) =>
     a
   );
 
-/* XXX Util.copyTextToClipboard = (i, t) => {
+/* XXX */ Util.copyTextToClipboard = (i, t) => {
   if(!Util.isBrowser()) {
     return import('./childProcess.js').then(async module => {
       let fs, std;
@@ -5026,7 +5026,7 @@ Util.transformer = (a, ...l) =>
   if(!t) t = doc.body;
   const e = doc.createElement('textarea');
   const prev = doc.activeElement;
-  e.value = i;
+  e.value = i+'';
   e.setAttribute('readonly', '');
   e.style.contain = 'strict';
   e.style.position = 'absolute';
@@ -5054,7 +5054,7 @@ Util.transformer = (a, ...l) =>
     prev.focus();
   }
   return isSuccess;
-};*/
+}; 
 
 Util.toPlainObject = obj => Util.toPlainObjectT(obj, v => (Util.isObject(v) ? Util.toPlainObject(v) : v));
 
