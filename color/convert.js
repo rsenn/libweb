@@ -115,8 +115,8 @@ export const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49]; /* Math Expressions
 
 export const atan2d = (y, x) => rad2deg(atan2(y, x)); // arc-tangent in degrees
 export const cosd = x => cos(deg2rad(x)); // cosine of the specified angle in degrees
-export const deg2rad = x => (x * PI) / 180; // degree to radian
-export const rad2deg = x => (x * 180) / PI; // radian to degree
+export const deg2rad = x => (x * PI) / 180;
+export const rad2deg = x => (x * 180) / PI;
 export const sind = x => sin(deg2rad(x)); // sine in degrees
 
 /* Math Constants
