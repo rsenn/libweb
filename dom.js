@@ -25,14 +25,7 @@ import { Container } from './dom/container.js';
 import { Layer, Renderer } from './dom/layer.js';
 import { Select } from './dom/select.js';
 import { Align, Anchor } from './geom/align.js';
-import {
-  ElementPosProps,
-  ElementRectProps,
-  ElementRectProxy,
-  ElementSizeProps,
-  ElementWHProps,
-  ElementXYProps
-} from './dom/elementRect.js';
+import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from './dom/elementRect.js';
 
 export function dom() {
   let args = [...arguments];
