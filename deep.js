@@ -56,8 +56,8 @@ export const equals = (a, b) => {
   let i, k, size_a, j, ref;
   if(a === b) {
     return true;
-  } else if(Util.isArray(a)) {
-    if(!(Util.isArray(b) && a.length === b.length)) {
+  } else if(Array.isArray(a)) {
+    if(!(Array.isArray(b) && a.length === b.length)) {
       return false;
     }
     for(i = j = 0, ref = a.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
@@ -230,7 +230,7 @@ export const transform = (obj, filter, t) => {
     path = arguments[3] == [];
   if(filter(obj, path)) {
     return t(obj, path);
-  } else if(Util.isArray(obj)) {
+  } else if(Array.isArray(obj)) {
     transformed = [];
     for(j = 0, len = obj.length; j < len; j++) {
       v = obj[j];
@@ -256,7 +256,7 @@ export const unset = (object, path) => {
     if(parts.length > 1) {
       unset(object[parts.shift()], parts);
     } else {
-      if(Util.isArray(object) && Util.isNumeric(path)) object.splice(+path, 1);
+      if(Array.isArray(object) && Util.isNumeric(path)) object.splice(+path, 1);
       else delete object[path];
     }
   }

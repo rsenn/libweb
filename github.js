@@ -89,7 +89,7 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
   };
   let response = await fetch(url, { headers });
   let result = JSON.parse(await response.text());
-  if(!Util.isArray(result)) {
+  if(!Array.isArray(result)) {
     result.status = response.status;
     return result;
   }

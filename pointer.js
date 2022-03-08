@@ -73,7 +73,7 @@ export class Pointer extends Array {
         if(a.o) {
           let r;
           let t = typeof i;
-          //console.log(`Pointer.deref[`,a.n,`]`,Util.isArray(a.o),a.o,i);
+          //console.log(`Pointer.deref[`,a.n,`]`,Array.isArray(a.o),a.o,i);
           if(t != 'string') {
             if(a.o.length !== undefined) {
               if(t == 'function') {
