@@ -128,11 +128,7 @@ let QRCode;
         if(row + r <= -1 || this.moduleCount <= row + r) continue;
         for(let c = -1; c <= 7; c++) {
           if(col + c <= -1 || this.moduleCount <= col + c) continue;
-          if(
-            (r >= 0 && r <= 6 && (c == 0 || c == 6)) ||
-            (c >= 0 && c <= 6 && (r == 0 || r == 6)) ||
-            (r >= 2 && r <= 4 && c >= 2 && c <= 4)
-          ) {
+          if((r >= 0 && r <= 6 && (c == 0 || c == 6)) || (c >= 0 && c <= 6 && (r == 0 || r == 6)) || (r >= 2 && r <= 4 && c >= 2 && c <= 4)) {
             this.modules[row + r][col + c] = true;
           } else {
             this.modules[row + r][col + c] = false;
@@ -382,48 +378,7 @@ let QRCode;
     PATTERN111: 7
   };
   var QRUtil = {
-    PATTERN_POSITION_TABLE: [
-      [],
-      [6, 18],
-      [6, 22],
-      [6, 26],
-      [6, 30],
-      [6, 34],
-      [6, 22, 38],
-      [6, 24, 42],
-      [6, 26, 46],
-      [6, 28, 50],
-      [6, 30, 54],
-      [6, 32, 58],
-      [6, 34, 62],
-      [6, 26, 46, 66],
-      [6, 26, 48, 70],
-      [6, 26, 50, 74],
-      [6, 30, 54, 78],
-      [6, 30, 56, 82],
-      [6, 30, 58, 86],
-      [6, 34, 62, 90],
-      [6, 28, 50, 72, 94],
-      [6, 26, 50, 74, 98],
-      [6, 30, 54, 78, 102],
-      [6, 28, 54, 80, 106],
-      [6, 32, 58, 84, 110],
-      [6, 30, 58, 86, 114],
-      [6, 34, 62, 90, 118],
-      [6, 26, 50, 74, 98, 122],
-      [6, 30, 54, 78, 102, 126],
-      [6, 26, 52, 78, 104, 130],
-      [6, 30, 56, 82, 108, 134],
-      [6, 34, 60, 86, 112, 138],
-      [6, 30, 58, 86, 114, 142],
-      [6, 34, 62, 90, 118, 146],
-      [6, 30, 54, 78, 102, 126, 150],
-      [6, 24, 50, 76, 102, 128, 154],
-      [6, 28, 54, 80, 106, 132, 158],
-      [6, 32, 58, 84, 110, 136, 162],
-      [6, 26, 54, 82, 110, 138, 166],
-      [6, 30, 58, 86, 114, 142, 170]
-    ],
+    PATTERN_POSITION_TABLE: [[], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50], [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78], [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98], [6, 30, 54, 78, 102], [6, 28, 54, 80, 106], [6, 32, 58, 84, 110], [6, 30, 58, 86, 114], [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122], [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134], [6, 34, 60, 86, 112, 138], [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150], [6, 24, 50, 76, 102, 128, 154], [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162], [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170]],
     G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
     G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
     G15_MASK: (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1),
@@ -567,30 +522,14 @@ let QRCode;
       }
       for(var row = 0; row < moduleCount; row++) {
         for(var col = 0; col < moduleCount - 6; col++) {
-          if(
-            qrCode.isDark(row, col) &&
-            !qrCode.isDark(row, col + 1) &&
-            qrCode.isDark(row, col + 2) &&
-            qrCode.isDark(row, col + 3) &&
-            qrCode.isDark(row, col + 4) &&
-            !qrCode.isDark(row, col + 5) &&
-            qrCode.isDark(row, col + 6)
-          ) {
+          if(qrCode.isDark(row, col) && !qrCode.isDark(row, col + 1) && qrCode.isDark(row, col + 2) && qrCode.isDark(row, col + 3) && qrCode.isDark(row, col + 4) && !qrCode.isDark(row, col + 5) && qrCode.isDark(row, col + 6)) {
             lostPoint += 40;
           }
         }
       }
       for(var col = 0; col < moduleCount; col++) {
         for(var row = 0; row < moduleCount - 6; row++) {
-          if(
-            qrCode.isDark(row, col) &&
-            !qrCode.isDark(row + 1, col) &&
-            qrCode.isDark(row + 2, col) &&
-            qrCode.isDark(row + 3, col) &&
-            qrCode.isDark(row + 4, col) &&
-            !qrCode.isDark(row + 5, col) &&
-            qrCode.isDark(row + 6, col)
-          ) {
+          if(qrCode.isDark(row, col) && !qrCode.isDark(row + 1, col) && qrCode.isDark(row + 2, col) && qrCode.isDark(row + 3, col) && qrCode.isDark(row + 4, col) && !qrCode.isDark(row + 5, col) && qrCode.isDark(row + 6, col)) {
             lostPoint += 40;
           }
         }
@@ -631,8 +570,7 @@ let QRCode;
     QRMath.EXP_TABLE[i] = 1 << i;
   }
   for(var i = 8; i < 256; i++) {
-    QRMath.EXP_TABLE[i] =
-      QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
+    QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
   }
   for(var i = 0; i < 255; i++) {
     QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
@@ -1062,15 +1000,7 @@ let QRCode;
             aHTML.push('<tr>');
 
             for(let col = 0; col < nCount; col++) {
-              aHTML.push(
-                '<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:' +
-                  nWidth +
-                  'px;height:' +
-                  nHeight +
-                  'px;background-color:' +
-                  (oQRCode.isDark(row, col) ? _htOption.colorDark : _htOption.colorLight) +
-                  ';"></td>'
-              );
+              aHTML.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:' + nWidth + 'px;height:' + nHeight + 'px;background-color:' + (oQRCode.isDark(row, col) ? _htOption.colorDark : _htOption.colorLight) + ';"></td>');
             }
 
             aHTML.push('</tr>');
@@ -1160,8 +1090,7 @@ let QRCode;
             el.onabort = fOnError;
             el.onerror = fOnError;
             el.onload = fOnSuccess;
-            el.src =
-              'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='; // the Image contains 1px data.
+            el.src = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='; // the Image contains 1px data.
             return;
           } else if(self._bSupportDataURI === true && self._fSuccess) {
             self._fSuccess.call(self);

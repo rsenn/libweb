@@ -757,7 +757,7 @@ export function walk(element) {
   const args = [...arguments];
   let elements = args.map(e => {
     if(e && e.charAt && e.charAt(0) != '#') {
-      e = img(`designs/${e.replace(/^#/, '')}`);
+      e = img('designs/'+e.replace(/^#/, ''));
     } else {
       e = Element.find(e);
     }

@@ -148,7 +148,10 @@ HSLA.prototype[Symbol.toPrimitive] = function(hint) {
   if(hint == 'default') return HSLA.prototype.hex.call(this);
   return HSLA.prototype.toString.call(this);
 };
-
+HSLA.prototype.toBGRA = function() {
+  let {r,g,b,a} = this.toRGBA();
+  return [b,g,r,a];
+};
 HSLA.prototype.toRGBA = function() {
   let { h, s, l, a } = this;
 

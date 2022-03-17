@@ -740,13 +740,7 @@ function* emitKeys(term) {
         // We buffered enough data.
         const seq = s.slice(seqStart);
         // CSI sequences might not represent a key.
-        if(
-          (seq[0] === '<' && (ch === 'M' || ch === 'm')) ||
-          (seq[0] === '<' && (ch === 'T' || ch === 't')) ||
-          ch === 'I' ||
-          ch === 'O' ||
-          seq === '200~'
-        ) {
+        if((seq[0] === '<' && (ch === 'M' || ch === 'm')) || (seq[0] === '<' && (ch === 'T' || ch === 't')) || ch === 'I' || ch === 'O' || seq === '200~') {
           /* These sequences should not be preceded with an extra ESC.
            * If that happens, it's probably because the Esc key was pressed.
            */

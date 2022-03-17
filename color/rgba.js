@@ -299,6 +299,10 @@ RGBA.prototype.toRGB = function() {
   const { r, g, b } = this;
   return new ctor(r, g, b, 255);
 };
+RGBA.prototype.toBGRA = function() {
+  const {r,g,b,a} =  this;
+  return [b,g,r,a];
+};
 RGBA.prototype.toHSLA = function() {
   let { r, g, b, a } = this;
   r /= 255;
