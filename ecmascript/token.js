@@ -117,7 +117,9 @@ export class TokenList extends Array {
   }
 
   toString() {
-    return this.map(tok => (/(literal|identifier)/i.test(tok.type) && /^[^'"]/.test(tok.value) ? '‹' + tok.value + '›' : tok.value)).join(' ');
+    return this.map(tok =>
+      /(literal|identifier)/i.test(tok.type) && /^[^'"]/.test(tok.value) ? '‹' + tok.value + '›' : tok.value
+    ).join(' ');
   }
 }
 

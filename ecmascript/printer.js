@@ -1,23 +1,4 @@
-import {
-  ESNode,
-  Literal,
-  FunctionLiteral,
-  TemplateLiteral,
-  Property,
-  MethodDefinition,
-  FunctionDeclaration,
-  ArrowFunctionExpression,
-  Identifier,
-  ClassDeclaration,
-  ObjectPattern,
-  SpreadElement,
-  MemberExpression,
-  Statement,
-  ImportDeclaration,
-  ImportSpecifier,
-  BlockStatement,
-  IfStatement
-} from './estree.js';
+import { ESNode, Literal, FunctionLiteral, TemplateLiteral, Property, MethodDefinition, FunctionDeclaration, ArrowFunctionExpression, Identifier, ClassDeclaration, ObjectPattern, SpreadElement, MemberExpression, Statement, ImportDeclaration, ImportSpecifier, BlockStatement, IfStatement } from './estree.js';
 import Util from '../util.js';
 import * as deep from '../deep.js';
 //import util from 'util';
