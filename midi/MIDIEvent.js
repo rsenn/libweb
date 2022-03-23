@@ -11,10 +11,10 @@ export const MIDIEvent = {
   read: function(stream, status) {
     //console.log('MIDIEvent.read', { status, buffer: stream._dv.buffer });
 
-let {position}=stream;
-      var delta = stream.readVLV();
-      stream.position=position;
-        var b = stream.readByte();
+    let { position } = stream;
+    var delta = stream.readVLV();
+    stream.position = position;
+    var b = stream.readByte();
     var hibyte;
     var result;
 

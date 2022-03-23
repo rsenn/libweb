@@ -12,6 +12,10 @@ export const SVG = ({ viewBox, preserveAspectRatio = 'xMinYMin', styles, childre
       version: '1.1',
       ...props
     },
-    [defs ? h('defs', {}, [h(FixedMedium), ...toChildArray(defs)]) : null, styles ? h('style', {}, styles) : null, ...children]
+    [
+      defs ? h('defs', {}, [h(FixedMedium), ...toChildArray(defs)]) : null,
+      styles ? h('style', {}, styles) : null,
+      ...children
+    ]
   );
 };

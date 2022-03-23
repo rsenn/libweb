@@ -15,12 +15,11 @@ export class MIDIStream {
   readByte() {
     const { byteLength } = this._dv.buffer;
 
-    if(this.position >= byteLength)
-      throw new Error('buffer overrun');
+    if(this.position >= byteLength) throw new Error('buffer overrun');
 
     var result = this._dv.getUint8(this.position);
     this.position++;
-  //console.log('readByte', result, this.position, byteLength);
+    //console.log('readByte', result, this.position, byteLength);
     return result;
   }
 
@@ -47,7 +46,7 @@ export class MIDIStream {
       } while(c & 0x80);
     }
 
-  return value;
+    return value;
   }
 
   writeByte(value) {
