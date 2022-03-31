@@ -1231,13 +1231,13 @@ Util.partition = function* (a, size) {
   for(let i = 0; i < a.length; i += size) yield a.slice(i, i + size);
 };
 
-Util.intersect = (a, b) => a.filter(Set.prototype.has, new Set(b));
 Util.difference = (a, b, incicludes) => {
   //console.log('Util.difference', { a, b, includes });
   if(typeof includes != 'function') return [a.filter(x => !b.includes(x)), b.filter(x => !a.includes(x))];
 
   return [a.filter(x => !includes(b, x)), b.filter(x => !includes(a, x))];
 };
+Util.intersect = (a, b) => a.filter(Set.prototype.has, new Set(b));
 Util.symmetricDifference = (a, b) => [].concat(...Util.difference(a, b));
 Util.union = (a, b, equality) => {
   if(equality === undefined) return [...new Set([...a, ...b])];
@@ -1249,9 +1249,7 @@ Util.chances = function(numbers, matches) {
   const f = Util.factorial;
   return f(numbers) / (f(matches) * f(numbers - matches));
 };
-Util.sum = function(arr) {
-  return arr.reduce((acc, n) => acc + n, 0);
-};
+Util.sum = (arr) => arr.reduce((acc, n) => acc + n, 0);
 
 Util.expr = fn => {
   let nargs = fn.length;
