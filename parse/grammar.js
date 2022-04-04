@@ -27,7 +27,12 @@ export class Rule {
     }
 
     toString() {
-      if(this.id !== undefined && this.str !== undefined) return Util.colorText(this.str, 1, this.id == Lexer.tokens.REGEXP ? 35 : this.id == Lexer.tokens.STRING ? 36 : 33);
+      if(this.id !== undefined && this.str !== undefined)
+        return Util.colorText(
+          this.str,
+          1,
+          this.id == Lexer.tokens.REGEXP ? 35 : this.id == Lexer.tokens.STRING ? 36 : 33
+        );
 
       let str = Util.colorText(this.str, 1, /^['"`]/.test(this.str) ? 36 : 33);
       return `${Util.className(this)}(${str})`;
@@ -58,7 +63,9 @@ return [...n];
   toString() {
     const { repeat = '', length, invert } = this;
     if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
-    return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
+    return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n =>
+      /*Util.className(n) + ' ' +*/ n.toString()
+    ).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
   }
 
   /*   *entries() {
@@ -66,7 +73,12 @@ return [...n];
     }*/
 
   combinations() {
-    let operators = new Map([...this].reduce((a, part, i) => (part instanceof Rule.Operator && '?*'.indexOf(part.op) != -1 ? [...a, [i, 1 << a.length]] : a), []));
+    let operators = new Map(
+      [...this].reduce(
+        (a, part, i) => (part instanceof Rule.Operator && '?*'.indexOf(part.op) != -1 ? [...a, [i, 1 << a.length]] : a),
+        []
+      )
+    );
     if(operators.size == 0) return [this];
     console.log('Match operators:', operators, [...this]);
     let n = Math.pow(2, operators.size);
@@ -123,7 +135,9 @@ return [...n];
     }
 
     toString() {
-      return `${this.args.length > 1 ? '' : this.op}(` + this.args.map(n => n.toString()).join(' ' + this.op + ' ') + `)`;
+      return (
+        `${this.args.length > 1 ? '' : this.op}(` + this.args.map(n => n.toString()).join(' ' + this.op + ' ') + `)`
+      );
     }
 
     clone() {
@@ -140,7 +154,10 @@ return [...n];
 
       if(this.op == '|' && args.length > 1) {
         //console.log("this.rule =", this.rule, Util.isObject(this.rule), !(this.rule === null)) ;
-        let subname = (name || 'rule') + '_' + (Util.isObject(this.rule) ? (this.rule.n = (this.rule.n ? this.rule.n : 0) + 1) : Util.randStr(8));
+        let subname =
+          (name || 'rule') +
+          '_' +
+          (Util.isObject(this.rule) ? (this.rule.n = (this.rule.n ? this.rule.n : 0) + 1) : Util.randStr(8));
 
         args = args.map(arg => (arg instanceof Array && arg.length == 1 ? arg[0] : arg));
 
@@ -196,7 +213,9 @@ return [...n];
       sep = ' ';
 
     if(multiline) (nl = '\n\t'), (sep = ' | ');
-    return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
+    return `Rule ${this.fragment ? 'fragment ' : ''}${
+      name ? Util.colorText(name, 1, 32) + ' ' : ''
+    }${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
   }
 
   toCowbird(accu, name) {
@@ -624,7 +643,10 @@ export class Grammar {
       let calls;
       let append;
       if(rule.selfReferential) {
-        let a = [rule.productions.filter(p => !p.selfReferential), rule.productions.filter(p => p.selfReferential).map(m => m.slice(1))];
+        let a = [
+          rule.productions.filter(p => !p.selfReferential),
+          rule.productions.filter(p => p.selfReferential).map(m => m.slice(1))
+        ];
         {
           let m = new Rule.Match(rule);
           let o = a[1];

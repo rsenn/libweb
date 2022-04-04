@@ -9,20 +9,7 @@ import { ImmutableXPath } from '../xml/xpath.js';
 import { ImmutablePath } from '../json.js';
 import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
-import {
-  BBox,
-  Point,
-  Circle,
-  Line,
-  isLine,
-  Rect,
-  TransformationList,
-  Transformation,
-  PointList,
-  Translation,
-  Polygon,
-  MakePolygon
-} from '../geom.js';
+import { BBox, Point, Circle, Line, isLine, Rect, TransformationList, Transformation, PointList, Translation, Polygon, MakePolygon } from '../geom.js';
 import { Repeater } from '../repeater/repeater.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
