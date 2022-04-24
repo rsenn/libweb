@@ -17,10 +17,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
  * Copyright (c) 2021 anseki
  * Licensed under the MIT license.
  */
-import PointerEvent from 'pointer-event';
-import CSSPrefix from 'cssprefix';
-import AnimEvent from 'anim-event';
-import mClassList from 'm-class-list';
+import PointerEvent from './pointer-event.js';
+import CSSPrefix from './cssprefix.js';
+import AnimEvent from './anim-event.js';
+import mClassList from './m-class-list.js';
 mClassList.ignoreNative = true;
 
 var ZINDEX = 9000,
@@ -1886,7 +1886,7 @@ function _setOptions(props, newOptions) {
   });
 }
 
-var PlainDraggable = /*#__PURE__*/function () {
+export const PlainDraggable = /*#__PURE__*/function () {
   /**
    * Create a `PlainDraggable` instance.
    * @param {Element} element - Target element.
@@ -2519,3 +2519,4 @@ PlainDraggable.limit = true;
 [SNAP/] */
 
 export default PlainDraggable;
+  
