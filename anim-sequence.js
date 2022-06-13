@@ -12,8 +12,7 @@
 
 // *** Currently, this code except `export` is not ES2015. ***
 
-var
-  FUNC_KEYS = {
+var FUNC_KEYS = {
     ease: [0.25, 0.1, 0.25, 1],
     linear: [0, 0, 1, 1],
     'ease-in': [0.42, 0, 1, 1],
@@ -21,21 +20,27 @@ var
     'ease-in-out': [0.42, 0, 0.58, 1]
   },
   MSPF = 1000 / 60 / 2, // precision ms/frame (FPS: 60)
-
-  requestAnim = window.requestAnimationFrame ||
+  requestAnim =
+    window.requestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
-    function(callback) { setTimeout(callback, MSPF); },
-
-  cancelAnim = window.cancelAnimationFrame ||
+    function(callback) {
+      setTimeout(callback, MSPF);
+    },
+  cancelAnim =
+    window.cancelAnimationFrame ||
     window.mozCancelAnimationFrame ||
     window.webkitCancelAnimationFrame ||
     window.msCancelAnimationFrame ||
-    function(requestID) { clearTimeout(requestID); },
-
-  isFinite = Number.isFinite || function(value) { return typeof value === 'number' && window.isFinite(value); },
-
+    function(requestID) {
+      clearTimeout(requestID);
+    },
+  isFinite =
+    Number.isFinite ||
+    function(value) {
+      return typeof value === 'number' && window.isFinite(value);
+    },
   /**
    * @callback frameCallback
    * @param {} value - A value that was made by `valueCallback`.
@@ -63,32 +68,33 @@ var
   newAnimId = 0,
   requestID;
 
-
-
 function step() {
   var now = Date.now(),
     next = false;
-  if (requestID) {
+  if(requestID) {
     cancelAnim.call(window, requestID);
     requestID = null;
   }
 
-  tasks.forEach(function(task) {
+  tasks.forEach(function (task) {
     var timeLen, loops, frame;
 
-    if (!task.framesStart) { return; }
+    if(!task.framesStart) {
+      return;
+    }
     timeLen = now - task.framesStart;
 
-    if (timeLen >= task.duration && task.count && task.loopsLeft <= 1) {
+    if(timeLen >= task.duration && task.count && task.loopsLeft <= 1) {
       frame = task.frames[(task.lastFrame = task.reverse ? 0 : task.frames.length - 1)];
       task.frameCallback(frame.value, true, frame.timeRatio, frame.outputRatio);
       task.framesStart = null;
       return;
     }
-    if (timeLen > task.duration) {
+    if(timeLen > task.duration) {
       loops = Math.floor(timeLen / task.duration);
-      if (task.count) {
-        if (loops >= task.loopsLeft) { // Here `task.loopsLeft > 1`
+      if(task.count) {
+        if(loops >= task.loopsLeft) {
+          // Here `task.loopsLeft > 1`
           frame = task.frames[(task.lastFrame = task.reverse ? 0 : task.frames.length - 1)];
           task.frameCallback(frame.value, true, frame.timeRatio, frame.outputRatio);
           task.framesStart = null;
@@ -100,22 +106,25 @@ function step() {
       timeLen = now - task.framesStart;
     }
 
-    if (task.reverse) { timeLen = task.duration - timeLen; }
+    if(task.reverse) {
+      timeLen = task.duration - timeLen;
+    }
     frame = task.frames[(task.lastFrame = Math.round(timeLen / MSPF))];
-    if (task.frameCallback(frame.value, false, frame.timeRatio, frame.outputRatio) !== false) {
+    if(task.frameCallback(frame.value, false, frame.timeRatio, frame.outputRatio) !== false) {
       next = true;
     } else {
       task.framesStart = null;
     }
   });
 
-  if (next) { requestID = requestAnim.call(window, step); }
+  if(next) {
+    requestID = requestAnim.call(window, step);
+  }
 }
-
 
 function startTask(task, timeRatio) {
   task.framesStart = Date.now();
-  if (timeRatio != null) {
+  if(timeRatio != null) {
     task.framesStart -= task.duration * (task.reverse ? 1 - timeRatio : timeRatio);
   }
   task.loopsLeft = task.count;
@@ -143,7 +152,13 @@ var AnimSequence = {
    */
   add: function(valueCallback, frameCallback, duration, count, timing, reverse, timeRatio) {
     var animId = ++newAnimId,
-      task, frames, stepX, stepT, nextX, t, point;
+      task,
+      frames,
+      stepX,
+      stepT,
+      nextX,
+      t,
+      point;
 
     function getPoint(t) {
       var t2 = t * t,
@@ -159,31 +174,32 @@ var AnimSequence = {
     }
 
     function newFrame(timeRatio, outputRatio) {
-      return {value: valueCallback(outputRatio),
-        timeRatio: timeRatio, outputRatio: outputRatio};
+      return { value: valueCallback(outputRatio), timeRatio: timeRatio, outputRatio: outputRatio };
     }
 
-    if (typeof timing === 'string') { timing = FUNC_KEYS[timing]; }
+    if(typeof timing === 'string') {
+      timing = FUNC_KEYS[timing];
+    }
     valueCallback = valueCallback || function() {};
 
     // Generate `frames` list
-    if (duration < MSPF) {
+    if(duration < MSPF) {
       frames = [newFrame(0, 0), newFrame(1, 1)];
     } else {
       stepX = MSPF / duration;
       frames = [newFrame(0, 0)];
 
-      if (timing[0] === 0 && timing[1] === 0 && timing[2] === 1 && timing[3] === 1) { // linear
-        for (nextX = stepX; nextX <= 1; nextX += stepX) {
+      if(timing[0] === 0 && timing[1] === 0 && timing[2] === 1 && timing[3] === 1) {
+        // linear
+        for(nextX = stepX; nextX <= 1; nextX += stepX) {
           frames.push(newFrame(nextX, nextX)); // x === y
         }
-
       } else {
         stepT = stepX / 10; // precision for `t`
         nextX = stepX;
-        for (t = stepT; t <= 1; t += stepT) {
+        for(t = stepT; t <= 1; t += stepT) {
           point = getPoint(t);
-          if (point.x >= nextX) {
+          if(point.x >= nextX) {
             frames.push(newFrame(point.x, point.y));
             nextX += stepX;
           }
@@ -195,26 +211,32 @@ var AnimSequence = {
 
     task = {
       animId: animId,
-      frameCallback: frameCallback, duration: duration, count: count, // task properties
+      frameCallback: frameCallback,
+      duration: duration,
+      count: count, // task properties
       frames: frames,
       reverse: !!reverse
     };
     tasks.push(task);
-    if (timeRatio !== false) { startTask(task, timeRatio); }
+    if(timeRatio !== false) {
+      startTask(task, timeRatio);
+    }
 
     return animId;
   },
 
   remove: function(animId) {
     var iRemove;
-    if (tasks.some(function(task, i) {
-      if (task.animId === animId) {
-        iRemove = i;
-        task.framesStart = null; // for `tasks.forEach` that is playing now.
-        return true;
-      }
-      return false;
-    })) {
+    if(
+      tasks.some(function (task, i) {
+        if(task.animId === animId) {
+          iRemove = i;
+          task.framesStart = null; // for `tasks.forEach` that is playing now.
+          return true;
+        }
+        return false;
+      })
+    ) {
       tasks.splice(iRemove, 1);
     }
   },
@@ -226,8 +248,8 @@ var AnimSequence = {
    * @returns {void}
    */
   start: function(animId, reverse, timeRatio) {
-    tasks.some(function(task) {
-      if (task.animId === animId) {
+    tasks.some(function (task) {
+      if(task.animId === animId) {
         task.reverse = !!reverse;
         startTask(task, timeRatio);
         return true;
@@ -243,17 +265,19 @@ var AnimSequence = {
    */
   stop: function(animId, getTimeRatioByFrame) {
     var timeRatio;
-    tasks.some(function(task) {
-      if (task.animId === animId) {
-        if (!getTimeRatioByFrame) {
+    tasks.some(function (task) {
+      if(task.animId === animId) {
+        if(!getTimeRatioByFrame) {
           timeRatio = (Date.now() - task.framesStart) / task.duration;
-          if (task.reverse) { timeRatio = 1 - timeRatio; }
-          if (timeRatio < 0) {
+          if(task.reverse) {
+            timeRatio = 1 - timeRatio;
+          }
+          if(timeRatio < 0) {
             timeRatio = 0;
-          } else if (timeRatio > 1) {
+          } else if(timeRatio > 1) {
             timeRatio = 1;
           }
-        } else if (task.lastFrame != null) {
+        } else if(task.lastFrame != null) {
           timeRatio = task.frames[task.lastFrame].timeRatio;
         }
         task.framesStart = null;
@@ -265,11 +289,14 @@ var AnimSequence = {
   },
 
   validTiming: function(timing) {
-    return typeof timing === 'string' ? FUNC_KEYS[timing] :
-      Array.isArray(timing) && [0, 1, 2, 3].every(function(i) {
-        return isFinite(timing[i]) && timing[i] >= 0 && timing[i] <= 1;
-      }) ? [timing[0], timing[1], timing[2], timing[3]] :
-      null;
+    return typeof timing === 'string'
+      ? FUNC_KEYS[timing]
+      : Array.isArray(timing) &&
+        [0, 1, 2, 3].every(function (i) {
+          return isFinite(timing[i]) && timing[i] >= 0 && timing[i] <= 1;
+        })
+      ? [timing[0], timing[1], timing[2], timing[3]]
+      : null;
   }
 };
 
