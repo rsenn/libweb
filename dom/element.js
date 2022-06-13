@@ -88,7 +88,7 @@ export class Element extends Node {
       });
 
     if(parent && parent.appendChild) parent.appendChild(e);
-    // console.log('Element.create ', e);
+    console.log('Element.create ', (window.e = e));
     return e;
   }
 

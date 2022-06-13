@@ -25,7 +25,7 @@ import { Via } from './components/via.js';
 import { Instance } from './components/instance.js';
 import { Sheet } from './components/sheet.js';
 
-const PrimitiveComponents = {
+export const PrimitiveComponents = {
   Wire,
   Rectangle,
   Pin,
