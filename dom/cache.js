@@ -85,7 +85,8 @@ export class Cache {
     for(let req of requests) {
       req = new Request(req);
 
-      if(!/^((http|https):\/\/)/.test(req.url)) throw new TypeError(`Add/AddAll does not support schemes other than "http" or "https"`);
+      if(!/^((http|https):\/\/)/.test(req.url))
+        throw new TypeError(`Add/AddAll does not support schemes other than "http" or "https"`);
 
       if(req.method !== 'GET') throw new TypeError(`Add/AddAll only supports the GET request method`);
 
@@ -115,7 +116,8 @@ export class Cache {
 
     req = isReq(req) ? req : new Request(req);
 
-    if(!/^((http|https):\/\/)/.test(req.url)) throw new TypeError(`Request scheme '${req.url.split(':')[0]}' is unsupported`);
+    if(!/^((http|https):\/\/)/.test(req.url))
+      throw new TypeError(`Request scheme '${req.url.split(':')[0]}' is unsupported`);
 
     if(req.method !== 'GET') throw new TypeError(`Request method '${req.method}' is unsupported`);
 
@@ -196,7 +198,9 @@ export class Cache {
             });
 
     return new Promise((resolve, reject) => {
-      fs.readdir(folder, (err, files) => (err ? reject(err) : resolve(search(files).map(file => new Request(base64ToStr(file))))));
+      fs.readdir(folder, (err, files) =>
+        err ? reject(err) : resolve(search(files).map(file => new Request(base64ToStr(file))))
+      );
     });
   }
 }

@@ -92,7 +92,11 @@ console._collect = function(type, args) {
     let stackParts = error.stack.split('\n');
     stack = [];
     for(let i = 0; i < stackParts.length; i++) {
-      if(stackParts[i].indexOf('console-history.js') > -1 || stackParts[i].indexOf('console-history.min.js') > -1 || stackParts[i] === 'Error') {
+      if(
+        stackParts[i].indexOf('console-history.js') > -1 ||
+        stackParts[i].indexOf('console-history.min.js') > -1 ||
+        stackParts[i] === 'Error'
+      ) {
         continue;
       }
       stack.push(stackParts[i].trim());

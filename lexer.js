@@ -16,7 +16,20 @@ Lexer.defunct = function(chr) {
   line = this.input.slice(...line);
 
   let rules = [...this.getRules()];
-  throw new Error('Unexpected character at index ' + (this.index - 1) + ': "' + chr + '"\nline: "' + line + '"\nloc: ' + loc.toString() + '\nstate=' + [...this.stateStack.map(n => this.states[n]), this.topState()] + '\nrules:\n' + rules.map(r => '  ' + (r.name + ': ').padEnd(20) + r.pattern.source).join('\n'));
+  throw new Error(
+    'Unexpected character at index ' +
+      (this.index - 1) +
+      ': "' +
+      chr +
+      '"\nline: "' +
+      line +
+      '"\nloc: ' +
+      loc.toString() +
+      '\nstate=' +
+      [...this.stateStack.map(n => this.states[n]), this.topState()] +
+      '\nrules:\n' +
+      rules.map(r => '  ' + (r.name + ': ').padEnd(20) + r.pattern.source).join('\n')
+  );
 };
 
 try {

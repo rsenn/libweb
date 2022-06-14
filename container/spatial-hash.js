@@ -2,7 +2,8 @@ export class SpatialHash {
   constructor(range, cellSize) {
     //var getBounds = getBounds(range);
     this.cellSize = cellSize;
-    if(range.width % cellSize !== 0 || range.height % cellSize !== 0) throw 'Exception: width and height must both be divisible by cell size';
+    if(range.width % cellSize !== 0 || range.height % cellSize !== 0)
+      throw 'Exception: width and height must both be divisible by cell size';
 
     this.horizontalCells = range.width / cellSize;
     this.verticalCells = range.height / cellSize;

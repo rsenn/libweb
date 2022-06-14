@@ -23,7 +23,8 @@ export const JSDefines = {
   ExponentPart: /{ExponentIndicator}{SignedInteger}/,
   OctalIntegerLiteral: /[0]o?{OctalDigits}/,
   HexIntegerLiteral: /[0][xX]{HexDigits}/,
-  DecimalLiteral: /{DecimalIntegerLiteral}\.({DecimalDigits}|)({ExponentPart})?|\.{DecimalDigits}({ExponentPart})?|{DecimalIntegerLiteral}({ExponentPart})?/,
+  DecimalLiteral:
+    /{DecimalIntegerLiteral}\.({DecimalDigits}|)({ExponentPart})?|\.{DecimalDigits}({ExponentPart})?|{DecimalIntegerLiteral}({ExponentPart})?/,
   LineContinuation: /\\(\r\n|\r|\n)/,
   OctalEscapeSequence: /(?:[1-7][0-7]{0,2}|[0-7]{1,3})/,
   HexEscapeSequence: /[x]{HexDigit}{2}/,
@@ -101,7 +102,10 @@ export const JSRules = [
 
   ['booleanLiteral', '<INITIAL,NOREGEX,NESTED>{BooleanValue}'],
   ['nullLiteral', '<INITIAL,NOREGEX,NESTED>{NullValue}'],
-  ['keyword', '<INITIAL,NOREGEX,NESTED>(instanceof|debugger|function|continue|finally|extends|default|static|export|switch|import|typeof|return|delete|async|yield|await|throw|super|const|class|catch|while|break|from|enum|case|with|void|this|else|let|try|var|new|for|as|of|do|in|if)\\b'],
+  [
+    'keyword',
+    '<INITIAL,NOREGEX,NESTED>(instanceof|debugger|function|continue|finally|extends|default|static|export|switch|import|typeof|return|delete|async|yield|await|throw|super|const|class|catch|while|break|from|enum|case|with|void|this|else|let|try|var|new|for|as|of|do|in|if)\\b'
+  ],
   ['identifier', '<INITIAL,NOREGEX,NESTED>{Identifier}'],
   ['privateIdentifier', '<INITIAL,NOREGEX,NESTED>#{Identifier}'],
   ['whitespace', '<INITIAL,NOREGEX,NESTED>({LineTerminators}|[ \\t\\v\\f]+|\\\\\\n)', 0x8000]

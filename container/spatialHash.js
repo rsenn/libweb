@@ -56,7 +56,10 @@ SpatialHash.prototype.insert = function(item) {
     for(; j <= y2; j++) this.hashes[i][j].push(item);
   }
 
-  if(this.itemCount++ >= 9e15) throw new Error('SpatialHash: To ensure pure integer stability it must not have more than 9E15 (900 000 000 000 000) objects');
+  if(this.itemCount++ >= 9e15)
+    throw new Error(
+      'SpatialHash: To ensure pure integer stability it must not have more than 9E15 (900 000 000 000 000) objects'
+    );
   else if(this.nId > 9e15 - 1) this.nId = -9e15;
 };
 

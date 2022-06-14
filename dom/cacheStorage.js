@@ -93,7 +93,9 @@ export class CacheStorage {
     let b64 = strToBase64(cacheName);
     let folder = tmpDir + b64;
 
-    return new Promise((resolve, reject) => fs.mkdirs(folder, err => (err ? reject(err) : resolve(new Cache(cacheName, folder + '/')))));
+    return new Promise((resolve, reject) =>
+      fs.mkdirs(folder, err => (err ? reject(err) : resolve(new Cache(cacheName, folder + '/'))))
+    );
   }
 
   /**

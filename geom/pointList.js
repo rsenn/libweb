@@ -86,11 +86,19 @@ PointList.prototype.splice = function() {
   let args = [...arguments];
   const start = args.shift();
   const remove = args.shift();
-  return Array.prototype.splice.apply(this, [start, remove, ...args.map(arg => (arg instanceof Point ? arg : new Point(arg)))]);
+  return Array.prototype.splice.apply(this, [
+    start,
+    remove,
+    ...args.map(arg => (arg instanceof Point ? arg : new Point(arg)))
+  ]);
 };
 PointList.prototype.slice = Array.prototype.slice;
 PointList.prototype.removeSegment = function(index) {
-  let indexes = [PointList.prototype.getLineIndex.call(this, index - 1), PointList.prototype.getLineIndex.call(this, index), PointList.prototype.getLineIndex.call(this, index + 1)];
+  let indexes = [
+    PointList.prototype.getLineIndex.call(this, index - 1),
+    PointList.prototype.getLineIndex.call(this, index),
+    PointList.prototype.getLineIndex.call(this, index + 1)
+  ];
   let lines = indexes.map(i => PointList.prototype.getLine.call(this, i));
   let point = Line.intersect(lines[0], lines[2]);
   if(point) {
@@ -205,7 +213,10 @@ PointList.prototype.bbox = function BBox(
   proto = {
     constructor: PointList.prototype.bbox,
     toString() {
-      return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + '').padStart(4, ' ')},y2:${(this.y2 + '').padStart(4, ' ')}}`;
+      return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + '').padStart(
+        4,
+        ' '
+      )},y2:${(this.y2 + '').padStart(4, ' ')}}`;
     }
   }
 ) {
@@ -308,10 +319,15 @@ PointList.prototype.lines = function(closed = false) {
   return iterableObj;
 };
 PointList.prototype.sort = function(pred) {
-  return Array.prototype.sort.call(this, pred || ((a, b) => Point.prototype.valueOf.call(a) - Point.prototype.valueOf.call(b)));
+  return Array.prototype.sort.call(
+    this,
+    pred || ((a, b) => Point.prototype.valueOf.call(a) - Point.prototype.valueOf.call(b))
+  );
 };
 PointList.prototype.toString = function(sep = ',', prec) {
-  return Array.prototype.map.call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + '')).join(' ');
+  return Array.prototype.map
+    .call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + ''))
+    .join(' ');
 };
 PointList.prototype[Symbol.toStringTag] = function(sep = ',', prec) {
   return Array.prototype.map
@@ -326,7 +342,11 @@ PointList.prototype.toPath = function() {
 PointList.prototype.toSource = function(opts = {}) {
   if(opts.asString) return `new PointList("${this.toString(opts)}")`;
 
-  let fn = opts.asArray ? p => `[${p.x},${p.y}]` : opts.plainObj ? p => Point.toSource(p, { space: '', padding: ' ', separator: ',' }) : point => Point.prototype.toSource.call(point, { ...opts, plainObj: true });
+  let fn = opts.asArray
+    ? p => `[${p.x},${p.y}]`
+    : opts.plainObj
+    ? p => Point.toSource(p, { space: '', padding: ' ', separator: ',' })
+    : point => Point.prototype.toSource.call(point, { ...opts, plainObj: true });
   return 'new PointList([' + PointList.prototype.map.call(this, fn).join(',') + '])';
 };
 PointList.prototype.add = function(pt) {
@@ -402,10 +422,25 @@ PointList.prototype.toPoints = function(ctor = Array.of) {
 PointList.prototype[Util.inspectSymbol] = function(depth, options) {
   //const obj = Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   const obj = Array.from(this); //Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
-  return `\x1b[1;31m${Util.className(this)}\x1b[0m ` + inspect(Object.setPrototypeOf(obj, PointList.prototype), depth, options);
+  return (
+    `\x1b[1;31m${Util.className(this)}\x1b[0m ` +
+    inspect(Object.setPrototypeOf(obj, PointList.prototype), depth, options)
+  );
 };
 
-for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {
+for(let name of [
+  'push',
+  'splice',
+  'clone',
+  'area',
+  'centroid',
+  'avg',
+  'bbox',
+  'rect',
+  'xrange',
+  'yrange',
+  'boundingRect'
+]) {
   PointList[name] = points => PointList.prototype[name].call(points);
 }
 

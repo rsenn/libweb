@@ -302,7 +302,16 @@ export default class Delaunator {
       const pl = triangles[al];
       const p1 = triangles[bl];
 
-      const illegal = inCircle(coords[2 * p0], coords[2 * p0 + 1], coords[2 * pr], coords[2 * pr + 1], coords[2 * pl], coords[2 * pl + 1], coords[2 * p1], coords[2 * p1 + 1]);
+      const illegal = inCircle(
+        coords[2 * p0],
+        coords[2 * p0 + 1],
+        coords[2 * pr],
+        coords[2 * pr + 1],
+        coords[2 * pl],
+        coords[2 * pl + 1],
+        coords[2 * p1],
+        coords[2 * p1 + 1]
+      );
 
       if(illegal) {
         triangles[a] = p1;
@@ -384,7 +393,11 @@ function orientIfSure(px, py, rx, ry, qx, qy) {
 
 //a more robust orientation test that's stable in a given triangle (to fix robustness issues)
 function orient(rx, ry, qx, qy, px, py) {
-  return (orientIfSure(px, py, rx, ry, qx, qy) || orientIfSure(rx, ry, qx, qy, px, py) || orientIfSure(qx, qy, px, py, rx, ry)) < 0;
+  return (
+    (orientIfSure(px, py, rx, ry, qx, qy) ||
+      orientIfSure(rx, ry, qx, qy, px, py) ||
+      orientIfSure(qx, qy, px, py, rx, ry)) < 0
+  );
 }
 
 function inCircle(ax, ay, bx, by, cx, cy, px, py) {

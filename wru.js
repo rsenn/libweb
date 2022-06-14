@@ -97,7 +97,9 @@ export const wru = (function (window) {
         current = { name: current[NAME] || 'anonymous', test: current };
       }
       log(OUTPUT_SEPARATOR);
-      log((iHasIt(current, NAME) && current[NAME]) || (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) || UNKNOWN);
+      log(
+        (iHasIt(current, NAME) && current[NAME]) || (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) || UNKNOWN
+      );
       pass = [];
       fail = [];
       fatal = [];

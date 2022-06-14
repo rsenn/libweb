@@ -81,7 +81,12 @@ export class EagleNodeList {
 
   [inspectSymbol]() {
     //    console.log("this.entries", this.entries);
-    return text(Util.className(this), 0) + ` [\n  ` + [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') + `\n]`;
+    return (
+      text(Util.className(this), 0) +
+      ` [\n  ` +
+      [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
+      `\n]`
+    );
   }
 
   static create(owner, ref, pred, getOrCreate) {
