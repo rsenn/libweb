@@ -11,13 +11,13 @@ export const getBody = xhr => {
 };
 
 export const bytesToSize = bytes => {
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
 
-  if(bytes === 0) return "0 Byte";
+  if(bytes === 0) return '0 Byte';
 
   const log = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
 
-  return Math.round(bytes / Math.pow(1024, log), 2) + " " + sizes[log];
+  return Math.round(bytes / Math.pow(1024, log), 2) + ' ' + sizes[log];
 };
 
 export const getEventFiles = event => {
@@ -30,14 +30,14 @@ export const getEventFiles = event => {
 
 export const isAccepted = (fileType, acceptedFiles) => {
   if(fileType && acceptedFiles) {
-    const mimeType = fileType || "";
-    const baseMimeType = mimeType.replace(/\/.*$/, "");
+    const mimeType = fileType || '';
+    const baseMimeType = mimeType.replace(/\/.*$/, '');
 
     return acceptedFiles.some(type => {
       const validType = type.trim();
 
-      if(validType.endsWith("/*")) {
-        return baseMimeType === validType.replace(/\/.*$/, "");
+      if(validType.endsWith('/*')) {
+        return baseMimeType === validType.replace(/\/.*$/, '');
       }
 
       return mimeType === validType;

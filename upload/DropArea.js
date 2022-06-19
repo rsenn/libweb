@@ -1,8 +1,8 @@
-import React from "react";
-import Context from "./Context.js";
-import PropTypes from "prop-types";
+import React from 'react';
+import Context from './Context.js';
+import PropTypes from 'prop-types';
 
-import { getEventFiles } from "./Utils.js";
+import { getEventFiles } from './Utils.js';
 
 class DropArea extends React.Component {
   constructor() {
@@ -67,7 +67,12 @@ class DropArea extends React.Component {
       { isDrag } = this.state;
 
     return (
-      <div onDrop={this.onDrop} onDragOver={this.onDragOver} onDragEnter={this.onDragEnter} onDragLeave={this.onDragLeave}>
+      <div
+        onDrop={this.onDrop}
+        onDragOver={this.onDragOver}
+        onDragEnter={this.onDragEnter}
+        onDragLeave={this.onDragLeave}
+      >
         {children(isDrag)}
       </div>
     );

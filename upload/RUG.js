@@ -1,12 +1,12 @@
-import React from "react";
-import { defaultProps, propTypes } from "./PropTypes.js";
+import React from 'react';
+import { defaultProps, propTypes } from './PropTypes.js';
 
-import Handle from "./Handle.js";
-import Context from "./Context.js";
-import Request from "./Request.js";
-import View from "./view";
+import Handle from './Handle.js';
+import Context from './Context.js';
+import Request from './Request.js';
+import View from './view';
 
-import { bytesToSize, isAccepted, getImageDimensions } from "./Utils.js";
+import { bytesToSize, isAccepted, getImageDimensions } from './Utils.js';
 
 class RUG extends React.Component {
   constructor({ initialState, ssrSupport }) {
@@ -91,7 +91,7 @@ class RUG extends React.Component {
       const image = images[key];
       if(image.uid === uid) {
         if(await this.props.onConfirmDelete(image, images)) {
-          if(typeof image.abort === "function") {
+          if(typeof image.abort === 'function') {
             image.abort();
           }
           deletedImage = image;
@@ -115,11 +115,13 @@ class RUG extends React.Component {
     (async () => {
       let { source } = this.props;
       if(response && response.photo) response.url = response.photo.src;
-      let { url, error, photo } = typeof source === "function" ? await source(response) : response;
+      let { url, error, photo } = typeof source === 'function' ? await source(response) : response;
       if(!url && photo && photo.src) url = photo.src;
-      console.log("RUG.onSuccess ", { uid, url, error, photo });
+      console.log('RUG.onSuccess ', { uid, url, error, photo });
 
-      this.setImage(uid, { src: url, done: !error, error: !!error, uploading: false, progress: 100 }, () => this.props.onSuccess(this.state.images.find(item => item.uid === uid)));
+      this.setImage(uid, { src: url, done: !error, error: !!error, uploading: false, progress: 100 }, () =>
+        this.props.onSuccess(this.state.images.find(item => item.uid === uid))
+      );
     })();
   }
 
@@ -153,7 +155,10 @@ class RUG extends React.Component {
   }
 
   onSelected(uid) {
-    this.setState({ images: this.state.images.map(item => Object.assign({}, item, { selected: item.uid === uid })) }, () => this.props.onChange(this.state.images));
+    this.setState(
+      { images: this.state.images.map(item => Object.assign({}, item, { selected: item.uid === uid })) },
+      () => this.props.onChange(this.state.images)
+    );
   }
 
   openDialogue() {
@@ -165,7 +170,13 @@ class RUG extends React.Component {
     for(const file of files) {
       try {
         const src = await this.getImageURLToBlob(file, images);
-        const image = this.create({ file, src, uploaded: new Date(), original_name: file.name, size: bytesToSize(file.size) });
+        const image = this.create({
+          file,
+          src,
+          uploaded: new Date(),
+          original_name: file.name,
+          size: bytesToSize(file.size)
+        });
         images.push(image);
       } catch(e) {
         // nothing
@@ -193,7 +204,7 @@ class RUG extends React.Component {
         accept.map(type => `${acceptType}/${type}`)
       )
     ) {
-      warning("accept");
+      warning('accept');
     }
     const ImageURL = URL.createObjectURL(file);
     // if not available rules
@@ -201,27 +212,27 @@ class RUG extends React.Component {
       const { size, limit, width, height } = rules;
       /* limit  */
       if(limit && images.length >= limit) {
-        warning("limit");
+        warning('limit');
       }
       /* size */
       if(size * 1024 < file.size) {
-        warning("size");
+        warning('size');
       }
-      if(acceptType === "image") {
+      if(acceptType === 'image') {
         /* dimensions */
         const image = await getImageDimensions(ImageURL);
         if(width) {
           if(image.width < width.min) {
-            warning("minWidth");
+            warning('minWidth');
           } else if(image.width > width.max) {
-            warning("maxWidth");
+            warning('maxWidth');
           }
         }
         if(height) {
           if(image.height < height.min) {
-            warning("minHeight");
+            warning('minHeight');
           } else if(image.height > height.max) {
-            warning("maxHeight");
+            warning('maxHeight');
           }
         }
       }
@@ -233,7 +244,17 @@ class RUG extends React.Component {
   upload({ uid, file, data }) {
     const { send, action, headers, customRequest } = this.props;
     const request = customRequest || Request;
-    const { abort } = request({ uid, file, data, send, action, headers, onError: this.onError, onSuccess: this.onSuccess, onProgress: this.onProgress });
+    const { abort } = request({
+      uid,
+      file,
+      data,
+      send,
+      action,
+      headers,
+      onError: this.onError,
+      onSuccess: this.onSuccess,
+      onProgress: this.onProgress
+    });
 
     this.setImage(uid, { abort, uploading: true });
   }
@@ -246,12 +267,12 @@ class RUG extends React.Component {
     const { type, sorting, children } = this.props,
       { images } = this.state;
     switch (typeof children) {
-      case "object":
+      case 'object':
         return children;
-      case "function":
+      case 'function':
         return children(images, options);
       default:
-        console.log("RUG.showChildren:", children);
+        console.log('RUG.showChildren:', children);
         return View({ type, sorting }, images);
     }
   }
@@ -261,7 +282,14 @@ class RUG extends React.Component {
     const { images, renderComponent } = this.state;
     // props
     const { className, style, accept, acceptType, header, footer } = this.props;
-    const contextValue = { images, accept, autoUpload: this.props.autoUpload, setSort: this.setSort, uploadFiles: this.uploadFiles, openDialogue: this.openDialogue },
+    const contextValue = {
+        images,
+        accept,
+        autoUpload: this.props.autoUpload,
+        setSort: this.setSort,
+        uploadFiles: this.uploadFiles,
+        openDialogue: this.openDialogue
+      },
       options = contextValue; // hide server side rendering
     if(!renderComponent) {
       return null;
@@ -269,10 +297,17 @@ class RUG extends React.Component {
     return (
       <Context.Provider value={contextValue}>
         <div className={`upload ${className}`} style={style}>
-          {header && (typeof header === "function" ? header(options) : Handle(options, header))}
+          {header && (typeof header === 'function' ? header(options) : Handle(options, header))}
           {this.showChildren(options)}
-          {footer && (typeof footer === "function" ? footer(options) : Handle(options, footer))}
-          <input multiple type='file' ref={this.fileInput} className='upload-file-input' accept={accept.map(type => `${acceptType}/${type}`)} onChange={event => this.uploadFiles(event.target.files)} />
+          {footer && (typeof footer === 'function' ? footer(options) : Handle(options, footer))}
+          <input
+            multiple
+            type='file'
+            ref={this.fileInput}
+            className='upload-file-input'
+            accept={accept.map(type => `${acceptType}/${type}`)}
+            onChange={event => this.uploadFiles(event.target.files)}
+          />
         </div>
       </Context.Provider>
     );

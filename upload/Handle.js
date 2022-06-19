@@ -1,10 +1,10 @@
-import React from "react";
-import DropArea from "./DropArea.js";
+import React from 'react';
+import DropArea from './DropArea.js';
 
 export default (options, { handle }) => (
   <DropArea>
     {isDrag => (
-      <div className={`upload-handle ${isDrag ? "__dragging" : ""}`}>
+      <div className={`upload-handle ${isDrag ? '__dragging' : ''}`}>
         <svg viewBox='0 -5 32 52' className='upload-handle-icon'>
           <g>
             <polyline points='1 19 1 31 31 31 31 19' />
@@ -14,7 +14,7 @@ export default (options, { handle }) => (
         </svg>
 
         <div className='upload-handle-info'>
-          {typeof handle === "function" ? (
+          {typeof handle === 'function' ? (
             handle(options)
           ) : (
             <React.Fragment>

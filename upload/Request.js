@@ -1,4 +1,4 @@
-import { getBody } from "./Utils.js";
+import { getBody } from './Utils.js';
 
 const Request = ({
   uid,
@@ -54,11 +54,11 @@ const Request = ({
     onError(uid, { action, status, response });
   };
 
-  xhr.open("POST", action, true);
+  xhr.open('POST', action, true);
 
   // if the value is null by default, the request will not be executed
-  if(headers["X-Requested-With"] !== null) {
-    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+  if(headers['X-Requested-With'] !== null) {
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   }
 
   /**
@@ -77,7 +77,7 @@ const Request = ({
     Form.append(key, value);
   });
 
-  Form.append("file", file);
+  Form.append('file', file);
 
   xhr.send(Form);
 

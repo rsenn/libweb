@@ -1,6 +1,6 @@
-import React from "react";
-import RefreshIcon from "./RefreshIcon.js";
-import UploadIcon from "./UploadIcon.js";
+import React from 'react';
+import RefreshIcon from './RefreshIcon.js';
+import UploadIcon from './UploadIcon.js';
 
 export default class List extends React.Component {
   constructor() {
@@ -15,7 +15,7 @@ export default class List extends React.Component {
         ...props
       } = this.props,
       { spin } = this.state,
-      showProgress = !done && !error ? "__active" : "";
+      showProgress = !done && !error ? '__active' : '';
 
     return (
       <div {...props} key={uid} className='upload-list'>
@@ -29,7 +29,7 @@ export default class List extends React.Component {
           </div>
         )}
 
-        {error && typeof refresh === "function" && (
+        {error && typeof refresh === 'function' && (
           <div
             onClick={() => {
               if(spin) return;
@@ -42,7 +42,7 @@ export default class List extends React.Component {
                 refresh();
               }, 700);
             }}
-            className={`upload-list-refresh ${spin ? "__spin" : ""}`}
+            className={`upload-list-refresh ${spin ? '__spin' : ''}`}
           >
             <div style={{ padding: 3 }}>
               <RefreshIcon />

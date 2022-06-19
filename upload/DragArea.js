@@ -1,8 +1,8 @@
-import React from "react";
-import { SortableContainer, SortableElement } from "react-sortable-hoc";
+import React from 'react';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
-import Context from "./Context.js";
-import { arrayMove } from "./Utils.js";
+import Context from './Context.js';
+import { arrayMove } from './Utils.js';
 
 const DragItem = SortableElement(({ children }) => <div>{children}</div>);
 const SortableList = SortableContainer(({ children }) => children);
@@ -37,7 +37,7 @@ DragArea.defaultProps = {
   lockAxis: null,
   useWindowAsScrollContainer: true,
   pressDelay: 200,
-  axis: "xy",
+  axis: 'xy',
   style: {}
 };
 

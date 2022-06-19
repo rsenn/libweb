@@ -1,5 +1,5 @@
-import React from "react";
-import RefreshIcon from "./RefreshIcon.js";
+import React from 'react';
+import RefreshIcon from './RefreshIcon.js';
 
 export default class Card extends React.Component {
   constructor() {
@@ -16,7 +16,7 @@ export default class Card extends React.Component {
       { spin } = this.state;
 
     return (
-      <div {...props} key={uid} className={`upload-card ${error ? "__error" : ""}`}>
+      <div {...props} key={uid} className={`upload-card ${error ? '__error' : ''}`}>
         <div className='upload-card-name' onClick={click}>
           <div>
             {name}
@@ -55,7 +55,7 @@ export default class Card extends React.Component {
           </div>
         )}
 
-        {error && typeof refresh === "function" && (
+        {error && typeof refresh === 'function' && (
           <div
             onClick={() => {
               if(spin) return;
@@ -68,7 +68,7 @@ export default class Card extends React.Component {
                 refresh();
               }, 700);
             }}
-            className={`upload-card-refresh ${spin ? "__spin" : ""}`}
+            className={`upload-card-refresh ${spin ? '__spin' : ''}`}
           >
             <div style={{ padding: 7 }}>
               <RefreshIcon />

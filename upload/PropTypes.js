@@ -1,10 +1,10 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 const func = () => {};
 
 export const defaultProps = {
-  action: "",
-  className: "",
+  action: '',
+  className: '',
 
   ssrSupport: false,
   autoUpload: true,
@@ -13,11 +13,11 @@ export const defaultProps = {
   headers: {},
   style: {},
 
-  accept: ["jpg", "jpeg", "png", "gif"],
-  acceptType: "image",
+  accept: ['jpg', 'jpeg', 'png', 'gif'],
+  acceptType: 'image',
   initialState: [],
 
-  type: "card",
+  type: 'card',
 
   sorting: true,
   header: true,
@@ -50,7 +50,7 @@ export const propTypes = {
 
   initialState: PropTypes.arrayOf(PropTypes.object),
 
-  type: PropTypes.oneOf(["card", "list"]),
+  type: PropTypes.oneOf(['card', 'list']),
 
   sorting: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 
