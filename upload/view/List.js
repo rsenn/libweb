@@ -1,12 +1,29 @@
-import React from 'react';
+function _extends() {
+  _extends =
+    Object.assign ||
+    function(target) {
+      for(var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for(var key in source) {
+          if(Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    };
+  return _extends.apply(this, arguments);
+}
+
+import React from '../../dom/preactComponent.js';
 import RefreshIcon from './RefreshIcon.js';
 import UploadIcon from './UploadIcon.js';
-
 export default class List extends React.Component {
   constructor() {
     super();
-
-    this.state = { spin: false };
+    this.state = {
+      spin: false
+    };
   }
 
   render() {
@@ -16,55 +33,117 @@ export default class List extends React.Component {
       } = this.props,
       { spin } = this.state,
       showProgress = !done && !error ? '__active' : '';
-
-    return (
-      <div {...props} key={uid} className='upload-list'>
-        {uploading && <div className={`upload-list-progress ${showProgress}`} style={{ width: `${progress}%` }} />}
-
-        {uploading && <span className={`upload-list-progress-count ${showProgress}`}>{progress || 0}%</span>}
-
-        {!(done || error || uploading) && (
-          <div onClick={upload} className='upload-list-upload-button'>
-            <UploadIcon />
-          </div>
-        )}
-
-        {error && typeof refresh === 'function' && (
-          <div
-            onClick={() => {
+    return h(
+      'div',
+      _extends({}, props, {
+        key: uid,
+        className: 'upload-list'
+      }),
+      uploading &&
+        h('div', {
+          className: `upload-list-progress ${showProgress}`,
+          style: {
+            width: `${progress}%`
+          }
+        }),
+      uploading &&
+        h(
+          'span',
+          {
+            className: `upload-list-progress-count ${showProgress}`
+          },
+          progress || 0,
+          '%'
+        ),
+      !(done || error || uploading) &&
+        h(
+          'div',
+          {
+            onClick: upload,
+            className: 'upload-list-upload-button'
+          },
+          h(UploadIcon, null)
+        ),
+      error &&
+        typeof refresh === 'function' &&
+        h(
+          'div',
+          {
+            onClick: () => {
               if(spin) return;
-
-              this.setState({ spin: true });
-
+              this.setState({
+                spin: true
+              });
               setTimeout(() => {
-                this.setState({ spin: false });
-
+                this.setState({
+                  spin: false
+                });
                 refresh();
               }, 700);
-            }}
-            className={`upload-list-refresh ${spin ? '__spin' : ''}`}
-          >
-            <div style={{ padding: 3 }}>
-              <RefreshIcon />
-            </div>
-          </div>
-        )}
-
-        <div className='upload-list-image' onClick={click}>
-          <img src={src} alt={name} />
-        </div>
-
-        <div className='upload-list-content' onClick={click}>
-          <div className='upload-list-name'>{name}</div>
-          <div className='upload-list-size'>{size}</div>
-        </div>
-
-        <div className='upload-list-remove' onClick={remove}>
-          <svg viewBox='0 0 40 40'>
-            <path stroke='current' strokeLinecap='round' strokeWidth='4' d='M 10,10 L 30,30 M 30,10 L 10,30' />
-          </svg>
-        </div>
-      </div>
+            },
+            className: `upload-list-refresh ${spin ? '__spin' : ''}`
+          },
+          h(
+            'div',
+            {
+              style: {
+                padding: 3
+              }
+            },
+            h(RefreshIcon, null)
+          )
+        ),
+      h(
+        'div',
+        {
+          className: 'upload-list-image',
+          onClick: click
+        },
+        h('img', {
+          src: src,
+          alt: name
+        })
+      ),
+      h(
+        'div',
+        {
+          className: 'upload-list-content',
+          onClick: click
+        },
+        h(
+          'div',
+          {
+            className: 'upload-list-name'
+          },
+          name
+        ),
+        h(
+          'div',
+          {
+            className: 'upload-list-size'
+          },
+          size
+        )
+      ),
+      h(
+        'div',
+        {
+          className: 'upload-list-remove',
+          onClick: remove
+        },
+        h(
+          'svg',
+          {
+            viewBox: '0 0 40 40'
+          },
+          h('path', {
+            stroke: 'current',
+            strokeLinecap: 'round',
+            strokeWidth: '4',
+            d: 'M 10,10 L 30,30 M 30,10 L 10,30'
+          })
+        )
+      )
     );
   }
 }
