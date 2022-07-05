@@ -823,6 +823,22 @@ let chain = this.scope();
     yield* super.getAll((v, p, o) => typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o), fn);
   }
 
+  get(pred, transform = a => a) {
+    let it = this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform);
+    let a = [...it];
+    const { root, path, raw } = this;
+    //console.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
+    return a[0] || null;
+    /*     const fn = Util.tryFunction(
+      (v, p, o) => typeof v == 'object' && v !== null && EagleElement.get(o || this.owner, p, v),
+      (r, v, p, o) => r && transform(r, p, o),
+      () => undefined
+    );
+
+    if(typeof pred != 'function') pred = EagleNode.makePredicate(pred);
+    return super.get((v, p, o) => typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o), fn);*/
+  }
+
   find(pred, transform = a => a) {
     const fn = Util.tryFunction(
       (v, p, o) => EagleElement.get(o || this.owner, p),

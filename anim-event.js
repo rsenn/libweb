@@ -10,32 +10,41 @@
  * Licensed under the MIT license.
  */
 var MSPF = 1000 / 60,
-    // ms/frame (FPS: 60)
-KEEP_LOOP = 500,
+  // ms/frame (FPS: 60)
+  KEEP_LOOP = 500,
+  /**
+   * @typedef {Object} task
+   * @property {Event} event
+   * @property {function} listener
+   */
 
-/**
- * @typedef {Object} task
- * @property {Event} event
- * @property {function} listener
- */
+  /** @type {task[]} */
+  tasks = [];
 
-/** @type {task[]} */
-tasks = [];
-
-var requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
-  return setTimeout(callback, MSPF);
-},
-    cancelAnim = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || function (requestID) {
-  return clearTimeout(requestID);
-};
+var requestAnim =
+    window.requestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback) {
+      return setTimeout(callback, MSPF);
+    },
+  cancelAnim =
+    window.cancelAnimationFrame ||
+    window.mozCancelAnimationFrame ||
+    window.webkitCancelAnimationFrame ||
+    window.msCancelAnimationFrame ||
+    function(requestID) {
+      return clearTimeout(requestID);
+    };
 
 var lastFrameTime = Date.now(),
-    requestID;
+  requestID;
 
 function step() {
   var called, next;
 
-  if (requestID) {
+  if(requestID) {
     cancelAnim.call(window, requestID);
     requestID = null;
   }
@@ -43,7 +52,7 @@ function step() {
   tasks.forEach(function (task) {
     var event;
 
-    if (event = task.event) {
+    if((event = task.event)) {
       task.event = null; // Clear it before `task.listener()` because that might fire another event.
 
       task.listener(event);
@@ -51,15 +60,15 @@ function step() {
     }
   });
 
-  if (called) {
+  if(called) {
     lastFrameTime = Date.now();
     next = true;
-  } else if (Date.now() - lastFrameTime < KEEP_LOOP) {
+  } else if(Date.now() - lastFrameTime < KEEP_LOOP) {
     // Go on for a while
     next = true;
   }
 
-  if (next) {
+  if(next) {
     requestID = requestAnim.call(window, step);
   }
 }
@@ -67,7 +76,7 @@ function step() {
 function indexOfTasks(listener) {
   var index = -1;
   tasks.some(function (task, i) {
-    if (task.listener === listener) {
+    if(task.listener === listener) {
       index = i;
       return true;
     }
@@ -85,14 +94,16 @@ var AnimEvent = {
   add: function add(listener) {
     var task;
 
-    if (indexOfTasks(listener) === -1) {
-      tasks.push(task = {
-        listener: listener
-      });
-      return function (event) {
+    if(indexOfTasks(listener) === -1) {
+      tasks.push(
+        (task = {
+          listener: listener
+        })
+      );
+      return function(event) {
         task.event = event;
 
-        if (!requestID) {
+        if(!requestID) {
           step();
         }
       };
@@ -103,10 +114,10 @@ var AnimEvent = {
   remove: function remove(listener) {
     var iRemove;
 
-    if ((iRemove = indexOfTasks(listener)) > -1) {
+    if((iRemove = indexOfTasks(listener)) > -1) {
       tasks.splice(iRemove, 1);
 
-      if (!tasks.length && requestID) {
+      if(!tasks.length && requestID) {
         cancelAnim.call(window, requestID);
         requestID = null;
       }

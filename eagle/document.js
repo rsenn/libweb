@@ -205,6 +205,10 @@ export class EagleDocument extends EagleNode {
     yield* super.getAll(pred, transform || ((v, p, o) => EagleElement.get(this, p, v)));
   }
 
+  get(pred, transform) {
+    return super.get(pred, transform || ((v, p, o) => EagleElement.get(this, p, v)));
+  }
+
   find(pred, transform) {
     return super.find(pred, transform || ((v, p, o) => EagleElement.get(this, p, v)));
   }
@@ -323,11 +327,19 @@ export class EagleDocument extends EagleNode {
       deep.RETURN_PATH);
 
     return this.lookup(path);*/
+    let layers = this.get('layers');
 
-    for(let name_or_id of (id + '').split(/\s+/g).map(n => (+n !== NaN ? +n : n))) {
+    for(let layer of layers.raw.children) {
+      let { number, name } = layer.attributes;
+      console.log('layer', { number, name });
+      if(number == id || name == id) return layer;
+    }
+    return null;
+
+    /*   for(let name_or_id of (id + '').split(/\s+/g).map(n => (+n !== NaN ? +n : n))) {
       const layer = this.layers[name_or_id];
       if(layer) return layer;
-    }
+    }*/
   }
 
   getMainElement = Util.memoize(function () {

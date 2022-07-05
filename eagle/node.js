@@ -242,11 +242,22 @@ export class EagleNode {
   get(pred, transform) {
     //console.log('get', this, pred);
     pred = EagleNode.makePredicate(pred);
-    let it = this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform);
+    let ctor = this[Symbol.species];
+    transform = transform || ((...args) => args);
+    let cond = pred;
+    let found = deep.find(this.raw, cond /*, deep.RETURN_VALUE_PATH*/);
+
+    if(found) {
+      let [v, p] = found;
+      return transform(v, [...this.path, ...p], this.document ?? this.root);
+    }
+    return found;
+
+    /*let it = this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform);
     let a = [...it];
     const { root, path, raw } = this;
     //console.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
-    return a[0] || null;
+    return a[0] || null;*/
   }
 
   find(name, transform = a => a) {
