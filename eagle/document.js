@@ -83,7 +83,7 @@ export class EagleDocument extends EagleNode {
 
     Util.define(this, {
       pathMapper: new PathMapper(xmlObj, ImmutablePath),
-    data: xmlStr,
+      data: xmlStr,
       raw2element: Util.weakMapper((raw, owner, ref) => {
         //let path=ref && ref.path ? [...ref.path] : ref;
         //console.log('raw2element new', { raw,owner: owner.raw,ref});
