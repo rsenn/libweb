@@ -264,7 +264,7 @@ export class EagleElement extends EagleNode {
             if(this[key] == undefined) this.initRelation(key, this.handlers[key], hfn);
           }
           //    console.log('hfn', {hfn:hfn+'',tagName,key});
-          let nfn = (...args) => {
+        /*  let nfn = (...args) => {
             let ret;
             try {
               ret = hfn(...args);
@@ -273,8 +273,8 @@ export class EagleElement extends EagleNode {
             }
             return ret;
           };
-
-          if(this[key] == undefined) trkl.bind(this, key, nfn);
+*/
+          if(this[key] == undefined) trkl.bind(this, key, hfn);
         } else {
           trkl.bind(this, key, handler);
         }

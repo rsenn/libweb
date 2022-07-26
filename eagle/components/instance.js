@@ -5,10 +5,10 @@ import { MakeRotation, log, useTransform } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
 export const Instance = ({ data, opts = {}, ...props }) => {
-   console.log('Instance.render', { data,opts });
+  // console.log('Instance.render', { data,opts });
 let [transformation, transform, accumulate] = useTransform(opts);
 
-   console.log('Instance.render', { transformation, transform, accumulate });
+  // console.log('Instance.render', { transformation, transform, accumulate });
   //let { transformation = new TransformationList() } = opts;
   //log('Instance.render', { transformation, data });
 
