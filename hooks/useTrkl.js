@@ -2,10 +2,13 @@ import { Component, useState, useMemo, useCallback, useRef, useEffect } from '..
 import Util from '../util.js';
 
 export const useTrkl = fn => {
+  if(!(typeof fn == 'function')) return fn;
+
+  //console.debug('useTrkl fn =', fn);
   if(Util.platform != 'browser') return fn();
 
   const [value, setValue] = useState(fn());
-  // console.debug('useTrkl fn =', fn, ' value =', value);
+  
 
   useEffect(() => {
     //console.log('updated', fn.id, fn());

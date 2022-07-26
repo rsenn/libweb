@@ -8,14 +8,16 @@ export const Instance = ({ data, opts = {}, ...props }) => {
   let [transformation, transform, accumulate] = useTransform(opts);
 
   //let { transformation = new TransformationList() } = opts;
-  log('Instance.render', { transformation, data });
-  let instance =
-    useValue(async function* () {
+  //log('Instance.render', { transformation, data });
+
+  let instance = /*useValue(async function* () {}) || */data;
+
+    async function* DataFn () {
       for await(let change of data.repeater) {
-        //log('change:', change);
+        log('change:', change);
         yield change;
       }
-    }) || data;
+    }
 
   let { x, y, rot, part, symbol } = instance;
   let { deviceset, name, value } = part;

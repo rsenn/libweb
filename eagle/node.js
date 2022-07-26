@@ -25,6 +25,8 @@ export class EagleNode {
   }
 
   constructor(owner, ref, raw) {
+    //console.log('EagleNode.constructor(1)', {owner: owner, ref,raw});
+
     //if(!owner) owner = new EagleReference(ref.root, []).dereference();
     if(!(ref instanceof EagleReference))
       ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
@@ -36,7 +38,10 @@ export class EagleNode {
       enumerable: false,
       writable: true
     });
+
     Util.define(this, 'ref', ref);
+
+    //console.log('EagleNode.constructor(2)', {owner: this.owner, ref: this.ref,raw: this.raw});
   }
 
   get path() {
@@ -104,12 +109,17 @@ export class EagleNode {
     const { ref, path, root } = this;
     if(ref)
       try {
-        return ref.derefence();
-      } catch(e) {}
+        return ref.dereference();
+      } catch(e) {
+        throw e;
+      }
+
     if(path && root)
       try {
         return path.deref(root.raw);
       } catch(e) {}
+
+    //throw new Error(`EagleNode.get raw : 'No ref and no path: ${Object.getOwnPropertyNames(this).join(', ')}`);
     return this.getRaw();
   }
 

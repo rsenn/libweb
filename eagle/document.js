@@ -11,10 +11,24 @@ import { LinesToPath } from './renderUtils.js';
 import { isBBox, BBox, Rect, Point, PointList, Line } from '../geom.js';
 import { RGBA } from '../color.js';
 import { EagleNodeList } from './nodeList.js';
+import { EagleNodeMap } from './nodeMap.js';
 import { PathMapper } from '../json/pathMapper.js';
 import { Palette } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { read as fromXML, write as toXML } from '../xml.js';
+
+function GetProxy(fn = (prop, target) => null, handlers = {}) {
+  return new Proxy(
+    {},
+    {
+      get(target, prop, receiver) {
+        let ret = fn(prop, target);
+        return ret;
+      },
+      ...handlers
+    }
+  );
+}
 
 export class EagleDocument extends EagleNode {
   static types = ['brd', 'sch', 'lbr'];
@@ -70,7 +84,13 @@ export class EagleDocument extends EagleNode {
     this.data = xmlStr;
 
     Util.define(this, {
-      raw2element: Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
+      raw2element: Util.weakMapper((raw, owner, ref) => {
+        //let path=ref && ref.path ? [...ref.path] : ref;
+        //console.log('raw2element new', { raw,owner: owner.raw,ref});
+        let el = new EagleElement(owner, ref, raw);
+        //console.log('raw2element new(2)', { el: el.raw,ref });
+        return el;
+      })
     });
 
     const { pathMapper, raw2element } = this;
@@ -120,10 +140,38 @@ export class EagleDocument extends EagleNode {
     // this.initCache(EagleElement, EagleNodeList.create);
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
+
+    this.layers = GetProxy(
+      (prop, target) => {
+        return this.getLayer(prop);
+      },
+      {
+        ownKeys: target => {
+          return this.get('layers').children.map(c => c.name);
+        }
+      }
+    );
+
+    this.sheets = GetProxy(
+      (prop, target) => {
+        return this.getSheet(prop);
+      },
+      {
+        ownKeys: target => {
+          return this.get('sheets').children.map((c,i) => i+'');
+        }
+      }
+    );
+
+    //  lazyProperty(this, 'layers', () => EagleNodeMap.create(this.get('layers').children.raw, 'name'));
   }
 
   /* prettier-ignore */ get raw() {
+    if(Array.isArray(this.xml))
     return this.xml[0];
+  //console.log('EagleDocument.get raw', { 'this': this.orig,xml: this.xml });
+  return this.xml;
+
   }
   /* prettier-ignore */ get filename() {
     return this.file && this.file.replace(/.*\//g, '');
@@ -322,24 +370,26 @@ export class EagleDocument extends EagleNode {
   }
 
   getLayer(id) {
-    /*    let path=deep.find(this.doc.raw, 
-      e => e.tagName=='layer' && (e.attributes.id==id ||e.attributes.name==name),
-      deep.RETURN_PATH);
-
-    return this.lookup(path);*/
     let layers = this.get('layers');
+    let i = 0;
 
-    for(let layer of layers.raw.children) {
+    for(let layer of layers.children) {
       let { number, name } = layer.attributes;
-      console.log('layer', { number, name });
+      // console.log('layer', { number, name });
       if(number == id || name == id) return layer;
+      i++;
     }
     return null;
+  }
+  getSheet(id) {
+    let sheets = this.get('sheets');
+    let i = 0;
 
-    /*   for(let name_or_id of (id + '').split(/\s+/g).map(n => (+n !== NaN ? +n : n))) {
-      const layer = this.layers[name_or_id];
-      if(layer) return layer;
-    }*/
+    for(let sheet of sheets.children) {
+       if(i == id ) return sheet;
+      i++;
+    }
+    return null;
   }
 
   getMainElement = Util.memoize(function () {

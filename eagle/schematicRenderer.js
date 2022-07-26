@@ -169,14 +169,17 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
     //console.log('doc:', doc);
+    console.log('SchematicRenderer.render',{ doc,parent,props,sheetNo});
 
-    const sheetsElem = Util.isObject(doc) && doc.find && doc.find('sheets');
-    const sheets = sheetsElem?.children ?? [];
+ /*   const sheetsElem = Util.isObject(doc) && doc.find && doc.find('sheets');
+    const sheets = sheetsElem?.children ?? [];*/
 
     //console.log('doc.sheets:',sheets);
 
-    let sheet = sheets[sheetNo];
-    //console.log('sheet.getBounds', sheet.getBounds+'');
+    let sheet = doc.sheets[sheetNo];
+    console.log('sheet', sheet);
+console.log('sheetNo', sheetNo);
+//console.log('doc', doc, Util.className(doc));
 
     let bounds = doc.getBounds(sheetNo || 0);
     //console.log('bounds:', bounds);

@@ -21,9 +21,12 @@ export class EagleNodeList {
       if(entries[pos]) pos = entries[pos][0];
     }
     if(pos < 0) pos += raw.length;
-    //console.log('EagleNodeList', { pos, pred});
+    let path = ref.path.down(pos);
+    //console.log('EagleNodeList.item', { owner, path, pos, pred, raw: raw[pos] });
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) {
-      let element = this.getOrCreate(owner.document, ref.down(pos) /*, raw[pos]*/);
+      owner.document.raw2element.map.delete(raw[pos]);
+
+      let element = this.getOrCreate(owner.document, ref.down(pos));
       if(pred(element)) return element;
     }
   }
@@ -34,7 +37,7 @@ export class EagleNodeList {
     let j = 0;
     for(let i = 0; i < raw.length; i++) {
       if(pred && !pred(raw[i], j, this)) continue;
-      yield this.getOrCreate(owner, ref.down(i) /*, raw[i]*/);
+      yield this.getOrCreate(owner.document, ref.down(i) /*, raw[i]*/);
       j++;
     }
   }
@@ -80,11 +83,13 @@ export class EagleNodeList {
   }
 
   [inspectSymbol]() {
+    let { raw, ref } = this;
     //    console.log("this.entries", this.entries);
     return (
       text(Util.className(this), 0) +
       ` [\n  ` +
-      [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
+      `...${raw.length} items...` +
+      //[...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
       `\n]`
     );
   }
