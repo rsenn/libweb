@@ -243,8 +243,8 @@ export class EagleProject {
 
     let libraries = {
       file: this.getLibrary(name),
-      schematic: schematic.libraries[name],
-      board: board.libraries[name]
+      schematic: schematic.getLibrary(name),
+      board: board.getLibrary(name)
     };
 
     /*  let layers = {

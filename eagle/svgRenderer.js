@@ -26,7 +26,7 @@ export class EagleSVGRenderer {
 
   constructor(doc, factory) {
     //console.log('EagleSVGRenderer.constructor',{factory});
-      if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
+    if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     this.doc = doc;
     let renderer = this;
     this.path2component = Util.mapWrapper(
@@ -39,7 +39,7 @@ export class EagleSVGRenderer {
     this.mirrorY = new TransformationList().scale(1, -1);
     this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
-     // console.log('EagleSVGRenderer.create',{factory});
+      // console.log('EagleSVGRenderer.create',{factory});
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
       let pathStr = path;
@@ -432,9 +432,9 @@ export class EagleSVGRenderer {
   }
 
   render(obj, props = {}, children = []) {
-    console.log('EagleSVGRenderer.render', {obj,props,children});
+    console.log('EagleSVGRenderer.render', { obj, props, children });
     let doc = obj.document || this.doc;
-    this.debug('EagleSVGRenderer.render', {doc});
+    this.debug('EagleSVGRenderer.render', { doc });
     let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList() } = props;
 
     if(!bounds || bounds.size.area() == 0) bounds = obj.getBounds({ bbox: true });

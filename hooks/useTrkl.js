@@ -8,7 +8,6 @@ export const useTrkl = fn => {
   if(Util.platform != 'browser') return fn();
 
   const [value, setValue] = useState(fn());
-  
 
   useEffect(() => {
     //console.log('updated', fn.id, fn());

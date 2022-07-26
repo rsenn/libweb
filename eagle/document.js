@@ -73,17 +73,17 @@ export class EagleDocument extends EagleNode {
   }
 
   constructor(xmlStr, project, filename, type, fs) {
-    console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
+    //console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
 
     const xml = fromXML(xmlStr); //parseXML(xmlStr);
     // console.log('EagleDocument.constructor', { xml });
 
     let xmlObj = deep.clone(xml[0]);
     super(project, EagleRef(xmlObj, []), xmlObj);
-    this.pathMapper = new PathMapper(xmlObj, ImmutablePath);
-    this.data = xmlStr;
 
     Util.define(this, {
+      pathMapper: new PathMapper(xmlObj, ImmutablePath),
+    data: xmlStr,
       raw2element: Util.weakMapper((raw, owner, ref) => {
         //let path=ref && ref.path ? [...ref.path] : ref;
         //console.log('raw2element new', { raw,owner: owner.raw,ref});
@@ -146,22 +146,18 @@ export class EagleDocument extends EagleNode {
         return this.getLayer(prop);
       },
       {
-        ownKeys: target => {
-          return this.get('layers').children.map(c => c.name);
-        }
+        ownKeys: target => this.get('layers').children.map(c => c.name)
       }
     );
 
-    this.sheets = GetProxy(
-      (prop, target) => {
-        return this.getSheet(prop);
-      },
-      {
-        ownKeys: target => {
-          return this.get('sheets').children.map((c,i) => i+'');
-        }
-      }
-    );
+    this.sheets = GetProxy((prop, target) => this.getSheet(prop), {
+      ownKeys: target => this.get('sheets').children.map((c, i) => i + '')
+    });
+
+    /*this.libraries = GetProxy((prop, target) => this.getLibrary(prop), {
+      ownKeys: target => this.get('libraries').children.map(l => l.attributes.name)
+    });*/
+    lazyProperty(this, 'drawing', () => this.get('drawing'));
 
     //  lazyProperty(this, 'layers', () => EagleNodeMap.create(this.get('layers').children.raw, 'name'));
   }
@@ -386,10 +382,14 @@ export class EagleDocument extends EagleNode {
     let i = 0;
 
     for(let sheet of sheets.children) {
-       if(i == id ) return sheet;
+      if(i == id) return sheet;
       i++;
     }
     return null;
+  }
+
+  getLibrary(name) {
+    return this.get(e => e.tagName == 'library' && e.attributes.name == name);
   }
 
   getMainElement = Util.memoize(function () {

@@ -177,7 +177,7 @@ export class EagleElement extends EagleNode {
             v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]
           );
         } else if(key == 'device') {
-           trkl.bind(this, key, v => {
+          trkl.bind(this, key, v => {
             if(v) {
               const { names } = v;
               if(names !== undefined) {
@@ -186,7 +186,7 @@ export class EagleElement extends EagleNode {
                 this.handlers.device(names.device);
               }
             } else {
-              const library = doc.libraries[attributes.library];
+              const library = doc.getLibrary(attributes.library);
               const deviceset = library.devicesets[attributes.deviceset];
               const device = deviceset.devices[attributes.device];
               return device;
@@ -216,7 +216,7 @@ export class EagleElement extends EagleNode {
                 hfn = () => attributes.name;
                 break;
               case 'library':
-                hfn = () => doc.libraries[attributes.library];
+                hfn = () => doc.getLibrary(attributes.library);
                 break;
               case 'deviceset':
                 hfn = () => this.library.devicesets[attributes.deviceset];
@@ -231,13 +231,13 @@ export class EagleElement extends EagleNode {
           } else if(tagName == 'instance' || tagName == 'pinref') {
             const module = elem.chain.module || doc;
 
-            /*        if(this.library === undefined) trkl.bind(this, 'library', () => this.part.library || this.document.libraries[this.part.attributes.library]);
+            /*        if(this.library === undefined) trkl.bind(this, 'library', () => this.part.library || this.document.getLibrary(this.part.attributes.library));
               if(this.deviceset === undefined) trkl.bind(this, 'deviceset', () => this.part.deviceset || this.library.devicesets[this.part.attributes.deviceset]);
               if(this.value === undefined) trkl.bind(this, 'value', () => this.part.value || this.deviceset.name);
 */
             switch (key) {
               case 'part':
-                hfn = () => module.parts[attributes.part];
+                hfn = () => this.document.get(e => e.tagName == 'part' && e.attributes.name == attributes.part);
                 break;
               case 'gate':
                 hfn = () => this.part.deviceset.gates[attributes.gate];
@@ -252,7 +252,6 @@ export class EagleElement extends EagleNode {
           } else if(key + 's' in doc) {
             hfn = () => doc[key + 's'][elem.attrMap[key] + ''];
           } else {
-
             let id = key == 'layer' ? 'number' : 'name';
             hfn = () => {
               let r,
@@ -264,9 +263,18 @@ export class EagleElement extends EagleNode {
             };
             if(this[key] == undefined) this.initRelation(key, this.handlers[key], hfn);
           }
-               //    console.log('hfn', {hfn:hfn+'',tagName,key});
+          //    console.log('hfn', {hfn:hfn+'',tagName,key});
+          let nfn = (...args) => {
+            let ret;
+            try {
+              ret = hfn(...args);
+            } catch(e) {
+              ret = e;
+            }
+            return ret;
+          };
 
-          if(this[key] == undefined) trkl.bind(this, key, hfn);
+          if(this[key] == undefined) trkl.bind(this, key, nfn);
         } else {
           trkl.bind(this, key, handler);
         }
@@ -283,6 +291,11 @@ export class EagleElement extends EagleNode {
       );
     else if('children' in raw)
       lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
+
+    if(tagName == 'drawing' || tagName == 'schematic' || tagName == 'board') {
+      for(let child of raw.children)
+        lazyProperty(this, child.tagName, () => this.get(e => e.tagName == child.tagName));
+    }
 
     if(tagName == 'pad') {
       trkl.bind(this, 'layer', () => {
@@ -539,7 +552,6 @@ export class EagleElement extends EagleNode {
     if(!pred && ['sheet', 'schematic'].indexOf(this.tagName) != -1)
       pred = e => ['wire', 'instance'].indexOf(e.tagName) != -1;
 
-
     if(pred) {
       let ok = 0;
       for(let element of this.getAll(pred)) {
@@ -582,7 +594,7 @@ export class EagleElement extends EagleNode {
     } else if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
-      let library = document.libraries[libName];
+      let library = document.getLibrary(libName);
       console.log(Util.className(this) + '.getBounds', path + '', `<${this.tagName}>`, { libName, library });
       let pkg = library.packages[raw.attributes.package];
       bb = pkg.getBounds();
@@ -616,10 +628,10 @@ export class EagleElement extends EagleNode {
           .map(e => {
             let ret;
             try {
-            ret = e.getBounds();
-          }catch(e) {}
-          return ret;
-        })
+              ret = e.getBounds();
+            } catch(e) {}
+            return ret;
+          })
           .map(b => new Rect(b))
           .map(r => r.toPoints())
           .flat()

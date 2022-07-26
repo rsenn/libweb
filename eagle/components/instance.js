@@ -5,8 +5,10 @@ import { MakeRotation, log, useTransform } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
 export const Instance = ({ data, opts = {}, ...props }) => {
-  let [transformation, transform, accumulate] = useTransform(opts);
+   console.log('Instance.render', { data,opts });
+let [transformation, transform, accumulate] = useTransform(opts);
 
+   console.log('Instance.render', { transformation, transform, accumulate });
   //let { transformation = new TransformationList() } = opts;
   //log('Instance.render', { transformation, data });
 
@@ -31,6 +33,8 @@ export const Instance = ({ data, opts = {}, ...props }) => {
   if(!value && deviceset) value = deviceset.name;
 
   // value = value.replace(/Ω/g, "\u2126;").replace(/μ/g, "\u00b5;");
+
+   console.log('Instance.render', { symbol});
 
   const sym = h(SchematicSymbol, {
     data: symbol,
