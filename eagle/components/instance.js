@@ -34,8 +34,7 @@ let [transformation, transform, accumulate] = useTransform(opts);
 
   // value = value.replace(/Ω/g, "\u2126;").replace(/μ/g, "\u00b5;");
 
-   console.log('Instance.render', { symbol});
-
+ 
   const sym = h(SchematicSymbol, {
     data: symbol,
     opts: {

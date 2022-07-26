@@ -264,7 +264,7 @@ export class EagleElement extends EagleNode {
             if(this[key] == undefined) this.initRelation(key, this.handlers[key], hfn);
           }
           //    console.log('hfn', {hfn:hfn+'',tagName,key});
-        /*  let nfn = (...args) => {
+          /*  let nfn = (...args) => {
             let ret;
             try {
               ret = hfn(...args);
