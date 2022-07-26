@@ -19,13 +19,17 @@ export class BoardRenderer extends EagleSVGRenderer {
   constructor(obj, factory) {
     super(obj.document, factory);
     const { layers, elements, signals, sheets } = obj;
+    const doc = obj.document;
 
-    let board = obj.tagName == 'board' ? obj : obj.document.mainElement;
+    let board = obj.tagName == 'board' ? obj : doc.mainElement;
 
     this.elements = elements;
-    this.signals = signals;
+    this.signals = EagleNodeMap.create(obj.drawing.board.signals.children, 'name');
+
     //this.plain = board.plain; //get('plain', (v, l) => EagleElement.get(board, l));
-    this.layers = Object.fromEntries([...obj.document.layers].map(([n, l]) => [l.name, l]));
+    //this.layers = Object.getOwnPropertyNames(doc.layers).map(n => [n, doc.layers[n]]);
+    this.layers = EagleNodeMap.create(obj.drawing.layers.children, 'name');
+
     this.board = board;
 
     this.setPalette(BoardRenderer.palette);
@@ -395,6 +399,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     );
     let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
     this.debug('bounds: ', bounds);
+
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
         layer: 'Bottom',
@@ -411,7 +416,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         predicate: i => i.attributes.layer === undefined
       });
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
-    let plain = [...this.doc.plain];
+    let plain = [...doc.get('plain').children];
     this.renderCollection(plain, plainGroup);
     this.bounds = bounds;
     this.rect = bounds.rect;

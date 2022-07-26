@@ -149,11 +149,14 @@ export class EagleDocument extends EagleNode {
         ownKeys: target => this.get('layers').children.map(c => c.name)
       }
     );
-
-    this.sheets = GetProxy((prop, target) => this.getSheet(prop), {
-      ownKeys: target => this.get('sheets').children.map((c, i) => i + '')
-    });
-
+    if(this.type == 'sch')
+      this.sheets = GetProxy((prop, target) => this.getSheet(prop), {
+        ownKeys: target => this.get('sheets').children.map((c, i) => i + '')
+      });
+    if(this.type == 'brd') {
+      this.elements = EagleNodeMap.create(this.get('elements').children, 'name');
+      lazyProperty(this, 'plain', () => this.drawing.board.plain);
+    }
     /*this.libraries = GetProxy((prop, target) => this.getLibrary(prop), {
       ownKeys: target => this.get('libraries').children.map(l => l.attributes.name)
     });*/
@@ -313,7 +316,9 @@ export class EagleDocument extends EagleNode {
     //console.log("this.type", this.type);
     let plain = this.plain;
 
-    if(!plain && (plain = this.find('plain'))) plain = [...plain.children];
+    if(!plain) plain = this.get('plain');
+
+    if(plain && 'children' in plain) plain = [...plain.children];
 
     if(plain) plain = plain.filter(e => e.tagName == 'wire');
 
@@ -377,8 +382,12 @@ export class EagleDocument extends EagleNode {
     }
     return null;
   }
+
   getSheet(id) {
     let sheets = this.get('sheets');
+
+    if(!sheets) return null;
+
     let i = 0;
 
     for(let sheet of sheets.children) {

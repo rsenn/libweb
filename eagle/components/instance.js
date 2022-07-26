@@ -6,20 +6,20 @@ import { useValue } from '../../repeater/react-hooks.js';
 
 export const Instance = ({ data, opts = {}, ...props }) => {
   // console.log('Instance.render', { data,opts });
-let [transformation, transform, accumulate] = useTransform(opts);
+  let [transformation, transform, accumulate] = useTransform(opts);
 
   // console.log('Instance.render', { transformation, transform, accumulate });
   //let { transformation = new TransformationList() } = opts;
   //log('Instance.render', { transformation, data });
 
-  let instance = /*useValue(async function* () {}) || */data;
+  let instance = /*useValue(async function* () {}) || */ data;
 
-    async function* DataFn () {
-      for await(let change of data.repeater) {
-        log('change:', change);
-        yield change;
-      }
+  async function* DataFn() {
+    for await(let change of data.repeater) {
+      log('change:', change);
+      yield change;
     }
+  }
 
   let { x, y, rot, part, symbol } = instance;
   let { deviceset, name, value } = part;
@@ -34,7 +34,6 @@ let [transformation, transform, accumulate] = useTransform(opts);
 
   // value = value.replace(/Ω/g, "\u2126;").replace(/μ/g, "\u00b5;");
 
- 
   const sym = h(SchematicSymbol, {
     data: symbol,
     opts: {

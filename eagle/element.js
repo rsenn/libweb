@@ -205,8 +205,8 @@ export class EagleElement extends EagleNode {
             hfn = value => {
               const libName = elem.attributes.library;
               const pkgName = elem.handlers.package();
-              const library = project.doc.get(e => e.tagName == 'library' && e.attributes.name == libName);
-              console.log(this.tagName, { libName, pkgName, library, key });
+              const library = this.document.getLibrary(libName);
+              // console.log(this.tagName, { libName, pkgName, library, key });
 
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
