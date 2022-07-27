@@ -280,8 +280,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-package': element.package.name,
         'data-path': element.path.toString(' '),
         'data-rot': rot,
-        transform,
-        'font-family': 'Fixed'
+        transform
       },
       parent
     );
