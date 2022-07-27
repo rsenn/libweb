@@ -266,6 +266,8 @@ export class BoardRenderer extends EagleSVGRenderer {
     transform = transform.concat(rotation);
     let elementName = EscapeClassName(name);
 
+    if(typeof value != 'string' || value.length == 0) value = ' ';
+
     const g = this.create(
       'g',
       {
@@ -326,10 +328,11 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderSignal(signal, parent, options = {}) {
     this.debug(`BoardRenderer.renderSignal`, signal.name, options);
-    let children = signal.children;
+    let children = signal.children ?? [];
     let props = {};
     if('layer' in options) {
-      let layer = options.layer ? this.doc.layers[options.layer] : null;
+      let layer = options.layer ? this.layers[options.layer] : null;
+      //console.log('renderSignal', children.filter+'');
       children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via');
       if(layer) {
         children = children.filter(child => child.layer.number == layer.number);
