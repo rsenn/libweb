@@ -356,7 +356,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       //console.log('class:', className, 'children.length:', children.length, ' options.layer:', options.layer, 'cond:', children.length > 1 && !(typeof options.layer == 'string') );
       if(children.length > 1 && options.layer != '') {
         delete options.layer;
-        let signalGroup = this.create('g', { /*id, */ ...props, 'font-family': 'Fixed' }, parent);
+        let signalGroup = this.create('g', { /*id, */ ...props /*, 'font-family': 'Fixed'*/ }, parent);
         return this.renderCollection(children, signalGroup, options);
       }
     }
