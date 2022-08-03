@@ -138,8 +138,8 @@ export class EagleSVGRenderer {
 
     Object.defineProperty(this, 'palette', {
       value: palette || (this.doc.type == 'brd' ? BoardRenderer.palette : SchematicRenderer.palette),
-      writable: false,
-      configurable: false
+      writable: true,
+      configurable: true
     });
   }
 
