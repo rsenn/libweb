@@ -12,6 +12,7 @@ import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName, RenderShap
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
 import { digit2color, GetFactor, GetColorBands, ValueToNumber, NumberToValue, GetExponent, GetMantissa } from '../eda/colorCoding.js';
+import { EagleNodeMap } from './nodeMap.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));

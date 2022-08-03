@@ -11,6 +11,7 @@ import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, isLine, Rect, TransformationList, Transformation, PointList, Translation, Polygon, MakePolygon } from '../geom.js';
 import { Repeater } from '../repeater/repeater.js';
+import { EagleNodeMap } from './nodeMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
