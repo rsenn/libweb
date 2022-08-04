@@ -1181,6 +1181,12 @@ function formatWithOptionsInternal(o, v) {
   return s;
 }
 
+export function isNumeric(value) {
+ for(let f of [v=>+v, parseInt,parseFloat]) 
+  if(!isNaN(f(value))) return true;
+return false;
+}
+
 Location.prototype.clone = function(freeze = false, withFilename = true) {
   const { line, column, pos, file } = this;
 

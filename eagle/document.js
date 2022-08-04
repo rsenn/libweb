@@ -16,6 +16,7 @@ import { PathMapper } from '../json/pathMapper.js';
 import { Palette } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { read as fromXML, write as toXML } from '../xml.js';
+import { ImmutableXPath } from '../xml/xpath.js';
 
 function GetProxy(fn = (prop, target) => null, handlers = {}) {
   return new Proxy(
@@ -149,18 +150,24 @@ export class EagleDocument extends EagleNode {
         ownKeys: target => this.get('layers').children.map(c => c.name)
       }
     );
-    if(this.type == 'sch')
-      this.sheets = GetProxy((prop, target) => this.getSheet(prop), {
+    //if(this.type == 'sch') lazyProperty(this, 'children', () => EagleNodeList.create(this.get('sheets'), ['children']  ));
+    if(this.type == 'sch') 
+       lazyProperty(this, 'sheets', () => EagleNodeList.create(this.lookup('/eagle/drawing/schematic/sheets'), ['children']  ));
+    
+    /*this.sheets = GetProxy((prop, target) => this.getSheet(prop), {
         ownKeys: target => this.get('sheets').children.map((c, i) => i + '')
-      });
+      });*/
     if(this.type == 'brd') {
-      this.elements = EagleNodeMap.create(this.get('elements').children, 'name');
-      lazyProperty(this, 'plain', () => this.drawing.board.plain);
+   //   this.elements = EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name');
+   //   
+      lazyProperty(this, 'plain', () => this.lookup('/eagle/drawing/board/plain'));
+      lazyProperty(this, 'elements', () => EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name'));
     }
     /*this.libraries = GetProxy((prop, target) => this.getLibrary(prop), {
       ownKeys: target => this.get('libraries').children.map(l => l.attributes.name)
     });*/
-    lazyProperty(this, 'drawing', () => this.get('drawing'));
+
+    lazyProperty(this, 'drawing', () => this.lookup('/eagle/drawing'));
 
     //  lazyProperty(this, 'layers', () => EagleNodeMap.create(this.get('layers').children.raw, 'name'));
   }
