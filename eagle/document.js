@@ -87,7 +87,7 @@ export class EagleDocument extends EagleNode {
       data: xmlStr,
       raw2element: Util.weakMapper((raw, owner, ref) => {
         //let path=ref && ref.path ? [...ref.path] : ref;
-        //console.log('raw2element new', { raw,owner: owner.raw,ref});
+        console.log('raw2element new', { raw,owner: owner.raw,ref});
         let el = new EagleElement(owner, ref, raw);
         //console.log('raw2element new(2)', { el: el.raw,ref });
         return el;
@@ -151,17 +151,24 @@ export class EagleDocument extends EagleNode {
       }
     );
     //if(this.type == 'sch') lazyProperty(this, 'children', () => EagleNodeList.create(this.get('sheets'), ['children']  ));
-    if(this.type == 'sch') 
-       lazyProperty(this, 'sheets', () => EagleNodeList.create(this.lookup('/eagle/drawing/schematic/sheets'), ['children']  ));
-    
+    if(this.type == 'sch') {
+      let sheets = this.get('sheets');
+      //   console.log("EagleDocument.constructor", {sheets},sheets.path);
+let parts = this.lookup('/eagle/drawing/schematic/parts');
+      lazyProperty(this, 'sheets', () => EagleNodeList.create(sheets, sheets.path.concat(['children'])));
+      lazyProperty(this, 'parts', () => EagleNodeList.create(parts, parts.path.concat(['children'])));
+    }
     /*this.sheets = GetProxy((prop, target) => this.getSheet(prop), {
         ownKeys: target => this.get('sheets').children.map((c, i) => i + '')
       });*/
     if(this.type == 'brd') {
-   //   this.elements = EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name');
-   //   
+      //   this.elements = EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name');
+      let elements = this.lookup('/eagle/drawing/board/elements');
+
       lazyProperty(this, 'plain', () => this.lookup('/eagle/drawing/board/plain'));
-      lazyProperty(this, 'elements', () => EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name'));
+      lazyProperty(this, 'elements', () =>
+        EagleNodeMap.create(elements.children, 'name')
+      );
     }
     /*this.libraries = GetProxy((prop, target) => this.getLibrary(prop), {
       ownKeys: target => this.get('libraries').children.map(l => l.attributes.name)
@@ -268,7 +275,7 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    // console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
+    //console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
 
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));

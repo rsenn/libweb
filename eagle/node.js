@@ -8,7 +8,8 @@ import { text, concat } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 import { BBox } from '../geom.js';
-import { ImmutablePath } from '../json.js';
+//import { ImmutablePath } from '../json.js';
+import { Pointer } from '../pointer.js';
 import { read as fromXML, write as toXML } from '../xml.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
@@ -16,6 +17,21 @@ export const makeEagleNode = (owner, ref, ctor) => {
   let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
   return e;
 };
+
+function* walkPath(p, t = p => p.up(1)) {
+  let run = true;
+  let skip;
+  let next;
+  const abort = () => (run = false);
+  const set = v => (p = v);
+  const ignore = () => (skip = true);
+  for(let p = this, i = 0; p; p = next) {
+    next = t(p, i++, abort, ignore);
+    if(!skip) yield p;
+    if(!run) break;
+    skip = false;
+  }
+}
 
 export class EagleNode {
   ref = null;
@@ -61,8 +77,8 @@ export class EagleNode {
     const { owner, path, document } = this;
     let chain = Object.fromEntries(
       Util.map(
-        path.walk((p, i, abort, ignore) => {
-          let value = p.apply(owner.raw, true);
+        walkPath(path, (p, i, abort, ignore) => {
+          let value = p.deref(owner.raw, true);
 
           if(i == 0) ignore();
           if(
@@ -75,7 +91,7 @@ export class EagleNode {
           return p.up(2);
         }),
         path => {
-          let v = path.apply(owner.raw, true);
+          let v = path.deref(owner.raw, true);
           return t(owner, path, v);
         }
       )
@@ -163,7 +179,8 @@ export class EagleNode {
       let raw = this.raw;
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
-        let path = new ImmutableXPath(xpath).concat(['children']);
+        console.log('xpath', xpath);
+        let path = new Pointer([...new ImmutableXPath(xpath).toPointer(raw)].concat(['children']));
         lazy[key] = () => this.lookup(xpath, true);
         if(!path.deref(raw, true)) {
           //   console.warn('path not found', path + '');
@@ -356,9 +373,10 @@ export class EagleNode {
     let attrs = [''];
     //console.log('EagleNode.inspect', { depth, options });
     const { raw } = this;
-    const { children, tagName, attributes } = raw;
+    const { children, tagName, attributes = {} } = raw;
     const { attributeLists } = EagleElement;
-    const attributeList = attributeLists[tagName] || Object.keys(raw.attributes);
+    //console.log('EagleNode.inspect',  {tagName,attributes});
+    const attributeList = attributeLists[tagName] || Object.keys(attributes);
     // console.log('EagleNode.inspect',  { tagName, attributeList });
     const getAttr = name => {
       for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];
@@ -404,12 +422,13 @@ export class EagleNode {
   }
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
-    if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath);
-    // console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
+    //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
+   /* if(!(xpath instanceof ImmutableXPath)) */xpath = new ImmutableXPath(xpath);
+    //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
 
-    let path = new ImmutablePath(xpath);
+    let path = new Pointer([...xpath.toPointer(this.raw)]); //[...xpath]);
     //console.log('EagleNode.lookup  xpath:', xpath, ' path:', path);
-    let value = path.deref(this.raw, true);
+    let value = xpath.deref(this.raw, true);
     let ret = t(this, path, value);
     //console.log('EagleNode.lookup =', toXML(ret, 1));
     return ret;

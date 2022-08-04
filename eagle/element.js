@@ -6,7 +6,8 @@ import { EagleElementProxy } from './elementProxy.js';
 import { EagleReference } from './ref.js';
 import { RGBA } from '../color.js';
 import { ImmutableXPath } from '../xml/xpath.js';
-import { ImmutablePath } from '../json.js';
+//import { ImmutablePath } from '../json.js';
+import { Pointer as ImmutablePath } from '../pointer.js';
 import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, isLine, Rect, TransformationList, Transformation, PointList, Translation, Polygon, MakePolygon } from '../geom.js';
@@ -61,9 +62,11 @@ export class EagleElement extends EagleNode {
     let doc = owner.document;
     const { pathMapper, raw2element } = doc;
     let insert = Util.inserter(pathMapper);
+    //console.log('EagleElement.get(1)', {root,ref});
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
+    //console.log('EagleElement.get(2)', {root,ref});
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
-    if(!raw) raw = ref.path.apply(root, true);
+    if(!raw) raw = ref.path.deref(root, true);
     if(!raw) raw = ref.dereference();
     //console.log('EagleElement.get(2)', {root,ref,raw});
     let inst = doc.raw2element(raw, owner, ref);
@@ -492,7 +495,7 @@ export class EagleElement extends EagleNode {
 
   event(name) {
     const value = this[name];
-    console.log('event:', this, { name, value });
+    //console.log('event:', this, { name, value });
 
     /*    for(let subscriber of this.subscribers) {
       subscriber.call(this, name, value);

@@ -1,11 +1,15 @@
 import Util from '../util.js';
-import { toXML, ImmutablePath } from '../json.js';
+import { toXML } from '../json.js';
 import { text, concat } from './common.js';
+import { Pointer as ImmutablePath  } from '../pointer.js';
+import { ImmutableXPath } from '../xml/xpath.js';
 
 export const ChildrenSym = Symbol('⊳');
 
 export class EagleReference {
   constructor(root, path, check = true) {
+  if((path instanceof ImmutableXPath)) path = [...path.toPointer(root)];
+
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     this.path = path;
     this.root = root;
@@ -34,7 +38,7 @@ export class EagleReference {
     const { path, root } = this;
     let r;
     try {
-      r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
+      r = (Util.isObject(root) && 'owner' in root && path.deref(root.owner, true)) || path.deref(root);
     } catch(err) {
       if(!noThrow) throw err;
       //console.log('err:', err.message, err.stack);
@@ -76,7 +80,7 @@ export class EagleReference {
 
   down(...args) {
     // return Array.prototype.concat.call(this, args);
-    return new EagleReference(this.root, this.path.down(...args), false);
+    return new EagleReference(this.root, this.path.concat(args), false);
   }
   up(n = 1) {
     return new EagleReference(this.root, this.path.up(n), false);
