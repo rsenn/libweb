@@ -423,7 +423,7 @@ export class EagleNode {
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
     //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
-   /* if(!(xpath instanceof ImmutableXPath)) */xpath = new ImmutableXPath(xpath);
+    /* if(!(xpath instanceof ImmutableXPath)) */ xpath = new ImmutableXPath(xpath);
     //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
 
     let path = new Pointer([...xpath.toPointer(this.raw)]); //[...xpath]);
