@@ -288,6 +288,38 @@ function O(l, u, i) {
   n.__ && n.__(l, u), r = (t = i === o) ? null : i && i.__k || u.__k, l = h(p, null, [l]), c = [], $(u, (t ? u : i || u).__k = l, r || f, f, void 0 !== u.ownerSVGElement, i && !t ? [i] : r ? null : u.childNodes.length ? e.slice.call(u.childNodes) : null, c, i || f, t), j(c, l);
 }
 
+export function cloneElement(vnode, props, children) {
+  var arguments$1 = arguments;
+  var normalizedProps = s({}, vnode.props),
+    key,
+    ref,
+    i;
+
+  for(i in props) {
+    if(i == 'key') {
+      key = props[i];
+    } else if(i == 'ref') {
+      ref = props[i];
+    } else {
+      normalizedProps[i] = props[i];
+    }
+  }
+
+  if(arguments.length > 3) {
+    children = [children];
+
+    for(i = 3; i < arguments.length; i++) {
+      children.push(arguments$1[i]);
+    }
+  }
+
+  if(children != null) {
+    normalizedProps.children = children;
+  }
+
+  return v(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
+}
+
 function B(n, l) {
   var u = {
     __c: l = "__cC" + r++,

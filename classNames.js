@@ -25,3 +25,5 @@ export function classNames(...args) {
 
   return classes.join(' ');
 }
+
+export default classNames;

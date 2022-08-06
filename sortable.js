@@ -1,9 +1,13 @@
 /* --------------------------- start of 'header' ---------------------------- */
 
 import React from './dom/preactComponent.js';
-import { findDOMNode } from './preact/compat.js';
+//import { findDOMNode } from './preact/compat.js';
 import invariant from './invariant.js';
 import PropTypes from './prop-types.js';
+
+function findDOMNode(component) {
+  return (component && (component.base || (component.nodeType === 1 && component))) || null;
+}
 
 /* ---------------------------- end of 'header' ----------------------------- */
 // ==UserScript==
