@@ -3,7 +3,7 @@ import { defaultProps, propTypes } from './PropTypes.js';
 import Handle from './Handle.js';
 import Context from './Context.js';
 import Request from './Request.js';
-import View from './view';
+import View from './view/index.js';
 import { bytesToSize, isAccepted, getImageDimensions } from './Utils.js';
 
 export class RUG extends React.Component {

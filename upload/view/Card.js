@@ -1,3 +1,7 @@
+
+import React from '../../dom/preactComponent.js';
+import RefreshIcon from './RefreshIcon.js';
+
 function _extends() {
   _extends =
     Object.assign ||
@@ -15,8 +19,6 @@ function _extends() {
   return _extends.apply(this, arguments);
 }
 
-import React from 'react';
-import RefreshIcon from './RefreshIcon.js';
 export class Card extends React.Component {
   constructor() {
     super();

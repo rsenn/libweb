@@ -1,5 +1,5 @@
 import React from '../dom/preactComponent.js';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { Manager, SortableHandle, SortableContainer, SortableElement } from '../sortable.js';
 import Context from './Context.js';
 import { arrayMove } from './Utils.js';
 

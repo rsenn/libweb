@@ -1,3 +1,10 @@
+import React from '../../dom/preactComponent.js';
+import classNames from '../../classNames.js';
+import List from './List.js';
+import Card from './Card.js';
+import DragArea from '../DragArea.js';
+
+
 function _extends() {
   _extends =
     Object.assign ||
@@ -15,11 +22,7 @@ function _extends() {
   return _extends.apply(this, arguments);
 }
 
-import React from '../../dom/preactComponent.js';
-import classNames from 'classnames';
-import List from './List.js';
-import Card from './Card.js';
-import DragArea from '../DragArea.js';
+
 
 const Item = (type, image) => {
   //console.log("UploadItem.render ", { type, image });

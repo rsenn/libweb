@@ -6,6 +6,7 @@ export {
   render,
   Component,
   createContext,
+  createRef,
   useState,
   useReducer,
   useEffect,
