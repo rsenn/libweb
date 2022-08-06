@@ -1,6 +1,7 @@
 import React from '../dom/preactComponent.js';
 import DropArea from './DropArea.js';
-export default (options, { handle }) =>
+
+export const Handle = (options, { handle }) =>
   h(DropArea, null, isDrag =>
     h(
       'div',
@@ -62,3 +63,5 @@ export default (options, { handle }) =>
       )
     )
   );
+
+export default Handle;

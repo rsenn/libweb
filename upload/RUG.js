@@ -6,7 +6,7 @@ import Request from './Request.js';
 import View from './view';
 import { bytesToSize, isAccepted, getImageDimensions } from './Utils.js';
 
-class RUG extends React.Component {
+export class RUG extends React.Component {
   constructor({ initialState, ssrSupport }) {
     super();
     this.fileInput = React.createRef();
@@ -415,4 +415,5 @@ class RUG extends React.Component {
 
 RUG.propTypes = propTypes;
 RUG.defaultProps = defaultProps;
+
 export default RUG;

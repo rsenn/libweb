@@ -18,7 +18,8 @@ function _extends() {
 import React from '../../dom/preactComponent.js';
 import RefreshIcon from './RefreshIcon.js';
 import UploadIcon from './UploadIcon.js';
-export default class List extends React.Component {
+
+export class List extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -147,3 +148,5 @@ export default class List extends React.Component {
     );
   }
 }
+
+export default List;

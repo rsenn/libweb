@@ -1,7 +1,7 @@
-export { default as DragArea } from './upload/DragArea.js';
-export { default as DropArea } from './upload/DropArea.js';
+export { DragArea } from './upload/DragArea.js';
+export { DropArea } from './upload/DropArea.js';
 
-export { default as Card } from './upload/view/Card.js';
-export { default as List } from './upload/view/List.js';
+export { Card } from './upload/view/Card.js';
+export { List } from './upload/view/List.js';
 
-export { default as RUG } from './upload/RUG.js';
+export { RUG } from './upload/RUG.js';

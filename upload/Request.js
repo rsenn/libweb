@@ -1,6 +1,6 @@
 import { getBody } from './Utils.js';
 
-const Request = ({ uid, send, file, action, headers, onProgress, onSuccess, onError }) => {
+export const Request = ({ uid, send, file, action, headers, onProgress, onSuccess, onError }) => {
   const xhr = new XMLHttpRequest();
   /**
    * Progress Percentage

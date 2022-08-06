@@ -1,3 +1,8 @@
+import React from '../dom/preactComponent.js';
+import Context from './Context.js';
+import PropTypes from '../prop-types.js';
+import { getEventFiles } from './Utils.js';
+
 function _extends() {
   _extends =
     Object.assign ||
@@ -15,12 +20,8 @@ function _extends() {
   return _extends.apply(this, arguments);
 }
 
-import React from '../dom/preactComponent.js';
-import Context from './Context.js';
-import PropTypes from '../prop-types.js';
-import { getEventFiles } from './Utils.js';
 
-class DropArea extends React.Component {
+export class DropArea extends React.Component {
   constructor() {
     super();
     this.onDrop = this.onDrop.bind(this);

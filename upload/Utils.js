@@ -8,12 +8,14 @@ export const getBody = xhr => {
     return text;
   }
 };
+
 export const bytesToSize = bytes => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if(bytes === 0) return '0 Byte';
   const log = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
   return Math.round(bytes / Math.pow(1024, log), 2) + ' ' + sizes[log];
 };
+
 export const getEventFiles = event => {
   if(!event.dataTransfer) {
     return [];
@@ -21,6 +23,7 @@ export const getEventFiles = event => {
 
   return event.dataTransfer.files;
 };
+
 export const isAccepted = (fileType, acceptedFiles) => {
   if(fileType && acceptedFiles) {
     const mimeType = fileType || '';
@@ -38,6 +41,7 @@ export const isAccepted = (fileType, acceptedFiles) => {
 
   return true;
 };
+
 export const getImageDimensions = data => {
   return new Promise(resolve => {
     const image = new Image();
@@ -53,6 +57,7 @@ export const getImageDimensions = data => {
     image.src = data;
   });
 };
+
 export const arrayMove = (array, from, to) => {
   array = array.slice();
   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);

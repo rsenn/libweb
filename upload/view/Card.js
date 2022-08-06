@@ -17,7 +17,7 @@ function _extends() {
 
 import React from 'react';
 import RefreshIcon from './RefreshIcon.js';
-export default class Card extends React.Component {
+export class Card extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -174,3 +174,5 @@ export default class Card extends React.Component {
     );
   }
 }
+
+export default Card;

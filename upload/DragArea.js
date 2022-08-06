@@ -1,3 +1,8 @@
+import React from '../dom/preactComponent.js';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import Context from './Context.js';
+import { arrayMove } from './Utils.js';
+
 function _extends() {
   _extends =
     Object.assign ||
@@ -14,15 +19,10 @@ function _extends() {
     };
   return _extends.apply(this, arguments);
 }
-
-import React from '../dom/preactComponent.js';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import Context from './Context.js';
-import { arrayMove } from './Utils.js';
 const DragItem = SortableElement(({ children }) => h('div', null, children));
 const SortableList = SortableContainer(({ children }) => children);
 
-const DragArea = props => {
+export const DragArea = props => {
   const { children, className, style } = props;
   return h(Context.Consumer, null, ({ images, setSort }) =>
     h(
@@ -61,4 +61,5 @@ DragArea.defaultProps = {
   axis: 'xy',
   style: {}
 };
+
 export default DragArea;
