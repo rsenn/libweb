@@ -1,14 +1,14 @@
 import Util from '../util.js';
 import { toXML } from '../json.js';
 import { text, concat } from './common.js';
-import { Pointer as ImmutablePath  } from '../pointer.js';
+import { Pointer as ImmutablePath } from '../pointer.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 
 export const ChildrenSym = Symbol('⊳');
 
 export class EagleReference {
   constructor(root, path, check = true) {
-  if((path instanceof ImmutableXPath)) path = [...path.toPointer(root)];
+    if(path instanceof ImmutableXPath) path = [...path.toPointer(root)];
 
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     this.path = path;

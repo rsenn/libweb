@@ -16,7 +16,8 @@ export {
   useMemo,
   useCallback,
   useContext,
-  useDebugValue,cloneElement
+  useDebugValue,
+  cloneElement
 } from '../preact.mjs';
 import { forwardRef } from '../preact/forwardRef.js';
 export { forwardRef } from '../preact/forwardRef.js';

@@ -1,6 +1,6 @@
 import { MutablePath, ImmutablePath } from '../json/path.js';
 //import Util from '../util.js';
-import {className, define, immutableClass, isArray, isNumeric, isObject} from '../misc.js';
+import { className, define, immutableClass, isArray, isNumeric, isObject } from '../misc.js';
 
 const incr = (o, p, i = 1) => (o[p] = (o[p] || 0) + i);
 const isSpecialAttr = attr => ['children', 'attributes'].indexOf(attr) != -1;
@@ -275,7 +275,7 @@ export class MutableXPath extends MutablePath {
     }
   }
 
-/*  [Symbol.inspect ?? Symbol.for('nodejs.util.inspect.custom')](c) {
+  /*  [Symbol.inspect ?? Symbol.for('nodejs.util.inspect.custom')](c) {
     let ctor = this.constructor;
     let { absolute } = this;
     c = typeof c == 'function' ? c : (text, ...colors) => `\x1b[${colors.join(';')}m${text}\x1b[0m`;
@@ -333,7 +333,11 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
   return entries ? r : new Map(r);
 };
 
-define(MutableXPath, {  get [Symbol.species]() {  return MutableXPath; }});
+define(MutableXPath, {
+  get [Symbol.species]() {
+    return MutableXPath;
+  }
+});
 //defineGetter(MutableXPath, Symbol.species, () => MutableXPath);
 
 export const parseXPath = s => ImmutableXPath.parse(s);
@@ -343,4 +347,8 @@ export const XPath = immutableClass(MutableXPath);
 export const ImmutableXPath = XPath;
 
 //defineGetter(XPath, Symbol.species, () => ImmutableXPath);
-define(XPath, {  get [Symbol.species]() {  return ImmutableXPath; }});
+define(XPath, {
+  get [Symbol.species]() {
+    return ImmutableXPath;
+  }
+});

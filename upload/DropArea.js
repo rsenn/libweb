@@ -20,7 +20,6 @@ function _extends() {
   return _extends.apply(this, arguments);
 }
 
-
 export class DropArea extends React.Component {
   constructor() {
     super();

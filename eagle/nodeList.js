@@ -21,7 +21,7 @@ export class EagleNodeList {
       if(entries[pos]) pos = entries[pos][0];
     }
     if(pos < 0) pos += raw.length;
-  //  let path = ref.path.down(pos);
+    //  let path = ref.path.down(pos);
     let path = ref.path.concat([pos]);
     //console.log('EagleNodeList.item', { owner, path, pos, pred, raw: raw[pos] });
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) {
