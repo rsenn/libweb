@@ -351,63 +351,6 @@ export function toString(arrayBuf, encoding = 'utf-8') {
   return o;
 }
 
-export function toArrayBuffer(str, encoding = 'utf-8') {
-  if(globalThis.TextDecoder && encoding == 'utf-8') {
-    let enc = new TextEncoder();
-    return enc.encode(str).buffer;
-  }
-
-  if(encoding == 'latin1') {
-    let i,
-      len = str.length;
-    let a = new Uint8Array(len);
-    for(i = 0; i < len; i++) {
-      a[i] = str.charCodeAt(i);
-    }
-    return a.buffer;
-  }
-  let offset, length;
-  const end = Math.min((length ?? str.length - (offset | 0)) + (offset | 0), str.length);
-  console.log('end:', end);
-
-  const a = [];
-  for(let i = offset | 0; i < end; i++) {
-    const c = str.codePointAt(i);
-
-    if(c < 0x80) {
-      a.push(c);
-    } else {
-      if(c < 0x800) {
-        a.push((c >> 6) | 0xc0);
-      } else {
-        if(c < 0x10000) {
-          a.push((c >> 12) | 0xe0);
-        } else {
-          if(c < 0x00200000) {
-            a.push((c >> 18) | 0xf0);
-          } else {
-            if(c < 0x04000000) {
-              a.push((c >> 24) | 0xf8);
-            } else if(c < 0x80000000) {
-              a.push((c >> 30) | 0xfc);
-              a.push(((c >> 24) & 0x3f) | 0x80);
-            } else {
-              return 0;
-            }
-            a.push(((c >> 18) & 0x3f) | 0x80);
-          }
-          a.push(((c >> 12) & 0x3f) | 0x80);
-        }
-        a.push(((c >> 6) & 0x3f) | 0x80);
-      }
-      a.push((c & 0x3f) | 0x80);
-    }
-  }
-  const u8a = Uint8Array.from(a);
-  console.log('toArrayBuffer', { a, u8a });
-  return u8a.buffer;
-}
-
 const b64ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 const b64chs = [...b64ch];
 const b64tab = (a => {
@@ -1280,6 +1223,140 @@ export function bits(buffer) {
     ret.push(a[bit >> 3] & (1 << shift) ? 1 : 0);
   }
   return ret;
+}
+
+export function dupArrayBuffer(buf, start, length) {
+  let a = new Uint8Array(buf, start,length);
+  return new Uint8Array([...a]);
+}
+export function getTypeName(v) {
+  return typeof v;
+}
+export function isArrayBuffer(buf) {
+  return isObject(buf) && buf instanceof ArrayBuffer;
+}
+
+export function isBigDecimal(num) {
+  return typeof num == 'bigdecimal' || num[Symbol.toStringTag] == 'BigDecimal';
+}
+
+export function isBigFloat(num) {
+  return typeof num == 'bigfloat' || num[Symbol.toStringTag] == 'BigFloat';
+}
+
+export function isBigInt(num) {
+  return typeof num == 'bigint' || num[Symbol.toStringTag] == 'isBigInt';
+}
+
+export function isBool(value) {
+  return typeof value == 'boolean';
+}
+
+export function isCFunction(fn) {
+  return false;
+}
+
+export function isConstructor(fn) {
+  return typeof fn == 'function' && 'prototype' in fn;
+}
+
+export function isEmptyString(value) {
+  return value === '';
+}
+
+export function isError(value) {
+  return value instanceof Error || value[Symbol.toStringTag].endsWith('Error');
+}
+
+export function isException(value) {
+  return false;
+}
+
+export function isExtensible(value) {
+  return typeof value == 'object' && value !== null && Object.isExtensible(value);
+}
+
+export function isFunction(value) {
+  return typeof value == 'function';
+}
+
+export function isHTMLDDA(value) {
+  return false;
+}
+
+
+export function isInstanceOf(value, ctor) {
+  if(ctor[Symbol.hasInstance]) {
+    return ctor[Symbol.hasInstance](value);
+  }
+  return typeof value == 'object' && value !== null && value instanceof ctor;
+}
+
+export function isInteger(value) {
+  return Math.abs(value) % 1 == 0;
+}
+
+export function isJobPending(id) {
+  return false;
+}
+
+export function isLiveObject(obj) {
+  return true;
+}
+
+export function isNull(value) {
+  return value === null;
+}
+
+export function isNumber(value) {
+  return typeof value == 'number';
+}
+export function isUndefined(value) {
+  return typeof value == 'undefined';
+}
+
+export function isString(value) {
+  return typeof value == 'string';
+}
+export function isUninitialized(value) {
+  return false;
+}
+
+export function isSymbol(value) {
+  return typeof value == 'symbol' || value[Symbol.toStringTag] == 'Symbol';
+}
+
+export function isUncatchableError(value) {
+  return false;
+}
+
+export function isRegisteredClass(id) {
+  return false;
+}
+export function rand() {
+  return Math.random() * 2 ** 32;
+}
+
+export function randi() {
+  return rand() - 2 ** 31;
+}
+
+export function randf() {
+  return Math.random();
+}
+
+export function srand(seed) {}
+
+export function toArrayBuffer(value) {
+  if(typeof value == 'object' && value !== null && 'buffer' in value && isArrayBuffer(value.buffer))
+    return value.buffer;
+
+  if(typeof value == 'string') {
+    const encoder = new TextEncoder();
+    const view = encoder.encode(value);
+    return view.buffer;
+  }
+  return value;
 }
 
 Location.prototype.clone = function(freeze = false, withFilename = true) {
