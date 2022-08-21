@@ -29,13 +29,13 @@ export const PROT_SEM = 8;
 export const PROT_WRITE = 2;
 
 export function filename() {}
-    
+
 export function mmap() {}
-    
+
 export function mprotect() {}
-    
+
 export function msync() {}
-    
+
 export function munmap() {}
-    
+
 export function toString() {}

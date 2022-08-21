@@ -1186,6 +1186,102 @@ export function isNumeric(value) {
   return false;
 }
 
+export function functionName(fn) {
+  if(typeof fn == 'function' && typeof fn.name == 'string') return fn.name;
+  try {
+    const matches = /function\s*([^(]*)\(.*/g.exec(fn + '');
+    if(matches && matches[1]) return matches[1];
+  } catch {}
+  return null;
+}
+
+export function className(obj) {
+  if(isObject(obj)) {
+    if('constructor' in obj) return functionName(obj.constructor);
+    if(Symbol.toStringTag in obj) return obj[Symbol.toStringTag];
+  }
+  return null;
+}
+
+export const isArrowFunction = fn =>
+  (isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+
+export function immutableClass(orig, ...proto) {
+  let name = functionName(orig).replace(/Mutable/g, '');
+  let imName = 'Immutable' + name;
+  proto = proto || [];
+  let initialProto = proto.map(p =>
+    isArrowFunction(p)
+      ? p
+      : ctor => {
+          for(let n in p) ctor.prototype[n] = p[n];
+        }
+  );
+  let body = `class ${imName} extends ${name} {\n  constructor(...args) {\n    super(...args);\n    if(new.target === ${imName})\n      return Object.freeze(this);\n  }\n};\n\n${imName}.prototype.constructor = ${imName};\n\nreturn ${imName};`;
+  for(let p of initialProto) p(orig);
+  let ctor; // = new Function(name, body)(orig);
+
+  let imm = base => {
+    let cls;
+    cls = class extends base {
+      constructor(...args) {
+        super(...args);
+        if(new.target === cls) return Object.freeze(this);
+      }
+    };
+    return cls;
+  };
+  ctor = imm(orig);
+  let species = ctor;
+  return ctor;
+}
+
+export const isArray = a => Array.isArray(a);
+
+export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
+  return define(proto, {
+    *[Symbol.iterator]() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield itemFn(this, i);
+    },
+    *keys() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield i;
+    },
+    *entries() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield [i, itemFn(this, i)];
+    },
+    *values() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield itemFn(this, i);
+    },
+    forEach(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) callback.call(thisArg, itemFn(this, i), i, this);
+    },
+    reduce(callback, accu, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
+      return accu;
+    }
+  });
+}
+
+export function bits(buffer) {
+  let a = new Uint8Array(buffer);
+  let bit,
+    bits = buffer.byteLength << 3;
+  let ret = [];
+  for(bit = 0; bit < bits; bit++) {
+    let shift = bit & 0x7;
+    let bpos = bit >> 3;
+
+    ret.push(a[bit >> 3] & (1 << shift) ? 1 : 0);
+  }
+  return ret;
+}
+
 Location.prototype.clone = function(freeze = false, withFilename = true) {
   const { line, column, pos, file } = this;
 
