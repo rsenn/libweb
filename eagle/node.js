@@ -178,30 +178,32 @@ export class EagleNode {
       let owner = this.document;
       let raw = this.raw;
       for(let xpath of fields) {
-        let key = xpath[xpath.length - 1];
-        console.log('xpath', xpath);
-        let path = new Pointer([...new ImmutableXPath(xpath).toPointer(raw)].concat(['children']));
-        lazy[key] = () => this.lookup(xpath, true);
-        if(!path.deref(raw, true)) {
-          //   console.warn('path not found', path + '');
-          continue;
-        }
-        path = this.ref.path.down(...path);
-        lists[key] = () => listCtor(owner, path);
-        maps[key] =
-          ['sheets', 'connects', 'plain'].indexOf(key) != -1
-            ? lists[key]
-            : () =>
-                EagleNodeMap.create(
-                  lists[key](),
-                  ['board', 'schematic', 'library'].indexOf(key) != -1
-                    ? 'tagName'
-                    : key == 'instances'
-                    ? 'part'
-                    : key == 'layers'
-                    ? ['number', 'name']
-                    : 'name'
-                );
+        try {
+          let key = xpath[xpath.length - 1];
+          // console.log('xpath', xpath);
+          let path = new Pointer([...new ImmutableXPath(xpath).toPointer(raw)].concat(['children']));
+          lazy[key] = () => this.lookup(xpath, true);
+          if(!path.deref(raw, true)) {
+            //   console.warn('path not found', path + '');
+            continue;
+          }
+          path = this.ref.path.down(...path);
+          lists[key] = () => listCtor(owner, path);
+          maps[key] =
+            ['sheets', 'connects', 'plain'].indexOf(key) != -1
+              ? lists[key]
+              : () =>
+                  EagleNodeMap.create(
+                    lists[key](),
+                    ['board', 'schematic', 'library'].indexOf(key) != -1
+                      ? 'tagName'
+                      : key == 'instances'
+                      ? 'part'
+                      : key == 'layers'
+                      ? ['number', 'name']
+                      : 'name'
+                  );
+        } catch(e) {}
       }
       Util.defineGettersSetters(this.lists, lists);
       Util.defineGettersSetters(this.cache, lazy);
@@ -424,7 +426,7 @@ export class EagleNode {
   lookup(xpath, t = (o, p, v) => [o, p]) {
     //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
     /* if(!(xpath instanceof ImmutableXPath)) */ xpath = new ImmutableXPath(xpath);
-    //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
+    console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
 
     let path = new Pointer([...xpath.toPointer(this.raw)]); //[...xpath]);
     //console.log('EagleNode.lookup  xpath:', xpath, ' path:', path);

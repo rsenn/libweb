@@ -65,8 +65,24 @@ export class EagleElement extends EagleNode {
     //console.log('EagleElement.get(1)', {root,ref});
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
     //console.log('EagleElement.get(2)', {root,ref});
-    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
-    if(!raw) raw = ref.path.deref(root, true);
+    //
+    if(Util.isObject(ref) && Array.isArray(ref) && !(ref instanceof EagleReference)) {
+      //console.log('EagleElement.get(2)', {root,ref});
+
+      try {
+        ref = new EagleReference(owner, ref);
+      } catch(e) {
+        try {
+          ref = new EagleReference(owner.raw, ref);
+        } catch(e) {
+          ref = new EagleReference(root, ref);
+        }
+      }
+    }
+    if(!Util.isObject(ref) || !('dereference' in ref) || !(ref instanceof EagleReference)) {
+      ref = new EagleReference(root, ref);
+    }
+    if(!raw && Util.isObject(ref.path)) raw = ref.path.deref(root, true);
     if(!raw) raw = ref.dereference();
     //console.log('EagleElement.get(2)', {root,ref,raw});
     let inst = doc.raw2element(raw, owner, ref);
@@ -357,6 +373,8 @@ export class EagleElement extends EagleNode {
       ].indexOf(tagName) != -1
     ) {
     }
+    //console.log('EagleElement.initCache', this);
+
     this.initCache(EagleElement, EagleNodeList.create);
 
     if(tagName == 'symbol') {
@@ -366,18 +384,20 @@ export class EagleElement extends EagleNode {
       });
     }
     if(tagName == 'element') {
-      for(let key of ['pad', 'wire', 'circle', 'text', 'rectangle'])
-        lazyProperty(this, key + 's', () => {
-          let list = EagleNodeList.create(
-            this,
-            this.package.path.down('children'),
-            e => e.tagName == key,
-            (o, p, r) => TList(EagleElement.get(o, p, r), elem)
-          );
+      if(this.package) {
+        for(let key of ['pad', 'wire', 'circle', 'text', 'rectangle'])
+          lazyProperty(this, key + 's', () => {
+            let list = EagleNodeList.create(
+              this,
+              this.package.ref.down('children'),
+              e => e.tagName == key,
+              (o, p, r) => TList(EagleElement.get(o, p, r), elem)
+            );
 
-          if(key != 'pad') return list;
-          return EagleNodeMap.create(list, 'name');
-        });
+            if(key != 'pad') return list;
+            return EagleNodeMap.create(list, 'name');
+          });
+      }
 
       trkl.bind(this, 'contacts', () =>
         Object.fromEntries(
@@ -893,6 +913,8 @@ let chain = this.scope();
   /* prettier-ignore */ get pos() {
     return `(${(this.x / 25.4).toFixed(1)} ${(this.y / 25.4).toFixed(1)})`;
   }
+
+  [Symbol.toStringTag] = 'EagleElement';
 
   /*
   static create(owner, ref, ...args) {

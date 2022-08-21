@@ -14,9 +14,9 @@ export class EagleReference {
     this.path = path;
     this.root = root;
     //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
-    if(check && !this.dereference(false)) {
+    if(check && !this.dereference(true)) {
       //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
-      throw new Error(this.path.join(','));
+      throw new Error(this.root.tagName + ' ' + this.path);
     }
   }
 

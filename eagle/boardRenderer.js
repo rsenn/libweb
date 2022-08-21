@@ -145,7 +145,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       widths = {};
 
     const { tPlace } = this.layers;
-
+    console.log('BoardRenderer.renderCollection', coll);
     for(let item of coll) {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
@@ -285,8 +285,9 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
+    console.log('BoardRenderer.renderElement', { name, value });
 
-    if(/^[RLC][0-9]/.test(name) && element.pads.length == 2) {
+    if(/^[RLC][0-9]/.test(name) /*&& (!element.pads || element.pads.length == 2)*/) {
       let re;
       this.debug('BoardRenderer.renderElement', { name, value });
       switch (name[0]) {
@@ -310,12 +311,13 @@ export class BoardRenderer extends EagleSVGRenderer {
 
       //      console.log('Element.render name:', name, ' number:', number, ' value:', value);
     }
-    this.renderCollection(element.package.children, g, {
-      name,
-      value,
-      transformation: this.transform.concat(transform),
-      flat: true
-    });
+    if(element?.package?.children)
+      this.renderCollection(element.package.children, g, {
+        name,
+        value,
+        transformation: this.transform.concat(transform),
+        flat: true
+      });
     this.create(Origin, { /* x, y,*/ element, layer: this.layers['tOrigins'] }, g);
 
     /*    let angle = Util.randInt(0, 360);
@@ -418,7 +420,9 @@ export class BoardRenderer extends EagleSVGRenderer {
         layer: '',
         predicate: i => i.attributes.layer === undefined
       });
+
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
+
     let plain = [...doc.get('plain').children];
     this.renderCollection(plain, plainGroup);
     this.bounds = bounds;

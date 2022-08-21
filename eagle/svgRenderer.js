@@ -8,6 +8,7 @@ import trkl from '../trkl.js';
 import { h, Component } from '../dom/preactComponent.js';
 import { ColorMap } from '../draw/colorMap.js';
 import { SVG } from './components/svg.js';
+import { ImmutableXPath } from '../xml/xpath.js';
 const transformXPath = p => p.replace(/➟/g, 'children').replace(/ /g, '.').split(/\./g);
 
 export class EagleSVGRenderer {
@@ -42,12 +43,18 @@ export class EagleSVGRenderer {
       // console.log('EagleSVGRenderer.create',{factory});
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
-      let pathStr = path;
       if(path) {
-        let e = doc.lookup(path);
-        let parent = e.parentNode;
+        if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
+        else if(!Util.isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
+        /*        let ref=new EagleReference(doc,path);*/
+        console.log('EagleSVGRenderer.create', { path /*,ref*/ });
+        //      let pathStr = path.replace(/\.?children/g, '/');
+        try {
+          let e = path.apply(doc);
+          let parent = e.parentNode;
 
-        insert(path, ret);
+          insert(path, ret);
+        } catch(e) {}
       }
       return ret;
     };
@@ -191,7 +198,7 @@ export class EagleSVGRenderer {
           //...LayerAttributes(l),
           stroke,
           'data-name': l.name,
-          'data-path': l.path.toString(' '),
+          'data-path': l.path /*.toString(' ')*/,
           ...(active == 'yes' ? { 'data-active': 'yes' } : {}),
           ...(visible == 'yes' ? { 'data-visible': 'yes' } : {})
         },

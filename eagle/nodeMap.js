@@ -1,6 +1,8 @@
 import Util from '../util.js';
 import { EagleElement } from './element.js';
 import { text, concat, inspectSymbol } from './common.js';
+import { Pointer } from '../pointer.js';
+import { Pointer as ImmutablePath } from '../pointer.js';
 
 export class EagleNodeMap {
   constructor(list, key) {
@@ -31,12 +33,12 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
   get(name, key = this.key) {
     const { owner, ref, raw } = this.list || {};
-    //console.log('EagleNodeMap', { raw, name });
+    //console.log('EagleNodeMap.get', { name, key }, { owner, ref });
     if(raw) {
       const fn = EagleNodeMap.makePredicate(name, key);
       const idx = raw.findIndex(fn);
       let value = raw[idx];
-      return raw[idx] ? EagleElement.get(owner, ref.down(idx)) : null;
+      return raw[idx] ? EagleElement.get(owner, ['children', idx]) : null;
     }
   }
 

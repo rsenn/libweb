@@ -87,7 +87,7 @@ export class EagleDocument extends EagleNode {
       data: xmlStr,
       raw2element: Util.weakMapper((raw, owner, ref) => {
         //let path=ref && ref.path ? [...ref.path] : ref;
-        console.log('raw2element new', { raw, owner: owner.raw, ref });
+        //console.log('raw2element new', { raw, owner: owner.raw, ref });
         let el = new EagleElement(owner, ref, raw);
         //console.log('raw2element new(2)', { el: el.raw,ref });
         return el;
@@ -273,7 +273,7 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    //console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
+    console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
 
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));

@@ -5,8 +5,11 @@ import { text, concat, inspectSymbol } from './common.js';
 
 export class EagleNodeList {
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
+    //console.log('EagleNodeList.constructor', { owner: owner.raw, ref, pred });
+    if(Util.isObject(owner) && !('raw' in owner)) throw new Error('raw owner');
     if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
     let raw = ref.dereference();
+    //     console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     //console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     let species = Util.getConstructor(owner);
     Util.define(this, { ref, owner, raw, getOrCreate });
@@ -34,11 +37,19 @@ export class EagleNodeList {
 
   *[Symbol.iterator]() {
     let { ref, owner, raw, pred } = this;
-    //console.log('Symbol.iterator', { ref, owner, raw, pred: pred + '' });
     let j = 0;
     for(let i = 0; i < raw.length; i++) {
       if(pred && !pred(raw[i], j, this)) continue;
-      yield this.getOrCreate(owner.document, ref.down(i) /*, raw[i]*/);
+      //console.log('Symbol.iterator', { i, owner: owner.raw, raw: raw[i] });
+      try {
+        yield this.getOrCreate(owner, ref.down(i) /*, raw[i]*/);
+      } catch(e) {
+        try {
+          yield this.getOrCreate(owner, ref.down(i).slice(-2) /*, raw[i]*/);
+        } catch(e) {
+          throw new Error('iteration ' + i + ' ' + ref);
+        }
+      }
       j++;
     }
   }
