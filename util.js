@@ -4850,7 +4850,7 @@ Util.bindProperties = (proxy, target, props, gen) => {
     ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props]
     : [props, Object.keys(props)];
 
-  if(!gen) gen = p => v => v === undefined ? target[propMap[p]] : (target[propMap[p]] = v);
+  gen ??= p => v => v === undefined ? target[propMap[p]] : (target[propMap[p]] = v);
   const propGetSet = propNames
     .map(k => [k, propMap[k]])
 

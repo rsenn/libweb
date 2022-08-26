@@ -1226,7 +1226,7 @@ export function bits(buffer) {
 }
 
 export function dupArrayBuffer(buf, start, length) {
-  let a = new Uint8Array(buf, start,length);
+  let a = new Uint8Array(buf, start, length);
   return new Uint8Array([...a]);
 }
 export function getTypeName(v) {
@@ -1283,7 +1283,6 @@ export function isFunction(value) {
 export function isHTMLDDA(value) {
   return false;
 }
-
 
 export function isInstanceOf(value, ctor) {
   if(ctor[Symbol.hasInstance]) {

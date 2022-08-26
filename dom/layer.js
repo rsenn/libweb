@@ -1,12 +1,56 @@
-import { Element } from './element.js';
+import { Element, isElement } from './element.js';
+import { Rect } from '../geom/rect.js';
+import { Pointer } from '../pointer.js';
+import * as deep from '../deep.js';
+import trkl from '../trkl.js';
 
+const GetSet = (getFn, setFn) => value => value !== undefined ? setFn(value) : getFn();
+const PropSetterGetter = (obj, property) =>
+  GetSet(
+    () => obj[property],
+    value => (obj[property] = value)
+  );
+const PropGetter = (obj, property) => () => obj[property];
+
+const CSSSetter = (elem, property) => value => Element.setCSS(elem, { [property]: value + 'px' });
+const CSSGetter = (elem, property) => () => Element.getCSS(elem, property);
+const CSSGetSet = (elem, property) => GetSet(CSSGetter(elem, property), CSSSetter(elem, property));
 /**
  *
  */
-export class Layer extends Element {
-  constructor(arg, attr) {
-    this.elm = (Element.isElement(arg) && arg) || Element.create(arg);
-    this.rect = Element.rect(this.elm);
+export class Layer {
+  constructor(arg, ...args) {
+    if(!isElement(arg)) {
+      let [attr = {}, parent = document.body] = args;
+
+      this.elm = Element.create(arg, attr, parent);
+    } else {
+      this.elm = arg;
+    }
+    return trkl.object(
+      {
+        x: GetSet(PropGetter(this.elm, 'offsetLeft'), CSSSetter(this.elm, 'left')),
+        y: GetSet(PropGetter(this.elm, 'offsetTop'), CSSSetter(this.elm, 'top')),
+        width: GetSet(PropGetter(this.elm, 'offsetWidth'), CSSSetter(this.elm, 'width')),
+        height: GetSet(PropGetter(this.elm, 'offsetHeight'), CSSSetter(this.elm, 'height'))
+      },
+      this
+    );
+  }
+
+  get rect() {
+    return trkl.object({
+      x: CSSGetSet(this.elm, 'left'),
+      y: CSSGetSet(this.elm, 'top'),
+      width: CSSGetSet(this.elm, 'width'),
+      height: CSSGetSet(this.elm, 'height')
+    });
+  }
+  set rect(value) {
+    Element.setRect(this.elm, value);
+  }
+  get style() {
+    return this.elm.style;
   }
 }
 

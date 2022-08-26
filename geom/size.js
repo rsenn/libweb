@@ -228,17 +228,17 @@ Size.prototype.toObject = function() {
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 
-Size.bind = (...args) => {
-  const o = args[0] instanceof Size ? args.shift() : new Size();
-  const gen = Util.isFunction(args[args.length - 1]) && args.pop();
-  const p = args.length > 1 ? args.pop() : ['width', 'height'];
-  const t = args.pop();
-  gen = gen || (k => v => v === undefined ? t[k] : (t[k] = v));
+Size.bind = (o, keys, g) => {
+  keys ??= ['width', 'width'];
+  o ??= new Size();
+  g ??= k => value => value !== undefined ? (o[k] = value) : o[k];
 
-  // const [  p = ['width', 'height']  ] = args[0] instanceof Size ? args : [new Size(), ...args];
-  console.debug('Size.bind', { args, o, t, p, gen });
-  const { width, height } = Util.isArray(p) ? p.reduce((acc, name) => ({ ...acc, [name]: name }), {}) : p;
-  return Util.bindProperties(new Size(0, 0), t, { width, height }, gen);
+  const { width, height } = Array.isArray(keys)
+    ? keys.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})
+    : keys;
+  //console.debug('Size.bind', { keys, o, p, x, y });
+  //
+  return Object.setPrototypeOf(Util.bindProperties({}, o, { width, height }), Size.prototype);
 };
 
 for(let method of Util.getMethodNames(Size.prototype))

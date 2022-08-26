@@ -360,14 +360,15 @@ Point.prototype[Util.inspectSymbol] = function(depth, options) {
   return /*Object.setPrototypeOf*/ { x, y } /*, Point.prototype*/;
 };
 
-Point.bind = (...args) => {
-  const keys = ['x', 'y'];
-  let [o, p] = args;
-  if(p == null) p = keys;
-  const { x, y } = (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
-  //console.debug('Point.bind', { keys, o, p, x, y });
+Point.bind = (o, keys, g) => {
+  keys ??= ['x', 'y'];
+  o ??= new Point();
+  g ??= k => value => value !== undefined ? (o[k] = value) : o[k];
+
+  const { x, y } = Array.isArray(keys) ? keys.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {}) : keys;
   return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
+
 export default Point;
 
 Util.defineGetter(Point, Symbol.species, function() {
