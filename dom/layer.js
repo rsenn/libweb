@@ -1,8 +1,10 @@
 import { Element, isElement } from './element.js';
 import { Rect } from '../geom/rect.js';
+import { RGBA, HSLA } from '../color.js';
 import { Pointer } from '../pointer.js';
 import * as deep from '../deep.js';
 import trkl from '../trkl.js';
+import { Transformation, Rotation, Translation, Scaling, TransformationList } from '../geom/transformation.js';
 
 const GetSet = (getFn, setFn) => value => value !== undefined ? setFn(value) : getFn();
 const PropSetterGetter = (obj, property) =>
@@ -12,9 +14,11 @@ const PropSetterGetter = (obj, property) =>
   );
 const PropGetter = (obj, property) => () => obj[property];
 
-const CSSSetter = (elem, property) => value => Element.setCSS(elem, { [property]: value + 'px' });
-const CSSGetter = (elem, property) => () => Element.getCSS(elem, property);
-const CSSGetSet = (elem, property) => GetSet(CSSGetter(elem, property), CSSSetter(elem, property));
+const cssSet = (elem, property) => value =>
+  Element.setCSS(elem, { [property]: typeof value == 'number' ? value + 'px' : value });
+const cssGet = (elem, property) => () => Element.getCSS(elem, property);
+const cssGetSet = (elem, property) => GetSet(cssGet(elem, property), cssSet(elem, property));
+
 /**
  *
  */
@@ -27,24 +31,27 @@ export class Layer {
     } else {
       this.elm = arg;
     }
+    this.transform = TransformationList.fromString(this.elm.style.transform);
+
     return trkl.object(
-      {
-        x: GetSet(PropGetter(this.elm, 'offsetLeft'), CSSSetter(this.elm, 'left')),
-        y: GetSet(PropGetter(this.elm, 'offsetTop'), CSSSetter(this.elm, 'top')),
-        width: GetSet(PropGetter(this.elm, 'offsetWidth'), CSSSetter(this.elm, 'width')),
-        height: GetSet(PropGetter(this.elm, 'offsetHeight'), CSSSetter(this.elm, 'height'))
-      },
+      (this._getset = {
+        x: GetSet(PropGetter(this.elm, 'offsetLeft'), cssSet(this.elm, 'left')),
+        y: GetSet(PropGetter(this.elm, 'offsetTop'), cssSet(this.elm, 'top')),
+        width: GetSet(PropGetter(this.elm, 'offsetWidth'), cssSet(this.elm, 'width')),
+        height: GetSet(PropGetter(this.elm, 'offsetHeight'), cssSet(this.elm, 'height')),
+        border: cssGetSet(this.elm, 'border'),
+        margin: cssGetSet(this.elm, 'margin'),
+        padding: cssGetSet(this.elm, 'padding'),
+        opacity: cssGetSet(this.elm, 'opacity'),
+        display: cssGetSet(this.elm, 'display'),
+        boxSizing: cssGetSet(this.elm, 'box-sizing')
+      }),
       this
     );
   }
 
   get rect() {
-    return trkl.object({
-      x: CSSGetSet(this.elm, 'left'),
-      y: CSSGetSet(this.elm, 'top'),
-      width: CSSGetSet(this.elm, 'width'),
-      height: CSSGetSet(this.elm, 'height')
-    });
+    return Rect.bind({}, null, k => this._getset[k]);
   }
   set rect(value) {
     Element.setRect(this.elm, value);

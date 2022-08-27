@@ -493,14 +493,14 @@ Rect.toSource = (rect, opts = {}) => {
   return `{${sep}${props}${sep}}`;
 };
 
-Rect.bind = (...args) => {
-  let [o, p, gen] = args[0] instanceof Rect ? [new Rect(), ...args] : args;
-
-  gen ??= k => v => v === undefined ? o[k] : (o[k] = v);
+Rect.bind = (o, p, gen) => {
+  o ??= new Rect();
+  //gen ??= k => v => v === undefined ? o[k] : (o[k] = v);
   p ??= ['x', 'y', 'width', 'height'];
   const [x, y, width, height] = p;
-  let pt = Point.bind(o, [x, y], gen);
-  let sz = Size.bind(o, [width, height], gen);
+  Point.bind(o, [x, y], gen);
+  Size.bind(o, [width, height], gen);
+  return o;
   let proxy = new Rect(pt, sz);
   return proxy;
 };
