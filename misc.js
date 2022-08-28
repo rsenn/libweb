@@ -1181,34 +1181,36 @@ export function immutableClass(orig, ...proto) {
 
 export const isArray = a => Array.isArray(a);
 
+export class ArrayFacade {
+  *[Symbol.iterator]() {
+    const { length } = this;
+    for(let i = 0; i < length; i++) yield itemFn(this, i);
+  }
+  *keys() {
+    const { length } = this;
+    for(let i = 0; i < length; i++) yield i;
+  }
+  *entries() {
+    const { length } = this;
+    for(let i = 0; i < length; i++) yield [i, itemFn(this, i)];
+  }
+  *values() {
+    const { length } = this;
+    for(let i = 0; i < length; i++) yield itemFn(this, i);
+  }
+  forEach(callback, thisArg) {
+    const { length } = this;
+    for(let i = 0; i < length; i++) callback.call(thisArg, itemFn(this, i), i, this);
+  }
+  reduce(callback, accu, thisArg) {
+    const { length } = this;
+    for(let i = 0; i < length; i++) accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
+    return accu;
+  }
+}
+
 export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
-  return define(proto, {
-    *[Symbol.iterator]() {
-      const { length } = this;
-      for(let i = 0; i < length; i++) yield itemFn(this, i);
-    },
-    *keys() {
-      const { length } = this;
-      for(let i = 0; i < length; i++) yield i;
-    },
-    *entries() {
-      const { length } = this;
-      for(let i = 0; i < length; i++) yield [i, itemFn(this, i)];
-    },
-    *values() {
-      const { length } = this;
-      for(let i = 0; i < length; i++) yield itemFn(this, i);
-    },
-    forEach(callback, thisArg) {
-      const { length } = this;
-      for(let i = 0; i < length; i++) callback.call(thisArg, itemFn(this, i), i, this);
-    },
-    reduce(callback, accu, thisArg) {
-      const { length } = this;
-      for(let i = 0; i < length; i++) accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
-      return accu;
-    }
-  });
+  return define(proto, ArrayFacade.prototype);
 }
 
 export function bits(buffer) {

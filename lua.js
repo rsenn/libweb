@@ -789,7 +789,8 @@ ${other}`;
         case 'Undefined':
           ret = '';
           break;
-        default: //Util.inspect(node, { newline: ' ' }));
+        default:
+          //Util.inspect(node, { newline: ' ' }));
           throw { message: `Dunno how to generate for ${node.type}` };
           break;
       }
