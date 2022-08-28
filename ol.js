@@ -31,3 +31,4 @@ export { ZoomSlider } from '../openlayers/src/ol/control.js';
 export { getVectorContext } from '../openlayers/src/ol/render.js';
 export { unByKey } from '../openlayers/src/ol/Observable.js';
 export { default as Control } from '../openlayers/src/ol/control/Control.js';
+export { default as Link } from '../openlayers/src/ol/interaction/Link.js';
