@@ -3,8 +3,11 @@ import { Rect } from '../geom/rect.js';
 import { RGBA, HSLA } from '../color.js';
 import { Pointer } from '../pointer.js';
 import * as deep from '../deep.js';
+import { lazyProperties } from '../misc.js';
 import trkl from '../trkl.js';
 import { Transformation, Rotation, Translation, Scaling, TransformationList } from '../geom/transformation.js';
+//import { Element, isElement } from '../dom.js';
+import { h, forwardRef, Fragment, React, ReactComponent, Portal, toChildArray } from './preactComponent.js';
 
 const GetSet = (getFn, setFn) => value => value !== undefined ? setFn(value) : getFn();
 const PropSetterGetter = (obj, property) =>
@@ -24,10 +27,15 @@ const cssGetSet = (elem, property) => GetSet(cssGet(elem, property), cssSet(elem
  */
 export class Layer {
   constructor(arg, ...args) {
-    if(!isElement(arg)) {
-      let [attr = {}, parent = document.body] = args;
+    if(typeof arg == 'string' && args.length == 0) {
+      console.log('arg', arg);
+      this.elm = document.querySelector(arg);
+    } else if(!isElement(arg)) {
+      //let parent = isElement(args[0]) ? args.shift() : document.body;
 
-      this.elm = Element.create(arg, attr, parent);
+      //et [attr = {}, parent = document.body] = args;
+
+      this.elm = Element.create(arg, ...args);
     } else {
       this.elm = arg;
     }
@@ -42,6 +50,7 @@ export class Layer {
         border: cssGetSet(this.elm, 'border'),
         margin: cssGetSet(this.elm, 'margin'),
         padding: cssGetSet(this.elm, 'padding'),
+        position: cssGetSet(this.elm, 'position'),
         opacity: cssGetSet(this.elm, 'opacity'),
         display: cssGetSet(this.elm, 'display'),
         boxSizing: cssGetSet(this.elm, 'box-sizing')
@@ -59,7 +68,19 @@ export class Layer {
   get style() {
     return this.elm.style;
   }
+
+  render(component) {
+    let { renderer } = this;
+    renderer.component = component ?? renderer.component;
+    renderer.refresh();
+  }
 }
+
+lazyProperties(Layer.prototype, {
+  renderer() {
+    return new Renderer(null, this.elm);
+  }
+});
 
 export class Renderer {
   constructor(component, root_node) {
@@ -68,7 +89,9 @@ export class Renderer {
   }
   refresh() {
     this.clear();
-    ReactDOM.render(this.component, this.root_node);
+    const { component, root_node } = this;
+    console.log('refresh', { component, root_node });
+    React.render(this.component, this.root_node);
 
     const e = (this.element = this.root_node.firstChild);
     const xpath = Element.xpath(e);

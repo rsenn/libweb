@@ -837,10 +837,10 @@ export function lazyProperty(obj, name, getter, opts = {}) {
   return Object.defineProperty(obj, name, {
     get: types.isAsyncFunction(getter)
       ? async function() {
-          return replaceProperty(await getter.call(obj, name));
+          return replaceProperty(await getter.call(this ?? obj, name));
         }
       : function() {
-          const value = getter.call(obj, name);
+          const value = getter.call(this ?? obj, name);
           if(types.isPromise(value)) {
             value.then(v => {
               replaceProperty(v);
