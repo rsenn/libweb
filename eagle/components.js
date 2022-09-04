@@ -24,6 +24,7 @@ import { SMD } from './components/smd.js';
 import { Via } from './components/via.js';
 import { Instance } from './components/instance.js';
 import { Sheet } from './components/sheet.js';
+import { Board } from './components/board.js';
 
 export const PrimitiveComponents = {
   Wire,
@@ -46,7 +47,10 @@ export const PrimitiveComponents = {
   Smd: SMD,
   Via,
   Instance,
-  Sheet
+  Sheet,
+  Element,
+  Board,
+  Drawing
 };
 
 let prevName;

@@ -2,8 +2,11 @@ import Util from '../../util.js';
 import { useTrkl, log } from '../renderUtils.js';
 import { h, Component } from '../../dom/preactComponent.js';
 
-export const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, ...props }) => {
-  let visible = 'yes' == useTrkl(layer.handlers.visible);
+export const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, data, ...props }) => {
+  if(data)
+    layer ??= data.document.getLayer(isNaN(+data.attributes.layer) ? data.attributes.layer : +data.attributes.layer);
+
+  let visible = !layer?.handlers || 'yes' == useTrkl(layer.handlers.visible);
   log('WirePath', layer.toString(), 'visible:', visible);
 
   let attrs = {
@@ -16,6 +19,8 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
 
   log('WirePath', layer.toString(), 'path:', path);
   log('WirePath', layer.toString(), 'cmds:', cmds);
+
+  cmds ??= [];
 
   let isArray = Util.isArray(cmds[0]) && cmds.length > 1;
 

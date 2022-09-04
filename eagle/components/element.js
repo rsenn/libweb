@@ -18,7 +18,10 @@ export const Element = ({ data, opts = {}, ...props }) => {
 
   let { x, y, rot, library, name, value } = element;
 
+  let transform = new TransformationList();
+
   transform.translate(x, y);
+
   if(rot) {
     rot = MakeRotation(rot);
     transform = transform.concat(rot);

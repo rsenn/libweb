@@ -337,7 +337,7 @@ export class EagleElement extends EagleNode {
     if(tagName == 'gate') {
       trkl.bind(this, 'symbol', () => {
         let chain = this.scope(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
-
+        console.log('chain', chain);
         let library = chain.library;
         return library.symbols[attributes.symbol];
       });
@@ -421,10 +421,11 @@ export class EagleElement extends EagleNode {
       );
     }
     if(tagName == 'signal') {
-      for(let prop of ['via', 'wire', 'contactref'])
+      for(let prop of ['via', 'wire', 'contactref']) {
         lazyProperty(this, prop + 's', () =>
           EagleNodeList.create(this, this.path.down('children'), e => e.tagName == prop)
         );
+      }
     }
     if(tagName == 'package') {
       lazyProperty(this, 'vias', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'via'));
@@ -701,6 +702,16 @@ export class EagleElement extends EagleNode {
       if(['x1', 'y1', 'x2', 'y2'].some(n => bb[n] === undefined))
         throw new Error(`No getBounds() for '${this.tagName}': ${bb}`);
     }
+
+    if('width' in this.attributes) {
+      let half = this.attributes.width * 0.5;
+
+      bb.x1 -= half;
+      bb.x2 += half;
+      bb.y1 -= half;
+      bb.y2 += half;
+    }
+
     return bb;
   }
 

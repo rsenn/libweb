@@ -95,7 +95,7 @@ export class EagleNodeList {
     return (
       text(Util.className(this), 0) +
       ` [\n  ` +
-      `...${raw.length} items...` +
+      `...${this.length} items...` +
       //[...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
       `\n]`
     );

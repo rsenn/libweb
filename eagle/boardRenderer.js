@@ -121,16 +121,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const {
-      predicate = i => i.tagName != 'description',
-      transformation,
-      pos,
-      rot,
-      name,
-      layer,
-      props = {},
-      flat
-    } = opts;
+    const { predicate = i => i.tagName != 'description', transformation, pos, rot, name, layer, props = {}, flat } = opts;
     //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
     this.debug(`BoardRenderer.renderCollection`, {
       coll,
@@ -145,7 +136,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       widths = {};
 
     const { tPlace } = this.layers;
-   // console.log('BoardRenderer.renderCollection', coll);
+    // console.log('BoardRenderer.renderCollection', coll);
     for(let item of coll) {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
@@ -285,7 +276,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-   // console.log('BoardRenderer.renderElement', { name, value });
+    // console.log('BoardRenderer.renderElement', { name, value });
 
     if(/^[RLC][0-9]/.test(name) /*&& (!element.pads || element.pads.length == 2)*/) {
       let re;
@@ -346,9 +337,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(children.length > 0) {
       const className = ElementToClass(signal);
-      const id = `signal-${EscapeClassName(signal.name)}${
-        typeof options.layer == 'string' && options.layer != '' ? '-' + options.layer.toLowerCase() : ''
-      }`;
+      const id = `signal-${EscapeClassName(signal.name)}${typeof options.layer == 'string' && options.layer != '' ? '-' + options.layer.toLowerCase() : ''}`;
       props = {
         ...props,
         class: className,

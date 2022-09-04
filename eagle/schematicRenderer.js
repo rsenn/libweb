@@ -23,7 +23,10 @@ export class SchematicRenderer extends EagleSVGRenderer {
   constructor(doc, factory) {
     super(doc, factory);
     this.id = 0;
-    this.palette = SchematicRenderer.palette;
+
+    this.setPalette(SchematicRenderer.palette);
+
+    //this.palette = SchematicRenderer.palette;
   }
 
   renderCollection(collection, parent, opts) {
@@ -161,9 +164,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.renderSheet`, sheet);
     let netsGroup = this.create('g', { className: 'nets', transform, 'font-family': 'Fixed' }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform, 'font-family': 'Fixed' }, parent);
-    instancesGroup.props.children = [...instances.list].map(data =>
-      h(Instance, { data, opts: { transformation: transform } })
-    );
+    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data, opts: { transformation: transform } }));
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 

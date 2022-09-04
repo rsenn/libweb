@@ -48,7 +48,7 @@ export class EagleSVGRenderer {
       if(path) {
         if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
         else if(!Util.isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
-       //console.log('EagleSVGRenderer.create', { path /*,ref*/ });
+        //console.log('EagleSVGRenderer.create', { path /*,ref*/ });
         try {
           let e = path.apply(doc);
           let parent = e.parentNode;
@@ -162,11 +162,7 @@ export class EagleSVGRenderer {
   layerOf(element) {
     let layer;
     do {
-      layer =
-        element.getAttribute('data-layer') ||
-        element.getAttribute('data-layer-id') ||
-        element.getAttribute('data-layer-name') ||
-        element.getAttribute('layer');
+      layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
       if(layer) {
         const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];

@@ -4,7 +4,6 @@ import List from './List.js';
 import Card from './Card.js';
 import DragArea from '../DragArea.js';
 
-
 function _extends() {
   _extends =
     Object.assign ||
@@ -21,8 +20,6 @@ function _extends() {
     };
   return _extends.apply(this, arguments);
 }
-
-
 
 const Item = (type, image) => {
   //console.log("UploadItem.render ", { type, image });

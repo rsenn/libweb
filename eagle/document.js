@@ -97,26 +97,13 @@ export class EagleDocument extends EagleNode {
     const { pathMapper, raw2element } = this;
 
     const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
-    const [obj2eagle, path2eagle] = [
-      Util.mapFunction(raw2element),
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))
-    ];
-    const [eagle2path, eagle2obj] = [
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
-    ];
+    const [obj2eagle, path2eagle] = [Util.mapFunction(raw2element), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))];
+    const [eagle2path, eagle2obj] = [Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))];
 
     // prettier-ignore
     this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
 
-    type =
-      type || /<library>/.test(xmlStr)
-        ? 'lbr'
-        : /(<element\ |<board)/.test(xmlStr)
-        ? 'brd'
-        : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr)
-        ? 'sch'
-        : null;
+    type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
 
     if(filename) {
       this.file = filename;
@@ -165,8 +152,9 @@ export class EagleDocument extends EagleNode {
     if(this.type == 'brd') {
       //   this.elements = EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name');
       let elements = this.lookup('/eagle/drawing/board/elements');
-
-      lazyProperty(this, 'plain', () => this.lookup('/eagle/drawing/board/plain'));
+      let plain = this.lookup('/eagle/drawing/board/plain');
+      lazyProperty(this, 'signals', () => EagleNodeMap.create(this.lookup('/eagle/drawing/board/signals').children, 'name'));
+      lazyProperty(this, 'plain', () => EagleNodeList.create(plain, plain.path.concat(['children'])));
       lazyProperty(this, 'elements', () => EagleNodeMap.create(elements.children, 'name'));
     }
     /*this.libraries = GetProxy((prop, target) => this.getLibrary(prop), {
@@ -287,45 +275,29 @@ export class EagleDocument extends EagleNode {
 
   getBounds(sheetNo = 0) {
     let bb = new BBox();
-    /*    if(this.type == 'brd') {
-      const board = this.lookup(['eagle', 'drawing', 'board']);
-      const plain = board.lookup(['plain']);
-      //console.debug('plain:', plain);
-      const measures = plain.children.filter(e => e.layer && e.layer.name == 'Measures');
-      let ret;
-      if(measures.length >= 4) ret = bb.update(measures);
-      else ret = board.getBounds();
-      return ret;
-    }*/
-
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
-
     if(this.type == 'sch') {
       return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
-    } else if(this.elements) {
+    }
+
+    if(this.elements) {
       for(let element of this.elements.list) {
-        //console.log(Util.className(this) + '.getBounds', { element });
         let bbrect = element.getBounds();
         bb.update(bbrect);
       }
-    } else if(this.signals) {
-      /*for(let signal of this.signals.list) {
-        let bbrect = signal.getBounds();*/
+    }
+    if(this.signals) {
       bb.update(
-        [...project.doc.signals.list]
+        [...this.signals.list]
           .map(sig => [...sig.children])
           .flat()
           .filter(c => !!c.geometry)
       );
-      bb.update(
-        [...project.doc.elements.list].map(e =>
-          e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())
-        )
-      );
-
-      /*      }*/
+      bb.update([...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())));
     }
-
+    /*if(this.plain) {
+      bb.update(this.plain.map(child => child.getBounds()));
+    }*/
     return bb;
   }
 
