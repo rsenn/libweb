@@ -142,14 +142,15 @@ export class EagleDocument extends EagleNode {
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 
-    this.layers = GetProxy(
+    /*this.layers = GetProxy(
       (prop, target) => {
         return this.getLayer(prop);
       },
       {
-        ownKeys: target => this.get('layers').children.map(c => c.name)
+        ownKeys: target => this.lookup('/eagle/drawing/layers').raw.children.map(c => c.attributes.name)
       }
-    );
+    );*/
+
     //if(this.type == 'sch') lazyProperty(this, 'children', () => EagleNodeList.create(this.get('sheets'), ['children']  ));
     if(this.type == 'sch') {
       let sheets = this.get('sheets');
@@ -174,7 +175,12 @@ export class EagleDocument extends EagleNode {
 
     lazyProperty(this, 'drawing', () => this.lookup('/eagle/drawing'));
 
-    //  lazyProperty(this, 'layers', () => EagleNodeMap.create(this.get('layers').children.raw, 'name'));
+    lazyProperty(this, 'layers', () => {
+      let layers = this.lookup('/eagle/drawing/layers');
+      console.log('EagleDocument.constructor', { layers });
+
+      return EagleNodeMap.create(layers.children, 'name');
+    });
   }
 
   /* prettier-ignore */ get raw() {
@@ -273,7 +279,7 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
+    // console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
 
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
@@ -298,7 +304,7 @@ export class EagleDocument extends EagleNode {
       return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
     } else if(this.elements) {
       for(let element of this.elements.list) {
-        // console.log(Util.className(this) + '.getBounds', element.path + '', `<${element.tagName}>`);
+        //console.log(Util.className(this) + '.getBounds', { element });
         let bbrect = element.getBounds();
         bb.update(bbrect);
       }
@@ -383,13 +389,13 @@ export class EagleDocument extends EagleNode {
   }
 
   getLayer(id) {
-    let layers = this.get('layers');
+    let layers = this.lookup('/eagle/drawing/layers');
     let i = 0;
 
-    for(let layer of layers.children) {
+    for(let layer of layers.raw.children) {
       let { number, name } = layer.attributes;
       // console.log('layer', { number, name });
-      if(number == id || name == id) return layer;
+      if(number == id || name == id) return layers.children[i];
       i++;
     }
     return null;

@@ -619,7 +619,7 @@ export class EagleElement extends EagleNode {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
       let library = document.getLibrary(libName);
-      console.log(Util.className(this) + '.getBounds', path + '', `<${this.tagName}>`, { libName, library });
+      // console.log(Util.className(this) + '.getBounds', path + '', `<${this.tagName}>`, { libName, library });
       let pkg = library.packages[raw.attributes.package];
       bb = pkg.getBounds();
       bb.move(this.x, this.y);
@@ -720,7 +720,8 @@ export class EagleElement extends EagleNode {
 
   /* prettier-ignore */ get geometry() {
     const { raw } = this;
-    const keys = Object.keys(raw.attributes);
+   // console.log('raw.attributes',raw.attributes);
+    const keys = Object.keys(raw.attributes ?? {});
     const makeGetterSetter = (k) => (v) => (v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + ''));
 
     if(this.shape == 'octagon') {

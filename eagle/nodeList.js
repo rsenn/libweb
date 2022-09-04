@@ -36,20 +36,15 @@ export class EagleNodeList {
   }
 
   *[Symbol.iterator]() {
-    let { ref, owner, raw, pred } = this;
+    const { ref, owner, raw, pred } = this;
     let j = 0;
-    for(let i = 0; i < raw.length; i++) {
+    let { length } = raw;
+
+    for(let i = 0; i < length; i++) {
       if(pred && !pred(raw[i], j, this)) continue;
-      //console.log('Symbol.iterator', { i, owner: owner.raw, raw: raw[i] });
-      try {
-        yield this.getOrCreate(owner, ref.down(i) /*, raw[i]*/);
-      } catch(e) {
-        try {
-          yield this.getOrCreate(owner, ref.down(i).slice(-2) /*, raw[i]*/);
-        } catch(e) {
-          throw new Error('iteration ' + i + ' ' + ref);
-        }
-      }
+
+      yield this.item(i);
+
       j++;
     }
   }

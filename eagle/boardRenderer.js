@@ -145,7 +145,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       widths = {};
 
     const { tPlace } = this.layers;
-    console.log('BoardRenderer.renderCollection', coll);
+   // console.log('BoardRenderer.renderCollection', coll);
     for(let item of coll) {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
@@ -285,7 +285,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    console.log('BoardRenderer.renderElement', { name, value });
+   // console.log('BoardRenderer.renderElement', { name, value });
 
     if(/^[RLC][0-9]/.test(name) /*&& (!element.pads || element.pads.length == 2)*/) {
       let re;

@@ -9,6 +9,8 @@ import { h, Component } from '../dom/preactComponent.js';
 import { ColorMap } from '../draw/colorMap.js';
 import { SVG } from './components/svg.js';
 import { ImmutableXPath } from '../xml/xpath.js';
+import { Pointer as ImmutablePath } from '../pointer.js';
+
 const transformXPath = p => p.replace(/➟/g, 'children').replace(/ /g, '.').split(/\./g);
 
 export class EagleSVGRenderer {
@@ -46,9 +48,7 @@ export class EagleSVGRenderer {
       if(path) {
         if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
         else if(!Util.isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
-        /*        let ref=new EagleReference(doc,path);*/
-        console.log('EagleSVGRenderer.create', { path /*,ref*/ });
-        //      let pathStr = path.replace(/\.?children/g, '/');
+       //console.log('EagleSVGRenderer.create', { path /*,ref*/ });
         try {
           let e = path.apply(doc);
           let parent = e.parentNode;
@@ -439,7 +439,7 @@ export class EagleSVGRenderer {
   }
 
   render(obj, props = {}, children = []) {
-    console.log('EagleSVGRenderer.render', { obj, props, children });
+    //console.log('EagleSVGRenderer.render', { obj, props, children });
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', { doc });
     let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList() } = props;

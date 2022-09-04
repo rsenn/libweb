@@ -9,19 +9,9 @@ export class EagleNodeMap {
     //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
     this.list = list;
-
-    //  if(Array.isArray(key)) key = key[key.length - 1];
-
-    // console.log('EagleNodeMap.constructor', { key });
     this.key = key;
   }
 
-  /*
-Object.defineProperties(EagleNodeMap.prototype, {
-  list: { writable: true, configurable: true, enumerable: false, value: null },
-  key: { writable: true, configurable: true, enumerable: false, value: null }
-});
-*/
   static makePredicate(name, key) {
     const a = Array.isArray(key) ? key : [key];
     return key == 'tagName' ? item => item.tagName == name : item => a.some(key => item.attributes[key] == name);
@@ -38,7 +28,8 @@ Object.defineProperties(EagleNodeMap.prototype, {
       const fn = EagleNodeMap.makePredicate(name, key);
       const idx = raw.findIndex(fn);
       let value = raw[idx];
-      return raw[idx] ? EagleElement.get(owner, ['children', idx]) : null;
+
+      return raw[idx] ? this.item(idx) : null;
     }
   }
 
