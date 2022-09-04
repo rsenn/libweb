@@ -7,7 +7,7 @@ import { Arc } from './arc.js';
 
 const RoundToMil = n => Math.round(n * 1000) / 1000;
 
-export const Wire = ({ data, opts = {}, ...props }) => {
+export const Wire = ({ data, opts = {}, color, ...props }) => {
   //
   let wire =
     useValue(async function* () {
@@ -29,9 +29,8 @@ export const Wire = ({ data, opts = {}, ...props }) => {
   let layer = wire.document.getLayer(layerId) ?? wire.layer;
 
   log('Wire.render ', { layerId, wire });
-  const color = wire.getColor();
+  color ??= wire.getColor();
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
- 
 
   let props = {
     class: ElementToClass(wire, layer.name),
@@ -40,9 +39,12 @@ export const Wire = ({ data, opts = {}, ...props }) => {
     'stroke-linecap': 'round',
     ...(curve ? { 'data-curve': curve } : {}),
     'data-layer': `${layer.number} ${layer.name}`,
-    transform,
     style: visible ? {} : { display: 'none' }
   };
+
+  if(transform.length > 0) props.transform = transform;
+
+  let d = `M ${x1} ${y1} L ${x2} ${y2}`;
 
   if(!isNaN(+curve) && Math.abs(+curve) > 0) {
     curve = +curve;
@@ -54,18 +56,14 @@ export const Wire = ({ data, opts = {}, ...props }) => {
     let r = (c / 1.4142135623730951).toFixed(3);
     let l = 0;
     let s = Math.sign(curve) == -1 ? '0' : '1';
-    return h('path', {
-      d: `M ${x1} ${y1} a ${r} ${r} 0 ${l} ${s} ${RoundToMil(xdiff)} ${RoundToMil(ydiff)}`,
-      fill: 'none',
-      ...props
-    });
+    d = `M ${x1} ${y1} a ${r} ${r} 0 ${l} ${s} ${RoundToMil(xdiff)} ${RoundToMil(ydiff)}`;
   }
 
-  return h('line', {
-    x1,
-    x2,
-    y1,
-    y2,
+  return h('path', {
+    d,
+    fill: 'none',
     ...props
   });
+
+  //return h('line', {x1, x2, y1, y2, ...props });
 };

@@ -337,7 +337,7 @@ export class EagleElement extends EagleNode {
     if(tagName == 'gate') {
       trkl.bind(this, 'symbol', () => {
         let chain = this.scope(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
-       // console.log('chain', chain);
+        // console.log('chain', chain);
         let library = chain.library;
         return library.symbols[attributes.symbol];
       });
