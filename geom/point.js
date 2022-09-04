@@ -57,7 +57,9 @@ export function Point(...args) {
   }
 }
 
-Point.getOther = args => (console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
+Point.getOther = args => (
+  console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args
+);
 
 Object.defineProperties(Point.prototype, {
   X: {
@@ -249,7 +251,11 @@ Point.prototype.toSource = function(opts = {}) {
   if(asArray) return `[${x},${y}]`;
   if(plainObj) return `{x:${x},y:${y}}`;
 
-  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(y, 1, 32)}${c(')', 1, 36)}`;
+  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(
+    y,
+    1,
+    32
+  )}${c(')', 1, 36)}`;
 };
 
 /*Point.prototype.toSource = function() {
@@ -337,9 +343,15 @@ Point.interpolate = (p1, p2, a) => {
   return new Point(p1.x * (1.0 - a) + p2.x * a, p1.y * (1.0 - a) + p2.y * a);
 };
 
-Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) => `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;
+Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) =>
+  `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;
 
-export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)) || o instanceof Point || Object.getPrototypeOf(o).constructor === Point);
+export const isPoint = o =>
+  o &&
+  ((o.x !== undefined && o.y !== undefined) ||
+    ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)) ||
+    o instanceof Point ||
+    Object.getPrototypeOf(o).constructor === Point);
 
 Point.isPoint = isPoint;
 

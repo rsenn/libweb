@@ -1,7 +1,14 @@
 import Util from './util.js';
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
 
-const slice = (x, s, e) => (typeof x == 'object' ? (isArrayBuffer(x) ? dupArrayBuffer(x, s, e) : Array.isArray(x) ? Array.prototype.slice.call(x, s, e) : x.slice(s, e)) : String.prototype.slice.call(x, s, e));
+const slice = (x, s, e) =>
+  typeof x == 'object'
+    ? isArrayBuffer(x)
+      ? dupArrayBuffer(x, s, e)
+      : Array.isArray(x)
+      ? Array.prototype.slice.call(x, s, e)
+      : x.slice(s, e)
+    : String.prototype.slice.call(x, s, e);
 const stringify = v => `${v}`;
 const protoOf = Object.getPrototypeOf;
 const formatNumber = n => (n === -0 ? '-0' : `${n}`);
@@ -361,7 +368,8 @@ export function btoa(bin) {
     asc = '';
   const pad = bin.length % 3;
   for(let i = 0; i < bin.length; i += 0) {
-    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255) throw new TypeError('invalid character found');
+    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255)
+      throw new TypeError('invalid character found');
     u32 = (c0 << 16) | (c1 << 8) | c2;
     asc += b64chs[(u32 >> 18) & 63] + b64chs[(u32 >> 12) & 63] + b64chs[(u32 >> 6) & 63] + b64chs[u32 & 63];
   }
@@ -377,8 +385,17 @@ export function atob(asc) {
     r1,
     r2;
   for(let i = 0; i < asc.length; i += 0) {
-    u24 = (b64tab[asc.charAt(i++)] << 18) | (b64tab[asc.charAt(i++)] << 12) | ((r1 = b64tab[asc.charAt(i++)]) << 6) | (r2 = b64tab[asc.charAt(i++)]);
-    bin += r1 === 64 ? String.fromCharCode((u24 >> 16) & 255) : r2 === 64 ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255) : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
+    u24 =
+      (b64tab[asc.charAt(i++)] << 18) |
+      (b64tab[asc.charAt(i++)] << 12) |
+      ((r1 = b64tab[asc.charAt(i++)]) << 6) |
+      (r2 = b64tab[asc.charAt(i++)]);
+    bin +=
+      r1 === 64
+        ? String.fromCharCode((u24 >> 16) & 255)
+        : r2 === 64
+        ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255)
+        : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
   }
   return bin;
 }
@@ -387,9 +404,18 @@ export function assert(actual, expected, message) {
 
   if(actual === expected) return;
 
-  if(actual !== null && expected !== null && typeof actual == 'object' && typeof expected == 'object' && actual.toString() === expected.toString()) return;
+  if(
+    actual !== null &&
+    expected !== null &&
+    typeof actual == 'object' &&
+    typeof expected == 'object' &&
+    actual.toString() === expected.toString()
+  )
+    return;
 
-  throw Error('assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : ''));
+  throw Error(
+    'assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : '')
+  );
 }
 
 export function escape(str, chars = []) {
@@ -493,7 +519,8 @@ export function weakAssign(obj, ...args) {
   let desc = {};
   for(let other of args) {
     let otherDesc = Object.getOwnPropertyDescriptors(other);
-    for(let key in otherDesc) if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
+    for(let key in otherDesc)
+      if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
   }
   return Object.defineProperties(obj, desc);
 }
@@ -547,7 +574,12 @@ export function* split(buf, ...points) {
   if(buf) yield buf;
 }
 
-export const unique = (arr, cmp) => arr.filter(typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i : (el, i, arr) => arr.indexOf(el) == i);
+export const unique = (arr, cmp) =>
+  arr.filter(
+    typeof cmp == 'function'
+      ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i
+      : (el, i, arr) => arr.indexOf(el) == i
+  );
 
 export const getFunctionArguments = fn =>
   (fn + '')
@@ -841,7 +873,8 @@ export function getOpt(options = {}, args) {
   let result = {};
   let positional = (result['@'] = []);
   if(!(options instanceof Array)) options = Object.entries(options);
-  const findOpt = arg => options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
+  const findOpt = arg =>
+    options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
   let [, params] = options.find(opt => opt[0] == '@') || [];
   if(typeof params == 'string') params = params.split(',');
   for(let i = 0; i < args.length; i++) {
@@ -1113,7 +1146,8 @@ export function className(obj) {
   return null;
 }
 
-export const isArrowFunction = fn => (isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+export const isArrowFunction = fn =>
+  (isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
 export function immutableClass(orig, ...proto) {
   let name = functionName(orig).replace(/Mutable/g, '');
@@ -1315,7 +1349,8 @@ export function randf() {
 export function srand(seed) {}
 
 export function toArrayBuffer(value) {
-  if(typeof value == 'object' && value !== null && 'buffer' in value && isArrayBuffer(value.buffer)) return value.buffer;
+  if(typeof value == 'object' && value !== null && 'buffer' in value && isArrayBuffer(value.buffer))
+    return value.buffer;
 
   if(typeof value == 'string') {
     const encoder = new TextEncoder();

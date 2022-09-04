@@ -85,25 +85,32 @@ export class EagleDocument extends EagleNode {
     Util.define(this, {
       pathMapper: new PathMapper(xmlObj, ImmutablePath),
       data: xmlStr,
-      raw2element: Util.weakMapper((raw, owner, ref) => {
-        //let path=ref && ref.path ? [...ref.path] : ref;
-        //console.log('raw2element new', { raw, owner: owner.raw, ref });
-        let el = new EagleElement(owner, ref, raw);
-        //console.log('raw2element new(2)', { el: el.raw,ref });
-        return el;
-      })
+      raw2element: Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
     });
 
     const { pathMapper, raw2element } = this;
 
     const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
-    const [obj2eagle, path2eagle] = [Util.mapFunction(raw2element), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))];
-    const [eagle2path, eagle2obj] = [Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))];
+    const [obj2eagle, path2eagle] = [
+      Util.mapFunction(raw2element),
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))
+    ];
+    const [eagle2path, eagle2obj] = [
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
+      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
+    ];
 
     // prettier-ignore
     this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
 
-    type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
+    type =
+      type || /<library>/.test(xmlStr)
+        ? 'lbr'
+        : /(<element\ |<board)/.test(xmlStr)
+        ? 'brd'
+        : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr)
+        ? 'sch'
+        : null;
 
     if(filename) {
       this.file = filename;
@@ -153,7 +160,9 @@ export class EagleDocument extends EagleNode {
       //   this.elements = EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name');
       let elements = this.lookup('/eagle/drawing/board/elements');
       let plain = this.lookup('/eagle/drawing/board/plain');
-      lazyProperty(this, 'signals', () => EagleNodeMap.create(this.lookup('/eagle/drawing/board/signals').children, 'name'));
+      lazyProperty(this, 'signals', () =>
+        EagleNodeMap.create(this.lookup('/eagle/drawing/board/signals').children, 'name')
+      );
       lazyProperty(this, 'plain', () => EagleNodeList.create(plain, plain.path.concat(['children'])));
       lazyProperty(this, 'elements', () => EagleNodeMap.create(elements.children, 'name'));
     }
@@ -165,7 +174,7 @@ export class EagleDocument extends EagleNode {
 
     lazyProperty(this, 'layers', () => {
       let layers = this.lookup('/eagle/drawing/layers');
-      console.log('EagleDocument.constructor', { layers });
+      //  console.log('EagleDocument.constructor', { layers });
 
       return EagleNodeMap.create(layers.children, 'name');
     });
@@ -293,7 +302,9 @@ export class EagleDocument extends EagleNode {
           .flat()
           .filter(c => !!c.geometry)
       );
-      bb.update([...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())));
+      bb.update(
+        [...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation()))
+      );
     }
     /*if(this.plain) {
       bb.update(this.plain.map(child => child.getBounds()));
@@ -302,7 +313,17 @@ export class EagleDocument extends EagleNode {
   }
 
   getMeasures(options = {}) {
-    const { bbox, geometry, points } = typeof options == 'boolean' ? { bbox: true } : options;
+    const { sheet = 0 } = options;
+    let ret;
+    let plain = this.type == 'sch' ? this.sheets[sheet].plain : this.plain;
+    for(let layer of ['Dimension', 'Measures']) {
+      let layerId = this.layers[layer].number;
+      ret = plain.filter(e => e.attributes.layer == layerId);
+      if(ret.length >= 1) break;
+    }
+    if(options.bbox) if (ret) ret = BBox.from(ret);
+    return ret;
+    /* const { bbox, geometry, points } = typeof options == 'boolean' ? { bbox: true } : options;
     //console.log("this.type", this.type);
     let plain = this.plain;
 
@@ -334,7 +355,7 @@ export class EagleDocument extends EagleNode {
 
         return measures;
       }
-    }
+    }*/
   }
 
   /* prettier-ignore */ get measures() {

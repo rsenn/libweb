@@ -5,6 +5,8 @@ import { useValue } from '../../repeater/react-hooks.js';
 import { TransformationList } from '../../geom.js';
 import { Arc } from './arc.js';
 
+const RoundToMil = n => Math.round(n * 1000) / 1000;
+
 export const Wire = ({ data, opts = {}, ...props }) => {
   //
   let wire =
@@ -29,9 +31,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
   log('Wire.render ', { layerId, wire });
   const color = wire.getColor();
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
-
-  /*if(transform+'' == '')
-    transform=undefined;*/
+ 
 
   let props = {
     class: ElementToClass(wire, layer.name),
@@ -46,9 +46,19 @@ export const Wire = ({ data, opts = {}, ...props }) => {
 
   if(!isNaN(+curve) && Math.abs(+curve) > 0) {
     curve = +curve;
-    let r = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    let l = 1;
-    return h('path', { d: `M ${x1} ${y1} A ${r} ${r} 0 ${l} 0 ${x2} ${y2}`, fill: 'none', ...props });
+    let xdiff = x2 - x1,
+      ydiff = y2 - y1;
+
+    //console.log('Wire', { xdiff, ydiff, curve });
+    let c = Math.sqrt(xdiff ** 2 + ydiff ** 2);
+    let r = (c / 1.4142135623730951).toFixed(3);
+    let l = 0;
+    let s = Math.sign(curve) == -1 ? '0' : '1';
+    return h('path', {
+      d: `M ${x1} ${y1} a ${r} ${r} 0 ${l} ${s} ${RoundToMil(xdiff)} ${RoundToMil(ydiff)}`,
+      fill: 'none',
+      ...props
+    });
   }
 
   return h('line', {

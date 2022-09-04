@@ -4,38 +4,40 @@ import { text, concat, inspectSymbol } from './common.js';
 import { Pointer } from '../pointer.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 
+const toArray = arg => (Array.isArray(arg) ? arg : [arg]);
+
 export class EagleNodeMap {
   constructor(list, key) {
     //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
     this.list = list;
-    this.key = key;
+    this.keys = toArray(key);
   }
 
-  static makePredicate(name, key) {
-    const a = Array.isArray(key) ? key : [key];
-    return key == 'tagName' ? item => item.tagName == name : item => a.some(key => item.attributes[key] == name);
+  static makePredicate(name, keys) {
+    keys = toArray(keys);
+    return item => keys.some(key => item.attributes[key] == name);
   }
 
   item(pos) {
     return this.list.item(pos);
   }
 
-  get(name, key = this.key) {
+  get(name, keys = this.keys) {
     const { owner, ref, raw } = this.list || {};
     //console.log('EagleNodeMap.get', { name, key }, { owner, ref });
-    if(raw) {
-      const fn = EagleNodeMap.makePredicate(name, key);
-      const idx = raw.findIndex(fn);
-      let value = raw[idx];
+    const fn = EagleNodeMap.makePredicate(name, keys);
+    const idx = raw.findIndex(fn);
 
+    if(idx != -1) {
+      let value = raw[idx];
       return raw[idx] ? this.item(idx) : null;
     }
   }
 
   set(name, value) {
     const list = this.list.raw;
-    const fn = EagleNodeMap.makePredicate(name, this.key);
+    const fn = EagleNodeMap.makePredicate(name, this.keys);
 
     const idx = list.findIndex(fn);
 
@@ -46,32 +48,41 @@ export class EagleNodeMap {
     else list.push(value);
   }
 
-  size(key = this.key) {
+  get size() {
     return this.list.length;
   }
 
-  *entries(key = this.key) {
+  /* *entries(key = this.key) {
     for(let [key, item] of this) yield [key || item.name, item];
-  }
+  }*/
 
-  *[Symbol.iterator](keyAttr = this.key) {
+  *[Symbol.iterator](keyAttr = this.keys[0]) {
     const A0 = a => (Array.isArray(a) ? a[0] : a);
 
     const fn = keyAttr == 'tagName' ? item => item.tagName : item => item.attributes[A0(keyAttr)];
     for(let item of this.list) yield [fn(item), item];
   }
 
-  toMap(key = this.key) {
+  toMap(key = this.keys[0]) {
     return new Map(this.entries(key));
   }
-  toObject(key = this.key) {
+  toObject(key = this.keys[0]) {
     return Object.fromEntries(this.entries(key));
   }
 
   [inspectSymbol]() {
     //    console.log("this.entries", this.entries);
-    return text(Util.className(this), 0) + ` {\n  ` + [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + v[inspectSymbol](), '') + `\n}`;
+    return (
+      text(Util.className(this), 0) +
+      ` {\n  ` +
+      [...this.entries()].reduce(
+        (acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + v[inspectSymbol](),
+        ''
+      ) +
+      `\n}`
+    );
   }
+
   static create(list, key = 'name', filter) {
     const Ctor = EagleNodeMap;
     //console.log('EagleNodeMap.create', { list, key });
