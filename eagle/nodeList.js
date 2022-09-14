@@ -91,13 +91,12 @@ export class EagleNodeList {
 
   [inspectSymbol]() {
     let { raw, ref } = this;
-    //    console.log("this.entries", this.entries);
     return (
       text(Util.className(this), 0) +
-      ` [\n  ` +
+      ` [ ` +
       `...${this.length} items...` +
       //[...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
-      `\n]`
+      ` ]`
     );
   }
 
@@ -158,5 +157,7 @@ export class EagleNodeList {
     });
   }
 }
+
+EagleNodeList.prototype[Symbol.toStringTag] = 'EagleNodeList';
 
 Util.decorateIterable(EagleNodeList.prototype, false);

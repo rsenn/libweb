@@ -1,8 +1,9 @@
-import Util from '../util.js';
 import { EagleElement } from './element.js';
 import { text, concat, inspectSymbol } from './common.js';
 import { Pointer } from '../pointer.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
+import { define, className } from '../misc.js';
+import Util from '../util.js';
 
 const toArray = arg => (Array.isArray(arg) ? arg : [arg]);
 
@@ -10,7 +11,8 @@ export class EagleNodeMap {
   constructor(list, key) {
     //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
-    this.list = list;
+
+    define(this, { list });
     this.keys = toArray(key);
   }
 
@@ -73,7 +75,7 @@ export class EagleNodeMap {
   [inspectSymbol]() {
     //    console.log("this.entries", this.entries);
     return (
-      text(Util.className(this), 0) +
+      text(className(this), 0) +
       ` {\n  ` +
       [...this.entries()].reduce(
         (acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + v[inspectSymbol](),
@@ -104,7 +106,7 @@ export class EagleNodeMap {
           if(typeof prop == 'symbol') return instance.list[prop];
           return instance.list[prop].bind(instance.list);
         }
-        if(instance.list[prop]) return instance.list[prop];
+        if(!(prop in instance)) if (instance.list[prop]) return instance.list[prop];
         return Reflect.get(target, prop, receiver);
       },
       getPrototypeOf(target) {
@@ -113,5 +115,7 @@ export class EagleNodeMap {
     });
   }
 }
+
+EagleNodeMap.prototype[Symbol.toStringTag] = 'EagleNodeMap';
 
 Util.decorateIterable(EagleNodeMap.prototype, false);

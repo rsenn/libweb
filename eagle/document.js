@@ -14,9 +14,9 @@ import { EagleNodeList } from './nodeList.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { PathMapper } from '../json/pathMapper.js';
 import { Palette } from './common.js';
-import { lazyProperty } from '../lazyInitializer.js';
 import { read as fromXML, write as toXML } from '../xml.js';
 import { ImmutableXPath } from '../xml/xpath.js';
+import { lazyProperty, lazyProperties } from '../misc.js';
 
 function GetProxy(fn = (prop, target) => null, handlers = {}) {
   return new Proxy(
@@ -134,50 +134,35 @@ export class EagleDocument extends EagleNode {
     //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     // this.initCache(EagleElement, EagleNodeList.create);
 
-    lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
-
-    /*this.layers = GetProxy(
-      (prop, target) => {
-        return this.getLayer(prop);
-      },
-      {
-        ownKeys: target => this.lookup('/eagle/drawing/layers').raw.children.map(c => c.attributes.name)
-      }
-    );*/
-
-    //if(this.type == 'sch') lazyProperty(this, 'children', () => EagleNodeList.create(this.get('sheets'), ['children']  ));
+    //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
+ 
     if(this.type == 'sch') {
-      let sheets = this.get('sheets');
-      //   console.log("EagleDocument.constructor", {sheets},sheets.path);
-      let parts = this.lookup('/eagle/drawing/schematic/parts');
-      lazyProperty(this, 'sheets', () => EagleNodeList.create(sheets, sheets.path.concat(['children'])));
-      lazyProperty(this, 'parts', () => EagleNodeList.create(parts, parts.path.concat(['children'])));
-    }
-    /*this.sheets = GetProxy((prop, target) => this.getSheet(prop), {
-        ownKeys: target => this.get('sheets').children.map((c, i) => i + '')
-      });*/
+      let schematic = this.lookup('/eagle/drawing/schematic');
+
+      let { parts, sheets, libraries } = schematic;
+      lazyProperties(this, {
+        sheets: () => EagleNodeList.create(sheets, sheets.path.concat(['children'])),
+        parts: () => EagleNodeList.create(parts, parts.path.concat(['children'])),
+        libraries: () => EagleNodeMap.create(libraries.children, 'name')
+      });
+    } 
     if(this.type == 'brd') {
-      //   this.elements = EagleNodeMap.create(this.lookup('/eagle/drawing/board/elements').children, 'name');
-      let elements = this.lookup('/eagle/drawing/board/elements');
-      let plain = this.lookup('/eagle/drawing/board/plain');
-      lazyProperty(this, 'signals', () =>
-        EagleNodeMap.create(this.lookup('/eagle/drawing/board/signals').children, 'name')
-      );
-      lazyProperty(this, 'plain', () => EagleNodeList.create(plain, plain.path.concat(['children'])));
-      lazyProperty(this, 'elements', () => EagleNodeMap.create(elements.children, 'name'));
+      let board = this.lookup('/eagle/drawing/board');
+      let { elements, plain, signals, libraries } = board;
+
+      lazyProperties(this, {
+        signals: () => EagleNodeMap.create(signals.children, 'name'),
+        plain: () => EagleNodeList.create(plain, plain.path.concat(['children'])),
+        elements: () => EagleNodeMap.create(elements.children, 'name'),
+        libraries: () => EagleNodeMap.create(libraries.children, 'name')
+      });
     }
-    /*this.libraries = GetProxy((prop, target) => this.getLibrary(prop), {
-      ownKeys: target => this.get('libraries').children.map(l => l.attributes.name)
-    });*/
+    let drawing = this.lookup('/eagle/drawing');
 
-    lazyProperty(this, 'drawing', () => this.lookup('/eagle/drawing'));
+    let { layers } = drawing;
 
-    lazyProperty(this, 'layers', () => {
-      let layers = this.lookup('/eagle/drawing/layers');
-      //  console.log('EagleDocument.constructor', { layers });
-
-      return EagleNodeMap.create(layers.children, 'name');
-    });
+    lazyProperties(this, { drawing: () => drawing, layers: () => EagleNodeMap.create(layers.children, 'name') });
+ 
   }
 
   /* prettier-ignore */ get raw() {
