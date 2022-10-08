@@ -8,12 +8,14 @@ import Util from '../util.js';
 const toArray = arg => (Array.isArray(arg) ? arg : [arg]);
 
 export class EagleNodeMap {
+  #keys = null;
+
   constructor(list, key) {
     //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
 
     define(this, { list });
-    this.keys = toArray(key);
+    this.#keys = toArray(key);
   }
 
   static makePredicate(name, keys) {
@@ -25,7 +27,7 @@ export class EagleNodeMap {
     return this.list.item(pos);
   }
 
-  get(name, keys = this.keys) {
+  get(name, keys = this.#keys) {
     const { owner, ref, raw } = this.list || {};
     //console.log('EagleNodeMap.get', { name, key }, { owner, ref });
     const fn = EagleNodeMap.makePredicate(name, keys);
@@ -39,7 +41,7 @@ export class EagleNodeMap {
 
   set(name, value) {
     const list = this.list.raw;
-    const fn = EagleNodeMap.makePredicate(name, this.keys);
+    const fn = EagleNodeMap.makePredicate(name, this.#keys);
 
     const idx = list.findIndex(fn);
 
@@ -54,21 +56,30 @@ export class EagleNodeMap {
     return this.list.length;
   }
 
-  /* *entries(key = this.key) {
-    for(let [key, item] of this) yield [key || item.name, item];
-  }*/
-
-  *[Symbol.iterator](keyAttr = this.keys[0]) {
-    const A0 = a => (Array.isArray(a) ? a[0] : a);
-
-    const fn = keyAttr == 'tagName' ? item => item.tagName : item => item.attributes[A0(keyAttr)];
-    for(let item of this.list) yield [fn(item), item];
+  *entries() {
+    let i,
+      size = this.size;
+    let prop = this.#keys[0];
+    for(i = 0; i < size; i++) {
+      let item = this.list.item(i);
+      yield [item[prop], item];
+    }
   }
 
-  toMap(key = this.keys[0]) {
+  *[Symbol.iterator]() {
+    let i,
+      size = this.size;
+    let prop = this.#keys[0];
+    for(i = 0; i < size; i++) {
+      let item = this.list.item(i);
+      yield [item[prop], item];
+    }
+  }
+
+  toMap(key = this.#keys[0]) {
     return new Map(this.entries(key));
   }
-  toObject(key = this.keys[0]) {
+  toObject(key = this.#keys[0]) {
     return Object.fromEntries(this.entries(key));
   }
 
@@ -99,9 +110,9 @@ export class EagleNodeMap {
         if(typeof prop == 'string') {
           if(prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
           if(prop == 'instance') return instance;
-          if(prop == 'length') return instance.size();
+          if(prop == 'length') return instance.length;
         }
-        if(typeof instance[prop] == 'function') return instance[prop];
+        if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
         if(typeof instance.list[prop] == 'function') {
           if(typeof prop == 'symbol') return instance.list[prop];
           return instance.list[prop].bind(instance.list);
@@ -118,4 +129,4 @@ export class EagleNodeMap {
 
 EagleNodeMap.prototype[Symbol.toStringTag] = 'EagleNodeMap';
 
-Util.decorateIterable(EagleNodeMap.prototype, false);
+// Util.decorateIterable(EagleNodeMap.prototype, false);

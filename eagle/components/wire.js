@@ -32,7 +32,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
   color ??= wire.getColor();
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
-  let props = {
+  let extraProps = {
     class: ElementToClass(wire, layer.name),
     stroke: color,
     'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
@@ -42,7 +42,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     style: visible ? {} : { display: 'none' }
   };
 
-  if(transform.length > 0) props.transform = transform;
+  if(transform.length > 0) extraProps.transform = transform;
 
   let d = `M ${x1} ${y1} L ${x2} ${y2}`;
 
@@ -62,7 +62,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
   return h('path', {
     d,
     fill: 'none',
-    ...props
+    ...extraProps
   });
 
   //return h('line', {x1, x2, y1, y2, ...props });

@@ -135,7 +135,7 @@ export class EagleDocument extends EagleNode {
     // this.initCache(EagleElement, EagleNodeList.create);
 
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
- 
+
     if(this.type == 'sch') {
       let schematic = this.lookup('/eagle/drawing/schematic');
 
@@ -145,7 +145,7 @@ export class EagleDocument extends EagleNode {
         parts: () => EagleNodeList.create(parts, parts.path.concat(['children'])),
         libraries: () => EagleNodeMap.create(libraries.children, 'name')
       });
-    } 
+    }
     if(this.type == 'brd') {
       let board = this.lookup('/eagle/drawing/board');
       let { elements, plain, signals, libraries } = board;
@@ -162,7 +162,6 @@ export class EagleDocument extends EagleNode {
     let { layers } = drawing;
 
     lazyProperties(this, { drawing: () => drawing, layers: () => EagleNodeMap.create(layers.children, 'name') });
- 
   }
 
   /* prettier-ignore */ get raw() {

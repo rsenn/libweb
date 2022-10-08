@@ -33,31 +33,32 @@ export const Drawing = ({
     }
   }
   viewBox = useTrkl(viewBox ?? rect);
+  {
+    let transform = new TransformationList();
 
-  let transform = new TransformationList();
+    transform.translate(0, viewBox.y1);
+    transform.scale(1, -1);
+    transform.translate(0, -viewBox.y1 - viewBox.height);
 
-  transform.translate(0, viewBox.y1);
-  transform.scale(1, -1);
-  transform.translate(0, -viewBox.y1 - viewBox.height);
+    if(data?.document?.type == 'brd') children = [h(Board, { data: data.document, transform })];
 
-  if(data?.document?.type == 'brd') children = [h(Board, { data: data.document, transform })];
+    attrs ??= {
+      bg: { color: '#ffffff', visible: true },
+      grid: { color: '#0000aa', width: 0.01, visible: true }
+    };
 
-  attrs ??= {
-    bg: { color: '#ffffff', visible: true },
-    grid: { color: '#0000aa', width: 0.01, visible: true }
-  };
+    const id = 'grid'; //grid-'+Util.randStr(8, '0123456789ABCDEF'.toLowerCase());
 
-  const id = 'grid'; //grid-'+Util.randStr(8, '0123456789ABCDEF'.toLowerCase());
+    log('Drawing.render', { attrs, grid, nodefs });
 
-  log('Drawing.render', { attrs, grid, nodefs });
+    const defs = nodefs ? {} : { defs: h(Pattern, { data: grid, id, attrs: attrs.grid }) };
 
-  const defs = nodefs ? {} : { defs: h(Pattern, { data: grid, id, attrs: attrs.grid }) };
-
-  return h(SVG, { viewBox, styles, style, ...size, ...defs, ...props }, [
-    h('g', { id: 'bg', transform }, [
-      h(Background, { rect, attrs: attrs.bg }),
-      h(Grid, { data: grid, id, rect, attrs: attrs.grid })
-    ]),
-    ...toChildArray(children)
-  ]);
+    return h(SVG, { viewBox, styles, style, ...size, ...defs, ...props }, [
+      h('g', { id: 'bg', transform }, [
+        h(Background, { rect, attrs: attrs.bg }),
+        h(Grid, { data: grid, id, rect, attrs: attrs.grid })
+      ]),
+      ...toChildArray(children)
+    ]);
+  }
 };

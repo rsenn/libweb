@@ -19,31 +19,34 @@ export class EagleNodeList {
   item(pos) {
     let { owner, ref, raw, pred } = this;
     let entries = [...raw.entries()];
+    if(pos < 0) pos += raw.length;
     if(typeof pred == 'function') {
       entries = entries.filter(([i, v]) => pred(v, i, raw));
       if(entries[pos]) pos = entries[pos][0];
     }
-    if(pos < 0) pos += raw.length;
-    //  let path = ref.path.down(pos);
-    let path = ref.path.concat([pos]);
-    //console.log('EagleNodeList.item', { owner, path, pos, pred, raw: raw[pos] });
+    //  let path = ref.path.concat([pos]);
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) {
       owner.document.raw2element.map.delete(raw[pos]);
 
       let element = this.getOrCreate(owner.document, ref.down(pos));
-      if(pred(element)) return element;
+      // if(pred(element))
+      return element;
     }
   }
 
   *[Symbol.iterator]() {
     const { ref, owner, raw, pred } = this;
     let j = 0;
-    let { length } = raw;
+    let { length } = this;
 
     for(let i = 0; i < length; i++) {
-      if(pred && !pred(raw[i], j, this)) continue;
+      let item = this.item(i);
 
-      yield this.item(i);
+      if(!item) break;
+
+      if(pred && !pred(item, i, this)) continue;
+
+      yield item;
 
       j++;
     }
@@ -135,7 +138,7 @@ export class EagleNodeList {
         if(prop == 'instance') return instance;
         if(typeof EagleNodeList.prototype[prop] == 'function') return EagleNodeList.prototype[prop];
         if(prop == 'path') return instance.ref.path;
-        if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
+        if(typeof instance[prop] == 'function') return instance[prop];
         if(instance[prop] !== undefined) return instance[prop];
         let list = instance && instance.ref ? instance.ref.dereference() : null;
         if(prop == 'find')
