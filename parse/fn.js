@@ -181,7 +181,7 @@ export function char(str, inverse = false) {
   for(let i = 0; i < str.length; i++) dict[str[i]] = str[i];
 
   return (target, position) => {
-    let char = target.substr(position, 1);
+    let char = target.slice(position, 1);
     let isMatch = !!dict[char];
     if(inverse ? !isMatch : isMatch) {
       //console.log(`position: ${position} char: ${char}`);
