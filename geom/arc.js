@@ -56,18 +56,27 @@ export class Arc {
 
   static radiusFromSegment(segment, angle) {
     let circumference = segment / (angle / (Math.PI * 2));
-    let radius = circumference / (Math.PI * 2);
-    return radius;
+    return circumference / (Math.PI * 2);
+  }
+  static radiusFromChordAndHeight(chord, arcHeight) {
+    return chord ** 2 / (8 * arcHeight) + arcHeight / 2;
+  }
+
+  static radiusFromChordAngle(chord, angle) {
+    let alpha = (Math.PI - angle) / 2;
+    return chord * Math.cos(alpha);
+  }
+
+  static radiusFromDistanceAngle(distance, angle) {
+    return distance / Math.cos(angle / 2);
   }
 
   static chordFromSegmentAngle(segment, angle) {
-    let radius = Arc.radiusFromSegment(segment, angle);
-    return Arc.chordFromSegment(radius, segment);
+    return Arc.chordFromSegment(Arc.radiusFromSegment(segment, angle), segment);
   }
 
   static distanceFromSegmentAngle(segment, angle) {
-    let radius = Arc.radiusFromSegment(segment, angle);
-    return Arc.distanceFromSegment(radius, segment);
+    return Arc.distanceFromSegment(Arc.radiusFromSegment(segment, angle), segment);
   }
 
   static segmentFromChord(radius, chord) {
@@ -79,8 +88,7 @@ export class Arc {
   }
 
   static segmentFromAngle(radius, angle) {
-    let $2pi = 2 * Math.PI;
-    return $2pi * radius * (angle / $2pi);
+    return radius * angle;
   }
 
   static angleFromChord(radius, chord) {
@@ -95,14 +103,17 @@ export class Arc {
     let $2pi = 2 * Math.PI;
     return (segment * $2pi) / ($2pi * radius);
   }
-
+  /*
   static distanceFromAngle(radius, angle) {
     return Math.sqrt(radius ** 2 - (0.5 * Arc.chordFromAngle(radius, angle)) ** 2);
+  }*/
+
+  static distanceFromAngle(radius, angle) {
+    return radius * Math.sin(angle);
   }
 
   static distanceFromSegmentAngle(segment, angle) {
-    let radius = Arc.radiusFromSegment(segment, angle);
-    return Arc.distanceFromAngle(radius, angle);
+    return Arc.distanceFromAngle(Arc.radiusFromSegment(segment, angle), angle);
   }
 
   static distanceFromChord(radius, chord) {
