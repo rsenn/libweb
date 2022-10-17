@@ -423,8 +423,8 @@ PointList.prototype[Util.inspectSymbol] = function(depth, options) {
   //const obj = Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   const obj = Array.from(this); //Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   return (
-    `\x1b[1;31m${Util.className(this)}\x1b[0m ` +
-    inspect(Object.setPrototypeOf(obj, PointList.prototype), depth, options)
+    `\x1b[1;31m${Util.className(this)}\x1b[0;36m` + obj.reduce((acc, { x, y }) => acc + ` ${x},${y}`, '') + `\x1b[0m`
+    // inspect(Object.setPrototypeOf(obj, PointList.prototype), depth, options)
   );
 };
 
