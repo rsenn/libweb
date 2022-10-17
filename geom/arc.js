@@ -131,9 +131,11 @@ export class Arc {
 
   static radiusFromChordSagitta(chord, sagitta) {
     return (sagitta**2+chord**2) / sagitta*2; }
+  
   static chordFromSagitta(radius, sagitta) {
     return Math.sqrt(2*radius*sagitta- sagitta**2);
   }
+
   static sagittaFromSegment(radius, segment) {
     return radius*Math.sin( segment/ (2*radius));
   }
