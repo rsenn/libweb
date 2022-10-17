@@ -1,6 +1,6 @@
 import { log } from '../renderUtils.js';
 import { h, Component, toChildArray, useState } from '../../dom/preactComponent.js';
-import { Rect } from '../../geom.js';
+import { Rect, TransformationList } from '../../geom.js';
 import { Grid, Pattern } from './grid.js';
 import { SVG } from './svg.js';
 import { Background } from './background.js';

@@ -131,12 +131,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       props = {},
       flat
     } = opts;
-    //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
-    this.debug(`BoardRenderer.renderCollection`, {
-      coll,
-      transformation,
-      name
-    });
+    //  this.debug(`BoardRenderer.renderCollection`, { coll, transformation,  name });
     let coordFn = i => i;
     let { class: addClass, ...addProps } = props;
     let wireMap = new Map(),
@@ -182,14 +177,8 @@ export class BoardRenderer extends EagleSVGRenderer {
         })
       );
 
-      this.debug('Lines:', name, [...lines]);
+     // this.debug('Lines:', name, [...lines]);
 
-      /*const cmdArr = cmds.map(cmd => cmd.split(/[^-.0-9A-Za-z]/g));
-      const positions = cmdArr.map(cmd => cmd.slice(-2).map(n => +n));
-      const path = cmdArr.slice(1).map((cmd, i) => [['M', ...positions[i]], cmd[0].toLowerCase() == 'z' ? ['L', ...positions[0]] : cmd]);
-      this.debug('wires.length:', wires.length, ' lines.length:', lines.length, ' cmds.length:', cmds.length);
-      this.debug('Lines:', { path, cmds, positions });
-*/
       const layer = layers[layerId] || this.layers.Bottom;
       const width = widths[layerId];
 
@@ -329,7 +318,6 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    this.debug(`BoardRenderer.renderSignal`, signal.name, options);
     let children = signal.children ?? [];
     let props = {};
     if('layer' in options) {
@@ -338,11 +326,13 @@ export class BoardRenderer extends EagleSVGRenderer {
       children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via');
       if(layer) {
         children = children.filter(child => child.layer.number == layer.number);
-        this.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
+        //this.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
       } else {
       }
     }
-    this.debug(`BoardRenderer.renderSignal`, children);
+    if(children.length) this.debug(`BoardRenderer.renderSignal[\x1b[1;33${signal.name}\x1b[0m]`, options);
+
+    if(children.length) this.debug(`BoardRenderer.renderSignal[\x1b[1;33m${signal.name}\x1b[0m]`, children);
 
     if(children.length > 0) {
       const className = ElementToClass(signal);
@@ -371,8 +361,6 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   render(doc = this.doc /*, parent, props = {}*/) {
     let parent, props;
-    /*if(!this.bounds)
-    this.bounds = doc.getBounds();*/
     let transform = this.transform;
     let bounds = doc.measures;
     let rect = new Rect(bounds).round(2.54);
@@ -388,7 +376,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
 
-    this.debug(`BoardRenderer.render`, { bounds, rect });
+    this.debug(`BoardRenderer.render`, { bounds, rect, transform });
     //this.renderLayers(parent);
     let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
     let signalsGroup = this.create(
@@ -402,7 +390,14 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
+    // let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
+    let elementsGroup = this.create(
+      Fragment,
+      {
+        /*id: 'elements', transform, 'font-family': 'Fixed'*/
+      },
+      parent
+    );
     this.debug('bounds: ', bounds);
 
     for(let signal of this.signals.list)

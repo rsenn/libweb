@@ -37,7 +37,7 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
     },
     isArray
       ? cmds.map(cmd => {
-          log('cmd:', cmd);
+        //  log('cmd:', cmd);
           return h('path', { d: cmd.join(' ') });
         })
       : []

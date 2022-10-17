@@ -1042,8 +1042,7 @@ export class Parser {
   }
 
   parseSync(file) {
-    let filetype = determine(file, this.index, 100 * LIMIT);
-    this.format.filetype = filetype;
+    this.format.filetype ??= determine(file, this.index, 100 * LIMIT);
     this.syncResult = [];
     this.process(file);
     this.flush();

@@ -216,7 +216,7 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, transformation = new TransformationList() } = opts;
 
-    this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
+    // this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
 
     const svg = (elem, attr, parent) =>
       this.create(
@@ -234,10 +234,7 @@ export class EagleSVGRenderer {
     let elem;
     const comp = ElementToComponent(item);
     if(comp) {
-      this.debug(
-        'EagleSVGRenderer render component ',
-        this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
-      );
+      //this.debug('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
       elem = svg(
         comp,
         {

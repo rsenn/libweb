@@ -21,6 +21,10 @@ export class Transformation {
     return this;
   }
 
+  get [Symbol.toStringTag]() {
+    return Util.functionName(this.constructor);
+  }
+
   get type() {
     let type =
       this.typeName ||
@@ -124,9 +128,9 @@ export class Transformation {
     return t;
   }
 
-  [Symbol.toStringTag]() {
+  /*[Symbol.toStringTag]() {
     return this.toString();
-  }
+  }*/
 
   [Symbol.toPrimitive](hint) {
     // console.log("hint:",hint);
@@ -152,6 +156,8 @@ export class Transformation {
     return MatrixTransformation;
   }
 }
+
+//Transformation.prototype[Symbol.toStringTag]='Transformation';
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
   value(inst) {
@@ -241,6 +247,8 @@ export class Rotation extends Transformation {
   }
 }
 
+Object.defineProperty(Rotation.prototype, Symbol.toStringTag, { value: 'Rotation', enumerable: false });
+
 export const ImmutableRotation = Util.immutableClass(Rotation);
 
 export class Translation extends Transformation {
@@ -299,6 +307,7 @@ export class Translation extends Transformation {
     return new Translation(this.x + other.x, this.y + other.y);
   }
 }
+Object.defineProperty(Translation.prototype, Symbol.toStringTag, { value: 'Translation', enumerable: false });
 
 export const ImmutableTranslation = Util.immutableClass(Translation);
 
@@ -361,6 +370,7 @@ export class Scaling extends Transformation {
     return new Scaling(this.x * other.x, this.y * other.y);
   }
 }
+Object.defineProperty(Scaling.prototype, Symbol.toStringTag, { value: 'Scaling', enumerable: false });
 
 export const ImmutableScaling = Util.immutableClass(Scaling);
 
@@ -401,6 +411,10 @@ export class MatrixTransformation extends Transformation {
     return new MatrixTransformation(this.matrix.multiply(other.matrix));
   }
 }
+Object.defineProperty(MatrixTransformation.prototype, Symbol.toStringTag, {
+  value: 'MatrixTransformation',
+  enumerable: false
+});
 
 export const ImmutableMatrixTransformation = Util.immutableClass(MatrixTransformation);
 
@@ -623,9 +637,9 @@ export class TransformationList extends Array {
     return this.toString('px', 'deg');
   }
 
-  [Symbol.toStringTag]() {
+  /*  [Symbol.toStringTag]() {
     return this.toString();
-  }
+  }*/
 
   toSource() {
     let s = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('([', 1, 36);
@@ -785,6 +799,10 @@ export class TransformationList extends Array {
     }
   }
 }
+Object.defineProperty(TransformationList.prototype, Symbol.toStringTag, {
+  value: 'TransformationList',
+  enumerable: false
+});
 
 const {
   concat,
