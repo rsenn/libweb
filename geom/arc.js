@@ -128,6 +128,23 @@ export class Arc {
   static radiusFromDistanceAngle(distance, angle) {
     return distance / Math.cos(angle / 2);
   }
+
+  static radiusFromChordSagitta(chord, sagitta) {
+    return (sagitta**2+chord**2) / sagitta*2; }
+  static chordFromSagitta(radius, sagitta) {
+    return Math.sqrt(2*radius*sagitta- sagitta**2);
+  }
+  static sagittaFromSegment(radius, segment) {
+    return radius*Math.sin( segment/ (2*radius));
+  }
+  
+  static sagittaFromAngle(radius, angle) {
+    return Arc.sagittaFromSegment(radius, Arc.segmentFromAngle(radius,angle));
+  }
+  
+  static sagittaFromChord(radius, chord) {
+    return Arc.sagittaFromAngle(radius, Arc.angleFromChord(radius,chord));
+  }
 }
 
 export function ArcTo(x, y, curve = 0) {
