@@ -50,33 +50,8 @@ export class Arc {
     return 2 * Math.sqrt(radius ** 2 - distance ** 2);
   }
 
-  static chordFromSegment(radius, segment) {
-    return Arc.chordFromAngle(radius, Arc.angleFromSegment(radius, segment));
-  }
-
-  static radiusFromSegment(segment, angle) {
-    let circumference = segment / (angle / (Math.PI * 2));
-    return circumference / (Math.PI * 2);
-  }
-  static radiusFromChordAndHeight(chord, arcHeight) {
-    return chord ** 2 / (8 * arcHeight) + arcHeight / 2;
-  }
-
-  static radiusFromChordAngle(chord, angle) {
-    let alpha = (Math.PI - angle) / 2;
-    return chord * Math.cos(alpha);
-  }
-
-  static radiusFromDistanceAngle(distance, angle) {
-    return distance / Math.cos(angle / 2);
-  }
-
-  static chordFromSegmentAngle(segment, angle) {
-    return Arc.chordFromSegment(Arc.radiusFromSegment(segment, angle), segment);
-  }
-
-  static distanceFromSegmentAngle(segment, angle) {
-    return Arc.distanceFromSegment(Arc.radiusFromSegment(segment, angle), segment);
+  static chordFromSegment(radius, arcLength) {
+    return Arc.chordFromAngle(radius, Arc.angleFromSegment(radius, arcLength));
   }
 
   static segmentFromChord(radius, chord) {
@@ -99,9 +74,9 @@ export class Arc {
     return Arc.angleFromChord(radius, chordFromDistance(radius, distance));
   }
 
-  static angleFromSegment(radius, segment) {
+  static angleFromSegment(radius, arcLength) {
     let $2pi = 2 * Math.PI;
-    return (segment * $2pi) / ($2pi * radius);
+    return (arcLength * $2pi) / ($2pi * radius);
   }
   /*
   static distanceFromAngle(radius, angle) {
@@ -112,20 +87,46 @@ export class Arc {
     return radius * Math.sin(angle);
   }
 
-  static distanceFromSegmentAngle(segment, angle) {
-    return Arc.distanceFromAngle(Arc.radiusFromSegment(segment, angle), angle);
-  }
-
   static distanceFromChord(radius, chord) {
     return Math.sqrt(radius ** 2 - (0.5 * chord) ** 2);
   }
 
-  static distanceFromChordAngle(chord, angle) {
-    return Arc.distanceFromAngle(radius, Arc.angleFromSegment(radius, segment));
+  static distanceFromSegment(radius, arcLength) {
+    return Arc.distanceFromAngle(radius, Arc.angleFromSegment(radius, arcLength));
   }
 
-  static distanceFromSegment(radius, segment) {
-    return Arc.distanceFromAngle(radius, Arc.angleFromSegment(radius, segment));
+  static radiusFromChordAndHeight(chord, arcHeight) {
+    return chord ** 2 / (8 * arcHeight) + arcHeight / 2;
+  }
+
+  static radiusFromChordAngle(chord, angle) {
+    let alpha = (Math.PI - angle) / 2;
+    return chord * Math.cos(alpha);
+  }
+
+  static distanceFromChordAngle(chord, angle) {
+    return Arc.distanceFromAngle(radius, Arc.angleFromSegment(radius, arcLength));
+  }
+
+  static radiusFromSegment(arcLength, angle) {
+    let circumference = arcLength / (angle / (Math.PI * 2));
+    return circumference / (Math.PI * 2);
+  }
+
+  static chordFromSegmentAngle(arcLength, angle) {
+    return Arc.chordFromSegment(Arc.radiusFromSegment(arcLength, angle), arcLength);
+  }
+
+  static distanceFromSegmentAngle(arcLength, angle) {
+    return Arc.distanceFromSegment(Arc.radiusFromSegment(arcLength, angle), arcLength);
+  }
+
+  static distanceFromSegmentAngle(arcLength, angle) {
+    return Arc.distanceFromAngle(Arc.radiusFromSegment(arcLength, angle), angle);
+  }
+
+  static radiusFromDistanceAngle(distance, angle) {
+    return distance / Math.cos(angle / 2);
   }
 }
 
