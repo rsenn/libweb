@@ -4,7 +4,7 @@ import { Graph } from './geom/graph.js';
 import { Intersection } from './geom/intersection.js';
 import { isLine, Line, ImmutableLine } from './geom/line.js';
 import { LineList } from './geom/lineList.js';
-import { Arc } from './geom/arc.js';
+import { Arc, ArcTo } from './geom/arc.js';
 
 import { isMatrix, Matrix, ImmutableMatrix } from './geom/matrix.js';
 import { isPoint, Point, ImmutablePoint } from './geom/point.js';
@@ -78,7 +78,7 @@ export { isBBox, BBox } from './geom/bbox.js';
 export { Graph } from './geom/graph.js';
 export { Intersection } from './geom/intersection.js';
 export { isLine, Line } from './geom/line.js';
-export { Arc } from './geom/arc.js';
+export { Arc, ArcTo } from './geom/arc.js';
 export { LineList } from './geom/lineList.js';
 export { Polygon, MakePolygon } from './geom/polygon.js';
 

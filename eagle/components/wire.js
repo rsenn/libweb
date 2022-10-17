@@ -59,6 +59,8 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     d = `M ${x1} ${y1} a ${r} ${r} 0 ${l} ${s} ${RoundToMil(xdiff)} ${RoundToMil(ydiff)}`;
   }
 
+  console.log('Wire', { ...extraProps, d });
+
   return h('path', {
     d,
     fill: 'none',

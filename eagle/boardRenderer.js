@@ -177,7 +177,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         })
       );
 
-     // this.debug('Lines:', name, [...lines]);
+      // this.debug('Lines:', name, [...lines]);
 
       const layer = layers[layerId] || this.layers.Bottom;
       const width = widths[layerId];
@@ -187,6 +187,12 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(true) {
         //  if(name == 'D2') window.lines = lines.map(l => l.clone());
         let lines2 = lines.map(l => new Line(l));
+        console.log(
+          'lines:',
+          console.config({ compact: 2 }),
+          [...lines2].map((l, i) => [l, lines[i].curve ?? 0])
+        );
+        //console.log('lines2:', lines2);
 
         let cmds = LinesToPath(
           lines.map(l => {
@@ -201,6 +207,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         if(flat) cmds = cmds.flat();
 
         this.debug('layerId:', layerId, 'width:', width);
+        console.log('cmds:', cmds);
 
         this.create(
           WirePath,
