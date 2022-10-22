@@ -187,6 +187,17 @@ export class Arc {
       Arc.angleFromChord(radius, chord)
     );
   }
+
+  static arcFromPoints(x0, y0, x1, y1, x2, y2) {
+    let r = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    let x = x0 - r;
+    let y = y0 - r;
+    let width = 2 * r;
+    let height = 2 * r;
+    let start = (180 / Math.PI) * Math.atan2(y1 - y0, x1 - x0);
+    let end = (180 / Math.PI) * Math.atan2(y2 - y0, x2 - x0);
+    return { x, y, width, height, start, end };
+  }
 }
 
 export function ArcTo(x, y, curve = 0) {
