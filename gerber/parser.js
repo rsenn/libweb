@@ -33,7 +33,9 @@ function determine(chunk, start, LIMIT) {
 // returns {next: '_', read: [chars read], lines: [lines read]}
 function getNext(type, chunk, start) {
   if(type !== 'gerber' && type !== 'drill') {
-    throw new Error('filetype to get next block must be "drill" or "gerber"');
+    throw new Error(
+      'filetype to get next block must be "drill" or "gerber"'
+    );
   }
 
   // parsing constants
@@ -79,7 +81,8 @@ function getNext(type, chunk, start) {
     }
 
     read++;
-    blockFound = splitFound && (!paramStarted || paramFound);
+    blockFound =
+      splitFound && (!paramStarted || paramFound);
   }
 
   let block = blockFound ? found.join('').trim() : '';
@@ -93,7 +96,12 @@ function done(line) {
 }
 
 function set(property, value, line) {
-  return { type: 'set', line: line || -1, prop: property, value };
+  return {
+    type: 'set',
+    line: line || -1,
+    prop: property,
+    value
+  };
 }
 
 function level(level, value, line) {
@@ -105,7 +113,12 @@ function tool(code, tool, line) {
 }
 
 function op(operation, location, line) {
-  return { type: 'op', line: line || -1, op: operation, coord: location };
+  return {
+    type: 'op',
+    line: line || -1,
+    op: operation,
+    coord: location
+  };
 }
 
 function macro(name, blocks, line) {
@@ -146,20 +159,36 @@ function normalizeCoord(number, format) {
   // otherwise we need to use the number format to split up the string
 
   // make sure format is valid
-  if(format.places == null || format.places.length !== 2) return NaN;
+  if(format.places == null || format.places.length !== 2)
+    return NaN;
 
   let leading = format.places[0];
   let trailing = format.places[1];
-  if(!Number.isFinite(leading) || !Number.isFinite(trailing)) return NaN;
+  if(
+    !Number.isFinite(leading) ||
+    !Number.isFinite(trailing)
+  )
+    return NaN;
 
   // pad according to trailing or leading zero suppression
-  if(format.zero === 'T') numberString = numberString.padStart(leading + trailing, '0');
-  else if(format.zero === 'L') numberString = numberString.padStart(leading + trailing, '0');
+  if(format.zero === 'T')
+    numberString = numberString.padStart(
+      leading + trailing,
+      '0'
+    );
+  else if(format.zero === 'L')
+    numberString = numberString.padStart(
+      leading + trailing,
+      '0'
+    );
   else return NaN;
 
   // finally, parse the numberString
   let before = numberString.slice(0, leading);
-  let after = numberString.slice(leading, leading + trailing);
+  let after = numberString.slice(
+    leading,
+    leading + trailing
+  );
   return Number(sign + before + '.' + after);
 }
 
@@ -183,7 +212,9 @@ function parse$1(coord, format) {
   }
 
   if(format.zero == null || format.places == null) {
-    throw new Error('cannot parse coordinate with format undefined');
+    throw new Error(
+      'cannot parse coordinate with format undefined'
+    );
   }
 
   // pull out the x, y, i, and j
@@ -191,7 +222,10 @@ function parse$1(coord, format) {
     let coordMatch = coord.match(matcher.test);
 
     if(coordMatch) {
-      result[matcher.coord] = normalizeCoord(coordMatch[1], format);
+      result[matcher.coord] = normalizeCoord(
+        coordMatch[1],
+        format
+      );
     }
 
     return result;
@@ -217,7 +251,10 @@ let parseCoord = { parse: parse$1, detectZero };
 // parse a macro expression and return a function that takes mods
 let reOP$1 = /[+\-\/xX()]/;
 let reNUMBER = /[$\d.]+/;
-let reTOKEN = new RegExp([reOP$1.source, reNUMBER.source].join('|'), 'g');
+let reTOKEN = new RegExp(
+  [reOP$1.source, reNUMBER.source].join('|'),
+  'g'
+);
 
 function parseMacroExpression(parser, expr) {
   // tokenize the expression
@@ -246,7 +283,9 @@ function parseMacroExpression(parser, expr) {
     let t = tokens[0];
 
     if(t === 'X') {
-      parser.warn("multiplication in macros should use 'x', not 'X'");
+      parser.warn(
+        "multiplication in macros should use 'x', not 'X'"
+      );
       t = 'x';
     }
     while(t === 'x' || t === '/') {
@@ -288,16 +327,24 @@ function parseMacroExpression(parser, expr) {
       return getValue(op.val);
     }
     if(type === '+') {
-      return evaluate(op.left, mods) + evaluate(op.right, mods);
+      return (
+        evaluate(op.left, mods) + evaluate(op.right, mods)
+      );
     }
     if(type === '-') {
-      return evaluate(op.left, mods) - evaluate(op.right, mods);
+      return (
+        evaluate(op.left, mods) - evaluate(op.right, mods)
+      );
     }
     if(type === 'x') {
-      return evaluate(op.left, mods) * evaluate(op.right, mods);
+      return (
+        evaluate(op.left, mods) * evaluate(op.right, mods)
+      );
     }
     // else division
-    return evaluate(op.left, mods) / evaluate(op.right, mods);
+    return (
+      evaluate(op.left, mods) / evaluate(op.right, mods)
+    );
   }
 
   // return the evaluation function bound to the parsed expression tree
@@ -358,7 +405,9 @@ function parseMacroBlock(parser, block) {
 
   // vector primitive
   if(code === 2) {
-    parser.warn('macro aperture vector primitives with code 2 are deprecated');
+    parser.warn(
+      'macro aperture vector primitives with code 2 are deprecated'
+    );
   }
 
   if(code === 2 || code === 20) {
@@ -388,7 +437,9 @@ function parseMacroBlock(parser, block) {
   }
 
   if(code === 22) {
-    parser.warn('macro aperture lower-left rectangle primitives are deprecated');
+    parser.warn(
+      'macro aperture lower-left rectangle primitives are deprecated'
+    );
     return {
       type: 'rectLL',
       exp,
@@ -451,7 +502,10 @@ function parseMacroBlock(parser, block) {
       rot: mods[6]
     };
   }
-  parser.warn(code + ' is an unrecognized primitive for a macro aperture');
+  parser.warn(
+    code +
+      ' is an unrecognized primitive for a macro aperture'
+  );
 }
 
 // parse gerber function
@@ -469,7 +523,8 @@ let reTOOL = /^(?:G54)?D0*([1-9]\d+)/;
 
 // operations
 let reOP = /D0*([123])$/;
-let reCOORD = /^(?:G0*[123])?((?:[XYIJ][+-]?\d+){1,4})(?:D0*[123])?$/;
+let reCOORD =
+  /^(?:G0*[123])?((?:[XYIJ][+-]?\d+){1,4})(?:D0*[123])?$/;
 
 // parameter code matchers
 let reUNITS = /^%MO(IN|MM)/;
@@ -477,7 +532,8 @@ let reUNITS = /^%MO(IN|MM)/;
 let reFORMAT = /^%FS([LT]?)([AI]?)(.*)X([0-7])([0-7])Y\4\5/;
 let rePOLARITY = /^%LP([CD])/;
 let reSTEP_REP = /^%SR(?:X(\d+)Y(\d+)I([\d.]+)J([\d.]+))?/;
-let reTOOL_DEF = /^%ADD0*(\d{2,})([A-Za-z_\$][\w\-\.]*)(?:,((?:X?[\d.]+)*))?/;
+let reTOOL_DEF =
+  /^%ADD0*(\d{2,})([A-Za-z_\$][\w\-\.]*)(?:,((?:X?[\d.]+)*))?/;
 let reMACRO = /^%AM([A-Za-z_\$][\w\-\.]*)\*?(.*)/;
 
 function parseToolDef(parser, block) {
@@ -485,7 +541,9 @@ function parseToolDef(parser, block) {
   let toolMatch = block.match(reTOOL_DEF);
   let tool = toolMatch[1];
   let shapeMatch = toolMatch[2];
-  let toolArgs = toolMatch[3] ? toolMatch[3].split('X') : [];
+  let toolArgs = toolMatch[3]
+    ? toolMatch[3].split('X')
+    : [];
 
   // get the shape
   let shape;
@@ -511,9 +569,16 @@ function parseToolDef(parser, block) {
   if(shape === 'circle') {
     val = [normalizeCoord(toolArgs[0], format)];
   } else if(shape === 'rect' || shape === 'obround') {
-    val = [normalizeCoord(toolArgs[0], format), normalizeCoord(toolArgs[1], format)];
+    val = [
+      normalizeCoord(toolArgs[0], format),
+      normalizeCoord(toolArgs[1], format)
+    ];
   } else if(shape === 'poly') {
-    val = [normalizeCoord(toolArgs[0], format), Number(toolArgs[1]), 0];
+    val = [
+      normalizeCoord(toolArgs[0], format),
+      Number(toolArgs[1]),
+      0
+    ];
     if(toolArgs[2]) {
       val[2] = Number(toolArgs[2]);
     }
@@ -523,7 +588,10 @@ function parseToolDef(parser, block) {
 
   let hole = [];
   if(toolArgs[maxArgs - 1]) {
-    hole = [normalizeCoord(toolArgs[maxArgs - 2], format), normalizeCoord(toolArgs[maxArgs - 1], format)];
+    hole = [
+      normalizeCoord(toolArgs[maxArgs - 2], format),
+      normalizeCoord(toolArgs[maxArgs - 1], format)
+    ];
   } else if(toolArgs[maxArgs - 2]) {
     hole = [normalizeCoord(toolArgs[maxArgs - 2], format)];
   }
@@ -535,10 +603,16 @@ function parseMacroDef(parser, block) {
   let macroMatch = block.match(reMACRO);
   let name = macroMatch[1];
   if(name.match(/\-/)) {
-    parser.warn('hyphens in macro name are illegal: ' + name);
+    parser.warn(
+      'hyphens in macro name are illegal: ' + name
+    );
   }
-  let blockMatch = macroMatch[2].length ? macroMatch[2].split('*') : [];
-  let blocks = blockMatch.filter(Boolean).map(block => parseMacroBlock(parser, block));
+  let blockMatch = macroMatch[2].length
+    ? macroMatch[2].split('*')
+    : [];
+  let blocks = blockMatch
+    .filter(Boolean)
+    .map(block => parseMacroBlock(parser, block));
 
   return parser.push(commandMap.macro(name, blocks));
 }
@@ -573,7 +647,9 @@ function parse(parser, block) {
   if(reBKP_UNITS.test(block)) {
     let bkpUnitsMatch = block.match(reBKP_UNITS)[1];
     let backupUnits = bkpUnitsMatch === '0' ? 'in' : 'mm';
-    return parser.push(commandMap.set('backupUnits', backupUnits));
+    return parser.push(
+      commandMap.set('backupUnits', backupUnits)
+    );
   }
 
   if(reFORMAT.test(block)) {
@@ -593,14 +669,24 @@ function parse(parser, block) {
     // warn if zero suppression missing or set to trailing
     if(!format.zero) {
       format.zero = 'L';
-      parser.warn('zero suppression missing from format; assuming leading');
+      parser.warn(
+        'zero suppression missing from format; assuming leading'
+      );
     } else if(format.zero === 'T') {
-      parser.warn('trailing zero suppression has been deprecated');
+      parser.warn(
+        'trailing zero suppression has been deprecated'
+      );
     }
 
     // warn if there were unknown characters in the format spec
     if(unknown) {
-      parser.warn('unknown characters "' + unknown + '" in "' + block + '" were ignored');
+      parser.warn(
+        'unknown characters "' +
+          unknown +
+          '" in "' +
+          block +
+          '" were ignored'
+      );
     }
 
     let epsilon = 1.5 * Math.pow(10, -format.places[1]);
@@ -612,12 +698,16 @@ function parse(parser, block) {
   if(reBKP_NOTA.test(block)) {
     let bkpNotaMatch = block.match(reBKP_NOTA)[1];
     let backupNota = bkpNotaMatch === '0' ? 'A' : 'I';
-    return parser.push(commandMap.set('backupNota', backupNota));
+    return parser.push(
+      commandMap.set('backupNota', backupNota)
+    );
   }
 
   if(rePOLARITY.test(block)) {
     let polarity = block.match(rePOLARITY)[1];
-    return parser.push(commandMap.level('polarity', polarity));
+    return parser.push(
+      commandMap.level('polarity', polarity)
+    );
   }
 
   if(reSTEP_REP.test(block)) {
@@ -626,7 +716,12 @@ function parse(parser, block) {
     let y = stepRepeatMatch[2] || 1;
     let i = stepRepeatMatch[3] || 0;
     let j = stepRepeatMatch[4] || 0;
-    let sr = { x: Number(x), y: Number(y), i: Number(i), j: Number(j) };
+    let sr = {
+      x: Number(x),
+      y: Number(y),
+      i: Number(i),
+      j: Number(j)
+    };
     return parser.push(commandMap.level('stepRep', sr));
   }
 
@@ -645,7 +740,11 @@ function parse(parser, block) {
 
   // finally, look for mode commands and operations
   // they may appear in the same block
-  if(reOP.test(block) || reMODE.test(block) || reCOORD.test(block)) {
+  if(
+    reOP.test(block) ||
+    reMODE.test(block) ||
+    reCOORD.test(block)
+  ) {
     let opMatch = block.match(reOP);
     let modeMatch = block.match(reMODE);
     let coordMatch = block.match(reCOORD);
@@ -666,7 +765,10 @@ function parse(parser, block) {
     if(opMatch || coordMatch) {
       let opCode = opMatch ? opMatch[1] : '';
       let coordString = coordMatch ? coordMatch[1] : '';
-      let coord = parseCoord.parse(coordString, parser.format);
+      let coord = parseCoord.parse(
+        coordString,
+        parser.format
+      );
 
       let op = 'last';
       if(opCode === '1') {
@@ -684,7 +786,11 @@ function parse(parser, block) {
   }
 
   // if we reach here the block was unhandled, so warn if it is not empty
-  return parser.warn('block "' + block + '" was not recognized and was ignored');
+  return parser.warn(
+    'block "' +
+      block +
+      '" was not recognized and was ignored'
+  );
 }
 
 // drill parser drill and route modes
@@ -699,12 +805,14 @@ let drillMode = {
 // parse drill function
 // takes a parser transform stream and a block string
 let reALTIUM_HINT = /;FILE_FORMAT=(\d):(\d)/;
-let reKI_HINT = /;FORMAT={(.):(.)\/ (absolute|.+)? \/ (metric|inch) \/.+(trailing|leading|decimal|keep)/;
+let reKI_HINT =
+  /;FORMAT={(.):(.)\/ (absolute|.+)? \/ (metric|inch) \/.+(trailing|leading|decimal|keep)/;
 
 let reUNITS$1 = /(INCH|METRIC)(?:,([TL])Z)?/;
 let reTOOL_DEF$1 = /T0*(\d+)[\S]*C([\d.]+)/;
 let reTOOL_SET = /T0*(\d+)(?![\S]*C)/;
-let reCOORD$1 = /((?:[XYIJA][+-]?[\d.]+){1,4})(?:G85((?:[XY][+-]?[\d.]+){1,2}))?/;
+let reCOORD$1 =
+  /((?:[XYIJA][+-]?[\d.]+){1,4})(?:G85((?:[XY][+-]?[\d.]+){1,2}))?/;
 let reROUTE = /^G0([01235])/;
 
 function setUnits(parser, units, line) {
@@ -727,7 +835,10 @@ function parseCommentForFormatHints(parser, block, line) {
     let suppressionSet = kicadMatch[5];
 
     // set format if we got numbers
-    if(Number.isFinite(leading) && Number.isFinite(trailing)) {
+    if(
+      Number.isFinite(leading) &&
+      Number.isFinite(trailing)
+    ) {
       result.places = [leading, trailing];
     }
 
@@ -740,13 +851,20 @@ function parseCommentForFormatHints(parser, block, line) {
 
     // send units
     if(unitSet === 'metric') {
-      parser.push(commandMap.set('backupUnits', 'mm', line));
+      parser.push(
+        commandMap.set('backupUnits', 'mm', line)
+      );
     } else {
-      parser.push(commandMap.set('backupUnits', 'in', line));
+      parser.push(
+        commandMap.set('backupUnits', 'in', line)
+      );
     }
 
     // set zero suppression
-    if(suppressionSet === 'leading' || suppressionSet === 'keep') {
+    if(
+      suppressionSet === 'leading' ||
+      suppressionSet === 'keep'
+    ) {
       result.zero = 'L';
     } else if(suppressionSet === 'trailing') {
       result.zero = 'T';
@@ -759,7 +877,10 @@ function parseCommentForFormatHints(parser, block, line) {
   else if(reALTIUM_HINT.test(block)) {
     let altiumMatch = block.match(reALTIUM_HINT);
 
-    result.places = [Number(altiumMatch[1]), Number(altiumMatch[2])];
+    result.places = [
+      Number(altiumMatch[1]),
+      Number(altiumMatch[2])
+    ];
   }
 
   return result;
@@ -791,7 +912,10 @@ function parseUnits(parser, block, line) {
 
 function coordToCommand(parser, block, line) {
   let coordMatch = block.match(reCOORD$1);
-  let coord = parseCoord.parse(coordMatch[1], parser.format);
+  let coord = parseCoord.parse(
+    coordMatch[1],
+    parser.format
+  );
 
   // if there's another match, then it was a slot
   if(coordMatch[2]) {
@@ -809,10 +933,14 @@ function coordToCommand(parser, block, line) {
 
   switch (parser.drillMode) {
     case drillMode.DRILL:
-      return parser.push(commandMap.op('flash', coord, line));
+      return parser.push(
+        commandMap.op('flash', coord, line)
+      );
 
     case drillMode.MOVE:
-      return parser.push(commandMap.op('move', coord, line));
+      return parser.push(
+        commandMap.op('move', coord, line)
+      );
 
     case drillMode.LINEAR:
       parser.push(commandMap.set('mode', 'i', line));
@@ -833,9 +961,15 @@ function parseBlock(parser, block, line) {
     let toolMatch = block.match(reTOOL_DEF$1);
     let toolCode = toolMatch[1];
     let toolDia = normalizeCoord(toolMatch[2]);
-    let toolDef = { shape: 'circle', params: [toolDia], hole: [] };
+    let toolDef = {
+      shape: 'circle',
+      params: [toolDia],
+      hole: []
+    };
 
-    return parser.push(commandMap.tool(toolCode, toolDef, line));
+    return parser.push(
+      commandMap.tool(toolCode, toolDef, line)
+    );
   }
 
   // tool set
@@ -887,9 +1021,15 @@ function flush(parser) {
   //console.debug('flush', { parser });
   if(parser.drillStash.length) {
     parser.drillStash.forEach(data => {
-      if(!parser.format.zero && reCOORD$1.test(data.block)) {
+      if(
+        !parser.format.zero &&
+        reCOORD$1.test(data.block)
+      ) {
         parser.format.zero = 'T';
-        parser.warn('zero suppression missing and not detectable;' + ' assuming trailing suppression');
+        parser.warn(
+          'zero suppression missing and not detectable;' +
+            ' assuming trailing suppression'
+        );
       }
       parseBlock(parser, data.block, data.line);
     });
@@ -903,7 +1043,11 @@ function parse$2(parser, block) {
   // parse comments for formatting hints and ignore the rest
   if(block[0] === ';') {
     // check for kicad format hints
-    let formatHints = parseCommentForFormatHints(parser, block, parser.line);
+    let formatHints = parseCommentForFormatHints(
+      parser,
+      block,
+      parser.line
+    );
 
     Object.keys(formatHints).forEach(key => {
       if(!parser.format[key]) {
@@ -923,8 +1067,15 @@ function parse$2(parser, block) {
     if(reCOORD$1.test(block)) {
       parser.format.zero = parseCoord.detectZero(block);
       if(parser.format.zero) {
-        let zero = parser.format.zero === 'L' ? 'leading' : 'trailing';
-        parser.warn('zero suppression missing; detected ' + zero + ' suppression');
+        let zero =
+          parser.format.zero === 'L'
+            ? 'leading'
+            : 'trailing';
+        parser.warn(
+          'zero suppression missing; detected ' +
+            zero +
+            ' suppression'
+        );
         flush(parser);
         return parseBlock(parser, block, parser.line);
       }
@@ -938,7 +1089,10 @@ function parse$2(parser, block) {
       }
     }
 
-    return parser.drillStash.push({ line: parser.line, block });
+    return parser.drillStash.push({
+      line: parser.line,
+      block
+    });
   }
 
   return parseBlock(parser, block, parser.line);
@@ -992,7 +1146,12 @@ export class Parser {
   transform(chunk, controller) {
     let filetype = this.format.filetype;
 
-    const done = controller ? err => (err ? controller.error(err) : controller.terminate()) : () => {};
+    const done = controller
+      ? err =>
+          err
+            ? controller.error(err)
+            : controller.terminate()
+      : () => {};
     // decode buffer to string
     //chunk = this.decoder.write(chunk);
     // determine filetype within 65535 characters
@@ -1001,7 +1160,9 @@ export class Parser {
       this.index += chunk.length;
       if(!filetype) {
         if(this.index >= LIMIT) {
-          return done(new Error('unable to determine filetype'));
+          return done(
+            new Error('unable to determine filetype')
+          );
         }
         this.stash += chunk;
         return done();
@@ -1023,9 +1184,12 @@ export class Parser {
   }
 
   flush(controller) {
-    if(this.format.filetype === 'drill') parseDrill.flush(this);
+    if(this.format.filetype === 'drill')
+      parseDrill.flush(this);
 
-    return typeof controller == 'object' ? controller.terminate() : controller && controller();
+    return typeof controller == 'object'
+      ? controller.terminate()
+      : controller && controller();
   }
 
   push(data) {
@@ -1042,7 +1206,11 @@ export class Parser {
   }
 
   parseSync(file) {
-    this.format.filetype ??= determine(file, this.index, 100 * LIMIT);
+    this.format.filetype ??= determine(
+      file,
+      this.index,
+      100 * LIMIT
+    );
     this.syncResult = [];
     this.process(file);
     this.flush();
@@ -1054,7 +1222,9 @@ export class Parser {
     let ret = [];
     let parser = new Parser();
 
-    await LineReader(file).pipeThrough(new TransformStream(parser)).pipeTo(ArrayWriter(ret));
+    await LineReader(file)
+      .pipeThrough(new TransformStream(parser))
+      .pipeTo(ArrayWriter(ret));
     // await readStream(LineReader(file).pipeThrough(new TransformStream(parser)), ret);
     return ret;
   }

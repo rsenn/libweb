@@ -11,7 +11,11 @@ import { SVG } from './components/svg.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 
-const transformXPath = p => p.replace(/➟/g, 'children').replace(/ /g, '.').split(/\./g);
+const transformXPath = p =>
+  p
+    .replace(/➟/g, 'children')
+    .replace(/ /g, '.')
+    .split(/\./g);
 
 export class EagleSVGRenderer {
   static rendererTypes = {};
@@ -29,25 +33,54 @@ export class EagleSVGRenderer {
 
   constructor(doc, factory) {
     //console.log('EagleSVGRenderer.constructor',{factory});
-    if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
+    if(new.target === EagleSVGRenderer)
+      throw new Error(
+        'Use SchematicRenderer or BoardRenderer'
+      );
     this.doc = doc;
     let renderer = this;
     this.path2component = Util.mapWrapper(
       new Map(),
-      path => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
+      path =>
+        (Util.isObject(path) && path.path !== undefined
+          ? path.path
+          : path) + '',
       key => new ImmutablePath(key)
     );
     const insertCtoP = Util.inserter(this.component2path);
-    const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
+    const insert = Util.inserter(
+      this.path2component,
+      (k, v) => insertCtoP(v, k)
+    );
     this.mirrorY = new TransformationList().scale(1, -1);
     this.append = factory;
-    this.create = function(tag, attrs, children, parent, element) {
+    this.create = function(
+      tag,
+      attrs,
+      children,
+      parent,
+      element
+    ) {
       // console.log('EagleSVGRenderer.create',{factory});
-      let ret = factory(tag, attrs, children, parent, element);
+      let ret = factory(
+        tag,
+        attrs,
+        children,
+        parent,
+        element
+      );
       let path = attrs['data-path'];
       if(path) {
-        if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
-        else if(!Util.isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
+        if(
+          typeof path == 'string' &&
+          /children\[/.test(path)
+        )
+          path = new ImmutablePath(path);
+        else if(
+          !Util.isObject(path) ||
+          !(path instanceof ImmutableXPath)
+        )
+          path = new ImmutableXPath(path);
         //console.log('EagleSVGRenderer.create', { path /*,ref*/ });
         try {
           let e = path.apply(doc);
@@ -83,7 +116,9 @@ export class EagleSVGRenderer {
       );
 
     // this.layers = Object.fromEntries([...doc.layers].map(([n, l]) => [l.name, l]));
-    this.layers = Object.getOwnPropertyNames(doc.layers).map(n => [n, doc.layers[n]]);
+    this.layers = Object.getOwnPropertyNames(
+      doc.layers
+    ).map(n => [n, doc.layers[n]]);
   }
 
   get maps() {
@@ -103,24 +138,35 @@ export class EagleSVGRenderer {
   }*/
 
   static create(doc, factory) {
-    let renderer = new EagleSVGRenderer.rendererTypes[doc.type](doc, factory);
+    let renderer = new EagleSVGRenderer.rendererTypes[
+      doc.type
+    ](doc, factory);
     return renderer;
   }
 
   setPalette(palette) {
-    palette = palette.map((color, i) => trkl(((color.valueOf = () => i), color)));
+    palette = palette.map((color, i) =>
+      trkl(((color.valueOf = () => i), color))
+    );
     let ncolors = palette.length;
-    palette = palette.reduce((acc, color, i) => ({ ...acc, [i + '']: color }), {
-      length: trkl(ncolors)
-    });
+    palette = palette.reduce(
+      (acc, color, i) => ({ ...acc, [i + '']: color }),
+      {
+        length: trkl(ncolors)
+      }
+    );
 
-    palette = trkl.bind(Util.define({}, { handlers: palette }), palette);
+    palette = trkl.bind(
+      Util.define({}, { handlers: palette }),
+      palette
+    );
     Object.setPrototypeOf(
       palette,
       Object.defineProperties(
         {
           *[Symbol.iterator]() {
-            for(let i = 0; i < this.length; i++) yield this[i];
+            for(let i = 0; i < this.length; i++)
+              yield this[i];
           }
         },
         {
@@ -130,7 +176,11 @@ export class EagleSVGRenderer {
             writable: false,
             configurable: false
           },
-          handlers: { value: null, enumerable: false, writable: true },
+          handlers: {
+            value: null,
+            enumerable: false,
+            writable: true
+          },
           length: {
             value: 0,
             enumerable: false,
@@ -144,14 +194,20 @@ export class EagleSVGRenderer {
     //this.debug("setPalette 4",palette)
 
     Object.defineProperty(this, 'palette', {
-      value: palette || (this.doc.type == 'brd' ? BoardRenderer.palette : SchematicRenderer.palette),
+      value:
+        palette ||
+        (this.doc.type == 'brd'
+          ? BoardRenderer.palette
+          : SchematicRenderer.palette),
       writable: true,
       configurable: true
     });
   }
 
   getColor(color) {
-    let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
+    let c =
+      this.palette[color] ||
+      /*this.colors[color] || */ 'rgb(165,165,165)';
     //this.debug('getColor', color, c);
 
     /* if(c)
@@ -178,7 +234,9 @@ export class EagleSVGRenderer {
     this.debug(`EagleSVGRenderer.renderLayers`);
 
     //const layerGroup = this.create('g', { className: 'layers' }, parent);
-    const layerList = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
+    const layerList = [...this.doc.layers.list].sort(
+      (a, b) => a.number - b.number
+    );
     const colors = {};
 
     this.layerElements = {};
@@ -199,8 +257,12 @@ export class EagleSVGRenderer {
           stroke,
           'data-name': l.name,
           'data-path': l.path /*.toString(' ')*/,
-          ...(active == 'yes' ? { 'data-active': 'yes' } : {}),
-          ...(visible == 'yes' ? { 'data-visible': 'yes' } : {})
+          ...(active == 'yes'
+            ? { 'data-active': 'yes' }
+            : {}),
+          ...(visible == 'yes'
+            ? { 'data-visible': 'yes' }
+            : {})
         },
         layerGroup
       );
@@ -214,7 +276,10 @@ export class EagleSVGRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    let { labelText, transformation = new TransformationList() } = opts;
+    let {
+      labelText,
+      transformation = new TransformationList()
+    } = opts;
 
     // this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
 
@@ -228,9 +293,14 @@ export class EagleSVGRenderer {
         parent
       );
 
-    let coordFn = /*transform ? MakeCoordTransformer(transform) :*/ i => i;
+    let coordFn =
+      /*transform ? MakeCoordTransformer(transform) :*/ i =>
+        i;
     const { layer } = item;
-    const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
+    const color =
+      typeof item.getColor == 'function'
+        ? item.getColor()
+        : this.constructor.palette[16];
     let elem;
     const comp = ElementToComponent(item);
     if(comp) {
@@ -287,7 +357,9 @@ export class EagleSVGRenderer {
       case 'label': {
         const { align } = item;
         const { x, y } = coordFn(item);
-        const transform = new TransformationList(`translate(${x},${y})`);
+        const transform = new TransformationList(
+          `translate(${x},${y})`
+        );
 
         elem = svg(
           'text',
@@ -297,7 +369,8 @@ export class EagleSVGRenderer {
             x,
             y,
             ...EagleSVGRenderer.alignmentAttrs(align),
-            children: labelText /*,            transform: transform.undo(transformation)*/,
+            children:
+              labelText /*,            transform: transform.undo(transformation)*/,
             'font-size': '0.1px',
             'font-family': 'Fixed Medium'
           },
@@ -383,8 +456,14 @@ export class EagleSVGRenderer {
         break;
       default: {
         const { x, y } = coordFn(item);
-        this.debug('EagleSVGRenderer.renderItem', { item, parent, opts });
-        throw new Error(`No renderer for element '${item.tagName}'`);
+        this.debug('EagleSVGRenderer.renderItem', {
+          item,
+          parent,
+          opts
+        });
+        throw new Error(
+          `No renderer for element '${item.tagName}'`
+        );
         //super.renderItem(item,parent,opts);
         break;
       }
@@ -394,9 +473,15 @@ export class EagleSVGRenderer {
 
   static alignment(align, def = [-1, 1], rot = 0) {
     let h, v;
-    const { horizontalAlignment, verticalAlignment } = EagleSVGRenderer;
+    const { horizontalAlignment, verticalAlignment } =
+      EagleSVGRenderer;
 
-    for(let tok of (align || horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1]).split(/-/g)) {
+    for(let tok of (
+      align ||
+      horizontalAlignment[def[0] + 1] +
+        '-' +
+        verticalAlignment[def[1] + 1]
+    ).split(/-/g)) {
       switch (tok) {
         case 'center': {
           if(h === undefined) h = 0;
@@ -415,23 +500,42 @@ export class EagleSVGRenderer {
         }
       }
     }
-    let ret = new Point(h === undefined ? def[0] : h, v === undefined ? def[1] : v);
-    if(Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
+    let ret = new Point(
+      h === undefined ? def[0] : h,
+      v === undefined ? def[1] : v
+    );
+    if(Math.abs(rot) > 0)
+      ret.rotate((rot * Math.PI) / 180);
     return ret;
   }
 
-  static alignmentAttrs(align, hv = HORIZONTAL_VERTICAL, rot = 0) {
-    let coord = align instanceof Point ? align : EagleSVGRenderer.alignment(align, [-1, 1]);
-    if(Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
+  static alignmentAttrs(
+    align,
+    hv = HORIZONTAL_VERTICAL,
+    rot = 0
+  ) {
+    let coord =
+      align instanceof Point
+        ? align
+        : EagleSVGRenderer.alignment(align, [-1, 1]);
+    if(Math.abs(rot) > 0)
+      coord.rotate((rot * Math.PI) / 180);
     const defaultY = 1;
     const defaultX = -1;
 
     const { x, y } = coord;
-    const { verticalAlignment, horizontalAlignment } = EagleSVGRenderer;
+    const { verticalAlignment, horizontalAlignment } =
+      EagleSVGRenderer;
     let r = {};
-    if(hv & VERTICAL) r['dominant-baseline'] = verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
+    if(hv & VERTICAL)
+      r['dominant-baseline'] =
+        verticalAlignment[Math.round(y) + 1] ||
+        verticalAlignment[defaultY + 1];
 
-    if(hv & HORIZONTAL) r['text-anchor'] = horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
+    if(hv & HORIZONTAL)
+      r['text-anchor'] =
+        horizontalAlignment[Math.round(x) + 1] ||
+        horizontalAlignment[defaultX + 1];
     return r;
   }
 
@@ -439,9 +543,14 @@ export class EagleSVGRenderer {
     //console.log('EagleSVGRenderer.render', { obj, props, children });
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', { doc });
-    let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList() } = props;
+    let {
+      bounds = obj.getMeasures &&
+        obj.getMeasures({ bbox: true }),
+      transform = new TransformationList()
+    } = props;
 
-    if(!bounds || bounds.size.area() == 0) bounds = obj.getBounds({ bbox: true });
+    if(!bounds || bounds.size.area() == 0)
+      bounds = obj.getBounds({ bbox: true });
 
     let rect = new Rect(bounds.rect);
     //    let { rect = new Rect(bounds.rect) } = props;
@@ -456,15 +565,24 @@ export class EagleSVGRenderer {
     this.rect = rect;
     this.bounds = bounds;
 
-    const { width, height } = (this.size = rect.size.toCSS('mm'));
-    console.log('EagleSVGRenderer', { bounds, width, height });
+    const { width, height } = (this.size =
+      rect.size.toCSS('mm'));
+    console.log('EagleSVGRenderer', {
+      bounds,
+      width,
+      height
+    });
 
     this.debug('SVGRenderer.render', { transform, index });
 
     let gridElement = doc.lookup('/eagle/drawing/grid');
     let attrs = {
       bg: trkl({ color: '#ffffff', visible: true }),
-      grid: trkl({ color: '#0000aa', width: 0.01, visible: true })
+      grid: trkl({
+        color: '#0000aa',
+        width: 0.01,
+        visible: true
+      })
     };
     const { bg, grid } = attrs;
     this.attrs = attrs;
@@ -499,5 +617,13 @@ export class EagleSVGRenderer {
     return svgElem;
   }
 }
-EagleSVGRenderer.horizontalAlignment = ['start', 'middle', 'end'];
-EagleSVGRenderer.verticalAlignment = ['hanging', 'mathematical', 'baseline'];
+EagleSVGRenderer.horizontalAlignment = [
+  'start',
+  'middle',
+  'end'
+];
+EagleSVGRenderer.verticalAlignment = [
+  'hanging',
+  'mathematical',
+  'baseline'
+];

@@ -20,7 +20,8 @@ export class EagleNodeMap {
 
   static makePredicate(name, keys) {
     keys = toArray(keys);
-    return item => keys.some(key => item.attributes[key] == name);
+    return item =>
+      keys.some(key => item.attributes[key] == name);
   }
 
   item(pos) {
@@ -89,7 +90,10 @@ export class EagleNodeMap {
       text(className(this), 0) +
       ` {\n  ` +
       [...this.entries()].reduce(
-        (acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + v[inspectSymbol](),
+        (acc, [k, v]) =>
+          (acc ? acc + ',\n  ' : acc) +
+          `'${text(k, 1, 32)}' => ` +
+          v[inspectSymbol](),
         ''
       ) +
       `\n}`
@@ -104,20 +108,30 @@ export class EagleNodeMap {
       get(target, prop, receiver) {
         let index;
         if(typeof prop != 'symbol') {
-          let item = instance.get(prop) || instance.list.item(prop);
+          let item =
+            instance.get(prop) || instance.list.item(prop);
           if(item) return item;
         }
         if(typeof prop == 'string') {
-          if(prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
+          if(
+            prop == 'ref' ||
+            prop == 'raw' ||
+            prop == 'owner'
+          )
+            return instance.list[prop];
           if(prop == 'instance') return instance;
           if(prop == 'length') return instance.length;
         }
-        if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
+        if(typeof instance[prop] == 'function')
+          return instance[prop].bind(instance);
         if(typeof instance.list[prop] == 'function') {
-          if(typeof prop == 'symbol') return instance.list[prop];
+          if(typeof prop == 'symbol')
+            return instance.list[prop];
           return instance.list[prop].bind(instance.list);
         }
-        if(!(prop in instance)) if (instance.list[prop]) return instance.list[prop];
+        if(!(prop in instance))
+          if(instance.list[prop])
+            return instance.list[prop];
         return Reflect.get(target, prop, receiver);
       },
       getPrototypeOf(target) {
