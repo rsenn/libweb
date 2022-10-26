@@ -208,11 +208,16 @@ export function ArcTo(x, y, curve = 0) {
     sweep = 0;
   let arcLen = Math.sqrt(x * x + y * y);
 
-  let f = 45 / curve;
+  let c = Math.abs(curve);
+  let s = Math.sign(curve) < 0 ? 1 : 0;
+  let f = 90 / c;
 
-  let remain = 360 - curve;
+  let remain = 360 - c;
 
   radius = arcLen * f;
 
-  return `a ${radius} ${radius} 0 ${largeArc} ${sweep} ${x} ${y}`;
+  largeArc = c > 90;
+  sweep ^= s;
+
+  return `a ${radius} ${radius} 0 ${largeArc | 0} ${sweep | 0} ${x} ${y}`;
 }
