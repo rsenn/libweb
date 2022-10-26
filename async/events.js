@@ -10,11 +10,12 @@ export function once(emitter, ...events) {
 }
 
 // Turn any event emitter into a stream
-export async function* streamify(event, element) {
+export async function* streamify(event, element, cond = last => true) {
   let events = Array.isArray(event) ? event : [event];
-  while(true) {
-    yield await once(element, ...events);
-  }
+  let last;
+  do {
+    yield (last = await once(element, ...events));
+  } while(cond(last));
 }
 
 // Only pass along events that meet a condition

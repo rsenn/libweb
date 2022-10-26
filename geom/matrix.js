@@ -254,7 +254,7 @@ Matrix.prototype.determinant = function() {
 };
 
 Matrix.prototype.invert = function() {
-  const det = Matrix.prototype.determinant.call(this);
+  /* const det = Matrix.prototype.determinant.call(this);
   return new Matrix([
     (this[4] * this[8] - this[5] * this[7]) / det,
     (this[2] * this[7] - this[1] * this[8]) / det,
@@ -265,7 +265,18 @@ Matrix.prototype.invert = function() {
     (this[3] * this[7] - this[4] * this[6]) / det,
     (this[6] * this[1] - this[0] * this[7]) / det,
     (this[0] * this[4] - this[1] * this[3]) / det
-  ]);
+  ]);*/
+  let { a, b, c, d, e, f } = this;
+  let den = a * d - b * c;
+
+  return new Matrix({
+    a: d / den,
+    b: b / -den,
+    c: c / -den,
+    d: a / den,
+    e: (d * e - c * f) / -den,
+    f: (b * e - a * f) / den
+  });
 };
 
 Matrix.prototype.scalar_product = function(f) {
