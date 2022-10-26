@@ -329,11 +329,8 @@ export const LinesToPath = (lines, lineFn) => {
     ret = [];
   let prevPoint = start;
   //path.push(`M ${prevPoint.x} ${prevPoint.y}`);
-  let debug = false; //Point.equals(start, { x: 0, y: -2 });
 
-  if(debug) {
-    console.debug(`LinesToPath`, { lines, lineFn }, Util.getCallerStack());
-  }
+  console.debug(`LinesToPath`, { lines, lineFn });
 
   lineFn =
     lineFn ||
@@ -353,7 +350,8 @@ export const LinesToPath = (lines, lineFn) => {
         const sweep = (curve || 0) >= 0; //Math.abs(slope.toAngle()) < PI ? 1 : 0;
 
         //if(isFinite(radius))
-        if(debug) Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius }, debug).print(console.log);
+        //console.debug(`lineFn`, { curve, angle, slope, radius });
+        console.debug(`lineFn`, p);
 
         if(curve !== undefined && isFinite(radius)) return RenderArcTo(dist, Math.abs(radius), theta, sweep, p[1]);
         else if(Point.equals(start, p[1])) return `Z`;

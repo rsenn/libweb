@@ -25,6 +25,8 @@ import { Via } from './components/via.js';
 import { Instance } from './components/instance.js';
 import { Sheet } from './components/sheet.js';
 import { Board } from './components/board.js';
+import { Signal } from './components/signal.js';
+import { Signals } from './components/signals.js';
 
 export const PrimitiveComponents = {
   Wire,
@@ -50,7 +52,9 @@ export const PrimitiveComponents = {
   Sheet,
   Element,
   Board,
-  Drawing
+  Drawing,
+  Signal,
+  Signals
 };
 
 let prevName;
