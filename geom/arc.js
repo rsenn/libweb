@@ -20,9 +20,7 @@ export class Arc {
       chord = chord[0];
     } else {
       if(chord.length > 1) chord = Point.diff(...chord);
-      /* if(isPoint(chord))*/ chord = Math.sqrt(
-        chord.x * chord.x + chord.y * chord.y
-      );
+      /* if(isPoint(chord))*/ chord = Math.sqrt(chord.x * chord.x + chord.y * chord.y);
     }
     return chord / (2 * Math.sin(angle / 2));
   }
@@ -39,12 +37,8 @@ export class Arc {
     let p3 = { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
     let chord = Point.distance([x1, y1], [x2, y2]);
     return new Point(
-      p3.x +
-        Math.sqrt(radsq - (chord / 2) * (chord / 2)) *
-          ((y1 - y2) / chord),
-      p3.y +
-        Math.sqrt(radsq - (chord / 2) * (chord / 2)) *
-          ((x2 - x1) / chord)
+      p3.x + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((y1 - y2) / chord),
+      p3.y + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((x2 - x1) / chord)
     );
   }
 
@@ -57,24 +51,15 @@ export class Arc {
   }
 
   static chordFromSegment(radius, arcLength) {
-    return Arc.chordFromAngle(
-      radius,
-      Arc.angleFromSegment(radius, arcLength)
-    );
+    return Arc.chordFromAngle(radius, Arc.angleFromSegment(radius, arcLength));
   }
 
   static segmentFromChord(radius, chord) {
-    return Arc.segmentFromAngle(
-      radius,
-      Arc.angleFromChord(radius, chord)
-    );
+    return Arc.segmentFromAngle(radius, Arc.angleFromChord(radius, chord));
   }
 
   static segmentFromDistance(radius, distance) {
-    return Arc.segmentFromAngle(
-      radius,
-      Arc.angleFromDistance(radius, distance)
-    );
+    return Arc.segmentFromAngle(radius, Arc.angleFromDistance(radius, distance));
   }
 
   static segmentFromAngle(radius, angle) {
@@ -86,10 +71,7 @@ export class Arc {
   }
 
   static angleFromDistance(radius, distance) {
-    return Arc.angleFromChord(
-      radius,
-      chordFromDistance(radius, distance)
-    );
+    return Arc.angleFromChord(radius, chordFromDistance(radius, distance));
   }
 
   static angleFromSegment(radius, arcLength) {
@@ -110,10 +92,7 @@ export class Arc {
   }
 
   static distanceFromSegment(radius, arcLength) {
-    return Arc.distanceFromAngle(
-      radius,
-      Arc.angleFromSegment(radius, arcLength)
-    );
+    return Arc.distanceFromAngle(radius, Arc.angleFromSegment(radius, arcLength));
   }
 
   static radiusFromChordAndHeight(chord, arcHeight) {
@@ -126,10 +105,7 @@ export class Arc {
   }
 
   static distanceFromChordAngle(chord, angle) {
-    return Arc.distanceFromAngle(
-      radius,
-      Arc.angleFromSegment(radius, arcLength)
-    );
+    return Arc.distanceFromAngle(radius, Arc.angleFromSegment(radius, arcLength));
   }
 
   static radiusFromSegment(arcLength, angle) {
@@ -138,24 +114,15 @@ export class Arc {
   }
 
   static chordFromSegmentAngle(arcLength, angle) {
-    return Arc.chordFromSegment(
-      Arc.radiusFromSegment(arcLength, angle),
-      arcLength
-    );
+    return Arc.chordFromSegment(Arc.radiusFromSegment(arcLength, angle), arcLength);
   }
 
   static distanceFromSegmentAngle(arcLength, angle) {
-    return Arc.distanceFromSegment(
-      Arc.radiusFromSegment(arcLength, angle),
-      arcLength
-    );
+    return Arc.distanceFromSegment(Arc.radiusFromSegment(arcLength, angle), arcLength);
   }
 
   static distanceFromSegmentAngle(arcLength, angle) {
-    return Arc.distanceFromAngle(
-      Arc.radiusFromSegment(arcLength, angle),
-      angle
-    );
+    return Arc.distanceFromAngle(Arc.radiusFromSegment(arcLength, angle), angle);
   }
 
   static radiusFromDistanceAngle(distance, angle) {
@@ -175,17 +142,11 @@ export class Arc {
   }
 
   static sagittaFromAngle(radius, angle) {
-    return Arc.sagittaFromSegment(
-      radius,
-      Arc.segmentFromAngle(radius, angle)
-    );
+    return Arc.sagittaFromSegment(radius, Arc.segmentFromAngle(radius, angle));
   }
 
   static sagittaFromChord(radius, chord) {
-    return Arc.sagittaFromAngle(
-      radius,
-      Arc.angleFromChord(radius, chord)
-    );
+    return Arc.sagittaFromAngle(radius, Arc.angleFromChord(radius, chord));
   }
 
   static arcFromPoints(x0, y0, x1, y1, x2, y2) {
