@@ -176,7 +176,8 @@ Object.defineProperty(Rect.prototype, 'upperLeft', {
   get() {
     return new Point(this.x, this.y);
   }
-});Object.defineProperty(Rect.prototype, 'lowerRight', {
+});
+Object.defineProperty(Rect.prototype, 'lowerRight', {
   get() {
     return new Point(this.x2, this.y2);
   }
