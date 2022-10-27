@@ -2,7 +2,7 @@ import { log } from '../renderUtils.js';
 import { h, Component, Fragment } from '../../dom/preactComponent.js';
 import { ElementToComponent } from '../components.js';
 
-export const Signals = ({ data, opts = {}, ...props }) => {
+export const Signals = ({ data, transform, opts = {}, ...props }) => {
   log('Signals.render', { data });
 
   const getByLayer = layerNo => [
@@ -16,12 +16,15 @@ export const Signals = ({ data, opts = {}, ...props }) => {
 
   return h(
     'g',
-    { class: 'signals', ['data-name']: 'signals' ,    id: 'signals',
-        'stroke-linecap': 'round',
-        'stroke-linejoin': 'round',
-        'font-family': 'Fixed'
-
-      },
+    {
+      id: 'signals',
+      class: 'signals',
+      ['data-name']: 'signals',
+      transform,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      'font-family': 'Fixed'
+    },
     layers.reduce((acc, layerNo, i) => {
       let items = getByLayer(layerNo);
 

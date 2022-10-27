@@ -2,7 +2,7 @@ import Util from '../util.js';
 import { Point, Line, LineList, Rect } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross, Arc, Origin, WirePath,ElementToComponent } from './components.js';
+import { Cross, Arc, Origin, WirePath, ElementToComponent } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
@@ -100,7 +100,7 @@ export class BoardRenderer extends EagleSVGRenderer {
                 stroke: 'none',
                 //                'stroke-width': 0.01,
                 x: 0.04,
-                y: -0.04,  
+                y: -0.04,
                 ...(layer
                   ? {
                       'data-layer': `${layer.number} ${layer.name}`
@@ -196,12 +196,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(true) {
         //  if(name == 'D2') window.lines = lines.map(l => l.clone());
         let lines2 = lines.map(l => new Line(l));
-        console.log(
-          'lines:',
-          console.config({ compact: 2 }),
-          [...lines2].map((l, i) => [l, lines[i].curve ?? 0])
-        );
-        //console.log('lines2:', lines2);
+        //console.log('lines:', console.config({ compact: 2 }), [...lines2].map((l, i) => [l, lines[i].curve ?? 0]));
 
         let cmds = LinesToPath(
           lines.map(l => {
@@ -216,7 +211,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         if(flat) cmds = cmds.flat();
 
         this.debug('layerId:', layerId, 'width:', width);
-        console.log('cmds:', cmds);
+        //console.log('cmds:', cmds);
 
         this.create(
           WirePath,
@@ -256,14 +251,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     let { name, library, value, x, y, rot } = element;
     if(typeof value != 'string') value = value + '';
 
-    this.debug(`BoardRenderer.renderElement`, {
-      name,
-      library,
-      value,
-      x,
-      y,
-      rot
-    });
+    //console.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
     let transform = new TransformationList();
     let rotation = MakeRotation(rot);
@@ -274,6 +262,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(typeof value != 'string' || value.length == 0) value = ' ';
 
+    //console.debug(`BoardRenderer.renderElement(2)`, { name, transform });
     const g = this.create(
       'g',
       {
@@ -343,23 +332,19 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.create(Arc, { x, y, radius: 2, width: 0.127, color: '#08f', startAngle: angles[0], endAngle: angles[3] }, parent);*/
   }
 
-  renderSignal(signal, parent, options = {}) {
+  /*  renderSignal(signal, parent, options = {}) {
     let children = signal.children ?? [];
     let props = {};
     if('layer' in options) {
       let layer = options.layer ? this.layers[options.layer] : null;
-      //console.log('renderSignal', children.filter+'');
       children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via');
       if(layer) {
         children = children.filter(child => child.layer.number == layer.number);
-        //this.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
       } else {
       }
     }
     if(children.length) this.debug(`BoardRenderer.renderSignal[\x1b[1;33${signal.name}\x1b[0m]`, options);
-
     if(children.length) this.debug(`BoardRenderer.renderSignal[\x1b[1;33m${signal.name}\x1b[0m]`, children);
-
     if(children.length > 0) {
       const className = ElementToClass(signal);
       const id = `signal-${EscapeClassName(signal.name)}${
@@ -372,13 +357,12 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-name': signal.name,
         'data-path': signal.path.toString(' ')
       };
-      //console.log('class:', className, 'children.length:', children.length, ' options.layer:', options.layer, 'cond:', children.length > 1 && !(typeof options.layer == 'string') );
       if(children.length > 1 && options.layer != '') {
         delete options.layer;
         let signalGroup = this.create(
           'g',
           {
-            /*id, */ ...props /*, 'font-family': 'Fixed'*/
+             ...props
           },
           parent
         );
@@ -386,10 +370,9 @@ export class BoardRenderer extends EagleSVGRenderer {
       }
     }
     return this.renderCollection(children, this.create(Fragment, {}, parent), {
-      ...options /*,
-      props*/
+      ...options
     });
-  }
+  }*/
 
   render(doc = this.doc /*, parent, props = {}*/) {
     let parent, props;
@@ -412,36 +395,16 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
 
-    this.debug(`BoardRenderer.render`, {
-      bounds,
-      rect,
-      transform
-    });
+    console.debug(`BoardRenderer.render`, { bounds, rect, transform });
     //this.renderLayers(parent);
     let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
-    let signalsElement=doc.get('signals');
-    let signalsGroup =this.create(ElementToComponent(signalsElement), { data: signalsElement }, parent);
+    let signalsElement = doc.get('signals');
+    let signalsGroup = this.create(ElementToComponent(signalsElement), { data: signalsElement, transform }, parent);
 
-     /*this.create(
-      'g',
-      {
-        id: 'signals',
-        'stroke-linecap': 'round',
-        'stroke-linejoin': 'round',
-        transform,
-        'font-family': 'Fixed'
-      },
-      parent
-    );*/
+    /*this.create('g', {id: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform, 'font-family': 'Fixed'}, parent );*/
     // let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
-    let elementsGroup = this.create(
-      Fragment,
-      {
-        /*id: 'elements', transform, 'font-family': 'Fixed'*/
-      },
-      parent
-    );
-    this.debug('bounds: ', bounds);
+    let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
+    //this.debug('bounds: ', bounds);
 
     /*for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

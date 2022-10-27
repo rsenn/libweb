@@ -331,7 +331,7 @@ export const LinesToPath = (lines, lineFn) => {
   let prevPoint = start;
   //path.push(`M ${prevPoint.x} ${prevPoint.y}`);
 
-  console.debug(`LinesToPath`, { lines, lineFn });
+  //console.debug(`LinesToPath`, { lines, lineFn });
 
   lineFn =
     lineFn ||
