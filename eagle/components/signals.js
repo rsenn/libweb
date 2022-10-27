@@ -16,7 +16,12 @@ export const Signals = ({ data, opts = {}, ...props }) => {
 
   return h(
     'g',
-    { class: 'signals', ['data-name']: 'signals' },
+    { class: 'signals', ['data-name']: 'signals' ,    id: 'signals',
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+        'font-family': 'Fixed'
+
+      },
     layers.reduce((acc, layerNo, i) => {
       let items = getByLayer(layerNo);
 

@@ -2,7 +2,7 @@ import Util from '../util.js';
 import { Point, Line, LineList, Rect } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross, Arc, Origin, WirePath } from './components.js';
+import { Cross, Arc, Origin, WirePath,ElementToComponent } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
@@ -100,7 +100,7 @@ export class BoardRenderer extends EagleSVGRenderer {
                 stroke: 'none',
                 //                'stroke-width': 0.01,
                 x: 0.04,
-                y: -0.04,
+                y: -0.04,  
                 ...(layer
                   ? {
                       'data-layer': `${layer.number} ${layer.name}`
@@ -419,7 +419,10 @@ export class BoardRenderer extends EagleSVGRenderer {
     });
     //this.renderLayers(parent);
     let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
-    let signalsGroup = this.create(
+    let signalsElement=doc.get('signals');
+    let signalsGroup =this.create(ElementToComponent(signalsElement), { data: signalsElement }, parent);
+
+     /*this.create(
       'g',
       {
         id: 'signals',
@@ -429,7 +432,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'font-family': 'Fixed'
       },
       parent
-    );
+    );*/
     // let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
     let elementsGroup = this.create(
       Fragment,
@@ -440,7 +443,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     );
     this.debug('bounds: ', bounds);
 
-    for(let signal of this.signals.list)
+    /*for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
         layer: 'Bottom',
         predicate: i => i.layer && i.layer.name == 'Bottom'
@@ -454,7 +457,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       this.renderSignal(signal, signalsGroup, {
         layer: '',
         predicate: i => i.attributes.layer === undefined
-      });
+      });*/
 
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
 
