@@ -268,6 +268,8 @@ export class EagleElement extends EagleNode {
                 hfn = () => this.gate.symbol.pins[attributes.pin];
                 break;
             }
+          } else if(key == 'layer') {
+            Util.defineGetter(this, 'layer', () => this.getLayer());
           } else if(key + 's' in doc) {
             hfn = () => doc[key + 's'][elem.attrMap[key] + ''];
           } else {
