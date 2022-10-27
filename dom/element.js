@@ -88,7 +88,7 @@ export class Element extends Node {
       });
 
     if(parent && parent.appendChild) parent.appendChild(e);
-    console.log('Element.create ', (window.e = e));
+    //console.log('Element.create ', (window.e = e));
     return e;
   }
 
@@ -459,7 +459,7 @@ export class Element extends Node {
   }
 
   static position(element, edges = ['left', 'top']) {
-    console.log('Element.position ', { element, edges });
+    //console.log('Element.position ', { element, edges });
     const rect = Element.rect(element);
     if(rect) {
       //if(typeof element == 'string') element = Element.find(element);
@@ -500,7 +500,7 @@ export class Element extends Node {
       to.y -= off.y;
     }*/
     let css = Point.toCSS(current, 1, edges);
-    console.log('Element.move: ', { position, to, css, off, current, edges });
+    //console.log('Element.move: ', { position, to, css, off, current, edges });
     //console.log('move newpos: ', Point.toCSS(pt));
     Element.setCSS(element, { ...css, position });
     return element;

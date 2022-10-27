@@ -33,6 +33,8 @@ export const Drawing = ({
     }
   }
   viewBox = useTrkl(viewBox ?? rect);
+
+  console.log('viewBox', viewBox);
   {
     let transform = new TransformationList();
 

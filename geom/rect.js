@@ -172,6 +172,15 @@ Object.defineProperty(Rect.prototype, 'area', {
     return Rect.prototype.getArea.call(this);
   }
 });
+Object.defineProperty(Rect.prototype, 'upperLeft', {
+  get() {
+    return new Point(this.x, this.y);
+  }
+});Object.defineProperty(Rect.prototype, 'lowerRight', {
+  get() {
+    return new Point(this.x2, this.y2);
+  }
+});
 
 const getSize = Util.memoize(rect =>
   Util.bindProperties(new Size(0, 0), rect, ['width', 'height'], k => {

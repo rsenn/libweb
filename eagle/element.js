@@ -438,7 +438,7 @@ export class EagleElement extends EagleNode {
     }
 
     if(tagName == 'layer') {
-      this.getColor = function(element) {
+      this.getColor = element => {
         if(element) this.elements.add(element);
         return this.color;
       };

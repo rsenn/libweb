@@ -90,7 +90,7 @@ Line.prototype.intersect = function(other) {
 
 Object.defineProperty(Line.prototype, 'a', {
   get() {
-    return Line.a(this);
+    return new Point(this.x1, this.y1);
   },
   set(value) {
     if(!(value instanceof Point)) value = Point(value);
@@ -101,7 +101,7 @@ Object.defineProperty(Line.prototype, 'a', {
 });
 Object.defineProperty(Line.prototype, 'b', {
   get() {
-    return Line.b(this);
+    return new Point(this.x2, this.y2);
   },
   set(value) {
     if(!(value instanceof Point)) value = Point(value);

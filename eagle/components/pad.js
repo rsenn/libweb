@@ -58,6 +58,8 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   const visibleProps = visible ? {} : { style: { display: 'none' } };
   const alignment = Alignment('center');
   if(name) {
+    let t = transformation.concat(rotation).invert().scale(1, -1);
+    log('Pad.render(2)', { t });
     const textElem = h(
       'text',
       {
@@ -66,11 +68,14 @@ export const Pad = ({ data, opts = {}, ...props }) => {
         fill: '#f0f',
         'font-size': '0.8px',
         ...AlignmentAttrs(alignment, VERTICAL),
-        transform: transformation.concat(rotation).invert().scaling
+        transform: t.scaling
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );
-    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
+    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [
+      h('path', { ...pathProps, ...visibleProps }),
+      textElem
+    ]);
   }
   return h('path', {
     ...baseProps,

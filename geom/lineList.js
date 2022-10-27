@@ -171,7 +171,7 @@ export class LineList extends Array {
     let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) =>
       this[0][p] ? p : a
     );
-    console.log('inspectFn:', toString);
+    //console.log('inspectFn:', toString);
     //   return Util.inspect(this, { ...opts, toString });
     return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${
       c.text(this.length, 1, 35) + c.code(1, 36)

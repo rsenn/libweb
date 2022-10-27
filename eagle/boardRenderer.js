@@ -148,7 +148,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       widths = {};
 
     const { tPlace } = this.layers;
-    console.log('BoardRenderer.renderCollection', coll[0].parentNode);
+    // console.log('BoardRenderer.renderCollection', coll[0].parentNode);
 
     for(let item of coll) {
       if(item.tagName === 'wire') {

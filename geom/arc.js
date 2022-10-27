@@ -162,20 +162,24 @@ export class Arc {
 }
 
 export function ArcTo(x, y, curve = 0) {
-  if(curve == 0) return `l ${x} ${y}`;
+  if(Math.abs(curve) <= Number.EPSILON) return `l ${x} ${y}`;
 
   let radius,
     largeArc = 0,
     sweep = 0;
-  let arcLen = Math.sqrt(x * x + y * y);
+
+  let chordLen = Math.sqrt(x * x + y * y);
 
   let c = Math.abs(curve);
   let s = Math.sign(curve) < 0 ? 1 : 0;
-  let f = 90 / c;
 
   let remain = 360 - c;
+  let angle = (c * Math.PI) / 180;
 
-  radius = arcLen * f;
+  let alpha = angle / 2;
+  radius = chordLen * Math.cos(alpha);
+
+  //console.log('ArcTo', { chordLen, angle, radius });
 
   largeArc = c > 90;
   sweep ^= s;

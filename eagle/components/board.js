@@ -2,7 +2,7 @@ import { log } from '../renderUtils.js';
 import { h, Component, Fragment } from '../../dom/preactComponent.js';
 import { ElementToComponent } from '../components.js';
 import { Element } from './element.js';
-import { Signal } from './signal.js';
+import { Signals } from './signals.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { HSLA } from '../../color/hsla.js';
 
@@ -26,11 +26,12 @@ export const Board = ({ data, ...props }) => {
   console.log('Board.render', { palette });
 
   return h('g', { ['data-name']: 'board', transform }, [
-    h(
+    h(Signals, { data: data.get('signals') }),
+    /*    h(
       'g',
       { ['data-name']: 'signals' },
       signals.list.map((data, i) => h(Signal, { data, color: palette[i] }))
-    ),
+    ),*/
     h(
       'g',
       { ['data-name']: 'elements' },

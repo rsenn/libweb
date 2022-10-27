@@ -103,7 +103,7 @@ Point.prototype.clone = function() {
 };
 Point.prototype.sum = function(...args) {
   const p = new Point(...args);
-  let r = new Point(this.x, this.y);
+  let r = new this.constructor(this.x, this.y);
   r.x += p.x;
   r.y += p.y;
   return r;

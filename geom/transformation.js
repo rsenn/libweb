@@ -9,13 +9,10 @@ export class Transformation {
   //typeName = null;
 
   constructor(transformation) {
-    if(transformation instanceof Transformation)
-      return transformation;
-    if(transformation instanceof TransformationList)
-      return transformation;
+    if(transformation instanceof Transformation) return transformation;
+    if(transformation instanceof TransformationList) return transformation;
 
-    if(typeof transformation == 'string')
-      return Transformation.fromString(transformation);
+    if(typeof transformation == 'string') return Transformation.fromString(transformation);
     //Util.define(this, { typeName });
     //this.type = type;
     //
@@ -41,21 +38,15 @@ export class Transformation {
   get [Symbol.isConcatSpreadable]() {
     return (
       this.constructor === TransformationList ||
-      Object.getPrototypeOf(this) ==
-        TransformationList.prototype ||
-      Object.getPrototypeOf(this).constructor ==
-        TransformationList
+      Object.getPrototypeOf(this) == TransformationList.prototype ||
+      Object.getPrototypeOf(this).constructor == TransformationList
     );
   }
   get axes() {
-    return this.axis !== undefined
-      ? [this.axis]
-      : ['x', 'y', 'z'].filter(axis => axis in this);
+    return this.axis !== undefined ? [this.axis] : ['x', 'y', 'z'].filter(axis => axis in this);
   }
   get props() {
-    return this.axes.concat(
-      ['axis', 'angle'].filter(key => key in this)
-    );
+    return this.axes.concat(['axis', 'angle'].filter(key => key in this));
   }
 
   has(axis) {
@@ -77,15 +68,11 @@ export class Transformation {
 
   vector(unit) {
     if(unit === undefined) unit = this.unit;
-    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(
-      unit ? axis => this[axis] + unit : axis => this[axis]
-    );
+    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
   }
 
   toString(tUnit) {
-    return `${this.type}${
-      this.is3D ? '3d' : ''
-    }(${this.vector(tUnit).join(', ')})`;
+    return `${this.type}${this.is3D ? '3d' : ''}(${this.vector(tUnit).join(', ')})`;
   }
 
   /*  toSource(unit) {
@@ -94,14 +81,8 @@ export class Transformation {
 
   clone() {
     let desc = Object.getOwnPropertyDescriptors(this);
-    let props = this.props.reduce(
-      (acc, prop) => ({ ...acc, [prop]: desc[prop] }),
-      {}
-    );
-    return Object.create(
-      Object.getPrototypeOf(this),
-      props
-    );
+    let props = this.props.reduce((acc, prop) => ({ ...acc, [prop]: desc[prop] }), {});
+    return Object.create(Object.getPrototypeOf(this), props);
   }
 
   static fromString(arg) {
@@ -153,8 +134,7 @@ export class Transformation {
 
   [Symbol.toPrimitive](hint) {
     // console.log("hint:",hint);
-    if(hint == 'string' || hint == 'default')
-      return this.toString();
+    if(hint == 'string' || hint == 'default') return this.toString();
 
     return this.toString() != '';
   }
@@ -181,21 +161,13 @@ export class Transformation {
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
   value(inst) {
-    return [
-      Transformation,
-      MatrixTransformation,
-      Rotation,
-      Translation,
-      Scaling,
-      TransformationList
-    ].some(
+    return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some(
       ctor => Object.getPrototypeOf(inst) == ctor.prototype
     );
   }
 });
 
-export const ImmutableTransformation =
-  Util.immutableClass(Transformation);
+export const ImmutableTransformation = Util.immutableClass(Transformation);
 
 export class Rotation extends Transformation {
   angle = 0;
@@ -204,10 +176,7 @@ export class Rotation extends Transformation {
   constructor(angle, x, y) {
     super('rotate');
 
-    if(
-      typeof x == 'string' &&
-      ['x', 'y', 'z'].indexOf(x.toLowerCase()) != -1
-    ) {
+    if(typeof x == 'string' && ['x', 'y', 'z'].indexOf(x.toLowerCase()) != -1) {
       this.axis = x.toLowerCase();
     } else if(!isNaN(+x) && !isNaN(+y)) {
       this.center = [+x, +y];
@@ -234,20 +203,10 @@ export class Rotation extends Transformation {
 
   toString(rUnit) {
     rUnit = rUnit || this.unit || '';
-    const axis =
-      this.axis !== undefined
-        ? this.axis.toUpperCase()
-        : '';
-    const angle = this.constructor.convertAngle(
-      this.angle,
-      rUnit
-    );
-    return `rotate${
-      this.is3D ? axis : ''
-    }(${angle}${rUnit}${
-      this.center
-        ? this.center.map(coord => `, ${coord}`).join('')
-        : ''
+    const axis = this.axis !== undefined ? this.axis.toUpperCase() : '';
+    const angle = this.constructor.convertAngle(this.angle, rUnit);
+    return `rotate${this.is3D ? axis : ''}(${angle}${rUnit}${
+      this.center ? this.center.map(coord => `, ${coord}`).join('') : ''
     })`;
   }
 
@@ -262,27 +221,16 @@ export class Rotation extends Transformation {
 
   toMatrix(matrix = Matrix.identity()) {
     const { center, angle } = this;
-    if(center)
-      matrix.translateSelf(
-        ...[...center].map(coord => -coord)
-      );
+    if(center) matrix.translateSelf(...[...center].map(coord => -coord));
     matrix.rotateSelf(DEG2RAD * angle);
     if(center) matrix.translateSelf(...center);
     return matrix.roundSelf();
   }
 
   accumulate(other) {
-    if(
-      this.type !== other.type &&
-      this.axis !== other.axis
-    )
-      throw new Error(
-        Util.className(this) + ': accumulate mismatch'
-      );
-    return new Rotation(
-      this.angle + other.angle,
-      this.axis
-    );
+    if(this.type !== other.type && this.axis !== other.axis)
+      throw new Error(Util.className(this) + ': accumulate mismatch');
+    return new Rotation(this.angle + other.angle, this.axis);
   }
 
   static convertAngle(angle, unit) {
@@ -299,14 +247,9 @@ export class Rotation extends Transformation {
   }
 }
 
-Object.defineProperty(
-  Rotation.prototype,
-  Symbol.toStringTag,
-  { value: 'Rotation', enumerable: false }
-);
+Object.defineProperty(Rotation.prototype, Symbol.toStringTag, { value: 'Rotation', enumerable: false });
 
-export const ImmutableRotation =
-  Util.immutableClass(Rotation);
+export const ImmutableRotation = Util.immutableClass(Rotation);
 
 export class Translation extends Transformation {
   x = 0;
@@ -316,10 +259,7 @@ export class Translation extends Transformation {
   constructor(...args) {
     super('translate');
 
-    if(
-      typeof args[1] == 'string' &&
-      ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1
-    ) {
+    if(typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
       const n = args.shift();
       const axis = args.shift().toLowerCase();
       this[axis] = n;
@@ -330,8 +270,7 @@ export class Translation extends Transformation {
       this.y = +y;
       if(z !== undefined) this.z = +z;
     }
-    if(args.length > 0 && typeof args[0] == 'string')
-      this.unit = args.shift();
+    if(args.length > 0 && typeof args[0] == 'string') this.unit = args.shift();
   }
 
   get values() {
@@ -341,9 +280,7 @@ export class Translation extends Transformation {
 
   isZero() {
     const { x, y, z } = this;
-    return 'z' in this
-      ? x == 0 && y == 0 && z == 0
-      : x == 0 && y == 0;
+    return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
   }
 
   toMatrix(matrix = Matrix.identity()) {
@@ -360,38 +297,19 @@ export class Translation extends Transformation {
     const { x, y, z } = this;
     return z !== undefined
       ? new Translation(-x, -y, -z)
-      : new Translation(
-          Math.abs(x) == 0 ? 0 : -x,
-          Math.abs(y) == 0 ? 0 : -y
-        );
+      : new Translation(Math.abs(x) == 0 ? 0 : -x, Math.abs(y) == 0 ? 0 : -y);
   }
 
   accumulate(other) {
-    if(this.type !== other.type)
-      throw new Error(
-        Util.className(this) + ': accumulate mismatch'
-      );
+    if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
-    if(this.is3D)
-      return new Translation(
-        this.x + other.x,
-        this.y + other.y,
-        this.z + other.z
-      );
-    return new Translation(
-      this.x + other.x,
-      this.y + other.y
-    );
+    if(this.is3D) return new Translation(this.x + other.x, this.y + other.y, this.z + other.z);
+    return new Translation(this.x + other.x, this.y + other.y);
   }
 }
-Object.defineProperty(
-  Translation.prototype,
-  Symbol.toStringTag,
-  { value: 'Translation', enumerable: false }
-);
+Object.defineProperty(Translation.prototype, Symbol.toStringTag, { value: 'Translation', enumerable: false });
 
-export const ImmutableTranslation =
-  Util.immutableClass(Translation);
+export const ImmutableTranslation = Util.immutableClass(Translation);
 
 export class Scaling extends Transformation {
   x = 1;
@@ -401,10 +319,7 @@ export class Scaling extends Transformation {
   constructor(...args) {
     super('scale');
 
-    if(
-      typeof args[1] == 'string' &&
-      ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1
-    ) {
+    if(typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
       const n = args.shift();
       const axis = args.shift().toLowerCase();
       this[axis] = n;
@@ -428,21 +343,14 @@ export class Scaling extends Transformation {
 
   isZero() {
     const { x, y, z } = this;
-    return 'z' in this
-      ? x == 1 && y == 1 && z == 1
-      : x == 1 && y == 1;
+    return 'z' in this ? x == 1 && y == 1 && z == 1 : x == 1 && y == 1;
   }
 
   toString() {
     const vector = this.vector('');
-    const coords =
-      /*Util.allEqual(vector) ? vector[0] : */ vector.join(
-        ', '
-      );
+    const coords = /*Util.allEqual(vector) ? vector[0] : */ vector.join(', ');
 
-    return `${this.type}${
-      this.is3D ? '3d' : ''
-    }(${coords})`;
+    return `${this.type}${this.is3D ? '3d' : ''}(${coords})`;
   }
 
   /*clone() {
@@ -452,34 +360,19 @@ export class Scaling extends Transformation {
 
   invert() {
     const { x, y, z } = this;
-    return z !== undefined
-      ? new Scaling(1 / x, 1 / y, 1 / z)
-      : new Scaling(1 / x, 1 / y);
+    return z !== undefined ? new Scaling(1 / x, 1 / y, 1 / z) : new Scaling(1 / x, 1 / y);
   }
 
   accumulate(other) {
-    if(this.type !== other.type)
-      throw new Error(
-        Util.className(this) + ': accumulate mismatch'
-      );
+    if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
-    if(this.is3D)
-      return new Scaling(
-        this.x * other.x,
-        this.y * other.y,
-        this.z * other.z
-      );
+    if(this.is3D) return new Scaling(this.x * other.x, this.y * other.y, this.z * other.z);
     return new Scaling(this.x * other.x, this.y * other.y);
   }
 }
-Object.defineProperty(
-  Scaling.prototype,
-  Symbol.toStringTag,
-  { value: 'Scaling', enumerable: false }
-);
+Object.defineProperty(Scaling.prototype, Symbol.toStringTag, { value: 'Scaling', enumerable: false });
 
-export const ImmutableScaling =
-  Util.immutableClass(Scaling);
+export const ImmutableScaling = Util.immutableClass(Scaling);
 
 export class MatrixTransformation extends Transformation {
   matrix = Matrix.IDENTITY;
@@ -513,62 +406,40 @@ export class MatrixTransformation extends Transformation {
   }
 
   accumulate(other) {
-    if(this.type !== other.type)
-      throw new Error(
-        Util.className(this) + ': accumulate mismatch'
-      );
+    if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
-    return new MatrixTransformation(
-      this.matrix.multiply(other.matrix)
-    );
+    return new MatrixTransformation(this.matrix.multiply(other.matrix));
   }
 }
-Object.defineProperty(
-  MatrixTransformation.prototype,
-  Symbol.toStringTag,
-  {
-    value: 'MatrixTransformation',
-    enumerable: false
-  }
-);
+Object.defineProperty(MatrixTransformation.prototype, Symbol.toStringTag, {
+  value: 'MatrixTransformation',
+  enumerable: false
+});
 
-export const ImmutableMatrixTransformation =
-  Util.immutableClass(MatrixTransformation);
+export const ImmutableMatrixTransformation = Util.immutableClass(MatrixTransformation);
 
 export class TransformationList extends Array {
   constructor(init, tUnit, rUnit) {
     super();
     if(Util.isObject(init)) {
-      if(tUnit === undefined)
-        tUnit = init.translationUnit || init.tUnit;
-      if(rUnit == undefined)
-        rUnit = init.rotationUnit || init.rUnit;
+      if(tUnit === undefined) tUnit = init.translationUnit || init.tUnit;
+      if(rUnit == undefined) rUnit = init.rotationUnit || init.rUnit;
     }
     //   if(typeof init != 'number' && typeof init != 'undefined' && !(Util.isArray(init) && init.length == 0)) console.debug(`TransformationList.constructor(`, typeof init == 'string' ? Util.abbreviate(init) : init, tUnit, rUnit, `)`);
     if(init) {
       this.initialize(init);
       // if(!(typeof init == 'number' || (Util.isArray(init) && init.length == 0))) console.debug(`TransformationList   initialized to:`, this);
     }
-    if(typeof tUnit == 'string')
-      this.translationUnit = tUnit;
+    if(typeof tUnit == 'string') this.translationUnit = tUnit;
     if(typeof rUnit == 'string') this.rotationUnit = rUnit;
 
     return this;
   }
 
   initialize(init) {
-    if(typeof init == 'number')
-      while(this.length < init) this.push(undefined);
-    else if(typeof init == 'string')
-      TransformationList.prototype.fromString.call(
-        this,
-        init
-      );
-    else if(init instanceof Array)
-      TransformationList.prototype.fromArray.call(
-        this,
-        init
-      );
+    if(typeof init == 'number') while(this.length < init) this.push(undefined);
+    else if(typeof init == 'string') TransformationList.prototype.fromString.call(this, init);
+    else if(init instanceof Array) TransformationList.prototype.fromArray.call(this, init);
     else throw new Error('No such initialization: ' + init);
     return this;
   }
@@ -609,38 +480,26 @@ export class TransformationList extends Array {
       const arg = arr[i];
 
       if(arg instanceof Transformation) this.push(arg);
-      else if(typeof arg == 'string')
-        this.push(Transformation.fromString(arg));
-      else
-        throw new Error('No such transformation: ' + arg);
+      else if(typeof arg == 'string') this.push(Transformation.fromString(arg));
+      else throw new Error('No such transformation: ' + arg);
     }
 
     return this;
   }
 
   get translationUnit() {
-    return (
-      (Util.isObject(this.translation) &&
-        this.translation.unit) ||
-      this.tUnit
-    );
+    return (Util.isObject(this.translation) && this.translation.unit) || this.tUnit;
   }
   set translationUnit(value) {
-    if(Util.isObject(this.translation))
-      this.translation.unit = value;
+    if(Util.isObject(this.translation)) this.translation.unit = value;
     else this.tUnit = value;
   }
 
   get rotationUnit() {
-    return (
-      (Util.isObject(this.rotation) &&
-        this.rotation.unit) ||
-      this.rUnit
-    );
+    return (Util.isObject(this.rotation) && this.rotation.unit) || this.rUnit;
   }
   set rotationUnit(value) {
-    if(Util.isObject(this.rotation))
-      this.rotation.unit = value;
+    if(Util.isObject(this.rotation)) this.rotation.unit = value;
     else this.rUnit = value;
   }
   static fromString(str) {
@@ -652,10 +511,7 @@ export class TransformationList extends Array {
   }
 
   static fromMatrix(matrix) {
-    matrix =
-      matrix instanceof Matrix
-        ? matrix
-        : new Matrix(matrix);
+    matrix = matrix instanceof Matrix ? matrix : new Matrix(matrix);
 
     const transformations = Matrix.decompose(matrix, true);
 
@@ -681,10 +537,8 @@ export class TransformationList extends Array {
 
   push(...args) {
     for(let arg of args) {
-      if(typeof arg == 'string')
-        arg = Transformation.fromString(arg);
-      else if(isMatrix(arg))
-        arg = new MatrixTransformation(arg);
+      if(typeof arg == 'string') arg = Transformation.fromString(arg);
+      else if(isMatrix(arg)) arg = new MatrixTransformation(arg);
 
       Array.prototype.push.call(this, arg);
     }
@@ -727,8 +581,7 @@ export class TransformationList extends Array {
 
   unshift(...args) {
     for(let arg of args.reverse()) {
-      if(typeof arg == 'string')
-        arg = Transformation.fromString(arg);
+      if(typeof arg == 'string') arg = Transformation.fromString(arg);
       Array.prototype.unshift.call(this, arg);
     }
     return this;
@@ -736,15 +589,12 @@ export class TransformationList extends Array {
 
   rotate(...args) {
     let rotation = new Rotation(...args);
-    if(!rotation.isZero())
-      Array.prototype.push.call(this, rotation);
+    if(!rotation.isZero()) Array.prototype.push.call(this, rotation);
     return this;
   }
 
   translate(x, y) {
-    let trans = this.filter(
-      t => !t.type.startsWith('translat')
-    );
+    let trans = this.filter(t => !t.type.startsWith('translat'));
     let vec = new Point(x, y);
 
     //trans.toMatrix().transform_point(vec);
@@ -754,27 +604,20 @@ export class TransformationList extends Array {
     let translation = new Translation(vec.x, vec.y);
 
     if(!translation.isZero())
-      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(
-        this,
-        translation
-      );
+      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(this, translation);
 
     return this;
   }
 
   scale(...args) {
     let scaling = new Scaling(...args);
-    if(!scaling.isZero())
-      Array.prototype.push.call(this, scaling);
+    if(!scaling.isZero()) Array.prototype.push.call(this, scaling);
     return this;
   }
 
   matrix(...args) {
-    let matrixTransformation = new MatrixTransformation(
-      ...args
-    );
-    if(!matrixTransformation.isZero())
-      Array.prototype.push.call(this, matrixTransformation);
+    let matrixTransformation = new MatrixTransformation(...args);
+    if(!matrixTransformation.isZero()) Array.prototype.push.call(this, matrixTransformation);
     return this;
   }
 
@@ -783,16 +626,7 @@ export class TransformationList extends Array {
       tUnit = tUnit || this.translationUnit;
       rUnit = rUnit || this.rotationUnit;
       let r = this.map(
-        t =>
-          t &&
-          t.type &&
-          t.toString(
-            t.type.startsWith('scal')
-              ? ''
-              : t.type.startsWith('rotat')
-              ? rUnit
-              : tUnit
-          )
+        t => t && t.type && t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)
       ).join(' ');
       return r;
     }
@@ -808,24 +642,18 @@ export class TransformationList extends Array {
   }*/
 
   toSource() {
-    let s =
-      Util.colorText('new ', 1, 31) +
-      Util.colorText(Util.className(this), 1, 33) +
-      Util.colorText('([', 1, 36);
+    let s = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('([', 1, 36);
 
     s += this.map(t => t.toSource()).join(', ');
     return s + Util.colorText('])', 1, 36);
   }
 
   toMatrices() {
-    return Array.prototype.map.call([...this], t =>
-      t.toMatrix()
-    );
+    return Array.prototype.map.call([...this], t => t.toMatrix());
   }
 
   toMatrix(matrix = Matrix.identity()) {
-    for(let other of this.toMatrices())
-      matrix.multiplySelf(other);
+    for(let other of this.toMatrices()) matrix.multiplySelf(other);
 
     return matrix.roundSelf();
   }
@@ -833,16 +661,14 @@ export class TransformationList extends Array {
   undo() {
     let ret = new TransformationList();
 
-    for(let i = this.length - 1; i >= 0; i--)
-      Array.prototype.push.call(ret, this[i].invert());
+    for(let i = this.length - 1; i >= 0; i--) Array.prototype.push.call(ret, this[i].invert());
 
     return ret;
   }
 
   merge(...args) {
     for(let arg of args) {
-      if(typeof arg == 'string')
-        arg = TransformationList.fromString(arg);
+      if(typeof arg == 'string') arg = TransformationList.fromString(arg);
 
       TransformationList.prototype.push.apply(this, arg);
     }
@@ -851,8 +677,7 @@ export class TransformationList extends Array {
 
   decompose(degrees = true, transformationList = true) {
     let matrix = this.toMatrix();
-    const { translate, rotate, scale } =
-      matrix.decompose(degrees);
+    const { translate, rotate, scale } = matrix.decompose(degrees);
     let decomposed = { translate, rotate, scale };
 
     if(transformationList) {
@@ -863,10 +688,9 @@ export class TransformationList extends Array {
       return ret;
     }
 
-    decomposed.scale.toArray =
-      decomposed.translate.toArray = function toArray() {
-        return [this.x, this.y];
-      };
+    decomposed.scale.toArray = decomposed.translate.toArray = function toArray() {
+      return [this.x, this.y];
+    };
     return decomposed;
   }
 
@@ -884,56 +708,30 @@ export class TransformationList extends Array {
   }
 
   get rotation() {
-    return this.findLast(
-      item =>
-        item && item.type && item.type.startsWith('rotat')
-    );
+    return this.findLast(item => item && item.type && item.type.startsWith('rotat'));
   }
   set rotation(value) {
-    let index = this.findLastIndex(item =>
-      item.type.startsWith('rotat')
-    );
-    value =
-      value instanceof Rotation
-        ? value
-        : new Rotation(value);
+    let index = this.findLastIndex(item => item.type.startsWith('rotat'));
+    value = value instanceof Rotation ? value : new Rotation(value);
     Array.prototype.splice.call(this, index, 1, value);
   }
 
   get scaling() {
-    return this.findLast(
-      item =>
-        item && item.type && item.type.startsWith('scal')
-    );
+    return this.findLast(item => item && item.type && item.type.startsWith('scal'));
   }
   set scaling(value) {
-    let index = this.findLastIndex(item =>
-      item.type.startsWith('scal')
-    );
-    value =
-      value instanceof Scaling ? value : new Scaling(value);
+    let index = this.findLastIndex(item => item.type.startsWith('scal'));
+    value = value instanceof Scaling ? value : new Scaling(value);
     Array.prototype.splice.call(this, index, 1, value);
   }
 
   get translation() {
-    return this.findLast(
-      item =>
-        item &&
-        item.type &&
-        typeof item.type == 'string' &&
-        item.type.startsWith('translat')
-    );
+    return this.findLast(item => item && item.type && typeof item.type == 'string' && item.type.startsWith('translat'));
   }
 
   set translation(value) {
-    let index = this.findLastIndex(
-      item =>
-        item && item.type && item.type.startsWith('transl')
-    );
-    value =
-      value instanceof Translation
-        ? value
-        : new Translation(value);
+    let index = this.findLastIndex(item => item && item.type && item.type.startsWith('transl'));
+    value = value instanceof Translation ? value : new Translation(value);
     Array.prototype.splice.call(this, index, 1, value);
   }
   /*  map(...args) {
@@ -957,10 +755,7 @@ export class TransformationList extends Array {
 
     for(let i = 0; i < this.length; i++) {
       let item = this[i];
-      if(
-        i + 1 < this.length &&
-        this[i + 1].type == this[i].type
-      ) {
+      if(i + 1 < this.length && this[i + 1].type == this[i].type) {
         item = item.accumulate(this[i + 1]);
         i++;
       } else {
@@ -985,9 +780,7 @@ export class TransformationList extends Array {
 
   invert() {
     //return this.reduce((acc, t) => [t.invert(), ...acc], []);
-    return new TransformationList(
-      this.reduceRight((acc, t) => [...acc, t.invert()], [])
-    );
+    return new TransformationList(this.reduceRight((acc, t) => [...acc, t.invert()], []));
   }
 
   join(sep = ' ') {
@@ -1006,14 +799,10 @@ export class TransformationList extends Array {
     }
   }
 }
-Object.defineProperty(
-  TransformationList.prototype,
-  Symbol.toStringTag,
-  {
-    value: 'TransformationList',
-    enumerable: false
-  }
-);
+Object.defineProperty(TransformationList.prototype, Symbol.toStringTag, {
+  value: 'TransformationList',
+  enumerable: false
+});
 
 const {
   concat,
@@ -1072,29 +861,18 @@ Util.inherit(
 
 //Object.setPrototypeOf(TransformationList.prototype, Transformation.prototype);
 
-export const ImmutableTransformationList =
-  Util.immutableClass(TransformationList);
+export const ImmutableTransformationList = Util.immutableClass(TransformationList);
 
-ImmutableTransformationList.prototype.rotate = function(
-  ...args
-) {
+ImmutableTransformationList.prototype.rotate = function(...args) {
   return this.concat([new ImmutableRotation(...args)]);
 };
 
-ImmutableTransformationList.prototype.translate = function(
-  ...args
-) {
+ImmutableTransformationList.prototype.translate = function(...args) {
   return this.concat([new ImmutableTranslation(...args)]);
 };
 
-ImmutableTransformationList.prototype.scale = function(
-  ...args
-) {
+ImmutableTransformationList.prototype.scale = function(...args) {
   return this.concat([new ImmutableScaling(...args)]);
 };
 
-Util.defineGetter(
-  ImmutableTransformationList,
-  Symbol.species,
-  () => ImmutableTransformationList
-);
+Util.defineGetter(ImmutableTransformationList, Symbol.species, () => ImmutableTransformationList);

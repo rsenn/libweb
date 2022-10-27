@@ -2,7 +2,7 @@ import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
 import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { TransformationList } from '../../geom.js';
+import { TransformationList, ArcTo } from '../../geom.js';
 import { Arc } from './arc.js';
 
 const RoundToMil = n => Math.round(n * 1000) / 1000;
@@ -47,19 +47,23 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
   let d = `M ${x1} ${y1} L ${x2} ${y2}`;
 
   if(!isNaN(+curve) && Math.abs(+curve) > 0) {
-    curve = +curve;
+    //curve = +curve;
     let xdiff = x2 - x1,
       ydiff = y2 - y1;
 
-    //console.log('Wire', { xdiff, ydiff, curve });
-    let c = Math.sqrt(xdiff ** 2 + ydiff ** 2);
+    /* let c = Math.sqrt(xdiff ** 2 + ydiff ** 2);
     let r = (c / 1.4142135623730951).toFixed(3);
     let l = 0;
-    let s = Math.sign(curve) == -1 ? '0' : '1';
-    d = `M ${x1} ${y1} a ${r} ${r} 0 ${l} ${s} ${RoundToMil(xdiff)} ${RoundToMil(ydiff)}`;
+    let s = Math.sign(curve) == -1 ? '0' : '1';*/
+
+    d = `M ${x1} ${y1} `;
+
+    //d += `a ${r} ${r} 0 ${l} ${s} ${RoundToMil(xdiff)} ${RoundToMil(ydiff)}`;
+
+    d += ArcTo(RoundToMil(xdiff), RoundToMil(ydiff), -curve);
   }
 
-  console.log('Wire', { ...extraProps, d });
+  //log('Wire', { ...extraProps, d });
 
   return h('path', {
     d,

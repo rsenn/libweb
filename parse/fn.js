@@ -8,9 +8,7 @@ export function string(str) {
   let len = str.length;
 
   return (target, position) => {
-    if(
-      target.substring(position, position + len) === str
-    ) {
+    if(target.substring(position, position + len) === str) {
       //console.log(`position: ${position} token: `,str);
 
       return [true, str, position + len];
@@ -20,29 +18,15 @@ export function string(str) {
 }
 
 export function token(str) {
-  let tok =
-    str instanceof RegExp
-      ? regex(str)
-      : typeof str == 'string'
-      ? string(str)
-      : str;
+  let tok = str instanceof RegExp ? regex(str) : typeof str == 'string' ? string(str) : str;
   return one(
     concat(
       ignore(any(char(' \n\r\t'))),
-      str instanceof RegExp
-        ? regex(str)
-        : typeof str == 'function'
-        ? str
-        : string(str),
+      str instanceof RegExp ? regex(str) : typeof str == 'function' ? str : string(str),
       ignore(any(char(' \n\r\t')))
     )
   );
-  return one(
-    concat(
-      ignore(any(char(' \n\r\t'))),
-      tok /*, ignore(any(char(' \n\r\t')))*/
-    )
-  );
+  return one(concat(ignore(any(char(' \n\r\t'))), tok /*, ignore(any(char(' \n\r\t')))*/));
   return tok;
 }
 
@@ -146,9 +130,7 @@ export function seq(...parsers) {
  * @return {Function} parser
  */
 export function concat(...parsers) {
-  return map(seq(...parsers), result =>
-    result.filter(e => e !== null)
-  );
+  return map(seq(...parsers), result => result.filter(e => e !== null));
 }
 
 /**
@@ -160,11 +142,7 @@ export function invert(parser) {
     let result = parser(target, position);
 
     if(!result[0]) {
-      return [
-        true,
-        target.substring(position, position + 1),
-        position + 1
-      ];
+      return [true, target.substring(position, position + 1), position + 1];
     }
     return [false, null, position];
   };
@@ -177,11 +155,7 @@ export function invert(parser) {
  * @return {Function}
  */
 export function regex(re) {
-  if(typeof re == 'string')
-    re = new RegExp(
-      '^(?:' + re.source + ')',
-      re.ignoreCase ? 'i' : ''
-    );
+  if(typeof re == 'string') re = new RegExp('^(?:' + re.source + ')', re.ignoreCase ? 'i' : '');
 
   return (target, position) => {
     re.lastIndex = 0;
@@ -204,8 +178,7 @@ export function regex(re) {
  */
 export function char(str, inverse = false) {
   let dict = {};
-  for(let i = 0; i < str.length; i++)
-    dict[str[i]] = str[i];
+  for(let i = 0; i < str.length; i++) dict[str[i]] = str[i];
 
   return (target, position) => {
     let char = target.slice(position, 1);
@@ -252,11 +225,7 @@ export function option(parser) {
  * @return {Function}
  */
 export function ignore(parser) {
-  return map(
-    parser,
-    result =>
-      null /*(result instanceof Array && result.length == 0) ? null : result*/
-  );
+  return map(parser, result => null /*(result instanceof Array && result.length == 0) ? null : result*/);
 }
 
 /**
@@ -264,11 +233,7 @@ export function ignore(parser) {
  * @return {Function}
  */
 export function one(parser) {
-  return map(parser, result =>
-    result instanceof Array && result.length == 1
-      ? result[0]
-      : result
-  );
+  return map(parser, result => (result instanceof Array && result.length == 1 ? result[0] : result));
 }
 
 /**

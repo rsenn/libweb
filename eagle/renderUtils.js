@@ -3,6 +3,7 @@ import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
 import { useTrkl } from '../hooks/useTrkl.js';
+//import * as std from 'std';
 export { useTrkl } from '../hooks/useTrkl.js';
 
 const PI = Math.PI;
@@ -336,6 +337,7 @@ export const LinesToPath = (lines, lineFn) => {
     lineFn ||
     ((point, curve) => {
       lineFn = (point, curve) => {
+        // console.log("lineFn", {point,curve});
         const p = [prevPoint, point];
         const dist = Point.distance(...p);
         //  console.log("p", {prevPoint,point})
@@ -351,7 +353,7 @@ export const LinesToPath = (lines, lineFn) => {
 
         //if(isFinite(radius))
         //console.debug(`lineFn`, { curve, angle, slope, radius });
-        console.debug(`lineFn`, p);
+        // console.debug(`lineFn`, p);
 
         if(curve !== undefined && isFinite(radius)) return RenderArcTo(dist, Math.abs(radius), theta, sweep, p[1]);
         else if(Point.equals(start, p[1])) return `Z`;
@@ -366,8 +368,10 @@ export const LinesToPath = (lines, lineFn) => {
 
   const lineTo = (...args) => {
     if(typeof args[0] == 'number') throw new Error('num');
+
+    if(args[0].x === undefined) throw new Error(`lineTo arg 1`);
+    //console.log("lineTo(",...args, ")");
     let l = lineFn(...args);
-    //console.log("lineTo(",...args, ")", {l});
     path.push(l);
   };
 
@@ -401,7 +405,9 @@ export const LinesToPath = (lines, lineFn) => {
       path.push(`M ${l.x1} ${l.y1}`);
       prevPoint = l[0];
       //   debug = Point.equals(l[1], { x: 0.635, y: 1.016 }) && l;
-      lineTo(l[1], l.curve);
+
+      //console.log('l', l, l.b);
+      lineTo(l.b, l.curve);
     }
   } while(lines.length > 0);
 

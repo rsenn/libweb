@@ -70,6 +70,7 @@ export const ElementNameToComponent = name => {
 };
 
 export const ElementToComponent = element => ElementNameToComponent(element.tagName);
+export const RenderElement = element => ElementToComponent(element);
 
 export { Wire } from './components/wire.js';
 export { Rectangle } from './components/rectangle.js';
