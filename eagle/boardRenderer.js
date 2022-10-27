@@ -153,8 +153,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     for(let item of coll) {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
-
-        /*           if(layerId != 21) */ {
+        /* if(layerId != 21) */ {
           layers[layerId] = item.layer || tPlace;
 
           if(item.layer) item.layer.elements.add(item);
@@ -168,10 +167,12 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(predicate(item)) other.push(item);
     }
 
-    for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
-
-    for(let item of other) if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
-
+    for(let item of other) {
+      if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
+    }
+    for(let item of other) {
+      if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
+    }
     for(let [layerId, wires] of wireMap) {
       let classList = (parent && parent.classList) || [];
       if([...classList].indexOf('plain') != -1) continue;
@@ -187,12 +188,12 @@ export class BoardRenderer extends EagleSVGRenderer {
       );
 
       // this.debug('Lines:', name, [...lines]);
-
       const layer = layers[layerId] || this.layers.Bottom;
       const width = widths[layerId];
 
       const color = layer.color;
       //this.debug('color:', color, layer.color);
+
       if(true) {
         //  if(name == 'D2') window.lines = lines.map(l => l.clone());
         let lines2 = lines.map(l => new Line(l));
@@ -401,31 +402,14 @@ export class BoardRenderer extends EagleSVGRenderer {
     let signalsElement = doc.get('signals');
     let signalsGroup = this.create(ElementToComponent(signalsElement), { data: signalsElement, transform }, parent);
 
-    /*this.create('g', {id: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform, 'font-family': 'Fixed'}, parent );*/
-    // let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
     let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
-    //this.debug('bounds: ', bounds);
-
-    /*for(let signal of this.signals.list)
-      this.renderSignal(signal, signalsGroup, {
-        layer: 'Bottom',
-        predicate: i => i.layer && i.layer.name == 'Bottom'
-      });
-    for(let signal of this.signals.list)
-      this.renderSignal(signal, signalsGroup, {
-        layer: 'Top',
-        predicate: i => i.layer && i.layer.name == 'Top'
-      });
-    for(let signal of this.signals.list)
-      this.renderSignal(signal, signalsGroup, {
-        layer: '',
-        predicate: i => i.attributes.layer === undefined
-      });*/
 
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
 
     let plain = [...doc.get('plain').children];
+
     this.renderCollection(plain, plainGroup);
+
     this.bounds = bounds;
     this.rect = bounds.rect;
     return parent;
