@@ -21,8 +21,8 @@ export const Signals = ({ data, transform, opts = {}, ...props }) => {
       class: 'signals',
       ['data-name']: 'signals',
       transform,
-      'stroke-linecap': 'round',
-      'stroke-linejoin': 'round',
+      'stroke-linecap': 'round', // 'square'
+      'stroke-linejoin': 'miter', // 'round', 'miter', 'bevel'
       'font-family': 'Fixed'
     },
     layers.reduce((acc, layerNo, i) => {

@@ -317,17 +317,11 @@ export class EagleElement extends EagleNode {
     }
 
     if(tagName == 'pad') {
-      trkl.bind(this, 'layer', () => {
-        return doc.layers['Pads'];
-      });
+      trkl.bind(this, 'layer', () => doc.layers['Pads']);
     } else if(tagName == 'via') {
-      trkl.bind(this, 'layer', () => {
-        return doc.layers['Vias'];
-      });
+      trkl.bind(this, 'layer', () => doc.layers['Vias']);
     } else if(tagName == 'hole') {
-      trkl.bind(this, 'layer', () => {
-        return doc.layers['Holes'];
-      });
+      trkl.bind(this, 'layer', () => doc.layers['Holes']);
     }
     if(tagName == 'part') lazyProperty(this, 'package', () => this.device.package);
 
@@ -548,7 +542,7 @@ export class EagleElement extends EagleNode {
   }
 
   getLayer() {
-    if(this.raw.attributes.layer) return this.raw.attributes.layer;
+    if(this.raw.attributes.layer) return this.document.getLayer(this.raw.attributes.layer);
     if(this.raw.tagName == 'pad') return 'Pads';
     if(this.raw.tagName == 'hole') return 'Holes';
     if(this.raw.tagName == 'description') return 'Document';

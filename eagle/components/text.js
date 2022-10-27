@@ -46,6 +46,8 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
 
   text = (text + '').replace(/Ω/g, '&#x2126;').replace(/μ/g, '&#xb5;');
 
+  visible = true;
+
   return h(Fragment, {}, [
     h(
       'text',
