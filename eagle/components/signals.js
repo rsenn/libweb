@@ -30,8 +30,9 @@ export const Signals = ({ data, transform, opts = {}, ...props }) => {
 
       for(let item of items) {
         let comp = ElementToComponent(item);
+        let signalName = item.parentNode.name;
 
-        acc.push(h(comp, { data: item, color: colors[i], opts }));
+        acc.push(h(comp, { data: item, 'data-signal': signalName, color: colors[i], opts }));
       }
       return acc;
     }, [])

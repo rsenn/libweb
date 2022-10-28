@@ -39,7 +39,8 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
      // 'stroke-linecap': 'round',
     ...(curve ? { 'data-curve': curve } : {}),
     'data-layer': `${layer.number} ${layer.name}`,
-    style: visible ? {} : { display: 'none' }
+    style: visible ? {} : { display: 'none' },
+    ...props
   };
 
   if(transform.length > 0) extraProps.transform = transform;
