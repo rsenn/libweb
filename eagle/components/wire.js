@@ -36,7 +36,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     class: ElementToClass(wire, layer.name),
     stroke: color,
     'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
-     // 'stroke-linecap': 'round',
+    // 'stroke-linecap': 'round',
     ...(curve ? { 'data-curve': curve } : {}),
     'data-layer': `${layer.number} ${layer.name}`,
     style: visible ? {} : { display: 'none' },
