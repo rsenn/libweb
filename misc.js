@@ -447,6 +447,119 @@ export function memoize(fn) {
   };
 }
 
+export function getset(target, ...args) {
+  let ret = [];
+  if(isFunction(target)) {
+    ret = [target, typeof args[0] == 'function' ? args[0] : target];
+  } else if(hasGetSet(target)) {
+    if(target.get === target.set) {
+      const GetSet = (...args) => target.set(...args);
+      ret = [GetSet, GetSet];
+    } else {
+      ret = [key => target.get(key), (key, value) => target.set(key, value)];
+      //console.log('getset', ret[1] + '', target.get === target.set);
+    }
+  } else if(isObject(target)) {
+    ret = [key => target[key], (key, value) => (target[key] = value)];
+  } else {
+    throw new TypeError(`getset unknown argument type '${typeof target}'`);
+  }
+  if(args.length) {
+    let [get, set] = ret;
+    ret = [() => get(...args), value => set(...args, value)];
+  }
+  return ret;
+}
+
+export function modifier(...args) {
+  let gs = gettersetter(...args);
+  return fn => {
+    let value = gs();
+    return fn(value, newValue => gs(newValue));
+  };
+}
+
+export function getter(target, ...args) {
+  if(isObject(target) && isFunction(target.get)) return () => target.get(...args);
+  let ret;
+  if(isFunction(target)) {
+    ret = target;
+  } else if(hasGetSet(target)) {
+    ret = key => target.get(key);
+  } else if(isObject(target)) {
+    ret = key => target[key];
+  } else {
+    throw new TypeError(`getter unknown argument type '${typeof target}'`);
+  }
+  if(args.length) {
+    let get = ret;
+    ret = () => get(...args);
+  }
+  return ret;
+}
+
+export function setter(target, ...args) {
+  if(isObject(target) && isFunction(target.set)) return value => target.set(...args, value);
+  let ret;
+  if(isFunction(target)) {
+    ret = target;
+  } else if(hasGetSet(target)) {
+    ret = (key, value) => target.set(key, value);
+  } else if(isObject(target)) {
+    ret = (key, value) => (target[key] = value);
+  } else {
+    throw new TypeError(`setter unknown argument type '${typeof target}'`);
+  }
+  if(args.length) {
+    let set = ret;
+    ret = value => set(...args, value);
+  }
+  return ret;
+}
+
+export function gettersetter(target, ...args) {
+  let fn;
+  if(isObject(target) && isFunction(target.receiver)) return (...args2) => target.receiver(...args, ...args2);
+  if(isFunction(target)) {
+    if(isFunction(args[0]) && args[0] !== target) {
+      let setter = args.shift();
+      fn = (...args) => (args.length == 0 ? target() : setter(...args));
+    } else fn = target;
+  } else if(hasGetSet(target)) {
+    if(target.get === target.set) fn = (...args) => target.set(...args);
+    else fn = (...args) => (args.length < 2 ? target.get(...args) : target.set(...args));
+  } else if(isObject(target)) {
+    fn = (...args) => {
+      const [key, value] = args;
+      if(args.length == 1) return target[key];
+      target[key] = value;
+    };
+  } else {
+    throw new TypeError(`gettersetter unknown argument type '${typeof target}'`);
+  }
+  if(fn !== target) define(fn, { receiver: target });
+  if(args.length) return (...args2) => fn(...args, ...args2);
+  return fn;
+}
+
+export function hasGetSet(obj) {
+  return isObject(obj) && ['get', 'set'].every(m => typeof obj[m] == 'function');
+}
+
+export function mapObject(target) {
+  let obj;
+  if(hasGetSet(target.receiver)) return target.receiver;
+  if(hasGetSet(target)) obj = target;
+  else if(typeof target == 'function') obj = { get: target, set: target };
+  else if(isObject(target))
+    obj = {
+      set: (key, value) => (target[key] = value),
+      get: key => target[key]
+    };
+  if(obj !== target) define(obj, { receiver: target });
+  return obj;
+}
+
 export function once(fn, thisArg, memoFn) {
   let ret,
     ran = false;
