@@ -331,10 +331,7 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'gate') {
       trkl.bind(this, 'symbol', () => {
-        let chain = this.scope(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
-        console.log('chain', { element: this, chain });
-        let library = chain.library;
-        console.log('library', library);
+        let { library } = this.scope2(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
         return library.symbols[attributes.symbol];
       });
 
@@ -484,7 +481,7 @@ export class EagleElement extends EagleNode {
     let tmp = this.repeater;
   }
 
-  /* prettier-ignore */ get repeater() {
+  get repeater() {
     let pushFn;
     if(!this.r) {
       this.r = new Repeater(async (push, stop) => {
@@ -501,7 +498,7 @@ export class EagleElement extends EagleNode {
 
           // console.log(`pushEvent`, e);
           //console.log(`pushEvent`, {e,k,v});
-          if(this.tagName == 'layer') this.elements.forEach((elem) => elem.pushEvent(...args));
+          if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
           pushFn(this);
         };
       });
@@ -530,7 +527,7 @@ export class EagleElement extends EagleNode {
     return handler;
   }
 
-  /* prettier-ignore */ get text() {
+  get text() {
     const { children } = this;
     let text = '';
     for(let child of children.raw) {
@@ -540,7 +537,7 @@ export class EagleElement extends EagleNode {
     return Util.decodeHTMLEntities(text);
   }
 
-  /* prettier-ignore */ get attributes() {
+  get attributes() {
     return this.attrMap;
   }
 
@@ -715,7 +712,7 @@ export class EagleElement extends EagleNode {
     return bb;
   }
 
-  /* prettier-ignore */ get bounds() {
+  get bounds() {
     return this.getBounds();
   }
 
@@ -729,29 +726,29 @@ export class EagleElement extends EagleNode {
     return ret;
   }
 
-  /* prettier-ignore */ get geometry() {
+  get geometry() {
     const { raw } = this;
-   // console.log('raw.attributes',raw.attributes);
+    // console.log('raw.attributes',raw.attributes);
     const keys = Object.keys(raw.attributes ?? {});
-    const makeGetterSetter = (k) => (v) => (v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + ''));
+    const makeGetterSetter = k => v => v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + '');
 
     if(this.shape == 'octagon') {
       let { radius = 1.27, x = 0, y = 0 } = this;
-      let octagon = MakePolygon(8, radius * 1.082392200292395, 0.5).map((p) => p.add(x, y).round(0.001));
+      let octagon = MakePolygon(8, radius * 1.082392200292395, 0.5).map(p => p.add(x, y).round(0.001));
       return octagon;
-    } else if(['x', 'y', 'radius'].every((prop) => Util.isNumeric(this[prop]))) {
-      return Circle.bind(this, null, (k) => (v) => (v === undefined ? +this[k] : (this[k] = +v)));
+    } else if(['x', 'y', 'radius'].every(prop => Util.isNumeric(this[prop]))) {
+      return Circle.bind(this, null, k => v => v === undefined ? +this[k] : (this[k] = +v));
       /*  } else if(['diameter', 'drill'].find(prop => keys.includes(prop))) {
       return Circle.bind(this, null, makeGetterSetter);*/
-    } else if(['x1', 'y1', 'x2', 'y2'].every((prop) => keys.includes(prop))) {
+    } else if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       let line = Line.bind(this, null, makeGetterSetter);
       trkl.bind(line, 'curve', this.handlers['curve']);
       trkl.bind(line, 'width', this.handlers['width']);
       return line;
-    } else if(['x', 'y'].every((prop) => keys.includes(prop))) {
+    } else if(['x', 'y'].every(prop => keys.includes(prop))) {
       const { x, y } = Point(this);
       if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
-      if(['width', 'height'].every((prop) => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
+      if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
       return Point.bind(this, ['x', 'y'], makeGetterSetter);
     }
 
@@ -771,7 +768,7 @@ export class EagleElement extends EagleNode {
       }
 
       for(let [layer, geometry] of ret) {
-        if(geometry.every((g) => isLine(g))) ret.set(layer, new LineList(geometry));
+        if(geometry.every(g => isLine(g))) ret.set(layer, new LineList(geometry));
       }
       if(ret.size) return ret;
     }
@@ -814,18 +811,15 @@ export class EagleElement extends EagleNode {
       i = 0;
     do {
       if(elem.name) {
-        //console.log('Element.scope2', {i: i++, name: elem.name, tag: elem.tagName});
-        obj[elem.tagName] = elem.name;
+        obj[elem.tagName] = elem;
       }
     } while(elem.tagName != 'eagle' && (elem = elem.parentNode));
-    //console.log('Element.scope2', { elem: this.tagName,obj});
     return obj;
   }
 
-  /* prettier-ignore */ get chain() {
-let chain = this.scope2();
-    if(this.name)
-      chain[this.tagName] = this.name;
+  get chain() {
+    let chain = this.scope2();
+    if(this.name) chain[this.tagName] = this.name;
     return chain;
   }
 
@@ -836,10 +830,10 @@ let chain = this.scope2();
     } while((e = e.parentNode));
   }
 
-  /* prettier-ignore */ get sheet() {
+  get sheet() {
     return this.getParent('sheet');
   }
-  /* prettier-ignore */ get sheetNumber() {
+  get sheetNumber() {
     let sheet = this.sheet;
     if(sheet) return this.getParent('sheets').children.indexOf(sheet);
   }
@@ -941,7 +935,7 @@ let chain = this.scope2();
     delete this.raw.attributes[name];
   }
 
-  /* prettier-ignore */ get pos() {
+  get pos() {
     return `(${(this.x / 25.4).toFixed(1)} ${(this.y / 25.4).toFixed(1)})`;
   }
 
