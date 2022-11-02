@@ -63,9 +63,8 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
 
     d += ArcTo(RoundToMil(xdiff), RoundToMil(ydiff), -curve);
   } else {
- //return h('line', {x1, x2, y1, y2, ...extraProps });
+    //return h('line', {x1, x2, y1, y2, ...extraProps });
   }
-
 
   //log('Wire', { ...extraProps, d });
 
@@ -74,5 +73,4 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     fill: 'none',
     ...extraProps
   });
-
 };

@@ -62,9 +62,10 @@ export const Pin = ({ data, opts = {}, ...props }) => {
 
         text: name,
         alignment: new Point(-1, 0),
-        transformation,
+        opts: { transformation },
         rot,
-        'data-rot': rot
+        'data-rot': rot,
+        'font-size': '1.905px'
         //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
       })
     );

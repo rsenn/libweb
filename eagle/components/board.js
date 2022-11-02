@@ -35,7 +35,7 @@ export const Board = ({ data, ...props }) => {
     h(
       'g',
       { ['data-name']: 'elements' },
-      elements.list.map(data => h(Element, { data }))
+      elements.list.map(data => h(Element, { data, opts: { transformation } }))
     )
   ]);
 };

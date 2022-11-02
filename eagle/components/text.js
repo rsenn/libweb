@@ -28,9 +28,9 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
 
   let transform = new TransformationList()
     .translate(x, y)
-    .concat(transformation.scaling ? [transformation.scaling] : [])
+    .concat(transformation.scaling ? [transformation.find(t => t.type == 'scale')] : [])
     //  .concat(transformation.rotation ? [transformation.rotation.invert()] : [])
-    .rotate(-realAngle);
+    .rotate(-realAngle % 180);
 
   let { scaling } = elementTransform;
   let align = Alignment(alignment, diffAngle, scaling);
@@ -45,6 +45,7 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
   if(align.y == 0) transform = transform.concat(new Translation(0, +0.11));
 
   text = (text + '').replace(/Ω/g, '&#x2126;').replace(/μ/g, '&#xb5;');
+  console.log(`Text.render`, console.config({ compact: 2 }), { transformation, transform, text, align });
 
   visible = true;
 

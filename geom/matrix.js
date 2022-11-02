@@ -594,8 +594,8 @@ Matrix.prototype.init_scale = function(sx, sy) {
 Object.defineProperties(Matrix.prototype, {
   scaling: {
     get() {
-      const x = Math.sign(this.xx) * Util.roundTo(Math.sqrt(this.xx ** 2 + this.xy ** 2), null, 13);
-      const y = Math.sign(this.yy) * Util.roundTo(Math.sqrt(this.yx ** 2 + this.yy ** 2), null, 13);
+      const x = Math.sign(this.a) * Util.roundTo(Math.sqrt(this.a ** 2 + this.c ** 2), null, 13);
+      const y = Math.sign(this.b) * Util.roundTo(Math.sqrt(this.b ** 2 + this.d ** 2), null, 13);
       return { x, y };
     },
     configurable: true

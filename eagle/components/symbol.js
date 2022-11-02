@@ -6,7 +6,7 @@ export const SchematicSymbol = ({ data, component = Fragment, id, class: classNa
   //console.log(`SchematicSymbol.render`, { data,id });
   const children = [...data.children];
 
-  let [transformation, transform, accumulate] = useTransform(props);
+  let [transformation, transform, accumulate] = useTransform(props.opts);
 
   //children.map(data => log('data:', data.tagName));
 
