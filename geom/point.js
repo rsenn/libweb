@@ -224,11 +224,14 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
   return a[Symbol.iterator].bind(a);
 });
 
-/*Point.prototype.valueOf = function(shl = 16) {
+Point.prototype.valueOf = function(shl = 16) {
   const { x, y } = this;
-  return x | (y << shl);
+
+  if(shl < 0) return x * (1 << Math.abs(shl)) + y;
+
+  return x + y * (1 << shl);
 };
-*/ Point.prototype.toString = function(opts = {}) {
+Point.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ',', left = '', right = '', pad = 0 } = opts;
   let x = Util.roundTo(this.x, precision);
   let y = Util.roundTo(this.y, precision);
