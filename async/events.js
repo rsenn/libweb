@@ -1,5 +1,3 @@
-import { map, filter } from './helpers.js';
-
 // Generate a Promise that listens only once for an event
 export function once(emitter, ...events) {
   return new Promise(resolve => {
