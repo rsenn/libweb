@@ -1440,7 +1440,7 @@ export const crosskit = {
       canvas.height = v.h;
       canvas.style.position = 'relative';
       canvas.style.left = '8px';
-      body.parentNode.appendChild(canvas);
+      (v.parent || body.parentNode).appendChild(canvas);
       cakecanvas = document.getElementsByTagName('canvas')[index];
       cakepen = this.context = cakecanvas.getContext('2d', v);
     }
