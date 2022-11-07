@@ -22,9 +22,11 @@ export const map = async function* (stream, transform = a => a) {
     yield transform(n);
   }
 };
+
 export const consume = async function(stream, fn = a => console.log(`async consume =`, a)) {
   for await(let n of stream) await fn(n);
 };
+
 export const accumulate = async function(stream, accu) {
   return await consume(stream, a => accu.push(a)), accu;
 };
@@ -49,11 +51,11 @@ export const oncePromise = (emitter, event) => {
 };
 
 // Turn any event emitter into a stream
-export const streamify = async function* (event, element) {
+/*export const streamify = async function* (event, element) {
   while(true) {
     yield await oncePromise(element, event);
   }
-};
+};*/
 
 // Only pass along events that meet a condition
 export const filter = async function* (stream, test) {
@@ -64,9 +66,9 @@ export const filter = async function* (stream, test) {
   }
 };
 
-let identity = e => e;
+//let identity = e => e;
 // Only pass along events that differ from the last one
-export const distinct = async function* (stream, extract = identity) {
+/*export const distinct = async function* (stream, extract = identity) {
   let lastVal;
   let thisVal;
   for await(let event of stream) {
@@ -76,10 +78,10 @@ export const distinct = async function* (stream, extract = identity) {
       yield event;
     }
   }
-};
+};*/
 
 // Only pass along event if some time has passed since the last one
-export const throttle = async function* (stream, delay) {
+/*export const throttle = async function* (stream, delay) {
   let lastTime;
   let thisTime;
   for await(let event of stream) {
@@ -89,14 +91,14 @@ export const throttle = async function* (stream, delay) {
       yield event;
     }
   }
-};
+};*/
 
 // Invoke a callback every time an event arrives
-export const subscribe = async (stream, callback) => {
+/*export const subscribe = async (stream, callback) => {
   for await(let event of stream) {
     callback(event);
   }
-};
+};*/
 
 /*var streamify = async function*(event, element) {
   element.addEventListener(event, e => {
@@ -110,10 +112,10 @@ export default {
   map,
   consume,
   oncePromise,
-  streamify,
+  // streamify,
   filter,
-  distinct,
-  throttle,
-  subscribe,
+  ////  distinct,
+  //throttle,
+  // subscribe,
   accumulate
 };

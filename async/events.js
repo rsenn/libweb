@@ -1,3 +1,5 @@
+import { map, filter } from './helpers.js';
+
 // Generate a Promise that listens only once for an event
 export function once(emitter, ...events) {
   return new Promise(resolve => {
@@ -19,18 +21,18 @@ export async function* streamify(event, element, cond = last => true) {
 }
 
 // Only pass along events that meet a condition
-export async function* filter(stream, test) {
+/*export async function* filter(stream, test) {
   for await(let event of stream) {
     if(test(event)) yield event;
   }
 }
-
+*/
 // Transform every event of the stream
-export async function* map(stream, transform) {
+/*export async function* map(stream, transform) {
   for await(let event of stream) {
     yield transform(event);
   }
-}
+}*/
 
 // Only pass along event if some time has passed since the last one
 export async function* throttle(stream, delay) {

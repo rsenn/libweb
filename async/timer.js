@@ -1,3 +1,5 @@
+import { map } from './helpers.js';
+
 //Create a Promise that resolves after ms time
 let timer = function(ms) {
   return new Promise(resolve => {
@@ -17,11 +19,11 @@ let source = async function* () {
 
 //Return a new async iterator that applies a
 //transform to the values from another async generator
-let map = async function* (stream, transform) {
+/*let map = async function* (stream, transform) {
   for await(let n of stream) {
     yield transform(n);
   }
-};
+};*/
 
 //Tie everything together
 let run = async function() {

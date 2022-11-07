@@ -1438,8 +1438,8 @@ export const crosskit = {
       canvas = document.createElement('canvas');
       canvas.width = v.w;
       canvas.height = v.h;
-      canvas.style.position = 'relative';
-      canvas.style.left = '8px';
+      /*canvas.style.position = 'relative';
+      canvas.style.left = '8px';*/
       (v.parent || body.parentNode).appendChild(canvas);
       cakecanvas = document.getElementsByTagName('canvas')[index];
       cakepen = this.context = cakecanvas.getContext('2d', v);
