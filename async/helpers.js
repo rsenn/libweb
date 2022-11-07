@@ -50,13 +50,6 @@ export const oncePromise = (emitter, event) => {
   });
 };
 
-// Turn any event emitter into a stream
-/*export const streamify = async function* (event, element) {
-  while(true) {
-    yield await oncePromise(element, event);
-  }
-};*/
-
 // Only pass along events that meet a condition
 export const filter = async function* (stream, test) {
   for await(let event of stream) {
@@ -66,56 +59,11 @@ export const filter = async function* (stream, test) {
   }
 };
 
-//let identity = e => e;
-// Only pass along events that differ from the last one
-/*export const distinct = async function* (stream, extract = identity) {
-  let lastVal;
-  let thisVal;
-  for await(let event of stream) {
-    thisVal = extract(event);
-    if(thisVal !== lastVal) {
-      lastVal = thisVal;
-      yield event;
-    }
-  }
-};*/
-
-// Only pass along event if some time has passed since the last one
-/*export const throttle = async function* (stream, delay) {
-  let lastTime;
-  let thisTime;
-  for await(let event of stream) {
-    thisTime = new Date().getTime();
-    if(!lastTime || thisTime - lastTime > delay) {
-      lastTime = thisTime;
-      yield event;
-    }
-  }
-};*/
-
-// Invoke a callback every time an event arrives
-/*export const subscribe = async (stream, callback) => {
-  for await(let event of stream) {
-    callback(event);
-  }
-};*/
-
-/*var streamify = async function*(event, element) {
-  element.addEventListener(event, e => {
-     // This doesn't work because yield is being
-     // called from inside another function.
-    yield e;
-  });
-};*/
 export default {
   timer,
   map,
   consume,
   oncePromise,
-  // streamify,
   filter,
-  ////  distinct,
-  //throttle,
-  // subscribe,
   accumulate
 };
