@@ -17,11 +17,11 @@ let source = async function* () {
 
 // Return a new async iterator that applies a
 // transform to the values from another async generator
-/*export const map = async function* (stream, transform = a => a) {
+export const map = async function* (stream, transform = a => a) {
   for await(let n of stream) {
     yield transform(n);
   }
-};*/
+};
 
 export const consume = async function(stream, fn = a => console.log(`async consume =`, a)) {
   for await(let n of stream) await fn(n);
@@ -51,19 +51,19 @@ export const oncePromise = (emitter, event) => {
 };
 
 // Only pass along events that meet a condition
-/*export const filter = async function* (stream, test) {
+export const filter = async function* (stream, test) {
   for await(let event of stream) {
     if(test(event)) {
       yield event;
     }
   }
-};*/
+};
 
 export default {
   timer,
-  //map,
+  map,
   consume,
   oncePromise,
-  //filter,
+  filter,
   accumulate
 };
