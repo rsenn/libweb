@@ -1,4 +1,4 @@
-class List {
+export class List {
   constructor(entries) {
     this.#size = 0;
     if(entries != null) {

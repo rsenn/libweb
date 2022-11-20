@@ -1,6 +1,6 @@
 export type Node<T> = { value: T; next: Node<T> };
 
-class List<T> {
+export class List<T> {
 	#size = 0;
 	#cursor?: Node<T>;
 
