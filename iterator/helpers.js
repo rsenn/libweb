@@ -158,3 +158,7 @@ export function some(iterator, fn) {
 export function accumulate(iterator, accu) {
   return consume(iterator, a => accu.push(a)), accu;
 }
+
+export function* take(iterator, n=1) {
+  while(n-- > 0) yield iterator.next().value;
+}
