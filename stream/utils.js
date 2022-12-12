@@ -14,6 +14,7 @@ export function isStream(obj) {
 
   return false;
 }
+
 export const AcquireReader =
   (gotClassPrototype('ReadableStream', 'getReader') &&
     ((stream, fn) => {
