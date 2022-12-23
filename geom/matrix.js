@@ -57,7 +57,7 @@ export function Matrix(...args) {
     /*} else if(typeof arg === 'number') {
     Matrix.prototype.init.call(ret, ...args);*/
   } else if(typeof arg === 'string' && /matrix\([^)]*\)/.test(arg)) {
-    let [xx, xy, x0, yy, yx, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
+    let [xx, yx, xy, yy, x0, y0] = [...arg.matchAll(/[-.0-9]+([Ee][-+]?[0-9]+|)/g)].map(m => parseFloat(m[0]));
     ret[0] = xx;
     ret[1] = xy;
     ret[2] = x0;
@@ -350,6 +350,10 @@ Matrix.fromJSON = obj => new Matrix(obj);
 Matrix.fromDOM = matrix => {
   const { a, b, c, d, e, f } = matrix;
   return new Matrix(a, c, e, b, d, f);
+};
+Matrix.fromCSS = str => {
+  let [xx, yx, xy, yy, x0, y0] = [...str.matchAll(/[-.0-9]+([Ee][-+]?[0-9]+|)/g)].map(m => parseFloat(m[0]));
+  return new Matrix(xx, xy, x0, yx, yy, y0);
 };
 
 Matrix.prototype.equals = function(other) {
