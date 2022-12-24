@@ -601,4 +601,3 @@ function latest(contenders) {
 }
 
 export { DroppingBuffer, FixedBuffer, MAX_QUEUE_LENGTH, Repeater, RepeaterOverflowError, SlidingBuffer };
-//# sourceMappingURL=repeater.js.map

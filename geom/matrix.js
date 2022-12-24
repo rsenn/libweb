@@ -592,7 +592,7 @@ Matrix.prototype.init_translate = function(tx, ty) {
 
 Matrix.prototype.init_scale = function(sx, sy) {
   if(sy === undefined) sy = sx;
-  return Matrix.prototype.init.call(this, sx, 0, 0, sy, 0, 0);
+  return Matrix.prototype.init.call(this, sx, 0, 0, 0, sy, 0);
 };
 
 Object.defineProperties(Matrix.prototype, {
@@ -624,13 +624,14 @@ Matrix.prototype.init_rotate = function(angle, deg = false) {
   const s = Math.sin(rad);
   const c = Math.cos(rad);
 
+  return Matrix.prototype.init.call(this, c, -s, 0, s, c, 0);
   /*  Matrix.prototype.set_row.call(this, 0, c, s, 0);
   Matrix.prototype.set_row.call(this, 1, -s, c, 0);
   Matrix.prototype.set_row.call(this, 2, 0,0,1);*/
 
-  Matrix.prototype.set_row.call(this, 0, c, -s, 0);
+  /*  Matrix.prototype.set_row.call(this, 0, c, -s, 0);
   Matrix.prototype.set_row.call(this, 1, s, c, 0);
-  Matrix.prototype.set_row.call(this, 2, 0, 0, 1);
+  Matrix.prototype.set_row.call(this, 2, 0, 0, 1);*/
 
   return this;
 };

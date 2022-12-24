@@ -15,6 +15,13 @@ const oncePromise = (emitter, events) => {
   });
 };
 
+export class WebSocketError extends Error {
+  constructor(message, ws) {
+    super(message);
+    this.ws = ws;
+  }
+}
+
 // Add an async iterator to all WebSockets
 //WebSocket.prototype[Symbol.asyncIterator] = WebSocketIterator;
 
@@ -30,7 +37,8 @@ export async function* WebSocketIterator() {
         return { reason, code };
 
       case 'error':
-        throw new Error(`WebSocket error: ${ev}`);
+        this.error = ev;
+        throw new WebSocketError(`WebSocket error`, this);
         break;
     }
   }
@@ -50,6 +58,7 @@ export function CreateWebSocket(path = '/', protocols = []) {
   ws[Symbol.asyncIterator] = WebSocketIterator;
   return ws;
 }
+
 export async function* StreamReadIterator(strm) {
   let reader = await strm.getReader();
 

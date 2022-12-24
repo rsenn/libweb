@@ -1,9 +1,19 @@
 // Generate a Promise that listens only once for an event
 export function once(emitter, ...events) {
-  return new Promise(resolve => {
+  return waitOne(emitter, events); /*new Promise(resolve => {
     events.forEach(type => emitter.addEventListener(type, handler, { passive: true }));
     function handler(event) {
       events.forEach(type => emitter.removeEventListener(type, handler, { passive: true }));
+      resolve(event);
+    }
+  });*/
+}
+
+export function waitOne(emitter, events, options = { passive: true }) {
+  return new Promise(resolve => {
+    events.forEach(type => emitter.addEventListener(type, handler, options));
+    function handler(event) {
+      events.forEach(type => emitter.removeEventListener(type, handler, options));
       resolve(event);
     }
   });
@@ -14,7 +24,7 @@ export async function* streamify(event, element, cond = last => true) {
   let events = Array.isArray(event) ? event : [event];
   let last;
   do {
-    yield (last = await once(element, ...events));
+    yield (last = await waitOne(element, events, { passive: false }));
   } while(cond(last));
 }
 
