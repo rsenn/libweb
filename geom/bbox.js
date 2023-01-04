@@ -183,8 +183,13 @@ export class BBox {
     obj.y2 = y2;
     return obj;
   }
+
   toString() {
     return `${this.x1} ${this.y1} ${this.x2} ${this.y2}`;
+  }
+
+  toSVG() {
+    return `${this.x1} ${this.y1} ${this.width} ${this.height}`;
   }
 
   transform(fn = arg => arg, out) {
@@ -210,7 +215,28 @@ export class BBox {
     return this;
   }
 
+  outset(...args) {
+    if(args.length >= 4) {
+      const [top, right, bottom, left] = args;
+      return new BBox(this.x1 - left, this.y1 - top, this.x2 + right, this.y2 + bottom);
+    }
+    if(args.length >= 2) {
+      const [vertical, horizontal] = args;
+      return this.outset(vertical, horizontal, vertical, horizontal);
+    }
+    return this.outset(args[0], args[0], args[0], args[0]);
+  }
+
+  inset(...args) {
+    return this.outset(...args.map(n => -n));
+  }
+
   static from(iter, tp = p => p) {
+    if(typeof iter == 'string') {
+      let [x1, y1, x2, y2] = [...iter.matchAll(/[-+.0-9]+/g)].map(([m]) => +m);
+      iter = [{ x1, y1, x2, y2 }];
+    }
+
     if(typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
 
     let r = new BBox();
@@ -233,11 +259,22 @@ export class BBox {
     return r;
   }
 
+  static fromString(s) {
+    //console.log('BBox.fromString',s);
+    let [x1, y1, x2, y2] = [...s.matchAll(/[-+.0-9]+/g)].map(([m]) => +m);
+
+    let r = new BBox();
+    return Object.assign(r, { x1, y1, x2, y2 });
+  }
+
   *[Symbol.iterator]() {
     let [x1, x2, y1, y2] = this;
     for(let prop of [x1, x2, y1, y2]) yield prop;
   }
 }
+
+BBox.prototype[Symbol.toStringTag] = 'BBox';
+
 export const isBBox = (bbox, testFn = (prop, name, obj) => name in obj) =>
   Util.isObject(bbox) && ['x1', 'y1', 'x2', 'y2'].every(n => testFn(bbox[n], n, bbox));
 
