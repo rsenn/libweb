@@ -157,6 +157,10 @@ export class EagleDocument extends EagleNode {
         libraries: () => EagleNodeMap.create(libraries.children, 'name')
       });
     }
+
+      lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
+
+
     let drawing = this.get('drawing');
 
     let { layers } = drawing;

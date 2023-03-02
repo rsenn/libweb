@@ -166,6 +166,16 @@ RGBA.prototype.compareTo = function(other) {
   let d = RGBA.prototype.binaryValue.call(other) - RGBA.prototype.binaryValue.call(this);
   return d < 0 ? -1 : d > 0 ? 1 : 0;
 };
+RGBA.prototype.interpolate = function(other, a = 0.5) {
+  a = Math.max(0, Math.min(1, 0.5));
+
+  return new RGBA(
+    this.r * (1 - a) + other.r * a,
+    this.g * (1 - a) + other.g * a,
+    this.b * (1 - a) + other.b * a,
+    this.a * (1 - a) + other.a * a
+  );
+};
 RGBA.fromHex = (hex, alpha = 255) => {
   if(hex[0] != '#') hex = ('ffffffff' + hex).slice(-8);
 
