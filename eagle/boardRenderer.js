@@ -1,8 +1,8 @@
-import Util from '../util.js';
+import { partition }  from '../misc.js';
 import { Point, Line, LineList, Rect } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross, Arc, Origin, WirePath, ElementToComponent } from './components.js';
+import { Cross, Arc, Origin, WirePath, Element, ElementToComponent } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
@@ -56,8 +56,6 @@ export class BoardRenderer extends EagleSVGRenderer {
         parent
       );
     const { coordFn = i => i, name, value } = opts;
-
-    //    console.log('renderItem', { name, value });
 
     switch (item.tagName) {
       case 'xvia':
@@ -123,9 +121,12 @@ export class BoardRenderer extends EagleSVGRenderer {
       default: {
         //       console.log('boardRenderer other renderItem', { item, parent, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) });
         super.renderItem(item, parent, { ...opts, color });
+        return;
         break;
       }
     }
+
+    console.log('BoardRenderer.renderItem', { name, value, item });
   }
 
   renderCollection(coll, parent, opts = {}) {
@@ -139,98 +140,72 @@ export class BoardRenderer extends EagleSVGRenderer {
       props = {},
       flat
     } = opts;
-    //  this.debug(`BoardRenderer.renderCollection`, { coll, transformation,  name });
+
+    this.debug(`BoardRenderer.renderCollection(1)`, { coll, transformation, name });
+
     let coordFn = i => i;
     let { class: addClass, ...addProps } = props;
-    let wireMap = new Map(),
-      other = [],
+    let other = [],
       layers = {},
-      widths = {};
+      wireObj = {};
 
     const { tPlace } = this.layers;
-    // console.log('BoardRenderer.renderCollection', coll[0].parentNode);
 
     for(let item of coll) {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
-        /* if(layerId != 21) */ {
-          layers[layerId] = item.layer || tPlace;
+        const layerName = item.layer.name;
+        layers[layerId] ??= item.layer || tPlace;
 
-          if(item.layer) item.layer.elements.add(item);
+        if(item.layer) item.layer.elements.add(item);
 
-          if('width' in item) widths[layerId] = item.width;
-          if(wireMap.has(layerId)) wireMap.get(layerId).push(item);
-          else wireMap.set(layerId, [item]);
-          continue;
-        }
+        wireObj[layerId] ??= {};
+        wireObj[layerId][item.width] ??= [];
+        wireObj[layerId][item.width].push(item);
+        continue;
       }
       if(predicate(item)) other.push(item);
     }
+    //console.log('BoardRenderer.renderCollection', wireObj);
+    //
+    let [pads, nonPads] = partition(other.filter(predicate), item => item.tagName == 'pad');
 
-    for(let item of other) {
-      if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
-    }
-    for(let item of other) {
-      if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
-    }
-    for(let [layerId, wires] of wireMap) {
-      let classList = (parent && parent.classList) || [];
-      if([...classList].indexOf('plain') != -1) continue;
+    for(let item of pads) this.renderItem(item, parent, { ...opts });
+    for(let item of nonPads) this.renderItem(item, parent, { ...opts });
 
-      let lines = new LineList(
-        wires.map(wire => {
-          let line = new Line(coordFn(wire)).round(0.0127, 6);
-          line.element = wire;
-          if(wire.curve !== undefined) line.curve = wire.curve;
-          line.width = wire.width;
-          return line;
-        })
-      );
-
-      // this.debug('Lines:', name, [...lines]);
-      const layer = layers[layerId] || this.layers.Bottom;
-      const width = widths[layerId];
-
-      const color = layer.color;
-      //this.debug('color:', color, layer.color);
-
-      if(true) {
-        //  if(name == 'D2') window.lines = lines.map(l => l.clone());
-        let lines2 = lines.map(l => new Line(l));
-        //console.log('lines:', console.config({ compact: 2 }), [...lines2].map((l, i) => [l, lines[i].curve ?? 0]));
-
-        let cmds = LinesToPath(
-          lines.map(l => {
-            let ret = new Line(l);
-            if(l.curve !== undefined) ret.curve = l.curve;
-            if(l.element !== undefined) ret.element = l.element;
-            return ret;
+    for(let layerId in wireObj) {
+      for(let width in wireObj[layerId]) {
+        let wires = wireObj[layerId][width];
+        let classList = (parent && parent.classList) || [];
+        if([...classList].indexOf('plain') != -1) continue;
+        let lines = new LineList(
+          wires.map(wire => {
+            let line = new Line(coordFn(wire)).round(0.0127, 6);
+            line.element = wire;
+            if(wire.curve !== undefined) line.curve = wire.curve;
+            line.width = wire.width;
+            return line;
           })
         );
-        //console.log('cmds:', cmds, lines2.connected(), opts);
+        const layer = layers[layerId] || this.layers.Bottom;
+        const color = layer.color;
 
-        if(flat) cmds = cmds.flat();
+        this.debug('BoardRenderer.renderCollection', { layer: layer.name, width, wires, lines });
 
-        this.debug('layerId:', layerId, 'width:', width);
-        //console.log('cmds:', cmds);
+        if(true) {
+          let lines2 = lines.map(l => new Line(l));
+          let cmds = LinesToPath(
+            lines.map(l => {
+              let ret = new Line(l);
+              if(l.curve !== undefined) ret.curve = l.curve;
+              if(l.element !== undefined) ret.element = l.element;
+              return ret;
+            })
+          );
+          if(flat) cmds = cmds.flat();
 
-        this.create(
-          WirePath,
-          {
-            class: classNames(addClass, ElementToClass(wires[0], layer.name)),
-            cmds,
-            color,
-            width,
-            layer,
-            separator: flat ? ' ' : '\n',
-            ...addProps
-          },
-          parent
-        );
-      } else {
-        window.lines = lines.slice();
-        // lines.ordered();
-        LinesToPath(lines).map(cmds =>
+          this.debug('BoardRenderer.renderCollection', console.config({ compact: false }), cmds);
+
           this.create(
             WirePath,
             {
@@ -239,20 +214,38 @@ export class BoardRenderer extends EagleSVGRenderer {
               color,
               width,
               layer,
+              separator: flat ? ' ' : '\n',
               ...addProps
             },
             parent
-          )
-        );
+          );
+        } else {
+          LinesToPath(lines).map(cmds =>
+            this.create(
+              WirePath,
+              {
+                class: classNames(addClass, ElementToClass(wires[0], layer.name)),
+                cmds,
+                color,
+                width,
+                layer,
+                ...addProps
+              },
+              parent
+            )
+          );
+        }
       }
     }
   }
 
   renderElement(element, parent) {
-    let { name, library, value, x, y, rot } = element;
+    let { name, library, value, x, y, rot = '0' } = element;
     if(typeof value != 'string') value = value + '';
 
-    //console.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
+    //throw new Error(`renderElement deprecated`);
+
+    this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
     let transform = new TransformationList();
     let rotation = MakeRotation(rot);
@@ -264,6 +257,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     if(typeof value != 'string' || value.length == 0) value = ' ';
 
     //console.debug(`BoardRenderer.renderElement(2)`, { name, transform });
+
     const g = this.create(
       'g',
       {
@@ -282,7 +276,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     );
     // console.log('BoardRenderer.renderElement', { name, value });
 
-    if(/^[RLC][0-9]/.test(name) /*&& (!element.pads || element.pads.length == 2)*/) {
+    if(/^[RLC][0-9]/.test(name)) {
       let re;
       this.debug('BoardRenderer.renderElement', {
         name,
@@ -306,9 +300,8 @@ export class BoardRenderer extends EagleSVGRenderer {
       try {
         number = ValueToNumber(value.replace(re, ''));
       } catch(e) {}
-
-      //      console.log('Element.render name:', name, ' number:', number, ' value:', value);
     }
+
     if(element?.package?.children)
       this.renderCollection(element.package.children, g, {
         name,
@@ -316,64 +309,17 @@ export class BoardRenderer extends EagleSVGRenderer {
         transformation: this.transform.concat(transform),
         flat: true
       });
+
     this.create(
       Origin,
       {
         /* x, y,*/ element,
-        layer: this.layers['tOrigins']
+        layer: this.layers['tOrigins'],
+        style: { display: 'none' }
       },
       g
     );
-
-    /*    let angle = Util.randInt(0, 360);
-    let angles = [angle, angle + 120, angle + 240, angle + 360];
-    this.create(Arc, { x, y, radius: 1, width: 0.508, color: '#f00', startAngle: angles[0], endAngle: angles[1] }, parent);
-    this.create(Arc, { x, y, radius: 1, width: 0.508, color: '#f80', startAngle: angles[1], endAngle: angles[2] }, parent);
-    this.create(Arc, { x, y, radius: 1, width: 0.508, color: '#ff0', startAngle: angles[2], endAngle: angles[3] }, parent);
-    this.create(Arc, { x, y, radius: 2, width: 0.127, color: '#08f', startAngle: angles[0], endAngle: angles[3] }, parent);*/
   }
-
-  /*  renderSignal(signal, parent, options = {}) {
-    let children = signal.children ?? [];
-    let props = {};
-    if('layer' in options) {
-      let layer = options.layer ? this.layers[options.layer] : null;
-      children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via');
-      if(layer) {
-        children = children.filter(child => child.layer.number == layer.number);
-      } else {
-      }
-    }
-    if(children.length) this.debug(`BoardRenderer.renderSignal[\x1b[1;33${signal.name}\x1b[0m]`, options);
-    if(children.length) this.debug(`BoardRenderer.renderSignal[\x1b[1;33m${signal.name}\x1b[0m]`, children);
-    if(children.length > 0) {
-      const className = ElementToClass(signal);
-      const id = `signal-${EscapeClassName(signal.name)}${
-        typeof options.layer == 'string' && options.layer != '' ? '-' + options.layer.toLowerCase() : ''
-      }`;
-      props = {
-        ...props,
-        class: className,
-        'data-type': signal.tagName,
-        'data-name': signal.name,
-        'data-path': signal.path.toString(' ')
-      };
-      if(children.length > 1 && options.layer != '') {
-        delete options.layer;
-        let signalGroup = this.create(
-          'g',
-          {
-             ...props
-          },
-          parent
-        );
-        return this.renderCollection(children, signalGroup, options);
-      }
-    }
-    return this.renderCollection(children, this.create(Fragment, {}, parent), {
-      ...options
-    });
-  }*/
 
   render(doc = this.doc /*, parent, props = {}*/) {
     let parent, props;
@@ -404,7 +350,10 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
 
-    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
+    for(let element of this.elements.list) {
+      //this.create(Element, element,  elementsGroup);
+      this.renderElement(element, elementsGroup);
+    }
 
     let plain = [...doc.get('plain').children];
 

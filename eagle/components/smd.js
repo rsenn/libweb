@@ -16,9 +16,7 @@ export const SMD = ({ data, opts = {}, ...props }) => {
       }
     }) || data;
 
-  //Util.putStack();
-
-  let { labelText, transform = new TransformationList() } = opts;
+   let { labelText, transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 

@@ -40,12 +40,12 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
   //align = align.rotate(diffAngle * DEG2RAD);
   align = align.round();
 
-  //console.log('Text.render', text);
+  //log('Text.render', text);
 
   if(align.y == 0) transform = transform.concat(new Translation(0, +0.11));
 
   text = (text + '').replace(/Ω/g, '&#x2126;').replace(/μ/g, '&#xb5;');
-  console.log(`Text.render`, console.config({ compact: 2 }), { transformation, transform, text, align });
+  log(`Text.render`, console.config({ compact: 2 }), { transformation, transform, text, align });
 
   visible = true;
 

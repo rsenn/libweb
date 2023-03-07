@@ -8,7 +8,7 @@ import { digit2color, GetFactor, GetColorBands, ValueToNumber, NumberToValue, Ge
 export const Element = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
 
-  console.log('Element.render', { transformation, data });
+  log('Element.render', { transformation, data });
 
   let element =
     useValue(async function* () {

@@ -246,16 +246,7 @@ export class EagleProject {
       schematic: schematic.getLibrary(name),
       board: board.getLibrary(name)
     };
-
-    /*  let layers = {
-      schematic: Util.toMap(schematic.layers.list.filter(l => l.active == 'yes'),
-        l => [l.number, l]
-      ),
-      board: Util.toMap(board.layers.list.filter(l => l.active == 'yes'),
-        l => [l.number, l]
-      )
-    };*/
-
+ 
     //console.log('libraries.schematic:', libraries.schematic);
     for(let destDoc of ['schematic', 'board']) {
       //console.log(`project[${destDoc}].libraries:`, this[destDoc].libraries);

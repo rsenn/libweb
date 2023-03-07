@@ -17,7 +17,12 @@ export class PathMapper {
     if(map.get(obj)) return;
 
     if(!(path instanceof ctor)) path = new ctor(path);
-    map.set(obj, path);
+    try {
+      map.set(obj, path);
+    } catch(e) {
+      console.log('PathMapper.set', { map, e });
+      throw e;
+    }
   }
 
   get(obj) {

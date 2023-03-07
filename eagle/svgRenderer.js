@@ -157,9 +157,7 @@ export class EagleSVGRenderer {
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
     //this.debug('getColor', color, c);
-
-    /* if(c)
-    Util.colorDump([c]);*/
+ 
     return c;
   }
 
@@ -220,32 +218,31 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, transformation = new TransformationList() } = opts;
 
-    // this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
+    console.log(`EagleSVGRenderer.renderItem`, { item, transformation });
 
     const svg = (elem, attr, parent) =>
       this.create(
         elem,
         {
           className: item.tagName,
-          /* 'data-path': item.path.toString(' '), */ ...attr
+          ...attr
         },
         parent
       );
 
-    let coordFn = /*transform ? MakeCoordTransformer(transform) :*/ i => i;
+    let coordFn = i => i;
     const { layer } = item;
     const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
     let elem;
     const comp = ElementToComponent(item);
     if(comp) {
-      //this.debug('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
       elem = svg(
         comp,
         {
           data: item,
           opts: {
             ...opts,
-            transformation /*: this.transform.filter(t => ['translate'].indexOf(t.type) == -1)*/
+            transformation
           }
         },
         parent
@@ -255,39 +252,6 @@ export class EagleSVGRenderer {
     }
 
     switch (item.tagName) {
-      /*case 'wire': {
-        const { width, curve = '' } = item;
-        const { x1, y1, x2, y2 } = coordFn(item);
-        svg('line', {
-            stroke: color,
-            x1,
-            x2,
-            y1,
-            y2,
-            'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
-            'data-curve': curve,
-            'data-layer': layer.name,
-            transform
-          },
-          parent
-        );
-        break;
-      }*/
-      /*case 'rectangle': {
-        const { x1, x2, y1, y2 } = coordFn(item);
-        let rect = Rect.from({ x1, x2, y1, y2 });
-        let rot = MakeRotation(item.rot);
-        let center = rect.center;
-        svg('rect', {
-            stroke: 'none',
-            fill: color,
-            ...rect.toObject(),
-            transform: `translate(${center}) ${rot} translate(${center.prod(-1)})`
-          },
-          parent
-        );
-        break;
-      }*/
       case 'label': {
         const { align } = item;
         const { x, y } = coordFn(item);
@@ -301,7 +265,7 @@ export class EagleSVGRenderer {
             x,
             y,
             ...EagleSVGRenderer.alignmentAttrs(align),
-            children: labelText /*,            transform: transform.undo(transformation)*/,
+            children: labelText,
             'font-size': '0.1px',
             'font-family': 'Fixed Medium'
           },
@@ -310,78 +274,6 @@ export class EagleSVGRenderer {
         break;
       }
 
-      /*  case 'text': {
-        let { children = [], text: innerText, align, size, font, rot } = item;
-        let text = innerText || labelText || children.join('\n');
-        let { x, y } = coordFn(item);
-        this.debug('text', { text });
-        if(text.startsWith('>')) {
-          const prop = text.slice(1).toLowerCase();
-          this.debug('text', { text, prop, opts });
-          text = prop in opts ? opts[prop] : text;
-        }
-        if(text == '') break;
-        const translation = new TransformationList(`translate(${x},${y})`);
-        this.debug('translation:', Util.className(translation));
-        const rotation = translation.concat(MakeRotation(rot));
-        this.debug('rotation:', Util.className(rotation));
-        let wholeTransform = transform.concat(MakeRotation(rot));
-        let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
-        let undoTransform = new TransformationList().scale(1, -1).rotate(wholeAngle);
-        let undoAngle = ClampAngle(undoTransform.decompose().rotate);
-        let angle = ClampAngle(undoAngle - wholeAngle, 180);
-        const finalTransformation = rotation
-          .concat(undoTransform)
-          .collapseAll();
-        this.debug(`wholeAngle ${text}`, wholeAngle);
-        this.debug(`finalTransformation ${text}`, finalTransformation.toString());
-        this.debug(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
-        if(finalTransformation.rotation) {
-          if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
-        }
-        const baseAlignment = EagleSVGRenderer.alignment(align);
-        const rotateAlignment = AlignmentAngle(wholeAngle);
-        const alignment = baseAlignment
-          .clone()
-          .rotate((rotateAlignment * Math.PI) / 180)
-          .round(0.5);
-        this.debug(`render alignment ${text}`,
-          Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
-          EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL)
-        );
-        const e = svg('text',
-          {
-            fill: color,
-            stroke: 'none',
-            'stroke-width': 0.05,
-            x,
-            y,
-            ...EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL),
-            transform: finalTransformation
-          },
-          parent
-        );g
-        let attrs = EagleSVGRenderer.alignmentAttrs(alignment, HORIZONTAL);
-        if(align !== undefined) attrs['data-align'] = align;
-        this.create('tspan', { ...attrs, children: text }, e);
-        break;
-      }
-*/
-      /*      case 'circle': {
-        const { width, radius } = item;
-        const { x, y } = coordFn(item);
-        svg('circle', {
-            stroke: color,
-            cx: x,
-            cy: y,
-            r: radius,
-            'stroke-width': width * 0.8,
-            fill: 'none'
-          },
-          parent
-        );
-        break;
-      }*/
       case 'pinref':
       case 'contactref':
         break;
@@ -393,7 +285,6 @@ export class EagleSVGRenderer {
           opts
         });
         throw new Error(`No renderer for element '${item.tagName}'`);
-        //super.renderItem(item,parent,opts);
         break;
       }
     }

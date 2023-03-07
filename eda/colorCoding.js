@@ -57,13 +57,13 @@ export const BG = Symbol.for('BG');
 export const PartScales = {
   C: 1e12,
   R: 1,
-  L: 1e0
+  L: 1
 };
 
 export const digit2color = {
   rgb: {
     //[BG]: '#ebce9d',[0]: '#000000', [1]: '#8b572a', [2]: '#d0021b', [3]: '#f5a623', //[4]: '#f8e71c', [5]: '#7ed321', [6]: '#4a90e2', [7]: '#9013fe', [8]: '#999999', [9]: '#ffffff'
-  [BG]: [...new HSLA({ h: 30, s: 66, l: 80, a: 1 }).toRGBA()].slice(0, 3),
+    [BG]: [...new HSLA({ h: 30, s: 66, l: 80, a: 1 }).toRGBA()].slice(0, 3),
     [0]: [0x00, 0x00, 0x00],
     [1]: [0x8b, 0x57, 0x2a],
     [2]: [0xd0, 0x02, 0x1b],

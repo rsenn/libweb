@@ -34,7 +34,7 @@ export const Drawing = ({
   }
   viewBox = useTrkl(viewBox ?? rect);
 
-  console.log('viewBox', viewBox);
+  log('viewBox', viewBox);
   {
     let transform = new TransformationList();
 
@@ -49,7 +49,7 @@ export const Drawing = ({
       grid: { color: '#0000aa', width: 0.01, visible: true }
     };
 
-    const id = 'grid'; //grid-'+Util.randStr(8, '0123456789ABCDEF'.toLowerCase());
+    const id = 'grid';
 
     log('Drawing.render', { attrs, grid, nodefs });
 

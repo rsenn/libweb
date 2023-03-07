@@ -128,5 +128,3 @@ export class EagleNodeMap {
 }
 
 EagleNodeMap.prototype[Symbol.toStringTag] = 'EagleNodeMap';
-
-// Util.decorateIterable(EagleNodeMap.prototype, false);

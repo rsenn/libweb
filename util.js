@@ -1304,6 +1304,23 @@ Util.union = (a, b, equality) => {
   return Util.unique([...a, ...b], equality);
 };
 
+/**
+ * accepts array and function returning `true` or `false` for each element
+ *
+ * @param  {[type]}   array    [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+Util.partition = (array, callback) => {
+  const matches = [],
+    nonMatches = [];
+
+  // push each element into array depending on return value of `callback`
+  for(let element of array) (callback(element) ? matches : nonMatches).push(element);
+
+  return [matches, nonMatches];
+};
+
 Util.chances = function(numbers, matches) {
   const f = Util.factorial;
   return f(numbers) / (f(matches) * f(numbers - matches));
@@ -2330,6 +2347,7 @@ Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => {
 
   return Util.tryFunction(fn, resolve, reject)(...args);
 };
+
 Util.putError = err => {
   let e = Util.isObject(err) && err instanceof Error ? err : Util.exception(err);
   (console.info || console.log)('Util.putError ', e);

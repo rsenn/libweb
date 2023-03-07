@@ -1128,6 +1128,16 @@ export function chunkArray(arr, size) {
   return arr.reduce(fn, []);
 }
 
+export function ucfirst(str) {
+  if(typeof str != 'string') str = str + '';
+  return str.substring(0, 1).toUpperCase() + str.substring(1);
+}
+
+export function lcfirst(str) {
+  if(typeof str != 'string') str = str + '';
+  return str.substring(0, 1).toLowerCase() + str.substring(1);
+}
+
 export function camelize(str, delim = '') {
   return str.replace(/^([A-Z])|[\s-_]+(\w)/g, (match, p1, p2, offset) => {
     if(p2) return delim + p2.toUpperCase();
@@ -1142,6 +1152,135 @@ export function decamelize(str, delim = '-') {
         .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + delim + '$2')
         .toLowerCase()
     : str;
+}
+
+export function shorten(str, max = 40, suffix = '...') {
+  max = +max;
+  if(isNaN(max)) max = Infinity;
+  if(Array.isArray(str)) return Array.prototype.slice.call(str, 0, Math.min(str.length, max)).concat([suffix]);
+  if(typeof str != 'string' || !Number.isFinite(max) || max < 0) return str;
+  str = '' + str;
+
+  if(str.length > max) {
+    let n = Math.floor((max - (2 + suffix.length)) / 2);
+    let tail = str.length - n;
+    let len = Math.min(n, tail);
+    let insert = ' ' + suffix + ' ' + (str.length - (len + n)) + ' bytes ' + suffix + ' ';
+
+    return str.substring(0, len) + insert + str.substring(tail);
+  }
+  return str;
+}
+
+export function arraysInCommon(a) {
+  let i,
+    c,
+    n = a.length,
+    min = Infinity;
+  while(n) {
+    if(a[--n].length < min) {
+      min = a[n].length;
+      i = n;
+    }
+  }
+  c = Array.from(a.splice(i, 1)[0]);
+  return c.filter((itm, indx) => {
+    if(c.indexOf(itm) == indx) return a.every(arr => arr.indexOf(itm) != -1);
+  });
+}
+
+export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
+  return define(proto, {
+    *[Symbol.iterator]() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield itemFn(this, i);
+    },
+    *keys() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield i;
+    },
+    *entries() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield [i, itemFn(this, i)];
+    },
+    *values() {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield itemFn(this, i);
+    },
+    forEach(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) callback.call(thisArg, itemFn(this, i), i, this);
+    },
+    reduce(callback, accu, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
+      return accu;
+    }
+  });
+}
+
+export function mod(a, b) {
+  return typeof b == 'number' ? ((a % b) + b) % b : n => ((n % a) + a) % a;
+}
+
+export function pushUnique(arr, ...args) {
+  let reject = [];
+  for(let arg of args)
+    if(arr.indexOf(arg) == -1) arr.push(arg);
+    else reject.push(arg);
+  return reject;
+}
+
+export function intersect(a, b) {
+  if(!Array.isArray(a)) a = [...a];
+  return a.filter(Set.prototype.has, new Set(b));
+}
+
+export function symmetricDifference(a, b) {
+  return [].concat(...difference(a, b));
+}
+
+export function* partitionArray(a, size) {
+  for(let i = 0; i < a.length; i += size) yield a.slice(i, i + size);
+}
+
+export function difference(a, b, includes) {
+  if(!Array.isArray(a)) a = [...a];
+  if(!Array.isArray(b)) b = [...b];
+
+  if(typeof includes != 'function') return [a.filter(x => !b.includes(x)), b.filter(x => !a.includes(x))];
+
+  return [a.filter(x => !includes(b, x)), b.filter(x => !includes(a, x))];
+}
+
+export function intersection(a, b) {
+  if(!(a instanceof Set)) a = new Set(a);
+  if(!(b instanceof Set)) b = new Set(b);
+  let intersection = new Set([...a].filter(x => b.has(x)));
+  return Array.from(intersection);
+}
+
+export function union(a, b, equality) {
+  if(equality === undefined) return [...new Set([...a, ...b])];
+
+  return unique([...a, ...b], equality);
+}
+
+/**
+ * accepts array and function returning `true` or `false` for each element
+ *
+ * @param  {[type]}   array    [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+export function partition(array, callback) {
+  const matches = [],
+    nonMatches = [];
+
+  // push each element into array depending on return value of `callback`
+  for(let element of array) (callback(element) ? matches : nonMatches).push(element);
+
+  return [matches, nonMatches];
 }
 
 export function Location(line, column, pos, file, freeze = true) {

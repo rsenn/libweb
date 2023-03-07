@@ -322,25 +322,19 @@ export const CalculateArcRadius = (d, angle) => {
   return distance / (2 * Math.sin(angle / 2));
 };
 
-export const LinesToPath = (lines, lineFn) => {
+export function LinesToPath(lines, lineFn) {
   let l = lines.shift(),
     m;
   let [start, point] = l.toPoints();
   let path,
     ret = [];
   let prevPoint = start;
-  //path.push(`M ${prevPoint.x} ${prevPoint.y}`);
-
-  //console.debug(`LinesToPath`, { lines, lineFn });
-
   lineFn =
     lineFn ||
     ((point, curve) => {
       lineFn = (point, curve) => {
-        // console.log("lineFn", {point,curve});
         const p = [prevPoint, point];
         const dist = Point.distance(...p);
-        //  console.log("p", {prevPoint,point})
         const slope = Point.diff(prevPoint, point).round(0.0001);
 
         let cmd;
@@ -349,12 +343,7 @@ export const LinesToPath = (lines, lineFn) => {
         const diff = Point.diff(p[0], p[1]);
         const radius = roundTo(CalculateArcRadius(diff, theta), 0.0001);
         prevPoint = point;
-        const sweep = (curve || 0) >= 0; //Math.abs(slope.toAngle()) < PI ? 1 : 0;
-
-        //if(isFinite(radius))
-        //console.debug(`lineFn`, { curve, angle, slope, radius });
-        // console.debug(`lineFn`, p);
-
+        const sweep = (curve || 0) >= 0;
         if(curve !== undefined && isFinite(radius)) return RenderArcTo(dist, Math.abs(radius), theta, sweep, p[1]);
         else if(Point.equals(start, p[1])) return `Z`;
         else return `L ${p[1].x} ${p[1].y}`;
@@ -363,26 +352,21 @@ export const LinesToPath = (lines, lineFn) => {
       start = new Point(point.x, point.y);
       return `M ${point.x} ${point.y}`;
     });
-
   ret.push((path = []));
 
   const lineTo = (...args) => {
     if(typeof args[0] == 'number') throw new Error('num');
-
     if(args[0].x === undefined) throw new Error(`lineTo arg 1`);
-    //console.log("lineTo(",...args, ")");
+
     let l = lineFn(...args);
     path.push(l);
   };
-
   lineTo(prevPoint);
   lineTo(point, l.curve);
-
   do {
     m = null;
     for(let i = 0; i < lines.length; i++) {
-      const p = lines[i]; /*.toPoints()*/
-
+      const p = lines[i];
       const d = [i, Point.distance(l[1], p[0]), Point.distance(l[1], p[1])];
 
       if(Point.equals(l[1], p[0])) {
@@ -391,28 +375,23 @@ export const LinesToPath = (lines, lineFn) => {
       } else if(Point.equals(l[1], p[1])) {
         let tmp = lines.splice(i, 1)[0];
         m = tmp.reverse();
-        //   if(tmp.curve !== undefined && isFinite(+tmp.curve) && Math.abs(+tmp.curve) > 0) m.curve = -tmp.curve;
         break;
       }
     }
     if(m) {
-      // debug = Point.equals(m[1], { x: 0.635, y: 1.016 }) && m;
       lineTo(m[1], m.curve);
       l = m;
     } else if(lines.length > 0) {
       l = lines.shift();
       ret.push((path = []));
       path.push(`M ${l.x1} ${l.y1}`);
+      start = l.a;
       prevPoint = l[0];
-      //   debug = Point.equals(l[1], { x: 0.635, y: 1.016 }) && l;
-
-      //console.log('l', l, l.b);
       lineTo(l.b, l.curve);
     }
   } while(lines.length > 0);
-
   return ret;
-};
+}
 
 export function MakeCoordTransformer(matrix) {
   const transformStr = matrix + '';

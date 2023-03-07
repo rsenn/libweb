@@ -68,6 +68,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
         fill: '#f0f',
         'font-size': '0.8px',
         ...AlignmentAttrs(alignment, VERTICAL),
+        style: { display: 'none' },
         transform: t.scaling
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)

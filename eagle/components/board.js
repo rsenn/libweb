@@ -23,7 +23,7 @@ export const Board = ({ data, ...props }) => {
 
   let palette = signals.list.map((sig, i) => new HSLA((i * 360) / (numSignals - 1), 100, 50, 1).toRGBA());
 
-  console.log('Board.render', { palette });
+  log('Board.render', { palette });
 
   return h('g', { ['data-name']: 'board', transform }, [
     h(Signals, { data: data.get('signals') }),

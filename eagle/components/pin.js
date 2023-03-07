@@ -65,7 +65,8 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         opts: { transformation },
         rot,
         'data-rot': rot,
-        'font-size': '1.905px'
+        'font-size': '1.905px',
+        style: { display: 'none' }
         //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
       })
     );

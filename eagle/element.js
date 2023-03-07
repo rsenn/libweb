@@ -55,8 +55,7 @@ export class EagleElement extends EagleNode {
       globalThis.tmp = { owner, root, path, raw, ref };
       //if(owner instanceof EagleDocument && root == null && path.length === 0) throw new Error('EagleElement.get');
 
-      //console.log('EagleElement.get',globalThis.tmp/*, Util.getCallerStack()*/);
-    }
+          }
     let root = ref.root || owner.raw ? owner.raw : owner;
     let doc = owner.document;
     const { pathMapper, raw2element } = doc;
@@ -581,13 +580,7 @@ export class EagleElement extends EagleNode {
       }
       if(ok) return bb;
     }
-    /*  let pos = this.geometry;
-    if(pos) {
-      if(pos.toObject) pos = pos.toObject();
-      else if(pos.clone) pos = pos.clone();
-      else pos = Util.clone(pos);
-    }*/
-    if(this.tagName == 'schematic') {
+      if(this.tagName == 'schematic') {
       let instances = [...this.getAll('instance')];
       return BBox.of(...instances);
     }

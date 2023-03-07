@@ -147,7 +147,7 @@ export class EagleDocument extends EagleNode {
       });
     }
     if(this.type == 'brd') {
-      let board = this.get('board') ??  this.lookup('/eagle/drawing/board');
+      let board = this.get('board') ?? this.lookup('/eagle/drawing/board');
       let { elements, plain, signals, libraries } = board;
 
       lazyProperties(this, {
@@ -158,8 +158,7 @@ export class EagleDocument extends EagleNode {
       });
     }
 
-      lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
-
+    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
 
     let drawing = this.get('drawing');
 
