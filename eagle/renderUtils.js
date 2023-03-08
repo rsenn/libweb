@@ -1,5 +1,5 @@
 import { Point, Line, TransformationList, ImmutableTransformationList, LineList } from '../geom.js';
-import { className,isObject,range,roundTo } from '../misc.js';
+import { unique, className, isObject, range, roundTo } from '../misc.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
 import { useTrkl } from '../hooks/useTrkl.js';

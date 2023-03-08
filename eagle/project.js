@@ -69,11 +69,10 @@ export class EagleProject {
       () => {
         let doc = EagleDocument.open(file, this.fs);
         this.list[index] = doc;
-           //console.log('this',this);
-           //console.log('this.addLibraries',this.addLibraries);
+        //console.log('this',this);
+        //console.log('this.addLibraries',this.addLibraries);
 
-        if(doc.libraries) 
-          this.addLibraries(doc.libraries.list.map(l => l.name));
+        if(doc.libraries) this.addLibraries(doc.libraries.list.map(l => l.name));
 
         return doc;
       },
@@ -141,7 +140,7 @@ export class EagleProject {
   }
 
   findDocument(pred) {
-  //console.log('findDocument', { pred });
+    //console.log('findDocument', { pred });
     if(typeof pred == 'string') {
       let name = pred;
       if(name.indexOf('/') == -1) name = '(^|/)' + name;
@@ -150,7 +149,7 @@ export class EagleProject {
       pred = name => re.test(name);
     }
     let names = Object.getOwnPropertyNames(this.documents);
-  //console.log('findDocument', { names,pred:pred+''});
+    //console.log('findDocument', { names,pred:pred+''});
     const name = names.find(pred);
 
     //console.log('findDocument', { names, name, pred: pred + '' });

@@ -6,7 +6,7 @@ import { LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { ElementToComponent, Package, Origin } from './components.js';
 import { Frame } from './components/frame.js';
-import {ucfirst,unique} from '../misc.js';
+import { ucfirst, unique } from '../misc.js';
 
 export class LibraryRenderer extends EagleSVGRenderer {
   static pinSizes = {

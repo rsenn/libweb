@@ -1,6 +1,6 @@
 import { EagleRef, EagleReference } from './ref.js';
 import * as deep from '../deep.js';
-import { className, define, defineGettersSetters, fnName, getPrototypeChain, isArray, isBrowser, isObject, memoize, tryCatch ,map} from '../misc.js';
+import { className, define, defineGettersSetters, fnName, getPrototypeChain, isArray, isBrowser, isObject, memoize, tryCatch, map } from '../misc.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';

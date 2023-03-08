@@ -1,5 +1,5 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import {isObject,roundTo,tryCatch} from '../../misc.js';
+import { isObject, roundTo, tryCatch } from '../../misc.js';
 import { MakeCoordTransformer, useTrkl, ElementToClass, log, Alignment } from '../renderUtils.js';
 import { Text } from './text.js';
 import { toXML } from '../../json.js';
@@ -11,7 +11,6 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
 
   let { transformation = new TransformationList() } = opts;
 
-   
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
   let { children, text: innerText, align = 'bottom-left', size, font, rot } = data;

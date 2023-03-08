@@ -1,4 +1,4 @@
-import {roundTo} from '../../misc.js';
+import { roundTo } from '../../misc.js';
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';

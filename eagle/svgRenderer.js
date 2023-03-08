@@ -1,5 +1,5 @@
 import { EagleElement } from './element.js';
-import { define, inserter, isObject,mapWrapper } from '../misc.js';
+import { define, inserter, isObject, mapWrapper } from '../misc.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { MakeRotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
