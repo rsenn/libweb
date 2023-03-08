@@ -268,7 +268,7 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
         continue;
       }
 
-      if(name.match(/[\s\n\\/='"\0<>]/)) continue;
+      if(name.match(/[\s\n\\\/='"\0<>]/)) continue;
       if(
         !(opts && opts.allAttributes) &&
         (name === 'key' || name === 'ref' || name === '__self' || name === '__source' || name === 'defaultValue')
@@ -339,7 +339,7 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
   }
 
   s = '<' + nodeName + s + '>';
-  if(String(nodeName).match(/[\s\n\\/='"\0<>]/)) throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
+  if(String(nodeName).match(/[\s\n\\\/='"\0<>]/)) throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
   var isVoid =
     String(nodeName).match(VOID_ELEMENTS) || (opts.voidElements && String(nodeName).match(opts.voidElements));
   var pieces = [];
