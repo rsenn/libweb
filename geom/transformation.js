@@ -425,10 +425,10 @@ export class TransformationList extends Array {
       if(tUnit === undefined) tUnit = init.translationUnit || init.tUnit;
       if(rUnit == undefined) rUnit = init.rotationUnit || init.rUnit;
     }
-    //   if(typeof init != 'number' && typeof init != 'undefined' && !(Util.isArray(init) && init.length == 0)) console.debug(`TransformationList.constructor(`, typeof init == 'string' ? Util.abbreviate(init) : init, tUnit, rUnit, `)`);
+    //   if(typeof init != 'number' && typeof init != 'undefined' && !(Array.isArray(init) && init.length == 0)) console.debug(`TransformationList.constructor(`, typeof init == 'string' ? Util.abbreviate(init) : init, tUnit, rUnit, `)`);
     if(init) {
       this.initialize(init);
-      // if(!(typeof init == 'number' || (Util.isArray(init) && init.length == 0))) console.debug(`TransformationList   initialized to:`, this);
+      // if(!(typeof init == 'number' || (Array.isArray(init) && init.length == 0))) console.debug(`TransformationList   initialized to:`, this);
     }
     if(typeof tUnit == 'string') this.translationUnit = tUnit;
     if(typeof rUnit == 'string') this.rotationUnit = rUnit;

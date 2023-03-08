@@ -230,7 +230,7 @@ OpenLayers.Bounds = OpenLayers.Class({
   top: null,
   centerLonLat: null,
   initialize: function(a, b, c, d) {
-    OpenLayers.Util.isArray(a) && ((d = a[3]), (c = a[2]), (b = a[1]), (a = a[0]));
+    OpenLayers.Array.isArray(a) && ((d = a[3]), (c = a[2]), (b = a[1]), (a = a[0]));
     null != a && (this.left = OpenLayers.Util.toFloat(a));
     null != b && (this.bottom = OpenLayers.Util.toFloat(b));
     null != c && (this.right = OpenLayers.Util.toFloat(c));
@@ -492,7 +492,7 @@ OpenLayers.LonLat = OpenLayers.Class({
   lon: 0,
   lat: 0,
   initialize: function(a, b) {
-    OpenLayers.Util.isArray(a) && ((b = a[1]), (a = a[0]));
+    OpenLayers.Array.isArray(a) && ((b = a[1]), (a = a[0]));
     this.lon = OpenLayers.Util.toFloat(a);
     this.lat = OpenLayers.Util.toFloat(b);
   },
@@ -538,7 +538,7 @@ OpenLayers.LonLat.fromString = function(a) {
   return new OpenLayers.LonLat(a[0], a[1]);
 };
 OpenLayers.LonLat.fromArray = function(a) {
-  var b = OpenLayers.Util.isArray(a);
+  var b = OpenLayers.Array.isArray(a);
   return new OpenLayers.LonLat(b && a[0], b && a[1]);
 };
 OpenLayers.Pixel = OpenLayers.Class({
@@ -667,7 +667,7 @@ OpenLayers.Util.getElement = function() {
 OpenLayers.Util.isElement = function(a) {
   return !(!a || 1 !== a.nodeType);
 };
-OpenLayers.Util.isArray = function(a) {
+OpenLayers.Array.isArray = function(a) {
   return '[object Array]' === Object.prototype.toString.call(a);
 };
 OpenLayers.Util.removeItem = function(a, b) {
@@ -5773,7 +5773,7 @@ OpenLayers.Geometry.fromWKT = function(a) {
     c || ((c = new OpenLayers.Format.WKT()), (OpenLayers.Geometry.fromWKT.format = c));
     a = c.read(a);
     if(a instanceof OpenLayers.Feature.Vector) b = a.geometry;
-    else if(OpenLayers.Util.isArray(a)) {
+    else if(OpenLayers.Array.isArray(a)) {
       b = a.length;
       for(var c = Array(b), d = 0; d < b; ++d) c[d] = a[d].geometry;
       b = new OpenLayers.Geometry.Collection(c);
@@ -5951,7 +5951,7 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
     null != a.left && null != a.bottom && null != a.right && null != a.top && this.setBounds(a);
   },
   addComponents: function(a) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     for(var b = 0, c = a.length; b < c; b++) this.addComponent(a[b]);
   },
   addComponent: function(a, b) {
@@ -5971,7 +5971,7 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
   },
   removeComponents: function(a) {
     var b = !1;
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     for(var c = a.length - 1; 0 <= c; --c) b = this.removeComponent(a[c]) || b;
     return b;
   },
@@ -6045,7 +6045,7 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
   equals: function(a) {
     var b = !0;
     if(a && a.CLASS_NAME && this.CLASS_NAME == a.CLASS_NAME)
-      if(OpenLayers.Util.isArray(a.components) && a.components.length == this.components.length)
+      if(OpenLayers.Array.isArray(a.components) && a.components.length == this.components.length)
         for(var c = 0, d = this.components.length; c < d; ++c) {
           if(!this.components[c].equals(a.components[c])) {
             b = !1;
@@ -6839,7 +6839,7 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   write: function(a) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     for(
       var b = this.createElementNS('http://www.opengis.net/wfs', 'wfs:' + this.collectionName), c = 0;
       c < a.length;
@@ -7178,7 +7178,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   write: function(a) {
     var b;
-    b = OpenLayers.Util.isArray(a) ? 'featureMembers' : 'featureMember';
+    b = OpenLayers.Array.isArray(a) ? 'featureMembers' : 'featureMember';
     a = this.writeNode('gml:' + b, a);
     this.setAttributeNS(a, this.namespaces.xsi, 'xsi:schemaLocation', this.schemaLocation);
     return OpenLayers.Format.XML.prototype.write.apply(this, [a]);
@@ -7417,7 +7417,7 @@ OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
   },
   write: function(a) {
     var b;
-    b = OpenLayers.Util.isArray(a) ? 'featureMembers' : 'featureMember';
+    b = OpenLayers.Array.isArray(a) ? 'featureMembers' : 'featureMember';
     a = this.writeNode('gml:' + b, a);
     this.setAttributeNS(a, this.namespaces.xsi, 'xsi:schemaLocation', this.schemaLocation);
     return OpenLayers.Format.XML.prototype.write.apply(this, [a]);
@@ -8280,13 +8280,13 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
     var b,
       c = !1;
     if('GeometryCollection' == a.type) {
-      if(!OpenLayers.Util.isArray(a.geometries)) throw 'GeometryCollection must have geometries array: ' + a;
+      if(!OpenLayers.Array.isArray(a.geometries)) throw 'GeometryCollection must have geometries array: ' + a;
       b = a.geometries.length;
       for(var c = Array(b), d = 0; d < b; ++d) c[d] = this.parseGeometry.apply(this, [a.geometries[d]]);
       b = new OpenLayers.Geometry.Collection(c);
       c = !0;
     } else {
-      if(!OpenLayers.Util.isArray(a.coordinates)) throw 'Geometry must have coordinates array: ' + a;
+      if(!OpenLayers.Array.isArray(a.coordinates)) throw 'Geometry must have coordinates array: ' + a;
       if(!this.parseCoords[a.type.toLowerCase()]) throw 'Unsupported geometry type: ' + a.type;
       try {
         b = this.parseCoords[a.type.toLowerCase()].apply(this, [a.coordinates]);
@@ -8376,7 +8376,7 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
   },
   write: function(a, b) {
     var c = { type: null };
-    if(OpenLayers.Util.isArray(a)) {
+    if(OpenLayers.Array.isArray(a)) {
       c.type = 'FeatureCollection';
       var d = a.length;
       c.features = Array(d);
@@ -8766,7 +8766,7 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
     }
   },
   addControls: function(a) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     this.controls = this.controls.concat(a);
     for(var b = 0, c = a.length; b < c; b++) {
       var d = a[b],
@@ -8894,7 +8894,7 @@ OpenLayers.Layer.HTTPRequest = OpenLayers.Class(OpenLayers.Layer, {
       d = OpenLayers.Util.extend({}, this.params),
       d = OpenLayers.Util.extend(d, a),
       e = OpenLayers.Util.getParameterString(d);
-    OpenLayers.Util.isArray(c) && (c = this.selectUrl(e, c));
+    OpenLayers.Array.isArray(c) && (c = this.selectUrl(e, c));
     var e = OpenLayers.Util.upperCaseObject(OpenLayers.Util.getParameters(c)),
       f;
     for(f in d) f.toUpperCase() in e && delete d[f];
@@ -9814,7 +9814,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
     for(var d = 0; d < b.length; d++) this.addRenderer(c, b[d]);
   },
   addRenderer: function(a, b) {
-    if(OpenLayers.Util.isArray(b)) this.addGroupRenderer(a, b);
+    if(OpenLayers.Array.isArray(b)) this.addGroupRenderer(a, b);
     else {
       var c = this.createElementNS('', b.type.toUpperCase() + 'RENDERER');
       a.appendChild(c);
@@ -11137,7 +11137,7 @@ OpenLayers.Format.GPX = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   write: function(a, b) {
-    a = OpenLayers.Util.isArray(a) ? a : [a];
+    a = OpenLayers.Array.isArray(a) ? a : [a];
     var c = this.createElementNS(this.namespaces.gpx, 'gpx');
     c.setAttribute('version', '1.1');
     c.setAttribute('creator', this.creator);
@@ -11173,7 +11173,7 @@ OpenLayers.Format.GPX = OpenLayers.Class(OpenLayers.Format.XML, {
     c = this.createElementNS(this.namespaces.gpx, 'trk');
     this.appendAttributesNode(c, a);
     a = this.buildTrkSegNode(b);
-    a = OpenLayers.Util.isArray(a) ? a : [a];
+    a = OpenLayers.Array.isArray(a) ? a : [a];
     for(var b = 0, d = a.length; b < d; b++) c.appendChild(a[b]);
     return c;
   },
@@ -11262,7 +11262,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
   getURL: function(a) {
     a = this.getXYZ(a);
     var b = this.url;
-    OpenLayers.Util.isArray(b) && (b = this.selectUrl('' + a.x + a.y + a.z, b));
+    OpenLayers.Array.isArray(b) && (b = this.selectUrl('' + a.x + a.y + a.z, b));
     return OpenLayers.String.format(b, a);
   },
   getXYZ: function(a) {
@@ -11377,7 +11377,7 @@ OpenLayers.Renderer = OpenLayers.Class({
   clear: function() {},
   getFeatureIdFromEvent: function(a) {},
   eraseFeatures: function(a) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     for(var b = 0, c = a.length; b < c; ++b) {
       var d = a[b];
       this.eraseGeometry(d.geometry, d.id);
@@ -11776,7 +11776,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
     return b;
   },
   eraseFeatures: function(a) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     for(var b = 0; b < a.length; ++b) delete this.features[a[b].id];
     this.redraw();
   },
@@ -11916,7 +11916,7 @@ OpenLayers.Format.OSM = OpenLayers.Class(OpenLayers.Format.XML, {
     return b && (this.checkTags ? c : !0);
   },
   write: function(a) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     this.osm_id = 1;
     this.created_nodes = {};
     var b = this.createElementNS(null, 'osm');
@@ -12076,7 +12076,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
     this.deleteCodes = [46, 68];
     this.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
     OpenLayers.Control.prototype.initialize.apply(this, [b]);
-    OpenLayers.Util.isArray(this.deleteCodes) || (this.deleteCodes = [this.deleteCodes]);
+    OpenLayers.Array.isArray(this.deleteCodes) || (this.deleteCodes = [this.deleteCodes]);
     var c = { documentDrag: this.documentDrag, stopDown: !1 };
     this.handlers = {
       keyboard: new OpenLayers.Handler.Keyboard(this, { keydown: this.handleKeypress }),
@@ -12676,7 +12676,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
     b != this.renderer.root.style.display && (this.renderer.root.style.display = b);
   },
   addFeatures: function(a, b) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     var c = !b || !b.silent;
     if(c) {
       var d = { features: a };
@@ -12704,7 +12704,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
   removeFeatures: function(a, b) {
     if(a && 0 !== a.length) {
       if(a === this.features) return this.removeAllFeatures(b);
-      OpenLayers.Util.isArray(a) || (a = [a]);
+      OpenLayers.Array.isArray(a) || (a = [a]);
       a === this.selectedFeatures && (a = a.slice());
       var c = !b || !b.silent;
       c && this.events.triggerEvent('beforefeaturesremoved', { features: a });
@@ -13112,7 +13112,7 @@ OpenLayers.Format.GML.v2 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
   },
   write: function(a) {
     var b;
-    b = OpenLayers.Util.isArray(a) ? 'wfs:FeatureCollection' : 'gml:featureMember';
+    b = OpenLayers.Array.isArray(a) ? 'wfs:FeatureCollection' : 'gml:featureMember';
     a = this.writeNode(b, a);
     this.setAttributeNS(a, this.namespaces.xsi, 'xsi:schemaLocation', this.schemaLocation);
     return OpenLayers.Format.XML.prototype.write.apply(this, [a]);
@@ -13771,7 +13771,7 @@ OpenLayers.Layer.TMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
     b = this.getServerZoom();
     c = this.serviceVersion + '/' + this.layername + '/' + b + '/' + c + '/' + a + '.' + this.type;
     a = this.url;
-    OpenLayers.Util.isArray(a) && (a = this.selectUrl(c, a));
+    OpenLayers.Array.isArray(a) && (a = this.selectUrl(c, a));
     return a + c;
   },
   setMap: function(a) {
@@ -14028,7 +14028,7 @@ OpenLayers.Protocol.WFS = function(a) {
 OpenLayers.Protocol.WFS.fromWMSLayer = function(a, b) {
   var c, d;
   c = a.params.LAYERS;
-  c = (OpenLayers.Util.isArray(c) ? c[0] : c).split(':');
+  c = (OpenLayers.Array.isArray(c) ? c[0] : c).split(':');
   1 < c.length && (d = c[0]);
   c = c.pop();
   d = {
@@ -14158,7 +14158,7 @@ OpenLayers.Format.CSWGetDomain.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML, 
         this.readChildNodes(a, b);
       },
       DomainValues: function(a, b) {
-        OpenLayers.Util.isArray(b.DomainValues) || (b.DomainValues = []);
+        OpenLayers.Array.isArray(b.DomainValues) || (b.DomainValues = []);
         for(var c = a.attributes, d = {}, e = 0, f = c.length; e < f; ++e) d[c[e].name] = c[e].nodeValue;
         this.readChildNodes(a, d);
         b.DomainValues.push(d);
@@ -14170,7 +14170,7 @@ OpenLayers.Format.CSWGetDomain.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML, 
         b.ParameterName = this.getChildValue(a);
       },
       ListOfValues: function(a, b) {
-        OpenLayers.Util.isArray(b.ListOfValues) || (b.ListOfValues = []);
+        OpenLayers.Array.isArray(b.ListOfValues) || (b.ListOfValues = []);
         this.readChildNodes(a, b.ListOfValues);
       },
       Value: function(a, b) {
@@ -15018,7 +15018,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
     return d;
   },
   write: function(a) {
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     for(var b = this.createElementNS(this.kmlns, 'kml'), c = this.createFolderXML(), d = 0, e = a.length; d < e; ++d)
       c.appendChild(this.createPlacemarkXML(a[d]));
     b.appendChild(c);
@@ -15263,7 +15263,7 @@ OpenLayers.Format.WMSCapabilities.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         this.readChildNodes(a, b.getcapabilities);
       },
       Format: function(a, b) {
-        OpenLayers.Util.isArray(b.formats) ? b.formats.push(this.getChildValue(a)) : (b.format = this.getChildValue(a));
+        OpenLayers.Array.isArray(b.formats) ? b.formats.push(this.getChildValue(a)) : (b.format = this.getChildValue(a));
       },
       DCPType: function(a, b) {
         this.readChildNodes(a, b);
@@ -15803,7 +15803,7 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
       ));
   },
   initLayer: function(a) {
-    OpenLayers.Util.isArray(a)
+    OpenLayers.Array.isArray(a)
       ? ((this.layers = a),
         (this.layer = new OpenLayers.Layer.Vector.RootContainer(this.id + '_container', { layers: a })))
       : (this.layer = a);
@@ -16553,7 +16553,7 @@ OpenLayers.Format.WMC = OpenLayers.Class(OpenLayers.Format.Context, {
       b.maxExtent = a.maxExtent;
     } else OpenLayers.Util.applyDefaults(b, a), void 0 != b.layers && delete b.layers;
     void 0 == b.layersContext && (b.layersContext = []);
-    if(void 0 != c && OpenLayers.Util.isArray(c))
+    if(void 0 != c && OpenLayers.Array.isArray(c))
       for(a = 0, d = c.length; a < d; a++) {
         var e = c[a];
         e instanceof OpenLayers.Layer.WMS && b.layersContext.push(this.layerToContext(e));
@@ -17008,7 +17008,7 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   write_wmc_StyleList: function(a) {
     var b = this.createElementDefaultNS('StyleList');
-    if((a = a.styles) && OpenLayers.Util.isArray(a))
+    if((a = a.styles) && OpenLayers.Array.isArray(a))
       for(var c, d = 0, e = a.length; d < e; d++) {
         var f = a[d],
           g = this.createElementDefaultNS('Style', null, f.current && !0 == f.current ? { current: '1' } : null);
@@ -17551,7 +17551,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           var c = { userStyles: [], namedStyles: [] };
           this.readChildNodes(a, c);
           for(var d = 0, e = c.userStyles.length; d < e; ++d) c.userStyles[d].layerName = c.name;
-          OpenLayers.Util.isArray(b.namedLayers) ? b.namedLayers.push(c) : (b.namedLayers[c.name] = c);
+          OpenLayers.Array.isArray(b.namedLayers) ? b.namedLayers.push(c) : (b.namedLayers[c.name] = c);
         },
         NamedStyle: function(a, b) {
           b.namedStyles.push(this.getChildName(a.firstChild));
@@ -17837,7 +17837,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           a.name && this.writeNode('Name', a.name, b);
           a.title && this.writeNode('Title', a.title, b);
           a.description && this.writeNode('Abstract', a.description, b);
-          if(OpenLayers.Util.isArray(a.namedLayers))
+          if(OpenLayers.Array.isArray(a.namedLayers))
             for(var c = 0, d = a.namedLayers.length; c < d; ++c) this.writeNode('NamedLayer', a.namedLayers[c], b);
           else for(c in a.namedLayers) this.writeNode('NamedLayer', a.namedLayers[c], b);
           return b;
@@ -18415,7 +18415,7 @@ OpenLayers.Format.XLS.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         var b = this.createElementNSPlus('xls:StreetAddress');
         a.building && this.writeNode(b, 'Building', a.building);
         a = a.street;
-        OpenLayers.Util.isArray(a) || (a = [a]);
+        OpenLayers.Array.isArray(a) || (a = [a]);
         for(var c = 0, d = a.length; c < d; c++) this.writeNode('Street', a[c], b);
         return b;
       },
@@ -18870,7 +18870,7 @@ OpenLayers.Format.OWSContext.v0_3_1 = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   decomposeNestingPath: function(a) {
     var b = [];
-    if(OpenLayers.Util.isArray(a)) {
+    if(OpenLayers.Array.isArray(a)) {
       for(a = a.slice(); 0 < a.length; ) b.push(a.slice()), a.pop();
       b.reverse();
     }
@@ -19688,7 +19688,7 @@ OpenLayers.Layer.TileCache = OpenLayers.Class(OpenLayers.Layer.Grid, {
       OpenLayers.Number.zeroPad(parseInt(a) % 1e3, 3) + '.' + this.extension
     ].join('/');
     b = this.url;
-    OpenLayers.Util.isArray(b) && (b = this.selectUrl(e, b));
+    OpenLayers.Array.isArray(b) && (b = this.selectUrl(e, b));
     b = '/' == b.charAt(b.length - 1) ? b : b + '/';
     return b + e;
   },
@@ -21316,7 +21316,7 @@ OpenLayers.WPSProcess = OpenLayers.Class({
     for(a.reference.body = b.process.description; 0 < this.executeCallbacks.length; ) this.executeCallbacks[0]();
   },
   toFeatures: function(a) {
-    var b = OpenLayers.Util.isArray(a);
+    var b = OpenLayers.Array.isArray(a);
     b || (a = [a]);
     for(var c = Array(a.length), d, e = 0, f = a.length; e < f; ++e)
       (d = a[e]), (c[e] = d instanceof OpenLayers.Feature.Vector ? d : new OpenLayers.Feature.Vector(d));
@@ -21481,7 +21481,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
     dc: {
       '*': function(a, b) {
         var c = a.localName || a.nodeName.split(':').pop();
-        OpenLayers.Util.isArray(b[c]) || (b[c] = []);
+        OpenLayers.Array.isArray(b[c]) || (b[c] = []);
         for(var d = {}, e = a.attributes, f = 0, g = e.length; f < g; ++f) d[e[f].name] = e[f].nodeValue;
         d.value = this.getChildValue(a);
         '' != d.value && b[c].push(d);
@@ -21490,7 +21490,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
     dct: {
       '*': function(a, b) {
         var c = a.localName || a.nodeName.split(':').pop();
-        OpenLayers.Util.isArray(b[c]) || (b[c] = []);
+        OpenLayers.Array.isArray(b[c]) || (b[c] = []);
         b[c].push(this.getChildValue(a));
       }
     },
@@ -21533,7 +21533,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
         (a.DistributedSearch || this.DistributedSearch) &&
           this.writeNode('csw:DistributedSearch', a.DistributedSearch || this.DistributedSearch, b);
         var c = a.ResponseHandler || this.ResponseHandler;
-        if(OpenLayers.Util.isArray(c) && 0 < c.length)
+        if(OpenLayers.Array.isArray(c) && 0 < c.length)
           for(var d = 0, e = c.length; d < e; d++) this.writeNode('csw:ResponseHandler', c[d], b);
         this.writeNode('Query', a.Query || this.Query, b);
         return b;
@@ -21548,7 +21548,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
         a || (a = {});
         var b = this.createElementNSPlus('csw:Query', { attributes: { typeNames: a.typeNames || 'csw:Record' } }),
           c = a.ElementName;
-        if(OpenLayers.Util.isArray(c) && 0 < c.length)
+        if(OpenLayers.Array.isArray(c) && 0 < c.length)
           for(var d = 0, e = c.length; d < e; d++) this.writeNode('csw:ElementName', c[d], b);
         else this.writeNode('csw:ElementSetName', a.ElementSetName || { value: 'summary' }, b);
         a.Constraint && this.writeNode('csw:Constraint', a.Constraint, b);
@@ -23200,7 +23200,7 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
   },
   select: function(a) {
     this.modifiers.multiple || this.modifiers.toggle || this.unselectAll();
-    OpenLayers.Util.isArray(a) || (a = [a]);
+    OpenLayers.Array.isArray(a) || (a = [a]);
     var b = this.events.triggerEvent('beforefeaturesselected', { features: a });
     if(!1 !== b) {
       for(var c = [], d, e = 0, f = a.length; e < f; ++e)
@@ -24019,7 +24019,7 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   write: function(a) {
     var b;
-    if(OpenLayers.Util.isArray(a)) {
+    if(OpenLayers.Array.isArray(a)) {
       b = this.createElementNS(this.rssns, 'rss');
       for(var c = 0, d = a.length; c < d; c++) b.appendChild(this.createFeatureXML(a[c]));
     } else b = this.createFeatureXML(a);
@@ -24783,7 +24783,7 @@ OpenLayers.Layer.Zoomify = OpenLayers.Class(OpenLayers.Layer.Grid, {
       a +
       '.jpg';
     b = this.url;
-    OpenLayers.Util.isArray(b) && (b = this.selectUrl(c, b));
+    OpenLayers.Array.isArray(b) && (b = this.selectUrl(c, b));
     return b + c;
   },
   getImageSize: function() {
@@ -24837,7 +24837,7 @@ OpenLayers.Layer.MapServer = OpenLayers.Class(OpenLayers.Layer.Grid, {
       d = OpenLayers.Util.extend({}, this.params),
       d = OpenLayers.Util.extend(d, a),
       e = OpenLayers.Util.getParameterString(d);
-    OpenLayers.Util.isArray(c) && (c = this.selectUrl(e, c));
+    OpenLayers.Array.isArray(c) && (c = this.selectUrl(e, c));
     var e = OpenLayers.Util.upperCaseObject(OpenLayers.Util.getParameters(c)),
       f;
     for(f in d) f.toUpperCase() in e && delete d[f];
@@ -25469,7 +25469,7 @@ OpenLayers.Control.WMTSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
     });
     OpenLayers.Util.applyDefaults(d, this.vendorParams);
     return {
-      url: OpenLayers.Util.isArray(a.url) ? a.url[0] : a.url,
+      url: OpenLayers.Array.isArray(a.url) ? a.url[0] : a.url,
       params: OpenLayers.Util.upperCaseObject(d),
       callback: function(c) {
         this.handleResponse(b, c, a);
@@ -26424,7 +26424,7 @@ OpenLayers.Layer.ArcGISCache = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     }
     b = this.url;
     e = '' + c + d + a;
-    OpenLayers.Util.isArray(b) && (b = this.selectUrl(e, b));
+    OpenLayers.Array.isArray(b) && (b = this.selectUrl(e, b));
     this.useArcGISServer
       ? (b += '/tile/${z}/${y}/${x}')
       : ((c = 'C' + OpenLayers.Number.zeroPad(c, 8, 16)),
@@ -26485,7 +26485,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
       (c = a[e]),
         c instanceof OpenLayers.Layer.WMS &&
           (!this.queryVisible || c.getVisibility()) &&
-          ((d = OpenLayers.Util.isArray(c.url) ? c.url[0] : c.url),
+          ((d = OpenLayers.Array.isArray(c.url) ? c.url[0] : c.url),
           !1 !== this.drillDown || this.url || (this.url = d),
           (!0 === this.drillDown || this.urlMatches(d)) && b.push(c));
     return b;
@@ -26537,7 +26537,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
   getStyleNames: function(a) {
     return a.params.STYLES
       ? a.params.STYLES
-      : OpenLayers.Util.isArray(a.params.LAYERS)
+      : OpenLayers.Array.isArray(a.params.LAYERS)
       ? Array(a.params.LAYERS.length)
       : a.params.LAYERS.replace(/[^,]/g, '');
   },
@@ -26555,7 +26555,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
       this.features = [];
       for(var d = {}, e, f = 0, g = c.length; f < g; f++) {
         var h = c[f];
-        e = OpenLayers.Util.isArray(h.url) ? h.url[0] : h.url;
+        e = OpenLayers.Array.isArray(h.url) ? h.url[0] : h.url;
         e in d ? d[e].push(h) : (this._numRequests++, (d[e] = [h]));
       }
       for(e in d) (c = d[e]), (c = this.buildWMSOptions(e, c, a, c[0].params.FORMAT)), OpenLayers.Request.GET(c);
@@ -27425,7 +27425,7 @@ OpenLayers.Layer.WMTS = OpenLayers.Class(OpenLayers.Layer.Grid, {
       var c = this.getTileInfo(a);
       a = this.dimensions;
       var d,
-        b = OpenLayers.Util.isArray(this.url)
+        b = OpenLayers.Array.isArray(this.url)
           ? this.selectUrl(
               [this.version, this.style, this.matrixSet, this.matrix.identifier, c.row, c.col].join(),
               this.url
@@ -27551,7 +27551,7 @@ OpenLayers.Layer.KaMapCache = OpenLayers.Class(OpenLayers.Layer.KaMap, {
         this.extension
       ],
       d = this.url;
-    OpenLayers.Util.isArray(d) && (d = this.selectUrl(c.join(''), d));
+    OpenLayers.Array.isArray(d) && (d = this.selectUrl(c.join(''), d));
     return d + c.join('');
   },
   CLASS_NAME: 'OpenLayers.Layer.KaMapCache'
@@ -27825,7 +27825,7 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   write: function(a) {
     var b;
-    if(OpenLayers.Util.isArray(a)) {
+    if(OpenLayers.Array.isArray(a)) {
       b = this.createElementNSPlus('atom:feed');
       b.appendChild(this.createElementNSPlus('atom:title', { value: this.feedTitle }));
       for(var c = 0, d = a.length; c < d; c++) b.appendChild(this.buildEntryNode(a[c]));
@@ -27852,11 +27852,11 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
       c = b.atom || {},
       d = this.createElementNSPlus('atom:entry');
     if(c.authors)
-      for(var e = OpenLayers.Util.isArray(c.authors) ? c.authors : [c.authors], f = 0, g = e.length; f < g; f++)
+      for(var e = OpenLayers.Array.isArray(c.authors) ? c.authors : [c.authors], f = 0, g = e.length; f < g; f++)
         d.appendChild(this.buildPersonConstructNode('author', e[f]));
     if(c.categories)
       for(
-        var e = OpenLayers.Util.isArray(c.categories) ? c.categories : [c.categories], h, f = 0, g = e.length;
+        var e = OpenLayers.Array.isArray(c.categories) ? c.categories : [c.categories], h, f = 0, g = e.length;
         f < g;
         f++
       )
@@ -27869,14 +27869,14 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
     c.content && d.appendChild(this.buildContentNode(c.content));
     if(c.contributors)
       for(
-        e = OpenLayers.Util.isArray(c.contributors) ? c.contributors : [c.contributors], f = 0, g = e.length;
+        e = OpenLayers.Array.isArray(c.contributors) ? c.contributors : [c.contributors], f = 0, g = e.length;
         f < g;
         f++
       )
         d.appendChild(this.buildPersonConstructNode('contributor', e[f]));
     a.fid && d.appendChild(this.createElementNSPlus('atom:id', { value: a.fid }));
     if(c.links)
-      for(e = OpenLayers.Util.isArray(c.links) ? c.links : [c.links], f = 0, g = e.length; f < g; f++)
+      for(e = OpenLayers.Array.isArray(c.links) ? c.links : [c.links], f = 0, g = e.length; f < g; f++)
         (h = e[f]),
           d.appendChild(
             this.createElementNSPlus('atom:link', {

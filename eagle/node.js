@@ -1,7 +1,7 @@
 import { EagleRef, EagleReference } from './ref.js';
 import Util from '../util.js';
 import * as deep from '../deep.js';
-import { define } from '../misc.js';
+import { className,define,defineGettersSetters,fnName,getPrototypeChain,isArray,isBrowser,isObject,memoize,tryCatch } from '../misc.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';
@@ -55,8 +55,7 @@ export class EagleNode {
       writable: true
     });
 
-    Util.define(this, 'ref', ref);
-
+    define(this, {ref});
     //console.log('EagleNode.constructor(2)', {owner: this.owner, ref: this.ref,raw: this.raw});
   }
 
@@ -112,7 +111,7 @@ export class EagleNode {
     return ret;*/
   }
   get project() {
-    if(Util.className(this.owner) == 'EagleProject') return this.owner;
+    if(className(this.owner) == 'EagleProject') return this.owner;
     return this.document.owner;
   }
 
@@ -159,8 +158,8 @@ export class EagleNode {
   }
 
   get childConstructor() {
-    let protos = Util.getPrototypeChain(this);
-    if(Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
+    let protos = getPrototypeChain(this);
+    if(fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
     let ctor = protos[0].constructor;
     //console.log('childConstructor:', this, ctor);
     return ctor;
@@ -170,7 +169,7 @@ export class EagleNode {
     let fields = this.cacheFields();
     let node = this;
     if(fields && fields.length) {
-      Util.define(this, { cache: {}, lists: {} });
+      define(this, { cache: {}, lists: {} });
       let lazy = {};
       let lists = {};
       let maps = {};
@@ -246,8 +245,8 @@ export class EagleNode {
     } else if(typeof pred == 'string') {
       let name = pred;
       pred = (v, p, o) => v.tagName === name;
-    } else if(Util.isObject(pred) && typeof pred != 'function') {
-      let keys = Util.isArray(pred) ? pred : Object.keys(pred);
+    } else if(isObject(pred) && typeof pred != 'function') {
+      let keys = Array.isArray(pred) ? pred : Object.keys(pred);
       let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
 
       pred = (v, p, o) =>
@@ -290,8 +289,6 @@ export class EagleNode {
   }
 
   find(name, transform = a => a) {
-    //console.log('find', this, name, Util.getCallers(0));
-    //throw new Error("find");
     let pred = EagleNode.makePredicate(name);
     let result = deep.find(this.raw, pred, [...this.path]); //this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform))
 
@@ -477,7 +474,7 @@ export class EagleNode {
   }
 
   xpath() {
-    return Util.tryCatch(
+    return tryCatch(
       () => ImmutableXPath.from(this.path, this.document),
       xpath => xpath,
       () => Object.setPrototypeOf([...this.path], ImmutableXPath.prototype)
@@ -490,7 +487,7 @@ export class EagleNode {
 
   *iterator(...args) {
     let predicate = typeof args[0] == 'function' ? args.shift() : arg => true;
-    let path = (Util.isArray(args[0]) && args.shift()) || [];
+    let path = (Array.isArray(args[0]) && args.shift()) || [];
     let t =
       typeof args[0] == 'function'
         ? args.shift()
@@ -499,7 +496,7 @@ export class EagleNode {
             l,
             d
           ];
-    let owner = Util.isObject(this) && 'owner' in this ? this.owner : this;
+    let owner = isObject(this) && 'owner' in this ? this.owner : this;
     let root = this.root || (owner.xml && owner.xml[0]);
     let node = root;
     if(path.length > 0) node = deep.get(node, path);
@@ -515,17 +512,17 @@ export class EagleNode {
     return toXML(this.raw); //, 10000, '"', indent);
   }
 
-  static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
+ /* static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
     const { depth, breakLength } = c;
     let o = e;
     let r = (e && e.raw) || e;
     if(typeof r == 'string') return text(r, 1, 36);
     let x = '';
     try {
-      x = Util.inspect(r, {
+      x = inspect(r, {
         depth: depth * 2,
         breakLength,
-        colors: !Util.isBrowser()
+        colors: !isBrowser()
       });
     } catch(err) {}
     let s = '⏐';
@@ -537,16 +534,16 @@ export class EagleNode {
     let [p, ...arr] = x;
     p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
     let l = e.path + '';
-    let type = Util.className(e);
+    let type = className(e);
     if(arr.length) arr.unshift('');
     let ret = [text(type, 38, 5, 219), p, text('⧃❋⭗', 38, 5, 112), ...arr, text(`〕`, 1, 37)];
 
     return (l.trim() ? l + '  ' : '') + ret.join(' ') + text('', 0);
-  };
+  };*/
 }
 
 define(EagleNode.prototype, {
-  getRaw: Util.memoize(function () {
+  getRaw: memoize(function () {
     const { owner, ref, document } = this;
     let r = ref.path.deref(owner.raw, true);
     if(!r) {

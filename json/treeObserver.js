@@ -12,7 +12,7 @@ export class TreeObserver extends ObservableMembrane {
     let type = null;
     path = path || this.mapper.get(value);
     if(!Util.isObject(value)) return null;
-    //else if(Util.isArray(value) || ImmutablePath.isChildren([...path][path.length - 1])) type = 'NodeList';
+    //else if(Array.isArray(value) || ImmutablePath.isChildren([...path][path.length - 1])) type = 'NodeList';
     else if('tagName' in value) type = 'Element';
     else if(Util.isObject(path) && [...path].reverse()[0] == 'attributes') type = 'AttributeMap';
     else if(Util.isObject(path) && [...path].reverse()[0] == 'children') type = 'NodeList';
@@ -42,7 +42,7 @@ export class TreeObserver extends ObservableMembrane {
         const idx = ['attributes', 'tagName', 'children'].indexOf(key);
         if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path || [], true);
         let value = path.apply(obj);
-        if(Util.isObject(obj) && !Util.isArray(obj) && key != 'tagName') {
+        if(Util.isObject(obj) && !Array.isArray(obj) && key != 'tagName') {
         }
         for(let handler of this.handlers) {
           handler('change', target, path, value);

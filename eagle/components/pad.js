@@ -1,4 +1,4 @@
-import Util from '../../util.js';
+import {roundTo} from '../../misc.js';
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, MakeRotation, Alignment, AlignmentAttrs, ElementToClass, RenderShape, useTrkl, log, VERTICAL, HORIZONTAL } from '../renderUtils.js';
 import { TransformationList, Point } from '../../geom.js';
@@ -21,8 +21,8 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   const { name, drill, radius, shape, layer, rot } = pad;
   const { x, y } = coordFn(pad);
   const diameter = radius * 2;
-  let ro = Util.roundTo(diameter / 2, 0.0001);
-  let ri = Util.roundTo(drill / 2, 0.0001);
+  let ro = roundTo(diameter / 2, 0.0001);
+  let ri = roundTo(drill / 2, 0.0001);
   let transform = `translate(${x},${y})`;
   let visible = 'yes' == useTrkl(layer.handlers.visible);
   let rotation = MakeRotation(rot);
@@ -40,7 +40,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     fill: padColor.toRGB(),
     'fill-opacity': padColor.a / 255
   };
-  if(padColor.a < 255) pathProps['fill-opacity'] = Util.roundTo(padColor.a / 255, 0.001);
+  if(padColor.a < 255) pathProps['fill-opacity'] = roundTo(padColor.a / 255, 0.001);
   const baseProps = {
     //class: ElementToClass(pad),
     //fill: padColor,

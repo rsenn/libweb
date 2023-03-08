@@ -1,4 +1,4 @@
-import Util from '../util.js';
+import {className,isObject} from '../misc.js';
 import { Point, Rect, Line, BBox } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';
@@ -182,7 +182,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     //console.log('doc:', doc);
     console.log('SchematicRenderer.render', { doc, parent, props, sheetNo });
 
-    /*   const sheetsElem = Util.isObject(doc) && doc.find && doc.find('sheets');
+    /*   const sheetsElem = isObject(doc) && doc.find && doc.find('sheets');
     const sheets = sheetsElem?.children ?? [];*/
 
     //console.log('doc.sheets:',sheets);
@@ -190,7 +190,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let sheet = doc.sheets[sheetNo];
     console.log('sheet', sheet);
     console.log('sheetNo', sheetNo);
-    //console.log('doc', doc, Util.className(doc));
+    //console.log('doc', doc, className(doc));
 
     let bounds = doc.getBounds(sheetNo || 0);
     //console.log('bounds:', bounds);

@@ -1,4 +1,4 @@
-import Util from '../../util.js';
+import {roundTo} from '../../misc.js';
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
@@ -38,7 +38,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
     cx: x,
     cy: y,
     r: radius,
-    'stroke-width': Util.roundTo(width * 0.8, 0.0001),
+    'stroke-width': roundTo(width * 0.8, 0.0001),
     fill: 'none',
     ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
     style: visible ? {} : { display: 'none' }

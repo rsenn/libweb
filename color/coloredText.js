@@ -236,7 +236,7 @@ export class ColoredText extends Array {
     Object.assign(a, {
       append(...args) {
         for(let other of args) {
-          if(Util.isArray(other)) {
+          if(Array.isArray(other)) {
             let i = 0;
             for(let arg of other) {
               this.push(arg);

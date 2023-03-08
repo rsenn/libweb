@@ -1,4 +1,5 @@
 import Util from '../util.js';
+import { define } from '../misc.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
@@ -211,12 +212,12 @@ export class EagleElement extends EagleNode {
             }
           });
         } else if(tagName == 'layer' && key == 'color') {
-          Util.defineGetter(this, 'color', () => {
+          define(this, { get color() { 
             let colorIndex = attributes.color == undefined ? 15 : attributes.color;
             let color = doc.palette[colorIndex] || doc.palette[0b0110];
             //console.log('colorIndex', colorIndex, color);
             return color;
-          });
+          }});
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
           let hfn;
           if(key == 'package') {
@@ -268,7 +269,8 @@ export class EagleElement extends EagleNode {
                 break;
             }
           } else if(key == 'layer') {
-            Util.defineGetter(this, 'layer', () => this.getLayer());
+           define(this, { get layer() { return this.getLayer(); } });
+           
           } else if(key + 's' in doc) {
             hfn = () => doc[key + 's'][elem.attrMap[key] + ''];
           } else {

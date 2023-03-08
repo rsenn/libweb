@@ -11,7 +11,7 @@ export class PointList extends Array {
     const base = Array;
     let ret = new.target ? this : [];
 
-    if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
+    if(Array.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
 
     if(typeof points === 'string') {
       const matches = [...points.matchAll(/[-.0-9,]+/g)];

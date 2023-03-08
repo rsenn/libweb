@@ -1,5 +1,5 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import Util from '../../util.js';
+import {isObject,roundTo,tryCatch} from '../../misc.js';
 import { MakeCoordTransformer, useTrkl, ElementToClass, log, Alignment } from '../renderUtils.js';
 import { Text } from './text.js';
 import { toXML } from '../../json.js';
@@ -18,7 +18,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
   let layer = data.document.getLayer(data.attributes.layer);
   let text = (
     innerText ||
-    /* labelText || */ Util.tryCatch(
+    /* labelText || */ tryCatch(
       () => children.map(t => (t + '').trim()).join('\n'),
       t => t,
       () => ''
@@ -35,7 +35,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
     const prop = text.slice(1).toLowerCase();
     text = prop in opts ? opts[prop] : text;
   } else {
-    //log('TextElement', data.tagName, Util.isObject(data) && '\n' + toXML(data.raw), '\n' + text);
+    //log('TextElement', data.tagName, isObject(data) && '\n' + toXML(data.raw), '\n' + text);
   }
   let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;
@@ -55,7 +55,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
     text,
     visible,
     opts,
-    style: { 'font-size': Util.roundTo(size * 1.5, 0.001) },
+    style: { 'font-size': roundTo(size * 1.5, 0.001) },
     ...attrs
   });
 };

@@ -83,7 +83,7 @@ export class TokenList extends Array {
   constructor(tokens = []) {
     super();
 
-    if(Util.isArray(tokens)) for(let token of tokens) this.push(token);
+    if(Array.isArray(tokens)) for(let token of tokens) this.push(token);
 
     //Array.prototype.splice.call(this, this.length, this.length, ...tokens);
   }

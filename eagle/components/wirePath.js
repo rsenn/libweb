@@ -26,10 +26,10 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
 
   cmds ??= [];
 
-  let isArray = Util.isArray(cmds[0]) && cmds.length > 1;
+  let isArray = Array.isArray(cmds[0]) && cmds.length > 1;
 
-  if(Util.isArray(cmds[0]) && cmds.length == 1) cmds = cmds[0];
-  // if(Util.isArray(cmds)) cmds =  separator + cmds.join(separator) + separator;
+  if(Array.isArray(cmds[0]) && cmds.length == 1) cmds = cmds[0];
+  // if(Array.isArray(cmds)) cmds =  separator + cmds.join(separator) + separator;
 
   return h(
     isArray ? 'g' : 'path',

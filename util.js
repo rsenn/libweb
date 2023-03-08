@@ -553,7 +553,7 @@ Util.toSource = function(arg, opts = {}) {
   const { c = Util.coloring(colors) } = opts;
   let o = [];
   const { print = (...args) => (o = c.concat(o, c.text(...args))) } = opts;
-  if(Util.isArray(arg)) {
+  if(Array.isArray(arg)) {
     print('[', 1, 36);
     for(let item of arg) {
       if(o.length > 0) print(', ');
@@ -887,7 +887,7 @@ Util.pad = function(s, n, char = ' ') {
 Util.abbreviate = function(str, max = 40, suffix = '...') {
   max = +max;
   if(isNaN(max)) max = Infinity;
-  if(Util.isArray(str)) {
+  if(Array.isArray(str)) {
     return Array.prototype.slice.call(str, 0, Math.min(str.length, max)).concat([suffix]);
   }
   if(typeof str != 'string' || !Number.isFinite(max) || max < 0) return str;
@@ -1222,7 +1222,7 @@ Util.fromEntries = Object.fromEntries
 
 Util.objectFrom = function(any) {
   if('toJS' in any) any = any.toJS();
-  else if(Util.isArray(any)) return Util.fromEntries(any);
+  else if(Array.isArray(any)) return Util.fromEntries(any);
   else if('entries' in any) return Util.fromEntries(any.entries());
   return Object.assign({}, any);
 };
@@ -1442,7 +1442,7 @@ Util.match = function(arg, pred) {
       (typeof key === 'string' && re.test(key)) ||
       (typeof val === 'string' && re.test(val));
   }
-  if(Util.isArray(arg)) {
+  if(Array.isArray(arg)) {
     if(!(arg instanceof Array)) arg = [...arg];
     return arg.reduce((acc, val, key) => {
       if(match(val, key, arg)) acc.push(val);
@@ -1489,7 +1489,7 @@ Util.leastCommonMultiple = (n1, n2) => {
 };
 Util.matchAll = Util.curry(function* (re, str) {
   let match;
-  re = re instanceof RegExp ? re : new RegExp(Util.isArray(re) ? '(' + re.join('|') + ')' : re, 'g');
+  re = re instanceof RegExp ? re : new RegExp(Array.isArray(re) ? '(' + re.join('|') + ')' : re, 'g');
   do {
     if((match = re.exec(str))) yield match;
   } while(match != null);
@@ -1715,7 +1715,7 @@ Util.colorDump = (iterable, textFn) => {
   const filters =
     'font-weight: bold; text-shadow: 0px 0px 1px rgba(0,0,0,0.8); filter: drop-shadow(30px 10px 4px #4444dd)';
 
-  if(!Util.isArray(iterable)) iterable = [...iterable];
+  if(!Array.isArray(iterable)) iterable = [...iterable];
   for(let j = 0; j < iterable.length; j++) {
     const [i, color] = iterable[j].length == 2 ? iterable[j] : [j, iterable[j]];
     console.log(
@@ -1863,7 +1863,7 @@ Util.validatePassword = function(value) {
   );
 };
 Util.clone = function(obj, proto) {
-  if(Util.isArray(obj)) return obj.slice();
+  if(Array.isArray(obj)) return obj.slice();
   try {
     let ret = new obj.constructor(obj);
     return ret;
@@ -2418,7 +2418,7 @@ Util.waitFor = async function waitFor(msecs) {
 };
 
 Util.timeout = async (msecs, promises, promiseClass = Promise) =>
-  await promiseClass.race([Util.waitFor(msecs)].concat(Util.isArray(promises) ? promises : [promises]));
+  await promiseClass.race([Util.waitFor(msecs)].concat(Array.isArray(promises) ? promises : [promises]));
 Util.isServer = function() {
   return !Util.isBrowser();
 };
@@ -2459,7 +2459,7 @@ Util.histogram = (...args) => {
     tmp = t(item, i);
     if(tmp) {
       key = tmp;
-      if(Util.isArray(tmp) && tmp.length >= 2) [key, arg] = tmp.slice(-2);
+      if(Array.isArray(tmp) && tmp.length >= 2) [key, arg] = tmp.slice(-2);
       else arg = tmp;
     }
     [key, arg] = [key].concat(setVal(arg, i)).slice(-2);
@@ -2487,7 +2487,7 @@ Util.concat = function* (...args) {
       console.error('isGenerator:', arg);
       yield* arg;
     } else {
-      /* if(Util.isArray(arg))*/
+      /* if(Array.isArray(arg))*/
       for(let item of arg) yield item;
     }
 
@@ -2505,7 +2505,7 @@ Util.rangeMinMax = function(arr, field) {
 };
 
 Util.remap = (...args) => {
-  const getR = () => (Util.isArray(args[0]) ? args.shift() : args.splice(0, 2));
+  const getR = () => (Array.isArray(args[0]) ? args.shift() : args.splice(0, 2));
   const _from = getR(),
     to = getR();
 
@@ -2582,7 +2582,7 @@ Util.isConstructor = x => {
 
 Util.filter = function(a, pred) {
   if(typeof pred != 'function') pred = Util.predicate(pred);
-  if(Util.isArray(a)) return a.filter(pred);
+  if(Array.isArray(a)) return a.filter(pred);
   /*return (function* () {
       for(let [k, v] of a.entries()) if(pred(v, k, a)) yield v;
     })();*/
@@ -2591,7 +2591,7 @@ Util.filter = function(a, pred) {
     return (function* () {
       for(let item of a) if(pred(item)) yield item;
     })();
-  let isa = Util.isArray(a);
+  let isa = Array.isArray(a);
   let ret = {};
   let fn = (k, v) => (ret[k] = v);
   for(let [k, v] of Util.entries(a)) if(pred(v, k, a)) fn(k, v);
@@ -2847,7 +2847,7 @@ Util.formatRecord = function(obj) {
   }
   return ret;
 };
-Util.isArray =
+Array.isArray =
   Array.isArray ||
   function(obj) {
     if(obj.constructor === Array) return true;
@@ -2862,10 +2862,10 @@ Util.isArray =
       obj instanceof Array
     );
   };
-Util.isArrayLike = obj => typeof obj == 'object' && obj !== null && 'length' in obj;
+Array.isArrayLike = obj => typeof obj == 'object' && obj !== null && 'length' in obj;
 
 Util.equals = function(a, b) {
-  if(Util.isArray(a) && Util.isArray(b)) {
+  if(Array.isArray(a) && Array.isArray(b)) {
     return a.length == b.length && a.every((e, i) => b[i] === e);
   } else if(Util.isObject(a) && Util.isObject(b)) {
     const size_a = Util.size(a);
@@ -3029,7 +3029,7 @@ Util.filterKeys = function(obj, pred = k => true) {
   if(pred instanceof RegExp) {
     let re = pred;
     pred = str => re.test(str);
-  } else if(Util.isArray(pred)) {
+  } else if(Array.isArray(pred)) {
     let a = pred;
     pred = str => a.indexOf(str) != -1;
   }
@@ -3084,7 +3084,7 @@ Util.numbersConvert = function(str) {
     .join('');
 };
 Util.entries = function(arg) {
-  if(Util.isArray(arg) || Util.isObject(arg)) {
+  if(Array.isArray(arg) || Util.isObject(arg)) {
     if(typeof arg.entries == 'function') return arg.entries();
     else if(Util.isIterable(arg))
       return (function* () {
@@ -3199,7 +3199,7 @@ Util.inserter = (dest, next = (k, v) => {}) => {
     dest instanceof WeakMap ||*/
     typeof dest.set == 'function' && dest.set.length >= 2
       ? (k, v) => dest.set(k, v)
-      : Util.isArray(dest)
+      : Array.isArray(dest)
       ? (k, v) => dest.push([k, v])
       : (k, v) => (dest[k] = v);
   let fn;
@@ -3217,7 +3217,7 @@ Util.keyIterator = obj => {
   let it;
   if(typeof obj.keys == 'function' && Util.isIterator((it = obj.keys()))) {
     return it;
-  } else if(Util.isArray(obj)) {
+  } else if(Array.isArray(obj)) {
     return Array.prototype.keys.call(obj);
   } else if('length' in obj) {
     return Array.prototype[Symbol.iterator].call(obj);
@@ -3228,7 +3228,7 @@ Util.entryIterator = obj => {
   let it;
   if(typeof obj.entries == 'function' && Util.isIterator((it = obj.entries()))) {
     return it;
-  } else if(Util.isArray(obj)) {
+  } else if(Array.isArray(obj)) {
     return Array.prototype.entries.call(obj);
   } else if('length' in obj) {
     return (function* () {
@@ -3376,7 +3376,7 @@ Util.mapFunction = map => {
     };
     fn[Symbol.iterator] = fn.entries;
     fn[inspectSymbol] = function() {
-      return new Map(this.map(([key, value]) => [Util.isArray(key) ? key.join('.') : key, value]));
+      return new Map(this.map(([key, value]) => [Array.isArray(key) ? key.join('.') : key, value]));
     };
   } else if(typeof map.keys == 'function') {
     if(Util.isAsync(map.keys) || Util.isPromise(map.keys())) {
@@ -3599,7 +3599,7 @@ Util.mapReducer = (setFn, filterFn = (key, value) => true, mapObj = new Map()) =
   );
   fn = function ReduceIntoMap(arg, acc = mapObj) {
     if(Util.isObject(arg) && typeof arg.reduce == 'function')
-      return arg.reduce((acc, arg) => (Util.isArray(arg) ? arg : Util.members(arg)).reduce(reducer, acc), self.map);
+      return arg.reduce((acc, arg) => (Array.isArray(arg) ? arg : Util.members(arg)).reduce(reducer, acc), self.map);
     let c = Util.counter();
     for(let mem of arg) acc = next(acc, mem, c());
     return acc;
@@ -3665,7 +3665,7 @@ Util.inherits =
 //Util.bindMethods = (obj, methods, dest = {}) => Util.bindMethodsTo(obj, methods ?? obj, dest);
 Util.bindMethods = (obj, methods, dest) => {
   dest ??= obj;
-  if(Util.isArray(methods)) {
+  if(Array.isArray(methods)) {
     for(let name of methods) if(typeof obj[name] == 'function') dest[name] = obj[name].bind(obj);
     return dest;
   }
@@ -3997,7 +3997,7 @@ Util.stack = function Stack(stack, offset) {
   }
 
   function stackToString(st, start = 0) {
-    if(Util.isArray(st)) {
+    if(Array.isArray(st)) {
       st = [
         ...(function* () {
           for(let i = start; i < st.length; i++) yield st[i];
@@ -4025,7 +4025,7 @@ Util.stack = function Stack(stack, offset) {
             .map(part => part.trim())
         : frame
     );
-    stack = stack.map(frame => (Util.isArray(frame) ? (frame.length < 2 ? ['', ...frame] : frame).slice(0, 2) : frame));
+    stack = stack.map(frame => (Array.isArray(frame) ? (frame.length < 2 ? ['', ...frame] : frame).slice(0, 2) : frame));
     stack = stack.map(([func, file]) => [
       func,
       file
@@ -4604,7 +4604,7 @@ Util.constructApply = (constructor, array) => {
 };
 
 Util.immutable = args => {
-  const argsType = typeof args === 'object' && Util.isArray(args) ? 'array' : 'object';
+  const argsType = typeof args === 'object' && Array.isArray(args) ? 'array' : 'object';
   const errorText =
     argsType === 'array'
       ? "Error! You can't change elements of this array"
@@ -4689,7 +4689,7 @@ Util.coloring = (useColor = true) =>
           let out = args.shift() || [''];
           if(typeof out == 'string') out = [out];
           for(let arg of args) {
-            if(Util.isArray(arg)) {
+            if(Array.isArray(arg)) {
               for(let subarg of arg) out[0] += subarg;
             } else out[0] += arg;
           }
@@ -4742,7 +4742,7 @@ Util.coloring = (useColor = true) =>
         concat(...args) {
           let out = args.shift() || [''];
           for(let arg of args) {
-            if(Util.isArray(arg) && typeof arg[0] == 'string') out[0] += arg.shift();
+            if(Array.isArray(arg) && typeof arg[0] == 'string') out[0] += arg.shift();
             else if(Util.isObject(arg)) {
               out.push(arg);
               continue;
@@ -4864,7 +4864,7 @@ Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
 
 Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
-  const [propMap, propNames] = Util.isArray(props)
+  const [propMap, propNames] = Array.isArray(props)
     ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props]
     : [props, Object.keys(props)];
 
@@ -4922,7 +4922,7 @@ Util.weakKey = (function () {
 })();
 
 Object.assign(Util.is, {
-  array: Util.isArray,
+  array: Array.isArray,
   bool: Util.isBool,
   constructor: Util.isConstructor,
   date: Util.isDate,
@@ -5372,7 +5372,7 @@ Util.proxyObject = (root, handler) => {
       new Proxy(value, {
         get(target, key) {
           let prop = value[key];
-          if(Util.isObject(prop) || Util.isArray(prop)) return new node([...path, key]);
+          if(Util.isObject(prop) || Array.isArray(prop)) return new node([...path, key]);
           return handler && handler.get ? handler.get(prop, key) : prop;
         }
       })
@@ -5411,7 +5411,7 @@ Util.getArgv = Util.memoize(() =>
   Util.tryCatch(
     () => {
       let a = process.argv;
-      if(!Util.isArray(a)) throw new Error();
+      if(!Array.isArray(a)) throw new Error();
       return a;
     },
     a => a,
@@ -5431,7 +5431,7 @@ Util.getArgs = Util.memoize(() =>
   Util.tryCatch(
     () => {
       let a = process.argv;
-      if(!Util.isArray(a)) throw new Error();
+      if(!Array.isArray(a)) throw new Error();
       return a;
     },
     a => a.slice(1),
@@ -5755,7 +5755,7 @@ Util.consoleConcat = function(...args) {
         } else {
           out[0] += arg.replace(/%/g, '%%');
         }
-      } else if(Util.isArray(arg) && typeof arg[0] == 'string' && /%[cos]/.test(arg[0])) {
+      } else if(Array.isArray(arg) && typeof arg[0] == 'string' && /%[cos]/.test(arg[0])) {
         concat(out, arg);
       } else {
         out[0] += ' %o';
@@ -5807,7 +5807,7 @@ Object.assign(Util.consolePrinter.prototype, Util.consoleConcat.prototype, {
       let arg = args.shift();
       //  console.debug('arg:', i, typeof(arg) == 'string'  ? Util.abbreviate(arg) : arg);
 
-      if(Util.isArray(arg) && /%c/.test(arg[0])) {
+      if(Array.isArray(arg) && /%c/.test(arg[0])) {
         this.i = i;
         this.add(...arg);
         continue;

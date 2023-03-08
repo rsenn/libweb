@@ -9,9 +9,9 @@ import Util from '../util.js';
 export class LineList extends Array {
   constructor(lines) {
     super();
-    if(Util.isArray(lines) || Util.isGenerator(lines)) {
+    if(Array.isArray(lines) || Util.isGenerator(lines)) {
       for(let line of lines) {
-        if(!(line instanceof Line)) line = Util.isArray(line) ? new Line(...line) : new Line(line);
+        if(!(line instanceof Line)) line = Array.isArray(line) ? new Line(...line) : new Line(line);
         this.push(line);
       }
     }

@@ -56,7 +56,7 @@ export class ReactComponent {
       if(innerHTML) obj.children.push(innerHTML);
       ret.push(obj);
     }
-    return Util.isArray(ret) && ret.length == 1 ? ret[0] : ret;
+    return Array.isArray(ret) && ret.length == 1 ? ret[0] : ret;
   }
 
   /*
@@ -75,7 +75,7 @@ export class ReactComponent {
     let { fmt = 0 } = opts;
     let s = '';
     if(obj.__ === null && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
-    if(Util.isArray(obj)) {
+    if(Array.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
         s += this.toString(item);

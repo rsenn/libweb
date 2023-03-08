@@ -6,6 +6,7 @@ import { LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { ElementToComponent, Package, Origin } from './components.js';
 import { Frame } from './components/frame.js';
+import {ucfirst,unique} from '../misc.js';
 
 export class LibraryRenderer extends EagleSVGRenderer {
   static pinSizes = {
@@ -73,7 +74,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
       .map(e => [e, e.scope().deviceset])
       .map(([e, deviceset]) => deviceset)
       .filter(deviceset => !!deviceset);
-    let prefixes = Util.unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix));
+    let prefixes = unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix));
     let suffix = '';
     if(item.tagName == 'symbol') {
       let symbolUsages = devicesets
@@ -161,7 +162,7 @@ if(translation) {
 
     this.debug('LibraryRenderer.renderCollection', { collection, options });
     let items = collection.map((item, index) => [
-      [Util.ucfirst(item.tagName), item.name],
+      [ucfirst(item.tagName), item.name],
       this.renderItem(item, { ...options, index })
     ]);
     return items;

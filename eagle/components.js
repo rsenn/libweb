@@ -1,4 +1,4 @@
-import Util from '../util.js';
+import {ucfirst} from '../misc.js';
 import { Component } from '../dom/preactComponent.js';
 import { polarToCartesian, describeArc, Arc } from './components/arc.js';
 import { Background } from './components/background.js';
@@ -62,7 +62,7 @@ export const PrimitiveComponents = {
 let prevName;
 
 export const ElementNameToComponent = name => {
-  let comp = PrimitiveComponents[Util.ucfirst(name)];
+  let comp = PrimitiveComponents[ucfirst(name)];
 
   if(!comp && name != prevName) {
     console.debug(`Not rendering component '${name}'`);

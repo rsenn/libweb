@@ -17,7 +17,7 @@ export class BBox {
   static create(arg) {
     if(isRect(arg)) return new BBox(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
 
-    if(Util.isArray(arg) || Util.isIterable(arg)) return BBox.of(...arg);
+    if(Array.isArray(arg) || Util.isIterable(arg)) return BBox.of(...arg);
   }
 
   static of(...args) {
@@ -60,7 +60,7 @@ export class BBox {
 
   update(arg, offset = 0.0, obj = null) {
     //console.log('BBox.update', { arg, offset, obj });
-    if(Util.isArray(arg)) return this.updateList(arg, offset);
+    if(Array.isArray(arg)) return this.updateList(arg, offset);
     else if(Util.isObject(arg)) {
       if(typeof arg.bbox == 'function') {
         arg = arg.bbox();

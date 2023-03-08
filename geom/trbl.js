@@ -11,7 +11,7 @@ export function TRBL(arg) {
   let args = [...arguments];
   // console.log("TRBL",{arg})
 
-  if(typeof arg === 'object' && !Util.isArray(arg)) {
+  if(typeof arg === 'object' && !Array.isArray(arg)) {
     Object.keys(arg).forEach(k => {
       const matches = /(top|right|bottom|left)/i.exec(k);
       //console.log("TRBL.constructor",{arg,matches,k});

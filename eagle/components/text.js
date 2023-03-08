@@ -1,4 +1,4 @@
-import Util from '../../util.js';
+import {mod} from '../misc.js';
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD, useTransformation } from '../renderUtils.js';
 import { TransformationList, Rotation, Translation } from '../../geom.js';
@@ -22,9 +22,9 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
 
   let rotation = MakeRotation(rot);
   let rotationAngle = Math.round(rotation.angle * RAD2DEG);
-  let totalAngle = Util.mod(parentAngle + rotationAngle, 180);
-  let realAngle = Util.mod(totalAngle - parentAngle, 360);
-  let diffAngle = Util.mod(-rotationAngle + realAngle, 360);
+  let totalAngle = mod(parentAngle + rotationAngle, 180);
+  let realAngle = mod(totalAngle - parentAngle, 360);
+  let diffAngle = mod(-rotationAngle + realAngle, 360);
 
   let transform = new TransformationList()
     .translate(x, y)

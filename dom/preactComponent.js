@@ -136,7 +136,7 @@ export class ReactComponent {
     } else {
       [tag, attr, parent] = args.splice(0, 3);
       let { children, ...props } = attr;
-      if(Util.isArray(parent)) {
+      if(Array.isArray(parent)) {
         children = add(children, ...parent);
         parent = args[0];
       }
@@ -189,11 +189,11 @@ export class ReactComponent {
       //console.log('a:', a);
       children = a.length > 0 ? this.toObject(...a) : [];
       //console.log('children:', children);
-      obj.children = Util.isArray(children) ? children : [children];
+      obj.children = Array.isArray(children) ? children : [children];
       if(innerHTML) obj.children.push(innerHTML);
       ret.push(obj);
     }
-    return Util.isArray(ret) && ret.length == 1 ? ret[0] : ret;
+    return Array.isArray(ret) && ret.length == 1 ? ret[0] : ret;
   }
 
   /*
@@ -209,7 +209,7 @@ export class ReactComponent {
   };
 
   static toChildArray(a) {
-    return Util.isArray(a) ? a : a ? [a] : [];
+    return Array.isArray(a) ? a : a ? [a] : [];
   }
 
   static toSource(obj, opts = {}, depth = 0) {
@@ -229,7 +229,7 @@ export class ReactComponent {
     if(p != '') o += ` ${p}${nl}`;
     o += `}`;
     let s = ReactComponent.toSource;
-    let c = Util.isArray(children)
+    let c = Array.isArray(children)
       ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]`
       : children
       ? '  ' + s(children, opts, depth + 1)
@@ -243,7 +243,7 @@ export class ReactComponent {
     let { fmt = 0 } = opts;
     let s = '';
     if(Util.isObject(obj) && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
-    if(Util.isArray(obj)) {
+    if(Array.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
         s += this.toString(item);

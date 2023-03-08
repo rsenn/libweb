@@ -6,10 +6,9 @@ const pathPadding = Util.isBrowser() ? 0 : 40;
 export const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 export const coloring = Util.coloring(!Util.isBrowser());
-//console.log('coloring: ', coloring);
+export const concat = coloring.concat.bind(coloring);
 export const ansi = coloring.code.bind(coloring); 
-export const text = coloring.text.bind(coloring); //? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
-export const concat = coloring.concat.bind(coloring); //? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
+export const text = coloring.text.bind(coloring);
 
 export const dingbatCode = digit =>
   digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1);
@@ -123,9 +122,9 @@ export const traverse = function* (obj, path = [], doc) {
   if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
   yield [obj, path, doc];
   if(typeof obj == 'object') {
-    if(Util.isArray(obj)) {
+    if(Array.isArray(obj)) {
       for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.concat([i]), doc);
-    } else if('children' in obj && Util.isArray(obj.children)) {
+    } else if('children' in obj && Array.isArray(obj.children)) {
       for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.concat(['children', i]), doc);
     }
   }

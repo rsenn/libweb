@@ -1,6 +1,7 @@
 import parseXML from '../xml/parse.js';
 import tXml from '../tXml.js';
 import Util from '../util.js';
+import { define} from '../misc.js';
 import * as deep from '../deep.js';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
@@ -82,7 +83,7 @@ export class EagleDocument extends EagleNode {
     let xmlObj = deep.clone(xml[0]);
     super(project, EagleRef(xmlObj, []), xmlObj);
 
-    Util.define(this, {
+    define(this, {
       pathMapper: new PathMapper(xmlObj, ImmutablePath),
       data: xmlStr,
       raw2element: Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
@@ -120,16 +121,15 @@ export class EagleDocument extends EagleNode {
     //console.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
     this.type = type;
     if(project) this.owner = project;
-    if(fs) Util.define(this, { fs });
-    Util.define(this, 'xml', xml);
+    if(fs) define(this, { fs });
+    define(this, { xml });
     const orig = xml[0];
-    Util.define(this, 'orig', orig);
-
-    Util.define(
+    define(this, {orig});
+    define(
       this,
-      'palette',
+     {  palette: 
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
-    );
+    });
 
     //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     // this.initCache(EagleElement, EagleNodeList.create);

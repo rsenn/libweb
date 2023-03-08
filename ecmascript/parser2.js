@@ -975,7 +975,7 @@ export class ECMAScriptParser extends Parser {
     //parseArrow
     if(args instanceof SequenceExpression) args = args.expressions;
 
-    if(!Util.isArray(args)) args = [args];
+    if(!Array.isArray(args)) args = [args];
 
     args = args.map(arg => {
       if(arg instanceof ObjectPattern) {

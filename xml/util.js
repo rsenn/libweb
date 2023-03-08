@@ -103,7 +103,7 @@ class XMLObject {
 
   toObject() {
     let { length, 0: tagName, children, ...attributes } = this;
-    if(Util.isArray(children)) children = [].concat(children);
+    if(Array.isArray(children)) children = [].concat(children);
 
     return { tagName, attributes, children };
   }
@@ -114,7 +114,7 @@ Object.assign(XMLObject.prototype, Util.filterKeys(Util.getMembers(Array.prototy
 Util.define(XMLObject.prototype, { get [Symbol.species]() {return XMLObject; } });
 Util.define(XMLObject.prototype, {
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return [this[0], this[1], ...(Util.isArray(this[2]) ? this[2] : [])];
+    return [this[0], this[1], ...(Array.isArray(this[2]) ? this[2] : [])];
   },
   [Symbol.toStringTag]() {
     return this.toString();

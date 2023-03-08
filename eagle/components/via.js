@@ -1,4 +1,4 @@
-import Util from '../../util.js';
+import {roundTo} from '../../misc.js';
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, Alignment, AlignmentAttrs, ElementToClass, RenderShape, useTrkl, log, VERTICAL, HORIZONTAL } from '../renderUtils.js';
 import { TransformationList } from '../../geom.js';
@@ -22,8 +22,8 @@ export const Via = ({ data, opts = {}, ...props }) => {
   if(diameter === 'auto') diameter = drill * 2;
 
   const { x, y } = coordFn(via);
-  let ro = Util.roundTo(diameter / 2, 0.0001);
-  let ri = Util.roundTo(drill / 2, 0.0001);
+  let ro = roundTo(diameter / 2, 0.0001);
+  let ri = roundTo(drill / 2, 0.0001);
   let transform = `translate(${x},${y})`;
   let visible = 'yes' == useTrkl(layer.handlers.visible);
 
@@ -39,7 +39,7 @@ export const Via = ({ data, opts = {}, ...props }) => {
     fill: viaColor.toRGB(),
     'fill-opacity': viaColor.a / 255
   };
-  if(viaColor.a < 255) pathProps['fill-opacity'] = Util.roundTo(viaColor.a / 255, 0.001);
+  if(viaColor.a < 255) pathProps['fill-opacity'] = roundTo(viaColor.a / 255, 0.001);
   const baseProps = {
     //  class: ElementToClass(via),
     //fill: viaColor,

@@ -14,7 +14,7 @@ export function RGBA(...args) {
   let ret = this instanceof RGBA ? this : {};
   let c = [];
 
-  if(args.length == 1 && Util.isArray(args[0]) && args[0].length >= 3) args = args[0];
+  if(args.length == 1 && Array.isArray(args[0]) && args[0].length >= 3) args = args[0];
   //console.log('RGBA(', args, ')');
 
   if(args.length >= 3) {

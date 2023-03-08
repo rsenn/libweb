@@ -9,7 +9,7 @@ export let toXML = (o, ...opts) => {
   // console.log("toXML", { o,opts,depth,quote,indent});
   if(typeof o == 'object' && o !== null) {
     if('raw' in o) o = o.raw;
-    if(Util.isArray(o)) return o.length === 1 ? toString(o[0], depth) : o.map(it => toString(it, depth)).join('\n');
+    if(Array.isArray(o)) return o.length === 1 ? toString(o[0], depth) : o.map(it => toString(it, depth)).join('\n');
     return toString(o, depth);
   }
 

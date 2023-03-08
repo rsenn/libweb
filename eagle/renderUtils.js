@@ -1,5 +1,5 @@
 import { Point, Line, TransformationList, ImmutableTransformationList, LineList } from '../geom.js';
-import Util from '../util.js';
+import { className,isObject,range,roundTo } from '../misc.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
 import { useTrkl } from '../hooks/useTrkl.js';
@@ -60,18 +60,18 @@ export const LayerToClass = layer => {
   return layerClass.split(' ');
 };
 export const ElementToClass = (element, layerName) => {
-  //console.debug('ElementToClass', Util.className(element), element.tagName, { element, layerName });
+  //console.debug('ElementToClass', className(element), element.tagName, { element, layerName });
   layerName = layerName || element.layer;
   let layerClass = layerName ? LayerToClass(layerName) : [];
 
   let tagName, name;
-  if(/*Util.isObject*/ element) {
+  if(/*isObject*/ element) {
     if(element.tagName) tagName = element.tagName;
     if(element.name) name = EscapeClassName(element.name);
   }
   let classes = [tagName, name, ...layerClass];
   //console.debug('ElementToClass', {classes,layerClass});
-  return classNames(...Util.unique(classes));
+  return classNames(...unique(classes));
 };
 
 export const ClampAngle = (a, mod = 360) => {
@@ -421,7 +421,7 @@ export function MakeCoordTransformer(matrix) {
       coords = { ...coords, x1, y1, x2, y2 };
     }
     let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
-    let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.000001) }), {});
+    let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: roundTo(coords[k], 0.000001) }), {});
 
     //console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
     return { ...newCoords };
@@ -476,7 +476,7 @@ export const RenderShape = (shape, ro, ri) => {
       break;
     }
     case 'octagon': {
-      d = Util.range(0, 7)
+      d = range(0, 7)
         .map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.2))
         .map(p => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
