@@ -34,7 +34,7 @@ export class EagleProject {
       dir = path.join(dir, 'lbr');
       if(fs.existsSync(dir)) libraryPath.push(dir);
       this.libraryPath = libraryPath;
-      console.log('loadFile', file, this.basename);
+      //console.log('loadFile', file, this.basename);
       if(fs.existsSync(file)) this.lazyOpen(file);
       /*else*/ this.load();
     };
@@ -60,7 +60,7 @@ export class EagleProject {
   }
 
   lazyOpen(file) {
-    console.log('EagleProject.lazyOpen', file);
+    //console.log('EagleProject.lazyOpen', file);
     let index = this.filenames.length;
     this.filenames.push(file);
     lazyProperty(
@@ -69,8 +69,8 @@ export class EagleProject {
       () => {
         let doc = EagleDocument.open(file, this.fs);
         this.list[index] = doc;
-           console.log('this',this);
-           console.log('this.addLibraries',this.addLibraries);
+           //console.log('this',this);
+           //console.log('this.addLibraries',this.addLibraries);
 
         if(doc.libraries) 
           this.addLibraries(doc.libraries.list.map(l => l.name));
@@ -95,7 +95,7 @@ export class EagleProject {
    * @return     {EagleDocument}  The eagle ownerDocument.
    */
   open(file) {
-    console.log('EagleProject.open', file);
+    //console.log('EagleProject.open', file);
     let doc, err;
 
     tryCatch();
@@ -141,7 +141,7 @@ export class EagleProject {
   }
 
   findDocument(pred) {
-  console.log('findDocument', { pred });
+  //console.log('findDocument', { pred });
     if(typeof pred == 'string') {
       let name = pred;
       if(name.indexOf('/') == -1) name = '(^|/)' + name;
@@ -150,7 +150,7 @@ export class EagleProject {
       pred = name => re.test(name);
     }
     let names = Object.getOwnPropertyNames(this.documents);
-  console.log('findDocument', { names,pred:pred+''});
+  //console.log('findDocument', { names,pred:pred+''});
     const name = names.find(pred);
 
     //console.log('findDocument', { names, name, pred: pred + '' });
@@ -289,7 +289,7 @@ export class EagleProject {
           dstMap.set(key, value);
           numUpdated++;
         }
-        console.log('update', { destDoc, destLib, entity, numUpdated });
+        //console.log('update', { destDoc, destLib, entity, numUpdated });
         //console.log('dstMap.ref:', dump(dstMap.ref, 2));
         //console.log('dstMap.raw:', dump(dstMap.raw, 2));
         //console.log('dstMap.keys:', dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
@@ -334,7 +334,7 @@ export class EagleProject {
       ]);
 
       return Promise.all(promises).then(result => {
-        console.log('result:', result);
+        //console.log('result:', result);
         resolve(Object.fromEntries(result));
       });
     });
