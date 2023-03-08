@@ -3,6 +3,7 @@ import { TransformationList } from '../../geom/transformation.js';
 import { useAttributes, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { useTrkl } from '../../hooks/useTrkl.js';
+import { define } from '../../misc.js';
 
 export const useGrid = data => {
   const factors = { inch: 25.4, mm: 1 };
@@ -46,7 +47,14 @@ export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', widt
         log('Pattern.render value =', value);
         current = value;
       };
-      Util.defineGetterSetter(ret, 'current', () => current, ret);
+      define(ret, {
+        get current() {
+          return current;
+        },
+        set current(value) {
+          ret(value);
+        }
+      });
       return ret;
     })();
 

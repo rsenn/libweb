@@ -1,7 +1,6 @@
 import { EagleRef, EagleReference } from './ref.js';
-import Util from '../util.js';
 import * as deep from '../deep.js';
-import { className,define,defineGettersSetters,fnName,getPrototypeChain,isArray,isBrowser,isObject,memoize,tryCatch } from '../misc.js';
+import { className, define, defineGettersSetters, fnName, getPrototypeChain, isArray, isBrowser, isObject, memoize, tryCatch ,map} from '../misc.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';
@@ -55,7 +54,7 @@ export class EagleNode {
       writable: true
     });
 
-    define(this, {ref});
+    define(this, { ref });
     //console.log('EagleNode.constructor(2)', {owner: this.owner, ref: this.ref,raw: this.raw});
   }
 
@@ -75,7 +74,7 @@ export class EagleNode {
   scope(t = (o, p, v) => [v.tagName, v]) {
     const { owner, path, document } = this;
     let chain = Object.fromEntries(
-      Util.map(
+      map(
         walkPath(path, (p, i, abort, ignore) => {
           let value = p.deref(owner.raw, true);
 
@@ -204,9 +203,9 @@ export class EagleNode {
                   );
         } catch(e) {}
       }
-      Util.defineGettersSetters(this.lists, lists);
-      Util.defineGettersSetters(this.cache, lazy);
-      Util.defineGettersSetters(this, maps);
+      defineGettersSetters(this.lists, lists);
+      defineGettersSetters(this.cache, lazy);
+      defineGettersSetters(this, maps);
     }
   }
 
@@ -279,13 +278,8 @@ export class EagleNode {
       let [v, p] = found;
       return transform(v, [...this.path, ...p], this.document ?? this.root);
     }
-    return found;
 
-    /*let it = this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform);
-    let a = [...it];
-    const { root, path, raw } = this;
-    //console.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
-    return a[0] || null;*/
+    return found;
   }
 
   find(name, transform = a => a) {
@@ -512,7 +506,7 @@ export class EagleNode {
     return toXML(this.raw); //, 10000, '"', indent);
   }
 
- /* static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
+  /* static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
     const { depth, breakLength } = c;
     let o = e;
     let r = (e && e.raw) || e;

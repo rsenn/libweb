@@ -3,7 +3,6 @@ import { text, concat, inspectSymbol } from './common.js';
 import { Pointer } from '../pointer.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { define, className } from '../misc.js';
-import Util from '../util.js';
 
 const toArray = arg => (Array.isArray(arg) ? arg : [arg]);
 

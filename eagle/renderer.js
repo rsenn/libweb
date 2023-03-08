@@ -1,4 +1,3 @@
-import Util from '../util.js';
 import { SchematicRenderer } from './schematicRenderer.js';
 import { BoardRenderer } from './boardRenderer.js';
 import { LibraryRenderer } from './libraryRenderer.js';
@@ -28,7 +27,7 @@ export function Renderer(doc, factory, debug) {
   setDebug(debug);
   console.log('DEBUG:', DEBUG);
   console.log('log:', log);
- 
+
   ret.debug = log;
   return ret;
 }

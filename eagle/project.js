@@ -1,4 +1,4 @@
-import Util from '../util.js';
+import { define, lazyProperty, tryCatch, unique } from '../misc.js';
 import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
@@ -15,7 +15,7 @@ export class EagleProject {
 
     this.filenames = [];
 
-    Util.define(this, {
+    define(this, {
       file,
       //  ...(file ? { dir: path.dirname(file) } : {}),
       documents: {},
@@ -60,16 +60,21 @@ export class EagleProject {
   }
 
   lazyOpen(file) {
-    //console.log('EagleProject.lazyOpen', file);
+    console.log('EagleProject.lazyOpen', file);
     let index = this.filenames.length;
     this.filenames.push(file);
-    Util.lazyProperty(
+    lazyProperty(
       this.documents,
       path.basename(file),
       () => {
         let doc = EagleDocument.open(file, this.fs);
         this.list[index] = doc;
-        if(doc.libraries) this.addLibraries(doc.libraries.list.map(l => l.name));
+           console.log('this',this);
+           console.log('this.addLibraries',this.addLibraries);
+
+        if(doc.libraries) 
+          this.addLibraries(doc.libraries.list.map(l => l.name));
+
         return doc;
       },
       { enumerable: true, configurable: true }
@@ -93,7 +98,7 @@ export class EagleProject {
     console.log('EagleProject.open', file);
     let doc, err;
 
-    Util.tryCatch();
+    tryCatch();
 
     try {
       doc = EagleDocument.open(file, this.fs);
@@ -115,9 +120,11 @@ export class EagleProject {
   }
 
   static async determineEaglePath(fs) {
-    const envVar = await Util.getEnv('PATH');
-    // console.log('envVar', { envVar });
-
+    let envVar;
+    if(!envVar)
+      try {
+        envVar = process.env['PATH'];
+      } catch(e) {}
     let searchPath = envVar.split(/:/g);
     let bin;
     for(let dir of searchPath) {
@@ -134,6 +141,7 @@ export class EagleProject {
   }
 
   findDocument(pred) {
+  console.log('findDocument', { pred });
     if(typeof pred == 'string') {
       let name = pred;
       if(name.indexOf('/') == -1) name = '(^|/)' + name;
@@ -142,10 +150,13 @@ export class EagleProject {
       pred = name => re.test(name);
     }
     let names = Object.getOwnPropertyNames(this.documents);
+  console.log('findDocument', { names,pred:pred+''});
     const name = names.find(pred);
+
     //console.log('findDocument', { names, name, pred: pred + '' });
     return this.documents[name];
   }
+
   getLibrary(name) {
     return this.findDocument(name + '.lbr');
   }
@@ -191,7 +202,7 @@ export class EagleProject {
   }
 
   getDocumentDirectories() {
-    return Util.unique(this.filenames.map(file => path.dirname(file)));
+    return unique(this.filenames.map(file => path.dirname(file)));
   }
 
   getLibraryPath() {
@@ -204,16 +215,16 @@ export class EagleProject {
   getLibraryNames() {
     let libraryNames = [];
 
-    Util.tryCatch(
+    tryCatch(
       () => this.schematic.libraries.keys(),
       names => (libraryNames = libraryNames.concat(names))
     );
-    Util.tryCatch(
+    tryCatch(
       () => this.board.libraries.keys(),
       names => (libraryNames = libraryNames.concat(names))
     );
 
-    return Util.unique(libraryNames);
+    return unique(libraryNames);
   }
 
   findLibrary(name, dirs = this.libraryPath) {
@@ -246,7 +257,7 @@ export class EagleProject {
       schematic: schematic.getLibrary(name),
       board: board.getLibrary(name)
     };
- 
+
     //console.log('libraries.schematic:', libraries.schematic);
     for(let destDoc of ['schematic', 'board']) {
       //console.log(`project[${destDoc}].libraries:`, this[destDoc].libraries);
@@ -271,7 +282,6 @@ export class EagleProject {
         let ent = srcLib[entity].entries();
         let m = new Map(ent);
         //console.log(`dstMap:`, dstMap);
-        //console.log(`dstMap:`, Util.className(dstMap));
         let numUpdated = 0;
         for(let value of srcLib[entity].values()) {
           const key = value.name;

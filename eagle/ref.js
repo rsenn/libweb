@@ -1,4 +1,4 @@
-import {abbreviate,className,isObject} from '../misc.js';
+import { abbreviate, className, isObject } from '../misc.js';
 import { toXML } from '../json.js';
 import { text, concat } from './common.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
@@ -13,9 +13,9 @@ export class EagleReference {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     this.path = path;
     this.root = root;
-    //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
+    //console.log('EagleReference', { root: abbreviate(toXML(root), 10), path });
     if(check && !this.dereference(true)) {
-      //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
+      //console.log('dereference:', { path, root: abbreviate(toXML(root), 10) });
       throw new Error(this.root.tagName + ' ' + this.path);
     }
   }
@@ -38,7 +38,7 @@ export class EagleReference {
     const { path, root } = this;
     let r;
     try {
-      r = (Util.isObject(root) && 'owner' in root && path.deref(root.owner, true)) || path.deref(root);
+      r = (isObject(root) && 'owner' in root && path.deref(root.owner, true)) || path.deref(root);
     } catch(err) {
       if(!noThrow) throw err;
       //console.log('err:', err.message, err.stack);
@@ -104,10 +104,10 @@ export class EagleReference {
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
     return (
-      text(Util.className(this), 38, 5, 219) +
+      text(className(this), 38, 5, 219) +
       ' { ' +
       this.path[Symbol.for('nodejs.util.inspect.custom')]() +
-      ` , root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`
+      ` , root:${abbreviate(toXML(this.root, 0), 40)}  }`
     );
   }
   inspect() {
@@ -116,7 +116,7 @@ export class EagleReference {
 }
 
 export const EagleRef = function EagleRef(root, path) {
-  if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
+  if(isObject(root) && isObject(root.root)) root = root.root;
   //console.log('EagleRef', { root, path });
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);

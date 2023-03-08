@@ -1,4 +1,3 @@
-import Util from '../../util.js';
 import { useTrkl, log } from '../renderUtils.js';
 import { h, Component } from '../../dom/preactComponent.js';
 

@@ -1,5 +1,4 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import Util from '../../util.js';
 import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { TransformationList } from '../../geom.js';
@@ -16,7 +15,7 @@ export const SMD = ({ data, opts = {}, ...props }) => {
       }
     }) || data;
 
-   let { labelText, transform = new TransformationList() } = opts;
+  let { labelText, transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 

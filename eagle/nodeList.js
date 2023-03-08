@@ -1,18 +1,20 @@
 import { EagleRef } from './ref.js';
 import { EagleElement } from './element.js';
-import Util from '../util.js';
+//import Util from '../util.js';
+import { className, define, getConstructor, isObject } from '../misc.js';
+
 import { text, concat, inspectSymbol } from './common.js';
 
 export class EagleNodeList {
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
     //console.log('EagleNodeList.constructor', { owner: owner.raw, ref, pred });
-    if(Util.isObject(owner) && !('raw' in owner)) throw new Error('raw owner');
-    if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
+    if(isObject(owner) && !('raw' in owner)) throw new Error('raw owner');
+    if(isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
     let raw = ref.dereference();
     //     console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     //console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
-    let species = Util.getConstructor(owner);
-    Util.define(this, { ref, owner, raw, getOrCreate });
+    let species = getConstructor(owner);
+    define(this, { ref, owner, raw, getOrCreate });
     this.pred = typeof pred == 'function' ? pred : () => true;
   }
 
@@ -25,7 +27,7 @@ export class EagleNodeList {
       if(entries[pos]) pos = entries[pos][0];
     }
     //  let path = ref.path.concat([pos]);
-    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) {
+    if(raw && isObject(raw[pos]) && 'tagName' in raw[pos]) {
       owner.document.raw2element.map.delete(raw[pos]);
 
       let element = this.getOrCreate(owner.document, ref.down(pos));
@@ -95,7 +97,7 @@ export class EagleNodeList {
   [inspectSymbol]() {
     let { raw, ref } = this;
     return (
-      text(Util.className(this), 0) +
+      text(className(this), 0) +
       ` [ ` +
       `...${this.length} items...` +
       //[...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
@@ -163,4 +165,4 @@ export class EagleNodeList {
 
 EagleNodeList.prototype[Symbol.toStringTag] = 'EagleNodeList';
 
-Util.decorateIterable(EagleNodeList.prototype, false);
+//Util.decorateIterable(EagleNodeList.prototype, false);

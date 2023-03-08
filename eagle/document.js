@@ -1,7 +1,6 @@
 import parseXML from '../xml/parse.js';
 import tXml from '../tXml.js';
-import Util from '../util.js';
-import { define} from '../misc.js';
+import { define, abbreviate, mapAdapter, mapFunction, memoize, weakMapper } from '../misc.js';
 import * as deep from '../deep.js';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
@@ -71,12 +70,10 @@ export class EagleDocument extends EagleNode {
 
     let xml = fs.readFileSync(filename, 'utf-8');
 
-    return new EagleDocument(/*Util.bufferToString*/ xml, null, filename);
+    return new EagleDocument(xml, null, filename);
   }
 
   constructor(xmlStr, project, filename, type, fs) {
-    //console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
-
     const xml = fromXML(xmlStr); //parseXML(xmlStr);
     // console.log('EagleDocument.constructor', { xml });
 
@@ -86,19 +83,19 @@ export class EagleDocument extends EagleNode {
     define(this, {
       pathMapper: new PathMapper(xmlObj, ImmutablePath),
       data: xmlStr,
-      raw2element: Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
+      raw2element: weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
     });
 
     const { pathMapper, raw2element } = this;
 
-    const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
+    const [obj2path, path2obj] = pathMapper.maps.map(mapFunction);
     const [obj2eagle, path2eagle] = [
-      Util.mapFunction(raw2element),
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))
+      mapFunction(raw2element),
+      mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))
     ];
     const [eagle2path, eagle2obj] = [
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
+      mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
+      mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
     ];
 
     // prettier-ignore
@@ -124,12 +121,8 @@ export class EagleDocument extends EagleNode {
     if(fs) define(this, { fs });
     define(this, { xml });
     const orig = xml[0];
-    define(this, {orig});
-    define(
-      this,
-     {  palette: 
-      Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
-    });
+    define(this, { orig });
+    define(this, { palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b)) });
 
     //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     // this.initCache(EagleElement, EagleNodeList.create);
@@ -239,7 +232,7 @@ export class EagleDocument extends EagleNode {
     fs = fs || this.fs || globalThis.fs;
     fs.writeFileSync(file+'.json', JSON.stringify(this.raw,null,2), true);
 
-    console.log('Saving', file, 'data: ',Util.abbreviate(data));
+    console.log('Saving', file, 'data: ',abbreviate(data));
     let ret = fs.writeFileSync(file, data, overwrite);
   //  console.log('ret',ret);
 
@@ -266,8 +259,6 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    // console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
-
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
   }
@@ -311,41 +302,10 @@ export class EagleDocument extends EagleNode {
       ret = plain.filter(e => e.attributes.layer == layerId);
       if(ret.length >= 1) break;
     }
+
     if(options.bbox) if (ret) ret = BBox.from(ret);
+
     return ret;
-    /* const { bbox, geometry, points } = typeof options == 'boolean' ? { bbox: true } : options;
-    //console.log("this.type", this.type);
-    let plain = this.plain;
-
-    if(!plain) plain = this.get('plain');
-
-    if(plain && 'children' in plain) plain = [...plain.children];
-
-    if(plain) plain = plain.filter(e => e.tagName == 'wire');
-
-    if(plain) {
-      let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1);
-
-      if(measures.length) {
-        if(bbox) {
-          measures = measures.map(e => (typeof e.getBounds == 'function' ? e.getBounds() : e.geometry));
-          measures = BBox.from(measures);
-          //console.log('measures bbox:', measures);
-
-          if(!isBBox(measures, v => Number.isFinite(v))) return undefined;
-        } else {
-          if(geometry || points) measures = measures.map(e => e.geometry);
-
-          if(points)
-            measures = measures
-              .map(l => [...l])
-              .flat()
-              .filter(Util.uniquePred(Point.equals));
-        }
-
-        return measures;
-      }
-    }*/
   }
 
   /* prettier-ignore */ get measures() {
@@ -402,7 +362,7 @@ export class EagleDocument extends EagleNode {
     return this.get(e => e.tagName == 'library' && e.attributes.name == name);
   }
 
-  getMainElement = Util.memoize(function () {
+  getMainElement = memoize(function () {
     //console.log('this:', this);
     switch (this.type) {
       case 'brd':

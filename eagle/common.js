@@ -1,13 +1,13 @@
 import { ImmutablePath } from '../json.js';
-//import { EagleElement } from "./element.js";
 import Util from '../util.js';
+import { className, isBrowser, isObject } from '../misc.js';
 
-const pathPadding = Util.isBrowser() ? 0 : 40;
+const pathPadding = isBrowser() ? 0 : 40;
 export const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
-export const coloring = Util.coloring(!Util.isBrowser());
+export const coloring = Util.coloring(!isBrowser());
 export const concat = coloring.concat.bind(coloring);
-export const ansi = coloring.code.bind(coloring); 
+export const ansi = coloring.code.bind(coloring);
 export const text = coloring.text.bind(coloring);
 
 export const dingbatCode = digit =>
@@ -65,8 +65,7 @@ export const Palette = {
 };
 
 export const dump = (o, depth = 2, breakLength = 400) => {
-  const isElement = o =>
-    Util.isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
+  const isElement = o => isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(className(o)) != -1;
   let s;
   if(o instanceof Array) {
     s = '';
@@ -78,10 +77,10 @@ export const dump = (o, depth = 2, breakLength = 400) => {
     s = EagleInterface.inspect(o, undefined, { depth, path: false });
     depth * 4;
   } else
-    s = Util.inspect(o, {
+    s = inspect(o, {
       depth,
       newline: '',
-      colors: !Util.isBrowser(),
+      colors: !isBrowser(),
       breakLength
     });
   return s;

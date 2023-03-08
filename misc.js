@@ -1,4 +1,4 @@
-import Util from './util.js';
+//import Util from './util.js';
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
 
 const slice = (x, s, e) =>
@@ -1680,7 +1680,7 @@ Location.prototype[Symbol.toPrimitive] = function(hint) {
 };
 Location.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
   return this.toString({ colors: true });
-  return Util.inspect(this, {
+  return inspect(this, {
     colors: true,
     ...opts,
     toString: Symbol.toStringTag

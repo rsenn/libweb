@@ -1,5 +1,5 @@
 import { EagleElement } from './element.js';
-import Util from '../util.js';
+import { define, inserter, isObject,mapWrapper } from '../misc.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { MakeRotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
@@ -32,13 +32,13 @@ export class EagleSVGRenderer {
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     this.doc = doc;
     let renderer = this;
-    this.path2component = Util.mapWrapper(
+    this.path2component = mapWrapper(
       new Map(),
-      path => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
+      path => (isObject(path) && path.path !== undefined ? path.path : path) + '',
       key => new ImmutablePath(key)
     );
-    const insertCtoP = Util.inserter(this.component2path);
-    const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
+    const insertCtoP = inserter(this.component2path);
+    const insert = inserter(this.path2component, (k, v) => insertCtoP(v, k));
     this.mirrorY = new TransformationList().scale(1, -1);
     this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
@@ -47,7 +47,7 @@ export class EagleSVGRenderer {
       let path = attrs['data-path'];
       if(path) {
         if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
-        else if(!Util.isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
+        else if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
         //console.log('EagleSVGRenderer.create', { path /*,ref*/ });
         try {
           let e = path.apply(doc);
@@ -114,7 +114,7 @@ export class EagleSVGRenderer {
       length: trkl(ncolors)
     });
 
-    palette = trkl.bind(Util.define({}, { handlers: palette }), palette);
+    palette = trkl.bind(define({}, { handlers: palette }), palette);
     Object.setPrototypeOf(
       palette,
       Object.defineProperties(
@@ -157,7 +157,7 @@ export class EagleSVGRenderer {
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
     //this.debug('getColor', color, c);
- 
+
     return c;
   }
 
