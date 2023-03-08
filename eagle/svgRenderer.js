@@ -218,7 +218,7 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, transformation = new TransformationList() } = opts;
 
-    console.log(`EagleSVGRenderer.renderItem`, { item, transformation });
+    this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
 
     const svg = (elem, attr, parent) =>
       this.create(
@@ -356,13 +356,13 @@ export class EagleSVGRenderer {
     this.bounds = bounds;
 
     const { width, height } = (this.size = rect.size.toCSS('mm'));
-    console.log('EagleSVGRenderer', {
+    this.debug('EagleSVGRenderer.render', {
       bounds,
       width,
       height
     });
 
-    this.debug('SVGRenderer.render', { transform, index });
+    this.debug('EagleSVGRenderer.render', { transform, index });
 
     let gridElement = doc.lookup('/eagle/drawing/grid');
     let attrs = {

@@ -1,4 +1,4 @@
-import { partition }  from '../misc.js';
+import { partition } from '../misc.js';
 import { Point, Line, LineList, Rect } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
@@ -126,7 +126,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       }
     }
 
-    console.log('BoardRenderer.renderItem', { name, value, item });
+    this.debug('BoardRenderer.renderItem', { name, value, item });
   }
 
   renderCollection(coll, parent, opts = {}) {
@@ -274,7 +274,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    // console.log('BoardRenderer.renderElement', { name, value });
+    // this.debug('BoardRenderer.renderElement', { name, value });
 
     if(/^[RLC][0-9]/.test(name)) {
       let re;
@@ -342,7 +342,8 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
 
-    console.debug(`BoardRenderer.render`, { bounds, rect, transform });
+    this.debug(`BoardRenderer.render`, { bounds, rect, transform });
+
     //this.renderLayers(parent);
     let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
     let signalsElement = doc.get('signals');

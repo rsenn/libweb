@@ -598,21 +598,24 @@ Matrix.prototype.init_scale = function(sx, sy) {
 Object.defineProperties(Matrix.prototype, {
   scaling: {
     get() {
-      const x = Math.sign(this.a) * Util.roundTo(Math.sqrt(this.a ** 2 + this.c ** 2), null, 13);
-      const y = Math.sign(this.b) * Util.roundTo(Math.sqrt(this.b ** 2 + this.d ** 2), null, 13);
-      return { x, y };
+      /*const x = (Math.sign(this.a) || 1) * Util.roundTo(Math.sqrt(this.a ** 2 + this.c ** 2), null, 13);
+      const y = (Math.sign(this.b) || 1) * Util.roundTo(Math.sqrt(this.b ** 2 + this.d ** 2), null, 13);
+      return { x, y };*/
+      return this.decompose().scale;
     },
     configurable: true
   },
   rotation: {
     get() {
-      const { c, a, scaling } = this;
-      return Math.atan2(-c / scaling.y, a / scaling.x);
+      /*const { c, a, scaling } = this;
+      return Math.atan2(-c / scaling.y, a / scaling.x);*/
+      return this.decompose().rotate;
     },
     configurable: true
   },
   translation: {
     get() {
+      return this.decompose().translate;
       return { x: this.e, y: this.f };
     },
     configurable: true

@@ -1,6 +1,6 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, ElementToClass, log, PinSizes } from '../renderUtils.js';
-import { TransformationList, Point, Line } from '../../geom.js';
+import { MakeCoordTransformer, ElementToClass, log, PinSizes, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, MakeRotation, RAD2DEG } from '../renderUtils.js';
+import { TransformationList, Rotation, Translation, Point, Line } from '../../geom.js';
 import { RGBA } from '../../color.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
@@ -8,9 +8,9 @@ import { Text } from './text.js';
 export const Pin = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  //log('Pin.render ', { data, opts });
-  let { transform = new TransformationList() } = opts;
+  log('Pin.render(0)', { data, opts });
 
+  let { transform = new TransformationList() } = opts;
   let { transformation } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
@@ -19,7 +19,11 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   const { x, y } = coordFn(data);
   const func = data.function;
 
-  const angle = +(rot || '0').replace(/R/, '');
+  let [rotation] = MakeRotation(rot);
+  console.log(`Pin.render(${name})`, { rotation });
+  let angle = rotation ? Math.round(rotation.angle) : 0;
+
+  //  const angle = +(rot || '0').replace(/R/, '');
   let veclen = PinSizes[length] * 2.54;
   if(func == 'dot') veclen -= 1.5;
   const dir = Point.fromAngle((angle * Math.PI) / 180);
@@ -28,9 +32,9 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   const pp = dir.prod(veclen + 0.75).add(pivot);
   const l = new Line(pivot, vec.add(pivot));
   let children = [];
-  const tp = pivot.diff(dir.prod(2.54));
+  const tp = pivot.diff(dir.prod(-2.54 * 2));
 
-  if(func == 'dot' && length != 'point')
+  if(func == 'dot' && length != 'point') {
     children.push(
       h('circle', {
         class: 'pin',
@@ -42,8 +46,10 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         'stroke-width': 0.3
       })
     );
+    console.log('Pin.render(2)', { pp });
+  }
 
-  if(l.getLength())
+  if(l.getLength()) {
     children.push(
       h('line', {
         class: 'pin',
@@ -52,8 +58,13 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         'stroke-width': 0.15
       })
     );
-  if(name != '' && visible != 'off')
-    children.push(
+    console.log('Pin.render(3)', { l });
+  }
+  if(name != '' && visible != 'off') {
+    const align = Alignment(angle >= 180 ? 'center-right' : 'center-left', 0);
+    //  const rotation=MakeRotation(rot);
+    console.log(`Pin.render(${name})`, { align, angle, rotation });
+    /* children.push(
       h(Text, {
         class: ElementToClass(data),
         color: Palette.schematic((r, g, b) => new RGBA(r, g, b))[16],
@@ -65,11 +76,65 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         opts: { transformation },
         rot,
         'data-rot': rot,
-        'font-size': '1.905px',
-        style: { display: 'none' }
-        //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
+        'font-size': '1.905px'
+      })
+    );*/
+
+    children.push(
+      h(
+        'text',
+        {
+          class: ElementToClass(data),
+          fill: Palette.schematic((r, g, b) => new RGBA(r, g, b))[16],
+          stroke: 'none',
+          x: 0,
+          y: 0,
+
+          //style: visible ? { ...style } : { ...style, display: 'none' },
+          ...AlignmentAttrs(align, VERTICAL),
+          ...props,
+          style: { 'font-size': '1.905px' },
+          transform: new TransformationList() /*transformation.invert()*/
+            .translate(tp.x, tp.y)
+            .rotate(angle % 180)
+            .concat(transformation.invert())
+        },
+        h(
+          'tspan',
+          {
+            ...AlignmentAttrs(align, HORIZONTAL),
+            dangerouslySetInnerHTML: { __html: name }
+          } /*, h(Fragment, {}, [text])*/
+        )
+      )
+    );
+    /*children.push(
+      h('circle', {
+        class: 'pin-x',
+        stroke: '#ff00ff',
+        fill: 'none',
+        cx: tp.x,
+        cy: tp.y,
+        r: 0.5,
+        'stroke-width': 0.1
       })
     );
+    children.push(
+      h('circle', {
+        class: 'pin-y',
+        stroke: '#4219ff',
+        opacity: 0.8,
+        fill: 'none',
+        cx: x,
+        cy: y,
+        r: 0.75,
+        'stroke-width': 0.1
+      })
+    );*/
 
+    console.log('Pin.render(5)', { name, tp, transformation, rot });
+  }
+
+  return h('g', { 'data-type': 'pin', 'data-name': name }, children);
   return h(Fragment, {}, children);
 };

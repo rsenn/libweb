@@ -3,12 +3,15 @@ import { h, Component, Fragment } from '../../dom/preactComponent.js';
 import { ElementToComponent } from '../components.js';
 
 export const SchematicSymbol = ({ data, component = Fragment, id, class: className, ...props }) => {
-  //log(`SchematicSymbol.render`, { data,id });
+  log(`SchematicSymbol.render`, { data, id });
+
   const children = [...data.children];
 
   let [transformation, transform, accumulate] = useTransform(props.opts);
 
   //children.map(data => log('data:', data.tagName));
+
+  console.log(`SchematicSymbol(${data.name}).render`, children /*.map(ch=>[ch, ElementToComponent(ch)])*/);
 
   return h(component, { id, class: className }, [
     ...children.filter(({ tagName }) => tagName != 'text').map(data => h(ElementToComponent(data), { data, ...props })),

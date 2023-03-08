@@ -100,6 +100,30 @@ export const MakeRotation = (rot, f = 1) => {
   return transformations;
 };
 
+export const ExtractRotation = transformation => {
+  let [sc] = transformation;
+  let t = transformation
+    .slice(sc.type == 'scale' && sc.x == 1 && sc.y == -1 ? 1 : 0)
+    .filter(t => t.type != 'translate');
+
+  let angle = t.rotation ? t.rotation.angle : 0;
+  let mirror = t.scaling && t.scaling.x == -1 && t.scaling.y == 1;
+
+  return new TransformationList().rotate(angle).scale(mirror ? -1 : 1, 1);
+};
+
+export const InferRotation = transformation => {
+  let [sc] = transformation;
+  let t = transformation
+    .slice(sc.type == 'scale' && sc.x == 1 && sc.y == -1 ? 1 : 0)
+    .filter(t => t.type != 'translate');
+
+  let angle = t.rotation ? t.rotation.angle : 0;
+  let mirror = t.scaling && t.scaling.x == -1 && t.scaling.y == 1;
+
+  return angle != 0 || mirror ? (mirror ? 'M' : '') + 'R' + angle : '';
+};
+
 export const EagleAlignments = {
   'bottom-left': [-1, -1],
   'bottom-center': [-1, 0],
@@ -113,14 +137,14 @@ export const EagleAlignments = {
 };
 
 export const Alignment = (align, rot = 0, scaling = null, def = 'bottom-left') => {
-  let [y, x] = EagleAlignments[align] || EagleAlignments[def];
+  let [y, x] = (typeof align == 'string' ? EagleAlignments[align] : [...align]) || EagleAlignments[def];
   let ret = new Point(x, y);
   if(scaling) {
     if(scaling.x < 0) ret.x = -ret.x;
     if(scaling.y < 0) ret.y = -ret.y;
   }
   if(Math.abs(rot) > 0) ret.rotate((rot * PI) / 180);
-  return ret;
+  return ret.round(1);
 };
 
 export const SVGAlignments = [

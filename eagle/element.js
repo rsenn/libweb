@@ -1,12 +1,12 @@
 import { className, decodeHTMLEntities, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst } from '../misc.js';
 import trkl from '../trkl.js';
+import Util from '../util.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleElementProxy } from './elementProxy.js';
 import { EagleReference } from './ref.js';
 import { RGBA } from '../color.js';
 import { ImmutableXPath } from '../xml/xpath.js';
-//import { ImmutablePath } from '../json.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
@@ -146,27 +146,37 @@ export class EagleElement extends EagleNode {
         let prop = trkl.property(this.attrMap, key);
         let handler;
         if(['visible', 'active'].indexOf(key) != -1)
-          handler = v =>
-            v !== undefined
-              ? prop(v === true ? 'yes' : v === false ? 'no' : v)
-              : (() => {
-                  let v = prop();
-                  if(v == 'yes') v = true;
-                  else if(v == 'no') v = false;
-                  return v;
-                })();
+          handler = Util.ifThenElse(
+            v => v !== undefined,
+            v => prop(v === true ? 'yes' : v === false ? 'no' : v),
+            () => {
+              let v = prop();
+              if(v == 'yes') v = true;
+              else if(v == 'no') v = false;
+              return v;
+            }
+          );
         else if(key == 'diameter') {
-          const getDiameter = v => (isNaN(+v) ? 'auto' : +v);
-          handler = v => (v !== undefined ? prop(isNaN(+v) ? v : +v) : getDiameter(prop()));
+          const getDiameter = Util.ifThenElse(
+            v => isNaN(+v),
+            () => 'auto',
+            v => +v
+          );
+          handler = Util.ifThenElse(
+            v => v !== undefined,
+            v => prop(isNaN(+v) ? v : +v),
+            () => getDiameter(prop())
+          );
         } else
-          handler = v =>
-            v !== undefined
-              ? prop(v + '')
-              : (() => {
-                  let v = prop();
-                  if(isNumeric(v) && key != 'name') v = parseFloat(v);
-                  return v;
-                })();
+          handler = Util.ifThenElse(
+            v => v !== undefined,
+            v => prop(v + ''),
+            () => {
+              let v = prop();
+              if(Util.isNumeric(v) && key != 'name') v = parseFloat(v);
+              return v;
+            }
+          );
 
         prop(attributes[key]);
         prop.subscribe(value =>
@@ -177,7 +187,7 @@ export class EagleElement extends EagleNode {
 
         if(
           Object.keys(names).indexOf(key) != -1 &&
-          !(['instance', 'part'].indexOf(tagName) != -1 && ['name', 'value'].indexOf(key) != -1)
+          !(['instance', 'part', 'element'].indexOf(tagName) != -1 && ['name', 'value'].indexOf(key) != -1)
         ) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v =>

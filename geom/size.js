@@ -49,7 +49,9 @@ export function Size(arg) {
 }
 
 Size.getOther = args =>
-  /*console.debug('getOther', ...args), */ typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args;
+  /*console.debug('getOther', ...args), */ typeof args[0] == 'number'
+    ? [{ width: args[0], height: typeof args[1] == 'number' ? args[1] : args[0] }]
+    : args;
 
 Size.prototype.width = NaN;
 Size.prototype.height = NaN;
@@ -151,15 +153,18 @@ Size.prototype.mul = function(...args) {
   return this;
 };
 Size.prototype.quot = function(other) {
+  if(typeof other == 'number') return new Size(this.width / other, this.height / other);
+
   return new Size(this.width / other.width, this.height / other.height);
 };
 Size.prototype.inverse = function(other) {
   return new Size(1 / this.width, 1 / this.height);
 };
 Size.prototype.div = function(...args) {
-  for(let f of Size.getOther(args)) {
-    this.width /= f;
-    this.height /= f;
+  let other = Size.getOther(args);
+  for(let f of other) {
+    this.width /= f.width;
+    this.height /= f.height;
   }
   return this;
 };

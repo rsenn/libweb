@@ -2785,6 +2785,8 @@ Util.numberParts = (num, base) => {
   return { sign: sgn, mantissa: num, exponent: exp };
 };
 Util.roundDigits = precision => {
+  if(typeof precision == 'number') return -Math.log10(precision);
+
   precision = precision + '';
   let index = precision.indexOf('.');
   let frac = index == -1 ? '' : precision.slice(index + 1);
@@ -2806,6 +2808,7 @@ Util.roundFunction = (prec, digits, type) => {
     return ret;
   };
 };
+
 Util.roundTo = function(value, prec, digits, type) {
   if(!isFinite(value)) return value;
   digits = digits || Util.roundDigits(prec);
@@ -2813,11 +2816,11 @@ Util.roundTo = function(value, prec, digits, type) {
   const fn = Math[type];
   if(prec == 1) return fn(value);
   let ret = prec > Number.EPSILON ? fn(value / prec) * prec : value;
-
   if(typeof digits == 'number' && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
-  else ret = Math[type](ret);
+  //else ret = Math[type](ret);
   return ret;
 };
+
 Util.base64 = (() => {
   const g = Util.getGlobalObject();
 

@@ -63,6 +63,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
         },
         parent
       );
+
     switch (item.tagName) {
       case 'junction': {
         const { x, y } = coordFn(item);

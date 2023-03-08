@@ -272,6 +272,18 @@ Rect.prototype.div = function(...args) {
   Size.prototype.div.call(this, ...args);
   return this;
 };
+Rect.prototype.quot = function(...args) {
+  let r = this.clone();
+  Point.prototype.div.call(r, ...args);
+  Size.prototype.div.call(r, ...args);
+  return r;
+};
+Rect.prototype.prod = function(...args) {
+  let r = this.clone();
+  Point.prototype.mul.call(r, ...args);
+  Size.prototype.mul.call(r, ...args);
+  return r;
+};
 Rect.prototype.outset = function(trbl) {
   if(typeof trbl == 'number') trbl = { top: trbl, right: trbl, bottom: trbl, left: trbl };
   this.x -= trbl.left;
@@ -409,13 +421,23 @@ Rect.prototype.align = function(align_to, a = 0) {
 };
 
 Rect.prototype.round = function(precision = 0.001, digits, type) {
-  let { x1, y1, x2, y2 } = this.toObject(true);
-  let a = Point.round({ x: -x1, y: -y1 }, precision, digits, type);
-  let b = Point.round({ x: x2, y: y2 }, precision, digits, type);
-  this.x = -a.x;
-  this.y = -a.y;
-  this.width = b.x - this.x;
-  this.height = b.y - this.y;
+  const { x1, y1, x2, y2 } = this;
+
+  let a = new Point(x1, y1).round(precision, undefined, type ?? 'floor');
+  let b = new Point(x2, y2).round(precision, undefined, type ?? 'ceil');
+
+  this.x = a.x;
+  this.y = a.y;
+  this.width = b.x - a.x;
+  this.height = b.y - a.y;
+
+  if(digits !== undefined) {
+    this.x = +this.x.toFixed(digits);
+    this.y = +this.y.toFixed(digits);
+    this.width = +this.width.toFixed(digits);
+    this.height = +this.height.toFixed(digits);
+  }
+
   return this;
 };
 Rect.prototype.toObject = function(bb = false) {
@@ -444,7 +466,7 @@ Rect.prototype[Symbol.iterator] = function* () {
 };
 Rect.prototype[Util.inspectSymbol] = function(depth, options) {
   const { x, y, width, height } = this;
-  return /*Object.setPrototypeOf*/ { x, y, width, height } /*, { [Symbol.toStringTag]: 'Rect' }*/;
+  return { x, y, width, height, [Symbol.toStringTag]: 'Rect' };
 };
 Rect.isBBox = rect => !(rect instanceof Rect) && ['x1', 'x2', 'y1', 'y2'].every(prop => prop in rect);
 Rect.assign = (to, rect) => Object.assign(to, new Rect(rect).toObject(Rect.isBBox(to)));
