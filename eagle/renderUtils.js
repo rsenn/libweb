@@ -9,7 +9,7 @@ export { useTrkl } from '../hooks/useTrkl.js';
 const PI = Math.PI;
 export const RAD2DEG = 180 / Math.PI;
 export const DEG2RAD = Math.PI / 180;
-const { mod, mul, roundTo } = Util;
+const { mod, mul } = Util;
 
 const rad2deg = mul(RAD2DEG);
 const deg2rad = mul(DEG2RAD);

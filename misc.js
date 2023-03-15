@@ -978,6 +978,18 @@ export function toBigInt(arg) {
   return BigInt(arg);
 }
 
+export function roundTo(value, prec, digits, type) {
+  if(!Number.isFinite(value)) return value;
+  type = type ?? 'round';
+  const fn = Math[type];
+  if(prec == 1) return fn(value);
+  let ret = prec > Number.EPSILON ? fn(value / prec) * prec : value;
+
+  if(isNumber(digits) && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
+  else ret = Math[type](ret);
+  return ret;
+}
+
 export function lazyProperty(obj, name, getter, opts = {}) {
   return Object.defineProperty(obj, name, {
     get: types.isAsyncFunction(getter)
@@ -1493,9 +1505,9 @@ export class ArrayFacade {
   }
 }
 
-export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
+/*export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
   return define(proto, ArrayFacade.prototype);
-}
+}*/
 
 export function bits(buffer) {
   let a = new Uint8Array(buffer);
