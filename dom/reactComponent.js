@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import { Element } from './element.js';
-import Util from '../util.js';
+import { Element } from "./element.js";
+import Util from "../util.js";
 
 export class ReactComponent {
   static create(...args) {
     let Tag, props;
-    if(typeof args[0] == 'string') {
+    if(typeof args[0] == "string") {
       Tag = args.shift();
       props = args.shift();
     } else {
@@ -21,10 +21,10 @@ export class ReactComponent {
   }
 
   static factory(render_to, root) {
-    if(typeof render_to === 'string') render_to = Element.find(append_to);
-    if(typeof render_to !== 'function') {
+    if(typeof render_to === "string") render_to = Element.find(append_to);
+    if(typeof render_to !== "function") {
       root = root || render_to;
-      render_to = component => require('react-dom').render(component, root || render_to);
+      render_to = component => require("react-dom").render(component, root || render_to);
     }
     let ret = function() {
       let args = [...arguments];
@@ -38,20 +38,22 @@ export class ReactComponent {
   static toObject(...args) {
     let ret = [];
     for(let arg of args) {
-      if(!typeof arg == 'object' || arg === null || !arg) continue;
+      if(!typeof arg == "object" || arg === null || !arg) continue;
 
       let tagName;
 
       if(arg.type && arg.type.name) tagName = arg.type.name;
-      else if(typeof arg.type == 'function') tagName = arg.type;
-      else tagName = arg.type + '';
+      else if(typeof arg.type == "function") tagName = arg.type;
+      else tagName = arg.type + "";
 
       let { children, key, innerHTML, ...props } = arg.props || {};
 
       let obj = { tagName, ...props };
-      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
+      if(Util.isObject(arg.props) && "key" in arg.props && key !== undefined) obj.key = key;
       if(!children) children = arg.children;
-      let a = React.toChildArray(children);
+
+      let a = Array.isArray(children) ? children : children ? [a] : []; // React.toChildArray(children);
+
       children = a.length > 0 ? this.toObject(...a) : [];
       obj.children = children instanceof Array ? children : [children];
       if(innerHTML) obj.children.push(innerHTML);
@@ -63,7 +65,7 @@ export class ReactComponent {
   /*
    */
   dummy() {
-    x = h(React.Fragment, { id: 'test' }, [h('blah', { className: 'test' }), h('p', { style: { width: '100%' } })]);
+    x = h(React.Fragment, { id: "test" }, [h("blah", { className: "test" }), h("p", { style: { width: "100%" } })]);
   }
 
   static formats = {
@@ -74,15 +76,15 @@ export class ReactComponent {
 
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
-    let s = '';
-    if(obj.__ === null && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
+    let s = "";
+    if(obj.__ === null && "key" in obj && "ref" in obj) obj = this.toObject(obj);
     if(Util.isArray(obj)) {
       for(let item of obj) {
-        s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
+        s += fmt < 2 ? "\n" : s == "" ? "" : `, `;
         s += this.toString(item);
       }
       return s;
-    } else if(typeof obj == 'string') {
+    } else if(typeof obj == "string") {
       return obj;
     }
     let { tagName, children, ...props } = obj;
@@ -92,17 +94,22 @@ export class ReactComponent {
     }
     for(let prop in props) {
       let value = props[prop];
-      s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.inspect(value)}`;
+      s +=
+        fmt == 0
+          ? ` ${prop}="${value + ""}"`
+          : fmt == 1
+          ? ` ${prop}={${Util.inspect(value)}}`
+          : (s == "" ? "" : `, `) + ` ${prop}: ${Util.inspect(value)}`;
     }
-    if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
+    if(typeof tagName == "function") tagName = tagName === Fragment ? "React.Fragment" : Util.fnName(tagName);
 
     //console.log('tagName:', tagName);
 
-    tagName += '';
+    tagName += "";
 
     s = fmt == 0 ? `<${tagName}${s}` : `h('${tagName}', {${s}`;
     if(!children || !children.length) {
-      s += fmt == 0 ? ' />' : ` })`;
+      s += fmt == 0 ? " />" : ` })`;
     } else {
       s += fmt < 2 ? `>` : ` }, [ `;
       s += Util.indent(this.toString(children));
