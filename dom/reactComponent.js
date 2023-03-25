@@ -52,7 +52,7 @@ export class ReactComponent {
       if(Util.isObject(arg.props) && "key" in arg.props && key !== undefined) obj.key = key;
       if(!children) children = arg.children;
 
-      let a = Array.isArray(children) ? children : children ? [a] : []; // React.toChildArray(children);
+      let a = ReactComponent.toChildArray(children);
 
       children = a.length > 0 ? this.toObject(...a) : [];
       obj.children = children instanceof Array ? children : [children];
@@ -73,6 +73,10 @@ export class ReactComponent {
     JSX: 1,
     H: 2
   };
+
+  static toChildArray(children) {
+    return Array.isArray(children) ? children : children ? [children] : [];
+  }
 
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
