@@ -169,8 +169,7 @@ export class EventTarget {
     if(typeof obj == 'object' && obj != null) {
       if(obj instanceof EventTarget) return true;
     }
-    if(['addEventListener', 'removeEventListener', 'dispatchEvent'].every(method => typeof obj[method] == 'function'))
-      return true;
+    if(['addEventListener', 'removeEventListener', 'dispatchEvent'].every(method => typeof obj[method] == 'function')) return true;
     return false;
   }
 }

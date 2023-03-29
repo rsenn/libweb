@@ -52,14 +52,7 @@ export default function toSource(object, replacer = a => a, indent = '  ', start
     }
     const keys = Object.keys(object);
     if(keys.length) {
-      return `{${join(
-        keys.map(
-          key =>
-            (legalKey(key) ? key : JSON.stringify(key)) +
-            ':' +
-            walk(object[key], replacer, indent, nextIndent, seen.slice())
-        )
-      )}}`;
+      return `{${join(keys.map(key => (legalKey(key) ? key : JSON.stringify(key)) + ':' + walk(object[key], replacer, indent, nextIndent, seen.slice())))}}`;
     }
     return '{}';
   }

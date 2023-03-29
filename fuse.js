@@ -59,11 +59,7 @@ function isBlank(value) {
 // Gets the `toStringTag` of `value`.
 // Adapted from: https://github.com/lodash/lodash/blob/master/.internal/getTag.js
 function getTag(value) {
-  return value == null
-    ? value === undefined
-      ? '[object Undefined]'
-      : '[object Null]'
-    : Object.prototype.toString.call(value);
+  return value == null ? (value === undefined ? '[object Undefined]' : '[object Null]') : Object.prototype.toString.call(value);
 }
 
 const EXTENDED_SEARCH_UNAVAILABLE = 'Extended search is not available';
@@ -478,16 +474,7 @@ function transformScore(result, data) {
   data.score = result.score;
 }
 
-function computeScore(
-  pattern,
-  {
-    errors = 0,
-    currentLocation = 0,
-    expectedLocation = 0,
-    distance = Config.distance,
-    ignoreLocation = Config.ignoreLocation
-  } = {}
-) {
+function computeScore(pattern, { errors = 0, currentLocation = 0, expectedLocation = 0, distance = Config.distance, ignoreLocation = Config.ignoreLocation } = {}) {
   const accuracy = errors / pattern.length;
 
   if(ignoreLocation) {
@@ -1101,16 +1088,7 @@ class IncludeMatch extends BaseMatch {
 }
 
 // ❗Order is important. DO NOT CHANGE.
-const searchers = [
-  ExactMatch,
-  IncludeMatch,
-  PrefixExactMatch,
-  InversePrefixExactMatch,
-  InverseSuffixExactMatch,
-  SuffixExactMatch,
-  InverseExactMatch,
-  FuzzyMatch
-];
+const searchers = [ExactMatch, IncludeMatch, PrefixExactMatch, InversePrefixExactMatch, InverseSuffixExactMatch, SuffixExactMatch, InverseExactMatch, FuzzyMatch];
 
 const searchersLen = searchers.length;
 
@@ -1462,11 +1440,7 @@ class Fuse {
   search(query, { limit = -1 } = {}) {
     const { includeMatches, includeScore, shouldSort, sortFn, ignoreFieldNorm } = this.options;
 
-    let results = isString(query)
-      ? isString(this._docs[0])
-        ? this._searchStringList(query)
-        : this._searchObjectList(query)
-      : this._searchLogical(query);
+    let results = isString(query) ? (isString(this._docs[0]) ? this._searchStringList(query) : this._searchObjectList(query)) : this._searchLogical(query);
 
     computeScore$1(results, { ignoreFieldNorm });
 
@@ -1672,10 +1646,7 @@ function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
     result.matches.forEach(({ key, norm, score }) => {
       const weight = key ? key.weight : null;
 
-      totalScore *= Math.pow(
-        score === 0 && weight ? Number.EPSILON : score,
-        (weight || 1) * (ignoreFieldNorm ? 1 : norm)
-      );
+      totalScore *= Math.pow(score === 0 && weight ? Number.EPSILON : score, (weight || 1) * (ignoreFieldNorm ? 1 : norm));
     });
 
     result.score = totalScore;

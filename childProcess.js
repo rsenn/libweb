@@ -99,23 +99,16 @@ export function QuickJSChildProcess(fs, std, os) {
     if(file) opts.file = file;
     if(stdio) {
       const [stdin, stdout, stderr] = stdio;
-      if(stdin)
-        opts.stdin =
-          stdin != 'pipe' ? (typeof stdin.fileno == 'function' ? stdin.fileno() : stdin) : dopipe(obj, 'stdin');
-      if(stdout)
-        opts.stdout =
-          stdout != 'pipe' ? (typeof stdout.fileno == 'function' ? stdout.fileno() : stdout) : dopipe(obj, 'stdout');
-      if(stderr)
-        opts.stderr =
-          stderr != 'pipe' ? (typeof stderr.fileno == 'function' ? stderr.fileno() : stderr) : dopipe(obj, 'stderr');
+      if(stdin) opts.stdin = stdin != 'pipe' ? (typeof stdin.fileno == 'function' ? stdin.fileno() : stdin) : dopipe(obj, 'stdin');
+      if(stdout) opts.stdout = stdout != 'pipe' ? (typeof stdout.fileno == 'function' ? stdout.fileno() : stdout) : dopipe(obj, 'stdout');
+      if(stderr) opts.stderr = stderr != 'pipe' ? (typeof stderr.fileno == 'function' ? stderr.fileno() : stderr) : dopipe(obj, 'stderr');
     }
     opts = { ...opts, block };
     if(env) opts.env = env;
 
     let ret = os.exec([command, ...args], opts);
 
-    for(let channel of ['stdin', 'stdout', 'stderr'])
-      if(opts[channel] != stdio[channel] && typeof opts[channel] == 'number') os.close(opts[channel]);
+    for(let channel of ['stdin', 'stdout', 'stderr']) if(opts[channel] != stdio[channel] && typeof opts[channel] == 'number') os.close(opts[channel]);
 
     let exitCode, pid;
     if(block) {
@@ -194,9 +187,7 @@ export function NodeJSChildProcess(fs, tty, child_process) {
     }
 
     if(stdio) {
-      opts.stdio = stdio.map(strm =>
-        typeof strm == 'object' && strm != null && typeof strm.fd == 'number' ? strm.fd : strm
-      );
+      opts.stdio = stdio.map(strm => (typeof strm == 'object' && strm != null && typeof strm.fd == 'number' ? strm.fd : strm));
     }
     //  console.log('child', { command, args, opts });
     obj = child_process.spawn(command, args, opts);

@@ -18,14 +18,7 @@ export { default as Geolocation } from '../openlayers/src/ol/Geolocation.js';
 export { default as GeoJSON } from '../openlayers/src/ol/format/GeoJSON.js';
 export { composeCssTransform } from '../openlayers/src/ol/transform.js';
 export { default as Icon } from '../openlayers/src/ol/style/Icon.js';
-export {
-  Fill,
-  RegularShape,
-  Stroke,
-  Style,
-  Circle as CircleStyle,
-  Text as TextStyle
-} from '../openlayers/src/ol/style.js';
+export { Fill, RegularShape, Stroke, Style, Circle as CircleStyle, Text as TextStyle } from '../openlayers/src/ol/style.js';
 export { fromLonLat, addCoordinateTransforms, addProjection, transform } from '../openlayers/src/ol/proj.js';
 export { ZoomSlider } from '../openlayers/src/ol/control.js';
 export { getVectorContext } from '../openlayers/src/ol/render.js';

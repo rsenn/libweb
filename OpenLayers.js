@@ -59,16 +59,7 @@ var OpenLayers = {
   VERSION_NUMBER: 'Release 2.13.1',
   singleFile: !0,
   _getScriptLocation: (function () {
-    for(
-      var a = /(^|(.*?\/))(OpenLayers[^\/]*?\.js)(\?|$)/,
-        b = document.getElementsByTagName('script'),
-        c,
-        d = '',
-        e = 0,
-        f = b.length;
-      e < f;
-      e++
-    )
+    for(var a = /(^|(.*?\/))(OpenLayers[^\/]*?\.js)(\?|$)/, b = document.getElementsByTagName('script'), c, d = '', e = 0, f = b.length; e < f; e++)
       if((c = b[e].getAttribute('src')))
         if((c = c.match(a))) {
           d = c[1];
@@ -90,9 +81,7 @@ OpenLayers.Class = function() {
         : function() {
             b.prototype.initialize.apply(this, arguments);
           };
-  1 < a
-    ? ((a = [d, b].concat(Array.prototype.slice.call(arguments).slice(1, a - 1), c)), OpenLayers.inherit.apply(null, a))
-    : (d.prototype = c);
+  1 < a ? ((a = [d, b].concat(Array.prototype.slice.call(arguments).slice(1, a - 1), c)), OpenLayers.inherit.apply(null, a)) : (d.prototype = c);
   return d;
 };
 OpenLayers.inherit = function(a, b) {
@@ -102,8 +91,7 @@ OpenLayers.inherit = function(a, b) {
   var d,
     e,
     c = 2;
-  for(d = arguments.length; c < d; c++)
-    (e = arguments[c]), 'function' === typeof e && (e = e.prototype), OpenLayers.Util.extend(a.prototype, e);
+  for(d = arguments.length; c < d; c++) (e = arguments[c]), 'function' === typeof e && (e = e.prototype), OpenLayers.Util.extend(a.prototype, e);
 };
 OpenLayers.Util = OpenLayers.Util || {};
 OpenLayers.Util.extend = function(a, b) {
@@ -113,10 +101,7 @@ OpenLayers.Util.extend = function(a, b) {
       var d = b[c];
       void 0 !== d && (a[c] = d);
     }
-    ('function' == typeof window.Event && b instanceof window.Event) ||
-      !b.hasOwnProperty ||
-      !b.hasOwnProperty('toString') ||
-      (a.toString = b.toString);
+    ('function' == typeof window.Event && b instanceof window.Event) || !b.hasOwnProperty || !b.hasOwnProperty('toString') || (a.toString = b.toString);
   }
   return a;
 };
@@ -132,8 +117,7 @@ OpenLayers.String = {
   },
   camelize: function(a) {
     a = a.split('-');
-    for(var b = a[0], c = 1, d = a.length; c < d; c++)
-      var e = a[c], b = b + (e.charAt(0).toUpperCase() + e.substring(1));
+    for(var b = a[0], c = 1, d = a.length; c < d; c++) var e = a[c], b = b + (e.charAt(0).toUpperCase() + e.substring(1));
     return b;
   },
   format: function(a, b, c) {
@@ -176,9 +160,7 @@ OpenLayers.Number = {
     1 == e.length && null == b && (b = 0);
     a = e[0];
     if(c) for(var f = /(-?[0-9]+)([0-9]{3})/; f.test(a); ) a = a.replace(f, '$1' + c + '$2');
-    0 == b
-      ? (b = a)
-      : ((c = 1 < e.length ? e[1] : '0'), null != b && (c += Array(b - c.length + 1).join('0')), (b = a + d + c));
+    0 == b ? (b = a) : ((c = 1 < e.length ? e[1] : '0'), null != b && (c += Array(b - c.length + 1).join('0')), (b = a + d + c));
     return b;
   },
   zeroPad: function(a, b, c) {
@@ -282,20 +264,14 @@ OpenLayers.Bounds = OpenLayers.Class({
     return new OpenLayers.Pixel((this.left + this.right) / 2, (this.bottom + this.top) / 2);
   },
   getCenterLonLat: function() {
-    this.centerLonLat ||
-      (this.centerLonLat = new OpenLayers.LonLat((this.left + this.right) / 2, (this.bottom + this.top) / 2));
+    this.centerLonLat || (this.centerLonLat = new OpenLayers.LonLat((this.left + this.right) / 2, (this.bottom + this.top) / 2));
     return this.centerLonLat;
   },
   scale: function(a, b) {
     null == b && (b = this.getCenterLonLat());
     var c, d;
     'OpenLayers.LonLat' == b.CLASS_NAME ? ((c = b.lon), (d = b.lat)) : ((c = b.x), (d = b.y));
-    return new OpenLayers.Bounds(
-      (this.left - c) * a + c,
-      (this.bottom - d) * a + d,
-      (this.right - c) * a + c,
-      (this.top - d) * a + d
-    );
+    return new OpenLayers.Bounds((this.left - c) * a + c, (this.bottom - d) * a + d, (this.right - c) * a + c, (this.top - d) * a + d);
   },
   add: function(a, b) {
     if(null == a || null == b) throw new TypeError('Bounds.add cannot receive null values');
@@ -330,11 +306,7 @@ OpenLayers.Bounds = OpenLayers.Class({
     b = b || {};
     var c = this.contains(a.lon, a.lat, b.inclusive),
       d = b.worldBounds;
-    d &&
-      !c &&
-      ((c = d.getWidth()),
-      (d = Math.round((a.lon - (d.left + d.right) / 2) / c)),
-      (c = this.containsLonLat({ lon: a.lon - d * c, lat: a.lat }, { inclusive: b.inclusive })));
+    d && !c && ((c = d.getWidth()), (d = Math.round((a.lon - (d.left + d.right) / 2) / c)), (c = this.containsLonLat({ lon: a.lon - d * c, lat: a.lat }, { inclusive: b.inclusive })));
     return c;
   },
   containsPixel: function(a, b) {
@@ -346,9 +318,7 @@ OpenLayers.Bounds = OpenLayers.Class({
     a = OpenLayers.Util.toFloat(a);
     b = OpenLayers.Util.toFloat(b);
     var d = !1;
-    return (d = c
-      ? a >= this.left && a <= this.right && b >= this.bottom && b <= this.top
-      : a > this.left && a < this.right && b > this.bottom && b < this.top);
+    return (d = c ? a >= this.left && a <= this.right && b >= this.bottom && b <= this.top : a > this.left && a < this.right && b > this.bottom && b < this.top);
   },
   intersectsBounds: function(a, b) {
     'boolean' === typeof b && (b = { inclusive: b });
@@ -364,16 +334,13 @@ OpenLayers.Bounds = OpenLayers.Class({
       var d = (a.top >= c.bottom && a.top <= c.top) || (c.top > a.bottom && c.top < a.top),
         e = (a.left >= c.left && a.left <= c.right) || (c.left >= a.left && c.left <= a.right),
         f = (a.right >= c.left && a.right <= c.right) || (c.right >= a.left && c.right <= a.right),
-        d =
-          ((a.bottom >= c.bottom && a.bottom <= c.top) || (c.bottom >= a.bottom && c.bottom <= a.top) || d) && (e || f);
+        d = ((a.bottom >= c.bottom && a.bottom <= c.top) || (c.bottom >= a.bottom && c.bottom <= a.top) || d) && (e || f);
     if(b.worldBounds && !d) {
       var g = b.worldBounds,
         e = g.getWidth(),
         f = !g.containsBounds(c),
         g = !g.containsBounds(a);
-      f && !g
-        ? ((a = a.add(-e, 0)), (d = c.intersectsBounds(a, { inclusive: b.inclusive })))
-        : g && !f && ((c = c.add(-e, 0)), (d = a.intersectsBounds(c, { inclusive: b.inclusive })));
+      f && !g ? ((a = a.add(-e, 0)), (d = c.intersectsBounds(a, { inclusive: b.inclusive }))) : g && !f && ((c = c.add(-e, 0)), (d = a.intersectsBounds(c, { inclusive: b.inclusive })));
     }
     return d;
   },
@@ -480,10 +447,7 @@ OpenLayers.Element = {
           ? (c = (c = document.defaultView.getComputedStyle(a, null)) ? c.getPropertyValue(b) : null)
           : a.currentStyle && (c = a.currentStyle[OpenLayers.String.camelize(b)]));
       var d = ['left', 'top', 'right', 'bottom'];
-      window.opera &&
-        -1 != OpenLayers.Util.indexOf(d, b) &&
-        'static' == OpenLayers.Element.getStyle(a, 'position') &&
-        (c = 'auto');
+      window.opera && -1 != OpenLayers.Util.indexOf(d, b) && 'static' == OpenLayers.Element.getStyle(a, 'position') && (c = 'auto');
     }
     return 'auto' == c ? null : c;
   }
@@ -511,10 +475,7 @@ OpenLayers.LonLat = OpenLayers.Class({
   },
   equals: function(a) {
     var b = !1;
-    null != a &&
-      (b =
-        (this.lon == a.lon && this.lat == a.lat) ||
-        (isNaN(this.lon) && isNaN(this.lat) && isNaN(a.lon) && isNaN(a.lat)));
+    null != a && (b = (this.lon == a.lon && this.lat == a.lat) || (isNaN(this.lon) && isNaN(this.lat) && isNaN(a.lon) && isNaN(a.lat)));
     return b;
   },
   transform: function(a, b) {
@@ -639,11 +600,7 @@ OpenLayers.Lang = {
       var c = a[0] + '-' + a[1].toUpperCase();
       'object' == typeof OpenLayers.Lang[c] && (b = c);
     }
-    b ||
-      (OpenLayers.Console.warn(
-        'Failed to find OpenLayers.Lang.' + a.join('-') + ' dictionary, falling back to default language'
-      ),
-      (b = OpenLayers.Lang.defaultCode));
+    b || (OpenLayers.Console.warn('Failed to find OpenLayers.Lang.' + a.join('-') + ' dictionary, falling back to default language'), (b = OpenLayers.Lang.defaultCode));
     OpenLayers.Lang.code = b;
   },
   translate: function(a, b) {
@@ -687,9 +644,7 @@ OpenLayers.Util.modifyDOMElement = function(a, b, c, d, e, f, g, h) {
   e && (a.style.position = e);
   f && (a.style.border = f);
   g && (a.style.overflow = g);
-  0 <= parseFloat(h) && 1 > parseFloat(h)
-    ? ((a.style.filter = 'alpha(opacity=' + 100 * h + ')'), (a.style.opacity = h))
-    : 1 == parseFloat(h) && ((a.style.filter = ''), (a.style.opacity = ''));
+  0 <= parseFloat(h) && 1 > parseFloat(h) ? ((a.style.filter = 'alpha(opacity=' + 100 * h + ')'), (a.style.opacity = h)) : 1 == parseFloat(h) && ((a.style.filter = ''), (a.style.opacity = ''));
 };
 OpenLayers.Util.createDiv = function(a, b, c, d, e, f, g, h) {
   var k = document.createElement('div');
@@ -739,11 +694,8 @@ OpenLayers.Util.modifyAlphaImageDiv = function(a, b, c, d, e, f, g, h, k) {
   OpenLayers.Util.alphaHack() &&
     ('none' != a.style.display && (a.style.display = 'inline-block'),
     null == h && (h = 'scale'),
-    (a.style.filter =
-      "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + b.src + "', sizingMethod='" + h + "')"),
-    0 <= parseFloat(a.style.opacity) &&
-      1 > parseFloat(a.style.opacity) &&
-      (a.style.filter += ' alpha(opacity=' + 100 * a.style.opacity + ')'),
+    (a.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + b.src + "', sizingMethod='" + h + "')"),
+    0 <= parseFloat(a.style.opacity) && 1 > parseFloat(a.style.opacity) && (a.style.filter += ' alpha(opacity=' + 100 * a.style.opacity + ')'),
     (b.style.filter = 'alpha(opacity=0)'));
 };
 OpenLayers.Util.createAlphaImageDiv = function(a, b, c, d, e, f, g, h, k) {
@@ -764,14 +716,8 @@ OpenLayers.Util.applyDefaults = function(a, b) {
   a = a || {};
   var c = 'function' == typeof window.Event && b instanceof window.Event,
     d;
-  for(d in b)
-    if(void 0 === a[d] || (!c && b.hasOwnProperty && b.hasOwnProperty(d) && !a.hasOwnProperty(d))) a[d] = b[d];
-  !c &&
-    b &&
-    b.hasOwnProperty &&
-    b.hasOwnProperty('toString') &&
-    !a.hasOwnProperty('toString') &&
-    (a.toString = b.toString);
+  for(d in b) if(void 0 === a[d] || (!c && b.hasOwnProperty && b.hasOwnProperty(d) && !a.hasOwnProperty(d))) a[d] = b[d];
+  !c && b && b.hasOwnProperty && b.hasOwnProperty('toString') && !a.hasOwnProperty('toString') && (a.toString = b.toString);
   return a;
 };
 OpenLayers.Util.getParameterString = function(a) {
@@ -781,8 +727,7 @@ OpenLayers.Util.getParameterString = function(a) {
     var d = a[c];
     if(null != d && 'function' != typeof d) {
       if('object' == typeof d && d.constructor == Array) {
-        for(var e = [], f, g = 0, h = d.length; g < h; g++)
-          (f = d[g]), e.push(encodeURIComponent(null === f || void 0 === f ? '' : f));
+        for(var e = [], f, g = 0, h = d.length; g < h; g++) (f = d[g]), e.push(encodeURIComponent(null === f || void 0 === f ? '' : f));
         d = e.join(',');
       } else d = encodeURIComponent(d);
       b.push(encodeURIComponent(c) + '=' + d);
@@ -880,11 +825,7 @@ OpenLayers.Util.distVincenty = function(a, b) {
   d = (v * (d * d - e * e)) / (e * e);
   c = (d / 1024) * (256 + d * (-128 + d * (74 - 47 * d)));
   return (
-    (
-      e *
-      (1 + (d / 16384) * (4096 + d * (-768 + d * (320 - 175 * d)))) *
-      (t - c * s * (q + (c / 4) * (r * (-1 + 2 * q * q) - (c / 6) * q * (-3 + 4 * s * s) * (-3 + 4 * q * q))))
-    ).toFixed(3) / 1e3
+    (e * (1 + (d / 16384) * (4096 + d * (-768 + d * (320 - 175 * d)))) * (t - c * s * (q + (c / 4) * (r * (-1 + 2 * q * q) - (c / 6) * q * (-3 + 4 * s * s) * (-3 + 4 * q * q))))).toFixed(3) / 1e3
   );
 };
 OpenLayers.Util.destinationVincenty = function(a, b, c) {
@@ -913,12 +854,7 @@ OpenLayers.Util.destinationVincenty = function(a, b, c) {
     1e-12 < Math.abs(f - s);
 
   )
-    var t = Math.cos(2 * n + f),
-      u = Math.sin(f),
-      v = Math.cos(f),
-      w = r * u * (t + (r / 4) * (v * (-1 + 2 * t * t) - (r / 6) * t * (-3 + 4 * u * u) * (-3 + 4 * t * t))),
-      s = f,
-      f = c / (g * q) + w;
+    var t = Math.cos(2 * n + f), u = Math.sin(f), v = Math.cos(f), w = r * u * (t + (r / 4) * (v * (-1 + 2 * t * t) - (r / 6) * t * (-3 + 4 * u * u) * (-3 + 4 * t * t))), s = f, f = c / (g * q) + w;
   c = m * u - l * v * k;
   g = Math.atan2(m * v + l * u * k, (1 - h) * Math.sqrt(a * a + c * c));
   b = Math.atan2(u * b, l * v - m * u * k);
@@ -1051,9 +987,7 @@ OpenLayers.Util.normalizeScale = function(a) {
 };
 OpenLayers.Util.getResolutionFromScale = function(a, b) {
   var c;
-  a &&
-    (null == b && (b = 'degrees'),
-    (c = 1 / (OpenLayers.Util.normalizeScale(a) * OpenLayers.INCHES_PER_UNIT[b] * OpenLayers.DOTS_PER_INCH)));
+  a && (null == b && (b = 'degrees'), (c = 1 / (OpenLayers.Util.normalizeScale(a) * OpenLayers.INCHES_PER_UNIT[b] * OpenLayers.DOTS_PER_INCH)));
   return c;
 };
 OpenLayers.Util.getScaleFromResolution = function(a, b) {
@@ -1064,30 +998,17 @@ OpenLayers.Util.pagePosition = function(a) {
   var b = [0, 0],
     c = OpenLayers.Util.getViewportElement();
   if(!a || a == window || a == c) return b;
-  var d =
-      OpenLayers.IS_GECKO &&
-      document.getBoxObjectFor &&
-      'absolute' == OpenLayers.Element.getStyle(a, 'position') &&
-      ('' == a.style.top || '' == a.style.left),
+  var d = OpenLayers.IS_GECKO && document.getBoxObjectFor && 'absolute' == OpenLayers.Element.getStyle(a, 'position') && ('' == a.style.top || '' == a.style.left),
     e = null;
-  if(a.getBoundingClientRect)
-    (a = a.getBoundingClientRect()),
-      (e = window.pageYOffset || c.scrollTop),
-      (b[0] = a.left + (window.pageXOffset || c.scrollLeft)),
-      (b[1] = a.top + e);
-  else if(document.getBoxObjectFor && !d)
-    (a = document.getBoxObjectFor(a)),
-      (c = document.getBoxObjectFor(c)),
-      (b[0] = a.screenX - c.screenX),
-      (b[1] = a.screenY - c.screenY);
+  if(a.getBoundingClientRect) (a = a.getBoundingClientRect()), (e = window.pageYOffset || c.scrollTop), (b[0] = a.left + (window.pageXOffset || c.scrollLeft)), (b[1] = a.top + e);
+  else if(document.getBoxObjectFor && !d) (a = document.getBoxObjectFor(a)), (c = document.getBoxObjectFor(c)), (b[0] = a.screenX - c.screenX), (b[1] = a.screenY - c.screenY);
   else {
     b[0] = a.offsetLeft;
     b[1] = a.offsetTop;
     e = a.offsetParent;
     if(e != a) for(; e; ) (b[0] += e.offsetLeft), (b[1] += e.offsetTop), (e = e.offsetParent);
     c = OpenLayers.BROWSER_NAME;
-    if('opera' == c || ('safari' == c && 'absolute' == OpenLayers.Element.getStyle(a, 'position')))
-      b[1] -= document.body.offsetTop;
+    if('opera' == c || ('safari' == c && 'absolute' == OpenLayers.Element.getStyle(a, 'position'))) b[1] -= document.body.offsetTop;
     for(e = a.offsetParent; e && e != document.body; ) {
       b[0] -= e.scrollLeft;
       if('opera' != c || 'TR' != e.tagName) b[1] -= e.scrollTop;
@@ -1098,12 +1019,7 @@ OpenLayers.Util.pagePosition = function(a) {
 };
 OpenLayers.Util.getViewportElement = function() {
   var a = arguments.callee.viewportElement;
-  void 0 == a &&
-    ((a =
-      'msie' == OpenLayers.BROWSER_NAME && 'CSS1Compat' != document.compatMode
-        ? document.body
-        : document.documentElement),
-    (arguments.callee.viewportElement = a));
+  void 0 == a && ((a = 'msie' == OpenLayers.BROWSER_NAME && 'CSS1Compat' != document.compatMode ? document.body : document.documentElement), (arguments.callee.viewportElement = a));
   return a;
 };
 OpenLayers.Util.isEquivalentUrl = function(a, b, c) {
@@ -1133,13 +1049,7 @@ OpenLayers.Util.createUrlObject = function(a, b) {
   d = {};
   d.host = c.host.split(':').shift();
   d.protocol = c.protocol;
-  d.port = b.ignorePort80
-    ? '80' == c.port || '0' == c.port
-      ? ''
-      : c.port
-    : '' == c.port || '0' == c.port
-    ? '80'
-    : c.port;
+  d.port = b.ignorePort80 ? ('80' == c.port || '0' == c.port ? '' : c.port) : '' == c.port || '0' == c.port ? '80' : c.port;
   d.hash = b.ignoreHash || '#' === c.hash ? '' : c.hash;
   var e = c.search;
   e || ((e = a.indexOf('?')), (e = -1 != e ? a.substr(e) : ''));
@@ -1181,11 +1091,7 @@ OpenLayers.Util.getRenderedDimensions = function(a, b, c) {
     e,
     f = document.createElement('div');
   f.style.visibility = 'hidden';
-  for(
-    var g = c && c.containerElement ? c.containerElement : document.body, h = !1, k = null, l = g;
-    l && 'body' != l.tagName.toLowerCase();
-
-  ) {
+  for(var g = c && c.containerElement ? c.containerElement : document.body, h = !1, k = null, l = g; l && 'body' != l.tagName.toLowerCase(); ) {
     var m = OpenLayers.Element.getStyle(l, 'position');
     if('absolute' == m) {
       h = !0;
@@ -1208,9 +1114,7 @@ OpenLayers.Util.getRenderedDimensions = function(a, b, c) {
   b = document.createElement('div');
   b.innerHTML = a;
   b.style.overflow = 'visible';
-  if(b.childNodes)
-    for(a = 0, c = b.childNodes.length; a < c; a++)
-      b.childNodes[a].style && (b.childNodes[a].style.overflow = 'visible');
+  if(b.childNodes) for(a = 0, c = b.childNodes.length; a < c; a++) b.childNodes[a].style && (b.childNodes[a].style.overflow = 'visible');
   f.appendChild(b);
   k ? g.appendChild(k) : g.appendChild(f);
   d || ((d = parseInt(b.scrollWidth)), (f.style.width = d + 'px'));
@@ -1258,12 +1162,8 @@ OpenLayers.Util.getFormattedLonLat = function(a, b, c) {
   60 <= f && ((f -= 60), (d += 1), 60 <= d && ((d -= 60), (e += 1)));
   10 > e && (e = '0' + e);
   e += '\u00b0';
-  0 <= c.indexOf('dm') &&
-    (10 > d && (d = '0' + d), (e += d + "'"), 0 <= c.indexOf('dms') && (10 > f && (f = '0' + f), (e += f + '"')));
-  return (e =
-    'lon' == b
-      ? e + (0 > a ? OpenLayers.i18n('W') : OpenLayers.i18n('E'))
-      : e + (0 > a ? OpenLayers.i18n('S') : OpenLayers.i18n('N')));
+  0 <= c.indexOf('dm') && (10 > d && (d = '0' + d), (e += d + "'"), 0 <= c.indexOf('dms') && (10 > f && (f = '0' + f), (e += f + '"')));
+  return (e = 'lon' == b ? e + (0 > a ? OpenLayers.i18n('W') : OpenLayers.i18n('E')) : e + (0 > a ? OpenLayers.i18n('S') : OpenLayers.i18n('N')));
 };
 OpenLayers.Format = OpenLayers.Class({
   options: null,
@@ -1313,13 +1213,11 @@ OpenLayers.Control = OpenLayers.Class({
     null == this.id && (this.id = OpenLayers.Util.createUniqueID(this.CLASS_NAME + '_'));
   },
   destroy: function() {
-    this.events &&
-      (this.eventListeners && this.events.un(this.eventListeners), this.events.destroy(), (this.events = null));
+    this.events && (this.eventListeners && this.events.un(this.eventListeners), this.events.destroy(), (this.events = null));
     this.eventListeners = null;
     this.handler && (this.handler.destroy(), (this.handler = null));
     if(this.handlers) {
-      for(var a in this.handlers)
-        this.handlers.hasOwnProperty(a) && 'function' == typeof this.handlers[a].destroy && this.handlers[a].destroy();
+      for(var a in this.handlers) this.handlers.hasOwnProperty(a) && 'function' == typeof this.handlers[a].destroy && this.handlers[a].destroy();
       this.handlers = null;
     }
     this.map && (this.map.removeControl(this), (this.map = null));
@@ -1333,10 +1231,7 @@ OpenLayers.Control = OpenLayers.Class({
     null == this.div &&
       ((this.div = OpenLayers.Util.createDiv(this.id)),
       (this.div.className = this.displayClass),
-      this.allowSelection ||
-        ((this.div.className += ' olControlNoSelect'),
-        this.div.setAttribute('unselectable', 'on', 0),
-        (this.div.onselectstart = OpenLayers.Function.False)),
+      this.allowSelection || ((this.div.className += ' olControlNoSelect'), this.div.setAttribute('unselectable', 'on', 0), (this.div.onselectstart = OpenLayers.Function.False)),
       '' != this.title && (this.div.title = this.title));
     null != a && (this.position = a.clone());
     this.moveTo(this.position);
@@ -1357,8 +1252,7 @@ OpenLayers.Control = OpenLayers.Class({
     return this.active
       ? (this.handler && this.handler.deactivate(),
         (this.active = !1),
-        this.map &&
-          OpenLayers.Element.removeClass(this.map.viewPortDiv, this.displayClass.replace(/ /g, '') + 'Active'),
+        this.map && OpenLayers.Element.removeClass(this.map.viewPortDiv, this.displayClass.replace(/ /g, '') + 'Active'),
         this.events.triggerEvent('deactivate'),
         !0)
       : !1;
@@ -1403,12 +1297,7 @@ OpenLayers.Event = {
     a.preventDefault ? a.preventDefault() : (a.returnValue = !1);
   },
   findElement: function(a, b) {
-    for(
-      var c = OpenLayers.Event.element(a);
-      c.parentNode && (!c.tagName || c.tagName.toUpperCase() != b.toUpperCase());
-
-    )
-      c = c.parentNode;
+    for(var c = OpenLayers.Event.element(a); c.parentNode && (!c.tagName || c.tagName.toUpperCase() != b.toUpperCase()); ) c = c.parentNode;
     return c;
   },
   observe: function(a, b, c, d) {
@@ -1460,8 +1349,7 @@ OpenLayers.Event = {
   },
   unloadCache: function() {
     if(OpenLayers.Event && OpenLayers.Event.observers) {
-      for(var a in OpenLayers.Event.observers)
-        OpenLayers.Event._removeElementObservers.apply(this, [OpenLayers.Event.observers[a]]);
+      for(var a in OpenLayers.Event.observers) OpenLayers.Event._removeElementObservers.apply(this, [OpenLayers.Event.observers[a]]);
       OpenLayers.Event.observers = !1;
     }
   },
@@ -1469,10 +1357,7 @@ OpenLayers.Event = {
 };
 OpenLayers.Event.observe(window, 'unload', OpenLayers.Event.unloadCache, !1);
 OpenLayers.Events = OpenLayers.Class({
-  BROWSER_EVENTS:
-    'mouseover mouseout mousedown mouseup mousemove click dblclick rightclick dblrightclick resize focus blur touchstart touchmove touchend keydown'.split(
-      ' '
-    ),
+  BROWSER_EVENTS: 'mouseover mouseout mousedown mouseup mousemove click dblclick rightclick dblrightclick resize focus blur touchstart touchmove touchend keydown'.split(' '),
   listeners: null,
   object: null,
   element: null,
@@ -1495,22 +1380,17 @@ OpenLayers.Events = OpenLayers.Class({
   destroy: function() {
     for(var a in this.extensions) 'boolean' !== typeof this.extensions[a] && this.extensions[a].destroy();
     this.extensions = null;
-    this.element &&
-      (OpenLayers.Event.stopObservingElement(this.element),
-      this.element.hasScrollEvent && OpenLayers.Event.stopObserving(window, 'scroll', this.clearMouseListener));
+    this.element && (OpenLayers.Event.stopObservingElement(this.element), this.element.hasScrollEvent && OpenLayers.Event.stopObserving(window, 'scroll', this.clearMouseListener));
     this.eventHandler = this.fallThrough = this.object = this.listeners = this.element = null;
   },
   addEventType: function(a) {},
   attachToElement: function(a) {
     this.element
       ? OpenLayers.Event.stopObservingElement(this.element)
-      : ((this.eventHandler = OpenLayers.Function.bindAsEventListener(this.handleBrowserEvent, this)),
-        (this.clearMouseListener = OpenLayers.Function.bind(this.clearMouseCache, this)));
+      : ((this.eventHandler = OpenLayers.Function.bindAsEventListener(this.handleBrowserEvent, this)), (this.clearMouseListener = OpenLayers.Function.bind(this.clearMouseCache, this)));
     this.element = a;
     for(var b = !!window.navigator.msMaxTouchPoints, c, d = 0, e = this.BROWSER_EVENTS.length; d < e; d++)
-      (c = this.BROWSER_EVENTS[d]),
-        OpenLayers.Event.observe(a, c, this.eventHandler),
-        b && 0 === c.indexOf('touch') && this.addMsTouchListener(a, c, this.eventHandler);
+      (c = this.BROWSER_EVENTS[d]), OpenLayers.Event.observe(a, c, this.eventHandler), b && 0 === c.indexOf('touch') && this.addMsTouchListener(a, c, this.eventHandler);
     OpenLayers.Event.observe(a, 'dragstart', OpenLayers.Event.stop);
   },
   on: function(a) {
@@ -1523,9 +1403,7 @@ OpenLayers.Events = OpenLayers.Class({
       var e = this.listeners[a];
       e || ((e = []), (this.listeners[a] = e), (this.extensionCount[a] = 0));
       b = { obj: b, func: c };
-      d
-        ? (e.splice(this.extensionCount[a], 0, b), 'object' === typeof d && d.extension && this.extensionCount[a]++)
-        : e.push(b);
+      d ? (e.splice(this.extensionCount[a], 0, b), 'object' === typeof d && d.extension && this.extensionCount[a]++) : e.push(b);
     }
   },
   registerPriority: function(a, b, c) {
@@ -1554,11 +1432,7 @@ OpenLayers.Events = OpenLayers.Class({
       b.object = this.object;
       b.element = this.element;
       b.type || (b.type = a);
-      for(
-        var c = c.slice(), d, e = 0, f = c.length;
-        e < f && ((d = c[e]), (d = d.func.apply(d.obj, [b])), void 0 == d || !1 != d);
-        e++
-      );
+      for(var c = c.slice(), d, e = 0, f = c.length; e < f && ((d = c[e]), (d = d.func.apply(d.obj, [b])), void 0 == d || !1 != d); e++);
       this.fallThrough || OpenLayers.Event.stop(b, !0);
       return d;
     }
@@ -1568,8 +1442,7 @@ OpenLayers.Events = OpenLayers.Class({
       c = this.listeners[b];
     if(c && 0 != c.length) {
       if((c = a.touches) && c[0]) {
-        for(var d = 0, e = 0, f = c.length, g, h = 0; h < f; ++h)
-          (g = this.getTouchClientXY(c[h])), (d += g.clientX), (e += g.clientY);
+        for(var d = 0, e = 0, f = c.length, g, h = 0; h < f; ++h) (g = this.getTouchClientXY(c[h])), (d += g.clientX), (e += g.clientY);
         a.clientX = d / f;
         a.clientY = e / f;
       }
@@ -1583,11 +1456,7 @@ OpenLayers.Events = OpenLayers.Class({
       b = b.pageYOffset,
       d = a.clientX,
       e = a.clientY;
-    if(
-      (0 === a.pageY && Math.floor(e) > Math.floor(a.pageY)) ||
-      (0 === a.pageX && Math.floor(d) > Math.floor(a.pageX))
-    )
-      (d -= c), (e -= b);
+    if((0 === a.pageY && Math.floor(e) > Math.floor(a.pageY)) || (0 === a.pageX && Math.floor(d) > Math.floor(a.pageX))) (d -= c), (e -= b);
     else if(e < a.pageY - b || d < a.pageX - c) (d = a.pageX - c), (e = a.pageY - b);
     a.olClientX = d;
     a.olClientY = e;
@@ -1599,16 +1468,12 @@ OpenLayers.Events = OpenLayers.Class({
     this.element.offsets = null;
   },
   getMousePosition: function(a) {
-    this.includeXY
-      ? this.element.hasScrollEvent ||
-        (OpenLayers.Event.observe(window, 'scroll', this.clearMouseListener), (this.element.hasScrollEvent = !0))
-      : this.clearMouseCache();
+    this.includeXY ? this.element.hasScrollEvent || (OpenLayers.Event.observe(window, 'scroll', this.clearMouseListener), (this.element.hasScrollEvent = !0)) : this.clearMouseCache();
     if(!this.element.scrolls) {
       var b = OpenLayers.Util.getViewportElement();
       this.element.scrolls = [window.pageXOffset || b.scrollLeft, window.pageYOffset || b.scrollTop];
     }
-    this.element.lefttop ||
-      (this.element.lefttop = [document.documentElement.clientLeft || 0, document.documentElement.clientTop || 0]);
+    this.element.lefttop || (this.element.lefttop = [document.documentElement.clientLeft || 0, document.documentElement.clientTop || 0]);
     this.element.offsets || (this.element.offsets = OpenLayers.Util.pagePosition(this.element));
     return new OpenLayers.Pixel(
       a.clientX + this.element.scrolls[0] - this.element.offsets[0] - this.element.lefttop[0],
@@ -1701,8 +1566,7 @@ OpenLayers.Events.buttonclick = OpenLayers.Class({
   completeRegEx: /^mouseup|touchend$/,
   initialize: function(a) {
     this.target = a;
-    for(a = this.events.length - 1; 0 <= a; --a)
-      this.target.register(this.events[a], this, this.buttonClick, { extension: !0 });
+    for(a = this.events.length - 1; 0 <= a; --a) this.target.register(this.events[a], this, this.buttonClick, { extension: !0 });
   },
   destroy: function() {
     for(var a = this.events.length - 1; 0 <= a; --a) this.target.unregister(this.events[a], this, this.buttonClick);
@@ -1782,10 +1646,7 @@ OpenLayers.Util.vendorPrefix = (function () {
         f = d.length,
         p = 'undefined' !== typeof a.cssText;
       for(g[b] = null; e < f; e++)
-        if(
-          ((c = d[e]) ? (p || (c = c.toLowerCase()), (c = c + b.charAt(0).toUpperCase() + b.slice(1))) : (c = b),
-          void 0 !== a[c])
-        ) {
+        if(((c = d[e]) ? (p || (c = c.toLowerCase()), (c = c + b.charAt(0).toUpperCase() + b.slice(1))) : (c = b), void 0 !== a[c])) {
           g[b] = c;
           break;
         }
@@ -1878,11 +1739,7 @@ OpenLayers.Tween = OpenLayers.Class({
     this.animationId = OpenLayers.Animation.start(OpenLayers.Function.bind(this.play, this));
   },
   stop: function() {
-    this.playing &&
-      (this.callbacks && this.callbacks.done && this.callbacks.done.call(this, this.finish),
-      OpenLayers.Animation.stop(this.animationId),
-      (this.animationId = null),
-      (this.playing = !1));
+    this.playing && (this.callbacks && this.callbacks.done && this.callbacks.done.call(this, this.finish), OpenLayers.Animation.stop(this.animationId), (this.animationId = null), (this.playing = !1));
   },
   play: function() {
     var a = {},
@@ -1894,10 +1751,7 @@ OpenLayers.Tween = OpenLayers.Class({
       a[b] = this.easing.apply(this, [this.time, c, d - c, this.duration]);
     }
     this.time++;
-    this.callbacks &&
-      this.callbacks.eachStep &&
-      (new Date().getTime() - this.startTime) / this.time <= 1e3 / this.minFrameRate &&
-      this.callbacks.eachStep.call(this, a);
+    this.callbacks && this.callbacks.eachStep && (new Date().getTime() - this.startTime) / this.time <= 1e3 / this.minFrameRate && this.callbacks.eachStep.call(this, a);
     this.time > this.duration && this.stop();
   },
   CLASS_NAME: 'OpenLayers.Tween'
@@ -1923,13 +1777,7 @@ OpenLayers.Easing.Expo = {
     return a == d ? b + c : c * (-Math.pow(2, (-10 * a) / d) + 1) + b;
   },
   easeInOut: function(a, b, c, d) {
-    return 0 == a
-      ? b
-      : a == d
-      ? b + c
-      : 1 > (a /= d / 2)
-      ? (c / 2) * Math.pow(2, 10 * (a - 1)) + b
-      : (c / 2) * (-Math.pow(2, -10 * --a) + 2) + b;
+    return 0 == a ? b : a == d ? b + c : 1 > (a /= d / 2) ? (c / 2) * Math.pow(2, 10 * (a - 1)) + b : (c / 2) * (-Math.pow(2, -10 * --a) + 2) + b;
   },
   CLASS_NAME: 'OpenLayers.Easing.Expo'
 };
@@ -1970,12 +1818,7 @@ OpenLayers.Projection = OpenLayers.Class({
       'object' == typeof Proj4js && this.proj.defData && a.proj.defData
         ? (b = this.proj.defData.replace(this.titleRegEx, '') == a.proj.defData.replace(this.titleRegEx, ''))
         : a.getCode &&
-          ((b = this.getCode()),
-          (a = a.getCode()),
-          (b =
-            b == a ||
-            (!!OpenLayers.Projection.transforms[b] &&
-              OpenLayers.Projection.transforms[b][a] === OpenLayers.Projection.nullTransform))));
+          ((b = this.getCode()), (a = a.getCode()), (b = b == a || (!!OpenLayers.Projection.transforms[b] && OpenLayers.Projection.transforms[b][a] === OpenLayers.Projection.nullTransform))));
     return b;
   },
   destroy: function() {
@@ -2000,11 +1843,7 @@ OpenLayers.Projection.addTransform = function(a, b, c) {
 };
 OpenLayers.Projection.transform = function(a, b, c) {
   if(b && c)
-    if(
-      (b instanceof OpenLayers.Projection || (b = new OpenLayers.Projection(b)),
-      c instanceof OpenLayers.Projection || (c = new OpenLayers.Projection(c)),
-      b.proj && c.proj)
-    )
+    if((b instanceof OpenLayers.Projection || (b = new OpenLayers.Projection(b)), c instanceof OpenLayers.Projection || (c = new OpenLayers.Projection(c)), b.proj && c.proj))
       a = Proj4js.transform(b.proj, c.proj, a);
     else {
       b = b.getCode();
@@ -2038,8 +1877,7 @@ OpenLayers.Projection.nullTransform = function(a) {
       r,
       s;
     g = 0;
-    for(p = d.length; g < p; ++g)
-      for(q = d[g], e(c, q, b), e(q, c, a), s = g + 1; s < p; ++s) (r = d[s]), e(q, r, f), e(r, q, f);
+    for(p = d.length; g < p; ++g) for (q = d[g], e(c, q, b), e(q, c, a), s = g + 1; s < p; ++s) (r = d[s]), e(q, r, f), e(r, q, f);
   }
   var d = 2.003750834e7,
     e = ['EPSG:900913', 'EPSG:3857', 'EPSG:102113', 'EPSG:102100'],
@@ -2103,27 +1941,15 @@ OpenLayers.Map = OpenLayers.Class({
     this.theme = OpenLayers._getScriptLocation() + 'theme/default/style.css';
     this.options = OpenLayers.Util.extend({}, b);
     OpenLayers.Util.extend(this, b);
-    OpenLayers.Util.applyDefaults(
-      this,
-      OpenLayers.Projection.defaults[
-        this.projection instanceof OpenLayers.Projection ? this.projection.projCode : this.projection
-      ]
-    );
-    !this.maxExtent ||
-      this.maxExtent instanceof OpenLayers.Bounds ||
-      (this.maxExtent = new OpenLayers.Bounds(this.maxExtent));
-    !this.minExtent ||
-      this.minExtent instanceof OpenLayers.Bounds ||
-      (this.minExtent = new OpenLayers.Bounds(this.minExtent));
-    !this.restrictedExtent ||
-      this.restrictedExtent instanceof OpenLayers.Bounds ||
-      (this.restrictedExtent = new OpenLayers.Bounds(this.restrictedExtent));
+    OpenLayers.Util.applyDefaults(this, OpenLayers.Projection.defaults[this.projection instanceof OpenLayers.Projection ? this.projection.projCode : this.projection]);
+    !this.maxExtent || this.maxExtent instanceof OpenLayers.Bounds || (this.maxExtent = new OpenLayers.Bounds(this.maxExtent));
+    !this.minExtent || this.minExtent instanceof OpenLayers.Bounds || (this.minExtent = new OpenLayers.Bounds(this.minExtent));
+    !this.restrictedExtent || this.restrictedExtent instanceof OpenLayers.Bounds || (this.restrictedExtent = new OpenLayers.Bounds(this.restrictedExtent));
     !this.center || this.center instanceof OpenLayers.LonLat || (this.center = new OpenLayers.LonLat(this.center));
     this.layers = [];
     this.id = OpenLayers.Util.createUniqueID('OpenLayers.Map_');
     this.div = OpenLayers.Util.getElement(a);
-    this.div ||
-      ((this.div = document.createElement('div')), (this.div.style.height = '1px'), (this.div.style.width = '1px'));
+    this.div || ((this.div = document.createElement('div')), (this.div.style.height = '1px'), (this.div.style.width = '1px'));
     OpenLayers.Element.addClass(this.div, 'olMap');
     var c = this.id + '_OpenLayers_ViewPort';
     this.viewPortDiv = OpenLayers.Util.createDiv(c, null, null, null, 'relative', null, 'hidden');
@@ -2134,9 +1960,7 @@ OpenLayers.Map = OpenLayers.Class({
     this.events = new OpenLayers.Events(this, this.viewPortDiv, null, this.fallThrough, { includeXY: !0 });
     OpenLayers.TileManager &&
       null !== this.tileManager &&
-      (this.tileManager instanceof OpenLayers.TileManager ||
-        (this.tileManager = new OpenLayers.TileManager(this.tileManager)),
-      this.tileManager.addMap(this));
+      (this.tileManager instanceof OpenLayers.TileManager || (this.tileManager = new OpenLayers.TileManager(this.tileManager)), this.tileManager.addMap(this));
     c = this.id + '_OpenLayers_Container';
     this.layerContainerDiv = OpenLayers.Util.createDiv(c);
     this.layerContainerDiv.style.zIndex = this.Z_INDEX_BASE.Popup - 1;
@@ -2145,9 +1969,7 @@ OpenLayers.Map = OpenLayers.Class({
     this.viewPortDiv.appendChild(this.layerContainerDiv);
     this.updateSize();
     if(this.eventListeners instanceof Object) this.events.on(this.eventListeners);
-    !0 === this.autoUpdateSize &&
-      ((this.updateSizeDestroy = OpenLayers.Function.bind(this.updateSize, this)),
-      OpenLayers.Event.observe(window, 'resize', this.updateSizeDestroy));
+    !0 === this.autoUpdateSize && ((this.updateSizeDestroy = OpenLayers.Function.bind(this.updateSize, this)), OpenLayers.Event.observe(window, 'resize', this.updateSizeDestroy));
     if(this.theme) {
       for(var c = !0, d = document.getElementsByTagName('link'), e = 0, f = d.length; e < f; ++e)
         if(OpenLayers.Util.isEquivalentUrl(d.item(e).href, this.theme)) {
@@ -2164,12 +1986,8 @@ OpenLayers.Map = OpenLayers.Class({
     null == this.controls &&
       ((this.controls = []),
       null != OpenLayers.Control &&
-        (OpenLayers.Control.Navigation
-          ? this.controls.push(new OpenLayers.Control.Navigation())
-          : OpenLayers.Control.TouchNavigation && this.controls.push(new OpenLayers.Control.TouchNavigation()),
-        OpenLayers.Control.Zoom
-          ? this.controls.push(new OpenLayers.Control.Zoom())
-          : OpenLayers.Control.PanZoom && this.controls.push(new OpenLayers.Control.PanZoom()),
+        (OpenLayers.Control.Navigation ? this.controls.push(new OpenLayers.Control.Navigation()) : OpenLayers.Control.TouchNavigation && this.controls.push(new OpenLayers.Control.TouchNavigation()),
+        OpenLayers.Control.Zoom ? this.controls.push(new OpenLayers.Control.Zoom()) : OpenLayers.Control.PanZoom && this.controls.push(new OpenLayers.Control.PanZoom()),
         OpenLayers.Control.ArgParser && this.controls.push(new OpenLayers.Control.ArgParser()),
         OpenLayers.Control.Attribution && this.controls.push(new OpenLayers.Control.Attribution())));
     e = 0;
@@ -2177,12 +1995,7 @@ OpenLayers.Map = OpenLayers.Class({
     this.popups = [];
     this.unloadDestroy = OpenLayers.Function.bind(this.destroy, this);
     OpenLayers.Event.observe(window, 'unload', this.unloadDestroy);
-    b &&
-      b.layers &&
-      (delete this.center,
-      delete this.zoom,
-      this.addLayers(b.layers),
-      b.center && !this.getCenter() && this.setCenter(b.center, b.zoom));
+    b && b.layers && (delete this.center, delete this.zoom, this.addLayers(b.layers), b.center && !this.getCenter() && this.setCenter(b.center, b.zoom));
     this.panMethod && (this.panTween = new OpenLayers.Tween(this.panMethod));
     this.zoomMethod && this.applyTransform.transform && (this.zoomTween = new OpenLayers.Tween(this.zoomMethod));
   },
@@ -2276,11 +2089,7 @@ OpenLayers.Map = OpenLayers.Class({
     a.isFixed ? this.viewPortDiv.appendChild(a.div) : this.layerContainerDiv.appendChild(a.div);
     this.layers.push(a);
     a.setMap(this);
-    a.isBaseLayer || (this.allOverlays && !this.baseLayer)
-      ? null == this.baseLayer
-        ? this.setBaseLayer(a)
-        : a.setVisibility(!1)
-      : a.redraw();
+    a.isBaseLayer || (this.allOverlays && !this.baseLayer) ? (null == this.baseLayer ? this.setBaseLayer(a) : a.setVisibility(!1)) : a.redraw();
     this.events.triggerEvent('addlayer', { layer: a });
     a.events.triggerEvent('added', { map: this, layer: a });
     a.afterAdd();
@@ -2323,8 +2132,7 @@ OpenLayers.Map = OpenLayers.Class({
       this.layers.splice(b, 0, a);
       for(var c = 0, d = this.layers.length; c < d; c++) this.setLayerZIndex(this.layers[c], c);
       this.events.triggerEvent('changelayer', { layer: a, property: 'order' });
-      this.allOverlays &&
-        (0 === b ? this.setBaseLayer(a) : this.baseLayer !== this.layers[0] && this.setBaseLayer(this.layers[0]));
+      this.allOverlays && (0 === b ? this.setBaseLayer(a) : this.baseLayer !== this.layers[0] && this.setBaseLayer(this.layers[0]));
     }
   },
   raiseLayer: function(a, b) {
@@ -2337,8 +2145,7 @@ OpenLayers.Map = OpenLayers.Class({
         c = OpenLayers.Util.getResolutionFromScale(this.getScale(), a.units);
       null == this.baseLayer || this.allOverlays || this.baseLayer.setVisibility(!1);
       this.baseLayer = a;
-      if(!this.allOverlays || this.baseLayer.visibility)
-        this.baseLayer.setVisibility(!0), !1 === this.baseLayer.inRange && this.baseLayer.redraw();
+      if(!this.allOverlays || this.baseLayer.visibility) this.baseLayer.setVisibility(!0), !1 === this.baseLayer.inRange && this.baseLayer.redraw();
       null != b && ((a = this.getZoomForResolution(c || this.resolution, !0)), this.setCenter(b, a, !1, !0));
       this.events.triggerEvent('changebaselayer', { layer: this.baseLayer });
     }
@@ -2348,17 +2155,14 @@ OpenLayers.Map = OpenLayers.Class({
     this.addControlToMap(a, b);
   },
   addControls: function(a, b) {
-    for(var c = 1 === arguments.length ? [] : b, d = 0, e = a.length; d < e; d++)
-      this.addControl(a[d], c[d] ? c[d] : null);
+    for(var c = 1 === arguments.length ? [] : b, d = 0, e = a.length; d < e; d++) this.addControl(a[d], c[d] ? c[d] : null);
   },
   addControlToMap: function(a, b) {
     a.outsideViewport = null != a.div;
     this.displayProjection && !a.displayProjection && (a.displayProjection = this.displayProjection);
     a.setMap(this);
     var c = a.draw(b);
-    c &&
-      !a.outsideViewport &&
-      ((c.style.zIndex = this.Z_INDEX_BASE.Control + this.controls.length), this.viewPortDiv.appendChild(c));
+    c && !a.outsideViewport && ((c.style.zIndex = this.Z_INDEX_BASE.Control + this.controls.length), this.viewPortDiv.appendChild(c));
     a.autoActivate && a.activate();
   },
   getControl: function(a) {
@@ -2372,17 +2176,13 @@ OpenLayers.Map = OpenLayers.Class({
     return b;
   },
   removeControl: function(a) {
-    a &&
-      a == this.getControl(a.id) &&
-      (a.div && a.div.parentNode == this.viewPortDiv && this.viewPortDiv.removeChild(a.div),
-      OpenLayers.Util.removeItem(this.controls, a));
+    a && a == this.getControl(a.id) && (a.div && a.div.parentNode == this.viewPortDiv && this.viewPortDiv.removeChild(a.div), OpenLayers.Util.removeItem(this.controls, a));
   },
   addPopup: function(a, b) {
     if(b) for(var c = this.popups.length - 1; 0 <= c; --c) this.removePopup(this.popups[c]);
     a.map = this;
     this.popups.push(a);
-    if((c = a.draw()))
-      (c.style.zIndex = this.Z_INDEX_BASE.Popup + this.popups.length), this.layerContainerDiv.appendChild(c);
+    if((c = a.draw())) (c.style.zIndex = this.Z_INDEX_BASE.Popup + this.popups.length), this.layerContainerDiv.appendChild(c);
   },
   removePopup: function(a) {
     OpenLayers.Util.removeItem(this.popups, a);
@@ -2415,10 +2215,8 @@ OpenLayers.Map = OpenLayers.Class({
   },
   getCurrentSize: function() {
     var a = new OpenLayers.Size(this.div.clientWidth, this.div.clientHeight);
-    if((0 == a.w && 0 == a.h) || (isNaN(a.w) && isNaN(a.h)))
-      (a.w = this.div.offsetWidth), (a.h = this.div.offsetHeight);
-    if((0 == a.w && 0 == a.h) || (isNaN(a.w) && isNaN(a.h)))
-      (a.w = parseInt(this.div.style.width)), (a.h = parseInt(this.div.style.height));
+    if((0 == a.w && 0 == a.h) || (isNaN(a.w) && isNaN(a.h))) (a.w = this.div.offsetWidth), (a.h = this.div.offsetHeight);
+    if((0 == a.w && 0 == a.h) || (isNaN(a.w) && isNaN(a.h))) (a.w = parseInt(this.div.style.width)), (a.h = parseInt(this.div.style.height));
     return a;
   },
   calculateBounds: function(a, b) {
@@ -2438,9 +2236,7 @@ OpenLayers.Map = OpenLayers.Class({
     return a;
   },
   getCachedCenter: function() {
-    !this.center &&
-      this.size &&
-      (this.center = this.getLonLatFromViewPortPx({ x: this.size.w / 2, y: this.size.h / 2 }));
+    !this.center && this.size && (this.center = this.getLonLatFromViewPortPx({ x: this.size.w / 2, y: this.size.h / 2 }));
     return this.center;
   },
   getZoom: function() {
@@ -2453,10 +2249,7 @@ OpenLayers.Map = OpenLayers.Class({
       var d = this.getViewPortPxFromLonLat(this.getCachedCenter());
       a = d.add(a, b);
       if(this.dragging || !a.equals(d))
-        (d = this.getLonLatFromViewPortPx(a)),
-          c.animate
-            ? this.panTo(d)
-            : (this.moveTo(d), this.dragging && ((this.dragging = !1), this.events.triggerEvent('moveend')));
+        (d = this.getLonLatFromViewPortPx(a)), c.animate ? this.panTo(d) : (this.moveTo(d), this.dragging && ((this.dragging = !1), this.events.triggerEvent('moveend')));
     }
   },
   panTo: function(a) {
@@ -2507,9 +2300,7 @@ OpenLayers.Map = OpenLayers.Class({
       b && ((this.layerContainerOriginPx.y -= b), (this.minPx.y -= b), (this.maxPx.y -= b));
       this.applyTransform();
       d = 0;
-      for(e = this.layers.length; d < e; ++d)
-        (c = this.layers[d]),
-          c.visibility && (c === this.baseLayer || c.inRange) && (c.moveByPx(a, b), c.events.triggerEvent('move'));
+      for(e = this.layers.length; d < e; ++d) (c = this.layers[d]), c.visibility && (c === this.baseLayer || c.inRange) && (c.moveByPx(a, b), c.events.triggerEvent('move'));
       this.events.triggerEvent('move');
     }
   },
@@ -2540,9 +2331,7 @@ OpenLayers.Map = OpenLayers.Class({
     b !== d && (a = this.getCenter());
     var d = c.dragging || this.dragging,
       e = c.forceZoomChange;
-    this.getCachedCenter() ||
-      this.isValidLonLat(a) ||
-      ((a = this.maxExtent.getCenterLonLat()), (this.center = a.clone()));
+    this.getCachedCenter() || this.isValidLonLat(a) || ((a = this.maxExtent.getCenterLonLat()), (this.center = a.clone()));
     if(null != this.restrictedExtent) {
       null == a && (a = this.center);
       null == b && (b = this.getZoom());
@@ -2587,21 +2376,15 @@ OpenLayers.Map = OpenLayers.Class({
       }
       e && ((this.zoom = b), (this.resolution = a));
       a = this.getExtent();
-      this.baseLayer.visibility &&
-        (this.baseLayer.moveTo(a, e, c.dragging),
-        c.dragging || this.baseLayer.events.triggerEvent('moveend', { zoomChanged: e }));
+      this.baseLayer.visibility && (this.baseLayer.moveTo(a, e, c.dragging), c.dragging || this.baseLayer.events.triggerEvent('moveend', { zoomChanged: e }));
       a = this.baseLayer.getExtent();
       for(b = this.layers.length - 1; 0 <= b; --b)
         (f = this.layers[b]),
           f === this.baseLayer ||
             f.isBaseLayer ||
             ((g = f.calculateInRange()),
-            f.inRange != g &&
-              ((f.inRange = g) || f.display(!1),
-              this.events.triggerEvent('changelayer', { layer: f, property: 'visibility' })),
-            g &&
-              f.visibility &&
-              (f.moveTo(a, e, c.dragging), c.dragging || f.events.triggerEvent('moveend', { zoomChanged: e })));
+            f.inRange != g && ((f.inRange = g) || f.display(!1), this.events.triggerEvent('changelayer', { layer: f, property: 'visibility' })),
+            g && f.visibility && (f.moveTo(a, e, c.dragging), c.dragging || f.events.triggerEvent('moveend', { zoomChanged: e })));
       this.events.triggerEvent('move');
       d || this.events.triggerEvent('moveend');
       if(e) {
@@ -2633,8 +2416,7 @@ OpenLayers.Map = OpenLayers.Class({
   },
   isValidLonLat: function(a) {
     var b = !1;
-    null != a &&
-      ((b = this.getMaxExtent()), (b = b.containsLonLat(a, { worldBounds: this.baseLayer.wrapDateLine && b })));
+    null != a && ((b = this.getMaxExtent()), (b = b.containsLonLat(a, { worldBounds: this.baseLayer.wrapDateLine && b })));
     return b;
   },
   getProjection: function() {
@@ -2653,9 +2435,7 @@ OpenLayers.Map = OpenLayers.Class({
   },
   getMaxExtent: function(a) {
     var b = null;
-    a && a.restricted && this.restrictedExtent
-      ? (b = this.restrictedExtent)
-      : null != this.baseLayer && (b = this.baseLayer.maxExtent);
+    a && a.restricted && this.restrictedExtent ? (b = this.restrictedExtent) : null != this.baseLayer && (b = this.baseLayer.maxExtent);
     return b;
   },
   getNumZoomLevels: function() {
@@ -2670,9 +2450,7 @@ OpenLayers.Map = OpenLayers.Class({
   },
   getResolution: function() {
     var a = null;
-    null != this.baseLayer
-      ? (a = this.baseLayer.getResolution())
-      : !0 === this.allOverlays && 0 < this.layers.length && (a = this.layers[0].getResolution());
+    null != this.baseLayer ? (a = this.baseLayer.getResolution()) : !0 === this.allOverlays && 0 < this.layers.length && (a = this.layers[0].getResolution());
     return a;
   },
   getUnits: function() {
@@ -2682,8 +2460,7 @@ OpenLayers.Map = OpenLayers.Class({
   },
   getScale: function() {
     var a = null;
-    null != this.baseLayer &&
-      ((a = this.getResolution()), (a = OpenLayers.Util.getScaleFromResolution(a, this.baseLayer.units)));
+    null != this.baseLayer && ((a = this.getResolution()), (a = OpenLayers.Util.getScaleFromResolution(a, this.baseLayer.units)));
     return a;
   },
   getZoomForExtent: function(a, b) {
@@ -2805,9 +2582,7 @@ OpenLayers.Map = OpenLayers.Class({
   },
   getLayerPxFromViewPortPx: function(a) {
     var b = null;
-    null != a &&
-      ((b = a.add(-this.layerContainerOriginPx.x, -this.layerContainerOriginPx.y)), isNaN(b.x) || isNaN(b.y)) &&
-      (b = null);
+    null != a && ((b = a.add(-this.layerContainerOriginPx.x, -this.layerContainerOriginPx.y)), isNaN(b.x) || isNaN(b.y)) && (b = null);
     return b;
   },
   getLonLatFromLayerPx: function(a) {
@@ -2835,8 +2610,7 @@ OpenLayers.Map = OpenLayers.Class({
     }
     null === g || ('translate3d(' !== h[0] && !0 !== e)
       ? ((f.left = a + 'px'), (f.top = b + 'px'), null !== g && (f[g] = ''))
-      : (!0 === e && 'translate(' === h[0] && ((a -= d.x), (b -= d.y), (f.left = d.x + 'px'), (f.top = d.y + 'px')),
-        (f[g] = [h[0], a, 'px,', b, 'px', h[1], h[2], c, ',', c, h[3]].join('')));
+      : (!0 === e && 'translate(' === h[0] && ((a -= d.x), (b -= d.y), (f.left = d.x + 'px'), (f.top = d.y + 'px')), (f[g] = [h[0], a, 'px,', b, 'px', h[1], h[2], c, ',', c, h[3]].join('')));
   },
   CLASS_NAME: 'OpenLayers.Map'
 });
@@ -2871,22 +2645,19 @@ OpenLayers.Handler = OpenLayers.Class({
   },
   activate: function() {
     if(this.active) return !1;
-    for(var a = OpenLayers.Events.prototype.BROWSER_EVENTS, b = 0, c = a.length; b < c; b++)
-      this[a[b]] && this.register(a[b], this[a[b]]);
+    for(var a = OpenLayers.Events.prototype.BROWSER_EVENTS, b = 0, c = a.length; b < c; b++) this[a[b]] && this.register(a[b], this[a[b]]);
     return (this.active = !0);
   },
   deactivate: function() {
     if(!this.active) return !1;
-    for(var a = OpenLayers.Events.prototype.BROWSER_EVENTS, b = 0, c = a.length; b < c; b++)
-      this[a[b]] && this.unregister(a[b], this[a[b]]);
+    for(var a = OpenLayers.Events.prototype.BROWSER_EVENTS, b = 0, c = a.length; b < c; b++) this[a[b]] && this.unregister(a[b], this[a[b]]);
     this.active = this.touch = !1;
     return !0;
   },
   startTouch: function() {
     if(!this.touch) {
       this.touch = !0;
-      for(var a = 'mousedown mouseup mousemove click dblclick mouseout'.split(' '), b = 0, c = a.length; b < c; b++)
-        this[a[b]] && this.unregister(a[b], this[a[b]]);
+      for(var a = 'mousedown mouseup mousemove click dblclick mouseout'.split(' '), b = 0, c = a.length; b < c; b++) this[a[b]] && this.unregister(a[b], this[a[b]]);
     }
   },
   callback: function(a, b) {
@@ -2949,16 +2720,12 @@ OpenLayers.Handler.Click = OpenLayers.Class(OpenLayers.Handler, {
   },
   mouseup: function(a) {
     var b = !0;
-    this.checkModifiers(a) &&
-      this.control.handleRightClicks &&
-      OpenLayers.Event.isRightClick(a) &&
-      (b = this.rightclick(a));
+    this.checkModifiers(a) && this.control.handleRightClicks && OpenLayers.Event.isRightClick(a) && (b = this.rightclick(a));
     return b;
   },
   rightclick: function(a) {
     if(this.passesTolerance(a)) {
-      if(null != this.rightclickTimerId)
-        return this.clearTimer(), this.callback('dblrightclick', [a]), !this.stopDouble;
+      if(null != this.rightclickTimerId) return this.clearTimer(), this.callback('dblrightclick', [a]), !this.stopDouble;
       a = this['double'] ? OpenLayers.Util.extend({}, a) : this.callback('rightclick', [a]);
       a = OpenLayers.Function.bind(this.delayedRightCall, this, a);
       this.rightclickTimerId = window.setTimeout(a, this.delay);
@@ -2984,27 +2751,16 @@ OpenLayers.Handler.Click = OpenLayers.Class(OpenLayers.Handler, {
   handleSingle: function(a) {
     this.passesTolerance(a) &&
       (null != this.timerId
-        ? (this.last.touches &&
-            1 === this.last.touches.length &&
-            (this['double'] && OpenLayers.Event.preventDefault(a), this.handleDouble(a)),
+        ? (this.last.touches && 1 === this.last.touches.length && (this['double'] && OpenLayers.Event.preventDefault(a), this.handleDouble(a)),
           (this.last.touches && 2 === this.last.touches.length) || this.clearTimer())
-        : ((this.first = this.getEventInfo(a)),
-          (a = this.single ? OpenLayers.Util.extend({}, a) : null),
-          this.queuePotentialClick(a)));
+        : ((this.first = this.getEventInfo(a)), (a = this.single ? OpenLayers.Util.extend({}, a) : null), this.queuePotentialClick(a)));
   },
   queuePotentialClick: function(a) {
     this.timerId = window.setTimeout(OpenLayers.Function.bind(this.delayedCall, this, a), this.delay);
   },
   passesTolerance: function(a) {
     var b = !0;
-    if(
-      null != this.pixelTolerance &&
-      this.down &&
-      this.down.xy &&
-      (b = this.pixelTolerance >= this.down.xy.distanceTo(a.xy)) &&
-      this.touch &&
-      this.down.touches.length === this.last.touches.length
-    ) {
+    if(null != this.pixelTolerance && this.down && this.down.xy && (b = this.pixelTolerance >= this.down.xy.distanceTo(a.xy)) && this.touch && this.down.touches.length === this.last.touches.length) {
       a = 0;
       for(var c = this.down.touches.length; a < c; ++a)
         if(this.getTouchDistance(this.down.touches[a], this.last.touches[a]) > this.pixelTolerance) {
@@ -3041,8 +2797,7 @@ OpenLayers.Handler.Click = OpenLayers.Class(OpenLayers.Handler, {
   },
   deactivate: function() {
     var a = !1;
-    OpenLayers.Handler.prototype.deactivate.apply(this, arguments) &&
-      (this.clearTimer(), (this.last = this.first = this.down = null), (a = !0));
+    OpenLayers.Handler.prototype.deactivate.apply(this, arguments) && (this.clearTimer(), (this.last = this.first = this.down = null), (a = !0));
     return a;
   },
   CLASS_NAME: 'OpenLayers.Handler.Click'
@@ -3081,8 +2836,7 @@ OpenLayers.Handler.Drag = OpenLayers.Class(OpenLayers.Handler, {
         this.down(a),
         this.callback('down', [a.xy]),
         OpenLayers.Event.preventDefault(a),
-        this.oldOnselectstart ||
-          (this.oldOnselectstart = document.onselectstart ? document.onselectstart : OpenLayers.Function.True),
+        this.oldOnselectstart || (this.oldOnselectstart = document.onselectstart ? document.onselectstart : OpenLayers.Function.True),
         (document.onselectstart = OpenLayers.Function.False),
         (b = !this.stopDown))
       : ((this.started = !1), (this.last = this.start = null));
@@ -3093,16 +2847,12 @@ OpenLayers.Handler.Drag = OpenLayers.Class(OpenLayers.Handler, {
     !this.started ||
       this.timeoutId ||
       (a.xy.x == this.last.x && a.xy.y == this.last.y) ||
-      (!0 === this.documentDrag &&
-        this.documentEvents &&
-        (a.element === document ? (this.adjustXY(a), this.setEvent(a)) : this.removeDocumentEvents()),
-      0 < this.interval &&
-        (this.timeoutId = setTimeout(OpenLayers.Function.bind(this.removeTimeout, this), this.interval)),
+      (!0 === this.documentDrag && this.documentEvents && (a.element === document ? (this.adjustXY(a), this.setEvent(a)) : this.removeDocumentEvents()),
+      0 < this.interval && (this.timeoutId = setTimeout(OpenLayers.Function.bind(this.removeTimeout, this), this.interval)),
       (this.dragging = !0),
       this.move(a),
       this.callback('move', [a.xy]),
-      this.oldOnselectstart ||
-        ((this.oldOnselectstart = document.onselectstart), (document.onselectstart = OpenLayers.Function.False)),
+      this.oldOnselectstart || ((this.oldOnselectstart = document.onselectstart), (document.onselectstart = OpenLayers.Function.False)),
       (this.last = a.xy));
     return !0;
   },
@@ -3172,10 +2922,7 @@ OpenLayers.Handler.Drag = OpenLayers.Class(OpenLayers.Handler, {
   deactivate: function() {
     var a = !1;
     OpenLayers.Handler.prototype.deactivate.apply(this, arguments) &&
-      ((this.dragging = this.started = !1),
-      (this.last = this.start = null),
-      (a = !0),
-      OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olDragDown'));
+      ((this.dragging = this.started = !1), (this.last = this.start = null), (a = !0), OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olDragDown'));
     return a;
   },
   adjustXY: function(a) {
@@ -3264,25 +3011,13 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
     else {
       this.div.className += ' ' + this.displayClass + 'Container';
       var a = OpenLayers.Util.getImageLocation('layer-switcher-maximize.png');
-      this.maximizeDiv = OpenLayers.Util.createAlphaImageDiv(
-        this.displayClass + 'MaximizeButton',
-        null,
-        null,
-        a,
-        'absolute'
-      );
+      this.maximizeDiv = OpenLayers.Util.createAlphaImageDiv(this.displayClass + 'MaximizeButton', null, null, a, 'absolute');
       this.maximizeDiv.style.display = 'none';
       this.maximizeDiv.className = this.displayClass + 'MaximizeButton olButton';
       this.maximizeTitle && (this.maximizeDiv.title = this.maximizeTitle);
       this.div.appendChild(this.maximizeDiv);
       a = OpenLayers.Util.getImageLocation('layer-switcher-minimize.png');
-      this.minimizeDiv = OpenLayers.Util.createAlphaImageDiv(
-        'OpenLayers_Control_minimizeDiv',
-        null,
-        null,
-        a,
-        'absolute'
-      );
+      this.minimizeDiv = OpenLayers.Util.createAlphaImageDiv('OpenLayers_Control_minimizeDiv', null, null, a, 'absolute');
       this.minimizeDiv.style.display = 'none';
       this.minimizeDiv.className = this.displayClass + 'MinimizeButton olButton';
       this.minimizeTitle && (this.minimizeDiv.title = this.minimizeTitle);
@@ -3329,9 +3064,7 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
     this.updateMapToRect();
   },
   onButtonClick: function(a) {
-    a.buttonElement === this.minimizeDiv
-      ? this.minimizeControl()
-      : a.buttonElement === this.maximizeDiv && this.maximizeControl();
+    a.buttonElement === this.minimizeDiv ? this.minimizeControl() : a.buttonElement === this.maximizeDiv && this.maximizeControl();
   },
   maximizeControl: function(a) {
     this.element.style.display = '';
@@ -3355,14 +3088,8 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
   isSuitableOverview: function() {
     var a = this.map.getExtent(),
       b = this.map.getMaxExtent(),
-      a = new OpenLayers.Bounds(
-        Math.max(a.left, b.left),
-        Math.max(a.bottom, b.bottom),
-        Math.min(a.right, b.right),
-        Math.min(a.top, b.top)
-      );
-    this.ovmap.getProjection() != this.map.getProjection() &&
-      (a = a.transform(this.map.getProjectionObject(), this.ovmap.getProjectionObject()));
+      a = new OpenLayers.Bounds(Math.max(a.left, b.left), Math.max(a.bottom, b.bottom), Math.min(a.right, b.right), Math.min(a.top, b.top));
+    this.ovmap.getProjection() != this.map.getProjection() && (a = a.transform(this.map.getProjectionObject(), this.ovmap.getProjectionObject()));
     b = this.ovmap.getResolution() / this.map.getResolution();
     return b > this.minRatio && b <= this.maxRatio && this.ovmap.getExtent().containsBounds(a);
   },
@@ -3371,9 +3098,7 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
       b = this.ovmap.getResolution(),
       c = b / a;
     c > this.maxRatio ? (b = this.minRatio * a) : c <= this.minRatio && (b = this.maxRatio * a);
-    this.ovmap.getProjection() != this.map.getProjection()
-      ? ((a = this.map.center.clone()), a.transform(this.map.getProjectionObject(), this.ovmap.getProjectionObject()))
-      : (a = this.map.center);
+    this.ovmap.getProjection() != this.map.getProjection() ? ((a = this.map.center.clone()), a.transform(this.map.getProjectionObject(), this.ovmap.getProjectionObject())) : (a = this.map.center);
     this.ovmap.setCenter(a, this.ovmap.getZoomForResolution(b * this.resolutionFactor));
     this.updateRectToMap();
   },
@@ -3384,26 +3109,14 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
     OpenLayers.Event.stopObserving(window, 'unload', this.ovmap.unloadDestroy);
     this.ovmap.addLayers(this.layers);
     this.ovmap.zoomToMaxExtent();
-    this.wComp = (this.wComp =
-      parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-left-width')) +
-      parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-right-width')))
+    this.wComp = (this.wComp = parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-left-width')) + parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-right-width')))
       ? this.wComp
       : 2;
-    this.hComp = (this.hComp =
-      parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-top-width')) +
-      parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-bottom-width')))
+    this.hComp = (this.hComp = parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-top-width')) + parseInt(OpenLayers.Element.getStyle(this.extentRectangle, 'border-bottom-width')))
       ? this.hComp
       : 2;
-    this.handlers.drag = new OpenLayers.Handler.Drag(
-      this,
-      { move: this.rectDrag, done: this.updateMapToRect },
-      { map: this.ovmap }
-    );
-    this.handlers.click = new OpenLayers.Handler.Click(
-      this,
-      { click: this.mapDivClick },
-      { single: !0, double: !1, stopSingle: !0, stopDouble: !0, pixelTolerance: 1, map: this.ovmap }
-    );
+    this.handlers.drag = new OpenLayers.Handler.Drag(this, { move: this.rectDrag, done: this.updateMapToRect }, { map: this.ovmap });
+    this.handlers.click = new OpenLayers.Handler.Click(this, { click: this.mapDivClick }, { single: !0, double: !1, stopSingle: !0, stopDouble: !0, pixelTolerance: 1, map: this.ovmap });
     this.handlers.click.activate();
     this.rectEvents = new OpenLayers.Events(this, this.extentRectangle, null, !0);
     this.rectEvents.register('mouseover', this, function(a) {
@@ -3420,16 +3133,12 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
   },
   updateRectToMap: function() {
     var a;
-    a =
-      this.ovmap.getProjection() != this.map.getProjection()
-        ? this.map.getExtent().transform(this.map.getProjectionObject(), this.ovmap.getProjectionObject())
-        : this.map.getExtent();
+    a = this.ovmap.getProjection() != this.map.getProjection() ? this.map.getExtent().transform(this.map.getProjectionObject(), this.ovmap.getProjectionObject()) : this.map.getExtent();
     (a = this.getRectBoundsFromMapBounds(a)) && this.setRectPxBounds(a);
   },
   updateMapToRect: function() {
     var a = this.getMapBoundsFromRectBounds(this.rectPxBounds);
-    this.ovmap.getProjection() != this.map.getProjection() &&
-      (a = a.transform(this.ovmap.getProjectionObject(), this.map.getProjectionObject()));
+    this.ovmap.getProjection() != this.map.getProjection() && (a = a.transform(this.ovmap.getProjectionObject(), this.map.getProjectionObject()));
     this.map.panTo(a.getCenterLonLat());
   },
   setRectPxBounds: function(a) {
@@ -3484,8 +3193,7 @@ OpenLayers.Layer = OpenLayers.Class({
   div: null,
   opacity: 1,
   alwaysInRange: null,
-  RESOLUTION_PROPERTIES:
-    'scales resolutions maxScale minScale maxResolution minResolution numZoomLevels maxZoomLevel'.split(' '),
+  RESOLUTION_PROPERTIES: 'scales resolutions maxScale minScale maxResolution minResolution numZoomLevels maxZoomLevel'.split(' '),
   events: null,
   map: null,
   isBaseLayer: !1,
@@ -3550,9 +3258,7 @@ OpenLayers.Layer = OpenLayers.Class({
     return a;
   },
   setName: function(a) {
-    a != this.name &&
-      ((this.name = a),
-      null != this.map && this.map.events.triggerEvent('changelayer', { layer: this, property: 'name' }));
+    a != this.name && ((this.name = a), null != this.map && this.map.events.triggerEvent('changelayer', { layer: this, property: 'name' }));
   },
   addOptions: function(a, b) {
     null == this.options && (this.options = {});
@@ -3571,10 +3277,7 @@ OpenLayers.Layer = OpenLayers.Class({
       for(e in a)
         if(a.hasOwnProperty(e) && 0 <= OpenLayers.Util.indexOf(d, e)) {
           this.initResolutions();
-          b &&
-            this.map.baseLayer === this &&
-            (this.map.setCenter(this.map.getCenter(), this.map.getZoomForResolution(c), !1, !0),
-            this.map.events.triggerEvent('changebaselayer', { layer: this }));
+          b && this.map.baseLayer === this && (this.map.setCenter(this.map.getCenter(), this.map.getZoomForResolution(c), !1, !0), this.map.events.triggerEvent('changebaselayer', { layer: this }));
           break;
         }
     }
@@ -3585,10 +3288,7 @@ OpenLayers.Layer = OpenLayers.Class({
     if(this.map) {
       this.inRange = this.calculateInRange();
       var b = this.getExtent();
-      b &&
-        this.inRange &&
-        this.visibility &&
-        (this.moveTo(b, !0, !1), this.events.triggerEvent('moveend', { zoomChanged: !0 }), (a = !0));
+      b && this.inRange && this.visibility && (this.moveTo(b, !0, !1), this.events.triggerEvent('moveend', { zoomChanged: !0 }), (a = !0));
     }
     return a;
   },
@@ -3607,9 +3307,7 @@ OpenLayers.Layer = OpenLayers.Class({
       'string' == typeof this.projection && (this.projection = new OpenLayers.Projection(this.projection)),
       (this.units = this.projection.getUnits() || this.units || this.map.units),
       this.initResolutions(),
-      this.isBaseLayer ||
-        ((this.inRange = this.calculateInRange()),
-        (this.div.style.display = this.visibility && this.inRange ? '' : 'none')),
+      this.isBaseLayer || ((this.inRange = this.calculateInRange()), (this.div.style.display = this.visibility && this.inRange ? '' : 'none')),
       this.setTileSize());
   },
   afterAdd: function() {},
@@ -3633,19 +3331,15 @@ OpenLayers.Layer = OpenLayers.Class({
       this.events.triggerEvent('visibilitychanged'));
   },
   display: function(a) {
-    a != ('none' != this.div.style.display) &&
-      (this.div.style.display = a && this.calculateInRange() ? 'block' : 'none');
+    a != ('none' != this.div.style.display) && (this.div.style.display = a && this.calculateInRange() ? 'block' : 'none');
   },
   calculateInRange: function() {
     var a = !1;
-    this.alwaysInRange
-      ? (a = !0)
-      : this.map && ((a = this.map.getResolution()), (a = a >= this.minResolution && a <= this.maxResolution));
+    this.alwaysInRange ? (a = !0) : this.map && ((a = this.map.getResolution()), (a = a >= this.minResolution && a <= this.maxResolution));
     return a;
   },
   setIsBaseLayer: function(a) {
-    a != this.isBaseLayer &&
-      ((this.isBaseLayer = a), null != this.map && this.map.events.triggerEvent('changebaselayer', { layer: this }));
+    a != this.isBaseLayer && ((this.isBaseLayer = a), null != this.map && this.map.events.triggerEvent('changebaselayer', { layer: this }));
   },
   initResolutions: function() {
     var a,
@@ -3654,15 +3348,13 @@ OpenLayers.Layer = OpenLayers.Class({
       d = {},
       e = !0;
     a = 0;
-    for(b = this.RESOLUTION_PROPERTIES.length; a < b; a++)
-      (c = this.RESOLUTION_PROPERTIES[a]), (d[c] = this.options[c]), e && this.options[c] && (e = !1);
+    for(b = this.RESOLUTION_PROPERTIES.length; a < b; a++) (c = this.RESOLUTION_PROPERTIES[a]), (d[c] = this.options[c]), e && this.options[c] && (e = !1);
     null == this.options.alwaysInRange && (this.alwaysInRange = e);
     null == d.resolutions && (d.resolutions = this.resolutionsFromScales(d.scales));
     null == d.resolutions && (d.resolutions = this.calculateResolutions(d));
     if(null == d.resolutions) {
       a = 0;
-      for(b = this.RESOLUTION_PROPERTIES.length; a < b; a++)
-        (c = this.RESOLUTION_PROPERTIES[a]), (d[c] = null != this.options[c] ? this.options[c] : this.map[c]);
+      for(b = this.RESOLUTION_PROPERTIES.length; a < b; a++) (c = this.RESOLUTION_PROPERTIES[a]), (d[c] = null != this.options[c] ? this.options[c] : this.map[c]);
       null == d.resolutions && (d.resolutions = this.resolutionsFromScales(d.scales));
       null == d.resolutions && (d.resolutions = this.calculateResolutions(d));
     }
@@ -3702,30 +3394,15 @@ OpenLayers.Layer = OpenLayers.Class({
       d = a.maxResolution;
     null != a.minScale
       ? (d = OpenLayers.Util.getResolutionFromScale(a.minScale, this.units))
-      : 'auto' == d &&
-        null != this.maxExtent &&
-        ((b = this.map.getSize()),
-        (c = this.maxExtent.getWidth() / b.w),
-        (b = this.maxExtent.getHeight() / b.h),
-        (d = Math.max(c, b)));
+      : 'auto' == d && null != this.maxExtent && ((b = this.map.getSize()), (c = this.maxExtent.getWidth() / b.w), (b = this.maxExtent.getHeight() / b.h), (d = Math.max(c, b)));
     c = a.minResolution;
     null != a.maxScale
       ? (c = OpenLayers.Util.getResolutionFromScale(a.maxScale, this.units))
-      : 'auto' == a.minResolution &&
-        null != this.minExtent &&
-        ((b = this.map.getSize()),
-        (c = this.minExtent.getWidth() / b.w),
-        (b = this.minExtent.getHeight() / b.h),
-        (c = Math.max(c, b)));
-    'number' !== typeof d &&
-      'number' !== typeof c &&
-      null != this.maxExtent &&
-      ((d = this.map.getTileSize()), (d = Math.max(this.maxExtent.getWidth() / d.w, this.maxExtent.getHeight() / d.h)));
+      : 'auto' == a.minResolution && null != this.minExtent && ((b = this.map.getSize()), (c = this.minExtent.getWidth() / b.w), (b = this.minExtent.getHeight() / b.h), (c = Math.max(c, b)));
+    'number' !== typeof d && 'number' !== typeof c && null != this.maxExtent && ((d = this.map.getTileSize()), (d = Math.max(this.maxExtent.getWidth() / d.w, this.maxExtent.getHeight() / d.h)));
     b = a.maxZoomLevel;
     a = a.numZoomLevels;
-    'number' === typeof c && 'number' === typeof d && void 0 === a
-      ? (a = Math.floor(Math.log(d / c) / Math.log(2)) + 1)
-      : void 0 === a && null != b && (a = b + 1);
+    'number' === typeof c && 'number' === typeof d && void 0 === a ? (a = Math.floor(Math.log(d / c) / Math.log(2)) + 1) : void 0 === a && null != b && (a = b + 1);
     if(!('number' !== typeof a || 0 >= a || ('number' !== typeof d && 'number' !== typeof c))) {
       b = Array(a);
       var e = 2;
@@ -3799,10 +3476,7 @@ OpenLayers.Layer = OpenLayers.Class({
   },
   getViewPortPxFromLonLat: function(a, b) {
     var c = null;
-    null != a &&
-      ((b = b || this.map.getResolution()),
-      (c = this.map.calculateBounds(null, b)),
-      (c = new OpenLayers.Pixel((1 / b) * (a.lon - c.left), (1 / b) * (c.top - a.lat))));
+    null != a && ((b = b || this.map.getResolution()), (c = this.map.calculateBounds(null, b)), (c = new OpenLayers.Pixel((1 / b) * (a.lon - c.left), (1 / b) * (c.top - a.lat))));
     return c;
   },
   setOpacity: function(a) {
@@ -3828,9 +3502,7 @@ OpenLayers.Layer = OpenLayers.Class({
       var b = this.gutter * this.map.getResolution();
       a = new OpenLayers.Bounds(a.left - b, a.bottom - b, a.right + b, a.top + b);
     }
-    this.wrapDateLine &&
-      ((b = { rightTolerance: this.getResolution(), leftTolerance: this.getResolution() }),
-      (a = a.wrapDateLine(this.maxExtent, b)));
+    this.wrapDateLine && ((b = { rightTolerance: this.getResolution(), leftTolerance: this.getResolution() }), (a = a.wrapDateLine(this.maxExtent, b)));
     return a;
   },
   CLASS_NAME: 'OpenLayers.Layer'
@@ -3838,9 +3510,7 @@ OpenLayers.Layer = OpenLayers.Class({
 OpenLayers.Layer.SphericalMercator = {
   getExtent: function() {
     var a = null;
-    return (a = this.sphericalMercator
-      ? this.map.calculateBounds()
-      : OpenLayers.Layer.FixedZoomLevels.prototype.getExtent.apply(this));
+    return (a = this.sphericalMercator ? this.map.calculateBounds() : OpenLayers.Layer.FixedZoomLevels.prototype.getExtent.apply(this));
   },
   getLonLatFromViewPortPx: function(a) {
     return OpenLayers.Layer.prototype.getLonLatFromViewPortPx.apply(this, arguments);
@@ -3891,8 +3561,7 @@ OpenLayers.Layer.EventPane = OpenLayers.Class(OpenLayers.Layer, {
     this.pane.style.display = this.div.style.display;
     this.pane.style.width = '100%';
     this.pane.style.height = '100%';
-    'msie' == OpenLayers.BROWSER_NAME &&
-      (this.pane.style.background = 'url(' + OpenLayers.Util.getImageLocation('blank.gif') + ')');
+    'msie' == OpenLayers.BROWSER_NAME && (this.pane.style.background = 'url(' + OpenLayers.Util.getImageLocation('blank.gif') + ')');
     this.isFixed ? this.map.viewPortDiv.appendChild(this.pane) : this.map.layerContainerDiv.appendChild(this.pane);
     this.loadMapObject();
     null == this.mapObject && this.loadWarningMessage();
@@ -3941,12 +3610,8 @@ OpenLayers.Layer.EventPane = OpenLayers.Class(OpenLayers.Layer, {
           g = this.getOLZoomFromMapObjectZoom(g);
         (d.equals(f) && e == g) ||
           (!b && f && this.dragPanMapObject && this.smoothDragPan
-            ? ((e = this.map.getViewPortPxFromLonLat(f)),
-              (d = this.map.getViewPortPxFromLonLat(d)),
-              this.dragPanMapObject(d.x - e.x, e.y - d.y))
-            : ((d = this.getMapObjectLonLatFromOLLonLat(d)),
-              (e = this.getMapObjectZoomFromOLZoom(e)),
-              this.setMapObjectCenter(d, e, c)));
+            ? ((e = this.map.getViewPortPxFromLonLat(f)), (d = this.map.getViewPortPxFromLonLat(d)), this.dragPanMapObject(d.x - e.x, e.y - d.y))
+            : ((d = this.getMapObjectLonLatFromOLLonLat(d)), (e = this.getMapObjectZoomFromOLZoom(e)), this.setMapObjectCenter(d, e, c)));
       }
     }
   },
@@ -3954,26 +3619,19 @@ OpenLayers.Layer.EventPane = OpenLayers.Class(OpenLayers.Layer, {
     var b = null;
     null != this.mapObject &&
       null != this.getMapObjectCenter() &&
-      ((a = this.getMapObjectPixelFromOLPixel(a)),
-      (a = this.getMapObjectLonLatFromMapObjectPixel(a)),
-      (b = this.getOLLonLatFromMapObjectLonLat(a)));
+      ((a = this.getMapObjectPixelFromOLPixel(a)), (a = this.getMapObjectLonLatFromMapObjectPixel(a)), (b = this.getOLLonLatFromMapObjectLonLat(a)));
     return b;
   },
   getViewPortPxFromLonLat: function(a) {
     var b = null;
     null != this.mapObject &&
       null != this.getMapObjectCenter() &&
-      ((a = this.getMapObjectLonLatFromOLLonLat(a)),
-      (a = this.getMapObjectPixelFromMapObjectLonLat(a)),
-      (b = this.getOLPixelFromMapObjectPixel(a)));
+      ((a = this.getMapObjectLonLatFromOLLonLat(a)), (a = this.getMapObjectPixelFromMapObjectLonLat(a)), (b = this.getOLPixelFromMapObjectPixel(a)));
     return b;
   },
   getOLLonLatFromMapObjectLonLat: function(a) {
     var b = null;
-    null != a &&
-      ((b = this.getLongitudeFromMapObjectLonLat(a)),
-      (a = this.getLatitudeFromMapObjectLonLat(a)),
-      (b = new OpenLayers.LonLat(b, a)));
+    null != a && ((b = this.getLongitudeFromMapObjectLonLat(a)), (a = this.getLatitudeFromMapObjectLonLat(a)), (b = new OpenLayers.LonLat(b, a)));
     return b;
   },
   getMapObjectLonLatFromOLLonLat: function(a) {
@@ -3983,8 +3641,7 @@ OpenLayers.Layer.EventPane = OpenLayers.Class(OpenLayers.Layer, {
   },
   getOLPixelFromMapObjectPixel: function(a) {
     var b = null;
-    null != a &&
-      ((b = this.getXFromMapObjectPixel(a)), (a = this.getYFromMapObjectPixel(a)), (b = new OpenLayers.Pixel(b, a)));
+    null != a && ((b = this.getXFromMapObjectPixel(a)), (a = this.getYFromMapObjectPixel(a)), (b = new OpenLayers.Pixel(b, a)));
     return b;
   },
   getMapObjectPixelFromOLPixel: function(a) {
@@ -4004,8 +3661,7 @@ OpenLayers.Layer.FixedZoomLevels = OpenLayers.Class({
     if(null == this.minZoomLevel || this.minZoomLevel < this.MIN_ZOOM_LEVEL) this.minZoomLevel = this.MIN_ZOOM_LEVEL;
     a = this.MAX_ZOOM_LEVEL - this.minZoomLevel + 1;
     b =
-      (null == this.options.numZoomLevels && null != this.options.maxZoomLevel) ||
-      (null == this.numZoomLevels && null != this.maxZoomLevel)
+      (null == this.options.numZoomLevels && null != this.options.maxZoomLevel) || (null == this.numZoomLevels && null != this.maxZoomLevel)
         ? this.maxZoomLevel - this.minZoomLevel + 1
         : this.numZoomLevels;
     this.numZoomLevels = null != b ? Math.min(b, a) : a;
@@ -4039,16 +3695,12 @@ OpenLayers.Layer.FixedZoomLevels = OpenLayers.Class({
   },
   getOLZoomFromMapObjectZoom: function(a) {
     var b = null;
-    null != a &&
-      ((b = a - this.minZoomLevel),
-      this.map.baseLayer !== this && (b = this.map.baseLayer.getZoomForResolution(this.getResolutionForZoom(b))));
+    null != a && ((b = a - this.minZoomLevel), this.map.baseLayer !== this && (b = this.map.baseLayer.getZoomForResolution(this.getResolutionForZoom(b))));
     return b;
   },
   getMapObjectZoomFromOLZoom: function(a) {
     var b = null;
-    null != a &&
-      ((b = a + this.minZoomLevel),
-      this.map.baseLayer !== this && (b = this.getZoomForResolution(this.map.baseLayer.getResolutionForZoom(b))));
+    null != a && ((b = a + this.minZoomLevel), this.map.baseLayer !== this && (b = this.getZoomForResolution(this.map.baseLayer.getResolutionForZoom(b))));
     return b;
   },
   CLASS_NAME: 'OpenLayers.Layer.FixedZoomLevels'
@@ -4057,10 +3709,8 @@ OpenLayers.Layer.Google = OpenLayers.Class(OpenLayers.Layer.EventPane, OpenLayer
   MIN_ZOOM_LEVEL: 0,
   MAX_ZOOM_LEVEL: 21,
   RESOLUTIONS: [
-    1.40625, 0.703125, 0.3515625, 0.17578125, 0.087890625, 0.0439453125, 0.02197265625, 0.010986328125, 0.0054931640625,
-    0.00274658203125, 0.001373291015625, 6.866455078125e-4, 3.4332275390625e-4, 1.71661376953125e-4,
-    8.58306884765625e-5, 4.291534423828125e-5, 2.145767211914062e-5, 1.072883605957031e-5, 5.36441802978515e-6,
-    2.68220901489257e-6, 1.341104507446289e-6, 6.705522537231445e-7
+    1.40625, 0.703125, 0.3515625, 0.17578125, 0.087890625, 0.0439453125, 0.02197265625, 0.010986328125, 0.0054931640625, 0.00274658203125, 0.001373291015625, 6.866455078125e-4, 3.4332275390625e-4,
+    1.71661376953125e-4, 8.58306884765625e-5, 4.291534423828125e-5, 2.145767211914062e-5, 1.072883605957031e-5, 5.36441802978515e-6, 2.68220901489257e-6, 1.341104507446289e-6, 6.705522537231445e-7
   ],
   type: null,
   wrapDateLine: !0,
@@ -4076,8 +3726,7 @@ OpenLayers.Layer.Google = OpenLayers.Class(OpenLayers.Layer.EventPane, OpenLayer
     b.maxExtent && (b.maxExtent = b.maxExtent.clone());
     OpenLayers.Layer.EventPane.prototype.initialize.apply(this, [a, b]);
     OpenLayers.Layer.FixedZoomLevels.prototype.initialize.apply(this, [a, b]);
-    this.sphericalMercator &&
-      (OpenLayers.Util.extend(this, OpenLayers.Layer.SphericalMercator), this.initMercatorParameters());
+    this.sphericalMercator && (OpenLayers.Util.extend(this, OpenLayers.Layer.SphericalMercator), this.initMercatorParameters());
   },
   clone: function() {
     return new OpenLayers.Layer.Google(this.name, this.getOptions());
@@ -4097,9 +3746,7 @@ OpenLayers.Layer.Google = OpenLayers.Class(OpenLayers.Layer.EventPane, OpenLayer
     delete this._dragging;
   },
   setOpacity: function(a) {
-    a !== this.opacity &&
-      (null != this.map && this.map.events.triggerEvent('changelayer', { layer: this, property: 'opacity' }),
-      (this.opacity = a));
+    a !== this.opacity && (null != this.map && this.map.events.triggerEvent('changelayer', { layer: this, property: 'opacity' }), (this.opacity = a));
     if(this.getVisibility()) {
       var b = this.getMapContainer();
       OpenLayers.Util.modifyDOMElement(b, null, null, null, null, null, null, a);
@@ -4120,12 +3767,7 @@ OpenLayers.Layer.Google = OpenLayers.Class(OpenLayers.Layer.EventPane, OpenLayer
       b && b.parentNode && b.parentNode.removeChild(b);
       (b = a.termsOfUse) && b.parentNode && b.parentNode.removeChild(b);
       (a = a.poweredBy) && a.parentNode && a.parentNode.removeChild(a);
-      this.mapObject &&
-        window.google &&
-        google.maps &&
-        google.maps.event &&
-        google.maps.event.clearListeners &&
-        google.maps.event.clearListeners(this.mapObject, 'tilesloaded');
+      this.mapObject && window.google && google.maps && google.maps.event && google.maps.event.clearListeners && google.maps.event.clearListeners(this.mapObject, 'tilesloaded');
     }
   },
   removeMap: function(a) {
@@ -4244,11 +3886,7 @@ OpenLayers.Layer.Google.v2 = {
           (this.poweredBy.style.display = ''),
           (b.displayed = this.id))
         : (b.displayed === this.id && delete b.displayed,
-          b.displayed ||
-            ((c.style.display = 'none'),
-            (this.termsOfUse.style.display = 'none'),
-            (this.termsOfUse.style.left = '-9999px'),
-            (this.poweredBy.style.display = 'none')));
+          b.displayed || ((c.style.display = 'none'), (this.termsOfUse.style.display = 'none'), (this.termsOfUse.style.left = '-9999px'), (this.poweredBy.style.display = 'none')));
     }
   },
   getMapContainer: function() {
@@ -4279,9 +3917,7 @@ OpenLayers.Layer.Google.v2 = {
   },
   getMapObjectLonLatFromLonLat: function(a, b) {
     var c;
-    this.sphericalMercator
-      ? ((c = this.inverseMercator(a, b)), (c = new GLatLng(c.lat, c.lon)))
-      : (c = new GLatLng(b, a));
+    this.sphericalMercator ? ((c = this.inverseMercator(a, b)), (c = new GLatLng(c.lat, c.lon))) : (c = new GLatLng(b, a));
     return c;
   },
   getMapObjectPixelFromXY: function(a, b) {
@@ -4348,11 +3984,7 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
     return a;
   },
   createElementNS: function(a, b) {
-    return this.xmldom
-      ? 'string' == typeof a
-        ? this.xmldom.createNode(1, b, a)
-        : this.xmldom.createNode(1, b, '')
-      : document.createElementNS(a, b);
+    return this.xmldom ? ('string' == typeof a ? this.xmldom.createNode(1, b, a) : this.xmldom.createNode(1, b, '')) : document.createElementNS(a, b);
   },
   createDocumentFragment: function() {
     return this.xmldom ? this.xmldom.createDocumentFragment() : document.createDocumentFragment();
@@ -4366,9 +3998,7 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
     if(a.getElementsByTagNameNS) d = a.getElementsByTagNameNS(b, c);
     else {
       a = a.getElementsByTagName('*');
-      for(var e, f, g = 0, h = a.length; g < h; ++g)
-        if(((e = a[g]), (f = e.prefix ? e.prefix + ':' + c : c), '*' == c || f == e.nodeName))
-          ('*' != b && b != e.namespaceURI) || d.push(e);
+      for(var e, f, g = 0, h = a.length; g < h; ++g) if(((e = a[g]), (f = e.prefix ? e.prefix + ':' + c : c), '*' == c || f == e.nodeName)) ('*' != b && b != e.namespaceURI) || d.push(e);
     }
     return d;
   },
@@ -4440,8 +4070,7 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
   },
   setAttributeNS: function(a, b, c, d) {
     if(a.setAttributeNS) a.setAttributeNS(b, c, d);
-    else if(this.xmldom)
-      b ? ((b = a.ownerDocument.createNode(2, c, b)), (b.nodeValue = d), a.setAttributeNode(b)) : a.setAttribute(c, d);
+    else if(this.xmldom) b ? ((b = a.ownerDocument.createNode(2, c, b)), (b.nodeValue = d), a.setAttributeNode(b)) : a.setAttribute(c, d);
     else throw 'setAttributeNS not implemented';
   },
   createElementNSPlus: function(a, b) {
@@ -4457,12 +4086,7 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
   },
   setAttributes: function(a, b) {
     var c, d, e;
-    for(e in b)
-      null != b[e] &&
-        b[e].toString &&
-        ((c = b[e].toString()),
-        (d = this.namespaces[e.substring(0, e.indexOf(':'))] || null),
-        this.setAttributeNS(a, d, e, c));
+    for(e in b) null != b[e] && b[e].toString && ((c = b[e].toString()), (d = this.namespaces[e.substring(0, e.indexOf(':'))] || null), this.setAttributeNS(a, d, e, c));
   },
   readNode: function(a, b) {
     b || (b = {});
@@ -4481,9 +4105,7 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
   writeNode: function(a, b, c) {
     var d,
       e = a.indexOf(':');
-    0 < e
-      ? ((d = a.substring(0, e)), (a = a.substring(e + 1)))
-      : (d = c ? this.namespaceAlias[c.namespaceURI] : this.defaultPrefix);
+    0 < e ? ((d = a.substring(0, e)), (a = a.substring(e + 1))) : (d = c ? this.namespaceAlias[c.namespaceURI] : this.defaultPrefix);
     b = this.writers[d][a].apply(this, [b]);
     c && c.appendChild(b);
     return b;
@@ -4562,10 +4184,7 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
   CLASS_NAME: 'OpenLayers.Format.XML'
 });
 OpenLayers.Format.XML.CONTENT_TYPE = { EMPTY: 0, SIMPLE: 1, COMPLEX: 2, MIXED: 3 };
-OpenLayers.Format.XML.lookupNamespaceURI = OpenLayers.Function.bind(
-  OpenLayers.Format.XML.prototype.lookupNamespaceURI,
-  OpenLayers.Format.XML.prototype
-);
+OpenLayers.Format.XML.lookupNamespaceURI = OpenLayers.Function.bind(OpenLayers.Format.XML.prototype.lookupNamespaceURI, OpenLayers.Format.XML.prototype);
 OpenLayers.Format.XML.document = null;
 OpenLayers.Format.WFST = function(a) {
   a = OpenLayers.Util.applyDefaults(a, OpenLayers.Format.WFST.DEFAULTS);
@@ -4657,21 +4276,14 @@ OpenLayers.Feature.Vector = OpenLayers.Class(OpenLayers.Feature, {
   },
   onScreen: function(a) {
     var b = !1;
-    this.layer &&
-      this.layer.map &&
-      ((b = this.layer.map.getExtent()),
-      a
-        ? ((a = this.geometry.getBounds()), (b = b.intersectsBounds(a)))
-        : (b = b.toGeometry().intersects(this.geometry)));
+    this.layer && this.layer.map && ((b = this.layer.map.getExtent()), a ? ((a = this.geometry.getBounds()), (b = b.intersectsBounds(a))) : (b = b.toGeometry().intersects(this.geometry)));
     return b;
   },
   getVisibility: function() {
     return !(
       (this.style && 'none' == this.style.display) ||
       !this.layer ||
-      (this.layer &&
-        this.layer.styleMap &&
-        'none' == this.layer.styleMap.createSymbolizer(this, this.renderIntent).display) ||
+      (this.layer && this.layer.styleMap && 'none' == this.layer.styleMap.createSymbolizer(this, this.renderIntent).display) ||
       (this.layer && !this.layer.getVisibility())
     );
   },
@@ -4818,20 +4430,8 @@ OpenLayers.Style = OpenLayers.Class({
     this.defaultStyle = this.rules = null;
   },
   createSymbolizer: function(a) {
-    for(
-      var b = this.defaultsPerSymbolizer ? {} : this.createLiterals(OpenLayers.Util.extend({}, this.defaultStyle), a),
-        c = this.rules,
-        d,
-        e = [],
-        f = !1,
-        g = 0,
-        h = c.length;
-      g < h;
-      g++
-    )
-      (d = c[g]),
-        d.evaluate(a) &&
-          (d instanceof OpenLayers.Rule && d.elseFilter ? e.push(d) : ((f = !0), this.applySymbolizer(d, b, a)));
+    for(var b = this.defaultsPerSymbolizer ? {} : this.createLiterals(OpenLayers.Util.extend({}, this.defaultStyle), a), c = this.rules, d, e = [], f = !1, g = 0, h = c.length; g < h; g++)
+      (d = c[g]), d.evaluate(a) && (d instanceof OpenLayers.Rule && d.elseFilter ? e.push(d) : ((f = !0), this.applySymbolizer(d, b, a)));
     if(!1 == f && 0 < e.length) for(f = !0, g = 0, h = e.length; g < h; g++) this.applySymbolizer(e[g], b, a);
     0 < c.length && !1 == f && (b.display = 'none');
     null != b.label && 'string' !== typeof b.label && (b.label = String(b.label));
@@ -4851,8 +4451,7 @@ OpenLayers.Style = OpenLayers.Class({
           strokeDashstyle: d.strokeDashstyle,
           strokeLinecap: d.strokeLinecap
         }),
-      (!0 !== a.fill && !0 !== a.graphic) ||
-        OpenLayers.Util.applyDefaults(a, { fillColor: d.fillColor, fillOpacity: d.fillOpacity }),
+      (!0 !== a.fill && !0 !== a.graphic) || OpenLayers.Util.applyDefaults(a, { fillColor: d.fillColor, fillOpacity: d.fillOpacity }),
       !0 === a.graphic &&
         OpenLayers.Util.applyDefaults(a, {
           pointRadius: this.defaultStyle.pointRadius,
@@ -4900,8 +4499,7 @@ OpenLayers.Style = OpenLayers.Class({
     this.propertyStyles = this.findPropertyStyles();
   },
   getSymbolizerPrefix: function(a) {
-    for(var b = OpenLayers.Style.SYMBOLIZER_PREFIXES, c = 0, d = b.length; c < d; c++)
-      if(-1 != a.CLASS_NAME.indexOf(b[c])) return b[c];
+    for(var b = OpenLayers.Style.SYMBOLIZER_PREFIXES, c = 0, d = b.length; c < d; c++) if(-1 != a.CLASS_NAME.indexOf(b[c])) return b[c];
   },
   clone: function() {
     var a = OpenLayers.Util.extend({}, this);
@@ -4916,9 +4514,7 @@ OpenLayers.Style = OpenLayers.Class({
   CLASS_NAME: 'OpenLayers.Style'
 });
 OpenLayers.Style.createLiteral = function(a, b, c, d) {
-  'string' == typeof a &&
-    -1 != a.indexOf('${') &&
-    ((a = OpenLayers.String.format(a, b, [c, d])), (a = isNaN(a) || !a ? a : parseFloat(a)));
+  'string' == typeof a && -1 != a.indexOf('${') && ((a = OpenLayers.String.format(a, b, [c, d])), (a = isNaN(a) || !a ? a : parseFloat(a)));
   return a;
 };
 OpenLayers.Style.SYMBOLIZER_PREFIXES = ['Point', 'Line', 'Polygon', 'Text', 'Raster'];
@@ -4934,9 +4530,7 @@ OpenLayers.Filter = OpenLayers.Class({
     return null;
   },
   toString: function() {
-    return OpenLayers.Format && OpenLayers.Format.CQL
-      ? OpenLayers.Format.CQL.prototype.write(this)
-      : Object.prototype.toString.call(this);
+    return OpenLayers.Format && OpenLayers.Format.CQL ? OpenLayers.Format.CQL.prototype.write(this) : Object.prototype.toString.call(this);
   },
   CLASS_NAME: 'OpenLayers.Filter'
 });
@@ -5058,9 +4652,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
           }
         });
         if('string' == typeof this.featureType) this.writeNode('Query', a, b);
-        else
-          for(var c = 0, d = this.featureType.length; c < d; c++)
-            (a.featureType = this.featureType[c]), this.writeNode('Query', a, b);
+        else for(var c = 0, d = this.featureType.length; c < d; c++) (a.featureType = this.featureType[c]), this.writeNode('Query', a, b);
         return b;
       },
       Transaction: function(a) {
@@ -5080,12 +4672,10 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
             });
           var f, g;
           a = 0;
-          for(d = e.length; a < d; ++a)
-            (g = e[a]), (f = this.stateName[g.state]) && this.writeNode(f, { feature: g, options: b }, c);
+          for(d = e.length; a < d; ++a) (g = e[a]), (f = this.stateName[g.state]) && this.writeNode(f, { feature: g, options: b }, c);
           !0 === b.multi && this.setGeometryTypes();
         }
-        if(b.nativeElements)
-          for(a = 0, d = b.nativeElements.length; a < d; ++a) this.writeNode('wfs:Native', b.nativeElements[a], c);
+        if(b.nativeElements) for(a = 0, d = b.nativeElements.length; a < d; ++a) this.writeNode('wfs:Native', b.nativeElements[a], c);
         return c;
       },
       Native: function(a) {
@@ -5113,14 +4703,9 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         });
         this.featureNS && a.setAttribute('xmlns:' + this.featurePrefix, this.featureNS);
         var c = b.modified;
-        null === this.geometryName ||
-          (c && void 0 === c.geometry) ||
-          ((this.srsName = this.getSrsName(b)),
-          this.writeNode('Property', { name: this.geometryName, value: b.geometry }, a));
+        null === this.geometryName || (c && void 0 === c.geometry) || ((this.srsName = this.getSrsName(b)), this.writeNode('Property', { name: this.geometryName, value: b.geometry }, a));
         for(var d in b.attributes)
-          void 0 === b.attributes[d] ||
-            (c && c.attributes && (!c.attributes || void 0 === c.attributes[d])) ||
-            this.writeNode('Property', { name: d, value: b.attributes[d] }, a);
+          void 0 === b.attributes[d] || (c && c.attributes && (!c.attributes || void 0 === c.attributes[d])) || this.writeNode('Property', { name: d, value: b.attributes[d] }, a);
         this.writeNode('ogc:Filter', new OpenLayers.Filter.FeatureId({ fids: [b.fid] }), a);
         return a;
       },
@@ -5136,9 +4721,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
       Value: function(a) {
         var b;
         a instanceof OpenLayers.Geometry
-          ? ((b = this.createElementNSPlus('wfs:Value')),
-            (a = this.writeNode('feature:_geometry', a).firstChild),
-            b.appendChild(a))
+          ? ((b = this.createElementNSPlus('wfs:Value')), (a = this.writeNode('feature:_geometry', a).firstChild), b.appendChild(a))
           : (b = this.createElementNSPlus('wfs:Value', { value: a }));
         return b;
       },
@@ -5167,9 +4750,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
     return a.join(' ') || void 0;
   },
   setFilterProperty: function(a) {
-    if(a.filters)
-      for(var b = 0, c = a.filters.length; b < c; ++b)
-        OpenLayers.Format.WFST.v1.prototype.setFilterProperty.call(this, a.filters[b]);
+    if(a.filters) for(var b = 0, c = a.filters.length; b < c; ++b) OpenLayers.Format.WFST.v1.prototype.setFilterProperty.call(this, a.filters[b]);
     else a instanceof OpenLayers.Filter.Spatial && !a.property && (a.property = this.geometryName);
   },
   CLASS_NAME: 'OpenLayers.Format.WFST.v1'
@@ -5181,8 +4762,7 @@ OpenLayers.Format.OGCExceptionReport = OpenLayers.Class(OpenLayers.Format.XML, {
   read: function(a) {
     'string' == typeof a && (a = OpenLayers.Format.XML.prototype.read.apply(this, [a]));
     var b = { exceptionReport: null };
-    a.documentElement &&
-      (this.readChildNodes(a, b), null === b.exceptionReport && (b = new OpenLayers.Format.OWSCommon().read(a)));
+    a.documentElement && (this.readChildNodes(a, b), null === b.exceptionReport && (b = new OpenLayers.Format.OWSCommon().read(a)));
     return b;
   },
   readers: {
@@ -5214,9 +4794,7 @@ OpenLayers.Format.XML.VersionedOGC = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   getVersion: function(a, b) {
     var c;
-    a
-      ? ((c = this.version), c || ((c = a.getAttribute('version')), c || (c = this.defaultVersion)))
-      : (c = (b && b.version) || this.version || this.defaultVersion);
+    a ? ((c = this.version), c || ((c = a.getAttribute('version')), c || (c = this.defaultVersion))) : (c = (b && b.version) || this.version || this.defaultVersion);
     return c;
   },
   getParser: function(a) {
@@ -5224,12 +4802,7 @@ OpenLayers.Format.XML.VersionedOGC = OpenLayers.Class(OpenLayers.Format.XML, {
     var b = this.profile ? '_' + this.profile : '';
     if(!this.parser || this.parser.VERSION != a) {
       var c = OpenLayers.Format[this.name]['v' + a.replace(/\./g, '_') + b];
-      if(
-        !c &&
-        ('' !== b && this.allowFallback && ((b = ''), (c = OpenLayers.Format[this.name]['v' + a.replace(/\./g, '_')])),
-        !c)
-      )
-        throw "Can't find a " + this.name + ' parser for version ' + a + b;
+      if(!c && ('' !== b && this.allowFallback && ((b = ''), (c = OpenLayers.Format[this.name]['v' + a.replace(/\./g, '_')])), !c)) throw "Can't find a " + this.name + ' parser for version ' + a + b;
       this.parser = new c(this.options);
     }
     return this.parser;
@@ -5305,13 +4878,11 @@ OpenLayers.Filter.Comparison = OpenLayers.Class(OpenLayers.Filter, {
     switch (this.type) {
       case OpenLayers.Filter.Comparison.EQUAL_TO:
         b = this.value;
-        b =
-          this.matchCase || 'string' != typeof a || 'string' != typeof b ? a == b : a.toUpperCase() == b.toUpperCase();
+        b = this.matchCase || 'string' != typeof a || 'string' != typeof b ? a == b : a.toUpperCase() == b.toUpperCase();
         break;
       case OpenLayers.Filter.Comparison.NOT_EQUAL_TO:
         b = this.value;
-        b =
-          this.matchCase || 'string' != typeof a || 'string' != typeof b ? a != b : a.toUpperCase() != b.toUpperCase();
+        b = this.matchCase || 'string' != typeof a || 'string' != typeof b ? a != b : a.toUpperCase() != b.toUpperCase();
         break;
       case OpenLayers.Filter.Comparison.LESS_THAN:
         b = a < this.value;
@@ -5382,8 +4953,7 @@ OpenLayers.Filter.Function = OpenLayers.Class(OpenLayers.Filter, {
   CLASS_NAME: 'OpenLayers.Filter.Function'
 });
 OpenLayers.Date = {
-  dateRegEx:
-    /^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:(?:T(\d{1,2}):(\d{2}):(\d{2}(?:\.\d+)?)(Z|(?:[+-]\d{1,2}(?::(\d{2}))?)))|Z)?$/,
+  dateRegEx: /^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:(?:T(\d{1,2}):(\d{2}):(\d{2}(?:\.\d+)?)(Z|(?:[+-]\d{1,2}(?::(\d{2}))?)))|Z)?$/,
   toISOString: (function () {
     return 'toISOString' in Date.prototype
       ? function(a) {
@@ -5422,11 +4992,7 @@ OpenLayers.Date = {
           g = f | 0,
           f = Math.round(1e3 * (f - g));
         b.setUTCHours(d, e, g, f);
-        'Z' !== c &&
-          ((c = parseInt(c, 10)),
-          (a = parseInt(a[8], 10) || 0),
-          (a = -1e3 * (60 * 60 * c + 60 * a)),
-          (b = new Date(b.getTime() + a)));
+        'Z' !== c && ((c = parseInt(c, 10)), (a = parseInt(a[8], 10) || 0), (a = -1e3 * (60 * 60 * c + 60 * a)), (b = new Date(b.getTime() + a)));
       }
     } else b = new Date('invalid');
     return b;
@@ -5467,9 +5033,7 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
       Filter: function(a, b) {
         var c = { fids: [], filters: [] };
         this.readChildNodes(a, c);
-        0 < c.fids.length
-          ? (b.filter = new OpenLayers.Filter.FeatureId({ fids: c.fids }))
-          : 0 < c.filters.length && (b.filter = c.filters[0]);
+        0 < c.fids.length ? (b.filter = new OpenLayers.Filter.FeatureId({ fids: c.fids })) : 0 < c.filters.length && (b.filter = c.filters[0]);
       },
       FeatureId: function(a, b) {
         var c = a.getAttribute('fid');
@@ -5577,21 +5141,18 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         return b;
       },
       _featureIds: function(a) {
-        for(var b = this.createDocumentFragment(), c = 0, d = a.fids.length; c < d; ++c)
-          this.writeNode('ogc:FeatureId', a.fids[c], b);
+        for(var b = this.createDocumentFragment(), c = 0, d = a.fids.length; c < d; ++c) this.writeNode('ogc:FeatureId', a.fids[c], b);
         return b;
       },
       FeatureId: function(a) {
         return this.createElementNSPlus('ogc:FeatureId', { attributes: { fid: a } });
       },
       And: function(a) {
-        for(var b = this.createElementNSPlus('ogc:And'), c, d = 0, e = a.filters.length; d < e; ++d)
-          (c = a.filters[d]), this.writeNode(this.getFilterType(c), c, b);
+        for(var b = this.createElementNSPlus('ogc:And'), c, d = 0, e = a.filters.length; d < e; ++d) (c = a.filters[d]), this.writeNode(this.getFilterType(c), c, b);
         return b;
       },
       Or: function(a) {
-        for(var b = this.createElementNSPlus('ogc:Or'), c, d = 0, e = a.filters.length; d < e; ++d)
-          (c = a.filters[d]), this.writeNode(this.getFilterType(c), c, b);
+        for(var b = this.createElementNSPlus('ogc:Or'), c, d = 0, e = a.filters.length; d < e; ++d) (c = a.filters[d]), this.writeNode(this.getFilterType(c), c, b);
         return b;
       },
       Not: function(a) {
@@ -5740,14 +5301,7 @@ OpenLayers.Geometry = OpenLayers.Class({
     var d = !1;
     null != this.getBounds() &&
       null != a &&
-      ((b = null != b ? b : 0),
-      (c = null != c ? c : 0),
-      (d = new OpenLayers.Bounds(
-        this.bounds.left - b,
-        this.bounds.bottom - c,
-        this.bounds.right + b,
-        this.bounds.top + c
-      ).containsLonLat(a)));
+      ((b = null != b ? b : 0), (c = null != c ? c : 0), (d = new OpenLayers.Bounds(this.bounds.left - b, this.bounds.bottom - c, this.bounds.right + b, this.bounds.top + c).containsLonLat(a)));
     return d;
   },
   getLength: function() {
@@ -5760,9 +5314,7 @@ OpenLayers.Geometry = OpenLayers.Class({
     return null;
   },
   toString: function() {
-    return OpenLayers.Format && OpenLayers.Format.WKT
-      ? OpenLayers.Format.WKT.prototype.write(new OpenLayers.Feature.Vector(this))
-      : Object.prototype.toString.call(this);
+    return OpenLayers.Format && OpenLayers.Format.WKT ? OpenLayers.Format.WKT.prototype.write(new OpenLayers.Feature.Vector(this)) : Object.prototype.toString.call(this);
   },
   CLASS_NAME: 'OpenLayers.Geometry'
 });
@@ -5796,21 +5348,13 @@ OpenLayers.Geometry.segmentsIntersect = function(a, b, c) {
     g = h * g - k * f;
   0 == n
     ? 0 == l && 0 == g && (e = !0)
-    : ((f = l / n),
-      (n = g / n),
-      0 <= f &&
-        1 >= f &&
-        0 <= n &&
-        1 >= n &&
-        (d ? ((h = a.x1 + f * h), (n = a.y1 + f * k), (e = new OpenLayers.Geometry.Point(h, n))) : (e = !0)));
+    : ((f = l / n), (n = g / n), 0 <= f && 1 >= f && 0 <= n && 1 >= n && (d ? ((h = a.x1 + f * h), (n = a.y1 + f * k), (e = new OpenLayers.Geometry.Point(h, n))) : (e = !0)));
   if(c)
     if(e) {
       if(d)
         a: for(a = [a, b], b = 0; 2 > b; ++b)
           for(f = a[b], k = 1; 3 > k; ++k)
-            if(
-              ((h = f['x' + k]), (n = f['y' + k]), (d = Math.sqrt(Math.pow(h - e.x, 2) + Math.pow(n - e.y, 2))), d < c)
-            ) {
+            if(((h = f['x' + k]), (n = f['y' + k]), (d = Math.sqrt(Math.pow(h - e.x, 2) + Math.pow(n - e.y, 2))), d < c)) {
               e.x = h;
               e.y = n;
               break a;
@@ -5818,9 +5362,7 @@ OpenLayers.Geometry.segmentsIntersect = function(a, b, c) {
     } else
       a: for(a = [a, b], b = 0; 2 > b; ++b)
         for(h = a[b], n = a[(b + 1) % 2], k = 1; 3 > k; ++k)
-          if(
-            ((f = { x: h['x' + k], y: h['y' + k] }), (g = OpenLayers.Geometry.distanceToSegment(f, n)), g.distance < c)
-          ) {
+          if(((f = { x: h['x' + k], y: h['y' + k] }), (g = OpenLayers.Geometry.distanceToSegment(f, n)), g.distance < c)) {
             e = d ? new OpenLayers.Geometry.Point(f.x, f.y) : !0;
             break a;
           }
@@ -5868,12 +5410,7 @@ OpenLayers.Geometry.Point = OpenLayers.Class(OpenLayers.Geometry, {
       g,
       h;
     a instanceof OpenLayers.Geometry.Point
-      ? ((e = this.x),
-        (f = this.y),
-        (g = a.x),
-        (h = a.y),
-        (d = Math.sqrt(Math.pow(e - g, 2) + Math.pow(f - h, 2))),
-        (d = c ? { x0: e, y0: f, x1: g, y1: h, distance: d } : d))
+      ? ((e = this.x), (f = this.y), (g = a.x), (h = a.y), (d = Math.sqrt(Math.pow(e - g, 2) + Math.pow(f - h, 2))), (d = c ? { x0: e, y0: f, x1: g, y1: h, distance: d } : d))
       : ((d = a.distanceTo(this, b)), c && (d = { x0: d.x1, y0: d.y1, x1: d.x0, y1: d.y0, distance: d.distance }));
     return d;
   },
@@ -5934,8 +5471,7 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
     OpenLayers.Geometry.prototype.destroy.apply(this, arguments);
   },
   clone: function() {
-    for(var a = eval('new ' + this.CLASS_NAME + '()'), b = 0, c = this.components.length; b < c; b++)
-      a.addComponent(this.components[b].clone());
+    for(var a = eval('new ' + this.CLASS_NAME + '()'), b = 0, c = this.components.length; b < c; b++) a.addComponent(this.components[b].clone());
     OpenLayers.Util.applyDefaults(a, this);
     return a;
   },
@@ -6029,15 +5565,8 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
   },
   distanceTo: function(a, b) {
     for(
-      var c = !(b && !1 === b.edge) && b && b.details,
-        d,
-        e,
-        f,
-        g = Number.POSITIVE_INFINITY,
-        h = 0,
-        k = this.components.length;
-      h < k &&
-      !((d = this.components[h].distanceTo(a, b)), (f = c ? d.distance : d), f < g && ((g = f), (e = d), 0 == g));
+      var c = !(b && !1 === b.edge) && b && b.details, d, e, f, g = Number.POSITIVE_INFINITY, h = 0, k = this.components.length;
+      h < k && !((d = this.components[h].distanceTo(a, b)), (f = c ? d.distance : d), f < g && ((g = f), (e = d), 0 == g));
       ++h
     );
     return e;
@@ -6068,8 +5597,7 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
     return b;
   },
   getVertices: function(a) {
-    for(var b = [], c = 0, d = this.components.length; c < d; ++c)
-      Array.prototype.push.apply(b, this.components[c].getVertices(a));
+    for(var b = [], c = 0, d = this.components.length; c < d; ++c) Array.prototype.push.apply(b, this.components[c].getVertices(a));
     return b;
   },
   CLASS_NAME: 'OpenLayers.Geometry.Collection'
@@ -6088,9 +5616,7 @@ OpenLayers.Geometry.Curve = OpenLayers.Class(OpenLayers.Geometry.MultiPoint, {
   componentTypes: ['OpenLayers.Geometry.Point'],
   getLength: function() {
     var a = 0;
-    if(this.components && 1 < this.components.length)
-      for(var b = 1, c = this.components.length; b < c; b++)
-        a += this.components[b - 1].distanceTo(this.components[b]);
+    if(this.components && 1 < this.components.length) for(var b = 1, c = this.components.length; b < c; b++) a += this.components[b - 1].distanceTo(this.components[b]);
     return a;
   },
   getGeodesicLength: function(a) {
@@ -6101,10 +5627,7 @@ OpenLayers.Geometry.Curve = OpenLayers.Class(OpenLayers.Geometry.MultiPoint, {
     }
     a = 0;
     if(b.components && 1 < b.components.length)
-      for(var d, e = 1, f = b.components.length; e < f; e++)
-        (c = b.components[e - 1]),
-          (d = b.components[e]),
-          (a += OpenLayers.Util.distVincenty({ lon: c.x, lat: c.y }, { lon: d.x, lat: d.y }));
+      for(var d, e = 1, f = b.components.length; e < f; e++) (c = b.components[e - 1]), (d = b.components[e]), (a += OpenLayers.Util.distVincenty({ lon: c.x, lat: c.y }, { lon: d.x, lat: d.y }));
     return 1e3 * a;
   },
   CLASS_NAME: 'OpenLayers.Geometry.Curve'
@@ -6118,11 +5641,7 @@ OpenLayers.Geometry.LineString = OpenLayers.Class(OpenLayers.Geometry.Curve, {
   intersects: function(a) {
     var b = !1,
       c = a.CLASS_NAME;
-    if(
-      'OpenLayers.Geometry.LineString' == c ||
-      'OpenLayers.Geometry.LinearRing' == c ||
-      'OpenLayers.Geometry.Point' == c
-    ) {
+    if('OpenLayers.Geometry.LineString' == c || 'OpenLayers.Geometry.LinearRing' == c || 'OpenLayers.Geometry.Point' == c) {
       var d = this.getSortedSegments();
       a = 'OpenLayers.Geometry.Point' == c ? [{ x1: a.x, y1: a.y, x2: a.x, y2: a.y }] : a.getSortedSegments();
       var e,
@@ -6145,16 +5664,7 @@ OpenLayers.Geometry.LineString = OpenLayers.Class(OpenLayers.Geometry.Curve, {
         for(; q < r; ++q) {
           k = a[q];
           if(k.x1 > f) break;
-          if(
-            !(
-              k.x2 < e ||
-              ((l = k.y1),
-              (m = k.y2),
-              Math.min(l, m) > Math.max(g, h) ||
-                Math.max(l, m) < Math.min(g, h) ||
-                !OpenLayers.Geometry.segmentsIntersect(c, k))
-            )
-          ) {
+          if(!(k.x2 < e || ((l = k.y1), (m = k.y2), Math.min(l, m) > Math.max(g, h) || Math.max(l, m) < Math.min(g, h) || !OpenLayers.Geometry.segmentsIntersect(c, k)))) {
             b = !0;
             break a;
           }
@@ -6165,29 +5675,14 @@ OpenLayers.Geometry.LineString = OpenLayers.Class(OpenLayers.Geometry.Curve, {
   },
   getSortedSegments: function() {
     for(var a = this.components.length - 1, b = Array(a), c, d, e = 0; e < a; ++e)
-      (c = this.components[e]),
-        (d = this.components[e + 1]),
-        (b[e] = c.x < d.x ? { x1: c.x, y1: c.y, x2: d.x, y2: d.y } : { x1: d.x, y1: d.y, x2: c.x, y2: c.y });
+      (c = this.components[e]), (d = this.components[e + 1]), (b[e] = c.x < d.x ? { x1: c.x, y1: c.y, x2: d.x, y2: d.y } : { x1: d.x, y1: d.y, x2: c.x, y2: c.y });
     return b.sort(function (a, b) {
       return a.x1 - b.x1;
     });
   },
   splitWithSegment: function(a, b) {
     for(
-      var c = !(b && !1 === b.edge),
-        d = b && b.tolerance,
-        e = [],
-        f = this.getVertices(),
-        g = [],
-        h = [],
-        k = !1,
-        l,
-        m,
-        n,
-        p = { point: !0, tolerance: d },
-        q = null,
-        r = 0,
-        s = f.length - 2;
+      var c = !(b && !1 === b.edge), d = b && b.tolerance, e = [], f = this.getVertices(), g = [], h = [], k = !1, l, m, n, p = { point: !0, tolerance: d }, q = null, r = 0, s = f.length - 2;
       r <= s;
       ++r
     )
@@ -6197,15 +5692,10 @@ OpenLayers.Geometry.LineString = OpenLayers.Class(OpenLayers.Geometry.Curve, {
         (l = f[r + 1]),
         (m = { x1: d.x, y1: d.y, x2: l.x, y2: l.y }),
         (m = OpenLayers.Geometry.segmentsIntersect(a, m, p)),
-        m instanceof OpenLayers.Geometry.Point &&
-          ((n =
-            (m.x === a.x1 && m.y === a.y1) || (m.x === a.x2 && m.y === a.y2) || m.equals(d) || m.equals(l) ? !0 : !1) ||
-            c))
+        m instanceof OpenLayers.Geometry.Point && ((n = (m.x === a.x1 && m.y === a.y1) || (m.x === a.x2 && m.y === a.y2) || m.equals(d) || m.equals(l) ? !0 : !1) || c))
       )
         m.equals(h[h.length - 1]) || h.push(m.clone()),
-          (0 === r && m.equals(d)) ||
-            m.equals(l) ||
-            ((k = !0), m.equals(d) || g.push(m), e.push(new OpenLayers.Geometry.LineString(g)), (g = [m.clone()]));
+          (0 === r && m.equals(d)) || m.equals(l) || ((k = !0), m.equals(d) || g.push(m), e.push(new OpenLayers.Geometry.LineString(g)), (g = [m.clone()]));
     k && (g.push(l.clone()), e.push(new OpenLayers.Geometry.LineString(g)));
     if(0 < h.length)
       var t = a.x1 < a.x2 ? 1 : -1,
@@ -6242,15 +5732,8 @@ OpenLayers.Geometry.LineString = OpenLayers.Class(OpenLayers.Geometry.Curve, {
         d && r.push(l.clone());
         for(var u = 0; u < h.length; ++u)
           if((p = h[u].splitWithSegment(n, b)))
-            if(
-              ((q = p.lines),
-              0 < q.length && (q.unshift(u, 1), Array.prototype.splice.apply(h, q), (u += q.length - 2)),
-              d)
-            )
-              for(var v = 0, w = p.points.length; v < w; ++v)
-                (q = p.points[v]),
-                  q.equals(l) ||
-                    (r.push(q), g.push(new OpenLayers.Geometry.LineString(r)), (r = q.equals(m) ? [] : [q.clone()]));
+            if(((q = p.lines), 0 < q.length && (q.unshift(u, 1), Array.prototype.splice.apply(h, q), (u += q.length - 2)), d))
+              for(var v = 0, w = p.points.length; v < w; ++v) (q = p.points[v]), q.equals(l) || (r.push(q), g.push(new OpenLayers.Geometry.LineString(r)), (r = q.equals(m) ? [] : [q.clone()]));
       }
       d && 0 < g.length && 0 < r.length && (r.push(m.clone()), g.push(new OpenLayers.Geometry.LineString(r)));
     } else c = a.splitWith(this, b);
@@ -6263,11 +5746,7 @@ OpenLayers.Geometry.LineString = OpenLayers.Class(OpenLayers.Geometry.Curve, {
     return a.split(this, b);
   },
   getVertices: function(a) {
-    return !0 === a
-      ? [this.components[0], this.components[this.components.length - 1]]
-      : !1 === a
-      ? this.components.slice(1, this.components.length - 1)
-      : this.components.slice();
+    return !0 === a ? [this.components[0], this.components[this.components.length - 1]] : !1 === a ? this.components.slice(1, this.components.length - 1) : this.components.slice();
   },
   distanceTo: function(a, b) {
     var c = !(b && !1 === b.edge) && b && b.details,
@@ -6298,16 +5777,10 @@ OpenLayers.Geometry.LineString = OpenLayers.Class(OpenLayers.Geometry.Curve, {
             f = 0;
             e = { distance: 0, x0: p.x, y0: p.y, x1: p.x, y1: p.y };
             break a;
-          } else
-            (d = OpenLayers.Geometry.distanceToSegment({ x: l, y: q }, d)),
-              d.distance < f && ((f = d.distance), (e = { distance: f, x0: l, y0: q, x1: d.x, y1: d.y }));
+          } else (d = OpenLayers.Geometry.distanceToSegment({ x: l, y: q }, d)), d.distance < f && ((f = d.distance), (e = { distance: f, x0: l, y0: q, x1: d.x, y1: d.y }));
       }
       c || (e = e.distance);
-      0 !== f &&
-        k &&
-        ((d = a.distanceTo(new OpenLayers.Geometry.Point(k.x2, k.y2), b)),
-        (m = c ? d.distance : d),
-        m < f && (e = c ? { distance: f, x0: d.x1, y0: d.y1, x1: d.x0, y1: d.y0 } : m));
+      0 !== f && k && ((d = a.distanceTo(new OpenLayers.Geometry.Point(k.x2, k.y2), b)), (m = c ? d.distance : d), m < f && (e = c ? { distance: f, x0: d.x1, y0: d.y1, x1: d.x0, y1: d.y0 } : m));
     } else (e = a.distanceTo(this, b)), c && (e = { distance: e.distance, x0: e.x1, y0: e.y1, x1: e.x0, y1: e.y0 });
     return e;
   },
@@ -6353,10 +5826,7 @@ OpenLayers.Geometry.MultiLineString = OpenLayers.Class(OpenLayers.Geometry.Colle
         if((e = f.split(l[p], b))) {
           if(d) {
             g = e[0];
-            for(var q = 0, r = g.length; q < r; ++q)
-              0 === q && k.length
-                ? k[k.length - 1].addComponent(g[q])
-                : k.push(new OpenLayers.Geometry.MultiLineString([g[q]]));
+            for(var q = 0, r = g.length; q < r; ++q) 0 === q && k.length ? k[k.length - 1].addComponent(g[q]) : k.push(new OpenLayers.Geometry.MultiLineString([g[q]]));
             g = !0;
             e = e[1];
           }
@@ -6366,10 +5836,7 @@ OpenLayers.Geometry.MultiLineString = OpenLayers.Class(OpenLayers.Geometry.Colle
             break;
           }
         }
-      g ||
-        (k.length
-          ? k[k.length - 1].addComponent(f.clone())
-          : (k = [new OpenLayers.Geometry.MultiLineString(f.clone())]));
+      g || (k.length ? k[k.length - 1].addComponent(f.clone()) : (k = [new OpenLayers.Geometry.MultiLineString(f.clone())]));
     }
     k && 1 < k.length ? (g = !0) : (k = []);
     l && 1 < l.length ? (h = !0) : (l = []);
@@ -6393,22 +5860,12 @@ OpenLayers.Geometry.MultiLineString = OpenLayers.Class(OpenLayers.Geometry.Colle
         f = this.components[m];
         for(var p = 0; p < k.length; ++p)
           if((e = k[p].split(f, b))) {
-            d &&
-              ((g = e[0]),
-              g.length && (g.unshift(p, 1), Array.prototype.splice.apply(k, g), (p += g.length - 2)),
-              (e = e[1]),
-              0 === e.length && (e = [f.clone()]));
+            d && ((g = e[0]), g.length && (g.unshift(p, 1), Array.prototype.splice.apply(k, g), (p += g.length - 2)), (e = e[1]), 0 === e.length && (e = [f.clone()]));
             g = 0;
-            for(var q = e.length; g < q; ++g)
-              0 === g && l.length
-                ? l[l.length - 1].addComponent(e[g])
-                : l.push(new OpenLayers.Geometry.MultiLineString([e[g]]));
+            for(var q = e.length; g < q; ++g) 0 === g && l.length ? l[l.length - 1].addComponent(e[g]) : l.push(new OpenLayers.Geometry.MultiLineString([e[g]]));
             g = !0;
           }
-        g ||
-          (l.length
-            ? l[l.length - 1].addComponent(f.clone())
-            : (l = [new OpenLayers.Geometry.MultiLineString([f.clone()])]));
+        g || (l.length ? l[l.length - 1].addComponent(f.clone()) : (l = [new OpenLayers.Geometry.MultiLineString([f.clone()])]));
       }
     } else c = a.split(this);
     k && 1 < k.length ? (h = !0) : (k = []);
@@ -6430,9 +5887,7 @@ OpenLayers.Geometry.LinearRing = OpenLayers.Class(OpenLayers.Geometry.LineString
   removeComponent: function(a) {
     var b = this.components && 3 < this.components.length;
     b &&
-      (this.components.pop(),
-      OpenLayers.Geometry.Collection.prototype.removeComponent.apply(this, arguments),
-      OpenLayers.Geometry.Collection.prototype.addComponent.apply(this, [this.components[0]]));
+      (this.components.pop(), OpenLayers.Geometry.Collection.prototype.removeComponent.apply(this, arguments), OpenLayers.Geometry.Collection.prototype.addComponent.apply(this, [this.components[0]]));
     return b;
   },
   move: function(a, b) {
@@ -6483,8 +5938,7 @@ OpenLayers.Geometry.LinearRing = OpenLayers.Class(OpenLayers.Geometry.LineString
   getArea: function() {
     var a = 0;
     if(this.components && 2 < this.components.length) {
-      for(var b = (a = 0), c = this.components.length; b < c - 1; b++)
-        var d = this.components[b], e = this.components[b + 1], a = a + (d.x + e.x) * (e.y - d.y);
+      for(var b = (a = 0), c = this.components.length; b < c - 1; b++) var d = this.components[b], e = this.components[b + 1], a = a + (d.x + e.x) * (e.y - d.y);
       a = -a / 2;
     }
     return a;
@@ -6499,11 +5953,7 @@ OpenLayers.Geometry.LinearRing = OpenLayers.Class(OpenLayers.Geometry.LineString
     c = b.components && b.components.length;
     if(2 < c) {
       for(var d, e, f = 0; f < c - 1; f++)
-        (d = b.components[f]),
-          (e = b.components[f + 1]),
-          (a +=
-            OpenLayers.Util.rad(e.x - d.x) *
-            (2 + Math.sin(OpenLayers.Util.rad(d.y)) + Math.sin(OpenLayers.Util.rad(e.y))));
+        (d = b.components[f]), (e = b.components[f + 1]), (a += OpenLayers.Util.rad(e.x - d.x) * (2 + Math.sin(OpenLayers.Util.rad(d.y)) + Math.sin(OpenLayers.Util.rad(e.y))));
       a = (40680631590769 * a) / 2;
     }
     return a;
@@ -6513,15 +5963,7 @@ OpenLayers.Geometry.LinearRing = OpenLayers.Class(OpenLayers.Geometry.LineString
       c = b(a.x, 14);
     a = b(a.y, 14);
     for(var d = this.components.length - 1, e, f, g, h, k, l = 0, m = 0; m < d; ++m)
-      if(
-        ((e = this.components[m]),
-        (g = b(e.x, 14)),
-        (e = b(e.y, 14)),
-        (f = this.components[m + 1]),
-        (h = b(f.x, 14)),
-        (f = b(f.y, 14)),
-        e == f)
-      ) {
+      if(((e = this.components[m]), (g = b(e.x, 14)), (e = b(e.y, 14)), (f = this.components[m + 1]), (h = b(f.x, 14)), (f = b(f.y, 14)), e == f)) {
         if(a == e && ((g <= h && c >= g && c <= h) || (g >= h && c <= g && c >= h))) {
           l = -1;
           break;
@@ -6532,9 +5974,7 @@ OpenLayers.Geometry.LinearRing = OpenLayers.Class(OpenLayers.Geometry.LineString
           l = -1;
           break;
         }
-        k <= c ||
-          (g != h && (k < Math.min(g, h) || k > Math.max(g, h))) ||
-          (((e < f && a >= e && a < f) || (e > f && a < e && a >= f)) && ++l);
+        k <= c || (g != h && (k < Math.min(g, h) || k > Math.max(g, h))) || (((e < f && a >= e && a < f) || (e > f && a < e && a >= f)) && ++l);
       }
     return -1 == l ? 1 : !!(l & 1);
   },
@@ -6542,8 +5982,7 @@ OpenLayers.Geometry.LinearRing = OpenLayers.Class(OpenLayers.Geometry.LineString
     var b = !1;
     if('OpenLayers.Geometry.Point' == a.CLASS_NAME) b = this.containsPoint(a);
     else if('OpenLayers.Geometry.LineString' == a.CLASS_NAME) b = a.intersects(this);
-    else if('OpenLayers.Geometry.LinearRing' == a.CLASS_NAME)
-      b = OpenLayers.Geometry.LineString.prototype.intersects.apply(this, [a]);
+    else if('OpenLayers.Geometry.LinearRing' == a.CLASS_NAME) b = OpenLayers.Geometry.LineString.prototype.intersects.apply(this, [a]);
     else for(var c = 0, d = a.components.length; c < d && !(b = a.components[c].intersects(this)); ++c);
     return b;
   },
@@ -6557,15 +5996,13 @@ OpenLayers.Geometry.Polygon = OpenLayers.Class(OpenLayers.Geometry.Collection, {
   getArea: function() {
     var a = 0;
     if(this.components && 0 < this.components.length)
-      for(var a = a + Math.abs(this.components[0].getArea()), b = 1, c = this.components.length; b < c; b++)
-        a -= Math.abs(this.components[b].getArea());
+      for(var a = a + Math.abs(this.components[0].getArea()), b = 1, c = this.components.length; b < c; b++) a -= Math.abs(this.components[b].getArea());
     return a;
   },
   getGeodesicArea: function(a) {
     var b = 0;
     if(this.components && 0 < this.components.length)
-      for(var b = b + Math.abs(this.components[0].getGeodesicArea(a)), c = 1, d = this.components.length; c < d; c++)
-        b -= Math.abs(this.components[c].getGeodesicArea(a));
+      for(var b = b + Math.abs(this.components[0].getGeodesicArea(a)), c = 1, d = this.components.length; c < d; c++) b -= Math.abs(this.components[c].getGeodesicArea(a));
     return b;
   },
   containsPoint: function(a) {
@@ -6597,20 +6034,14 @@ OpenLayers.Geometry.Polygon = OpenLayers.Class(OpenLayers.Geometry.Collection, {
     return b;
   },
   distanceTo: function(a, b) {
-    return b && !1 === b.edge && this.intersects(a)
-      ? 0
-      : OpenLayers.Geometry.Collection.prototype.distanceTo.apply(this, [a, b]);
+    return b && !1 === b.edge && this.intersects(a) ? 0 : OpenLayers.Geometry.Collection.prototype.distanceTo.apply(this, [a, b]);
   },
   CLASS_NAME: 'OpenLayers.Geometry.Polygon'
 });
 OpenLayers.Geometry.Polygon.createRegularPolygon = function(a, b, c, d) {
   var e = Math.PI * (1 / c - 0.5);
   d && (e += (d / 180) * Math.PI);
-  for(var f, g = [], h = 0; h < c; ++h)
-    (f = e + (2 * h * Math.PI) / c),
-      (d = a.x + b * Math.cos(f)),
-      (f = a.y + b * Math.sin(f)),
-      g.push(new OpenLayers.Geometry.Point(d, f));
+  for(var f, g = [], h = 0; h < c; ++h) (f = e + (2 * h * Math.PI) / c), (d = a.x + b * Math.cos(f)), (f = a.y + b * Math.sin(f)), g.push(new OpenLayers.Geometry.Point(d, f));
   a = new OpenLayers.Geometry.LinearRing(g);
   return new OpenLayers.Geometry.Polygon([a]);
 };
@@ -6642,27 +6073,16 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   parseFeature: function(a) {
-    for(
-      var b = 'MultiPolygon Polygon MultiLineString LineString MultiPoint Point Envelope'.split(' '), c, d, e, f = 0;
-      f < b.length;
-      ++f
-    )
+    for(var b = 'MultiPolygon Polygon MultiLineString LineString MultiPoint Point Envelope'.split(' '), c, d, e, f = 0; f < b.length; ++f)
       if(((c = b[f]), (d = this.getElementsByTagNameNS(a, this.gmlns, c)), 0 < d.length)) {
-        if((e = this.parseGeometry[c.toLowerCase()]))
-          (e = e.apply(this, [d[0]])),
-            this.internalProjection &&
-              this.externalProjection &&
-              e.transform(this.externalProjection, this.internalProjection);
+        if((e = this.parseGeometry[c.toLowerCase()])) (e = e.apply(this, [d[0]])), this.internalProjection && this.externalProjection && e.transform(this.externalProjection, this.internalProjection);
         else throw new TypeError('Unsupported geometry type: ' + c);
         break;
       }
     var g;
     c = this.getElementsByTagNameNS(a, this.gmlns, 'Box');
     for(f = 0; f < c.length; ++f)
-      (b = c[f]),
-        (d = this.parseGeometry.box.apply(this, [b])),
-        (b = b.parentNode),
-        'boundedBy' === (b.localName || b.nodeName.split(':').pop()) ? (g = d) : (e = d.toGeometry());
+      (b = c[f]), (d = this.parseGeometry.box.apply(this, [b])), (b = b.parentNode), 'boundedBy' === (b.localName || b.nodeName.split(':').pop()) ? (g = d) : (e = d.toGeometry());
     var h;
     this.extractAttributes && (h = this.parseAttributes(a));
     h = new OpenLayers.Feature.Vector(e, h);
@@ -6682,14 +6102,9 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
       var b, c;
       c = [];
       b = this.getElementsByTagNameNS(a, this.gmlns, 'pos');
-      0 < b.length &&
-        ((c = b[0].firstChild.nodeValue),
-        (c = c.replace(this.regExes.trimSpace, '')),
-        (c = c.split(this.regExes.splitSpace)));
+      0 < b.length && ((c = b[0].firstChild.nodeValue), (c = c.replace(this.regExes.trimSpace, '')), (c = c.split(this.regExes.splitSpace)));
       0 == c.length &&
-        ((b = this.getElementsByTagNameNS(a, this.gmlns, 'coordinates')),
-        0 < b.length &&
-          ((c = b[0].firstChild.nodeValue), (c = c.replace(this.regExes.removeSpace, '')), (c = c.split(','))));
+        ((b = this.getElementsByTagNameNS(a, this.gmlns, 'coordinates')), 0 < b.length && ((c = b[0].firstChild.nodeValue), (c = c.replace(this.regExes.removeSpace, '')), (c = c.split(','))));
       0 == c.length &&
         ((b = this.getElementsByTagNameNS(a, this.gmlns, 'coord')),
         0 < b.length &&
@@ -6697,15 +6112,12 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
           (b = this.getElementsByTagNameNS(b[0], this.gmlns, 'Y')),
           0 < a.length && 0 < b.length && (c = [a[0].firstChild.nodeValue, b[0].firstChild.nodeValue])));
       2 == c.length && (c[2] = null);
-      return this.xy
-        ? new OpenLayers.Geometry.Point(c[0], c[1], c[2])
-        : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
+      return this.xy ? new OpenLayers.Geometry.Point(c[0], c[1], c[2]) : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
     },
     multipoint: function(a) {
       a = this.getElementsByTagNameNS(a, this.gmlns, 'Point');
       var b = [];
-      if(0 < a.length)
-        for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.point.apply(this, [a[d]])) && b.push(c);
+      if(0 < a.length) for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.point.apply(this, [a[d]])) && b.push(c);
       return new OpenLayers.Geometry.MultiPoint(b);
     },
     linestring: function(a, b) {
@@ -6722,27 +6134,11 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
           h,
           k;
         for(c = 0; c < d.length / f; ++c)
-          (g = c * f),
-            (h = d[g]),
-            (k = d[g + 1]),
-            (g = 2 == f ? null : d[g + 2]),
-            this.xy ? e.push(new OpenLayers.Geometry.Point(h, k, g)) : e.push(new OpenLayers.Geometry.Point(k, h, g));
+          (g = c * f), (h = d[g]), (k = d[g + 1]), (g = 2 == f ? null : d[g + 2]), this.xy ? e.push(new OpenLayers.Geometry.Point(h, k, g)) : e.push(new OpenLayers.Geometry.Point(k, h, g));
       }
       if(0 == d.length && ((c = this.getElementsByTagNameNS(a, this.gmlns, 'coordinates')), 0 < c.length))
-        for(
-          d = this.getChildValue(c[0]),
-            d = d.replace(this.regExes.trimSpace, ''),
-            d = d.replace(this.regExes.trimComma, ','),
-            f = d.split(this.regExes.splitSpace),
-            c = 0;
-          c < f.length;
-          ++c
-        )
-          (d = f[c].split(',')),
-            2 == d.length && (d[2] = null),
-            this.xy
-              ? e.push(new OpenLayers.Geometry.Point(d[0], d[1], d[2]))
-              : e.push(new OpenLayers.Geometry.Point(d[1], d[0], d[2]));
+        for(d = this.getChildValue(c[0]), d = d.replace(this.regExes.trimSpace, ''), d = d.replace(this.regExes.trimComma, ','), f = d.split(this.regExes.splitSpace), c = 0; c < f.length; ++c)
+          (d = f[c].split(',')), 2 == d.length && (d[2] = null), this.xy ? e.push(new OpenLayers.Geometry.Point(d[0], d[1], d[2])) : e.push(new OpenLayers.Geometry.Point(d[1], d[0], d[2]));
       d = null;
       0 != e.length && (d = b ? new OpenLayers.Geometry.LinearRing(e) : new OpenLayers.Geometry.LineString(e));
       return d;
@@ -6750,22 +6146,19 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
     multilinestring: function(a) {
       a = this.getElementsByTagNameNS(a, this.gmlns, 'LineString');
       var b = [];
-      if(0 < a.length)
-        for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.linestring.apply(this, [a[d]])) && b.push(c);
+      if(0 < a.length) for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.linestring.apply(this, [a[d]])) && b.push(c);
       return new OpenLayers.Geometry.MultiLineString(b);
     },
     polygon: function(a) {
       a = this.getElementsByTagNameNS(a, this.gmlns, 'LinearRing');
       var b = [];
-      if(0 < a.length)
-        for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.linestring.apply(this, [a[d], !0])) && b.push(c);
+      if(0 < a.length) for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.linestring.apply(this, [a[d], !0])) && b.push(c);
       return new OpenLayers.Geometry.Polygon(b);
     },
     multipolygon: function(a) {
       a = this.getElementsByTagNameNS(a, this.gmlns, 'Polygon');
       var b = [];
-      if(0 < a.length)
-        for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.polygon.apply(this, [a[d]])) && b.push(c);
+      if(0 < a.length) for(var c, d = 0; d < a.length; ++d) (c = this.parseGeometry.polygon.apply(this, [a[d]])) && b.push(c);
       return new OpenLayers.Geometry.MultiPolygon(b);
     },
     envelope: function(a) {
@@ -6775,26 +6168,16 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
         e = this.getElementsByTagNameNS(a, this.gmlns, 'lowerCorner');
       if(0 < e.length) {
         c = [];
-        0 < e.length &&
-          ((c = e[0].firstChild.nodeValue),
-          (c = c.replace(this.regExes.trimSpace, '')),
-          (c = c.split(this.regExes.splitSpace)));
+        0 < e.length && ((c = e[0].firstChild.nodeValue), (c = c.replace(this.regExes.trimSpace, '')), (c = c.split(this.regExes.splitSpace)));
         2 == c.length && (c[2] = null);
-        var f = this.xy
-          ? new OpenLayers.Geometry.Point(c[0], c[1], c[2])
-          : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
+        var f = this.xy ? new OpenLayers.Geometry.Point(c[0], c[1], c[2]) : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
       }
       a = this.getElementsByTagNameNS(a, this.gmlns, 'upperCorner');
       if(0 < a.length) {
         c = [];
-        0 < a.length &&
-          ((c = a[0].firstChild.nodeValue),
-          (c = c.replace(this.regExes.trimSpace, '')),
-          (c = c.split(this.regExes.splitSpace)));
+        0 < a.length && ((c = a[0].firstChild.nodeValue), (c = c.replace(this.regExes.trimSpace, '')), (c = c.split(this.regExes.splitSpace)));
         2 == c.length && (c[2] = null);
-        var g = this.xy
-          ? new OpenLayers.Geometry.Point(c[0], c[1], c[2])
-          : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
+        var g = this.xy ? new OpenLayers.Geometry.Point(c[0], c[1], c[2]) : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
       }
       f &&
         g &&
@@ -6810,12 +6193,8 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
     box: function(a) {
       var b = this.getElementsByTagNameNS(a, this.gmlns, 'coordinates'),
         c = (a = null);
-      0 < b.length &&
-        ((b = b[0].firstChild.nodeValue),
-        (b = b.split(' ')),
-        2 == b.length && ((a = b[0].split(',')), (c = b[1].split(','))));
-      if(null !== a && null !== c)
-        return new OpenLayers.Bounds(parseFloat(a[0]), parseFloat(a[1]), parseFloat(c[0]), parseFloat(c[1]));
+      0 < b.length && ((b = b[0].firstChild.nodeValue), (b = b.split(' ')), 2 == b.length && ((a = b[0].split(',')), (c = b[1].split(','))));
+      if(null !== a && null !== c) return new OpenLayers.Bounds(parseFloat(a[0]), parseFloat(a[1]), parseFloat(c[0]), parseFloat(c[1]));
     }
   },
   parseAttributes: function(a) {
@@ -6827,10 +6206,7 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
         for(c = 0; c < a.length; ++c)
           if(((d = a[c]), 1 == d.nodeType))
             if(((e = d.childNodes), 1 == e.length)) {
-              if(((e = e[0]), 3 == e.nodeType || 4 == e.nodeType))
-                (d = d.prefix ? d.nodeName.split(':')[1] : d.nodeName),
-                  (e = e.nodeValue.replace(this.regExes.trimSpace, '')),
-                  (b[d] = e);
+              if(((e = e[0]), 3 == e.nodeType || 4 == e.nodeType)) (d = d.prefix ? d.nodeName.split(':')[1] : d.nodeName), (e = e.nodeValue.replace(this.regExes.trimSpace, '')), (b[d] = e);
             } else b[d.nodeName.split(':').pop()] = null;
         break;
       }
@@ -6840,12 +6216,7 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   write: function(a) {
     OpenLayers.Array.isArray(a) || (a = [a]);
-    for(
-      var b = this.createElementNS('http://www.opengis.net/wfs', 'wfs:' + this.collectionName), c = 0;
-      c < a.length;
-      c++
-    )
-      b.appendChild(this.createFeatureXML(a[c]));
+    for(var b = this.createElementNS('http://www.opengis.net/wfs', 'wfs:' + this.collectionName), c = 0; c < a.length; c++) b.appendChild(this.createFeatureXML(a[c]));
     return OpenLayers.Format.XML.prototype.write.apply(this, [b]);
   },
   createFeatureXML: function(a) {
@@ -6867,9 +6238,7 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   buildGeometryNode: function(a) {
-    this.externalProjection &&
-      this.internalProjection &&
-      ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
+    this.externalProjection && this.internalProjection && ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
     var b = a.CLASS_NAME,
       b = b.substring(b.lastIndexOf('.') + 1);
     return this.buildGeometry[b.toLowerCase()].apply(this, [a]);
@@ -6883,11 +6252,7 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
     multipoint: function(a) {
       var b = this.createElementNS(this.gmlns, 'gml:MultiPoint');
       a = a.components;
-      for(var c, d, e = 0; e < a.length; e++)
-        (c = this.createElementNS(this.gmlns, 'gml:pointMember')),
-          (d = this.buildGeometry.point.apply(this, [a[e]])),
-          c.appendChild(d),
-          b.appendChild(c);
+      for(var c, d, e = 0; e < a.length; e++) (c = this.createElementNS(this.gmlns, 'gml:pointMember')), (d = this.buildGeometry.point.apply(this, [a[e]])), c.appendChild(d), b.appendChild(c);
       return b;
     },
     linestring: function(a) {
@@ -6899,10 +6264,7 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
       var b = this.createElementNS(this.gmlns, 'gml:MultiLineString');
       a = a.components;
       for(var c, d, e = 0; e < a.length; ++e)
-        (c = this.createElementNS(this.gmlns, 'gml:lineStringMember')),
-          (d = this.buildGeometry.linestring.apply(this, [a[e]])),
-          c.appendChild(d),
-          b.appendChild(c);
+        (c = this.createElementNS(this.gmlns, 'gml:lineStringMember')), (d = this.buildGeometry.linestring.apply(this, [a[e]])), c.appendChild(d), b.appendChild(c);
       return b;
     },
     linearring: function(a) {
@@ -6924,11 +6286,7 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
     multipolygon: function(a) {
       var b = this.createElementNS(this.gmlns, 'gml:MultiPolygon');
       a = a.components;
-      for(var c, d, e = 0; e < a.length; ++e)
-        (c = this.createElementNS(this.gmlns, 'gml:polygonMember')),
-          (d = this.buildGeometry.polygon.apply(this, [a[e]])),
-          c.appendChild(d),
-          b.appendChild(c);
+      for(var c, d, e = 0; e < a.length; ++e) (c = this.createElementNS(this.gmlns, 'gml:polygonMember')), (d = this.buildGeometry.polygon.apply(this, [a[e]])), c.appendChild(d), b.appendChild(c);
       return b;
     },
     bounds: function(a) {
@@ -6995,27 +6353,17 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
       if(c.length) {
         a = 0;
         for(var d = c.length; a < d; ++a) this.readNode(c[a], { features: b }, !0);
-      } else
-        (c = this.getElementsByTagNameNS(a, this.namespaces.gml, 'featureMembers')),
-          c.length && this.readNode(c[0], { features: b }, !0);
+      } else (c = this.getElementsByTagNameNS(a, this.namespaces.gml, 'featureMembers')), c.length && this.readNode(c[0], { features: b }, !0);
     }
     return b;
   },
   readNode: function(a, b, c) {
-    !0 === c &&
-      !0 === this.autoConfig &&
-      ((this.featureType = null),
-      delete this.namespaceAlias[this.featureNS],
-      delete this.namespaces.feature,
-      (this.featureNS = null));
+    !0 === c && !0 === this.autoConfig && ((this.featureType = null), delete this.namespaceAlias[this.featureNS], delete this.namespaces.feature, (this.featureNS = null));
     this.featureNS ||
       a.prefix in this.namespaces ||
       a.parentNode.namespaceURI != this.namespaces.gml ||
       !this.regExes.featureMember.test(a.parentNode.nodeName) ||
-      ((this.featureType = a.nodeName.split(':').pop()),
-      this.setNamespace('feature', a.namespaceURI),
-      (this.featureNS = a.namespaceURI),
-      (this.autoConfig = !0));
+      ((this.featureType = a.nodeName.split(':').pop()), this.setNamespace('feature', a.namespaceURI), (this.featureNS = a.namespaceURI), (this.autoConfig = !0));
     return OpenLayers.Format.XML.prototype.readNode.apply(this, [a, b]);
   },
   readers: {
@@ -7043,20 +6391,11 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
       },
       coordinates: function(a, b) {
         for(
-          var c = this.getChildValue(a).replace(this.regExes.trimSpace, ''),
-            c = c.replace(this.regExes.trimComma, ','),
-            c = c.split(this.regExes.splitSpace),
-            d,
-            e = c.length,
-            f = Array(e),
-            g = 0;
+          var c = this.getChildValue(a).replace(this.regExes.trimSpace, ''), c = c.replace(this.regExes.trimComma, ','), c = c.split(this.regExes.splitSpace), d, e = c.length, f = Array(e), g = 0;
           g < e;
           ++g
         )
-          (d = c[g].split(',')),
-            (f[g] = this.xy
-              ? new OpenLayers.Geometry.Point(d[0], d[1], d[2])
-              : new OpenLayers.Geometry.Point(d[1], d[0], d[2]));
+          (d = c[g].split(',')), (f[g] = this.xy ? new OpenLayers.Geometry.Point(d[0], d[1], d[2]) : new OpenLayers.Geometry.Point(d[1], d[0], d[2]));
         b.points = f;
       },
       coord: function(a, b) {
@@ -7153,10 +6492,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
         this.singleFeatureType || ((d.type = a.nodeName.split(':').pop()), (d.namespace = a.namespaceURI));
         var e = a.getAttribute('fid') || this.getAttributeNS(a, this.namespaces.gml, 'id');
         e && (d.fid = e);
-        this.internalProjection &&
-          this.externalProjection &&
-          d.geometry &&
-          d.geometry.transform(this.externalProjection, this.internalProjection);
+        this.internalProjection && this.externalProjection && d.geometry && d.geometry.transform(this.externalProjection, this.internalProjection);
         c.bounds && (d.bounds = c.bounds);
         b.features.push(d);
       },
@@ -7224,8 +6560,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
         return b;
       },
       GeometryCollection: function(a) {
-        for(var b = this.createElementNSPlus('gml:GeometryCollection'), c = 0, d = a.components.length; c < d; ++c)
-          this.writeNode('geometryMember', a.components[c], b);
+        for(var b = this.createElementNSPlus('gml:GeometryCollection'), c = 0, d = a.components.length; c < d; ++c) this.writeNode('geometryMember', a.components[c], b);
         return b;
       },
       geometryMember: function(a) {
@@ -7246,9 +6581,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
         return b;
       },
       _geometry: function(a) {
-        this.externalProjection &&
-          this.internalProjection &&
-          (a = a.clone().transform(this.internalProjection, this.externalProjection));
+        this.externalProjection && this.internalProjection && (a = a.clone().transform(this.internalProjection, this.externalProjection));
         var b = this.createElementNSPlus('feature:' + this.geometryName);
         a = this.writeNode('gml:' + this.geometryTypes[a.CLASS_NAME], a, b);
         this.srsName && a.setAttribute('srsName', this.srsName);
@@ -7260,8 +6593,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
     },
     wfs: {
       FeatureCollection: function(a) {
-        for(var b = this.createElementNSPlus('wfs:FeatureCollection'), c = 0, d = a.length; c < d; ++c)
-          this.writeNode('gml:featureMember', a[c], b);
+        for(var b = this.createElementNSPlus('wfs:FeatureCollection'), c = 0, d = a.length; c < d; ++c) this.writeNode('gml:featureMember', a[c], b);
         return b;
       }
     }
@@ -7280,8 +6612,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
   CLASS_NAME: 'OpenLayers.Format.GML.Base'
 });
 OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
-  schemaLocation:
-    'http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd',
+  schemaLocation: 'http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd',
   curve: !1,
   multiCurve: !0,
   surface: !1,
@@ -7315,9 +6646,7 @@ OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
         },
         pos: function(a, b) {
           var c = this.getChildValue(a).replace(this.regExes.trimSpace, '').split(this.regExes.splitSpace),
-            c = this.xy
-              ? new OpenLayers.Geometry.Point(c[0], c[1], c[2])
-              : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
+            c = this.xy ? new OpenLayers.Geometry.Point(c[0], c[1], c[2]) : new OpenLayers.Geometry.Point(c[1], c[0], c[2]);
           b.points = [c];
         },
         posList: function(a, b) {
@@ -7333,10 +6662,7 @@ OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
             k < l;
             k += d
           )
-            (e = c[k]),
-              (f = c[k + 1]),
-              (g = 2 == d ? void 0 : c[k + 2]),
-              (h[k / d] = this.xy ? new OpenLayers.Geometry.Point(e, f, g) : new OpenLayers.Geometry.Point(f, e, g));
+            (e = c[k]), (f = c[k + 1]), (g = 2 == d ? void 0 : c[k + 2]), (h[k / d] = this.xy ? new OpenLayers.Geometry.Point(e, f, g) : new OpenLayers.Geometry.Point(f, e, g));
           b.points = h;
         },
         Surface: function(a, b) {
@@ -7426,8 +6752,7 @@ OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
     gml: OpenLayers.Util.applyDefaults(
       {
         featureMembers: function(a) {
-          for(var b = this.createElementNSPlus('gml:featureMembers'), c = 0, d = a.length; c < d; ++c)
-            this.writeNode('feature:_typeName', a[c], b);
+          for(var b = this.createElementNSPlus('gml:featureMembers'), c = 0, d = a.length; c < d; ++c) this.writeNode('feature:_typeName', a[c], b);
           return b;
         },
         Point: function(a) {
@@ -7459,8 +6784,7 @@ OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
           return b;
         },
         posList: function(a) {
-          for(var b = a.length, c = Array(b), d, e = 0; e < b; ++e)
-            (d = a[e]), (c[e] = this.xy ? d.x + ' ' + d.y : d.y + ' ' + d.x);
+          for(var b = a.length, c = Array(b), d, e = 0; e < b; ++e) (d = a[e]), (c[e] = this.xy ? d.x + ' ' + d.y : d.y + ' ' + d.x);
           return this.createElementNSPlus('gml:posList', { value: c.join(' ') });
         },
         Surface: function(a) {
@@ -7632,8 +6956,7 @@ OpenLayers.Format.Filter.v1_1_0 = OpenLayers.Class(OpenLayers.Format.GML.v3, Ope
           return b;
         },
         SortBy: function(a) {
-          for(var b = this.createElementNSPlus('ogc:SortBy'), c = 0, d = a.length; c < d; c++)
-            this.writeNode('ogc:SortProperty', a[c], b);
+          for(var b = this.createElementNSPlus('ogc:SortBy'), c = 0, d = a.length; c < d; c++) this.writeNode('ogc:SortProperty', a[c], b);
           return b;
         },
         SortProperty: function(a) {
@@ -7657,10 +6980,7 @@ OpenLayers.Format.Filter.v1_1_0 = OpenLayers.Class(OpenLayers.Format.GML.v3, Ope
     if(a.value instanceof OpenLayers.Filter.Function) this.writeNode('Function', a.value, c);
     else {
       var d;
-      d =
-        a.value instanceof OpenLayers.Geometry
-          ? this.writeNode('feature:_geometry', a.value).firstChild
-          : this.writeNode('gml:Envelope', a.value);
+      d = a.value instanceof OpenLayers.Geometry ? this.writeNode('feature:_geometry', a.value).firstChild : this.writeNode('gml:Envelope', a.value);
       a.projection && d.setAttribute('srsName', a.projection);
       c.appendChild(d);
     }
@@ -7981,12 +7301,8 @@ OpenLayers.Format.WFST.v1_1_0 = OpenLayers.Class(OpenLayers.Format.Filter.v1_1_0
               attributes: { typeName: (b ? b + ':' : '') + a.featureType, srsName: a.srsName }
             });
           a.featureNS && c.setAttribute('xmlns:' + b, a.featureNS);
-          if(a.propertyNames)
-            for(var b = 0, d = a.propertyNames.length; b < d; b++)
-              this.writeNode('wfs:PropertyName', { property: a.propertyNames[b] }, c);
-          a.filter &&
-            (OpenLayers.Format.WFST.v1_1_0.prototype.setFilterProperty.call(this, a.filter),
-            this.writeNode('ogc:Filter', a.filter, c));
+          if(a.propertyNames) for(var b = 0, d = a.propertyNames.length; b < d; b++) this.writeNode('wfs:PropertyName', { property: a.propertyNames[b] }, c);
+          a.filter && (OpenLayers.Format.WFST.v1_1_0.prototype.setFilterProperty.call(this, a.filter), this.writeNode('ogc:Filter', a.filter, c));
           return c;
         },
         PropertyName: function(a) {
@@ -8012,9 +7328,7 @@ OpenLayers.Protocol = OpenLayers.Class({
     this.options = a;
   },
   mergeWithDefaultFilter: function(a) {
-    return a && this.defaultFilter
-      ? new OpenLayers.Filter.Logical({ type: OpenLayers.Filter.Logical.AND, filters: [this.defaultFilter, a] })
-      : a || this.defaultFilter || void 0;
+    return a && this.defaultFilter ? new OpenLayers.Filter.Logical({ type: OpenLayers.Filter.Logical.AND, filters: [this.defaultFilter, a] }) : a || this.defaultFilter || void 0;
   },
   destroy: function() {
     this.format = this.options = null;
@@ -8125,11 +7439,7 @@ OpenLayers.Format.JSON = OpenLayers.Class(OpenLayers.Format, {
         a.hasOwnProperty(c) &&
           ((d = OpenLayers.Format.JSON.prototype.write.apply(this, [c, this.pretty])),
           (e = OpenLayers.Format.JSON.prototype.write.apply(this, [a[c], this.pretty])),
-          null != d &&
-            null != e &&
-            (f && b.push(','),
-            b.push(this.writeNewline(), this.writeIndent(), d, ':', this.writeSpace(), e),
-            (f = !0)));
+          null != d && null != e && (f && b.push(','), b.push(this.writeNewline(), this.writeIndent(), d, ':', this.writeSpace(), e), (f = !0)));
       this.level -= 1;
       b.push(this.writeNewline(), this.writeIndent(), '}');
       return b.join('');
@@ -8139,8 +7449,7 @@ OpenLayers.Format.JSON = OpenLayers.Class(OpenLayers.Format, {
         c = ['['];
       this.level += 1;
       for(var d = 0, e = a.length; d < e; ++d)
-        (b = OpenLayers.Format.JSON.prototype.write.apply(this, [a[d], this.pretty])),
-          null != b && (0 < d && c.push(','), c.push(this.writeNewline(), this.writeIndent(), b));
+        (b = OpenLayers.Format.JSON.prototype.write.apply(this, [a[d], this.pretty])), null != b && (0 < d && c.push(','), c.push(this.writeNewline(), this.writeIndent(), b));
       this.level -= 1;
       c.push(this.writeNewline(), this.writeIndent(), ']');
       return c.join('');
@@ -8168,21 +7477,7 @@ OpenLayers.Format.JSON = OpenLayers.Class(OpenLayers.Format, {
       function b(a) {
         return 10 > a ? '0' + a : a;
       }
-      return (
-        '"' +
-        a.getFullYear() +
-        '-' +
-        b(a.getMonth() + 1) +
-        '-' +
-        b(a.getDate()) +
-        'T' +
-        b(a.getHours()) +
-        ':' +
-        b(a.getMinutes()) +
-        ':' +
-        b(a.getSeconds()) +
-        '"'
-      );
+      return '"' + a.getFullYear() + '-' + b(a.getMonth() + 1) + '-' + b(a.getDate()) + 'T' + b(a.getHours()) + ':' + b(a.getMinutes()) + ':' + b(a.getSeconds()) + '"';
     }
   },
   CLASS_NAME: 'OpenLayers.Format.JSON'
@@ -8245,11 +7540,7 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
     var c = !1;
     switch (b) {
       case 'Geometry':
-        -1 ==
-        OpenLayers.Util.indexOf(
-          'Point MultiPoint LineString MultiLineString Polygon MultiPolygon Box GeometryCollection'.split(' '),
-          a.type
-        )
+        -1 == OpenLayers.Util.indexOf('Point MultiPoint LineString MultiLineString Polygon MultiPolygon Box GeometryCollection'.split(' '), a.type)
           ? OpenLayers.Console.error('Unsupported geometry type: ' + a.type)
           : (c = !0);
         break;
@@ -8294,10 +7585,7 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
         throw e;
       }
     }
-    this.internalProjection &&
-      this.externalProjection &&
-      !c &&
-      b.transform(this.externalProjection, this.internalProjection);
+    this.internalProjection && this.externalProjection && !c && b.transform(this.externalProjection, this.internalProjection);
     return b;
   },
   parseCoords: {
@@ -8382,16 +7670,13 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
       c.features = Array(d);
       for(var e = 0; e < d; ++e) {
         var f = a[e];
-        if(!f instanceof OpenLayers.Feature.Vector)
-          throw 'FeatureCollection only supports collections of features: ' + f;
+        if(!f instanceof OpenLayers.Feature.Vector) throw 'FeatureCollection only supports collections of features: ' + f;
         c.features[e] = this.extract.feature.apply(this, [f]);
       }
     } else
       0 == a.CLASS_NAME.indexOf('OpenLayers.Geometry')
         ? (c = this.extract.geometry.apply(this, [a]))
-        : a instanceof OpenLayers.Feature.Vector &&
-          ((c = this.extract.feature.apply(this, [a])),
-          a.layer && a.layer.projection && (c.crs = this.createCRSObject(a)));
+        : a instanceof OpenLayers.Feature.Vector && ((c = this.extract.feature.apply(this, [a])), a.layer && a.layer.projection && (c.crs = this.createCRSObject(a)));
     return OpenLayers.Format.JSON.prototype.write.apply(this, [c, b]);
   },
   createCRSObject: function(a) {
@@ -8399,10 +7684,7 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
     var b = {};
     a.match(/epsg:/i) &&
       ((a = parseInt(a.substring(a.indexOf(':') + 1))),
-      (b =
-        4326 == a
-          ? { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } }
-          : { type: 'name', properties: { name: 'EPSG:' + a } }));
+      (b = 4326 == a ? { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } } : { type: 'name', properties: { name: 'EPSG:' + a } }));
     return b;
   },
   extract: {
@@ -8414,9 +7696,7 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
     },
     geometry: function(a) {
       if(null == a) return null;
-      this.internalProjection &&
-        this.externalProjection &&
-        ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
+      this.internalProjection && this.externalProjection && ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
       var b = a.CLASS_NAME.split('.')[2];
       a = this.extract[b.toLowerCase()].apply(this, [a]);
       return 'Collection' == b ? { type: 'GeometryCollection', geometries: a } : { type: b, coordinates: a };
@@ -8425,33 +7705,27 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
       return [a.x, a.y];
     },
     multipoint: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push(this.extract.point.apply(this, [a.components[c]]));
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push(this.extract.point.apply(this, [a.components[c]]));
       return b;
     },
     linestring: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push(this.extract.point.apply(this, [a.components[c]]));
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push(this.extract.point.apply(this, [a.components[c]]));
       return b;
     },
     multilinestring: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push(this.extract.linestring.apply(this, [a.components[c]]));
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push(this.extract.linestring.apply(this, [a.components[c]]));
       return b;
     },
     polygon: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push(this.extract.linestring.apply(this, [a.components[c]]));
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push(this.extract.linestring.apply(this, [a.components[c]]));
       return b;
     },
     multipolygon: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push(this.extract.polygon.apply(this, [a.components[c]]));
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push(this.extract.polygon.apply(this, [a.components[c]]));
       return b;
     },
     collection: function(a) {
-      for(var b = a.components.length, c = Array(b), d = 0; d < b; ++d)
-        c[d] = this.extract.geometry.apply(this, [a.components[d]]);
+      for(var b = a.components.length, c = Array(b), d = 0; d < b; ++d) c[d] = this.extract.geometry.apply(this, [a.components[d]]);
       return c;
     }
   },
@@ -8522,9 +7796,7 @@ OpenLayers.Protocol.Script = OpenLayers.Class(OpenLayers.Protocol, {
   },
   handleResponse: function(a, b) {
     b.callback &&
-      (a.data
-        ? ((a.features = this.parseFeatures(a.data)), (a.code = OpenLayers.Protocol.Response.SUCCESS))
-        : (a.code = OpenLayers.Protocol.Response.FAILURE),
+      (a.data ? ((a.features = this.parseFeatures(a.data)), (a.code = OpenLayers.Protocol.Response.SUCCESS)) : (a.code = OpenLayers.Protocol.Response.FAILURE),
       this.destroyRequest(a.priv),
       b.callback.call(b.scope, a));
   },
@@ -8714,17 +7986,12 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
   destroy: function() {
     this.map && this.map.events.unregister('buttonclick', this, this.onButtonClick);
     OpenLayers.Control.prototype.destroy.apply(this, arguments);
-    for(var a, b = this.controls.length - 1; 0 <= b; b--)
-      (a = this.controls[b]),
-        a.events && a.events.un({ activate: this.iconOn, deactivate: this.iconOff }),
-        (a.panel_div = null);
+    for(var a, b = this.controls.length - 1; 0 <= b; b--) (a = this.controls[b]), a.events && a.events.un({ activate: this.iconOn, deactivate: this.iconOff }), (a.panel_div = null);
     this.activeState = null;
   },
   activate: function() {
     if(OpenLayers.Control.prototype.activate.apply(this, arguments)) {
-      for(var a, b = 0, c = this.controls.length; b < c; b++)
-        (a = this.controls[b]),
-          (a === this.defaultControl || (this.saveState && this.activeState[a.id])) && a.activate();
+      for(var a, b = 0, c = this.controls.length; b < c; b++) (a = this.controls[b]), (a === this.defaultControl || (this.saveState && this.activeState[a.id])) && a.activate();
       !0 === this.saveState && (this.defaultControl = null);
       this.redraw();
       return !0;
@@ -8733,8 +8000,7 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
   },
   deactivate: function() {
     if(OpenLayers.Control.prototype.deactivate.apply(this, arguments)) {
-      for(var a, b = 0, c = this.controls.length; b < c; b++)
-        (a = this.controls[b]), (this.activeState[a.id] = a.deactivate());
+      for(var a, b = 0, c = this.controls.length; b < c; b++) (a = this.controls[b]), (this.activeState[a.id] = a.deactivate());
       this.redraw();
       return !0;
     }
@@ -8742,17 +8008,14 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
   },
   draw: function() {
     OpenLayers.Control.prototype.draw.apply(this, arguments);
-    this.outsideViewport
-      ? (this.events.attachToElement(this.div), this.events.register('buttonclick', this, this.onButtonClick))
-      : this.map.events.register('buttonclick', this, this.onButtonClick);
+    this.outsideViewport ? (this.events.attachToElement(this.div), this.events.register('buttonclick', this, this.onButtonClick)) : this.map.events.register('buttonclick', this, this.onButtonClick);
     this.addControlsToMap(this.controls);
     return this.div;
   },
   redraw: function() {
     for(var a = this.div.childNodes.length - 1; 0 <= a; a--) this.div.removeChild(this.div.childNodes[a]);
     this.div.innerHTML = '';
-    if(this.active)
-      for(var a = 0, b = this.controls.length; a < b; a++) this.div.appendChild(this.controls[a].panel_div);
+    if(this.active) for(var a = 0, b = this.controls.length; a < b; a++) this.div.appendChild(this.controls[a].panel_div);
   },
   activateControl: function(a) {
     if(!this.active) return !1;
@@ -8760,8 +8023,7 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
     else if(a.type == OpenLayers.Control.TYPE_TOGGLE) a.active ? a.deactivate() : a.activate();
     else if(this.allowDepress && a.active) a.deactivate();
     else {
-      for(var b, c = 0, d = this.controls.length; c < d; c++)
-        (b = this.controls[c]), b == a || (b.type !== OpenLayers.Control.TYPE_TOOL && null != b.type) || b.deactivate();
+      for(var b, c = 0, d = this.controls.length; c < d; c++) (b = this.controls[c]), b == a || (b.type !== OpenLayers.Control.TYPE_TOOL && null != b.type) || b.deactivate();
       a.activate();
     }
   },
@@ -8784,9 +8046,7 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
   addControlsToMap: function(a) {
     for(var b, c = 0, d = a.length; c < d; c++)
       (b = a[c]),
-        !0 === b.autoActivate
-          ? ((b.autoActivate = !1), this.map.addControl(b), (b.autoActivate = !0))
-          : (this.map.addControl(b), b.deactivate()),
+        !0 === b.autoActivate ? ((b.autoActivate = !1), this.map.addControl(b), (b.autoActivate = !0)) : (this.map.addControl(b), b.deactivate()),
         b.events.on({ activate: this.iconOn, deactivate: this.iconOff });
   },
   iconOn: function() {
@@ -8846,11 +8106,7 @@ OpenLayers.Control.ZoomToMaxExtent = OpenLayers.Class(OpenLayers.Control.Button,
 OpenLayers.Control.ZoomPanel = OpenLayers.Class(OpenLayers.Control.Panel, {
   initialize: function(a) {
     OpenLayers.Control.Panel.prototype.initialize.apply(this, [a]);
-    this.addControls([
-      new OpenLayers.Control.ZoomIn(),
-      new OpenLayers.Control.ZoomToMaxExtent(),
-      new OpenLayers.Control.ZoomOut()
-    ]);
+    this.addControls([new OpenLayers.Control.ZoomIn(), new OpenLayers.Control.ZoomToMaxExtent(), new OpenLayers.Control.ZoomOut()]);
   },
   CLASS_NAME: 'OpenLayers.Control.ZoomPanel'
 });
@@ -8885,8 +8141,7 @@ OpenLayers.Layer.HTTPRequest = OpenLayers.Class(OpenLayers.Layer, {
     return a ? this.mergeNewParams({ _olSalt: Math.random() }) : OpenLayers.Layer.prototype.redraw.apply(this, []);
   },
   selectUrl: function(a, b) {
-    for(var c = 1, d = 0, e = a.length; d < e; d++)
-      (c *= a.charCodeAt(d) * this.URL_HASH_FACTOR), (c -= Math.floor(c));
+    for(var c = 1, d = 0, e = a.length; d < e; d++) (c *= a.charCodeAt(d) * this.URL_HASH_FACTOR), (c -= Math.floor(c));
     return b[Math.floor(c * b.length)];
   },
   getFullRequestString: function(a, b) {
@@ -8982,9 +8237,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
     this.url = d;
     this.layerAlphaHack = this.layer.alpha && OpenLayers.Util.alphaHack();
     if(null != this.maxGetUrlLength || this.layer.gutter || this.layerAlphaHack)
-      (this.frame = document.createElement('div')),
-        (this.frame.style.position = 'absolute'),
-        (this.frame.style.overflow = 'hidden');
+      (this.frame = document.createElement('div')), (this.frame.style.position = 'absolute'), (this.frame.style.overflow = 'hidden');
     null != this.maxGetUrlLength && OpenLayers.Util.extend(this, OpenLayers.Tile.Image.IFrame);
   },
   destroy: function() {
@@ -8995,9 +8248,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
   draw: function() {
     var a = OpenLayers.Tile.prototype.draw.apply(this, arguments);
     a
-      ? (this.layer != this.layer.map.baseLayer &&
-          this.layer.reproject &&
-          (this.bounds = this.getBoundsFromBaseLayer(this.position)),
+      ? (this.layer != this.layer.map.baseLayer && this.layer.reproject && (this.bounds = this.getBoundsFromBaseLayer(this.position)),
         this.isLoading ? (this._loadEvent = 'reload') : ((this.isLoading = !0), (this._loadEvent = 'loadstart')),
         this.renderTile(),
         this.positionTile())
@@ -9020,8 +8271,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
     var a = this.getTile().style,
       b = this.frame ? this.size : this.layer.getImageSize(this.bounds),
       c = 1;
-    this.layer instanceof OpenLayers.Layer.Grid &&
-      (c = this.layer.getServerResolution() / this.layer.map.getResolution());
+    this.layer instanceof OpenLayers.Layer.Grid && (c = this.layer.getServerResolution() / this.layer.map.getResolution());
     a.left = this.position.x + 'px';
     a.top = this.position.y + 'px';
     a.width = Math.round(c * b.w) + 'px';
@@ -9046,9 +8296,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
       if(this.frame) {
         var b = 0,
           c = 0;
-        this.layer.gutter &&
-          ((b = 100 * (this.layer.gutter / this.layer.tileSize.w)),
-          (c = 100 * (this.layer.gutter / this.layer.tileSize.h)));
+        this.layer.gutter && ((b = 100 * (this.layer.gutter / this.layer.tileSize.w)), (c = 100 * (this.layer.gutter / this.layer.tileSize.h)));
         a.left = -b + '%';
         a.top = -c + '%';
         a.width = 2 * b + 100 + '%';
@@ -9088,10 +8336,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
     a
       ? ((b.style.visibility = 'hidden'),
         (b.style.opacity = 0),
-        this.crossOriginKeyword &&
-          ('data:' !== a.substr(0, 5)
-            ? b.setAttribute('crossorigin', this.crossOriginKeyword)
-            : b.removeAttribute('crossorigin')),
+        this.crossOriginKeyword && ('data:' !== a.substr(0, 5) ? b.setAttribute('crossorigin', this.crossOriginKeyword) : b.removeAttribute('crossorigin')),
         (b.src = a))
       : (this.stopLoading(), (this.imgDiv = null), b.parentNode && b.parentNode.removeChild(b));
   },
@@ -9114,9 +8359,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
     this.isLoading = !1;
     this.canvasContext = null;
     this.events.triggerEvent('loadend');
-    !0 === this.layerAlphaHack &&
-      (a.style.filter =
-        "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + a.src + "', sizingMethod='scale')");
+    !0 === this.layerAlphaHack && (a.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + a.src + "', sizingMethod='scale')");
   },
   onImageError: function() {
     var a = this.imgDiv;
@@ -9124,9 +8367,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
       (this.imageReloadAttempts++,
       this.imageReloadAttempts <= OpenLayers.IMAGE_RELOAD_ATTEMPTS
         ? this.setImgSrc(this.layer.getURL(this.bounds))
-        : (OpenLayers.Element.addClass(a, 'olImageLoadError'),
-          this.events.triggerEvent('loaderror'),
-          this.onImageLoad()));
+        : (OpenLayers.Element.addClass(a, 'olImageLoadError'), this.events.triggerEvent('loaderror'), this.onImageLoad()));
   },
   stopLoading: function() {
     OpenLayers.Event.stopObservingElement(this.imgDiv);
@@ -9203,8 +8444,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
   },
   clearGrid: function() {
     if(this.grid) {
-      for(var a = 0, b = this.grid.length; a < b; a++)
-        for(var c = this.grid[a], d = 0, e = c.length; d < e; d++) this.destroyTile(c[d]);
+      for(var a = 0, b = this.grid.length; a < b; a++) for (var c = this.grid[a], d = 0, e = c.length; d < e; d++) this.destroyTile(c[d]);
       this.grid = [];
       this.gridLayout = this.gridResolution = null;
     }
@@ -9212,13 +8452,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
   addOptions: function(a, b) {
     var c = void 0 !== a.singleTile && a.singleTile !== this.singleTile;
     OpenLayers.Layer.HTTPRequest.prototype.addOptions.apply(this, arguments);
-    this.map &&
-      c &&
-      (this.initProperties(),
-      this.clearGrid(),
-      (this.tileSize = this.options.tileSize),
-      this.setTileSize(),
-      this.moveTo(null, !0));
+    this.map && c && (this.initProperties(), this.clearGrid(), (this.tileSize = this.options.tileSize), this.setTileSize(), this.moveTo(null, !0));
   },
   clone: function(a) {
     null == a && (a = new OpenLayers.Layer.Grid(this.name, this.url, this.params, this.getOptions()));
@@ -9242,13 +8476,10 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
       this.getServerResolution(f);
       if(this.singleTile) {
         if(d || (!c && !e.containsBounds(a)))
-          b && 'resize' !== this.transitionEffect && this.removeBackBuffer(),
-            (b && 'resize' !== this.transitionEffect) || this.applyBackBuffer(f),
-            this.initSingleTile(a);
+          b && 'resize' !== this.transitionEffect && this.removeBackBuffer(), (b && 'resize' !== this.transitionEffect) || this.applyBackBuffer(f), this.initSingleTile(a);
       } else
         (d = d || !e.intersectsBounds(a, { worldBounds: this.map.baseLayer.wrapDateLine && this.map.getMaxExtent() }))
-          ? (!b || ('resize' !== this.transitionEffect && this.gridResolution !== f) || this.applyBackBuffer(f),
-            this.initGriddedTiles(a))
+          ? (!b || ('resize' !== this.transitionEffect && this.gridResolution !== f) || this.applyBackBuffer(f), this.initGriddedTiles(a))
           : this.moveGriddedTiles();
     }
   },
@@ -9272,10 +8503,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
       d = (h - d) / (f * g);
       f = Math.floor(c);
       k = Math.floor(d);
-      0 <= k &&
-        k < e &&
-        (e = this.grid[k][f]) &&
-        (b = { tile: e, i: Math.floor((c - f) * a), j: Math.floor((d - k) * g) });
+      0 <= k && k < e && (e = this.grid[k][f]) && (b = { tile: e, i: Math.floor((c - f) * a), j: Math.floor((d - k) * g) });
     }
     return b;
   },
@@ -9301,9 +8529,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
   },
   getServerZoom: function() {
     var a = this.getServerResolution();
-    return this.serverResolutions
-      ? OpenLayers.Util.indexOf(this.serverResolutions, a)
-      : this.map.getZoomForResolution(a) + (this.zoomOffset || 0);
+    return this.serverResolutions ? OpenLayers.Util.indexOf(this.serverResolutions, a) : this.map.getZoomForResolution(a) + (this.zoomOffset || 0);
   },
   applyBackBuffer: function(a) {
     null !== this.backBufferTimerId && this.removeBackBuffer();
@@ -9311,9 +8537,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
     if(!b) {
       b = this.createBackBuffer();
       if(!b) return;
-      a === this.gridResolution
-        ? this.div.insertBefore(b, this.div.firstChild)
-        : this.map.baseLayer.div.parentNode.insertBefore(b, this.map.baseLayer.div);
+      a === this.gridResolution ? this.div.insertBefore(b, this.div.firstChild) : this.map.baseLayer.div.parentNode.insertBefore(b, this.map.baseLayer.div);
       this.backBuffer = b;
       var c = this.grid[0][0].bounds;
       this.backBufferLonLat = { lon: c.left, lat: c.top };
@@ -9338,10 +8562,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
       a.className = 'olBackBuffer';
       a.style.position = 'absolute';
       var b = this.map;
-      a.style.zIndex =
-        'resize' === this.transitionEffect
-          ? this.getZIndex() - 1
-          : b.Z_INDEX_BASE.BaseLayer - (b.getNumLayers() - b.getLayerIndex(this));
+      a.style.zIndex = 'resize' === this.transitionEffect ? this.getZIndex() - 1 : b.Z_INDEX_BASE.BaseLayer - (b.getNumLayers() - b.getLayerIndex(this));
       for(var b = 0, c = this.grid.length; b < c; b++)
         for(var d = 0, e = this.grid[b].length; d < e; d++) {
           var f = this.grid[b][d],
@@ -9353,22 +8574,19 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
   },
   removeBackBuffer: function() {
     if(this._transitionElement) {
-      for(var a = this.transitionendEvents.length - 1; 0 <= a; --a)
-        OpenLayers.Event.stopObserving(this._transitionElement, this.transitionendEvents[a], this._removeBackBuffer);
+      for(var a = this.transitionendEvents.length - 1; 0 <= a; --a) OpenLayers.Event.stopObserving(this._transitionElement, this.transitionendEvents[a], this._removeBackBuffer);
       delete this._transitionElement;
     }
     this.backBuffer &&
       (this.backBuffer.parentNode && this.backBuffer.parentNode.removeChild(this.backBuffer),
       (this.backBufferResolution = this.backBuffer = null),
-      null !== this.backBufferTimerId &&
-        (window.clearTimeout(this.backBufferTimerId), (this.backBufferTimerId = null)));
+      null !== this.backBufferTimerId && (window.clearTimeout(this.backBufferTimerId), (this.backBufferTimerId = null)));
   },
   moveByPx: function(a, b) {
     this.singleTile || this.moveGriddedTiles();
   },
   setTileSize: function(a) {
-    this.singleTile &&
-      ((a = this.map.getSize()), (a.h = parseInt(a.h * this.ratio, 10)), (a.w = parseInt(a.w * this.ratio, 10)));
+    this.singleTile && ((a = this.map.getSize()), (a.h = parseInt(a.h * this.ratio, 10)), (a.w = parseInt(a.w * this.ratio, 10)));
     OpenLayers.Layer.HTTPRequest.prototype.setTileSize.apply(this, [a]);
   },
   getTilesBounds: function() {
@@ -9389,9 +8607,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
     b = new OpenLayers.Bounds(b.lon - c / 2, b.lat - a / 2, b.lon + c / 2, b.lat + a / 2);
     c = this.map.getLayerPxFromLonLat({ lon: b.left, lat: b.top });
     this.grid.length || (this.grid[0] = []);
-    (a = this.grid[0][0])
-      ? a.moveTo(b, c)
-      : ((a = this.addTile(b, c)), this.addTileMonitoringHooks(a), a.draw(), (this.grid[0][0] = a));
+    (a = this.grid[0][0]) ? a.moveTo(b, c) : ((a = this.addTile(b, c)), this.addTileMonitoringHooks(a), a.draw(), (this.grid[0][0] = a));
     this.removeExcessTiles(1, 1);
     this.gridResolution = this.getServerResolution();
   },
@@ -9407,9 +8623,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
     var a = this.tileOrigin;
     if(!a)
       var a = this.getMaxExtent(),
-        b = { tl: ['left', 'top'], tr: ['right', 'top'], bl: ['left', 'bottom'], br: ['right', 'bottom'] }[
-          this.tileOriginCorner
-        ],
+        b = { tl: ['left', 'top'], tr: ['right', 'top'], bl: ['left', 'bottom'], br: ['right', 'bottom'] }[this.tileOriginCorner],
         a = new OpenLayers.LonLat(a[b[0]], a[b[1]]);
     return a;
   },
@@ -9421,12 +8635,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
       g = d.startcol,
       d = d.startrow,
       h = this.rowSign;
-    return new OpenLayers.Bounds(
-      c.lon + (g + b) * e,
-      c.lat - (d + a * h) * f * h,
-      c.lon + (g + b + 1) * e,
-      c.lat - (d + (a - 1) * h) * f * h
-    );
+    return new OpenLayers.Bounds(c.lon + (g + b) * e, c.lat - (d + a * h) * f * h, c.lon + (g + b + 1) * e, c.lat - (d + (a - 1) * h) * f * h);
   },
   initGriddedTiles: function(a) {
     this.events.triggerEvent('retile');
@@ -9489,10 +8698,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
       !1 === this.loading && ((this.loading = !0), this.events.triggerEvent('loadstart'));
       this.events.triggerEvent('tileloadstart', { tile: a });
       this.numLoadingTiles++;
-      !this.singleTile &&
-        this.backBuffer &&
-        this.gridResolution === this.backBufferResolution &&
-        OpenLayers.Element.addClass(a.getTile(), 'olTileReplacing');
+      !this.singleTile && this.backBuffer && this.gridResolution === this.backBufferResolution && OpenLayers.Element.addClass(a.getTile(), 'olTileReplacing');
     };
     a.onLoadEnd = function(b) {
       this.numLoadingTiles--;
@@ -9512,8 +8718,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
           else {
             this._transitionElement = b ? this.div.lastChild : a.imgDiv;
             b = this.transitionendEvents;
-            for(c = b.length - 1; 0 <= c; --c)
-              OpenLayers.Event.observe(this._transitionElement, b[c], this._removeBackBuffer);
+            for(c = b.length - 1; 0 <= c; --c) OpenLayers.Event.observe(this._transitionElement, b[c], this._removeBackBuffer);
             this.backBufferTimerId = window.setTimeout(this._removeBackBuffer, this.removeBackBufferDelay);
           }
         this.loading = !1;
@@ -9592,8 +8797,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
       }
     }
     c = 0;
-    for(d = this.grid.length; c < d; c++)
-      for(; this.grid[c].length > b; ) (e = this.grid[c]), (f = e.pop()), this.destroyTile(f);
+    for(d = this.grid.length; c < d; c++) for (; this.grid[c].length > b; ) (e = this.grid[c]), (f = e.pop()), this.destroyTile(f);
   },
   onMapResize: function() {
     this.singleTile && (this.clearGrid(), this.setTileSize());
@@ -9611,10 +8815,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
   CLASS_NAME: 'OpenLayers.Layer.Grid'
 });
 OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
-  fontStyleKeys:
-    'antialiasing blockout font fontcolor fontsize fontstyle glowing interval outline printmode shadow transparency'.split(
-      ' '
-    ),
+  fontStyleKeys: 'antialiasing blockout font fontcolor fontsize fontstyle glowing interval outline printmode shadow transparency'.split(' '),
   request: null,
   response: null,
   initialize: function(a) {
@@ -9628,10 +8829,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
         this.addCoordSys(b.filtercoordsys, a.filterCoordSys);
         a.polygon
           ? ((b.isspatial = !0), (b.spatialfilter.polygon = a.polygon))
-          : a.envelope &&
-            ((b.isspatial = !0),
-            (b.spatialfilter.envelope = { minx: 0, miny: 0, maxx: 0, maxy: 0 }),
-            this.parseEnvelope(b.spatialfilter.envelope, a.envelope));
+          : a.envelope && ((b.isspatial = !0), (b.spatialfilter.envelope = { minx: 0, miny: 0, maxx: 0, maxy: 0 }), this.parseEnvelope(b.spatialfilter.envelope, a.envelope));
       } else
         'image' == a.requesttype
           ? ((this.request.get_feature = null),
@@ -9654,28 +8852,17 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
     null !== b && ((a.width = b.w), (a.height = b.h), (a.printwidth = b.w), (a.printheight = b.h));
   },
   addCoordSys: function(a, b) {
-    'string' == typeof b
-      ? ((a.id = parseInt(b)), (a.string = b))
-      : 'object' == typeof b && null !== b.proj && ((a.id = b.proj.srsProjNumber), (a.string = b.proj.srsCode));
+    'string' == typeof b ? ((a.id = parseInt(b)), (a.string = b)) : 'object' == typeof b && null !== b.proj && ((a.id = b.proj.srsProjNumber), (a.string = b.proj.srsCode));
   },
   iserror: function(a) {
     var b = null;
-    a
-      ? ((a = OpenLayers.Format.XML.prototype.read.apply(this, [a])),
-        (a = a.documentElement.getElementsByTagName('ERROR')),
-        (b = null !== a && 0 < a.length))
-      : (b = '' !== this.response.error);
+    a ? ((a = OpenLayers.Format.XML.prototype.read.apply(this, [a])), (a = a.documentElement.getElementsByTagName('ERROR')), (b = null !== a && 0 < a.length)) : (b = '' !== this.response.error);
     return b;
   },
   read: function(a) {
     'string' == typeof a && (a = OpenLayers.Format.XML.prototype.read.apply(this, [a]));
     var b = null;
-    a &&
-      a.documentElement &&
-      (b =
-        'ARCXML' == a.documentElement.nodeName
-          ? a.documentElement
-          : a.documentElement.getElementsByTagName('ARCXML')[0]);
+    a && a.documentElement && (b = 'ARCXML' == a.documentElement.nodeName ? a.documentElement : a.documentElement.getElementsByTagName('ARCXML')[0]);
     if(!b || 'parsererror' === b.firstChild.nodeName) {
       var c, d;
       try {
@@ -9699,15 +8886,9 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
       null != a.featurecoordsys &&
         ((d = this.createElementNS('', 'FEATURECOORDSYS')),
         e.appendChild(d),
-        0 === a.featurecoordsys.id
-          ? d.setAttribute('string', a.featurecoordsys.string)
-          : d.setAttribute('id', a.featurecoordsys.id));
+        0 === a.featurecoordsys.id ? d.setAttribute('string', a.featurecoordsys.string) : d.setAttribute('id', a.featurecoordsys.id));
       null != a.filtercoordsys &&
-        ((d = this.createElementNS('', 'FILTERCOORDSYS')),
-        e.appendChild(d),
-        0 === a.filtercoordsys.id
-          ? d.setAttribute('string', a.filtercoordsys.string)
-          : d.setAttribute('id', a.filtercoordsys.id));
+        ((d = this.createElementNS('', 'FILTERCOORDSYS')), e.appendChild(d), 0 === a.filtercoordsys.id ? d.setAttribute('string', a.filtercoordsys.string) : d.setAttribute('id', a.filtercoordsys.id));
       null != a.envelope &&
         ((d = this.createElementNS('', 'ENVELOPE')),
         e.appendChild(d),
@@ -9725,11 +8906,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
         ((d = this.createElementNS('', 'BACKGROUND')),
         e.appendChild(d),
         d.setAttribute('color', a.background.color.r + ',' + a.background.color.g + ',' + a.background.color.b),
-        null !== a.background.transcolor &&
-          d.setAttribute(
-            'transcolor',
-            a.background.transcolor.r + ',' + a.background.transcolor.g + ',' + a.background.transcolor.b
-          ));
+        null !== a.background.transcolor && d.setAttribute('transcolor', a.background.transcolor.r + ',' + a.background.transcolor.g + ',' + a.background.transcolor.b));
       if(null != a.layerlist && 0 < a.layerlist.length)
         for(d = this.createElementNS('', 'LAYERLIST'), e.appendChild(d), e = 0; e < a.layerlist.length; e++) {
           var f = this.createElementNS('', 'LAYERDEF');
@@ -9740,17 +8917,12 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
             var g = a.layerlist[e].query;
             if(0 > g.where.length) continue;
             var h = null,
-              h =
-                'boolean' == typeof g.spatialfilter && g.spatialfilter
-                  ? this.createElementNS('', 'SPATIALQUERY')
-                  : this.createElementNS('', 'QUERY');
+              h = 'boolean' == typeof g.spatialfilter && g.spatialfilter ? this.createElementNS('', 'SPATIALQUERY') : this.createElementNS('', 'QUERY');
             h.setAttribute('where', g.where);
             'number' == typeof g.accuracy && 0 < g.accuracy && h.setAttribute('accuracy', g.accuracy);
             'number' == typeof g.featurelimit && 2e3 > g.featurelimit && h.setAttribute('featurelimit', g.featurelimit);
             'string' == typeof g.subfields && '#ALL#' != g.subfields && h.setAttribute('subfields', g.subfields);
-            'string' == typeof g.joinexpression &&
-              0 < g.joinexpression.length &&
-              h.setAttribute('joinexpression', g.joinexpression);
+            'string' == typeof g.joinexpression && 0 < g.joinexpression.length && h.setAttribute('joinexpression', g.joinexpression);
             'string' == typeof g.jointables && 0 < g.jointables.length && h.setAttribute('jointables', g.jointables);
             f.appendChild(h);
           }
@@ -9761,16 +8933,12 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
         ((d = this.createElementNS('', 'GET_FEATURES')),
         d.setAttribute('outputmode', 'newxml'),
         d.setAttribute('checkesc', 'true'),
-        a.get_feature.geometry
-          ? d.setAttribute('geometry', a.get_feature.geometry)
-          : d.setAttribute('geometry', 'false'),
+        a.get_feature.geometry ? d.setAttribute('geometry', a.get_feature.geometry) : d.setAttribute('geometry', 'false'),
         a.get_feature.compact && d.setAttribute('compact', a.get_feature.compact),
         'number' == a.get_feature.featurelimit && d.setAttribute('featurelimit', a.get_feature.featurelimit),
         d.setAttribute('globalenvelope', 'true'),
         c.appendChild(d),
-        null != a.get_feature.layer &&
-          0 < a.get_feature.layer.length &&
-          ((e = this.createElementNS('', 'LAYER')), e.setAttribute('id', a.get_feature.layer), d.appendChild(e)),
+        null != a.get_feature.layer && 0 < a.get_feature.layer.length && ((e = this.createElementNS('', 'LAYER')), e.setAttribute('id', a.get_feature.layer), d.appendChild(e)),
         (a = a.get_feature.query),
         null != a &&
           ((e = null),
@@ -9779,18 +8947,13 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
           'number' == typeof a.accuracy && e.setAttribute('accuracy', a.accuracy),
           null != a.featurecoordsys &&
             ((d = this.createElementNS('', 'FEATURECOORDSYS')),
-            0 == a.featurecoordsys.id
-              ? d.setAttribute('string', a.featurecoordsys.string)
-              : d.setAttribute('id', a.featurecoordsys.id),
+            0 == a.featurecoordsys.id ? d.setAttribute('string', a.featurecoordsys.string) : d.setAttribute('id', a.featurecoordsys.id),
             e.appendChild(d)),
           null != a.filtercoordsys &&
             ((d = this.createElementNS('', 'FILTERCOORDSYS')),
-            0 === a.filtercoordsys.id
-              ? d.setAttribute('string', a.filtercoordsys.string)
-              : d.setAttribute('id', a.filtercoordsys.id),
+            0 === a.filtercoordsys.id ? d.setAttribute('string', a.filtercoordsys.string) : d.setAttribute('id', a.filtercoordsys.id),
             e.appendChild(d)),
-          0 < a.buffer &&
-            ((d = this.createElementNS('', 'BUFFER')), d.setAttribute('distance', a.buffer), e.appendChild(d)),
+          0 < a.buffer && ((d = this.createElementNS('', 'BUFFER')), d.setAttribute('distance', a.buffer), e.appendChild(d)),
           a.isspatial &&
             ((d = this.createElementNS('', 'SPATIALFILTER')),
             d.setAttribute('relation', a.spatialfilter.relation),
@@ -9802,8 +8965,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
                 f.setAttribute('maxx', a.spatialfilter.envelope.maxx),
                 f.setAttribute('maxy', a.spatialfilter.envelope.maxy),
                 d.appendChild(f))
-              : 'object' == typeof a.spatialfilter.polygon &&
-                d.appendChild(this.writePolygonGeometry(a.spatialfilter.polygon))),
+              : 'object' == typeof a.spatialfilter.polygon && d.appendChild(this.writePolygonGeometry(a.spatialfilter.polygon))),
           null != a.where && 0 < a.where.length && e.setAttribute('where', a.where)));
     b.appendChild(c);
     return OpenLayers.Format.XML.prototype.write.apply(this, [b]);
@@ -9871,8 +9033,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
           null != g &&
             ('string' == typeof e.symbol.boundarycolor && g.setAttribute('boundarycolor', e.symbol.boundarycolor),
             'string' == typeof e.symbol.fillcolor && g.setAttribute('fillcolor', e.symbol.fillcolor),
-            'number' == typeof e.symbol.filltransparency &&
-              g.setAttribute('filltransparency', e.symbol.filltransparency),
+            'number' == typeof e.symbol.filltransparency && g.setAttribute('filltransparency', e.symbol.filltransparency),
             f.appendChild(g));
         }
       }
@@ -9900,16 +9061,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   addSimpleLabelRenderer: function(a, b) {
     a.setAttribute('field', b.field);
-    for(
-      var c =
-          'featureweight howmanylabels labelbufferratio labelpriorities labelweight linelabelposition rotationalangles'.split(
-            ' '
-          ),
-        d = 0,
-        e = c.length;
-      d < e;
-      d++
-    ) {
+    for(var c = 'featureweight howmanylabels labelbufferratio labelpriorities labelweight linelabelposition rotationalangles'.split(' '), d = 0, e = c.length; d < e; d++) {
       var f = c[d];
       b[f] && a.setAttribute(f, b[f]);
     }
@@ -9923,8 +9075,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
     }
   },
   writePolygonGeometry: function(a) {
-    if(!(a instanceof OpenLayers.Geometry.Polygon))
-      throw { message: 'Cannot write polygon geometry to ArcXML with an ' + a.CLASS_NAME + ' object.', geometry: a };
+    if(!(a instanceof OpenLayers.Geometry.Polygon)) throw { message: 'Cannot write polygon geometry to ArcXML with an ' + a.CLASS_NAME + ' object.', geometry: a };
     for(var b = this.createElementNS('', 'POLYGON'), c = 0, d = a.components.length; c < d; c++) {
       for(var e = a.components[c], f = this.createElementNS('', 'RING'), g = 0, h = e.components.length; g < h; g++) {
         var k = e.components[g],
@@ -9956,30 +9107,11 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
             ? (b.error = 'No OUTPUT tag found in ArcXML response.')
             : ((c = this.parseAttributes(c[0])),
               (d = this.parseAttributes(a[0])),
-              (b.image =
-                'string' == typeof d.type
-                  ? { envelope: c, output: { type: d.type, data: this.getChildValue(a[0]) } }
-                  : { envelope: c, output: d }));
+              (b.image = 'string' == typeof d.type ? { envelope: c, output: { type: d.type, data: this.getChildValue(a[0]) } } : { envelope: c, output: d }));
       else if('FEATURES' == d) {
-        if(
-          ((a = c[0].getElementsByTagName('FEATURES')),
-          (c = a[0].getElementsByTagName('FEATURECOUNT')),
-          (b.features.featurecount = c[0].getAttribute('count')),
-          0 < b.features.featurecount)
-        )
-          for(
-            c = a[0].getElementsByTagName('ENVELOPE'),
-              b.features.envelope = this.parseAttributes(c[0], 'number'),
-              a = a[0].getElementsByTagName('FEATURE'),
-              c = 0;
-            c < a.length;
-            c++
-          ) {
-            for(
-              var d = new OpenLayers.Feature.Vector(), e = a[c].getElementsByTagName('FIELD'), f = 0;
-              f < e.length;
-              f++
-            ) {
+        if(((a = c[0].getElementsByTagName('FEATURES')), (c = a[0].getElementsByTagName('FEATURECOUNT')), (b.features.featurecount = c[0].getAttribute('count')), 0 < b.features.featurecount))
+          for(c = a[0].getElementsByTagName('ENVELOPE'), b.features.envelope = this.parseAttributes(c[0], 'number'), a = a[0].getElementsByTagName('FEATURE'), c = 0; c < a.length; c++) {
+            for(var d = new OpenLayers.Feature.Vector(), e = a[c].getElementsByTagName('FIELD'), f = 0; f < e.length; f++) {
               var g = e[f].getAttribute('name'),
                 h = e[f].getAttribute('value');
               d.attributes[g] = h;
@@ -9991,8 +9123,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
               for(g = 0; g < e.length; g++) {
                 h = [];
                 h.push(this.parsePointGeometry(e[g]));
-                for(var k = e[g].getElementsByTagName('HOLE'), l = 0; l < k.length; l++)
-                  h.push(this.parsePointGeometry(k[l]));
+                for(var k = e[g].getElementsByTagName('HOLE'), l = 0; l < k.length; l++) h.push(this.parsePointGeometry(k[l]));
                 f.push(new OpenLayers.Geometry.Polygon(h));
               }
               d.geometry = 1 == f.length ? f[0] : new OpenLayers.Geometry.MultiPolygon(f);
@@ -10004,8 +9135,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   parseAttributes: function(a, b) {
-    for(var c = {}, d = 0; d < a.attributes.length; d++)
-      c[a.attributes[d].nodeName] = 'number' == b ? parseFloat(a.attributes[d].nodeValue) : a.attributes[d].nodeValue;
+    for(var c = {}, d = 0; d < a.attributes.length; d++) c[a.attributes[d].nodeName] = 'number' == b ? parseFloat(a.attributes[d].nodeValue) : a.attributes[d].nodeValue;
     return c;
   },
   parsePointGeometry: function(a) {
@@ -10017,8 +9147,7 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
         b.push(new OpenLayers.Geometry.Point(d[0], d[1]));
       }
     else if(((a = a.getElementsByTagName('POINT')), 0 < a.length))
-      for(c = 0; c < a.length; c++)
-        b.push(new OpenLayers.Geometry.Point(parseFloat(a[c].getAttribute('x')), parseFloat(a[c].getAttribute('y'))));
+      for(c = 0; c < a.length; c++) b.push(new OpenLayers.Geometry.Point(parseFloat(a[c].getAttribute('x')), parseFloat(a[c].getAttribute('y'))));
     return new OpenLayers.Geometry.LinearRing(b);
   },
   CLASS_NAME: 'OpenLayers.Format.ArcXML'
@@ -10103,13 +9232,7 @@ OpenLayers.Format.ArcXML.Response = OpenLayers.Class({
         !e.documentElement &&
         d.getResponseHeader('Content-Type').match(/[^\/]+\/[^\+]+\+xml/) &&
         ((e = new window.ActiveXObject('Microsoft.XMLDOM')), (e.async = !1), (e.validateOnParse = !1), e.loadXML(f));
-      c =
-        e &&
-        ((h && 0 != e.parseError) ||
-          !e.documentElement ||
-          (e.documentElement && 'parsererror' == e.documentElement.tagName))
-          ? null
-          : e;
+      c = e && ((h && 0 != e.parseError) || !e.documentElement || (e.documentElement && 'parsererror' == e.documentElement.tagName)) ? null : e;
       a.responseXML = c;
     } catch(g) {}
     try {
@@ -10158,22 +9281,14 @@ OpenLayers.Format.ArcXML.Response = OpenLayers.Class({
       }),
       window.attachEvent('onunload', t));
     b.onopen && b.onopen.apply(this, arguments);
-    4 < arguments.length
-      ? this._object.open(a, f, k, p, q)
-      : 3 < arguments.length
-      ? this._object.open(a, f, k, p)
-      : this._object.open(a, f, k);
+    4 < arguments.length ? this._object.open(a, f, k, p, q) : 3 < arguments.length ? this._object.open(a, f, k, p) : this._object.open(a, f, k);
     this.readyState = b.OPENED;
     c(this);
     this._object.onreadystatechange = function() {
       if(!g || k)
         (r.readyState = r._object.readyState),
           d(r),
-          r._aborted
-            ? (r.readyState = b.UNSENT)
-            : (r.readyState == b.DONE && (delete r._data, e(r), h && k && window.detachEvent('onunload', t)),
-              s != r.readyState && c(r),
-              (s = r.readyState));
+          r._aborted ? (r.readyState = b.UNSENT) : (r.readyState == b.DONE && (delete r._data, e(r), h && k && window.detachEvent('onunload', t)), s != r.readyState && c(r), (s = r.readyState));
     };
   };
   b.prototype.send = function(a) {
@@ -10181,12 +9296,9 @@ OpenLayers.Format.ArcXML.Response = OpenLayers.Class({
     arguments.length || (a = null);
     a &&
       a.nodeType &&
-      ((a = window.XMLSerializer ? new window.XMLSerializer().serializeToString(a) : a.xml),
-      this._headers['Content-Type'] || this._object.setRequestHeader('Content-Type', 'application/xml'));
+      ((a = window.XMLSerializer ? new window.XMLSerializer().serializeToString(a) : a.xml), this._headers['Content-Type'] || this._object.setRequestHeader('Content-Type', 'application/xml'));
     this._data = a;
-    a: if((this._object.send(this._data), g && !this._async))
-      for(this.readyState = b.OPENED, d(this); this.readyState < b.DONE; )
-        if((this.readyState++, c(this), this._aborted)) break a;
+    a: if((this._object.send(this._data), g && !this._async)) for(this.readyState = b.OPENED, d(this); this.readyState < b.DONE; ) if ((this.readyState++, c(this), this._aborted)) break a;
   };
   b.prototype.abort = function() {
     b.onabort && b.onabort.apply(this, arguments);
@@ -10228,11 +9340,8 @@ OpenLayers.Format.ArcXML.Response = OpenLayers.Class({
       preventDefault: function() {},
       initEvent: function() {}
     };
-    'readystatechange' == a.type &&
-      this.onreadystatechange &&
-      (this.onreadystatechange.handleEvent || this.onreadystatechange).apply(this, [a]);
-    for(var b = 0, c; (c = this._listeners[b]); b++)
-      c[0] != a.type || c[2] || (c[1].handleEvent || c[1]).apply(this, [a]);
+    'readystatechange' == a.type && this.onreadystatechange && (this.onreadystatechange.handleEvent || this.onreadystatechange).apply(this, [a]);
+    for(var b = 0, c; (c = this._listeners[b]); b++) c[0] != a.type || c[2] || (c[1].handleEvent || c[1]).apply(this, [a]);
   };
   b.prototype.toString = function() {
     return '[object XMLHttpRequest]';
@@ -10301,9 +9410,7 @@ OpenLayers.Util.extend(OpenLayers.Request, {
     var g = this.events,
       h = this;
     d.onreadystatechange = function() {
-      d.readyState == OpenLayers.Request.XMLHttpRequest.DONE &&
-        !1 !== g.triggerEvent('complete', { request: d, config: a, requestUrl: e }) &&
-        h.runCallbacks({ request: d, config: a, requestUrl: e });
+      d.readyState == OpenLayers.Request.XMLHttpRequest.DONE && !1 !== g.triggerEvent('complete', { request: d, config: a, requestUrl: e }) && h.runCallbacks({ request: d, config: a, requestUrl: e });
     };
     !1 === a.async
       ? d.send(a.data)
@@ -10376,30 +9483,20 @@ OpenLayers.Layer.ArcIMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
     this.params = OpenLayers.Util.applyDefaults({ ServiceName: c.serviceName }, this.DEFAULT_PARAMS);
     this.options = OpenLayers.Util.applyDefaults(c, this.DEFAULT_OPTIONS);
     OpenLayers.Layer.Grid.prototype.initialize.apply(this, [a, b, this.params, c]);
-    this.transparent &&
-      (this.isBaseLayer || (this.isBaseLayer = !1),
-      'image/jpeg' == this.format && (this.format = OpenLayers.Util.alphaHack() ? 'image/gif' : 'image/png'));
+    this.transparent && (this.isBaseLayer || (this.isBaseLayer = !1), 'image/jpeg' == this.format && (this.format = OpenLayers.Util.alphaHack() ? 'image/gif' : 'image/png'));
     null === this.options.layers && (this.options.layers = []);
   },
   getURL: function(a) {
     var b = '';
     a = this.adjustBounds(a);
-    a = new OpenLayers.Format.ArcXML(
-      OpenLayers.Util.extend(this.options, { requesttype: 'image', envelope: a.toArray(), tileSize: this.tileSize })
-    );
+    a = new OpenLayers.Format.ArcXML(OpenLayers.Util.extend(this.options, { requesttype: 'image', envelope: a.toArray(), tileSize: this.tileSize }));
     a = new OpenLayers.Request.POST({ url: this.getFullRequestString(), data: a.write(), async: !1 });
-    null != a &&
-      ((b = a.responseXML),
-      (b && b.documentElement) || (b = a.responseText),
-      (b = new OpenLayers.Format.ArcXML().read(b)),
-      (b = this.getUrlOrImage(b.image.output)));
+    null != a && ((b = a.responseXML), (b && b.documentElement) || (b = a.responseText), (b = new OpenLayers.Format.ArcXML().read(b)), (b = this.getUrlOrImage(b.image.output)));
     return b;
   },
   getURLasync: function(a, b, c) {
     a = this.adjustBounds(a);
-    a = new OpenLayers.Format.ArcXML(
-      OpenLayers.Util.extend(this.options, { requesttype: 'image', envelope: a.toArray(), tileSize: this.tileSize })
-    );
+    a = new OpenLayers.Format.ArcXML(OpenLayers.Util.extend(this.options, { requesttype: 'image', envelope: a.toArray(), tileSize: this.tileSize }));
     OpenLayers.Request.POST({
       url: this.getFullRequestString(),
       async: !0,
@@ -10441,11 +9538,7 @@ OpenLayers.Layer.ArcIMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
     h.request.get_feature.layer = b.id;
     'number' == typeof b.query.accuracy
       ? (h.request.get_feature.query.accuracy = b.query.accuracy)
-      : ((a = this.map.getCenter()),
-        (c = this.map.getViewPortPxFromLonLat(a)),
-        c.x++,
-        (c = this.map.getLonLatFromPixel(c)),
-        (h.request.get_feature.query.accuracy = c.lon - a.lon));
+      : ((a = this.map.getCenter()), (c = this.map.getViewPortPxFromLonLat(a)), c.x++, (c = this.map.getLonLatFromPixel(c)), (h.request.get_feature.query.accuracy = c.lon - a.lon));
     h.request.get_feature.query.where = b.query.where;
     h.request.get_feature.query.spatialfilter.relation = 'area_intersection';
     OpenLayers.Request.POST({
@@ -10619,17 +9712,7 @@ OpenLayers.Control.PanZoomBar = OpenLayers.Class(OpenLayers.Control.PanZoom, {
       b = OpenLayers.Util.getImageLocation('zoombar.png'),
       c = null;
     OpenLayers.Util.alphaHack()
-      ? ((c = this.id + '_' + this.map.id),
-        (c = OpenLayers.Util.createAlphaImageDiv(
-          c,
-          a,
-          { w: f.w, h: this.zoomStopHeight },
-          b,
-          'absolute',
-          null,
-          'crop'
-        )),
-        (c.style.height = f.h + 'px'))
+      ? ((c = this.id + '_' + this.map.id), (c = OpenLayers.Util.createAlphaImageDiv(c, a, { w: f.w, h: this.zoomStopHeight }, b, 'absolute', null, 'crop')), (c.style.height = f.h + 'px'))
       : (c = OpenLayers.Util.createDiv('OpenLayers_Control_PanZoomBar_Zoombar' + this.map.id, a, f, b));
     c.style.cursor = 'pointer';
     c.className = 'olButton';
@@ -10689,9 +9772,7 @@ OpenLayers.Control.PanZoomBar = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         c = OpenLayers.Util.pagePosition(this.zoombarDiv);
       0 < a.clientY - c[1] &&
         a.clientY - c[1] < parseInt(this.zoombarDiv.style.height) - 2 &&
-        ((b = parseInt(this.slider.style.top) - b),
-        (this.slider.style.top = b + 'px'),
-        (this.mouseDragStart = a.xy.clone()));
+        ((b = parseInt(this.slider.style.top) - b), (this.slider.style.top = b + 'px'), (this.mouseDragStart = a.xy.clone()));
       this.deltaY = this.zoomStart.y - a.xy.y;
       OpenLayers.Event.stop(a);
     }
@@ -10810,8 +9891,7 @@ OpenLayers.Layer.Image = OpenLayers.Class(OpenLayers.Layer, {
     return (a = OpenLayers.Layer.prototype.clone.apply(this, [a]));
   },
   setMap: function(a) {
-    null == this.options.maxResolution &&
-      (this.options.maxResolution = (this.aspectRatio * this.extent.getWidth()) / this.size.w);
+    null == this.options.maxResolution && (this.options.maxResolution = (this.aspectRatio * this.extent.getWidth()) / this.size.w);
     OpenLayers.Layer.prototype.setMap.apply(this, arguments);
   },
   moveTo: function(a, b, c) {
@@ -10821,8 +9901,7 @@ OpenLayers.Layer.Image = OpenLayers.Class(OpenLayers.Layer, {
       this.setTileSize();
       var e = this.map.getLayerPxFromLonLat({ lon: this.extent.left, lat: this.extent.top });
       d
-        ? ((this.tile = new OpenLayers.Tile.Image(this, e, this.extent, null, this.tileSize)),
-          this.addTileMonitoringHooks(this.tile))
+        ? ((this.tile = new OpenLayers.Tile.Image(this, e, this.extent, null, this.tileSize)), this.addTileMonitoringHooks(this.tile))
         : ((this.tile.size = this.tileSize.clone()), (this.tile.position = e.clone()));
       this.tile.draw();
     }
@@ -10893,10 +9972,8 @@ OpenLayers.Strategy.Save = OpenLayers.Class(OpenLayers.Strategy, {
   activate: function() {
     var a = OpenLayers.Strategy.prototype.activate.call(this);
     if(a && this.auto)
-      if('number' === typeof this.auto)
-        this.timer = window.setInterval(OpenLayers.Function.bind(this.save, this), 1e3 * this.auto);
-      else
-        this.layer.events.on({ featureadded: this.triggerSave, afterfeaturemodified: this.triggerSave, scope: this });
+      if('number' === typeof this.auto) this.timer = window.setInterval(OpenLayers.Function.bind(this.save, this), 1e3 * this.auto);
+      else this.layer.events.on({ featureadded: this.triggerSave, afterfeaturemodified: this.triggerSave, scope: this });
     return a;
   },
   deactivate: function() {
@@ -10914,10 +9991,7 @@ OpenLayers.Strategy.Save = OpenLayers.Class(OpenLayers.Strategy, {
   },
   triggerSave: function(a) {
     var b = a.feature;
-    (b.state !== OpenLayers.State.INSERT &&
-      b.state !== OpenLayers.State.UPDATE &&
-      b.state !== OpenLayers.State.DELETE) ||
-      this.save([a.feature]);
+    (b.state !== OpenLayers.State.INSERT && b.state !== OpenLayers.State.UPDATE && b.state !== OpenLayers.State.DELETE) || this.save([a.feature]);
   },
   save: function(a) {
     a || (a = this.layer.features);
@@ -10926,14 +10000,7 @@ OpenLayers.Strategy.Save = OpenLayers.Class(OpenLayers.Strategy, {
       c = this.layer.map.getProjectionObject();
     if(!c.equals(b)) {
       for(var d = a.length, e = Array(d), f, g, h = 0; h < d; ++h)
-        (f = a[h]),
-          (g = f.clone()),
-          (g.fid = f.fid),
-          (g.state = f.state),
-          f.url && (g.url = f.url),
-          (g._original = f),
-          g.geometry.transform(c, b),
-          (e[h] = g);
+        (f = a[h]), (g = f.clone()), (g.fid = f.fid), (g.state = f.state), f.url && (g.url = f.url), (g._original = f), g.geometry.transform(c, b), (e[h] = g);
       a = e;
     }
     this.layer.protocol.commit(a, { callback: this.onCommit, scope: this });
@@ -10942,9 +10009,7 @@ OpenLayers.Strategy.Save = OpenLayers.Class(OpenLayers.Strategy, {
     var b = { response: a };
     if(a.success()) {
       for(var c = a.reqFeatures, d, e = [], f = a.insertIds || [], g = 0, h = 0, k = c.length; h < k; ++h)
-        if(((d = c[h]), (d = d._original || d), (a = d.state)))
-          a == OpenLayers.State.DELETE ? e.push(d) : a == OpenLayers.State.INSERT && ((d.fid = f[g]), ++g),
-            (d.state = null);
+        if(((d = c[h]), (d = d._original || d), (a = d.state))) a == OpenLayers.State.DELETE ? e.push(d) : a == OpenLayers.State.INSERT && ((d.fid = f[g]), ++g), (d.state = null);
       0 < e.length && this.layer.destroyFeatures(e);
       this.events.triggerEvent('success', b);
     } else this.events.triggerEvent('fail', b);
@@ -10964,12 +10029,7 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
         : a.object.events.register('added', this, function(b) {
             this.setMap(a.object.map);
           });
-    else
-      throw (
-        "Listeners for '" +
-        this.provides.join("', '") +
-        "' events can only be registered for OpenLayers.Layer.Vector or OpenLayers.Map instances"
-      );
+    else throw "Listeners for '" + this.provides.join("', '") + "' events can only be registered for OpenLayers.Layer.Vector or OpenLayers.Map instances";
     for(var b = this.provides.length - 1; 0 <= b; --b) a.extensions[this.provides[b]] = !0;
   },
   setMap: function(a) {
@@ -10992,16 +10052,9 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
     if(this.startEvt && ('touchend' === a.type || OpenLayers.Event.isLeftClick(a))) {
       a = this.getFeatures(this.startEvt);
       delete this.startEvt;
-      for(
-        var b, c, d = {}, e = 0, f = a.length;
-        e < f &&
-        ((b = a[e]), (c = b.layer), (d[c.id] = !0), (b = this.triggerEvent('featureclick', { feature: b })), !1 !== b);
-        ++e
-      );
+      for(var b, c, d = {}, e = 0, f = a.length; e < f && ((b = a[e]), (c = b.layer), (d[c.id] = !0), (b = this.triggerEvent('featureclick', { feature: b })), !1 !== b); ++e);
       e = 0;
-      for(f = this.map.layers.length; e < f; ++e)
-        (c = this.map.layers[e]),
-          c instanceof OpenLayers.Layer.Vector && !d[c.id] && this.triggerEvent('nofeatureclick', { layer: c });
+      for(f = this.map.layers.length; e < f; ++e) (c = this.map.layers[e]), c instanceof OpenLayers.Layer.Vector && !d[c.id] && this.triggerEvent('nofeatureclick', { layer: c });
     }
   },
   onMousemove: function(a) {
@@ -11014,17 +10067,9 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
       g;
     for(g in this.cache) (d = this.cache[g]), d.layer && d.layer.map ? c[d.id] || b.push(d) : delete this.cache[g];
     e = 0;
-    for(
-      f = a.length;
-      e < f && ((d = a[e]), (this.cache[d.id] = d), (g = this.triggerEvent('featureover', { feature: d })), !1 !== g);
-      ++e
-    );
+    for(f = a.length; e < f && ((d = a[e]), (this.cache[d.id] = d), (g = this.triggerEvent('featureover', { feature: d })), !1 !== g); ++e);
     e = 0;
-    for(
-      f = b.length;
-      e < f && ((d = b[e]), delete this.cache[d.id], (g = this.triggerEvent('featureout', { feature: d })), !1 !== g);
-      ++e
-    );
+    for(f = b.length; e < f && ((d = b[e]), delete this.cache[d.id], (g = this.triggerEvent('featureout', { feature: d })), !1 !== g); ++e);
   },
   triggerEvent: function(a, b) {
     var c = b.feature ? b.feature.layer : b.layer,
@@ -11046,15 +10091,10 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
         if(g.renderer instanceof OpenLayers.Renderer.Elements) {
           if(g instanceof OpenLayers.Layer.Vector)
             for(h = document.elementFromPoint(b, c); h && h._featureId; )
-              (k = g.getFeatureById(h._featureId))
-                ? (d.push(k), (h.style.display = 'none'), e.push(h), (h = document.elementFromPoint(b, c)))
-                : (h = !1);
+              (k = g.getFeatureById(h._featureId)) ? (d.push(k), (h.style.display = 'none'), e.push(h), (h = document.elementFromPoint(b, c))) : (h = !1);
           f.push(g);
           g.div.style.display = 'none';
-        } else
-          g.renderer instanceof OpenLayers.Renderer.Canvas &&
-            (k = g.renderer.getFeatureIdFromEvent(a)) &&
-            (d.push(k), f.push(g));
+        } else g.renderer instanceof OpenLayers.Renderer.Canvas && (k = g.renderer.getFeatureIdFromEvent(a)) && (d.push(k), f.push(g));
     l = 0;
     for(a = e.length; l < a; ++l) e[l].style.display = '';
     for(l = f.length - 1; 0 <= l; --l) f[l].div.style.display = 'block';
@@ -11106,23 +10146,18 @@ OpenLayers.Format.GPX = OpenLayers.Class(OpenLayers.Format.XML, {
       }
     if(this.extractRoutes)
       for(e = a.getElementsByTagName('rte'), c = 0, d = e.length; c < d; c++)
-        (f = {}),
-          this.extractAttributes && (f = this.parseAttributes(e[c])),
-          (g = this.extractSegment(e[c], 'rtept')),
-          b.push(new OpenLayers.Feature.Vector(g, f));
+        (f = {}), this.extractAttributes && (f = this.parseAttributes(e[c])), (g = this.extractSegment(e[c], 'rtept')), b.push(new OpenLayers.Feature.Vector(g, f));
     if(this.extractWaypoints)
       for(a = a.getElementsByTagName('wpt'), c = 0, e = a.length; c < e; c++)
         (f = {}),
           this.extractAttributes && (f = this.parseAttributes(a[c])),
           (d = new OpenLayers.Geometry.Point(a[c].getAttribute('lon'), a[c].getAttribute('lat'))),
           b.push(new OpenLayers.Feature.Vector(d, f));
-    if(this.internalProjection && this.externalProjection)
-      for(f = 0, a = b.length; f < a; f++) b[f].geometry.transform(this.externalProjection, this.internalProjection);
+    if(this.internalProjection && this.externalProjection) for(f = 0, a = b.length; f < a; f++) b[f].geometry.transform(this.externalProjection, this.internalProjection);
     return b;
   },
   extractSegment: function(a, b) {
-    for(var c = this.getElementsByTagNameNS(a, a.namespaceURI, b), d = [], e = 0, f = c.length; e < f; e++)
-      d.push(new OpenLayers.Geometry.Point(c[e].getAttribute('lon'), c[e].getAttribute('lat')));
+    for(var c = this.getElementsByTagNameNS(a, a.namespaceURI, b), d = [], e = 0, f = c.length; e < f; e++) d.push(new OpenLayers.Geometry.Point(c[e].getAttribute('lon'), c[e].getAttribute('lat')));
     return new OpenLayers.Geometry.LineString(d);
   },
   parseAttributes: function(a) {
@@ -11147,11 +10182,7 @@ OpenLayers.Format.GPX = OpenLayers.Class(OpenLayers.Format.XML, {
     return OpenLayers.Format.XML.prototype.write.apply(this, [c]);
   },
   buildMetadataNode: function(a) {
-    for(
-      var b = ['name', 'desc', 'author'], c = this.createElementNS(this.namespaces.gpx, 'metadata'), d = 0;
-      d < b.length;
-      d++
-    ) {
+    for(var b = ['name', 'desc', 'author'], c = this.createElementNS(this.namespaces.gpx, 'metadata'), d = 0; d < b.length; d++) {
       var e = b[d];
       if(a[e]) {
         var f = this.createElementNS(this.namespaces.gpx, e);
@@ -11251,8 +10282,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
   zoomOffset: 0,
   serverResolutions: null,
   initialize: function(a, b, c) {
-    if((c && c.sphericalMercator) || this.sphericalMercator)
-      c = OpenLayers.Util.extend({ projection: 'EPSG:900913', numZoomLevels: 19 }, c);
+    if((c && c.sphericalMercator) || this.sphericalMercator) c = OpenLayers.Util.extend({ projection: 'EPSG:900913', numZoomLevels: 19 }, c);
     OpenLayers.Layer.Grid.prototype.initialize.apply(this, [a || this.name, b || this.url, {}, c]);
   },
   clone: function(a) {
@@ -11283,21 +10313,14 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
 });
 OpenLayers.Layer.OSM = OpenLayers.Class(OpenLayers.Layer.XYZ, {
   name: 'OpenStreetMap',
-  url: [
-    'http://a.tile.openstreetmap.org/${z}/${x}/${y}.png',
-    'http://b.tile.openstreetmap.org/${z}/${x}/${y}.png',
-    'http://c.tile.openstreetmap.org/${z}/${x}/${y}.png'
-  ],
+  url: ['http://a.tile.openstreetmap.org/${z}/${x}/${y}.png', 'http://b.tile.openstreetmap.org/${z}/${x}/${y}.png', 'http://c.tile.openstreetmap.org/${z}/${x}/${y}.png'],
   attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
   sphericalMercator: !0,
   wrapDateLine: !0,
   tileOptions: null,
   initialize: function(a, b, c) {
     OpenLayers.Layer.XYZ.prototype.initialize.apply(this, arguments);
-    this.tileOptions = OpenLayers.Util.extend(
-      { crossOriginKeyword: 'anonymous' },
-      this.options && this.options.tileOptions
-    );
+    this.tileOptions = OpenLayers.Util.extend({ crossOriginKeyword: 'anonymous' }, this.options && this.options.tileOptions);
   },
   clone: function(a) {
     null == a && (a = new OpenLayers.Layer.OSM(this.name, this.url, this.getOptions()));
@@ -11427,8 +10450,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
     this.container.appendChild(this.root);
     this.canvas = this.root.getContext('2d');
     this.features = {};
-    this.hitDetection &&
-      ((this.hitCanvas = document.createElement('canvas')), (this.hitContext = this.hitCanvas.getContext('2d')));
+    this.hitDetection && ((this.hitCanvas = document.createElement('canvas')), (this.hitContext = this.hitCanvas.getContext('2d')));
   },
   setExtent: function() {
     OpenLayers.Renderer.prototype.setExtent.apply(this, arguments);
@@ -11448,12 +10470,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
     b.width = a.w;
     b.height = a.h;
     this.resolution = null;
-    this.hitDetection &&
-      ((b = this.hitCanvas),
-      (b.style.width = a.w + 'px'),
-      (b.style.height = a.h + 'px'),
-      (b.width = a.w),
-      (b.height = a.h));
+    this.hitDetection && ((b = this.hitCanvas), (b.style.width = a.w + 'px'), (b.style.height = a.h + 'px'), (b.width = a.w), (b.height = a.h));
   },
   drawFeature: function(a, b) {
     var c;
@@ -11471,12 +10488,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
   },
   drawGeometry: function(a, b, c) {
     var d = a.CLASS_NAME;
-    if(
-      'OpenLayers.Geometry.Collection' == d ||
-      'OpenLayers.Geometry.MultiPoint' == d ||
-      'OpenLayers.Geometry.MultiLineString' == d ||
-      'OpenLayers.Geometry.MultiPolygon' == d
-    )
+    if('OpenLayers.Geometry.Collection' == d || 'OpenLayers.Geometry.MultiPoint' == d || 'OpenLayers.Geometry.MultiLineString' == d || 'OpenLayers.Geometry.MultiPolygon' == d)
       for(d = 0; d < a.components.length; d++) this.drawGeometry(a.components[d], b, c);
     else
       switch (a.CLASS_NAME) {
@@ -11516,9 +10528,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
           p.globalAlpha = l;
           var q =
             OpenLayers.Renderer.Canvas.drawImageScaleFactor ||
-            (OpenLayers.Renderer.Canvas.drawImageScaleFactor = /android 2.1/.test(navigator.userAgent.toLowerCase())
-              ? 320 / window.screen.width
-              : 1);
+            (OpenLayers.Renderer.Canvas.drawImageScaleFactor = /android 2.1/.test(navigator.userAgent.toLowerCase()) ? 320 / window.screen.width : 1);
           p.drawImage(d, e * q, b * q, f * q, g * q);
           this.hitDetection && (this.setHitContextStyle('fill', c), this.hitContext.fillRect(e, b, f, g));
         }
@@ -11559,15 +10569,13 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
       if(!1 !== b.fill) {
         this.setCanvasStyle('fill', b);
         this.canvas.beginPath();
-        for(a = 0; a < h.length; a += 2)
-          (d = h[a]), (e = h[a + 1]), 0 == a && this.canvas.moveTo(d, e), this.canvas.lineTo(d, e);
+        for(a = 0; a < h.length; a += 2) (d = h[a]), (e = h[a + 1]), 0 == a && this.canvas.moveTo(d, e), this.canvas.lineTo(d, e);
         this.canvas.closePath();
         this.canvas.fill();
         if(this.hitDetection) {
           this.setHitContextStyle('fill', c, b);
           this.hitContext.beginPath();
-          for(a = 0; a < h.length; a += 2)
-            (d = h[a]), (e = h[a + 1]), 0 == a && this.canvas.moveTo(d, e), this.hitContext.lineTo(d, e);
+          for(a = 0; a < h.length; a += 2) (d = h[a]), (e = h[a + 1]), 0 == a && this.canvas.moveTo(d, e), this.hitContext.lineTo(d, e);
           this.hitContext.closePath();
           this.hitContext.fill();
         }
@@ -11575,15 +10583,13 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
       if(!1 !== b.stroke) {
         this.setCanvasStyle('stroke', b);
         this.canvas.beginPath();
-        for(a = 0; a < h.length; a += 2)
-          (d = h[a]), (e = h[a + 1]), 0 == a && this.canvas.moveTo(d, e), this.canvas.lineTo(d, e);
+        for(a = 0; a < h.length; a += 2) (d = h[a]), (e = h[a + 1]), 0 == a && this.canvas.moveTo(d, e), this.canvas.lineTo(d, e);
         this.canvas.closePath();
         this.canvas.stroke();
         if(this.hitDetection) {
           this.setHitContextStyle('stroke', c, b, f);
           this.hitContext.beginPath();
-          for(a = 0; a < h.length; a += 2)
-            (d = h[a]), (e = h[a + 1]), 0 == a && this.hitContext.moveTo(d, e), this.hitContext.lineTo(d, e);
+          for(a = 0; a < h.length; a += 2) (d = h[a]), (e = h[a + 1]), 0 == a && this.hitContext.moveTo(d, e), this.hitContext.lineTo(d, e);
           this.hitContext.closePath();
           this.hitContext.stroke();
         }
@@ -11598,9 +10604,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
     'fill' === a
       ? ((this.canvas.globalAlpha = b.fillOpacity), (this.canvas.fillStyle = b.fillColor))
       : 'stroke' === a
-      ? ((this.canvas.globalAlpha = b.strokeOpacity),
-        (this.canvas.strokeStyle = b.strokeColor),
-        (this.canvas.lineWidth = b.strokeWidth))
+      ? ((this.canvas.globalAlpha = b.strokeOpacity), (this.canvas.strokeStyle = b.strokeColor), (this.canvas.lineWidth = b.strokeWidth))
       : ((this.canvas.globalAlpha = 0), (this.canvas.lineWidth = 1));
   },
   featureIdToHex: function(a) {
@@ -11617,9 +10621,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
       : 'stroke' == a
       ? ((this.hitContext.globalAlpha = 1),
         (this.hitContext.strokeStyle = b),
-        'undefined' === typeof d
-          ? (this.hitContext.lineWidth = c.strokeWidth + 2)
-          : isNaN(d) || (this.hitContext.lineWidth = c.strokeWidth + 2 / d))
+        'undefined' === typeof d ? (this.hitContext.lineWidth = c.strokeWidth + 2) : isNaN(d) || (this.hitContext.lineWidth = c.strokeWidth + 2 / d))
       : ((this.hitContext.globalAlpha = 0), (this.hitContext.lineWidth = 1));
   },
   drawPoint: function(a, b, c) {
@@ -11638,21 +10640,13 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
             this.canvas.beginPath(),
             this.canvas.arc(a, d, f, 0, e, !0),
             this.canvas.fill(),
-            this.hitDetection &&
-              (this.setHitContextStyle('fill', c, b),
-              this.hitContext.beginPath(),
-              this.hitContext.arc(a, d, f, 0, e, !0),
-              this.hitContext.fill()));
+            this.hitDetection && (this.setHitContextStyle('fill', c, b), this.hitContext.beginPath(), this.hitContext.arc(a, d, f, 0, e, !0), this.hitContext.fill()));
           !1 !== b.stroke &&
             (this.setCanvasStyle('stroke', b),
             this.canvas.beginPath(),
             this.canvas.arc(a, d, f, 0, e, !0),
             this.canvas.stroke(),
-            this.hitDetection &&
-              (this.setHitContextStyle('stroke', c, b),
-              this.hitContext.beginPath(),
-              this.hitContext.arc(a, d, f, 0, e, !0),
-              this.hitContext.stroke()),
+            this.hitDetection && (this.setHitContextStyle('stroke', c, b), this.hitContext.beginPath(), this.hitContext.arc(a, d, f, 0, e, !0), this.hitContext.stroke()),
             this.setCanvasStyle('reset'));
         }
       }
@@ -11663,14 +10657,11 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
   },
   drawLinearRing: function(a, b, c) {
     !1 !== b.fill &&
-      (this.setCanvasStyle('fill', b),
-      this.renderPath(this.canvas, a, b, c, 'fill'),
-      this.hitDetection && (this.setHitContextStyle('fill', c, b), this.renderPath(this.hitContext, a, b, c, 'fill')));
+      (this.setCanvasStyle('fill', b), this.renderPath(this.canvas, a, b, c, 'fill'), this.hitDetection && (this.setHitContextStyle('fill', c, b), this.renderPath(this.hitContext, a, b, c, 'fill')));
     !1 !== b.stroke &&
       (this.setCanvasStyle('stroke', b),
       this.renderPath(this.canvas, a, b, c, 'stroke'),
-      this.hitDetection &&
-        (this.setHitContextStyle('stroke', c, b), this.renderPath(this.hitContext, a, b, c, 'stroke')));
+      this.hitDetection && (this.setHitContextStyle('stroke', c, b), this.renderPath(this.hitContext, a, b, c, 'stroke')));
     this.setCanvasStyle('reset');
   },
   renderPath: function(a, b, c, d, e) {
@@ -11702,13 +10693,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
     this.setCanvasStyle('reset');
     this.canvas.fillStyle = b.fontColor;
     this.canvas.globalAlpha = b.fontOpacity || 1;
-    var d = [
-        b.fontStyle ? b.fontStyle : 'normal',
-        'normal',
-        b.fontWeight ? b.fontWeight : 'normal',
-        b.fontSize ? b.fontSize : '1em',
-        b.fontFamily ? b.fontFamily : 'sans-serif'
-      ].join(' '),
+    var d = [b.fontStyle ? b.fontStyle : 'normal', 'normal', b.fontWeight ? b.fontWeight : 'normal', b.fontSize ? b.fontSize : '1em', b.fontFamily ? b.fontFamily : 'sans-serif'].join(' '),
       e = b.label.split('\n'),
       f = e.length;
     if(this.canvas.fillText) {
@@ -11764,9 +10749,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
       this.hitDetection &&
       'none' !== this.root.style.display &&
       !this.map.dragging &&
-      ((a = a.xy),
-      (a = this.hitContext.getImageData(a.x | 0, a.y | 0, 1, 1).data),
-      255 === a[3] && (a = a[2] + 256 * (a[1] + 256 * a[0])))
+      ((a = a.xy), (a = this.hitContext.getImageData(a.x | 0, a.y | 0, 1, 1).data), 255 === a[3] && (a = a[2] + 256 * (a[1] + 256 * a[0])))
     ) {
       a = 'OpenLayers_Feature_Vector_' + (a - 1 + this.hitOverflow);
       try {
@@ -11793,12 +10776,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
         f;
       for(f in this.features)
         this.features.hasOwnProperty(f) &&
-          ((b = this.features[f][0]),
-          (c = b.geometry),
-          this.calculateFeatureDx(c.getBounds(), e),
-          (d = this.features[f][1]),
-          this.drawGeometry(c, d, b.id),
-          d.label && a.push([b, d]));
+          ((b = this.features[f][0]), (c = b.geometry), this.calculateFeatureDx(c.getBounds(), e), (d = this.features[f][1]), this.drawGeometry(c, d, b.id), d.label && a.push([b, d]));
       b = 0;
       for(c = a.length; b < c; ++b) (f = a[b]), this.drawText(f[0].geometry.getCentroid(), f[1]);
     }
@@ -11841,12 +10819,8 @@ OpenLayers.Format.OSM = OpenLayers.Class(OpenLayers.Format.XML, {
         h.used = !0;
       }
       h = null;
-      h = f
-        ? new OpenLayers.Geometry.Polygon(new OpenLayers.Geometry.LinearRing(e))
-        : new OpenLayers.Geometry.LineString(e);
-      this.internalProjection &&
-        this.externalProjection &&
-        h.transform(this.externalProjection, this.internalProjection);
+      h = f ? new OpenLayers.Geometry.Polygon(new OpenLayers.Geometry.LinearRing(e)) : new OpenLayers.Geometry.LineString(e);
+      this.internalProjection && this.externalProjection && h.transform(this.externalProjection, this.internalProjection);
       e = new OpenLayers.Feature.Vector(h, c[d].tags);
       e.osm_id = parseInt(c[d].id);
       e.fid = 'way.' + e.osm_id;
@@ -11862,9 +10836,7 @@ OpenLayers.Format.OSM = OpenLayers.Class(OpenLayers.Format.XML, {
           c = c[0];
         } else c = this.getTags(h.node);
         e = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(h.lon, h.lat), c);
-        this.internalProjection &&
-          this.externalProjection &&
-          e.geometry.transform(this.externalProjection, this.internalProjection);
+        this.internalProjection && this.externalProjection && e.geometry.transform(this.externalProjection, this.internalProjection);
         e.osm_id = parseInt(l);
         e.fid = 'node.' + e.osm_id;
         a.push(e);
@@ -11922,8 +10894,7 @@ OpenLayers.Format.OSM = OpenLayers.Class(OpenLayers.Format.XML, {
     var b = this.createElementNS(null, 'osm');
     b.setAttribute('version', '0.5');
     b.setAttribute('generator', 'OpenLayers ' + OpenLayers.VERSION_NUMBER);
-    for(var c = a.length - 1; 0 <= c; c--)
-      for(var d = this.createFeatureNodes(a[c]), e = 0; e < d.length; e++) b.appendChild(d[e]);
+    for(var c = a.length - 1; 0 <= c; c--) for (var d = this.createFeatureNodes(a[c]), e = 0; e < d.length; e++) b.appendChild(d[e]);
     return OpenLayers.Format.XML.prototype.write.apply(this, [b]);
   },
   createFeatureNodes: function(a) {
@@ -11938,9 +10909,7 @@ OpenLayers.Format.OSM = OpenLayers.Class(OpenLayers.Format.XML, {
     point: function(a) {
       var b = null,
         c = a.geometry ? a.geometry : a;
-      this.internalProjection &&
-        this.externalProjection &&
-        ((c = c.clone()), c.transform(this.internalProjection, this.externalProjection));
+      this.internalProjection && this.externalProjection && ((c = c.clone()), c.transform(this.internalProjection, this.externalProjection));
       var d = !1;
       a.osm_id ? ((b = a.osm_id), this.created_nodes[b] && (d = !0)) : ((b = -this.osm_id), this.osm_id++);
       var e = d ? this.created_nodes[b] : this.createElementNS(null, 'node');
@@ -12019,8 +10988,7 @@ OpenLayers.Handler.Keyboard = OpenLayers.Class(OpenLayers.Handler, {
   activate: function() {
     if(OpenLayers.Handler.prototype.activate.apply(this, arguments)) {
       this.observeElement = this.observeElement || document;
-      for(var a = 0, b = this.KEY_EVENTS.length; a < b; a++)
-        OpenLayers.Event.observe(this.observeElement, this.KEY_EVENTS[a], this.eventListener);
+      for(var a = 0, b = this.KEY_EVENTS.length; a < b; a++) OpenLayers.Event.observe(this.observeElement, this.KEY_EVENTS[a], this.eventListener);
       return !0;
     }
     return !1;
@@ -12028,8 +10996,7 @@ OpenLayers.Handler.Keyboard = OpenLayers.Class(OpenLayers.Handler, {
   deactivate: function() {
     var a = !1;
     if(OpenLayers.Handler.prototype.deactivate.apply(this, arguments)) {
-      for(var a = 0, b = this.KEY_EVENTS.length; a < b; a++)
-        OpenLayers.Event.stopObserving(this.observeElement, this.KEY_EVENTS[a], this.eventListener);
+      for(var a = 0, b = this.KEY_EVENTS.length; a < b; a++) OpenLayers.Event.stopObserving(this.observeElement, this.KEY_EVENTS[a], this.eventListener);
       a = !0;
     }
     return a;
@@ -12067,10 +11034,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
     this.layer = a;
     this.vertices = [];
     this.virtualVertices = [];
-    this.virtualStyle = OpenLayers.Util.extend(
-      {},
-      this.layer.style || this.layer.styleMap.createSymbolizer(null, b.vertexRenderIntent)
-    );
+    this.virtualStyle = OpenLayers.Util.extend({}, this.layer.style || this.layer.styleMap.createSymbolizer(null, b.vertexRenderIntent));
     this.virtualStyle.fillOpacity = 0.3;
     this.virtualStyle.strokeOpacity = 0.3;
     this.deleteCodes = [46, 68];
@@ -12085,9 +11049,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
         {
           down: function(a) {
             this.vertex = null;
-            (a = this.layer.getFeatureFromEvent(this.handlers.drag.evt))
-              ? this.dragStart(a)
-              : this.clickout && (this._unselect = this.feature);
+            (a = this.layer.getFeatureFromEvent(this.handlers.drag.evt)) ? this.dragStart(a) : this.clickout && (this._unselect = this.feature);
           },
           move: function(a) {
             delete this._unselect;
@@ -12106,19 +11068,14 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
     };
   },
   destroy: function() {
-    this.map &&
-      this.map.events.un({ removelayer: this.handleMapEvents, changelayer: this.handleMapEvents, scope: this });
+    this.map && this.map.events.un({ removelayer: this.handleMapEvents, changelayer: this.handleMapEvents, scope: this });
     this.layer = null;
     OpenLayers.Control.prototype.destroy.apply(this, []);
   },
   activate: function() {
     this.moveLayerToTop();
     this.map.events.on({ removelayer: this.handleMapEvents, changelayer: this.handleMapEvents, scope: this });
-    return (
-      this.handlers.keyboard.activate() &&
-      this.handlers.drag.activate() &&
-      OpenLayers.Control.prototype.activate.apply(this, arguments)
-    );
+    return this.handlers.keyboard.activate() && this.handlers.drag.activate() && OpenLayers.Control.prototype.activate.apply(this, arguments);
   },
   deactivate: function() {
     var a = !1;
@@ -12138,12 +11095,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
     return this.layer.events.triggerEvent('beforefeaturemodified', { feature: a });
   },
   selectFeature: function(a) {
-    if(
-      !(
-        this.feature === a ||
-        (this.geometryTypes && -1 == OpenLayers.Util.indexOf(this.geometryTypes, a.geometry.CLASS_NAME))
-      )
-    ) {
+    if(!(this.feature === a || (this.geometryTypes && -1 == OpenLayers.Util.indexOf(this.geometryTypes, a.geometry.CLASS_NAME)))) {
       !1 !== this.beforeSelectFeature(a) &&
         (this.feature && this.unselectFeature(this.feature),
         (this.feature = a),
@@ -12172,9 +11124,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
   },
   dragStart: function(a) {
     var b = 'OpenLayers.Geometry.Point' == a.geometry.CLASS_NAME;
-    this.standalone ||
-      ((a._sketch || !b) && a._sketch) ||
-      (this.toggle && this.feature === a && (this._unselect = a), this.selectFeature(a));
+    this.standalone || ((a._sketch || !b) && a._sketch) || (this.toggle && this.feature === a && (this._unselect = a), this.selectFeature(a));
     if(a._sketch || b) (this.vertex = a), (this.handlers.drag.stopDown = !0);
   },
   dragVertex: function(a, b) {
@@ -12185,19 +11135,13 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
     'OpenLayers.Geometry.Point' == this.feature.geometry.CLASS_NAME
       ? this.layer.events.triggerEvent('vertexmodified', { vertex: a.geometry, feature: this.feature, pixel: b })
       : (a._index
-          ? (a.geometry.parent.addComponent(a.geometry, a._index),
-            delete a._index,
-            OpenLayers.Util.removeItem(this.virtualVertices, a),
-            this.vertices.push(a))
+          ? (a.geometry.parent.addComponent(a.geometry, a._index), delete a._index, OpenLayers.Util.removeItem(this.virtualVertices, a), this.vertices.push(a))
           : a == this.dragHandle
           ? (this.layer.removeFeatures(this.vertices, { silent: !0 }),
             (this.vertices = []),
-            this.radiusHandle &&
-              (this.layer.destroyFeatures([this.radiusHandle], { silent: !0 }), (this.radiusHandle = null)))
-          : a !== this.radiusHandle &&
-            this.layer.events.triggerEvent('vertexmodified', { vertex: a.geometry, feature: this.feature, pixel: b }),
-        0 < this.virtualVertices.length &&
-          (this.layer.destroyFeatures(this.virtualVertices, { silent: !0 }), (this.virtualVertices = [])),
+            this.radiusHandle && (this.layer.destroyFeatures([this.radiusHandle], { silent: !0 }), (this.radiusHandle = null)))
+          : a !== this.radiusHandle && this.layer.events.triggerEvent('vertexmodified', { vertex: a.geometry, feature: this.feature, pixel: b }),
+        0 < this.virtualVertices.length && (this.layer.destroyFeatures(this.virtualVertices, { silent: !0 }), (this.virtualVertices = [])),
         this.layer.drawFeature(this.feature, this.standalone ? void 0 : 'select'));
     this.layer.drawFeature(a);
   },
@@ -12208,11 +11152,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
     this.layer.events.triggerEvent('featuremodified', { feature: this.feature });
   },
   setFeatureState: function() {
-    if(
-      this.feature.state != OpenLayers.State.INSERT &&
-      this.feature.state != OpenLayers.State.DELETE &&
-      ((this.feature.state = OpenLayers.State.UPDATE), this.modified && this._originalGeometry)
-    ) {
+    if(this.feature.state != OpenLayers.State.INSERT && this.feature.state != OpenLayers.State.DELETE && ((this.feature.state = OpenLayers.State.UPDATE), this.modified && this._originalGeometry)) {
       var a = this.feature;
       a.modified = OpenLayers.Util.extend(a.modified, { geometry: this._originalGeometry });
       delete this._originalGeometry;
@@ -12220,17 +11160,14 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
   },
   resetVertices: function() {
     0 < this.vertices.length && (this.layer.removeFeatures(this.vertices, { silent: !0 }), (this.vertices = []));
-    0 < this.virtualVertices.length &&
-      (this.layer.removeFeatures(this.virtualVertices, { silent: !0 }), (this.virtualVertices = []));
+    0 < this.virtualVertices.length && (this.layer.removeFeatures(this.virtualVertices, { silent: !0 }), (this.virtualVertices = []));
     this.dragHandle && (this.layer.destroyFeatures([this.dragHandle], { silent: !0 }), (this.dragHandle = null));
     this.radiusHandle && (this.layer.destroyFeatures([this.radiusHandle], { silent: !0 }), (this.radiusHandle = null));
     this.feature &&
       'OpenLayers.Geometry.Point' != this.feature.geometry.CLASS_NAME &&
       (this.mode & OpenLayers.Control.ModifyFeature.DRAG && this.collectDragHandle(),
-      this.mode & (OpenLayers.Control.ModifyFeature.ROTATE | OpenLayers.Control.ModifyFeature.RESIZE) &&
-        this.collectRadiusHandle(),
-      this.mode & OpenLayers.Control.ModifyFeature.RESHAPE &&
-        (this.mode & OpenLayers.Control.ModifyFeature.RESIZE || this.collectVertices()));
+      this.mode & (OpenLayers.Control.ModifyFeature.ROTATE | OpenLayers.Control.ModifyFeature.RESIZE) && this.collectRadiusHandle(),
+      this.mode & OpenLayers.Control.ModifyFeature.RESHAPE && (this.mode & OpenLayers.Control.ModifyFeature.RESIZE || this.collectVertices()));
   },
   handleKeypress: function(a) {
     var b = a.keyCode;
@@ -12252,33 +11189,20 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
   collectVertices: function() {
     function a(c) {
       var d, e, f;
-      if('OpenLayers.Geometry.Point' == c.CLASS_NAME)
-        (e = new OpenLayers.Feature.Vector(c)),
-          (e._sketch = !0),
-          (e.renderIntent = b.vertexRenderIntent),
-          b.vertices.push(e);
+      if('OpenLayers.Geometry.Point' == c.CLASS_NAME) (e = new OpenLayers.Feature.Vector(c)), (e._sketch = !0), (e.renderIntent = b.vertexRenderIntent), b.vertices.push(e);
       else {
         f = c.components.length;
         'OpenLayers.Geometry.LinearRing' == c.CLASS_NAME && (f -= 1);
         for(d = 0; d < f; ++d)
           (e = c.components[d]),
-            'OpenLayers.Geometry.Point' == e.CLASS_NAME
-              ? ((e = new OpenLayers.Feature.Vector(e)),
-                (e._sketch = !0),
-                (e.renderIntent = b.vertexRenderIntent),
-                b.vertices.push(e))
-              : a(e);
+            'OpenLayers.Geometry.Point' == e.CLASS_NAME ? ((e = new OpenLayers.Feature.Vector(e)), (e._sketch = !0), (e.renderIntent = b.vertexRenderIntent), b.vertices.push(e)) : a(e);
         if(b.createVertices && 'OpenLayers.Geometry.MultiPoint' != c.CLASS_NAME)
           for(d = 0, f = c.components.length; d < f - 1; ++d) {
             e = c.components[d];
             var g = c.components[d + 1];
             'OpenLayers.Geometry.Point' == e.CLASS_NAME &&
               'OpenLayers.Geometry.Point' == g.CLASS_NAME &&
-              ((e = new OpenLayers.Feature.Vector(
-                new OpenLayers.Geometry.Point((e.x + g.x) / 2, (e.y + g.y) / 2),
-                null,
-                b.virtualStyle
-              )),
+              ((e = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point((e.x + g.x) / 2, (e.y + g.y) / 2), null, b.virtualStyle)),
               (e.geometry.parent = c),
               (e._index = d + 1),
               (e._sketch = !0),
@@ -12353,9 +11277,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
   },
   moveLayerBack: function() {
     var a = this.layer.getZIndex() - 1;
-    a >= this.map.Z_INDEX_BASE.Feature
-      ? this.layer.setZIndex(a)
-      : this.map.setLayerZIndex(this.layer, this.map.getLayerIndex(this.layer));
+    a >= this.map.Z_INDEX_BASE.Feature ? this.layer.setZIndex(a) : this.map.setLayerZIndex(this.layer, this.map.getLayerIndex(this.layer));
   },
   CLASS_NAME: 'OpenLayers.Control.ModifyFeature'
 });
@@ -12366,10 +11288,9 @@ OpenLayers.Control.ModifyFeature.DRAG = 8;
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
   key: null,
   serverResolutions: [
-    156543.03390625, 78271.516953125, 39135.7584765625, 19567.87923828125, 9783.939619140625, 4891.9698095703125,
-    2445.9849047851562, 1222.9924523925781, 611.4962261962891, 305.74811309814453, 152.87405654907226,
-    76.43702827453613, 38.218514137268066, 19.109257068634033, 9.554628534317017, 4.777314267158508, 2.388657133579254,
-    1.194328566789627, 0.5971642833948135, 0.29858214169740677, 0.14929107084870338, 0.07464553542435169
+    156543.03390625, 78271.516953125, 39135.7584765625, 19567.87923828125, 9783.939619140625, 4891.9698095703125, 2445.9849047851562, 1222.9924523925781, 611.4962261962891, 305.74811309814453,
+    152.87405654907226, 76.43702827453613, 38.218514137268066, 19.109257068634033, 9.554628534317017, 4.777314267158508, 2.388657133579254, 1.194328566789627, 0.5971642833948135, 0.29858214169740677,
+    0.14929107084870338, 0.07464553542435169
   ],
   attributionTemplate:
     '<span class="olBingAttribution ${type}"><div><a target="_blank" href="http://www.bing.com/maps/"><img src="${logo}" /></a></div>${copyrights}<a style="white-space: nowrap" target="_blank" href="http://www.microsoft.com/maps/product/terms.html">Terms of Use</a></span>',
@@ -12389,16 +11310,8 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
   loadMetadata: function() {
     this._callbackId = '_callback_' + this.id.replace(/\./g, '_');
     window[this._callbackId] = OpenLayers.Function.bind(OpenLayers.Layer.Bing.processMetadata, this);
-    var a = OpenLayers.Util.applyDefaults(
-        { key: this.key, jsonp: this._callbackId, include: 'ImageryProviders' },
-        this.metadataParams
-      ),
-      a =
-        this.protocol +
-        '//dev.virtualearth.net/REST/v1/Imagery/Metadata/' +
-        this.type +
-        '?' +
-        OpenLayers.Util.getParameterString(a),
+    var a = OpenLayers.Util.applyDefaults({ key: this.key, jsonp: this._callbackId, include: 'ImageryProviders' }, this.metadataParams),
+      a = this.protocol + '//dev.virtualearth.net/REST/v1/Imagery/Metadata/' + this.type + '?' + OpenLayers.Util.getParameterString(a),
       b = document.createElement('script');
     b.type = 'text/javascript';
     b.src = a;
@@ -12411,8 +11324,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
       b = b.replace('{culture}', this.culture),
       b = b.replace(this.protocolRegex, this.protocol);
     this.url = [];
-    for(var c = 0; c < a.imageUrlSubdomains.length; ++c)
-      this.url.push(b.replace('{subdomain}', a.imageUrlSubdomains[c]));
+    for(var c = 0; c < a.imageUrlSubdomains.length; ++c) this.url.push(b.replace('{subdomain}', a.imageUrlSubdomains[c]));
     this.addOptions(
       {
         maxResolution: Math.min(this.serverResolutions[a.zoomMin], this.maxResolution || Number.POSITIVE_INFINITY),
@@ -12457,9 +11369,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
       g = 0;
       for(h = d.length; g < h; ++g)
         for(f = d[g], k = 0, l = f.coverageAreas.length; k < l; ++k)
-          (n = f.coverageAreas[k]),
-            (m = OpenLayers.Bounds.fromArray(n.bbox, !0)),
-            c.intersectsBounds(m) && e <= n.zoomMax && e >= n.zoomMin && (b += f.attribution + ' ');
+          (n = f.coverageAreas[k]), (m = OpenLayers.Bounds.fromArray(n.bbox, !0)), c.intersectsBounds(m) && e <= n.zoomMax && e >= n.zoomMin && (b += f.attribution + ' ');
       a = a.brandLogoUri.replace(this.protocolRegex, this.protocol);
       this.attribution = OpenLayers.String.format(this.attributionTemplate, {
         type: this.type.toLowerCase(),
@@ -12501,8 +11411,7 @@ OpenLayers.StyleMap = OpenLayers.Class({
       temporary: new OpenLayers.Style(OpenLayers.Feature.Vector.style.temporary),
       delete: new OpenLayers.Style(OpenLayers.Feature.Vector.style['delete'])
     };
-    if(a instanceof OpenLayers.Style)
-      (this.styles['default'] = a), (this.styles.select = a), (this.styles.temporary = a), (this.styles['delete'] = a);
+    if(a instanceof OpenLayers.Style) (this.styles['default'] = a), (this.styles.select = a), (this.styles.temporary = a), (this.styles['delete'] = a);
     else if('object' == typeof a)
       for(var c in a)
         if(a[c] instanceof OpenLayers.Style) this.styles[c] = a[c];
@@ -12609,8 +11518,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
     }
   },
   displayError: function() {
-    this.reportError &&
-      OpenLayers.Console.userError(OpenLayers.i18n('browserNotSupported', { renderers: this.renderers.join('\n') }));
+    this.reportError && OpenLayers.Console.userError(OpenLayers.i18n('browserNotSupported', { renderers: this.renderers.join('\n') }));
   },
   setMap: function(a) {
     OpenLayers.Layer.prototype.setMap.apply(this, arguments);
@@ -12666,9 +11574,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
       !0 === OpenLayers.IS_GECKO && (this.div.scrollLeft = this.div.scrollLeft);
       if(!b && d) for(var f in this.unrenderedFeatures) (e = this.unrenderedFeatures[f]), this.drawFeature(e);
     }
-    if(!this.drawn || b || !d)
-      for(this.drawn = !0, f = 0, d = this.features.length; f < d; f++)
-        (this.renderer.locked = f !== d - 1), (e = this.features[f]), this.drawFeature(e);
+    if(!this.drawn || b || !d) for(this.drawn = !0, f = 0, d = this.features.length; f < d; f++) (this.renderer.locked = f !== d - 1), (e = this.features[f]), this.drawFeature(e);
   },
   display: function(a) {
     OpenLayers.Layer.prototype.display.apply(this, arguments);
@@ -12686,8 +11592,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
     for(var d = [], e = 0, f = a.length; e < f; e++) {
       this.renderer.locked = e != a.length - 1 ? !0 : !1;
       var g = a[e];
-      if(this.geometryType && !(g.geometry instanceof this.geometryType))
-        throw new TypeError('addFeatures: component should be an ' + this.geometryType.prototype.CLASS_NAME);
+      if(this.geometryType && !(g.geometry instanceof this.geometryType)) throw new TypeError('addFeatures: component should be an ' + this.geometryType.prototype.CLASS_NAME);
       g.layer = this;
       !g.style && this.style && (g.style = OpenLayers.Util.extend({}, this.style));
       if(c) {
@@ -12727,10 +11632,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
     var b = this.features;
     a && this.events.triggerEvent('beforefeaturesremoved', { features: b });
     for(var c, d = b.length - 1; 0 <= d; d--)
-      (c = b[d]),
-        a && this.events.triggerEvent('beforefeatureremoved', { feature: c }),
-        (c.layer = null),
-        a && this.events.triggerEvent('featureremoved', { feature: c });
+      (c = b[d]), a && this.events.triggerEvent('beforefeatureremoved', { feature: c }), (c.layer = null), a && this.events.triggerEvent('featureremoved', { feature: c });
     this.renderer.clear();
     this.features = [];
     this.unrenderedFeatures = {};
@@ -12759,10 +11661,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
     this.renderer.eraseFeatures(a);
   },
   getFeatureFromEvent: function(a) {
-    if(!this.renderer)
-      throw Error(
-        'getFeatureFromEvent called on layer with no renderer. This usually means you destroyed a layer, but not some handler which is associated with it.'
-      );
+    if(!this.renderer) throw Error('getFeatureFromEvent called on layer with no renderer. This usually means you destroyed a layer, but not some handler which is associated with it.');
     var b = null;
     (a = this.renderer.getFeatureIdFromEvent(a)) && (b = 'string' === typeof a ? this.getFeatureById(a) : a);
     return b;
@@ -12794,9 +11693,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
   getDataExtent: function() {
     var a = null,
       b = this.features;
-    if(b && 0 < b.length)
-      for(var c = null, d = 0, e = b.length; d < e; d++)
-        if((c = b[d].geometry)) null === a && (a = new OpenLayers.Bounds()), a.extend(c.getBounds());
+    if(b && 0 < b.length) for(var c = null, d = 0, e = b.length; d < e; d++) if ((c = b[d].geometry)) null === a && (a = new OpenLayers.Bounds()), a.extend(c.getBounds());
     return a;
   },
   CLASS_NAME: 'OpenLayers.Layer.Vector'
@@ -12885,10 +11782,7 @@ OpenLayers.Layer.PointGrid = OpenLayers.Class(OpenLayers.Layer.Vector, {
         ++k
       )
         for(var f = e + k * this.dx, l = 0; l < b; ++l)
-          (h = c + l * this.dy),
-            (h = new OpenLayers.Geometry.Point(f, h)),
-            this.rotation && h.rotate(this.rotation, a),
-            (g[k * b + l] = new OpenLayers.Feature.Vector(h));
+          (h = c + l * this.dy), (h = new OpenLayers.Geometry.Point(f, h)), this.rotation && h.rotate(this.rotation, a), (g[k * b + l] = new OpenLayers.Feature.Vector(h));
       this.destroyFeatures(this.features, { silent: !0 });
       this.addFeatures(g, { silent: !0 });
     }
@@ -12918,12 +11812,7 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
         if(!b)
           try {
             var f,
-              b =
-                ((f = e.currentStyle
-                  ? e.currentStyle.overflow
-                  : document.defaultView.getComputedStyle(e, null).getPropertyValue('overflow')) &&
-                  'auto' == f) ||
-                'scroll' == f;
+              b = ((f = e.currentStyle ? e.currentStyle.overflow : document.defaultView.getComputedStyle(e, null).getPropertyValue('overflow')) && 'auto' == f) || 'scroll' == f;
           } catch(g) {}
         if(!c && ((c = OpenLayers.Element.hasClass(e, 'olScrollable')), !c))
           for(var d = 0, h = this.map.layers.length; d < h; d++) {
@@ -12940,9 +11829,7 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
         if(c)
           if(
             ((b = 0),
-            a.wheelDelta
-              ? ((b = a.wheelDelta), 0 === b % 160 && (b *= 0.75), (b /= 120))
-              : a.detail && (b = -(a.detail / Math.abs(a.detail))),
+            a.wheelDelta ? ((b = a.wheelDelta), 0 === b % 160 && (b *= 0.75), (b /= 120)) : a.detail && (b = -(a.detail / Math.abs(a.detail))),
             (this.delta += b),
             window.clearTimeout(this._timeoutId),
             this.interval && Math.abs(this.delta) < this.maxDelta)
@@ -12964,9 +11851,7 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
     this.delta = 0;
     b &&
       ((a.xy = this.map.events.getMousePosition(a)),
-      0 > b
-        ? this.callback('down', [a, this.cumulative ? Math.max(-this.maxDelta, b) : -1])
-        : this.callback('up', [a, this.cumulative ? Math.min(this.maxDelta, b) : 1]));
+      0 > b ? this.callback('down', [a, this.cumulative ? Math.max(-this.maxDelta, b) : -1]) : this.callback('up', [a, this.cumulative ? Math.min(this.maxDelta, b) : 1]));
   },
   activate: function(a) {
     if(OpenLayers.Handler.prototype.activate.apply(this, arguments)) {
@@ -13035,9 +11920,7 @@ OpenLayers.Rule = OpenLayers.Class({
     if(this.minScaleDenominator || this.maxScaleDenominator) var d = a.layer.map.getScale();
     this.minScaleDenominator && (c = d >= OpenLayers.Style.createLiteral(this.minScaleDenominator, b));
     c && this.maxScaleDenominator && (c = d < OpenLayers.Style.createLiteral(this.maxScaleDenominator, b));
-    c &&
-      this.filter &&
-      (c = 'OpenLayers.Filter.FeatureId' == this.filter.CLASS_NAME ? this.filter.evaluate(a) : this.filter.evaluate(b));
+    c && this.filter && (c = 'OpenLayers.Filter.FeatureId' == this.filter.CLASS_NAME ? this.filter.evaluate(a) : this.filter.evaluate(b));
     return c;
   },
   getContext: function(a) {
@@ -13054,10 +11937,7 @@ OpenLayers.Rule = OpenLayers.Class({
       for(var c = 0; c < b; ++c) a.symbolizers[c] = this.symbolizers[c].clone();
     } else {
       a.symbolizer = {};
-      for(var d in this.symbolizer)
-        (b = this.symbolizer[d]),
-          (c = typeof b),
-          'object' === c ? (a.symbolizer[d] = OpenLayers.Util.extend({}, b)) : 'string' === c && (a.symbolizer[d] = b);
+      for(var d in this.symbolizer) (b = this.symbolizer[d]), (c = typeof b), 'object' === c ? (a.symbolizer[d] = OpenLayers.Util.extend({}, b)) : 'string' === c && (a.symbolizer[d] = b);
     }
     a.filter = this.filter && this.filter.clone();
     a.context = this.context && OpenLayers.Util.extend({}, this.context);
@@ -13126,8 +12006,7 @@ OpenLayers.Format.GML.v2 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
           return b;
         },
         coordinates: function(a) {
-          for(var b = a.length, c = Array(b), d, e = 0; e < b; ++e)
-            (d = a[e]), (c[e] = this.xy ? d.x + ',' + d.y : d.y + ',' + d.x), void 0 != d.z && (c[e] += ',' + d.z);
+          for(var b = a.length, c = Array(b), d, e = 0; e < b; ++e) (d = a[e]), (c[e] = this.xy ? d.x + ',' + d.y : d.y + ',' + d.x), void 0 != d.z && (c[e] += ',' + d.z);
           return this.createElementNSPlus('gml:coordinates', {
             attributes: { decimal: '.', cs: ',', ts: ' ' },
             value: 1 == b ? c[0] : c.join(' ')
@@ -13256,10 +12135,7 @@ OpenLayers.Format.Filter.v1_0_0 = OpenLayers.Class(OpenLayers.Format.GML.v2, Ope
     if(a.value instanceof OpenLayers.Filter.Function) this.writeNode('Function', a.value, c);
     else {
       var d;
-      d =
-        a.value instanceof OpenLayers.Geometry
-          ? this.writeNode('feature:_geometry', a.value).firstChild
-          : this.writeNode('gml:Box', a.value);
+      d = a.value instanceof OpenLayers.Geometry ? this.writeNode('feature:_geometry', a.value).firstChild : this.writeNode('gml:Box', a.value);
       a.projection && d.setAttribute('srsName', a.projection);
       c.appendChild(d);
     }
@@ -13325,9 +12201,7 @@ OpenLayers.Format.WFST.v1_0_0 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0
             c = this.createElementNSPlus('wfs:Query', { attributes: { typeName: (b ? b + ':' : '') + a.featureType } });
           a.srsNameInQuery && a.srsName && c.setAttribute('srsName', a.srsName);
           a.featureNS && c.setAttribute('xmlns:' + b, a.featureNS);
-          if(a.propertyNames)
-            for(var b = 0, d = a.propertyNames.length; b < d; b++)
-              this.writeNode('ogc:PropertyName', { property: a.propertyNames[b] }, c);
+          if(a.propertyNames) for(var b = 0, d = a.propertyNames.length; b < d; b++) this.writeNode('ogc:PropertyName', { property: a.propertyNames[b] }, c);
           a.filter && (this.setFilterProperty(a.filter), this.writeNode('ogc:Filter', a.filter, c));
           return c;
         }
@@ -13346,18 +12220,14 @@ OpenLayers.ElementsIndexer = OpenLayers.Class({
   indices: null,
   compare: null,
   initialize: function(a) {
-    this.compare = a
-      ? OpenLayers.ElementsIndexer.IndexingMethods.Z_ORDER_Y_ORDER
-      : OpenLayers.ElementsIndexer.IndexingMethods.Z_ORDER_DRAWING_ORDER;
+    this.compare = a ? OpenLayers.ElementsIndexer.IndexingMethods.Z_ORDER_Y_ORDER : OpenLayers.ElementsIndexer.IndexingMethods.Z_ORDER_DRAWING_ORDER;
     this.clear();
   },
   insert: function(a) {
     this.exists(a) && this.remove(a);
     var b = a.id;
     this.determineZIndex(a);
-    for(var c = -1, d = this.order.length, e; 1 < d - c; )
-      (e = parseInt((c + d) / 2)),
-        0 < this.compare(this, a, OpenLayers.Util.getElement(this.order[e])) ? (c = e) : (d = e);
+    for(var c = -1, d = this.order.length, e; 1 < d - c; ) (e = parseInt((c + d) / 2)), 0 < this.compare(this, a, OpenLayers.Util.getElement(this.order[e])) ? (c = e) : (d = e);
     this.order.splice(d, 0, b);
     this.indices[b] = this.getZIndex(a);
     return this.getNextElement(d);
@@ -13365,10 +12235,7 @@ OpenLayers.ElementsIndexer = OpenLayers.Class({
   remove: function(a) {
     a = a.id;
     var b = OpenLayers.Util.indexOf(this.order, a);
-    0 <= b &&
-      (this.order.splice(b, 1),
-      delete this.indices[a],
-      (this.maxZIndex = 0 < this.order.length ? this.indices[this.order[this.order.length - 1]] : 0));
+    0 <= b && (this.order.splice(b, 1), delete this.indices[a], (this.maxZIndex = 0 < this.order.length ? this.indices[this.order[this.order.length - 1]] : 0));
   },
   clear: function() {
     this.order = [];
@@ -13467,21 +12334,13 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
   drawGeometry: function(a, b, c) {
     var d = a.CLASS_NAME,
       e = !0;
-    if(
-      'OpenLayers.Geometry.Collection' == d ||
-      'OpenLayers.Geometry.MultiPoint' == d ||
-      'OpenLayers.Geometry.MultiLineString' == d ||
-      'OpenLayers.Geometry.MultiPolygon' == d
-    ) {
+    if('OpenLayers.Geometry.Collection' == d || 'OpenLayers.Geometry.MultiPoint' == d || 'OpenLayers.Geometry.MultiLineString' == d || 'OpenLayers.Geometry.MultiPolygon' == d) {
       for(var d = 0, f = a.components.length; d < f; d++) e = this.drawGeometry(a.components[d], b, c) && e;
       return e;
     }
     d = e = !1;
-    'none' != b.display &&
-      (b.backgroundGraphic ? this.redrawBackgroundNode(a.id, a, b, c) : (d = !0), (e = this.redrawNode(a.id, a, b, c)));
-    !1 == e &&
-      (b = document.getElementById(a.id)) &&
-      (b._style.backgroundGraphic && (d = !0), b.parentNode.removeChild(b));
+    'none' != b.display && (b.backgroundGraphic ? this.redrawBackgroundNode(a.id, a, b, c) : (d = !0), (e = this.redrawNode(a.id, a, b, c)));
+    !1 == e && (b = document.getElementById(a.id)) && (b._style.backgroundGraphic && (d = !0), b.parentNode.removeChild(b));
     d && (b = document.getElementById(a.id + this.BACKGROUND_ID_SUFFIX)) && b.parentNode.removeChild(b);
     return e;
   },
@@ -13495,11 +12354,7 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
     b = this.drawGeometryNode(a, b, c);
     if(!1 === b) return !1;
     a = b.node;
-    this.indexer
-      ? (c = this.indexer.insert(a))
-        ? this.vectorRoot.insertBefore(a, c)
-        : this.vectorRoot.appendChild(a)
-      : a.parentNode !== this.vectorRoot && this.vectorRoot.appendChild(a);
+    this.indexer ? ((c = this.indexer.insert(a)) ? this.vectorRoot.insertBefore(a, c) : this.vectorRoot.appendChild(a)) : a.parentNode !== this.vectorRoot && this.vectorRoot.appendChild(a);
     this.postDraw(a);
     return b.complete;
   },
@@ -13573,16 +12428,11 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         (c.geometry && (c.geometry.destroy(), (c.geometry = null)),
         c.parentNode.removeChild(c),
         this.indexer && this.indexer.remove(c),
-        c._style.backgroundGraphic &&
-          (c = OpenLayers.Util.getElement(a.id + this.BACKGROUND_ID_SUFFIX)) &&
-          c.parentNode &&
-          c.parentNode.removeChild(c));
+        c._style.backgroundGraphic && (c = OpenLayers.Util.getElement(a.id + this.BACKGROUND_ID_SUFFIX)) && c.parentNode && c.parentNode.removeChild(c));
   },
   nodeFactory: function(a, b) {
     var c = OpenLayers.Util.getElement(a);
-    c
-      ? this.nodeTypeCompare(c, b) || (c.parentNode.removeChild(c), (c = this.nodeFactory(a, b)))
-      : (c = this.createNode(b, a));
+    c ? this.nodeTypeCompare(c, b) || (c.parentNode.removeChild(c), (c = this.nodeFactory(a, b))) : (c = this.createNode(b, a));
     return c;
   },
   nodeTypeCompare: function(a, b) {},
@@ -13624,10 +12474,7 @@ OpenLayers.Control.ArgParser = OpenLayers.Class(OpenLayers.Control, {
     }
     b == this.map.controls.length &&
       ((b = this.getParameters()),
-      b.layers &&
-        ((this.layers = b.layers),
-        this.map.events.register('addlayer', this, this.configureLayers),
-        this.configureLayers()),
+      b.layers && ((this.layers = b.layers), this.map.events.register('addlayer', this, this.configureLayers), this.configureLayers()),
       b.lat &&
         b.lon &&
         ((this.center = new OpenLayers.LonLat(parseFloat(b.lon), parseFloat(b.lat))),
@@ -13661,12 +12508,8 @@ OpenLayers.Control.Permalink = OpenLayers.Class(OpenLayers.Control, {
   displayProjection: null,
   initialize: function(a, b, c) {
     null === a || 'object' != typeof a || OpenLayers.Util.isElement(a)
-      ? (OpenLayers.Control.prototype.initialize.apply(this, [c]),
-        (this.element = OpenLayers.Util.getElement(a)),
-        (this.base = b || document.location.href))
-      : ((this.base = document.location.href),
-        OpenLayers.Control.prototype.initialize.apply(this, [a]),
-        null != this.element && (this.element = OpenLayers.Util.getElement(this.element)));
+      ? (OpenLayers.Control.prototype.initialize.apply(this, [c]), (this.element = OpenLayers.Util.getElement(a)), (this.base = b || document.location.href))
+      : ((this.base = document.location.href), OpenLayers.Control.prototype.initialize.apply(this, [a]), null != this.element && (this.element = OpenLayers.Util.getElement(this.element)));
   },
   destroy: function() {
     this.element && this.element.parentNode == this.div && (this.div.removeChild(this.element), (this.element = null));
@@ -13682,17 +12525,13 @@ OpenLayers.Control.Permalink = OpenLayers.Class(OpenLayers.Control, {
         break;
       }
     }
-    b == this.map.controls.length &&
-      this.map.addControl(new this.argParserClass({ displayProjection: this.displayProjection }));
+    b == this.map.controls.length && this.map.addControl(new this.argParserClass({ displayProjection: this.displayProjection }));
   },
   draw: function() {
     OpenLayers.Control.prototype.draw.apply(this, arguments);
     this.element ||
       this.anchor ||
-      ((this.element = document.createElement('a')),
-      (this.element.innerHTML = OpenLayers.i18n('Permalink')),
-      (this.element.href = ''),
-      this.div.appendChild(this.element));
+      ((this.element = document.createElement('a')), (this.element.innerHTML = OpenLayers.i18n('Permalink')), (this.element.href = ''), this.div.appendChild(this.element));
     this.map.events.on({
       moveend: this.updateLink,
       changelayer: this.updateLink,
@@ -13720,14 +12559,7 @@ OpenLayers.Control.Permalink = OpenLayers.Class(OpenLayers.Control, {
         d.zoom = b || this.map.getZoom(),
           b = a.lat,
           a = a.lon,
-          this.displayProjection &&
-            ((b = OpenLayers.Projection.transform(
-              { x: a, y: b },
-              this.map.getProjectionObject(),
-              this.displayProjection
-            )),
-            (a = b.x),
-            (b = b.y)),
+          this.displayProjection && ((b = OpenLayers.Projection.transform({ x: a, y: b }, this.map.getProjectionObject(), this.displayProjection)), (a = b.x), (b = b.y)),
           d.lat = Math.round(1e5 * b) / 1e5,
           d.lon = Math.round(1e5 * a) / 1e5,
           c = c || this.map.layers,
@@ -13738,9 +12570,7 @@ OpenLayers.Control.Permalink = OpenLayers.Class(OpenLayers.Control, {
         a++
       ) {
         var e = c[a];
-        d.layers = e.isBaseLayer
-          ? d.layers + (e == this.map.baseLayer ? 'B' : '0')
-          : d.layers + (e.getVisibility() ? 'T' : 'F');
+        d.layers = e.isBaseLayer ? d.layers + (e == this.map.baseLayer ? 'B' : '0') : d.layers + (e.getVisibility() ? 'T' : 'F');
       }
     return d;
   },
@@ -13915,8 +12745,7 @@ OpenLayers.Strategy.Fixed = OpenLayers.Class(OpenLayers.Strategy, {
   activate: function() {
     var a = OpenLayers.Strategy.prototype.activate.apply(this, arguments);
     if(a)
-      if((this.layer.events.on({ refresh: this.load, scope: this }), !0 == this.layer.visibility || this.preload))
-        this.load();
+      if((this.layer.events.on({ refresh: this.load, scope: this }), !0 == this.layer.visibility || this.preload)) this.load();
       else this.layer.events.on({ visibilitychanged: this.load, scope: this });
     return a;
   },
@@ -13965,19 +12794,9 @@ OpenLayers.Control.Zoom = OpenLayers.Class(OpenLayers.Control, {
   getOrCreateLinks: function(a) {
     var b = document.getElementById(this.zoomInId),
       c = document.getElementById(this.zoomOutId);
-    b ||
-      ((b = document.createElement('a')),
-      (b.href = '#zoomIn'),
-      b.appendChild(document.createTextNode(this.zoomInText)),
-      (b.className = 'olControlZoomIn'),
-      a.appendChild(b));
+    b || ((b = document.createElement('a')), (b.href = '#zoomIn'), b.appendChild(document.createTextNode(this.zoomInText)), (b.className = 'olControlZoomIn'), a.appendChild(b));
     OpenLayers.Element.addClass(b, 'olButton');
-    c ||
-      ((c = document.createElement('a')),
-      (c.href = '#zoomOut'),
-      c.appendChild(document.createTextNode(this.zoomOutText)),
-      (c.className = 'olControlZoomOut'),
-      a.appendChild(c));
+    c || ((c = document.createElement('a')), (c.href = '#zoomOut'), c.appendChild(document.createTextNode(this.zoomOutText)), (c.className = 'olControlZoomOut'), a.appendChild(c));
     OpenLayers.Element.addClass(c, 'olButton');
     return { zoomIn: b, zoomOut: c };
   },
@@ -14002,8 +12821,7 @@ OpenLayers.Layer.PointTrack = OpenLayers.Class(OpenLayers.Layer.Vector, {
       d = a[g];
       f = d.geometry;
       if(!f) (f = d.lonlat), (f = new OpenLayers.Geometry.Point(f.lon, f.lat));
-      else if('OpenLayers.Geometry.Point' != f.CLASS_NAME)
-        throw new TypeError('Only features with point geometries are supported.');
+      else if('OpenLayers.Geometry.Point' != f.CLASS_NAME) throw new TypeError('Only features with point geometries are supported.');
       if(0 < g) {
         d = null != this.dataFrom ? a[g + this.dataFrom].data || a[g + this.dataFrom].attributes : null;
         var k = null != this.styleFrom ? a[g + this.styleFrom].style : null;
@@ -14085,9 +12903,7 @@ OpenLayers.Layer.Markers = OpenLayers.Class(OpenLayers.Layer, {
   },
   getDataExtent: function() {
     var a = null;
-    if(this.markers && 0 < this.markers.length)
-      for(var a = new OpenLayers.Bounds(), b = 0, c = this.markers.length; b < c; b++)
-        a.extend(this.markers[b].lonlat);
+    if(this.markers && 0 < this.markers.length) for(var a = new OpenLayers.Bounds(), b = 0, c = this.markers.length; b < c; b++) a.extend(this.markers[b].lonlat);
     return a;
   },
   CLASS_NAME: 'OpenLayers.Layer.Markers'
@@ -14217,8 +13033,7 @@ OpenLayers.Format.CSWGetDomain.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML, 
         var b = this.createElementNSPlus('csw:GetDomain', { attributes: { service: 'CSW', version: this.version } });
         a.PropertyName || this.PropertyName
           ? this.writeNode('csw:PropertyName', a.PropertyName || this.PropertyName, b)
-          : (a.ParameterName || this.ParameterName) &&
-            this.writeNode('csw:ParameterName', a.ParameterName || this.ParameterName, b);
+          : (a.ParameterName || this.ParameterName) && this.writeNode('csw:ParameterName', a.ParameterName || this.ParameterName, b);
         this.readChildNodes(b, a);
         return b;
       },
@@ -14261,9 +13076,7 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
   },
   setTargets: function(a) {
     this.targets = [];
-    if(a && a.length)
-      for(var b, c = 0, d = a.length; c < d; ++c)
-        (b = a[c]), b instanceof OpenLayers.Layer.Vector ? this.addTargetLayer(b) : this.addTarget(b);
+    if(a && a.length) for(var b, c = 0, d = a.length; c < d; ++c) (b = a[c]), b instanceof OpenLayers.Layer.Vector ? this.addTargetLayer(b) : this.addTarget(b);
   },
   addTargetLayer: function(a) {
     this.addTarget({ layer: a });
@@ -14316,16 +13129,7 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
     this.considerSnapping(a.vertex, new OpenLayers.Geometry.Point(b.lon, b.lat));
   },
   considerSnapping: function(a, b) {
-    for(
-      var c = { rank: Number.POSITIVE_INFINITY, dist: Number.POSITIVE_INFINITY, x: null, y: null },
-        d = !1,
-        e,
-        f,
-        g = 0,
-        h = this.targets.length;
-      g < h;
-      ++g
-    )
+    for(var c = { rank: Number.POSITIVE_INFINITY, dist: Number.POSITIVE_INFINITY, x: null, y: null }, d = !1, e, f, g = 0, h = this.targets.length; g < h; ++g)
       if(((f = this.targets[g]), (e = this.testTarget(f, b))))
         if(this.greedy) {
           c = e;
@@ -14353,9 +13157,7 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
             distance: c.dist
           }))
         : (d = !1));
-    this.point &&
-      !d &&
-      ((a.x = b.x), (a.y = b.y), (this.point = null), this.events.triggerEvent('unsnap', { point: a }));
+    this.point && !d && ((a.x = b.x), (a.y = b.y), (this.point = null), this.events.triggerEvent('unsnap', { point: a }));
   },
   testTarget: function(a, b) {
     var c = this.layer.map.getResolution();
@@ -14383,14 +13185,7 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
       s < t;
       ++s
     )
-      if(
-        ((h = g[s]),
-        h !== this.feature &&
-          !h._sketch &&
-          h.state !== OpenLayers.State.DELETE &&
-          (!a.filter || a.filter.evaluate(h)) &&
-          h.atPoint(r, d, d))
-      )
+      if(((h = g[s]), h !== this.feature && !h._sketch && h.state !== OpenLayers.State.DELETE && (!a.filter || a.filter.evaluate(h)) && h.atPoint(r, d, d)))
         for(var u = 0, v = Math.min(e.rank + 1, q); u < v; ++u)
           if(((k = this.precedence[u]), a[k]))
             if('edge' === k) {
@@ -14403,11 +13198,7 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
               l = h.geometry.getVertices('node' === k);
               p = !1;
               for(var w = 0, x = l.length; w < x; ++w)
-                (m = l[w]),
-                  (n = m.distanceTo(b)),
-                  n <= c[k] &&
-                    (u < e.rank || (u === e.rank && n < e.dist)) &&
-                    ((e = { rank: u, dist: n, x: m.x, y: m.y }), (p = f = !0));
+                (m = l[w]), (n = m.distanceTo(b)), n <= c[k] && (u < e.rank || (u === e.rank && n < e.dist)) && ((e = { rank: u, dist: n, x: m.x, y: m.y }), (p = f = !0));
               if(p) break;
             }
     return f ? e : null;
@@ -14526,8 +13317,7 @@ OpenLayers.Format.WCSGetCoverage = OpenLayers.Class(OpenLayers.Format.XML, {
         return b;
       },
       TemporalSubset: function(a) {
-        for(var b = this.createElementNSPlus('wcs:TemporalSubset', {}), c = 0, d = a.timePeriods.length; c < d; ++c)
-          this.writeNode('wcs:TimePeriod', a.timePeriods[c], b);
+        for(var b = this.createElementNSPlus('wcs:TemporalSubset', {}), c = 0, d = a.timePeriods.length; c < d; ++c) this.writeNode('wcs:TimePeriod', a.timePeriods[c], b);
         return b;
       },
       TimePeriod: function(a) {
@@ -14659,17 +13449,11 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   parseKmlColor: function(a) {
     var b = null;
-    a &&
-      (a = a.match(this.regExes.kmlColor)) &&
-      (b = { color: '#' + a[4] + a[3] + a[2], opacity: parseInt(a[1], 16) / 255 });
+    a && (a = a.match(this.regExes.kmlColor)) && (b = { color: '#' + a[4] + a[3] + a[2], opacity: parseInt(a[1], 16) / 255 });
     return b;
   },
   parseStyle: function(a) {
-    for(
-      var b = {}, c = ['LineStyle', 'PolyStyle', 'IconStyle', 'BalloonStyle', 'LabelStyle'], d, e, f = 0, g = c.length;
-      f < g;
-      ++f
-    )
+    for(var b = {}, c = ['LineStyle', 'PolyStyle', 'IconStyle', 'BalloonStyle', 'LabelStyle'], d, e, f = 0, g = c.length; f < g; ++f)
       if(((d = c[f]), (e = this.getElementsByTagNameNS(a, '*', d)[0])))
         switch (d.toLowerCase()) {
           case 'linestyle':
@@ -14693,10 +13477,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
               if(m) {
                 var n = this.parseProperty(l, '*', 'w'),
                   p = this.parseProperty(l, '*', 'h');
-                !OpenLayers.String.startsWith(m, 'http://maps.google.com/mapfiles/kml') ||
-                  n ||
-                  p ||
-                  ((p = n = 64), (h /= 2));
+                !OpenLayers.String.startsWith(m, 'http://maps.google.com/mapfiles/kml') || n || p || ((p = n = 64), (h /= 2));
                 n = n || p;
                 p = p || n;
                 n && (d = parseInt(n) * h);
@@ -14706,12 +13487,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
                     (p = p[2]),
                     (m = this.parseProperty(l, '*', 'x')),
                     (l = this.parseProperty(l, '*', 'y')),
-                    (m =
-                      'http://maps.google.com/mapfiles/kml/pal' +
-                      n +
-                      '/icon' +
-                      (8 * (l ? 7 - l / 32 : 7) + (m ? m / 32 : 0)) +
-                      p);
+                    (m = 'http://maps.google.com/mapfiles/kml/pal' + n + '/icon' + (8 * (l ? 7 - l / 32 : 7) + (m ? m / 32 : 0)) + p);
                 b.graphicOpacity = 1;
                 b.externalGraphic = m;
               }
@@ -14720,27 +13496,17 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
               (m = parseFloat(e.getAttribute('x'))),
                 (l = parseFloat(e.getAttribute('y'))),
                 (n = e.getAttribute('xunits')),
-                'pixels' == n
-                  ? (b.graphicXOffset = -m * h)
-                  : 'insetPixels' == n
-                  ? (b.graphicXOffset = -d + m * h)
-                  : 'fraction' == n && (b.graphicXOffset = -d * m),
+                'pixels' == n ? (b.graphicXOffset = -m * h) : 'insetPixels' == n ? (b.graphicXOffset = -d + m * h) : 'fraction' == n && (b.graphicXOffset = -d * m),
                 (e = e.getAttribute('yunits')),
-                'pixels' == e
-                  ? (b.graphicYOffset = -k + l * h + 1)
-                  : 'insetPixels' == e
-                  ? (b.graphicYOffset = -(l * h) + 1)
-                  : 'fraction' == e && (b.graphicYOffset = -k * (1 - l) + 1);
+                'pixels' == e ? (b.graphicYOffset = -k + l * h + 1) : 'insetPixels' == e ? (b.graphicYOffset = -(l * h) + 1) : 'fraction' == e && (b.graphicYOffset = -k * (1 - l) + 1);
             b.graphicWidth = d;
             b.graphicHeight = k;
             break;
           case 'balloonstyle':
-            (e = OpenLayers.Util.getXmlNodeValue(e)) &&
-              (b.balloonStyle = e.replace(this.regExes.straightBracket, '${$1}'));
+            (e = OpenLayers.Util.getXmlNodeValue(e)) && (b.balloonStyle = e.replace(this.regExes.straightBracket, '${$1}'));
             break;
           case 'labelstyle':
-            if(((d = this.parseProperty(e, '*', 'color')), (d = this.parseKmlColor(d))))
-              (b.fontColor = d.color), (b.fontOpacity = d.opacity);
+            if(((d = this.parseProperty(e, '*', 'color')), (d = this.parseKmlColor(d)))) (b.fontColor = d.color), (b.fontOpacity = d.opacity);
         }
     !b.strokeColor && b.fillColor && (b.strokeColor = b.fillColor);
     (a = a.getAttribute('id')) && b && (b.id = a);
@@ -14748,16 +13514,10 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   parseStyleMaps: function(a, b) {
     for(var c = 0, d = a.length; c < d; c++)
-      for(
-        var e = a[c], f = this.getElementsByTagNameNS(e, '*', 'Pair'), e = e.getAttribute('id'), g = 0, h = f.length;
-        g < h;
-        g++
-      ) {
+      for(var e = a[c], f = this.getElementsByTagNameNS(e, '*', 'Pair'), e = e.getAttribute('id'), g = 0, h = f.length; g < h; g++) {
         var k = f[g],
           l = this.parseProperty(k, '*', 'key');
-        (k = this.parseProperty(k, '*', 'styleUrl')) &&
-          'normal' == l &&
-          (this.styles[(b.styleBaseUrl || '') + '#' + e] = this.styles[(b.styleBaseUrl || '') + k]);
+        (k = this.parseProperty(k, '*', 'styleUrl')) && 'normal' == l && (this.styles[(b.styleBaseUrl || '') + '#' + e] = this.styles[(b.styleBaseUrl || '') + k]);
       }
   },
   parseFeatures: function(a, b) {
@@ -14765,10 +13525,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
       var f = a[d],
         g = this.parseFeature.apply(this, [f]);
       if(g) {
-        this.extractStyles &&
-          g.attributes &&
-          g.attributes.styleUrl &&
-          (g.style = this.getStyle(g.attributes.styleUrl, b));
+        this.extractStyles && g.attributes && g.attributes.styleUrl && (g.style = this.getStyle(g.attributes.styleUrl, b));
         if(this.extractStyles) {
           var h = this.getElementsByTagNameNS(f, '*', 'Style')[0];
           h && (h = this.parseStyle(h)) && (g.style = OpenLayers.Util.extend(g.style, h));
@@ -14776,9 +13533,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
         this.extractTracks
           ? (f = this.getElementsByTagNameNS(f, this.namespaces.gx, 'Track')) &&
             0 < f.length &&
-            ((g = { features: [], feature: g }),
-            this.readNode(f[0], g),
-            0 < g.features.length && c.push.apply(c, g.features))
+            ((g = { features: [], feature: g }), this.readNode(f[0], g), 0 < g.features.length && c.push.apply(c, g.features))
           : c.push(g);
       } else throw 'Bad Placemark: ' + d;
     }
@@ -14801,47 +13556,23 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
           var d;
           c.attributes = {};
           for(var e = 0, f = this.trackAttributes.length; e < f; ++e)
-            (d = this.trackAttributes[e]),
-              (c.attributes[d] = []),
-              d in this.readers.kml || (this.readers.kml[d] = this.readers.kml._trackPointAttribute);
+            (d = this.trackAttributes[e]), (c.attributes[d] = []), d in this.readers.kml || (this.readers.kml[d] = this.readers.kml._trackPointAttribute);
         }
         this.readChildNodes(a, c);
-        if(c.whens.length !== c.points.length)
-          throw Error(
-            'gx:Track with unequal number of when (' +
-              c.whens.length +
-              ') and gx:coord (' +
-              c.points.length +
-              ') elements.'
-          );
+        if(c.whens.length !== c.points.length) throw Error('gx:Track with unequal number of when (' + c.whens.length + ') and gx:coord (' + c.points.length + ') elements.');
         var g = 0 < c.angles.length;
-        if(g && c.whens.length !== c.angles.length)
-          throw Error(
-            'gx:Track with unequal number of when (' +
-              c.whens.length +
-              ') and gx:angles (' +
-              c.angles.length +
-              ') elements.'
-          );
+        if(g && c.whens.length !== c.angles.length) throw Error('gx:Track with unequal number of when (' + c.whens.length + ') and gx:angles (' + c.angles.length + ') elements.');
         for(var h, e = 0, f = c.whens.length; e < f; ++e) {
           h = b.feature.clone();
           h.fid = b.feature.fid || b.feature.id;
           d = c.points[e];
           h.geometry = d;
           'z' in d && (h.attributes.altitude = d.z);
-          this.internalProjection &&
-            this.externalProjection &&
-            h.geometry.transform(this.externalProjection, this.internalProjection);
-          if(this.trackAttributes)
-            for(var k = 0, l = this.trackAttributes.length; k < l; ++k)
-              (d = this.trackAttributes[k]), (h.attributes[d] = c.attributes[d][e]);
+          this.internalProjection && this.externalProjection && h.geometry.transform(this.externalProjection, this.internalProjection);
+          if(this.trackAttributes) for(var k = 0, l = this.trackAttributes.length; k < l; ++k) (d = this.trackAttributes[k]), (h.attributes[d] = c.attributes[d][e]);
           h.attributes.when = c.whens[e];
           h.attributes.trackId = b.feature.id;
-          g &&
-            ((d = c.angles[e]),
-            (h.attributes.heading = parseFloat(d[0])),
-            (h.attributes.tilt = parseFloat(d[1])),
-            (h.attributes.roll = parseFloat(d[2])));
+          g && ((d = c.angles[e]), (h.attributes.heading = parseFloat(d[0])), (h.attributes.tilt = parseFloat(d[1])), (h.attributes.roll = parseFloat(d[2])));
           b.features.push(h);
         }
       },
@@ -14859,17 +13590,8 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   parseFeature: function(a) {
     for(var b = ['MultiGeometry', 'Polygon', 'LineString', 'Point'], c, d, e, f = 0, g = b.length; f < g; ++f)
-      if(
-        ((c = b[f]),
-        (this.internalns = a.namespaceURI ? a.namespaceURI : this.kmlns),
-        (d = this.getElementsByTagNameNS(a, this.internalns, c)),
-        0 < d.length)
-      ) {
-        if((b = this.parseGeometry[c.toLowerCase()]))
-          (e = b.apply(this, [d[0]])),
-            this.internalProjection &&
-              this.externalProjection &&
-              e.transform(this.externalProjection, this.internalProjection);
+      if(((c = b[f]), (this.internalns = a.namespaceURI ? a.namespaceURI : this.kmlns), (d = this.getElementsByTagNameNS(a, this.internalns, c)), 0 < d.length)) {
+        if((b = this.parseGeometry[c.toLowerCase()])) (e = b.apply(this, [d[0]])), this.internalProjection && this.externalProjection && e.transform(this.externalProjection, this.internalProjection);
         else throw new TypeError('Unsupported geometry type: ' + c);
         break;
       }
@@ -14885,12 +13607,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
       d = OpenLayers.Util.extend({}, b);
     d.depth++;
     d.styleBaseUrl = c;
-    !this.styles[a] &&
-      !OpenLayers.String.startsWith(a, '#') &&
-      d.depth <= this.maxDepth &&
-      !this.fetched[c] &&
-      (c = this.fetchLink(c)) &&
-      this.parseData(c, d);
+    !this.styles[a] && !OpenLayers.String.startsWith(a, '#') && d.depth <= this.maxDepth && !this.fetched[c] && (c = this.fetchLink(c)) && this.parseData(c, d);
     return OpenLayers.Util.extend({}, this.styles[a]);
   },
   parseGeometry: {
@@ -14924,8 +13641,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
           k < e;
           ++k
         )
-          if(((g = d[k].split(',')), (h = g.length), 1 < h))
-            2 == g.length && (g[2] = null), (f[k] = new OpenLayers.Geometry.Point(g[0], g[1], g[2]));
+          if(((g = d[k].split(',')), (h = g.length), 1 < h)) 2 == g.length && (g[2] = null), (f[k] = new OpenLayers.Geometry.Point(g[0], g[1], g[2]));
           else throw 'Bad LineString point coordinates: ' + d[k];
         if(e) d = b ? new OpenLayers.Geometry.LinearRing(f) : new OpenLayers.Geometry.LineString(f);
         else throw 'Bad LineString coordinates: ' + c;
@@ -14944,10 +13660,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
     },
     multigeometry: function(a) {
       for(var b, c = [], d = a.childNodes, e = 0, f = d.length; e < f; ++e)
-        (a = d[e]),
-          1 == a.nodeType &&
-            ((b = a.prefix ? a.nodeName.split(':')[1] : a.nodeName),
-            (b = this.parseGeometry[b.toLowerCase()]) && c.push(b.apply(this, [a])));
+        (a = d[e]), 1 == a.nodeType && ((b = a.prefix ? a.nodeName.split(':')[1] : a.nodeName), (b = this.parseGeometry[b.toLowerCase()]) && c.push(b.apply(this, [a])));
       return new OpenLayers.Geometry.Collection(c);
     }
   },
@@ -14972,8 +13685,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
             f = e[1];
         }
         if(3 == f.nodeType || 4 == f.nodeType)
-          if(((d = d.prefix ? d.nodeName.split(':')[1] : d.nodeName), (f = OpenLayers.Util.getXmlNodeValue(f))))
-            (f = f.replace(this.regExes.trimSpace, '')), (b[d] = f);
+          if(((d = d.prefix ? d.nodeName.split(':')[1] : d.nodeName), (f = OpenLayers.Util.getXmlNodeValue(f)))) (f = f.replace(this.regExes.trimSpace, '')), (b[d] = f);
       }
     return b;
   },
@@ -14991,20 +13703,11 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
       var h = {},
         k = e.getElementsByTagName('value');
       k.length && (h.value = this.getChildValue(k[0]));
-      this.kvpAttributes
-        ? (b[f] = h.value)
-        : ((e = e.getElementsByTagName('displayName')),
-          e.length && (h.displayName = this.getChildValue(e[0])),
-          (b[f] = h));
+      this.kvpAttributes ? (b[f] = h.value) : ((e = e.getElementsByTagName('displayName')), e.length && (h.displayName = this.getChildValue(e[0])), (b[f] = h));
     }
     a = a.getElementsByTagName('SimpleData');
     c = 0;
-    for(d = a.length; c < d; c++)
-      (h = {}),
-        (e = a[c]),
-        (f = e.getAttribute('name')),
-        (h.value = this.getChildValue(e)),
-        this.kvpAttributes ? (b[f] = h.value) : ((h.displayName = f), (b[f] = h));
+    for(d = a.length; c < d; c++) (h = {}), (e = a[c]), (f = e.getAttribute('name')), (h.value = this.getChildValue(e)), this.kvpAttributes ? (b[f] = h.value) : ((h.displayName = f), (b[f] = h));
     return b;
   },
   parseProperty: function(a, b, c) {
@@ -15019,8 +13722,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   write: function(a) {
     OpenLayers.Array.isArray(a) || (a = [a]);
-    for(var b = this.createElementNS(this.kmlns, 'kml'), c = this.createFolderXML(), d = 0, e = a.length; d < e; ++d)
-      c.appendChild(this.createPlacemarkXML(a[d]));
+    for(var b = this.createElementNS(this.kmlns, 'kml'), c = this.createFolderXML(), d = 0, e = a.length; d < e; ++d) c.appendChild(this.createPlacemarkXML(a[d]));
     b.appendChild(c);
     return OpenLayers.Format.XML.prototype.write.apply(this, [b]);
   },
@@ -15032,11 +13734,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
       b.appendChild(c);
       a.appendChild(b);
     }
-    this.foldersDesc &&
-      ((b = this.createElementNS(this.kmlns, 'description')),
-      (c = this.createTextNode(this.foldersDesc)),
-      b.appendChild(c),
-      a.appendChild(b));
+    this.foldersDesc && ((b = this.createElementNS(this.kmlns, 'description')), (c = this.createTextNode(this.foldersDesc)), b.appendChild(c), a.appendChild(b));
     return a;
   },
   createPlacemarkXML: function(a) {
@@ -15088,19 +13786,14 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
       var b = this.createElementNS(this.kmlns, 'Polygon');
       a = a.components;
       for(var c, d, e = 0, f = a.length; e < f; ++e)
-        (c = 0 == e ? 'outerBoundaryIs' : 'innerBoundaryIs'),
-          (c = this.createElementNS(this.kmlns, c)),
-          (d = this.buildGeometry.linearring.apply(this, [a[e]])),
-          c.appendChild(d),
-          b.appendChild(c);
+        (c = 0 == e ? 'outerBoundaryIs' : 'innerBoundaryIs'), (c = this.createElementNS(this.kmlns, c)), (d = this.buildGeometry.linearring.apply(this, [a[e]])), c.appendChild(d), b.appendChild(c);
       return b;
     },
     multipolygon: function(a) {
       return this.buildGeometry.collection.apply(this, [a]);
     },
     collection: function(a) {
-      for(var b = this.createElementNS(this.kmlns, 'MultiGeometry'), c, d = 0, e = a.components.length; d < e; ++d)
-        (c = this.buildGeometryNode.apply(this, [a.components[d]])) && b.appendChild(c);
+      for(var b = this.createElementNS(this.kmlns, 'MultiGeometry'), c, d = 0, e = a.components.length; d < e; ++d) (c = this.buildGeometryNode.apply(this, [a.components[d]])) && b.appendChild(c);
       return b;
     }
   },
@@ -15116,9 +13809,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   buildCoordinates: function(a) {
-    this.internalProjection &&
-      this.externalProjection &&
-      ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
+    this.internalProjection && this.externalProjection && ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
     return a.x + ',' + a.y;
   },
   buildExtendedData: function(a) {
@@ -15181,12 +13872,7 @@ OpenLayers.Format.WMSCapabilities.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
       },
       BoundingBox: function(a, b) {
         var c = {};
-        c.bbox = [
-          parseFloat(a.getAttribute('minx')),
-          parseFloat(a.getAttribute('miny')),
-          parseFloat(a.getAttribute('maxx')),
-          parseFloat(a.getAttribute('maxy'))
-        ];
+        c.bbox = [parseFloat(a.getAttribute('minx')), parseFloat(a.getAttribute('miny')), parseFloat(a.getAttribute('maxx')), parseFloat(a.getAttribute('maxy'))];
         var d = { x: parseFloat(a.getAttribute('resx')), y: parseFloat(a.getAttribute('resy')) };
         (isNaN(d.x) && isNaN(d.y)) || (c.res = d);
         return c;
@@ -15426,12 +14112,7 @@ OpenLayers.Format.WMSCapabilities.v1_1 = OpenLayers.Class(OpenLayers.Format.WMSC
           b.userSymbols = c;
         },
         LatLonBoundingBox: function(a, b) {
-          b.llbbox = [
-            parseFloat(a.getAttribute('minx')),
-            parseFloat(a.getAttribute('miny')),
-            parseFloat(a.getAttribute('maxx')),
-            parseFloat(a.getAttribute('maxy'))
-          ];
+          b.llbbox = [parseFloat(a.getAttribute('minx')), parseFloat(a.getAttribute('miny')), parseFloat(a.getAttribute('maxx')), parseFloat(a.getAttribute('maxy'))];
         },
         BoundingBox: function(a, b) {
           var c = OpenLayers.Format.WMSCapabilities.v1.prototype.readers.wms.BoundingBox.apply(this, [a, b]);
@@ -15444,8 +14125,7 @@ OpenLayers.Format.WMSCapabilities.v1_1 = OpenLayers.Class(OpenLayers.Format.WMSC
             e = Math.pow(2, 0.5),
             f = OpenLayers.INCHES_PER_UNIT.m;
           0 != c && (b.maxScale = parseFloat(((c / e) * f * OpenLayers.DOTS_PER_INCH).toPrecision(13)));
-          d != Number.POSITIVE_INFINITY &&
-            (b.minScale = parseFloat(((d / e) * f * OpenLayers.DOTS_PER_INCH).toPrecision(13)));
+          d != Number.POSITIVE_INFINITY && (b.minScale = parseFloat(((d / e) * f * OpenLayers.DOTS_PER_INCH).toPrecision(13)));
         },
         Dimension: function(a, b) {
           var c = {
@@ -15552,8 +14232,7 @@ OpenLayers.Protocol.WFS.v1 = OpenLayers.Class(OpenLayers.Protocol, {
       var c = a.priv;
       200 <= c.status && 300 > c.status
         ? (c = this.parseResponse(c, b.readOptions)) && !1 !== c.success
-          ? (b.readOptions && 'object' == b.readOptions.output ? OpenLayers.Util.extend(a, c) : (a.features = c),
-            (a.code = OpenLayers.Protocol.Response.SUCCESS))
+          ? (b.readOptions && 'object' == b.readOptions.output ? OpenLayers.Util.extend(a, c) : (a.features = c), (a.code = OpenLayers.Protocol.Response.SUCCESS))
           : ((a.code = OpenLayers.Protocol.Response.FAILURE), (a.error = c))
         : (a.code = OpenLayers.Protocol.Response.FAILURE);
       b.callback.call(b.scope, a);
@@ -15591,9 +14270,7 @@ OpenLayers.Protocol.WFS.v1 = OpenLayers.Class(OpenLayers.Protocol, {
       (d && d.documentElement) || (d = c.responseText);
       c = this.format.read(d) || {};
       a.insertIds = c.insertIds || [];
-      c.success
-        ? (a.code = OpenLayers.Protocol.Response.SUCCESS)
-        : ((a.code = OpenLayers.Protocol.Response.FAILURE), (a.error = c));
+      c.success ? (a.code = OpenLayers.Protocol.Response.SUCCESS) : ((a.code = OpenLayers.Protocol.Response.FAILURE), (a.error = c));
       b.callback.call(b.scope, a);
     }
   },
@@ -15683,30 +14360,24 @@ OpenLayers.Handler.Feature = OpenLayers.Class(OpenLayers.Handler, {
         (a = this.feature != this.lastFeature),
         this.geometryTypeMatches(this.feature)
           ? (d && a
-              ? (this.lastFeature && this.triggerCallback(b, 'out', [this.lastFeature]),
-                this.triggerCallback(b, 'in', [this.feature]))
+              ? (this.lastFeature && this.triggerCallback(b, 'out', [this.lastFeature]), this.triggerCallback(b, 'in', [this.feature]))
               : (d && !e) || this.triggerCallback(b, 'in', [this.feature]),
             (this.lastFeature = this.feature),
             (c = !0))
-          : (this.lastFeature && ((d && a) || e) && this.triggerCallback(b, 'out', [this.lastFeature]),
-            (this.feature = null)))
+          : (this.lastFeature && ((d && a) || e) && this.triggerCallback(b, 'out', [this.lastFeature]), (this.feature = null)))
       : this.lastFeature && (d || e) && this.triggerCallback(b, 'out', [this.lastFeature]);
     return c;
   },
   triggerCallback: function(a, b, c) {
     if((b = this.EVENTMAP[a][b]))
       'click' == a && this.up && this.down
-        ? (Math.sqrt(Math.pow(this.up.x - this.down.x, 2) + Math.pow(this.up.y - this.down.y, 2)) <=
-            this.clickTolerance && this.callback(b, c),
-          (this.up = this.down = null))
+        ? (Math.sqrt(Math.pow(this.up.x - this.down.x, 2) + Math.pow(this.up.y - this.down.y, 2)) <= this.clickTolerance && this.callback(b, c), (this.up = this.down = null))
         : this.callback(b, c);
   },
   activate: function() {
     var a = !1;
     OpenLayers.Handler.prototype.activate.apply(this, arguments) &&
-      (this.moveLayerToTop(),
-      this.map.events.on({ removelayer: this.handleMapEvents, changelayer: this.handleMapEvents, scope: this }),
-      (a = !0));
+      (this.moveLayerToTop(), this.map.events.on({ removelayer: this.handleMapEvents, changelayer: this.handleMapEvents, scope: this }), (a = !0));
     return a;
   },
   deactivate: function() {
@@ -15727,9 +14398,7 @@ OpenLayers.Handler.Feature = OpenLayers.Class(OpenLayers.Handler, {
   },
   moveLayerBack: function() {
     var a = this.layer.getZIndex() - 1;
-    a >= this.map.Z_INDEX_BASE.Feature
-      ? this.layer.setZIndex(a)
-      : this.map.setLayerZIndex(this.layer, this.map.getLayerIndex(this.layer));
+    a >= this.map.Z_INDEX_BASE.Feature ? this.layer.setZIndex(a) : this.map.setLayerZIndex(this.layer, this.map.getLayerIndex(this.layer));
   },
   CLASS_NAME: 'OpenLayers.Handler.Feature'
 });
@@ -15751,13 +14420,10 @@ OpenLayers.Layer.Vector.RootContainer = OpenLayers.Class(OpenLayers.Layer.Vector
     OpenLayers.Layer.Vector.prototype.removeMap.apply(this, arguments);
   },
   collectRoots: function() {
-    for(var a, b = 0; b < this.map.layers.length; ++b)
-      (a = this.map.layers[b]), -1 != OpenLayers.Util.indexOf(this.layers, a) && a.renderer.moveRoot(this.renderer);
+    for(var a, b = 0; b < this.map.layers.length; ++b) (a = this.map.layers[b]), -1 != OpenLayers.Util.indexOf(this.layers, a) && a.renderer.moveRoot(this.renderer);
   },
   resetRoots: function() {
-    for(var a, b = 0; b < this.layers.length; ++b)
-      (a = this.layers[b]),
-        this.renderer && a.renderer.getRenderLayerId() == this.id && this.renderer.moveRoot(a.renderer);
+    for(var a, b = 0; b < this.layers.length; ++b) (a = this.layers[b]), this.renderer && a.renderer.getRenderLayerId() == this.id && this.renderer.moveRoot(a.renderer);
   },
   handleChangeLayer: function(a) {
     var b = a.layer;
@@ -15795,18 +14461,10 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
     this.handlers = {
       feature: new OpenLayers.Handler.Feature(this, this.layer, this.callbacks, { geometryTypes: this.geometryTypes })
     };
-    this.box &&
-      (this.handlers.box = new OpenLayers.Handler.Box(
-        this,
-        { done: this.selectBox },
-        { boxDivClassName: 'olHandlerBoxSelectFeature' }
-      ));
+    this.box && (this.handlers.box = new OpenLayers.Handler.Box(this, { done: this.selectBox }, { boxDivClassName: 'olHandlerBoxSelectFeature' }));
   },
   initLayer: function(a) {
-    OpenLayers.Array.isArray(a)
-      ? ((this.layers = a),
-        (this.layer = new OpenLayers.Layer.Vector.RootContainer(this.id + '_container', { layers: a })))
-      : (this.layer = a);
+    OpenLayers.Array.isArray(a) ? ((this.layers = a), (this.layer = new OpenLayers.Layer.Vector.RootContainer(this.id + '_container', { layers: a }))) : (this.layer = a);
   },
   destroy: function() {
     this.active && this.layers && this.map.removeLayer(this.layer);
@@ -15814,17 +14472,11 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
     this.layers && this.layer.destroy();
   },
   activate: function() {
-    this.active ||
-      (this.layers && this.map.addLayer(this.layer),
-      this.handlers.feature.activate(),
-      this.box && this.handlers.box && this.handlers.box.activate());
+    this.active || (this.layers && this.map.addLayer(this.layer), this.handlers.feature.activate(), this.box && this.handlers.box && this.handlers.box.activate());
     return OpenLayers.Control.prototype.activate.apply(this, arguments);
   },
   deactivate: function() {
-    this.active &&
-      (this.handlers.feature.deactivate(),
-      this.handlers.box && this.handlers.box.deactivate(),
-      this.layers && this.map.removeLayer(this.layer));
+    this.active && (this.handlers.feature.deactivate(), this.handlers.box && this.handlers.box.deactivate(), this.layers && this.map.removeLayer(this.layer));
     return OpenLayers.Control.prototype.deactivate.apply(this, arguments);
   },
   unselectAll: function(a) {
@@ -15834,9 +14486,7 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
       e,
       f;
     for(e = 0; e < b.length; ++e)
-      if(((c = b[e]), (f = 0), null != c.selectedFeatures))
-        for(; c.selectedFeatures.length > f; )
-          (d = c.selectedFeatures[f]), a && a.except == d ? ++f : this.unselect(d);
+      if(((c = b[e]), (f = 0), null != c.selectedFeatures)) for(; c.selectedFeatures.length > f; ) (d = c.selectedFeatures[f]), a && a.except == d ? ++f : this.unselect(d);
   },
   clickFeature: function(a) {
     this.hover ||
@@ -15857,8 +14507,7 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
   },
   overFeature: function(a) {
     var b = a.layer;
-    this.hover &&
-      (this.highlightOnly ? this.highlight(a) : -1 == OpenLayers.Util.indexOf(b.selectedFeatures, a) && this.select(a));
+    this.hover && (this.highlightOnly ? this.highlight(a) : -1 == OpenLayers.Util.indexOf(b.selectedFeatures, a) && this.select(a));
   },
   outFeature: function(a) {
     if(this.hover)
@@ -15881,9 +14530,7 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
   },
   unhighlight: function(a) {
     var b = a.layer;
-    void 0 == a._prevHighlighter
-      ? delete a._lastHighlighter
-      : (a._prevHighlighter != this.id && (a._lastHighlighter = a._prevHighlighter), delete a._prevHighlighter);
+    void 0 == a._prevHighlighter ? delete a._lastHighlighter : (a._prevHighlighter != this.id && (a._lastHighlighter = a._prevHighlighter), delete a._prevHighlighter);
     b.drawFeature(a, a.style || a.layer.style || 'default');
     this.events.triggerEvent('featureunhighlighted', { feature: a });
   },
@@ -15963,16 +14610,12 @@ OpenLayers.Handler.Point = OpenLayers.Class(OpenLayers.Handler, {
   pixelTolerance: 5,
   lastTouchPx: null,
   initialize: function(a, b, c) {
-    (c && c.layerOptions && c.layerOptions.styleMap) ||
-      (this.style = OpenLayers.Util.extend(OpenLayers.Feature.Vector.style['default'], {}));
+    (c && c.layerOptions && c.layerOptions.styleMap) || (this.style = OpenLayers.Util.extend(OpenLayers.Feature.Vector.style['default'], {}));
     OpenLayers.Handler.prototype.initialize.apply(this, arguments);
   },
   activate: function() {
     if(!OpenLayers.Handler.prototype.activate.apply(this, arguments)) return !1;
-    var a = OpenLayers.Util.extend(
-      { displayInLayerSwitcher: !1, calculateInRange: OpenLayers.Function.True, wrapDateLine: this.citeCompliant },
-      this.layerOptions
-    );
+    var a = OpenLayers.Util.extend({ displayInLayerSwitcher: !1, calculateInRange: OpenLayers.Function.True, wrapDateLine: this.citeCompliant }, this.layerOptions);
     this.layer = new OpenLayers.Layer.Vector(this.CLASS_NAME, a);
     this.map.addLayer(this.layer);
     return !0;
@@ -16074,13 +14717,7 @@ OpenLayers.Handler.Point = OpenLayers.Class(OpenLayers.Handler, {
   up: function(a) {
     this.mouseDown = !1;
     this.stoppedDown = this.stopDown;
-    if(
-      !this.checkModifiers(a) ||
-      (this.lastUp && this.lastUp.equals(a.xy)) ||
-      !this.lastDown ||
-      !this.passesTolerance(this.lastDown, a.xy, this.pixelTolerance)
-    )
-      return !0;
+    if(!this.checkModifiers(a) || (this.lastUp && this.lastUp.equals(a.xy)) || !this.lastDown || !this.passesTolerance(this.lastDown, a.xy, this.pixelTolerance)) return !0;
     this.touch && this.modifyFeature(a.xy);
     this.persist && this.destroyPersistedFeature();
     this.lastUp = a.xy;
@@ -16171,9 +14808,7 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
       d = b[c],
       e = a.removeComponent(d);
     e &&
-      (this.touch &&
-        0 < c &&
-        ((b = a.components), (a = b[c - 1]), (c = this.getCurrentPointIndex()), (b = b[c]), (b.x = a.x), (b.y = a.y)),
+      (this.touch && 0 < c && ((b = a.components), (a = b[c - 1]), (c = this.getCurrentPointIndex()), (b = b[c]), (b.x = a.x), (b.y = a.y)),
       this.redoStack || (this.redoStack = []),
       this.redoStack.push(d),
       this.drawFeature());
@@ -16209,8 +14844,7 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
     return a;
   },
   touchstart: function(a) {
-    if(this.timerId && this.passesTolerance(this.lastTouchPx, a.xy, this.doubleTouchTolerance))
-      return this.finishGeometry(), window.clearTimeout(this.timerId), (this.timerId = null), !1;
+    if(this.timerId && this.passesTolerance(this.lastTouchPx, a.xy, this.doubleTouchTolerance)) return this.finishGeometry(), window.clearTimeout(this.timerId), (this.timerId = null), !1;
     this.timerId && (window.clearTimeout(this.timerId), (this.timerId = null));
     this.timerId = window.setTimeout(
       OpenLayers.Function.bind(function () {
@@ -16222,11 +14856,8 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
   },
   down: function(a) {
     var b = this.stopDown;
-    this.freehandMode(a) &&
-      ((b = !0), this.touch && (this.modifyFeature(a.xy, !!this.lastUp), OpenLayers.Event.stop(a)));
-    this.touch ||
-      (this.lastDown && this.passesTolerance(this.lastDown, a.xy, this.pixelTolerance)) ||
-      this.modifyFeature(a.xy, !!this.lastUp);
+    this.freehandMode(a) && ((b = !0), this.touch && (this.modifyFeature(a.xy, !!this.lastUp), OpenLayers.Event.stop(a)));
+    this.touch || (this.lastDown && this.passesTolerance(this.lastDown, a.xy, this.pixelTolerance)) || this.modifyFeature(a.xy, !!this.lastUp);
     this.mouseDown = !0;
     this.lastDown = a.xy;
     this.stoppedDown = b;
@@ -16236,9 +14867,7 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
     if(this.stoppedDown && this.freehandMode(a))
       return (
         this.persist && this.destroyPersistedFeature(),
-        this.maxVertices && this.line && this.line.geometry.components.length === this.maxVertices
-          ? (this.removePoint(), this.finalize())
-          : this.addPoint(a.xy),
+        this.maxVertices && this.line && this.line.geometry.components.length === this.maxVertices ? (this.removePoint(), this.finalize()) : this.addPoint(a.xy),
         !1
       );
     this.touch || (this.mouseDown && !this.stoppedDown) || this.modifyFeature(a.xy, !!this.lastUp);
@@ -16281,11 +14910,7 @@ OpenLayers.Spherical.computeDistanceBetween = function(a, b, c) {
 };
 OpenLayers.Spherical.computeHeading = function(a, b) {
   var c = Math.sin((Math.PI * (a.lon - b.lon)) / 180) * Math.cos((Math.PI * b.lat) / 180),
-    d =
-      Math.cos((Math.PI * a.lat) / 180) * Math.sin((Math.PI * b.lat) / 180) -
-      Math.sin((Math.PI * a.lat) / 180) *
-        Math.cos((Math.PI * b.lat) / 180) *
-        Math.cos((Math.PI * (a.lon - b.lon)) / 180);
+    d = Math.cos((Math.PI * a.lat) / 180) * Math.sin((Math.PI * b.lat) / 180) - Math.sin((Math.PI * a.lat) / 180) * Math.cos((Math.PI * b.lat) / 180) * Math.cos((Math.PI * (a.lon - b.lon)) / 180);
   return (180 * Math.atan2(c, d)) / Math.PI;
 };
 OpenLayers.Control.CacheWrite = OpenLayers.Class(OpenLayers.Control, {
@@ -16306,10 +14931,7 @@ OpenLayers.Control.CacheWrite = OpenLayers.Class(OpenLayers.Control, {
     a.layer.events.un({ tileloadstart: this.makeSameOrigin, tileloaded: this.onTileLoaded, scope: this });
   },
   makeSameOrigin: function(a) {
-    if(
-      this.active &&
-      ((a = a.tile), a instanceof OpenLayers.Tile.Image && !a.crossOriginKeyword && 'data:' !== a.url.substr(0, 5))
-    ) {
+    if(this.active && ((a = a.tile), a instanceof OpenLayers.Tile.Image && !a.crossOriginKeyword && 'data:' !== a.url.substr(0, 5))) {
       var b = OpenLayers.Request.makeSameOrigin(a.url, OpenLayers.ProxyHost);
       OpenLayers.Control.CacheWrite.urlMap[b] = a.url;
       a.url = b;
@@ -16327,15 +14949,9 @@ OpenLayers.Control.CacheWrite = OpenLayers.Class(OpenLayers.Control, {
       a = a.tile;
       try {
         var b = a.getCanvasContext();
-        b &&
-          window.localStorage.setItem(
-            'olCache_' + (OpenLayers.Control.CacheWrite.urlMap[a.url] || a.url),
-            b.canvas.toDataURL(this.imageFormat)
-          );
+        b && window.localStorage.setItem('olCache_' + (OpenLayers.Control.CacheWrite.urlMap[a.url] || a.url), b.canvas.toDataURL(this.imageFormat));
       } catch(c) {
-        (b = c.name || c.message) && this.quotaRegEx.test(b)
-          ? this.events.triggerEvent('cachefull', { tile: a })
-          : OpenLayers.Console.error(c.toString());
+        (b = c.name || c.message) && this.quotaRegEx.test(b) ? this.events.triggerEvent('cachefull', { tile: a }) : OpenLayers.Console.error(c.toString());
       }
     }
   },
@@ -16353,8 +14969,7 @@ OpenLayers.Control.CacheWrite = OpenLayers.Class(OpenLayers.Control, {
 OpenLayers.Control.CacheWrite.clearCache = function() {
   if(window.localStorage) {
     var a, b;
-    for(a = window.localStorage.length - 1; 0 <= a; --a)
-      (b = window.localStorage.key(a)), 'olCache_' === b.substr(0, 8) && window.localStorage.removeItem(b);
+    for(a = window.localStorage.length - 1; 0 <= a; --a) (b = window.localStorage.key(a)), 'olCache_' === b.substr(0, 8) && window.localStorage.removeItem(b);
   }
 };
 OpenLayers.Control.CacheWrite.urlMap = {};
@@ -16501,14 +15116,8 @@ OpenLayers.Format.WMC = OpenLayers.Class(OpenLayers.Format.Context, {
         displayInLayerSwitcher: a.displayInLayerSwitcher,
         singleTile: a.singleTile,
         tileSize: a.singleTile || !a.tileSize ? void 0 : { width: a.tileSize.w, height: a.tileSize.h },
-        minScale:
-          a.options.resolutions || a.options.scales || a.options.maxResolution || a.options.minScale
-            ? a.minScale
-            : void 0,
-        maxScale:
-          a.options.resolutions || a.options.scales || a.options.minResolution || a.options.maxScale
-            ? a.maxScale
-            : void 0,
+        minScale: a.options.resolutions || a.options.scales || a.options.maxResolution || a.options.minScale ? a.minScale : void 0,
+        maxScale: a.options.resolutions || a.options.scales || a.options.minResolution || a.options.maxScale ? a.maxScale : void 0,
         formats: [],
         styles: [],
         srs: a.srs,
@@ -16523,9 +15132,7 @@ OpenLayers.Format.WMC = OpenLayers.Class(OpenLayers.Format.Context, {
     else c.formats.push({ value: a.params.FORMAT, current: !0 });
     if(a.metadata.styles && 0 < a.metadata.styles.length)
       for(d = 0, e = a.metadata.styles.length; d < e; d++)
-        (b = a.metadata.styles[d]),
-          (b.current = b.href == a.params.SLD || b.body == a.params.SLD_BODY || b.name == a.params.STYLES ? !0 : !1),
-          c.styles.push(b);
+        (b = a.metadata.styles[d]), (b.current = b.href == a.params.SLD || b.body == a.params.SLD_BODY || b.name == a.params.STYLES ? !0 : !1), c.styles.push(b);
     else
       c.styles.push({
         href: a.params.SLD,
@@ -16594,23 +15201,14 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
   },
   runChildNodes: function(a, b) {
     for(var c = b.childNodes, d, e, f, g = 0, h = c.length; g < h; ++g)
-      (d = c[g]),
-        1 == d.nodeType &&
-          ((e = this.getNamespacePrefix(d.namespaceURI)),
-          (f = d.nodeName.split(':').pop()),
-          (e = this['read_' + e + '_' + f]) && e.apply(this, [a, d]));
+      (d = c[g]), 1 == d.nodeType && ((e = this.getNamespacePrefix(d.namespaceURI)), (f = d.nodeName.split(':').pop()), (e = this['read_' + e + '_' + f]) && e.apply(this, [a, d]));
   },
   read_wmc_General: function(a, b) {
     this.runChildNodes(a, b);
   },
   read_wmc_BoundingBox: function(a, b) {
     a.projection = b.getAttribute('SRS');
-    a.bounds = new OpenLayers.Bounds(
-      b.getAttribute('minx'),
-      b.getAttribute('miny'),
-      b.getAttribute('maxx'),
-      b.getAttribute('maxy')
-    );
+    a.bounds = new OpenLayers.Bounds(b.getAttribute('minx'), b.getAttribute('miny'), b.getAttribute('maxx'), b.getAttribute('maxy'));
   },
   read_wmc_LayerList: function(a, b) {
     a.layersContext = [];
@@ -16634,12 +15232,7 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
     a.units = this.getChildValue(b);
   },
   read_ol_maxExtent: function(a, b) {
-    var c = new OpenLayers.Bounds(
-      b.getAttribute('minx'),
-      b.getAttribute('miny'),
-      b.getAttribute('maxx'),
-      b.getAttribute('maxy')
-    );
+    var c = new OpenLayers.Bounds(b.getAttribute('minx'), b.getAttribute('miny'), b.getAttribute('maxx'), b.getAttribute('maxy'));
     a.maxExtent = c;
   },
   read_ol_transparent: function(a, b) {
@@ -16871,8 +15464,7 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   write_wmc_KeywordList: function(a) {
-    for(var b = this.createElementDefaultNS('KeywordList'), c = 0, d = a.length; c < d; c++)
-      b.appendChild(this.createElementDefaultNS('Keyword', a[c]));
+    for(var b = this.createElementDefaultNS('KeywordList'), c = 0, d = a.length; c < d; c++) b.appendChild(this.createElementDefaultNS('Keyword', a[c]));
     return b;
   },
   write_wmc_ContactInformation: function(a) {
@@ -16916,8 +15508,7 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   write_wmc_LayerList: function(a) {
-    for(var b = this.createElementDefaultNS('LayerList'), c = 0, d = a.layersContext.length; c < d; ++c)
-      b.appendChild(this.write_wmc_Layer(a.layersContext[c]));
+    for(var b = this.createElementDefaultNS('LayerList'), c = 0, d = a.layersContext.length; c < d; ++c) b.appendChild(this.write_wmc_Layer(a.layersContext[c]));
     return b;
   },
   write_wmc_Layer: function(a) {
@@ -16944,25 +15535,14 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
       maxy: c.top.toPrecision(18)
     });
     b.appendChild(d);
-    a.tileSize &&
-      !a.singleTile &&
-      ((c = this.createElementNS(this.namespaces.ol, 'ol:tileSize')),
-      this.setAttributes(c, a.tileSize),
-      b.appendChild(c));
-    for(
-      var c = 'transparent numZoomLevels units isBaseLayer opacity displayInLayerSwitcher singleTile'.split(' '),
-        e = 0,
-        f = c.length;
-      e < f;
-      ++e
-    )
+    a.tileSize && !a.singleTile && ((c = this.createElementNS(this.namespaces.ol, 'ol:tileSize')), this.setAttributes(c, a.tileSize), b.appendChild(c));
+    for(var c = 'transparent numZoomLevels units isBaseLayer opacity displayInLayerSwitcher singleTile'.split(' '), e = 0, f = c.length; e < f; ++e)
       (d = this.createOLPropertyNode(a, c[e])) && b.appendChild(d);
     return b;
   },
   createOLPropertyNode: function(a, b) {
     var c = null;
-    null != a[b] &&
-      ((c = this.createElementNS(this.namespaces.ol, 'ol:' + b)), c.appendChild(this.createTextNode(a[b].toString())));
+    null != a[b] && ((c = this.createElementNS(this.namespaces.ol, 'ol:' + b)), c.appendChild(this.createTextNode(a[b].toString())));
     return c;
   },
   write_wmc_Server: function(a) {
@@ -17000,9 +15580,7 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
   write_wmc_FormatList: function(a) {
     for(var b = this.createElementDefaultNS('FormatList'), c = 0, d = a.formats.length; c < d; c++) {
       var e = a.formats[c];
-      b.appendChild(
-        this.createElementDefaultNS('Format', e.value, e.current && !0 == e.current ? { current: '1' } : null)
-      );
+      b.appendChild(this.createElementDefaultNS('Format', e.value, e.current && !0 == e.current ? { current: '1' } : null));
     }
     return b;
   },
@@ -17128,13 +15706,7 @@ OpenLayers.Kinetic = OpenLayers.Class({
       if(c - f.tick > this.delay) break;
       b = f;
     }
-    if(
-      b &&
-      ((d = new Date().getTime() - b.tick),
-      (c = Math.sqrt(Math.pow(a.x - b.xy.x, 2) + Math.pow(a.y - b.xy.y, 2))),
-      (d = c / d),
-      !(0 == d || d < this.threshold))
-    )
+    if(b && ((d = new Date().getTime() - b.tick), (c = Math.sqrt(Math.pow(a.x - b.xy.x, 2) + Math.pow(a.y - b.xy.y, 2))), (d = c / d), !(0 == d || d < this.threshold)))
       return (c = Math.asin((a.y - b.xy.y) / c)), b.xy.x <= a.x && (c = Math.PI - c), { speed: d, theta: c };
   },
   move: function(a, b) {
@@ -17183,9 +15755,7 @@ OpenLayers.Format.WPSExecute = OpenLayers.Class(OpenLayers.Format.XML, OpenLayer
   schemaLocationAttr: function(a) {},
   write: function(a) {
     var b;
-    window.ActiveXObject
-      ? (this.xmldom = b = new ActiveXObject('Microsoft.XMLDOM'))
-      : (b = document.implementation.createDocument('', '', null));
+    window.ActiveXObject ? (this.xmldom = b = new ActiveXObject('Microsoft.XMLDOM')) : (b = document.implementation.createDocument('', '', null));
     a = this.writeNode('wps:Execute', a, b);
     this.setAttributeNS(a, this.namespaces.xsi, 'xsi:schemaLocation', this.schemaLocation);
     return OpenLayers.Format.XML.prototype.write.apply(this, [a]);
@@ -17236,8 +15806,7 @@ OpenLayers.Format.WPSExecute = OpenLayers.Class(OpenLayers.Format.XML, OpenLayer
         return b;
       },
       DataInputs: function(a) {
-        for(var b = this.createElementNSPlus('wps:DataInputs', {}), c = 0, d = a.length; c < d; ++c)
-          this.writeNode('wps:Input', a[c], b);
+        for(var b = this.createElementNSPlus('wps:DataInputs', {}), c = 0, d = a.length; c < d; ++c) this.writeNode('wps:Input', a[c], b);
         return b;
       },
       Input: function(a) {
@@ -17290,9 +15859,7 @@ OpenLayers.Format.WPSExecute = OpenLayers.Class(OpenLayers.Format.XML, OpenLayer
         a.wcs
           ? this.writeNode('wcs:GetCoverage', a.wcs, b)
           : a.wfs
-          ? ((this.featureType = a.wfs.featureType),
-            (this.version = a.wfs.version),
-            this.writeNode('wfs:GetFeature', a.wfs, b))
+          ? ((this.featureType = a.wfs.featureType), (this.version = a.wfs.version), this.writeNode('wfs:GetFeature', a.wfs, b))
           : this.writeNode('wps:Execute', a, b);
         return b;
       }
@@ -17397,10 +15964,7 @@ OpenLayers.Layer.GeoRSS = OpenLayers.Class(OpenLayers.Layer.Markers, {
     this.features = null;
   },
   loadRSS: function() {
-    this.loaded ||
-      (this.events.triggerEvent('loadstart'),
-      OpenLayers.Request.GET({ url: this.location, success: this.parseData, scope: this }),
-      (this.loaded = !0));
+    this.loaded || (this.events.triggerEvent('loadstart'), OpenLayers.Request.GET({ url: this.location, success: this.parseData, scope: this }), (this.loaded = !0));
   },
   moveTo: function(a, b, c) {
     OpenLayers.Layer.Markers.prototype.moveTo.apply(this, arguments);
@@ -17420,9 +15984,7 @@ OpenLayers.Layer.GeoRSS = OpenLayers.Class(OpenLayers.Layer.Markers, {
     }
     a = {};
     OpenLayers.Util.extend(a, this.formatOptions);
-    this.map &&
-      !this.projection.equals(this.map.getProjectionObject()) &&
-      ((a.externalProjection = this.projection), (a.internalProjection = this.map.getProjectionObject()));
+    this.map && !this.projection.equals(this.map.getProjectionObject()) && ((a.externalProjection = this.projection), (a.internalProjection = this.map.getProjectionObject()));
     b = new OpenLayers.Format.GeoRSS(a).read(b);
     a = 0;
     for(var d = b.length; a < d; a++) {
@@ -17468,8 +16030,7 @@ OpenLayers.Layer.GeoRSS = OpenLayers.Class(OpenLayers.Layer.Markers, {
         b.div,
         'click',
         OpenLayers.Function.bind(function () {
-          for(var a = 0, b = this.layer.map.popups.length; a < b; a++)
-            this.layer.map.removePopup(this.layer.map.popups[a]);
+          for(var a = 0, b = this.layer.map.popups.length; a < b; a++) this.layer.map.removePopup(this.layer.map.popups[a]);
         }, this)
       ),
       this.layer.map.addPopup(b));
@@ -17560,9 +16121,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           var c = { defaultsPerSymbolizer: !0, rules: [] };
           this.featureTypeCounter = -1;
           this.readChildNodes(a, c);
-          this.multipleSymbolizers
-            ? (delete c.defaultsPerSymbolizer, (c = new OpenLayers.Style2(c)))
-            : (c = new OpenLayers.Style(this.defaultSymbolizer, c));
+          this.multipleSymbolizers ? (delete c.defaultsPerSymbolizer, (c = new OpenLayers.Style2(c))) : (c = new OpenLayers.Style(this.defaultSymbolizer, c));
           b.userStyles.push(c);
         },
         IsDefault: function(a, b) {
@@ -17696,17 +16255,13 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           var c = { fill: !1, stroke: !1 };
           this.multipleSymbolizers || (c = b.symbolizer.Polygon || c);
           this.readChildNodes(a, c);
-          this.multipleSymbolizers
-            ? ((c.zIndex = this.featureTypeCounter), b.symbolizers.push(new OpenLayers.Symbolizer.Polygon(c)))
-            : (b.symbolizer.Polygon = c);
+          this.multipleSymbolizers ? ((c.zIndex = this.featureTypeCounter), b.symbolizers.push(new OpenLayers.Symbolizer.Polygon(c))) : (b.symbolizer.Polygon = c);
         },
         PointSymbolizer: function(a, b) {
           var c = { fill: !1, stroke: !1, graphic: !1 };
           this.multipleSymbolizers || (c = b.symbolizer.Point || c);
           this.readChildNodes(a, c);
-          this.multipleSymbolizers
-            ? ((c.zIndex = this.featureTypeCounter), b.symbolizers.push(new OpenLayers.Symbolizer.Point(c)))
-            : (b.symbolizer.Point = c);
+          this.multipleSymbolizers ? ((c.zIndex = this.featureTypeCounter), b.symbolizers.push(new OpenLayers.Symbolizer.Point(c))) : (b.symbolizer.Point = c);
         },
         Stroke: function(a, b) {
           b.stroke = !0;
@@ -17726,18 +16281,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           b.graphic = !0;
           var c = {};
           this.readChildNodes(a, c);
-          for(
-            var d =
-                'stroke strokeColor strokeWidth strokeOpacity strokeLinecap fill fillColor fillOpacity graphicName rotation graphicFormat'.split(
-                  ' '
-                ),
-              e,
-              f,
-              g = 0,
-              h = d.length;
-            g < h;
-            ++g
-          )
+          for(var d = 'stroke strokeColor strokeWidth strokeOpacity strokeLinecap fill fillColor fillOpacity graphicName rotation graphicFormat'.split(' '), e, f, g = 0, h = d.length; g < h; ++g)
             (e = d[g]), (f = c[e]), void 0 != f && (b[e] = f);
           void 0 != c.opacity && (b.graphicOpacity = c.opacity);
           void 0 != c.size && (isNaN(c.size / 2) ? (b.graphicWidth = c.size) : (b.pointRadius = c.size / 2));
@@ -17822,10 +16366,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           for(var e, f, g = 1, h = d.length; g < h; g++)
             (e = d[g]),
               (f = e.indexOf('}')),
-              0 < f
-                ? (this.writeNode('ogc:PropertyName', { property: e.substring(0, f) }, c),
-                  c.appendChild(this.createTextNode(e.substring(++f))))
-                : c.appendChild(this.createTextNode('${' + e));
+              0 < f ? (this.writeNode('ogc:PropertyName', { property: e.substring(0, f) }, c), c.appendChild(this.createTextNode(e.substring(++f)))) : c.appendChild(this.createTextNode('${' + e));
           return c;
         },
         StyledLayerDescriptor: function(a) {
@@ -17837,8 +16378,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           a.name && this.writeNode('Name', a.name, b);
           a.title && this.writeNode('Title', a.title, b);
           a.description && this.writeNode('Abstract', a.description, b);
-          if(OpenLayers.Array.isArray(a.namedLayers))
-            for(var c = 0, d = a.namedLayers.length; c < d; ++c) this.writeNode('NamedLayer', a.namedLayers[c], b);
+          if(OpenLayers.Array.isArray(a.namedLayers)) for(var c = 0, d = a.namedLayers.length; c < d; ++c) this.writeNode('NamedLayer', a.namedLayers[c], b);
           else for(c in a.namedLayers) this.writeNode('NamedLayer', a.namedLayers[c], b);
           return b;
         },
@@ -17854,10 +16394,8 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
         NamedLayer: function(a) {
           var b = this.createElementNSPlus('sld:NamedLayer');
           this.writeNode('Name', a.name, b);
-          if(a.namedStyles)
-            for(var c = 0, d = a.namedStyles.length; c < d; ++c) this.writeNode('NamedStyle', a.namedStyles[c], b);
-          if(a.userStyles)
-            for(c = 0, d = a.userStyles.length; c < d; ++c) this.writeNode('UserStyle', a.userStyles[c], b);
+          if(a.namedStyles) for(var c = 0, d = a.namedStyles.length; c < d; ++c) this.writeNode('NamedStyle', a.namedStyles[c], b);
+          if(a.userStyles) for(c = 0, d = a.userStyles.length; c < d; ++c) this.writeNode('UserStyle', a.userStyles[c], b);
           return b;
         },
         NamedStyle: function(a) {
@@ -17876,17 +16414,12 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
               if(((e = a.rules[l]), e.symbolizers)) {
                 f = {};
                 for(var n = 0, p = e.symbolizers.length; n < p; ++n)
-                  (g = e.symbolizers[n]),
-                    (h = g.zIndex),
-                    h in f || ((k = e.clone()), (k.symbolizers = []), (f[h] = k)),
-                    f[h].symbolizers.push(g.clone());
+                  (g = e.symbolizers[n]), (h = g.zIndex), h in f || ((k = e.clone()), (k.symbolizers = []), (f[h] = k)), f[h].symbolizers.push(g.clone());
                 for(h in f) h in c || (d.push(h), (c[h] = [])), c[h].push(f[h]);
               } else c[0].push(e.clone());
             d.sort();
             l = 0;
-            for(m = d.length; l < m; ++l)
-              (e = c[d[l]]),
-                0 < e.length && ((k = a.clone()), (k.rules = c[d[l]]), this.writeNode('FeatureTypeStyle', k, b));
+            for(m = d.length; l < m; ++l) (e = c[d[l]]), 0 < e.length && ((k = a.clone()), (k.rules = c[d[l]]), this.writeNode('FeatureTypeStyle', k, b));
           } else this.writeNode('FeatureTypeStyle', a, b);
           return b;
         },
@@ -17894,8 +16427,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           return this.createElementNSPlus('sld:IsDefault', { value: a ? '1' : '0' });
         },
         FeatureTypeStyle: function(a) {
-          for(var b = this.createElementNSPlus('sld:FeatureTypeStyle'), c = 0, d = a.rules.length; c < d; ++c)
-            this.writeNode('Rule', a.rules[c], b);
+          for(var b = this.createElementNSPlus('sld:FeatureTypeStyle'), c = 0, d = a.rules.length; c < d; ++c) this.writeNode('Rule', a.rules[c], b);
           return b;
         },
         Rule: function(a) {
@@ -17908,11 +16440,8 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           void 0 != a.maxScaleDenominator && this.writeNode('MaxScaleDenominator', a.maxScaleDenominator, b);
           var c, d;
           if(this.multipleSymbolizers && a.symbolizers)
-            for(var e = 0, f = a.symbolizers.length; e < f; ++e)
-              (d = a.symbolizers[e]), (c = d.CLASS_NAME.split('.').pop()), this.writeNode(c + 'Symbolizer', d, b);
-          else
-            for(var f = OpenLayers.Style.SYMBOLIZER_PREFIXES, e = 0, g = f.length; e < g; ++e)
-              (c = f[e]), (d = a.symbolizer[c]) && this.writeNode(c + 'Symbolizer', d, b);
+            for(var e = 0, f = a.symbolizers.length; e < f; ++e) (d = a.symbolizers[e]), (c = d.CLASS_NAME.split('.').pop()), this.writeNode(c + 'Symbolizer', d, b);
+          else for(var f = OpenLayers.Style.SYMBOLIZER_PREFIXES, e = 0, g = f.length; e < g; ++e) (c = f[e]), (d = a.symbolizer[c]) && this.writeNode(c + 'Symbolizer', d, b);
           return b;
         },
         ElseFilter: function() {
@@ -17934,9 +16463,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           void 0 != a.strokeColor && this.writeNode('CssParameter', { symbolizer: a, key: 'strokeColor' }, b);
           void 0 != a.strokeOpacity && this.writeNode('CssParameter', { symbolizer: a, key: 'strokeOpacity' }, b);
           void 0 != a.strokeWidth && this.writeNode('CssParameter', { symbolizer: a, key: 'strokeWidth' }, b);
-          void 0 != a.strokeDashstyle &&
-            'solid' !== a.strokeDashstyle &&
-            this.writeNode('CssParameter', { symbolizer: a, key: 'strokeDashstyle' }, b);
+          void 0 != a.strokeDashstyle && 'solid' !== a.strokeDashstyle && this.writeNode('CssParameter', { symbolizer: a, key: 'strokeDashstyle' }, b);
           void 0 != a.strokeLinecap && this.writeNode('CssParameter', { symbolizer: a, key: 'strokeLinecap' }, b);
           return b;
         },
@@ -17949,8 +16476,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
         TextSymbolizer: function(a) {
           var b = this.createElementNSPlus('sld:TextSymbolizer');
           null != a.label && this.writeNode('Label', a.label, b);
-          (null == a.fontFamily && null == a.fontSize && null == a.fontWeight && null == a.fontStyle) ||
-            this.writeNode('Font', a, b);
+          (null == a.fontFamily && null == a.fontSize && null == a.fontWeight && null == a.fontStyle) || this.writeNode('Font', a, b);
           (null == a.labelAnchorPointX &&
             null == a.labelAnchorPointY &&
             null == a.labelAlign &&
@@ -17960,18 +16486,12 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             null == a.labelPerpendicularOffset) ||
             this.writeNode('LabelPlacement', a, b);
           (null == a.haloRadius && null == a.haloColor && null == a.haloOpacity) || this.writeNode('Halo', a, b);
-          (null == a.fontColor && null == a.fontOpacity) ||
-            this.writeNode('Fill', { fillColor: a.fontColor, fillOpacity: a.fontOpacity }, b);
+          (null == a.fontColor && null == a.fontOpacity) || this.writeNode('Fill', { fillColor: a.fontColor, fillOpacity: a.fontOpacity }, b);
           return b;
         },
         LabelPlacement: function(a) {
           var b = this.createElementNSPlus('sld:LabelPlacement');
-          (null == a.labelAnchorPointX &&
-            null == a.labelAnchorPointY &&
-            null == a.labelAlign &&
-            null == a.labelXOffset &&
-            null == a.labelYOffset &&
-            null == a.labelRotation) ||
+          (null == a.labelAnchorPointX && null == a.labelAnchorPointY && null == a.labelAlign && null == a.labelXOffset && null == a.labelYOffset && null == a.labelRotation) ||
             null != a.labelPerpendicularOffset ||
             this.writeNode('PointPlacement', a, b);
           null != a.labelPerpendicularOffset && this.writeNode('LinePlacement', a, b);
@@ -17987,8 +16507,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
         },
         PointPlacement: function(a) {
           var b = this.createElementNSPlus('sld:PointPlacement');
-          (null == a.labelAnchorPointX && null == a.labelAnchorPointY && null == a.labelAlign) ||
-            this.writeNode('AnchorPoint', a, b);
+          (null == a.labelAnchorPointX && null == a.labelAnchorPointY && null == a.labelAlign) || this.writeNode('AnchorPoint', a, b);
           (null == a.labelXOffset && null == a.labelYOffset) || this.writeNode('Displacement', a, b);
           null != a.labelRotation && this.writeNode('Rotation', a.labelRotation, b);
           return b;
@@ -18041,8 +16560,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
         Halo: function(a) {
           var b = this.createElementNSPlus('sld:Halo');
           a.haloRadius && this.writeNode('Radius', a.haloRadius, b);
-          (a.haloColor || a.haloOpacity) &&
-            this.writeNode('Fill', { fillColor: a.haloColor, fillOpacity: a.haloOpacity }, b);
+          (a.haloColor || a.haloOpacity) && this.writeNode('Fill', { fillColor: a.haloColor, fillOpacity: a.haloOpacity }, b);
           return b;
         },
         Radius: function(a) {
@@ -18061,8 +16579,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           return b;
         },
         ColorMap: function(a) {
-          for(var b = this.createElementNSPlus('sld:ColorMap'), c = 0, d = a.length; c < d; ++c)
-            this.writeNode('ColorMapEntry', a[c], b);
+          for(var b = this.createElementNSPlus('sld:ColorMap'), c = 0, d = a.length; c < d; ++c) this.writeNode('ColorMapEntry', a[c], b);
           return b;
         },
         ColorMapEntry: function(a) {
@@ -18094,9 +16611,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
           var b = this.createElementNSPlus('sld:Graphic');
           void 0 != a.externalGraphic ? this.writeNode('ExternalGraphic', a, b) : this.writeNode('Mark', a, b);
           void 0 != a.graphicOpacity && this.writeNode('Opacity', a.graphicOpacity, b);
-          void 0 != a.pointRadius
-            ? this.writeNode('Size', 2 * a.pointRadius, b)
-            : void 0 != a.graphicWidth && this.writeNode('Size', a.graphicWidth, b);
+          void 0 != a.pointRadius ? this.writeNode('Size', 2 * a.pointRadius, b) : void 0 != a.graphicWidth && this.writeNode('Size', a.graphicWidth, b);
           void 0 != a.rotation && this.writeNode('Rotation', a.rotation, b);
           return b;
         },
@@ -18156,9 +16671,7 @@ OpenLayers.Layer.WMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
     !this.noMagic &&
       this.params.TRANSPARENT &&
       'true' == this.params.TRANSPARENT.toString().toLowerCase() &&
-      ((null != d && d.isBaseLayer) || (this.isBaseLayer = !1),
-      'image/jpeg' == this.params.FORMAT &&
-        (this.params.FORMAT = OpenLayers.Util.alphaHack() ? 'image/gif' : 'image/png'));
+      ((null != d && d.isBaseLayer) || (this.isBaseLayer = !1), 'image/jpeg' == this.params.FORMAT && (this.params.FORMAT = OpenLayers.Util.alphaHack() ? 'image/gif' : 'image/png'));
   },
   clone: function(a) {
     null == a && (a = new OpenLayers.Layer.WMS(this.name, this.url, this.params, this.getOptions()));
@@ -18166,10 +16679,7 @@ OpenLayers.Layer.WMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
   },
   reverseAxisOrder: function() {
     var a = this.projection.getCode();
-    return (
-      1.3 <= parseFloat(this.params.VERSION) &&
-      !!(this.yx[a] || (OpenLayers.Projection.defaults[a] && OpenLayers.Projection.defaults[a].yx))
-    );
+    return 1.3 <= parseFloat(this.params.VERSION) && !!(this.yx[a] || (OpenLayers.Projection.defaults[a] && OpenLayers.Projection.defaults[a].yx));
   },
   getURL: function(a) {
     a = this.adjustBounds(a);
@@ -18271,10 +16781,7 @@ OpenLayers.Format.WMC.v1_1_0 = OpenLayers.Class(OpenLayers.Format.WMC.v1, {
       c.appendChild(this.createTextNode(a.maxScale.toPrecision(16)));
       b.appendChild(c);
     }
-    a.minScale &&
-      ((c = this.createElementNS(this.namespaces.sld, 'sld:MaxScaleDenominator')),
-      c.appendChild(this.createTextNode(a.minScale.toPrecision(16))),
-      b.appendChild(c));
+    a.minScale && ((c = this.createElementNS(this.namespaces.sld, 'sld:MaxScaleDenominator')), c.appendChild(this.createTextNode(a.minScale.toPrecision(16))), b.appendChild(c));
     if(a.srs) for(var d in a.srs) b.appendChild(this.createElementDefaultNS('SRS', d));
     b.appendChild(this.write_wmc_FormatList(a));
     b.appendChild(this.write_wmc_StyleList(a));
@@ -18394,8 +16901,7 @@ OpenLayers.Format.XLS.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         return b;
       },
       GeocodeRequest: function(a) {
-        for(var b = this.createElementNSPlus('xls:GeocodeRequest'), c = 0, d = a.length; c < d; c++)
-          this.writeNode('Address', a[c], b);
+        for(var b = this.createElementNSPlus('xls:GeocodeRequest'), c = 0, d = a.length; c < d; c++) this.writeNode('Address', a[c], b);
         return b;
       },
       Address: function(a) {
@@ -18453,10 +16959,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
   translationParameters: null,
   symbolMetrics: null,
   initialize: function(a) {
-    this.supported() &&
-      (OpenLayers.Renderer.Elements.prototype.initialize.apply(this, arguments),
-      (this.translationParameters = { x: 0, y: 0 }),
-      (this.symbolMetrics = {}));
+    this.supported() && (OpenLayers.Renderer.Elements.prototype.initialize.apply(this, arguments), (this.translationParameters = { x: 0, y: 0 }), (this.symbolMetrics = {}));
   },
   supported: function() {
     return (
@@ -18476,14 +16979,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
       d = this.getResolution(),
       e = -a.left / d,
       d = a.top / d;
-    if(b)
-      return (
-        (this.left = e),
-        (this.top = d),
-        this.rendererRoot.setAttributeNS(null, 'viewBox', '0 0 ' + this.size.w + ' ' + this.size.h),
-        this.translate(this.xOffset, 0),
-        !0
-      );
+    if(b) return (this.left = e), (this.top = d), this.rendererRoot.setAttributeNS(null, 'viewBox', '0 0 ' + this.size.w + ' ' + this.size.h), this.translate(this.xOffset, 0), !0;
     (e = this.translate(e - this.left + this.xOffset, d - this.top)) || this.setExtent(a, !0);
     return c && e;
   },
@@ -18530,9 +17026,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     if(d) {
       a.setAttributeNS(null, 'title', d);
       var e = a.getElementsByTagName('title');
-      0 < e.length
-        ? (e[0].firstChild.textContent = d)
-        : ((e = this.nodeFactory(null, 'title')), (e.textContent = d), a.appendChild(e));
+      0 < e.length ? (e[0].firstChild.textContent = d) : ((e = this.nodeFactory(null, 'title')), (e.textContent = d), a.appendChild(e));
     }
     var e = parseFloat(a.getAttributeNS(null, 'r')),
       d = 1,
@@ -18581,12 +17075,9 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         (e |= 0),
         'svg' !== a.nodeName
           ? a.setAttributeNS(null, 'transform', 'rotate(' + e + ' ' + f.x + ' ' + f.y + ')')
-          : ((f = this.symbolMetrics[l.id]),
-            a.firstChild.setAttributeNS(null, 'transform', 'rotate(' + e + ' ' + f[1] + ' ' + f[2] + ')')));
+          : ((f = this.symbolMetrics[l.id]), a.firstChild.setAttributeNS(null, 'transform', 'rotate(' + e + ' ' + f[1] + ' ' + f[2] + ')')));
     }
-    c.isFilled
-      ? (a.setAttributeNS(null, 'fill', b.fillColor), a.setAttributeNS(null, 'fill-opacity', b.fillOpacity))
-      : a.setAttributeNS(null, 'fill', 'none');
+    c.isFilled ? (a.setAttributeNS(null, 'fill', b.fillColor), a.setAttributeNS(null, 'fill-opacity', b.fillOpacity)) : a.setAttributeNS(null, 'fill', 'none');
     c.isStroked
       ? (a.setAttributeNS(null, 'stroke', b.strokeColor),
         a.setAttributeNS(null, 'stroke-opacity', b.strokeOpacity),
@@ -18647,9 +17138,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     var d = this.getResolution(),
       e = (b.x - this.featureDx) / d + this.left;
     b = this.top - b.y / d;
-    return this.inValidRange(e, b)
-      ? (a.setAttributeNS(null, 'cx', e), a.setAttributeNS(null, 'cy', b), a.setAttributeNS(null, 'r', c), a)
-      : !1;
+    return this.inValidRange(e, b) ? (a.setAttributeNS(null, 'cx', e), a.setAttributeNS(null, 'cy', b), a.setAttributeNS(null, 'r', c), a) : !1;
   },
   drawLineString: function(a, b) {
     var c = this.getComponentsString(b.components);
@@ -18661,23 +17150,15 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
   },
   drawPolygon: function(a, b) {
     for(var c = '', d = !0, e = !0, f, g, h = 0, k = b.components.length; h < k; h++)
-      (c += ' M'),
-        (f = this.getComponentsString(b.components[h].components, ' ')),
-        (g = f.path) ? ((c += ' ' + g), (e = f.complete && e)) : (d = !1);
-    return d
-      ? (a.setAttributeNS(null, 'd', c + ' z'), a.setAttributeNS(null, 'fill-rule', 'evenodd'), e ? a : null)
-      : !1;
+      (c += ' M'), (f = this.getComponentsString(b.components[h].components, ' ')), (g = f.path) ? ((c += ' ' + g), (e = f.complete && e)) : (d = !1);
+    return d ? (a.setAttributeNS(null, 'd', c + ' z'), a.setAttributeNS(null, 'fill-rule', 'evenodd'), e ? a : null) : !1;
   },
   drawRectangle: function(a, b) {
     var c = this.getResolution(),
       d = (b.x - this.featureDx) / c + this.left,
       e = this.top - b.y / c;
     return this.inValidRange(d, e)
-      ? (a.setAttributeNS(null, 'x', d),
-        a.setAttributeNS(null, 'y', e),
-        a.setAttributeNS(null, 'width', b.width / c),
-        a.setAttributeNS(null, 'height', b.height / c),
-        a)
+      ? (a.setAttributeNS(null, 'x', d), a.setAttributeNS(null, 'y', e), a.setAttributeNS(null, 'width', b.width / c), a.setAttributeNS(null, 'height', b.height / c), a)
       : !1;
   },
   drawText: function(a, b, c) {
@@ -18706,19 +17187,15 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     b.fontSize && f.setAttributeNS(null, 'font-size', b.fontSize);
     b.fontWeight && f.setAttributeNS(null, 'font-weight', b.fontWeight);
     b.fontStyle && f.setAttributeNS(null, 'font-style', b.fontStyle);
-    !0 === b.labelSelect
-      ? (f.setAttributeNS(null, 'pointer-events', 'visible'), (f._featureId = a))
-      : f.setAttributeNS(null, 'pointer-events', 'none');
+    !0 === b.labelSelect ? (f.setAttributeNS(null, 'pointer-events', 'visible'), (f._featureId = a)) : f.setAttributeNS(null, 'pointer-events', 'none');
     g = b.labelAlign || OpenLayers.Renderer.defaultSymbolizer.labelAlign;
     f.setAttributeNS(null, 'text-anchor', OpenLayers.Renderer.SVG.LABEL_ALIGN[g[0]] || 'middle');
-    !0 === OpenLayers.IS_GECKO &&
-      f.setAttributeNS(null, 'dominant-baseline', OpenLayers.Renderer.SVG.LABEL_ALIGN[g[1]] || 'central');
+    !0 === OpenLayers.IS_GECKO && f.setAttributeNS(null, 'dominant-baseline', OpenLayers.Renderer.SVG.LABEL_ALIGN[g[1]] || 'central');
     for(var h = b.label.split('\n'), k = h.length; f.childNodes.length > k; ) f.removeChild(f.lastChild);
     for(var l = 0; l < k; l++) {
       var m = this.nodeFactory(a + d + '_tspan_' + l, 'tspan');
       !0 === b.labelSelect && ((m._featureId = a), (m._geometry = c), (m._geometryClass = c.CLASS_NAME));
-      !1 === OpenLayers.IS_GECKO &&
-        m.setAttributeNS(null, 'baseline-shift', OpenLayers.Renderer.SVG.LABEL_VSHIFT[g[1]] || '-35%');
+      !1 === OpenLayers.IS_GECKO && m.setAttributeNS(null, 'baseline-shift', OpenLayers.Renderer.SVG.LABEL_VSHIFT[g[1]] || '-35%');
       m.setAttribute('x', e);
       if(0 == l) {
         var n = OpenLayers.Renderer.SVG.LABEL_VFACTOR[g[1]];
@@ -18736,9 +17213,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         c.push(g),
         (g = this.getShortString(g))
           ? f.push(g)
-          : (0 < h && this.getShortString(a[h - 1]) && f.push(this.clipLine(a[h], a[h - 1])),
-            h < e - 1 && this.getShortString(a[h + 1]) && f.push(this.clipLine(a[h], a[h + 1])),
-            (d = !1));
+          : (0 < h && this.getShortString(a[h - 1]) && f.push(this.clipLine(a[h], a[h - 1])), h < e - 1 && this.getShortString(a[h + 1]) && f.push(this.clipLine(a[h], a[h + 1])), (d = !1));
     return { path: f.join(b || ','), complete: d };
   },
   clipLine: function(a, b) {
@@ -18774,18 +17249,8 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     a = this.nodeFactory(b, 'symbol');
     var e = this.nodeFactory(null, 'polygon');
     a.appendChild(e);
-    for(
-      var c = new OpenLayers.Bounds(Number.MAX_VALUE, Number.MAX_VALUE, 0, 0), f = [], g, h, k = 0;
-      k < d.length;
-      k += 2
-    )
-      (g = d[k]),
-        (h = d[k + 1]),
-        (c.left = Math.min(c.left, g)),
-        (c.bottom = Math.min(c.bottom, h)),
-        (c.right = Math.max(c.right, g)),
-        (c.top = Math.max(c.top, h)),
-        f.push(g, ',', h);
+    for(var c = new OpenLayers.Bounds(Number.MAX_VALUE, Number.MAX_VALUE, 0, 0), f = [], g, h, k = 0; k < d.length; k += 2)
+      (g = d[k]), (h = d[k + 1]), (c.left = Math.min(c.left, g)), (c.bottom = Math.min(c.bottom, h)), (c.right = Math.max(c.right, g)), (c.top = Math.max(c.top, h)), f.push(g, ',', h);
     e.setAttributeNS(null, 'points', f.join(' '));
     d = c.getWidth();
     e = c.getHeight();
@@ -18821,12 +17286,7 @@ OpenLayers.Format.OWSContext = OpenLayers.Class(OpenLayers.Format.Context, {
   },
   toContext: function(a) {
     var b = {};
-    'OpenLayers.Map' == a.CLASS_NAME &&
-      ((b.bounds = a.getExtent()),
-      (b.maxExtent = a.maxExtent),
-      (b.projection = a.projection),
-      (b.size = a.getSize()),
-      (b.layers = a.layers));
+    'OpenLayers.Map' == a.CLASS_NAME && ((b.bounds = a.getExtent()), (b.maxExtent = a.maxExtent), (b.projection = a.projection), (b.size = a.getSize()), (b.layers = a.layers));
     return b;
   },
   CLASS_NAME: 'OpenLayers.Format.OWSContext'
@@ -19023,8 +17483,7 @@ OpenLayers.Format.OWSContext.v0_3_1 = OpenLayers.Class(OpenLayers.Format.XML, {
         return b;
       },
       StyleList: function(a) {
-        for(var b = this.createElementNSPlus('StyleList'), c = 0, d = a.length; c < d; c++)
-          this.writeNode('Style', a[c], b);
+        for(var b = this.createElementNSPlus('StyleList'), c = 0, d = a.length; c < d; c++) this.writeNode('Style', a[c], b);
         return b;
       },
       Style: function(a) {
@@ -19056,11 +17515,7 @@ OpenLayers.Format.OWSContext.v0_3_1 = OpenLayers.Class(OpenLayers.Format.XML, {
         });
         this.writeNode('ows:Title', a.name, b);
         this.writeNode('ows:OutputFormat', a.params.FORMAT, b);
-        this.writeNode(
-          'Server',
-          { service: OpenLayers.Format.Context.serviceTypes.WMS, version: a.params.VERSION, url: a.url },
-          b
-        );
+        this.writeNode('Server', { service: OpenLayers.Format.Context.serviceTypes.WMS, version: a.params.VERSION, url: a.url }, b);
         a.metadata.styles && 0 < a.metadata.styles.length && this.writeNode('StyleList', a.metadata.styles, b);
         return b;
       },
@@ -19074,10 +17529,7 @@ OpenLayers.Format.OWSContext.v0_3_1 = OpenLayers.Class(OpenLayers.Format.XML, {
             (c = b.lastIndexOf('/')),
             (d = this.nestingLayerLookup[b]),
             (c = 0 < c ? b.substring(c + 1, b.length) : b),
-            d ||
-              ((d = this.createElementNSPlus('Layer')),
-              this.writeNode('ows:Title', c, d),
-              (this.nestingLayerLookup[b] = d)),
+            d || ((d = this.createElementNSPlus('Layer')), this.writeNode('ows:Title', c, d), (this.nestingLayerLookup[b] = d)),
             a.subPaths.shift(),
             this.writeNode('_Layer', a, d))
           : (b instanceof OpenLayers.Layer.WMS
@@ -19088,8 +17540,7 @@ OpenLayers.Format.OWSContext.v0_3_1 = OpenLayers.Class(OpenLayers.Format.XML, {
                   : b.protocol instanceof OpenLayers.Protocol.HTTP
                   ? b.protocol.format instanceof OpenLayers.Format.GML
                     ? ((b.protocol.format.version = '2.1.2'), (d = this.writeNode('_GML', b)))
-                    : b.protocol.format instanceof OpenLayers.Format.KML &&
-                      ((b.protocol.format.version = '2.2'), (d = this.writeNode('_KML', b)))
+                    : b.protocol.format instanceof OpenLayers.Format.KML && ((b.protocol.format.version = '2.2'), (d = this.writeNode('_KML', b)))
                   : (this.setNamespace('feature', this.featureNS), (d = this.writeNode('_InlineGeometry', b)))),
             b.options.maxScale && this.writeNode('sld:MinScaleDenominator', b.options.maxScale, d),
             b.options.minScale && this.writeNode('sld:MaxScaleDenominator', b.options.minScale, d),
@@ -19104,11 +17555,7 @@ OpenLayers.Format.OWSContext.v0_3_1 = OpenLayers.Class(OpenLayers.Format.XML, {
           }
         });
         this.writeNode('ows:Title', a.name, b);
-        this.writeNode(
-          'Server',
-          { service: OpenLayers.Format.Context.serviceTypes.WFS, version: a.protocol.version, url: a.protocol.url },
-          b
-        );
+        this.writeNode('Server', { service: OpenLayers.Format.Context.serviceTypes.WFS, version: a.protocol.version, url: a.protocol.url }, b);
         return b;
       },
       _InlineGeometry: function(a) {
@@ -19186,8 +17633,7 @@ OpenLayers.Popup = OpenLayers.Class({
   padding: 0,
   disableFirefoxOverflowHack: !1,
   fixPadding: function() {
-    'number' == typeof this.padding &&
-      (this.padding = new OpenLayers.Bounds(this.padding, this.padding, this.padding, this.padding));
+    'number' == typeof this.padding && (this.padding = new OpenLayers.Bounds(this.padding, this.padding, this.padding, this.padding));
   },
   panMapIfOutOfView: !1,
   keepInMap: !1,
@@ -19282,11 +17728,9 @@ OpenLayers.Popup = OpenLayers.Class({
         c = c + (e + b.right);
     this.size.w += c;
     this.size.h += d;
-    'msie' == OpenLayers.BROWSER_NAME &&
-      ((this.contentSize.w += b.left + b.right), (this.contentSize.h += b.bottom + b.top));
+    'msie' == OpenLayers.BROWSER_NAME && ((this.contentSize.w += b.left + b.right), (this.contentSize.h += b.bottom + b.top));
     null != this.div && ((this.div.style.width = this.size.w + 'px'), (this.div.style.height = this.size.h + 'px'));
-    null != this.contentDiv &&
-      ((this.contentDiv.style.width = a.w + 'px'), (this.contentDiv.style.height = a.h + 'px'));
+    null != this.contentDiv && ((this.contentDiv.style.width = a.w + 'px'), (this.contentDiv.style.height = a.h + 'px'));
   },
   updateSize: function() {
     var a = "<div class='" + this.contentDisplayClass + "'>" + this.contentDiv.innerHTML + '</div>',
@@ -19303,9 +17747,7 @@ OpenLayers.Popup = OpenLayers.Class({
               displayClass: this.contentDisplayClass,
               containerElement: b
             })),
-            'hidden' != OpenLayers.Element.getStyle(this.contentDiv, 'overflow') &&
-              a.equals(d) &&
-              ((d = OpenLayers.Util.getScrollbarWidth()), c.w ? (a.h += d) : (a.w += d)),
+            'hidden' != OpenLayers.Element.getStyle(this.contentDiv, 'overflow') && a.equals(d) && ((d = OpenLayers.Util.getScrollbarWidth()), c.w ? (a.h += d) : (a.w += d)),
             (e = this.getSafeContentSize(a))));
     this.setSize(e);
   },
@@ -19315,8 +17757,7 @@ OpenLayers.Popup = OpenLayers.Class({
   },
   setOpacity: function(a) {
     void 0 != a && (this.opacity = a);
-    null != this.div &&
-      ((this.div.style.opacity = this.opacity), (this.div.style.filter = 'alpha(opacity=' + 100 * this.opacity + ')'));
+    null != this.div && ((this.div.style.opacity = this.opacity), (this.div.style.filter = 'alpha(opacity=' + 100 * this.opacity + ')'));
   },
   setBorder: function(a) {
     void 0 != a && (this.border = a);
@@ -19327,16 +17768,13 @@ OpenLayers.Popup = OpenLayers.Class({
     null != this.contentDiv &&
       null != this.contentHTML &&
       this.contentHTML != this.contentDiv.innerHTML &&
-      ((this.contentDiv.innerHTML = this.contentHTML),
-      this.autoSize && (this.registerImageListeners(), this.updateSize()));
+      ((this.contentDiv.innerHTML = this.contentHTML), this.autoSize && (this.registerImageListeners(), this.updateSize()));
   },
   registerImageListeners: function() {
     for(
       var a = function() {
           null !== this.popup.id &&
-            (this.popup.updateSize(),
-            this.popup.visible() && this.popup.panMapIfOutOfView && this.popup.panIntoView(),
-            OpenLayers.Event.stopObserving(this.img, 'load', this.img._onImgLoad));
+            (this.popup.updateSize(), this.popup.visible() && this.popup.panMapIfOutOfView && this.popup.panIntoView(), OpenLayers.Event.stopObserving(this.img, 'load', this.img._onImgLoad));
         },
         b = this.contentDiv.getElementsByTagName('img'),
         c = 0,
@@ -19345,9 +17783,7 @@ OpenLayers.Popup = OpenLayers.Class({
       c++
     ) {
       var e = b[c];
-      if(0 == e.width || 0 == e.height)
-        (e._onImgLoad = OpenLayers.Function.bind(a, { popup: this, img: e })),
-          OpenLayers.Event.observe(e, 'load', e._onImgLoad);
+      if(0 == e.width || 0 == e.height) (e._onImgLoad = OpenLayers.Function.bind(a, { popup: this, img: e })), OpenLayers.Event.observe(e, 'load', e._onImgLoad);
     }
   },
   getSafeContentSize: function(a) {
@@ -19424,18 +17860,14 @@ OpenLayers.Popup = OpenLayers.Class({
   },
   panIntoView: function() {
     var a = this.map.getSize(),
-      b = this.map.getViewPortPxFromLayerPx(
-        new OpenLayers.Pixel(parseInt(this.div.style.left), parseInt(this.div.style.top))
-      ),
+      b = this.map.getViewPortPxFromLayerPx(new OpenLayers.Pixel(parseInt(this.div.style.left), parseInt(this.div.style.top))),
       c = b.clone();
     b.x < this.map.paddingForPopups.left
       ? (c.x = this.map.paddingForPopups.left)
-      : b.x + this.size.w > a.w - this.map.paddingForPopups.right &&
-        (c.x = a.w - this.map.paddingForPopups.right - this.size.w);
+      : b.x + this.size.w > a.w - this.map.paddingForPopups.right && (c.x = a.w - this.map.paddingForPopups.right - this.size.w);
     b.y < this.map.paddingForPopups.top
       ? (c.y = this.map.paddingForPopups.top)
-      : b.y + this.size.h > a.h - this.map.paddingForPopups.bottom &&
-        (c.y = a.h - this.map.paddingForPopups.bottom - this.size.h);
+      : b.y + this.size.h > a.h - this.map.paddingForPopups.bottom && (c.y = a.h - this.map.paddingForPopups.bottom - this.size.h);
     this.map.pan(b.x - c.x, b.y - c.y);
   },
   registerEvents: function() {
@@ -19516,8 +17948,7 @@ OpenLayers.Control.ScaleLine = OpenLayers.Class(OpenLayers.Control, {
         c = OpenLayers.INCHES_PER_UNIT,
         d = this.maxWidth * a * c[b],
         e = 1;
-      !0 === this.geodesic &&
-        ((e = ((this.map.getGeodesicPixelSize().w || 1e-6) * this.maxWidth) / (d / c.km)), (d *= e));
+      !0 === this.geodesic && ((e = ((this.map.getGeodesicPixelSize().w || 1e-6) * this.maxWidth) / (d / c.km)), (d *= e));
       var f, g;
       1e5 < d ? ((f = this.topOutUnits), (g = this.bottomOutUnits)) : ((f = this.topInUnits), (g = this.bottomInUnits));
       var h = d / c[f],
@@ -19528,10 +17959,8 @@ OpenLayers.Control.ScaleLine = OpenLayers.Class(OpenLayers.Control, {
         k = (l / c[b]) * c[g],
         b = h / a / e,
         a = k / a / e;
-      'visible' == this.eBottom.style.visibility &&
-        ((this.eBottom.style.width = Math.round(a) + 'px'), (this.eBottom.innerHTML = l + ' ' + g));
-      'visible' == this.eTop.style.visibility &&
-        ((this.eTop.style.width = Math.round(b) + 'px'), (this.eTop.innerHTML = d + ' ' + f));
+      'visible' == this.eBottom.style.visibility && ((this.eBottom.style.width = Math.round(a) + 'px'), (this.eBottom.innerHTML = l + ' ' + g));
+      'visible' == this.eTop.style.visibility && ((this.eTop.style.width = Math.round(b) + 'px'), (this.eTop.innerHTML = d + ' ' + f));
     }
   },
   CLASS_NAME: 'OpenLayers.Control.ScaleLine'
@@ -19606,12 +18035,7 @@ OpenLayers.Marker = OpenLayers.Class({
   initialize: function(a, b) {
     this.lonlat = a;
     var c = b ? b : OpenLayers.Marker.defaultIcon();
-    null == this.icon
-      ? (this.icon = c)
-      : ((this.icon.url = c.url),
-        (this.icon.size = c.size),
-        (this.icon.offset = c.offset),
-        (this.icon.calculateOffset = c.calculateOffset));
+    null == this.icon ? (this.icon = c) : ((this.icon.url = c.url), (this.icon.size = c.size), (this.icon.offset = c.offset), (this.icon.calculateOffset = c.calculateOffset));
     this.events = new OpenLayers.Events(this, this.icon.imageDiv);
   },
   destroy: function() {
@@ -19733,8 +18157,7 @@ OpenLayers.Strategy.Paging = OpenLayers.Class(OpenLayers.Strategy, {
   },
   pagePrevious: function() {
     var a = !1;
-    this.features &&
-      (null === this.num && (this.num = this.pageCount()), (a = this.page((this.num - 1) * this.length)));
+    this.features && (null === this.num && (this.num = this.pageCount()), (a = this.page((this.num - 1) * this.length)));
     return a;
   },
   page: function(a, b) {
@@ -19788,19 +18211,13 @@ OpenLayers.Control.DragFeature = OpenLayers.Class(OpenLayers.Control, {
       feature: new OpenLayers.Handler.Feature(
         this,
         this.layer,
-        OpenLayers.Util.extend(
-          { click: this.clickFeature, clickout: this.clickoutFeature, over: this.overFeature, out: this.outFeature },
-          this.featureCallbacks
-        ),
+        OpenLayers.Util.extend({ click: this.clickFeature, clickout: this.clickoutFeature, over: this.overFeature, out: this.outFeature }, this.featureCallbacks),
         { geometryTypes: this.geometryTypes }
       )
     };
   },
   clickFeature: function(a) {
-    this.handlers.feature.touch &&
-      !this.over &&
-      this.overFeature(a) &&
-      (this.handlers.drag.dragstart(this.handlers.feature.evt), (this.handlers.drag.stopDown = !1));
+    this.handlers.feature.touch && !this.over && this.overFeature(a) && (this.handlers.drag.dragstart(this.handlers.feature.evt), (this.handlers.drag.stopDown = !1));
   },
   clickoutFeature: function(a) {
     this.handlers.feature.touch && this.over && (this.outFeature(a), (this.handlers.drag.stopDown = !0));
@@ -19825,11 +18242,7 @@ OpenLayers.Control.DragFeature = OpenLayers.Class(OpenLayers.Control, {
     var b = !1;
     this.handlers.drag.dragging
       ? (this.over = this.feature.id == a.id ? !0 : !1)
-      : ((this.feature = a),
-        this.handlers.drag.activate(),
-        (this.over = b = !0),
-        OpenLayers.Element.addClass(this.map.viewPortDiv, this.displayClass + 'Over'),
-        this.onEnter(a));
+      : ((this.feature = a), this.handlers.drag.activate(), (this.over = b = !0), OpenLayers.Element.addClass(this.map.viewPortDiv, this.displayClass + 'Over'), this.onEnter(a));
     return b;
   },
   downFeature: function(a) {
@@ -19852,11 +18265,7 @@ OpenLayers.Control.DragFeature = OpenLayers.Class(OpenLayers.Control, {
   outFeature: function(a) {
     this.handlers.drag.dragging
       ? this.feature.id == a.id && (this.over = !1)
-      : ((this.over = !1),
-        this.handlers.drag.deactivate(),
-        OpenLayers.Element.removeClass(this.map.viewPortDiv, this.displayClass + 'Over'),
-        this.onLeave(a),
-        (this.feature = null));
+      : ((this.over = !1), this.handlers.drag.deactivate(), OpenLayers.Element.removeClass(this.map.viewPortDiv, this.displayClass + 'Over'), this.onLeave(a), (this.feature = null));
   },
   cancel: function() {
     this.handlers.drag.deactivate();
@@ -19889,29 +18298,20 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
   initialize: function(a, b) {
     OpenLayers.Control.prototype.initialize.apply(this, [b]);
     this.layer = a;
-    this.rotationHandleSymbolizer ||
-      (this.rotationHandleSymbolizer = { stroke: !1, pointRadius: 10, fillOpacity: 0, cursor: 'pointer' });
+    this.rotationHandleSymbolizer || (this.rotationHandleSymbolizer = { stroke: !1, pointRadius: 10, fillOpacity: 0, cursor: 'pointer' });
     this.createBox();
     this.createControl();
   },
   activate: function() {
     var a = !1;
     OpenLayers.Control.prototype.activate.apply(this, arguments) &&
-      (this.dragControl.activate(),
-      this.layer.addFeatures([this.box]),
-      this.rotate && this.layer.addFeatures(this.rotationHandles),
-      this.layer.addFeatures(this.handles),
-      (a = !0));
+      (this.dragControl.activate(), this.layer.addFeatures([this.box]), this.rotate && this.layer.addFeatures(this.rotationHandles), this.layer.addFeatures(this.handles), (a = !0));
     return a;
   },
   deactivate: function() {
     var a = !1;
     OpenLayers.Control.prototype.deactivate.apply(this, arguments) &&
-      (this.layer.removeFeatures(this.handles),
-      this.rotate && this.layer.removeFeatures(this.rotationHandles),
-      this.layer.removeFeatures([this.box]),
-      this.dragControl.deactivate(),
-      (a = !0));
+      (this.layer.removeFeatures(this.handles), this.rotate && this.layer.removeFeatures(this.rotationHandles), this.layer.removeFeatures([this.box]), this.dragControl.deactivate(), (a = !0));
     return a;
   },
   setMap: function(a) {
@@ -20007,9 +18407,7 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
             this.x = d;
             this.y = e;
             h = 1;
-            g
-              ? ((l = 1e-5 > Math.abs(n) ? 1 : l / n), (h = (1e-5 > Math.abs(m) ? 1 : k / m) / l))
-              : ((m = Math.sqrt(m * m + n * n)), (l = Math.sqrt(k * k + l * l) / m));
+            g ? ((l = 1e-5 > Math.abs(n) ? 1 : l / n), (h = (1e-5 > Math.abs(m) ? 1 : k / m) / l)) : ((m = Math.sqrt(m * m + n * n)), (l = Math.sqrt(k * k + l * l) / m));
             a._moving = !0;
             a.box.geometry.rotate(-a.rotation, f);
             delete a._moving;
@@ -20042,11 +18440,7 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
             d *= 180 / Math.PI;
             a._angle = (a._angle + d) % 360;
             d = a.rotation % f;
-            if(Math.abs(a._angle) >= f || 0 !== d)
-              (d = Math.round(a._angle / f) * f - d),
-                (a._angle = 0),
-                a.box.geometry.rotate(d, g),
-                a.transformFeature({ rotation: d });
+            if(Math.abs(a._angle) >= f || 0 !== d) (d = Math.round(a._angle / f) * f - d), (a._angle = 0), a.box.geometry.rotate(d, g), a.transformFeature({ rotation: d });
           }
         },
         g = Array(8),
@@ -20060,17 +18454,9 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
       ++p
     )
       (k = this.box.geometry.components[p]),
-        (l = new OpenLayers.Feature.Vector(
-          k.clone(),
-          { role: n[p] + '-resize' },
-          'string' == typeof this.renderIntent ? null : this.renderIntent
-        )),
+        (l = new OpenLayers.Feature.Vector(k.clone(), { role: n[p] + '-resize' }, 'string' == typeof this.renderIntent ? null : this.renderIntent)),
         0 == p % 2 &&
-          ((m = new OpenLayers.Feature.Vector(
-            k.clone(),
-            { role: n[p] + '-rotate' },
-            'string' == typeof this.rotationHandleSymbolizer ? null : this.rotationHandleSymbolizer
-          )),
+          ((m = new OpenLayers.Feature.Vector(k.clone(), { role: n[p] + '-rotate' }, 'string' == typeof this.rotationHandleSymbolizer ? null : this.rotationHandleSymbolizer)),
           (m.geometry.move = f),
           (k._rotationHandle = m),
           (h[p / 2] = m)),
@@ -20107,8 +18493,7 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
   },
   drawHandles: function() {
     for(var a = this.layer, b = 0; 8 > b; ++b)
-      this.rotate && 0 === b % 2 && a.drawFeature(this.rotationHandles[b / 2], this.rotationHandleSymbolizer),
-        a.drawFeature(this.handles[b], this.renderIntent);
+      this.rotate && 0 === b % 2 && a.drawFeature(this.rotationHandles[b / 2], this.rotationHandleSymbolizer), a.drawFeature(this.handles[b], this.renderIntent);
   },
   transformFeature: function(a) {
     if(!this._setfeature) {
@@ -20132,12 +18517,7 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
     this.drawHandles();
   },
   destroy: function() {
-    for(var a, b = 0; 8 > b; ++b)
-      (a = this.box.geometry.components[b]),
-        a._handle.destroy(),
-        (a._handle = null),
-        a._rotationHandle && a._rotationHandle.destroy(),
-        (a._rotationHandle = null);
+    for(var a, b = 0; 8 > b; ++b) (a = this.box.geometry.components[b]), a._handle.destroy(), (a._handle = null), a._rotationHandle && a._rotationHandle.destroy(), (a._rotationHandle = null);
     this.rotationHandles = this.rotationHandleSymbolizer = this.handles = this.feature = this.center = null;
     this.box.destroy();
     this.layer = this.box = null;
@@ -20153,11 +18533,7 @@ OpenLayers.Handler.Box = OpenLayers.Class(OpenLayers.Handler, {
   boxOffsets: null,
   initialize: function(a, b, c) {
     OpenLayers.Handler.prototype.initialize.apply(this, arguments);
-    this.dragHandler = new OpenLayers.Handler.Drag(
-      this,
-      { down: this.startBox, move: this.moveBox, out: this.removeBox, up: this.endBox },
-      { keyMask: this.keyMask }
-    );
+    this.dragHandler = new OpenLayers.Handler.Drag(this, { down: this.startBox, move: this.moveBox, out: this.removeBox, up: this.endBox }, { keyMask: this.keyMask });
   },
   destroy: function() {
     OpenLayers.Handler.prototype.destroy.apply(this, arguments);
@@ -20208,9 +18584,7 @@ OpenLayers.Handler.Box = OpenLayers.Class(OpenLayers.Handler, {
     return OpenLayers.Handler.prototype.activate.apply(this, arguments) ? (this.dragHandler.activate(), !0) : !1;
   },
   deactivate: function() {
-    return OpenLayers.Handler.prototype.deactivate.apply(this, arguments)
-      ? (this.dragHandler.deactivate() && this.zoomBox && this.removeBox(), !0)
-      : !1;
+    return OpenLayers.Handler.prototype.deactivate.apply(this, arguments) ? (this.dragHandler.deactivate() && this.zoomBox && this.removeBox(), !0) : !1;
   },
   getBoxOffsets: function() {
     if(!this.boxOffsets) {
@@ -20260,10 +18634,7 @@ OpenLayers.Control.ZoomBox = OpenLayers.Class(OpenLayers.Control, {
         var g = e.lat - (d.getHeight() / 2) * b;
         b = e.lat + (d.getHeight() / 2) * b;
         b = new OpenLayers.Bounds(f, g, a, b);
-      } else
-        (f = this.map.getLonLatFromPixel({ x: a.left, y: a.bottom })),
-          (a = this.map.getLonLatFromPixel({ x: a.right, y: a.top })),
-          (b = new OpenLayers.Bounds(f.lon, f.lat, a.lon, a.lat));
+      } else (f = this.map.getLonLatFromPixel({ x: a.left, y: a.bottom })), (a = this.map.getLonLatFromPixel({ x: a.right, y: a.top })), (b = new OpenLayers.Bounds(f.lon, f.lat, a.lon, a.lat));
       f = this.map.getZoom();
       g = this.map.getSize();
       a = g.w / 2;
@@ -20271,13 +18642,9 @@ OpenLayers.Control.ZoomBox = OpenLayers.Class(OpenLayers.Control, {
       b = this.map.getZoomForExtent(b);
       d = this.map.getResolution();
       e = this.map.getResolutionForZoom(b);
-      d == e
-        ? this.map.setCenter(this.map.getLonLatFromPixel(c))
-        : this.map.zoomTo(b, { x: (d * c.x - e * a) / (d - e), y: (d * c.y - e * g) / (d - e) });
+      d == e ? this.map.setCenter(this.map.getLonLatFromPixel(c)) : this.map.zoomTo(b, { x: (d * c.x - e * a) / (d - e), y: (d * c.y - e * g) / (d - e) });
       f == this.map.getZoom() && !0 == this.alwaysZoom && this.map.zoomTo(f + (this.out ? -1 : 1));
-    } else
-      this.zoomOnClick &&
-        (this.out ? this.map.zoomTo(this.map.getZoom() - 1, a) : this.map.zoomTo(this.map.getZoom() + 1, a));
+    } else this.zoomOnClick && (this.out ? this.map.zoomTo(this.map.getZoom() - 1, a) : this.map.zoomTo(this.map.getZoom() + 1, a));
   },
   CLASS_NAME: 'OpenLayers.Control.ZoomBox'
 });
@@ -20295,11 +18662,7 @@ OpenLayers.Control.DragPan = OpenLayers.Class(OpenLayers.Control, {
       'object' === typeof this.enableKinetic && (a = OpenLayers.Util.extend(a, this.enableKinetic));
       this.kinetic = new OpenLayers.Kinetic(a);
     }
-    this.handler = new OpenLayers.Handler.Drag(
-      this,
-      { move: this.panMap, done: this.panMapDone, down: this.panMapStart },
-      { interval: this.interval, documentDrag: this.documentDrag }
-    );
+    this.handler = new OpenLayers.Handler.Drag(this, { move: this.panMap, done: this.panMapDone, down: this.panMapStart }, { interval: this.interval, documentDrag: this.documentDrag });
   },
   panMapStart: function() {
     this.kinetic && this.kinetic.begin();
@@ -20370,29 +18733,17 @@ OpenLayers.Control.Navigation = OpenLayers.Class(OpenLayers.Control, {
   },
   draw: function() {
     this.handleRightClicks && (this.map.viewPortDiv.oncontextmenu = OpenLayers.Function.False);
-    this.handlers.click = new OpenLayers.Handler.Click(
-      this,
-      { click: this.defaultClick, dblclick: this.defaultDblClick, dblrightclick: this.defaultDblRightClick },
-      { double: !0, stopDouble: !0 }
-    );
-    this.dragPan = new OpenLayers.Control.DragPan(
-      OpenLayers.Util.extend({ map: this.map, documentDrag: this.documentDrag }, this.dragPanOptions)
-    );
+    this.handlers.click = new OpenLayers.Handler.Click(this, { click: this.defaultClick, dblclick: this.defaultDblClick, dblrightclick: this.defaultDblRightClick }, { double: !0, stopDouble: !0 });
+    this.dragPan = new OpenLayers.Control.DragPan(OpenLayers.Util.extend({ map: this.map, documentDrag: this.documentDrag }, this.dragPanOptions));
     this.zoomBox = new OpenLayers.Control.ZoomBox({ map: this.map, keyMask: this.zoomBoxKeyMask });
     this.dragPan.draw();
     this.zoomBox.draw();
     this.handlers.wheel = new OpenLayers.Handler.MouseWheel(
       this,
       { up: this.wheelUp, down: this.wheelDown },
-      OpenLayers.Util.extend(
-        this.map.fractionalZoom ? {} : { cumulative: !1, interval: 50, maxDelta: 6 },
-        this.mouseWheelOptions
-      )
+      OpenLayers.Util.extend(this.map.fractionalZoom ? {} : { cumulative: !1, interval: 50, maxDelta: 6 }, this.mouseWheelOptions)
     );
-    OpenLayers.Control.PinchZoom &&
-      (this.pinchZoom = new OpenLayers.Control.PinchZoom(
-        OpenLayers.Util.extend({ map: this.map }, this.pinchZoomOptions)
-      ));
+    OpenLayers.Control.PinchZoom && (this.pinchZoom = new OpenLayers.Control.PinchZoom(OpenLayers.Util.extend({ map: this.map }, this.pinchZoomOptions)));
   },
   defaultClick: function(a) {
     a.lastTouches && 2 == a.lastTouches.length && this.map.zoomOut();
@@ -20470,10 +18821,7 @@ OpenLayers.Control.DrawFeature = OpenLayers.Class(OpenLayers.Control, {
   drawFeature: function(a) {
     a = new OpenLayers.Feature.Vector(a);
     !1 !== this.layer.events.triggerEvent('sketchcomplete', { feature: a }) &&
-      ((a.state = OpenLayers.State.INSERT),
-      this.layer.addFeatures([a]),
-      this.featureAdded(a),
-      this.events.triggerEvent('featureadded', { feature: a }));
+      ((a.state = OpenLayers.State.INSERT), this.layer.addFeatures([a]), this.featureAdded(a), this.events.triggerEvent('featureadded', { feature: a }));
   },
   insertXY: function(a, b) {
     this.handler && this.handler.line && this.handler.insertXY(a, b);
@@ -20518,11 +18866,7 @@ OpenLayers.Handler.Polygon = OpenLayers.Class(OpenLayers.Handler.Path, {
   addPoint: function(a) {
     if(!this.drawingHole && this.holeModifier && this.evt && this.evt[this.holeModifier])
       for(var b = this.point.geometry, c = this.control.layer.features, d, e = c.length - 1; 0 <= e; --e)
-        if(
-          ((d = c[e].geometry),
-          (d instanceof OpenLayers.Geometry.Polygon || d instanceof OpenLayers.Geometry.MultiPolygon) &&
-            d.intersects(b))
-        ) {
+        if(((d = c[e].geometry), (d instanceof OpenLayers.Geometry.Polygon || d instanceof OpenLayers.Geometry.MultiPolygon) && d.intersects(b))) {
           b = c[e];
           this.control.layer.removeFeatures([b], { silent: !0 });
           this.control.layer.events.registerPriority('sketchcomplete', this, this.finalizeInteriorRing);
@@ -20564,9 +18908,7 @@ OpenLayers.Handler.Polygon = OpenLayers.Class(OpenLayers.Handler.Path, {
               break a;
             }
     }
-    b
-      ? this.polygon.state !== OpenLayers.State.INSERT && (this.polygon.state = OpenLayers.State.UPDATE)
-      : this.polygon.geometry.removeComponent(a);
+    b ? this.polygon.state !== OpenLayers.State.INSERT && (this.polygon.state = OpenLayers.State.UPDATE) : this.polygon.geometry.removeComponent(a);
     this.restoreFeature();
     return !1;
   },
@@ -20648,8 +18990,7 @@ OpenLayers.Strategy.BBOX = OpenLayers.Class(OpenLayers.Strategy, {
   },
   deactivate: function() {
     var a = OpenLayers.Strategy.prototype.deactivate.call(this);
-    a &&
-      this.layer.events.un({ moveend: this.update, refresh: this.update, visibilitychanged: this.update, scope: this });
+    a && this.layer.events.un({ moveend: this.update, refresh: this.update, visibilitychanged: this.update, scope: this });
     return a;
   },
   update: function(a) {
@@ -20661,17 +19002,13 @@ OpenLayers.Strategy.BBOX = OpenLayers.Class(OpenLayers.Strategy, {
   getMapBounds: function() {
     if(null === this.layer.map) return null;
     var a = this.layer.map.getExtent();
-    a &&
-      !this.layer.projection.equals(this.layer.map.getProjectionObject()) &&
-      (a = a.clone().transform(this.layer.map.getProjectionObject(), this.layer.projection));
+    a && !this.layer.projection.equals(this.layer.map.getProjectionObject()) && (a = a.clone().transform(this.layer.map.getProjectionObject(), this.layer.projection));
     return a;
   },
   invalidBounds: function(a) {
     a || (a = this.getMapBounds());
     a = !this.bounds || !this.bounds.containsBounds(a);
-    !a &&
-      this.resFactor &&
-      ((a = this.resolution / this.layer.map.getResolution()), (a = a >= this.resFactor || a <= 1 / this.resFactor));
+    !a && this.resFactor && ((a = this.resolution / this.layer.map.getResolution()), (a = a >= this.resFactor || a <= 1 / this.resFactor));
     return a;
   },
   calculateBounds: function(a) {
@@ -20682,14 +19019,10 @@ OpenLayers.Strategy.BBOX = OpenLayers.Class(OpenLayers.Strategy, {
     this.bounds = new OpenLayers.Bounds(b.lon - c / 2, b.lat - a / 2, b.lon + c / 2, b.lat + a / 2);
   },
   triggerRead: function(a) {
-    !this.response ||
-      (a && !0 === a.noAbort) ||
-      (this.layer.protocol.abort(this.response), this.layer.events.triggerEvent('loadend'));
+    !this.response || (a && !0 === a.noAbort) || (this.layer.protocol.abort(this.response), this.layer.events.triggerEvent('loadend'));
     var b = { filter: this.createFilter() };
     this.layer.events.triggerEvent('loadstart', b);
-    this.response = this.layer.protocol.read(
-      OpenLayers.Util.applyDefaults({ filter: b.filter, callback: this.merge, scope: this }, a)
-    );
+    this.response = this.layer.protocol.read(OpenLayers.Util.applyDefaults({ filter: b.filter, callback: this.merge, scope: this }, a));
   },
   createFilter: function() {
     var a = new OpenLayers.Filter.Spatial({
@@ -20697,8 +19030,7 @@ OpenLayers.Strategy.BBOX = OpenLayers.Class(OpenLayers.Strategy, {
       value: this.bounds,
       projection: this.layer.projection
     });
-    this.layer.filter &&
-      (a = new OpenLayers.Filter.Logical({ type: OpenLayers.Filter.Logical.AND, filters: [this.layer.filter, a] }));
+    this.layer.filter && (a = new OpenLayers.Filter.Logical({ type: OpenLayers.Filter.Logical.AND, filters: [this.layer.filter, a] }));
     return a;
   },
   merge: function(a) {
@@ -20742,9 +19074,7 @@ OpenLayers.Layer.WorldWind = OpenLayers.Class(OpenLayers.Layer.Grid, {
       d = this.lzd / Math.pow(2, this.getZoom()),
       e = Math.floor((a.left - c.left) / d);
     a = Math.floor((a.bottom - c.bottom) / d);
-    return this.map.getResolution() <= this.lzd / 512 && this.getZoom() <= this.zoomLevels
-      ? this.getFullRequestString({ L: b, X: e, Y: a })
-      : OpenLayers.Util.getImageLocation('blank.gif');
+    return this.map.getResolution() <= this.lzd / 512 && this.getZoom() <= this.zoomLevels ? this.getFullRequestString({ L: b, X: e, Y: a }) : OpenLayers.Util.getImageLocation('blank.gif');
   },
   CLASS_NAME: 'OpenLayers.Layer.WorldWind'
 });
@@ -20769,16 +19099,13 @@ OpenLayers.Format.WMTSCapabilities = OpenLayers.Class(OpenLayers.Format.XML.Vers
     var g = b.format;
     !g && d.formats && d.formats.length && (g = d.formats[0]);
     var h;
-    b.matrixSet
-      ? (h = c.tileMatrixSets[b.matrixSet])
-      : 1 <= d.tileMatrixSetLinks.length && (h = c.tileMatrixSets[d.tileMatrixSetLinks[0].tileMatrixSet]);
+    b.matrixSet ? (h = c.tileMatrixSets[b.matrixSet]) : 1 <= d.tileMatrixSetLinks.length && (h = c.tileMatrixSets[d.tileMatrixSetLinks[0].tileMatrixSet]);
     if(!h) throw Error('matrixSet not found');
     for(var k, e = 0, f = d.styles.length; e < f && ((k = d.styles[e]), !k.isDefault); ++e);
     c = b.requestEncoding;
     if(!c && ((c = 'KVP'), a.operationsMetadata.GetTile.dcp.http)) {
       var l = a.operationsMetadata.GetTile.dcp.http;
-      l.get[0].constraints &&
-        ((l = l.get[0].constraints.GetEncoding.allowedValues), l.KVP || (!l.REST && !l.RESTful) || (c = 'REST'));
+      l.get[0].constraints && ((l = l.get[0].constraints.GetEncoding.allowedValues), l.KVP || (!l.REST && !l.RESTful) || (c = 'REST'));
     }
     var l = [],
       m = b.params || {};
@@ -20792,18 +19119,14 @@ OpenLayers.Format.WMTSCapabilities = OpenLayers.Class(OpenLayers.Format.XML.Vers
       p = b.units || ('EPSG:4326' === n ? 'degrees' : 'm'),
       q = [],
       r;
-    for(r in h.matrixIds)
-      h.matrixIds.hasOwnProperty(r) &&
-        q.push((2.8e-4 * h.matrixIds[r].scaleDenominator) / OpenLayers.METERS_PER_INCH / OpenLayers.INCHES_PER_UNIT[p]);
+    for(r in h.matrixIds) h.matrixIds.hasOwnProperty(r) && q.push((2.8e-4 * h.matrixIds[r].scaleDenominator) / OpenLayers.METERS_PER_INCH / OpenLayers.INCHES_PER_UNIT[p]);
     if('REST' === c && d.resourceUrls) {
       r = [];
-      for(var f = 0, s = d.resourceUrls.length; f < s; ++f)
-        (e = d.resourceUrls[f]), e.format === g && 'tile' === e.resourceType && r.push(e.template);
+      for(var f = 0, s = d.resourceUrls.length; f < s; ++f) (e = d.resourceUrls[f]), e.format === g && 'tile' === e.resourceType && r.push(e.template);
     } else {
       s = a.operationsMetadata.GetTile.dcp.http.get;
       r = [];
-      for(var t, e = 0, f = s.length; e < f; e++)
-        (t = s[e].constraints), (!t || (t && t.GetEncoding.allowedValues[c])) && r.push(s[e].url);
+      for(var t, e = 0, f = s.length; e < f; e++) (t = s[e].constraints), (!t || (t && t.GetEncoding.allowedValues[c])) && r.push(s[e].url);
     }
     return new OpenLayers.Layer.WMTS(
       OpenLayers.Util.applyDefaults(b, {
@@ -20876,10 +19199,7 @@ OpenLayers.Layer.Google.v3 = {
       e = this.mapObject.getDiv();
       if(!0 === a) {
         if(e.parentNode !== c.div)
-          if(b.rendered)
-            c.div.appendChild(e),
-              b.googleControl.appendChild(c.viewPortDiv),
-              google.maps.event.trigger(this.mapObject, 'resize');
+          if(b.rendered) c.div.appendChild(e), b.googleControl.appendChild(c.viewPortDiv), google.maps.event.trigger(this.mapObject, 'resize');
           else {
             var h = this;
             google.maps.event.addListenerOnce(this.mapObject, 'tilesloaded', function() {
@@ -20934,9 +19254,7 @@ OpenLayers.Layer.Google.v3 = {
   },
   getMapObjectLonLatFromLonLat: function(a, b) {
     var c;
-    this.sphericalMercator
-      ? ((c = this.inverseMercator(a, b)), (c = new google.maps.LatLng(c.lat, c.lon)))
-      : (c = new google.maps.LatLng(b, a));
+    this.sphericalMercator ? ((c = this.inverseMercator(a, b)), (c = new google.maps.LatLng(c.lat, c.lon))) : (c = new google.maps.LatLng(b, a));
     return c;
   },
   getMapObjectPixelFromXY: function(a, b) {
@@ -21054,17 +19372,9 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
     var b, c;
     a = a.replace(/[\n\r]/g, ' ');
     if((c = this.regExes.typeStr.exec(a)))
-      if(
-        ((a = c[1].toLowerCase()),
-        (c = c[2]),
-        this.parse[a] && (b = this.parse[a].apply(this, [c])),
-        this.internalProjection && this.externalProjection)
-      )
-        if(b && 'OpenLayers.Feature.Vector' == b.CLASS_NAME)
-          b.geometry.transform(this.externalProjection, this.internalProjection);
-        else if(b && 'geometrycollection' != a && 'object' == typeof b)
-          for(a = 0, c = b.length; a < c; a++)
-            b[a].geometry.transform(this.externalProjection, this.internalProjection);
+      if(((a = c[1].toLowerCase()), (c = c[2]), this.parse[a] && (b = this.parse[a].apply(this, [c])), this.internalProjection && this.externalProjection))
+        if(b && 'OpenLayers.Feature.Vector' == b.CLASS_NAME) b.geometry.transform(this.externalProjection, this.internalProjection);
+        else if(b && 'geometrycollection' != a && 'object' == typeof b) for(a = 0, c = b.length; a < c; a++) b[a].geometry.transform(this.externalProjection, this.internalProjection);
     return b;
   },
   write: function(a) {
@@ -21072,17 +19382,14 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
     a.constructor == Array ? (c = !0) : ((a = [a]), (c = !1));
     var d = [];
     c && d.push('GEOMETRYCOLLECTION(');
-    for(var e = 0, f = a.length; e < f; ++e)
-      c && 0 < e && d.push(','), (b = a[e].geometry), d.push(this.extractGeometry(b));
+    for(var e = 0, f = a.length; e < f; ++e) c && 0 < e && d.push(','), (b = a[e].geometry), d.push(this.extractGeometry(b));
     c && d.push(')');
     return d.join('');
   },
   extractGeometry: function(a) {
     var b = a.CLASS_NAME.split('.')[2].toLowerCase();
     if(!this.extract[b]) return null;
-    this.internalProjection &&
-      this.externalProjection &&
-      ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
+    this.internalProjection && this.externalProjection && ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
     return ('collection' == b ? 'GEOMETRYCOLLECTION' : b.toUpperCase()) + '(' + this.extract[b].apply(this, [a]) + ')';
   },
   extract: {
@@ -21090,33 +19397,27 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
       return a.x + ' ' + a.y;
     },
     multipoint: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push('(' + this.extract.point.apply(this, [a.components[c]]) + ')');
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push('(' + this.extract.point.apply(this, [a.components[c]]) + ')');
       return b.join(',');
     },
     linestring: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push(this.extract.point.apply(this, [a.components[c]]));
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push(this.extract.point.apply(this, [a.components[c]]));
       return b.join(',');
     },
     multilinestring: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push('(' + this.extract.linestring.apply(this, [a.components[c]]) + ')');
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push('(' + this.extract.linestring.apply(this, [a.components[c]]) + ')');
       return b.join(',');
     },
     polygon: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push('(' + this.extract.linestring.apply(this, [a.components[c]]) + ')');
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push('(' + this.extract.linestring.apply(this, [a.components[c]]) + ')');
       return b.join(',');
     },
     multipolygon: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push('(' + this.extract.polygon.apply(this, [a.components[c]]) + ')');
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push('(' + this.extract.polygon.apply(this, [a.components[c]]) + ')');
       return b.join(',');
     },
     collection: function(a) {
-      for(var b = [], c = 0, d = a.components.length; c < d; ++c)
-        b.push(this.extractGeometry.apply(this, [a.components[c]]));
+      for(var b = [], c = 0, d = a.components.length; c < d; ++c) b.push(this.extractGeometry.apply(this, [a.components[c]]));
       return b.join(',');
     }
   },
@@ -21126,8 +19427,7 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
       return new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(a[0], a[1]));
     },
     multipoint: function(a) {
-      for(var b = OpenLayers.String.trim(a).split(','), c = [], d = 0, e = b.length; d < e; ++d)
-        (a = b[d].replace(this.regExes.trimParens, '$1')), c.push(this.parse.point.apply(this, [a]).geometry);
+      for(var b = OpenLayers.String.trim(a).split(','), c = [], d = 0, e = b.length; d < e; ++d) (a = b[d].replace(this.regExes.trimParens, '$1')), c.push(this.parse.point.apply(this, [a]).geometry);
       return new OpenLayers.Feature.Vector(new OpenLayers.Geometry.MultiPoint(c));
     },
     linestring: function(a) {
@@ -21144,26 +19444,18 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
       var b;
       a = OpenLayers.String.trim(a).split(this.regExes.parenComma);
       for(var c = [], d = 0, e = a.length; d < e; ++d)
-        (b = a[d].replace(this.regExes.trimParens, '$1')),
-          (b = this.parse.linestring.apply(this, [b]).geometry),
-          (b = new OpenLayers.Geometry.LinearRing(b.components)),
-          c.push(b);
+        (b = a[d].replace(this.regExes.trimParens, '$1')), (b = this.parse.linestring.apply(this, [b]).geometry), (b = new OpenLayers.Geometry.LinearRing(b.components)), c.push(b);
       return new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon(c));
     },
     multipolygon: function(a) {
-      for(
-        var b = OpenLayers.String.trim(a).split(this.regExes.doubleParenComma), c = [], d = 0, e = b.length;
-        d < e;
-        ++d
-      )
+      for(var b = OpenLayers.String.trim(a).split(this.regExes.doubleParenComma), c = [], d = 0, e = b.length; d < e; ++d)
         (a = b[d].replace(this.regExes.trimParens, '$1')), c.push(this.parse.polygon.apply(this, [a]).geometry);
       return new OpenLayers.Feature.Vector(new OpenLayers.Geometry.MultiPolygon(c));
     },
     geometrycollection: function(a) {
       a = a.replace(/,\s*([A-Za-z])/g, '|$1');
       a = OpenLayers.String.trim(a).split('|');
-      for(var b = [], c = 0, d = a.length; c < d; ++c)
-        b.push(OpenLayers.Format.WKT.prototype.read.apply(this, [a[c]]));
+      for(var b = [], c = 0, d = a.length; c < d; ++c) b.push(OpenLayers.Format.WKT.prototype.read.apply(this, [a[c]]));
       return b;
     }
   },
@@ -21253,9 +19545,7 @@ OpenLayers.WPSProcess = OpenLayers.Class({
   },
   parseDescription: function(a) {
     a = this.client.servers[this.server];
-    this.description = new OpenLayers.Format.WPSDescribeProcess().read(
-      a.processDescription[this.identifier]
-    ).processDescriptions[this.identifier];
+    this.description = new OpenLayers.Format.WPSDescribeProcess().read(a.processDescription[this.identifier]).processDescriptions[this.identifier];
   },
   setInputData: function(a, b) {
     delete a.data;
@@ -21276,10 +19566,7 @@ OpenLayers.WPSProcess = OpenLayers.Class({
     else {
       a.data = {};
       var c = a.complexData;
-      c
-        ? ((c = this.findMimeType(c.supported.formats)),
-          (a.data.complexData = { mimeType: c, value: this.formats[c].write(this.toFeatures(b)) }))
-        : (a.data.literalData = { value: b });
+      c ? ((c = this.findMimeType(c.supported.formats)), (a.data.complexData = { mimeType: c, value: this.formats[c].write(this.toFeatures(b)) })) : (a.data.literalData = { value: b });
     }
   },
   setResponseForm: function(a) {
@@ -21306,10 +19593,7 @@ OpenLayers.WPSProcess = OpenLayers.Class({
   },
   chainProcess: function(a, b) {
     var c = this.getOutputIndex(b.process.description.processOutputs, b.output);
-    a.reference.mimeType = this.findMimeType(
-      a.complexData.supported.formats,
-      b.process.description.processOutputs[c].complexOutput.supported.formats
-    );
+    a.reference.mimeType = this.findMimeType(a.complexData.supported.formats, b.process.description.processOutputs[c].complexOutput.supported.formats);
     var d = {};
     d[a.reference.mimeType] = !0;
     b.process.setResponseForm({ outputIndex: c, supportedFormats: d });
@@ -21318,8 +19602,7 @@ OpenLayers.WPSProcess = OpenLayers.Class({
   toFeatures: function(a) {
     var b = OpenLayers.Array.isArray(a);
     b || (a = [a]);
-    for(var c = Array(a.length), d, e = 0, f = a.length; e < f; ++e)
-      (d = a[e]), (c[e] = d instanceof OpenLayers.Feature.Vector ? d : new OpenLayers.Feature.Vector(d));
+    for(var c = Array(a.length), d, e = 0, f = a.length; e < f; ++e) (d = a[e]), (c[e] = d instanceof OpenLayers.Feature.Vector ? d : new OpenLayers.Feature.Vector(d));
     return b ? c : c[0];
   },
   findMimeType: function(a, b) {
@@ -21345,11 +19628,7 @@ OpenLayers.WPSClient = OpenLayers.Class({
     OpenLayers.Util.extend(this, a);
     this.events = new OpenLayers.Events(this);
     this.servers = {};
-    for(var b in a.servers)
-      this.servers[b] =
-        'string' == typeof a.servers[b]
-          ? { url: a.servers[b], version: this.version, processDescription: {} }
-          : a.servers[b];
+    for(var b in a.servers) this.servers[b] = 'string' == typeof a.servers[b] ? { url: a.servers[b], version: this.version, processDescription: {} } : a.servers[b];
   },
   execute: function(a) {
     this.getProcess(a.server, a.process).execute({ inputs: a.inputs, success: a.success, scope: a.scope });
@@ -21440,10 +19719,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
       SearchResults: function(a, b) {
         this.readChildNodes(a, b);
         for(var c = a.attributes, d = {}, e = 0, f = c.length; e < f; ++e)
-          d[c[e].name] =
-            'numberOfRecordsMatched' == c[e].name || 'numberOfRecordsReturned' == c[e].name || 'nextRecord' == c[e].name
-              ? parseInt(c[e].nodeValue)
-              : c[e].nodeValue;
+          d[c[e].name] = 'numberOfRecordsMatched' == c[e].name || 'numberOfRecordsReturned' == c[e].name || 'nextRecord' == c[e].name ? parseInt(c[e].nodeValue) : c[e].nodeValue;
         b.SearchResults = d;
       },
       SummaryRecord: function(a, b) {
@@ -21497,12 +19773,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
     ows: OpenLayers.Util.applyDefaults(
       {
         BoundingBox: function(a, b) {
-          b.bounds &&
-            ((b.BoundingBox = [
-              { crs: b.projection, value: [b.bounds.left, b.bounds.bottom, b.bounds.right, b.bounds.top] }
-            ]),
-            delete b.projection,
-            delete b.bounds);
+          b.bounds && ((b.BoundingBox = [{ crs: b.projection, value: [b.bounds.left, b.bounds.bottom, b.bounds.right, b.bounds.top] }]), delete b.projection, delete b.bounds);
           OpenLayers.Format.OWSCommon.v1_0_0.prototype.readers.ows.BoundingBox.apply(this, arguments);
         }
       },
@@ -21530,11 +19801,9 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
             maxRecords: a.maxRecords || this.maxRecords
           }
         });
-        (a.DistributedSearch || this.DistributedSearch) &&
-          this.writeNode('csw:DistributedSearch', a.DistributedSearch || this.DistributedSearch, b);
+        (a.DistributedSearch || this.DistributedSearch) && this.writeNode('csw:DistributedSearch', a.DistributedSearch || this.DistributedSearch, b);
         var c = a.ResponseHandler || this.ResponseHandler;
-        if(OpenLayers.Array.isArray(c) && 0 < c.length)
-          for(var d = 0, e = c.length; d < e; d++) this.writeNode('csw:ResponseHandler', c[d], b);
+        if(OpenLayers.Array.isArray(c) && 0 < c.length) for(var d = 0, e = c.length; d < e; d++) this.writeNode('csw:ResponseHandler', c[d], b);
         this.writeNode('Query', a.Query || this.Query, b);
         return b;
       },
@@ -21548,8 +19817,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
         a || (a = {});
         var b = this.createElementNSPlus('csw:Query', { attributes: { typeNames: a.typeNames || 'csw:Record' } }),
           c = a.ElementName;
-        if(OpenLayers.Array.isArray(c) && 0 < c.length)
-          for(var d = 0, e = c.length; d < e; d++) this.writeNode('csw:ElementName', c[d], b);
+        if(OpenLayers.Array.isArray(c) && 0 < c.length) for(var d = 0, e = c.length; d < e; d++) this.writeNode('csw:ElementName', c[d], b);
         else this.writeNode('csw:ElementSetName', a.ElementSetName || { value: 'summary' }, b);
         a.Constraint && this.writeNode('csw:Constraint', a.Constraint, b);
         a.SortBy && this.writeNode('ogc:SortBy', a.SortBy, b);
@@ -21650,12 +19918,7 @@ OpenLayers.Format.Text = OpenLayers.Class(OpenLayers.Format, {
       if('#' != e.charAt(0))
         if(b) {
           for(
-            var e = e.split('\t'),
-              f = new OpenLayers.Geometry.Point(0, 0),
-              g = {},
-              h = this.defaultStyle ? OpenLayers.Util.applyDefaults({}, this.defaultStyle) : null,
-              k = !1,
-              l = 0;
+            var e = e.split('\t'), f = new OpenLayers.Geometry.Point(0, 0), g = {}, h = this.defaultStyle ? OpenLayers.Util.applyDefaults({}, this.defaultStyle) : null, k = !1, l = 0;
             l < e.length;
             l++
           )
@@ -21671,20 +19934,13 @@ OpenLayers.Format.Text = OpenLayers.Class(OpenLayers.Format, {
                 h.graphicHeight = parseFloat(m[1]);
               } else
                 'iconOffset' == b[l] && h
-                  ? ((m = e[l].split(',')),
-                    (h.graphicXOffset = parseFloat(m[0])),
-                    (h.graphicYOffset = parseFloat(m[1])))
+                  ? ((m = e[l].split(',')), (h.graphicXOffset = parseFloat(m[0])), (h.graphicYOffset = parseFloat(m[1])))
                   : 'description' == b[l]
                   ? (g.description = e[l])
                   : 'overflow' == b[l]
                   ? (g.overflow = e[l])
                   : (g[b[l]] = e[l]);
-          k &&
-            (this.internalProjection &&
-              this.externalProjection &&
-              f.transform(this.externalProjection, this.internalProjection),
-            (e = new OpenLayers.Feature.Vector(f, g, h)),
-            c.push(e));
+          k && (this.internalProjection && this.externalProjection && f.transform(this.externalProjection, this.internalProjection), (e = new OpenLayers.Feature.Vector(f, g, h)), c.push(e));
         } else b = e.split('\t');
     }
     return c;
@@ -21727,9 +19983,7 @@ OpenLayers.Layer.Text = OpenLayers.Class(OpenLayers.Layer.Markers, {
     a = a.responseText;
     var b = {};
     OpenLayers.Util.extend(b, this.formatOptions);
-    this.map &&
-      !this.projection.equals(this.map.getProjectionObject()) &&
-      ((b.externalProjection = this.projection), (b.internalProjection = this.map.getProjectionObject()));
+    this.map && !this.projection.equals(this.map.getProjectionObject()) && ((b.externalProjection = this.projection), (b.internalProjection = this.map.getProjectionObject()));
     a = new OpenLayers.Format.Text(b).read(a);
     for(var b = 0, c = a.length; b < c; b++) {
       var d = {},
@@ -21738,18 +19992,10 @@ OpenLayers.Layer.Text = OpenLayers.Class(OpenLayers.Layer.Markers, {
         g,
         h;
       f = new OpenLayers.LonLat(e.geometry.x, e.geometry.y);
-      e.style.graphicWidth &&
-        e.style.graphicHeight &&
-        (g = new OpenLayers.Size(e.style.graphicWidth, e.style.graphicHeight));
-      void 0 !== e.style.graphicXOffset &&
-        void 0 !== e.style.graphicYOffset &&
-        (h = new OpenLayers.Pixel(e.style.graphicXOffset, e.style.graphicYOffset));
-      null != e.style.externalGraphic
-        ? (d.icon = new OpenLayers.Icon(e.style.externalGraphic, g, h))
-        : ((d.icon = OpenLayers.Marker.defaultIcon()), null != g && d.icon.setSize(g));
-      null != e.attributes.title &&
-        null != e.attributes.description &&
-        (d.popupContentHTML = '<h2>' + e.attributes.title + '</h2><p>' + e.attributes.description + '</p>');
+      e.style.graphicWidth && e.style.graphicHeight && (g = new OpenLayers.Size(e.style.graphicWidth, e.style.graphicHeight));
+      void 0 !== e.style.graphicXOffset && void 0 !== e.style.graphicYOffset && (h = new OpenLayers.Pixel(e.style.graphicXOffset, e.style.graphicYOffset));
+      null != e.style.externalGraphic ? (d.icon = new OpenLayers.Icon(e.style.externalGraphic, g, h)) : ((d.icon = OpenLayers.Marker.defaultIcon()), null != g && d.icon.setSize(g));
+      null != e.attributes.title && null != e.attributes.description && (d.popupContentHTML = '<h2>' + e.attributes.title + '</h2><p>' + e.attributes.description + '</p>');
       d.overflow = e.attributes.overflow || 'auto';
       d = new OpenLayers.Feature(this, f, d);
       this.features.push(d);
@@ -21791,8 +20037,7 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
   layer: null,
   origin: null,
   initialize: function(a, b, c) {
-    (c && c.layerOptions && c.layerOptions.styleMap) ||
-      (this.style = OpenLayers.Util.extend(OpenLayers.Feature.Vector.style['default'], {}));
+    (c && c.layerOptions && c.layerOptions.styleMap) || (this.style = OpenLayers.Util.extend(OpenLayers.Feature.Vector.style['default'], {}));
     OpenLayers.Handler.Drag.prototype.initialize.apply(this, [a, b, c]);
     this.options = c ? c : {};
   },
@@ -21803,10 +20048,7 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
   activate: function() {
     var a = !1;
     OpenLayers.Handler.Drag.prototype.activate.apply(this, arguments) &&
-      ((a = OpenLayers.Util.extend(
-        { displayInLayerSwitcher: !1, calculateInRange: OpenLayers.Function.True, wrapDateLine: this.citeCompliant },
-        this.layerOptions
-      )),
+      ((a = OpenLayers.Util.extend({ displayInLayerSwitcher: !1, calculateInRange: OpenLayers.Function.True, wrapDateLine: this.citeCompliant }, this.layerOptions)),
       (this.layer = new OpenLayers.Layer.Vector(this.CLASS_NAME, a)),
       this.map.addLayer(this.layer),
       (a = !0));
@@ -21815,10 +20057,7 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
   deactivate: function() {
     var a = !1;
     OpenLayers.Handler.Drag.prototype.deactivate.apply(this, arguments) &&
-      (this.dragging && this.cancel(),
-      null != this.layer.map && (this.layer.destroy(!1), this.feature && this.feature.destroy()),
-      (this.feature = this.layer = null),
-      (a = !0));
+      (this.dragging && this.cancel(), null != this.layer.map && (this.layer.destroy(!1), this.feature && this.feature.destroy()), (this.feature = this.layer = null), (a = !0));
     return a;
   },
   down: function(a) {
@@ -21837,8 +20076,7 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
     var b = this.layer.getLonLatFromViewPortPx(a.xy),
       b = new OpenLayers.Geometry.Point(b.lon, b.lat);
     this.irregular
-      ? ((a = (Math.sqrt(2) * Math.abs(b.y - this.origin.y)) / 2),
-        (this.radius = Math.max(this.map.getResolution() / 2, a)))
+      ? ((a = (Math.sqrt(2) * Math.abs(b.y - this.origin.y)) / 2), (this.radius = Math.max(this.map.getResolution() / 2, a)))
       : this.fixedRadius
       ? (this.origin = b)
       : (this.calculateAngle(b, a), (this.radius = Math.max(this.map.getResolution() / 2, b.distanceTo(this.origin))));
@@ -21863,12 +20101,7 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
   createGeometry: function() {
     this.angle = Math.PI * (1 / this.sides - 0.5);
     this.snapAngle && (this.angle += this.snapAngle * (Math.PI / 180));
-    this.feature.geometry = OpenLayers.Geometry.Polygon.createRegularPolygon(
-      this.origin,
-      this.radius,
-      this.sides,
-      this.snapAngle
-    );
+    this.feature.geometry = OpenLayers.Geometry.Polygon.createRegularPolygon(this.origin, this.radius, this.sides, this.snapAngle);
   },
   modifyGeometry: function() {
     var a,
@@ -21876,11 +20109,7 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
       c = this.feature.geometry.components[0];
     c.components.length != this.sides + 1 && (this.createGeometry(), (c = this.feature.geometry.components[0]));
     for(var d = 0; d < this.sides; ++d)
-      (b = c.components[d]),
-        (a = this.angle + (2 * d * Math.PI) / this.sides),
-        (b.x = this.origin.x + this.radius * Math.cos(a)),
-        (b.y = this.origin.y + this.radius * Math.sin(a)),
-        b.clearBounds();
+      (b = c.components[d]), (a = this.angle + (2 * d * Math.PI) / this.sides), (b.x = this.origin.x + this.radius * Math.cos(a)), (b.y = this.origin.y + this.radius * Math.sin(a)), b.clearBounds();
   },
   calculateAngle: function(a, b) {
     var c = Math.atan2(a.y - this.origin.y, a.x - this.origin.x);
@@ -21945,25 +20174,15 @@ OpenLayers.Control.SLDSelect = OpenLayers.Class(OpenLayers.Control, {
     var b;
     if(this.layerCache[a.id]) b = this.layerCache[a.id];
     else {
-      b = new OpenLayers.Layer.WMS(
-        a.name,
-        a.url,
-        a.params,
-        OpenLayers.Util.applyDefaults(this.layerOptions, a.getOptions())
-      );
+      b = new OpenLayers.Layer.WMS(a.name, a.url, a.params, OpenLayers.Util.applyDefaults(this.layerOptions, a.getOptions()));
       this.layerCache[a.id] = b;
-      if(!1 === this.layerOptions.displayInLayerSwitcher)
-        a.events.on({ visibilitychanged: this.coupleLayerVisiblity, scope: b });
+      if(!1 === this.layerOptions.displayInLayerSwitcher) a.events.on({ visibilitychanged: this.coupleLayerVisiblity, scope: b });
       this.map.addLayer(b);
     }
     return b;
   },
   createSLD: function(a, b, c) {
-    for(
-      var d = { version: '1.0.0', namedLayers: {} }, e = ('' + a.params.LAYERS).split(','), f = 0, g = e.length;
-      f < g;
-      f++
-    ) {
+    for(var d = { version: '1.0.0', namedLayers: {} }, e = ('' + a.params.LAYERS).split(','), f = 0, g = e.length; f < g; f++) {
       var h = e[f];
       d.namedLayers[h] = { name: h, userStyles: [] };
       var k = this.selectionSymbolizer,
@@ -21985,8 +20204,7 @@ OpenLayers.Control.SLDSelect = OpenLayers.Class(OpenLayers.Control, {
       c = a.responseXML;
     (c && c.documentElement) || (c = a.responseText);
     a = b.read(c);
-    for(var b = [], c = null, d = 0, e = a.length; d < e; d++)
-      'WFS' == a[d].owsType && (b.push(a[d].typeName), (c = a[d].owsURL));
+    for(var b = [], c = null, d = 0, e = a.length; d < e; d++) 'WFS' == a[d].owsType && (b.push(a[d].typeName), (c = a[d].owsURL));
     OpenLayers.Request.GET({
       url: c,
       params: { SERVICE: 'WFS', TYPENAME: b.toString(), REQUEST: 'DescribeFeatureType', VERSION: '1.0.0' },
@@ -22008,12 +20226,7 @@ OpenLayers.Control.SLDSelect = OpenLayers.Class(OpenLayers.Control, {
       for(var e = a.featureTypes[c].properties, f = 0, g = e.length; f < g; f++) {
         var h = e[f],
           k = h.type;
-        (0 <= k.indexOf('LineString') ||
-          0 <= k.indexOf('GeometryAssociationType') ||
-          0 <= k.indexOf('GeometryPropertyType') ||
-          0 <= k.indexOf('Point') ||
-          0 <= k.indexOf('Polygon')) &&
-          b.push(h);
+        (0 <= k.indexOf('LineString') || 0 <= k.indexOf('GeometryAssociationType') || 0 <= k.indexOf('GeometryPropertyType') || 0 <= k.indexOf('Point') || 0 <= k.indexOf('Polygon')) && b.push(h);
       }
     return b;
   },
@@ -22164,13 +20377,9 @@ OpenLayers.Layer.MapGuide = OpenLayers.Class(OpenLayers.Layer.Grid, {
     d && null != d.useOverlay && (this.useOverlay = d.useOverlay);
     this.singleTile
       ? this.useOverlay
-        ? (OpenLayers.Util.applyDefaults(this.params, this.OVERLAY_PARAMS),
-          this.useAsyncOverlay || (this.params.version = '1.0.0'))
+        ? (OpenLayers.Util.applyDefaults(this.params, this.OVERLAY_PARAMS), this.useAsyncOverlay || (this.params.version = '1.0.0'))
         : OpenLayers.Util.applyDefaults(this.params, this.SINGLE_TILE_PARAMS)
-      : (this.useHttpTile
-          ? OpenLayers.Util.applyDefaults(this.params, this.FOLDER_PARAMS)
-          : OpenLayers.Util.applyDefaults(this.params, this.TILE_PARAMS),
-        this.setTileSize(this.defaultSize));
+      : (this.useHttpTile ? OpenLayers.Util.applyDefaults(this.params, this.FOLDER_PARAMS) : OpenLayers.Util.applyDefaults(this.params, this.TILE_PARAMS), this.setTileSize(this.defaultSize));
   },
   clone: function(a) {
     null == a && (a = new OpenLayers.Layer.MapGuide(this.name, this.url, this.params, this.getOptions()));
@@ -22226,9 +20435,7 @@ OpenLayers.Layer.MapGuide = OpenLayers.Class(OpenLayers.Layer.Grid, {
     for(g in e) g.toUpperCase() in f && delete e[g];
     e = OpenLayers.Util.getParameterString(e);
     e = e.replace(/,/g, '+');
-    '' != e &&
-      ((f = c.charAt(c.length - 1)),
-      (d = '&' == f || '?' == f ? d + e : -1 == c.indexOf('?') ? d + ('?' + e) : d + ('&' + e)));
+    '' != e && ((f = c.charAt(c.length - 1)), (d = '&' == f || '?' == f ? d + e : -1 == c.indexOf('?') ? d + ('?' + e) : d + ('&' + e)));
     return d;
   },
   getImageFilePath: function(a, b) {
@@ -22237,15 +20444,9 @@ OpenLayers.Layer.MapGuide = OpenLayers.Class(OpenLayers.Layer.Grid, {
     var d = '',
       e = '';
     0 > a.tilerow && (d = '-');
-    d =
-      0 == a.tilerow
-        ? d + '0'
-        : d + Math.floor(Math.abs(a.tilerow / this.params.tileRowsPerFolder)) * this.params.tileRowsPerFolder;
+    d = 0 == a.tilerow ? d + '0' : d + Math.floor(Math.abs(a.tilerow / this.params.tileRowsPerFolder)) * this.params.tileRowsPerFolder;
     0 > a.tilecol && (e = '-');
-    e =
-      0 == a.tilecol
-        ? e + '0'
-        : e + Math.floor(Math.abs(a.tilecol / this.params.tileColumnsPerFolder)) * this.params.tileColumnsPerFolder;
+    e = 0 == a.tilecol ? e + '0' : e + Math.floor(Math.abs(a.tilecol / this.params.tileColumnsPerFolder)) * this.params.tileColumnsPerFolder;
     d =
       '/S' +
       Math.floor(a.scaleindex) +
@@ -22318,50 +20519,34 @@ OpenLayers.Control.Measure = OpenLayers.Class(OpenLayers.Control, {
         ));
   },
   measureImmediate: function(a, b, c) {
-    c &&
-      !this.handler.freehandMode(this.handler.evt) &&
-      (this.cancelDelay(), this.measure(b.geometry, 'measurepartial'));
+    c && !this.handler.freehandMode(this.handler.evt) && (this.cancelDelay(), this.measure(b.geometry, 'measurepartial'));
   },
   cancelDelay: function() {
     null !== this.delayedTrigger && (window.clearTimeout(this.delayedTrigger), (this.delayedTrigger = null));
   },
   measure: function(a, b) {
     var c, d;
-    -1 < a.CLASS_NAME.indexOf('LineString')
-      ? ((c = this.getBestLength(a)), (d = 1))
-      : ((c = this.getBestArea(a)), (d = 2));
+    -1 < a.CLASS_NAME.indexOf('LineString') ? ((c = this.getBestLength(a)), (d = 1)) : ((c = this.getBestArea(a)), (d = 2));
     this.events.triggerEvent(b, { measure: c[0], units: c[1], order: d, geometry: a });
   },
   getBestArea: function(a) {
-    for(
-      var b = this.displaySystemUnits[this.displaySystem], c, d, e = 0, f = b.length;
-      e < f && !((c = b[e]), (d = this.getArea(a, c)), 1 < d);
-      ++e
-    );
+    for(var b = this.displaySystemUnits[this.displaySystem], c, d, e = 0, f = b.length; e < f && !((c = b[e]), (d = this.getArea(a, c)), 1 < d); ++e);
     return [d, c];
   },
   getArea: function(a, b) {
     var c, d;
-    this.geodesic
-      ? ((c = a.getGeodesicArea(this.map.getProjectionObject())), (d = 'm'))
-      : ((c = a.getArea()), (d = this.map.getUnits()));
+    this.geodesic ? ((c = a.getGeodesicArea(this.map.getProjectionObject())), (d = 'm')) : ((c = a.getArea()), (d = this.map.getUnits()));
     var e = OpenLayers.INCHES_PER_UNIT[b];
     e && (c *= Math.pow(OpenLayers.INCHES_PER_UNIT[d] / e, 2));
     return c;
   },
   getBestLength: function(a) {
-    for(
-      var b = this.displaySystemUnits[this.displaySystem], c, d, e = 0, f = b.length;
-      e < f && !((c = b[e]), (d = this.getLength(a, c)), 1 < d);
-      ++e
-    );
+    for(var b = this.displaySystemUnits[this.displaySystem], c, d, e = 0, f = b.length; e < f && !((c = b[e]), (d = this.getLength(a, c)), 1 < d); ++e);
     return [d, c];
   },
   getLength: function(a, b) {
     var c, d;
-    this.geodesic
-      ? ((c = a.getGeodesicLength(this.map.getProjectionObject())), (d = 'm'))
-      : ((c = a.getLength()), (d = this.map.getUnits()));
+    this.geodesic ? ((c = a.getGeodesicLength(this.map.getProjectionObject())), (d = 'm')) : ((c = a.getLength()), (d = this.map.getUnits()));
     var e = OpenLayers.INCHES_PER_UNIT[b];
     e && (c *= OpenLayers.INCHES_PER_UNIT[d] / e);
     return c;
@@ -22509,16 +20694,7 @@ OpenLayers.Popup.Framed = OpenLayers.Class(OpenLayers.Popup.Anchored, {
     for(b = 0; b < a.blocks.length; b++) {
       var c = {};
       this.blocks.push(c);
-      c.div = OpenLayers.Util.createDiv(
-        this.id + '_FrameDecorationDiv_' + b,
-        null,
-        null,
-        null,
-        'absolute',
-        null,
-        'hidden',
-        null
-      );
+      c.div = OpenLayers.Util.createDiv(this.id + '_FrameDecorationDiv_' + b, null, null, null, 'absolute', null, 'hidden', null);
       c.image = (this.isAlphaImage ? OpenLayers.Util.createAlphaImageDiv : OpenLayers.Util.createImage)(
         this.id + '_FrameDecorationImg_' + b,
         null,
@@ -22712,10 +20888,7 @@ OpenLayers.Tile.Image.IFrame = {
       this.useIFrame = null !== this.maxGetUrlLength && !this.layer.async && a.length > this.maxGetUrlLength;
       a = b && !this.useIFrame;
       b = !b && this.useIFrame;
-      if(a || b)
-        this.imgDiv && this.imgDiv.parentNode === this.frame && this.frame.removeChild(this.imgDiv),
-          (this.imgDiv = null),
-          a && this.frame.removeChild(this.frame.firstChild);
+      if(a || b) this.imgDiv && this.imgDiv.parentNode === this.frame && this.frame.removeChild(this.imgDiv), (this.imgDiv = null), a && this.frame.removeChild(this.frame.firstChild);
     }
     return OpenLayers.Tile.Image.prototype.draw.apply(this, arguments);
   },
@@ -22733,9 +20906,7 @@ OpenLayers.Tile.Image.IFrame = {
       }
       a = this.id + '_iFrame';
       9 > parseFloat(navigator.appVersion.split('MSIE')[1])
-        ? ((b = document.createElement('<iframe name="' + a + '">')),
-          (b.style.backgroundColor = '#FFFFFF'),
-          (b.style.filter = 'chroma(color=#FFFFFF)'))
+        ? ((b = document.createElement('<iframe name="' + a + '">')), (b.style.backgroundColor = '#FFFFFF'), (b.style.filter = 'chroma(color=#FFFFFF)'))
         : ((b = document.createElement('iframe')), (b.style.backgroundColor = 'transparent'), (b.name = a));
       b.scrolling = 'no';
       b.marginWidth = '0px';
@@ -22744,8 +20915,7 @@ OpenLayers.Tile.Image.IFrame = {
       b.style.position = 'absolute';
       b.style.width = '100%';
       b.style.height = '100%';
-      1 > this.layer.opacity &&
-        OpenLayers.Util.modifyDOMElement(b, null, null, null, null, null, null, this.layer.opacity);
+      1 > this.layer.opacity && OpenLayers.Util.modifyDOMElement(b, null, null, null, null, null, null, this.layer.opacity);
       this.frame.appendChild(b);
       return (this.imgDiv = b);
     }
@@ -22762,8 +20932,7 @@ OpenLayers.Tile.Image.IFrame = {
     var b = OpenLayers.Util.getParameters(this.url),
       c,
       d;
-    for(d in b)
-      (c = document.createElement('input')), (c.type = 'hidden'), (c.name = d), (c.value = b[d]), a.appendChild(c);
+    for(d in b) (c = document.createElement('input')), (c.type = 'hidden'), (c.name = d), (c.value = b[d]), a.appendChild(c);
     return a;
   },
   setImgSrc: function(a) {
@@ -22889,10 +21058,7 @@ OpenLayers.Handler.Pinch = OpenLayers.Class(OpenLayers.Handler, {
     var b = !0;
     this.pinching = !1;
     if(OpenLayers.Event.isMultiTouch(a))
-      (this.started = !0),
-        (this.last = this.start = { distance: this.getDistance(a.touches), delta: 0, scale: 1 }),
-        this.callback('start', [a, this.start]),
-        (b = !this.stopDown);
+      (this.started = !0), (this.last = this.start = { distance: this.getDistance(a.touches), delta: 0, scale: 1 }), this.callback('start', [a, this.start]), (b = !this.stopDown);
     else {
       if(this.started) return !1;
       this.started = !1;
@@ -22912,12 +21078,7 @@ OpenLayers.Handler.Pinch = OpenLayers.Class(OpenLayers.Handler, {
     return !0;
   },
   touchend: function(a) {
-    return this.started && !OpenLayers.Event.isMultiTouch(a)
-      ? ((this.pinching = this.started = !1),
-        this.callback('done', [a, this.start, this.last]),
-        (this.last = this.start = null),
-        !1)
-      : !0;
+    return this.started && !OpenLayers.Event.isMultiTouch(a) ? ((this.pinching = this.started = !1), this.callback('done', [a, this.start, this.last]), (this.last = this.start = null), !1) : !0;
   },
   activate: function() {
     var a = !1;
@@ -22926,8 +21087,7 @@ OpenLayers.Handler.Pinch = OpenLayers.Class(OpenLayers.Handler, {
   },
   deactivate: function() {
     var a = !1;
-    OpenLayers.Handler.prototype.deactivate.apply(this, arguments) &&
-      ((this.pinching = this.started = !1), (this.last = this.start = null), (a = !0));
+    OpenLayers.Handler.prototype.deactivate.apply(this, arguments) && ((this.pinching = this.started = !1), (this.last = this.start = null), (a = !0));
     return a;
   },
   getDistance: function(a) {
@@ -22959,9 +21119,7 @@ OpenLayers.Strategy.Refresh = OpenLayers.Class(OpenLayers.Strategy, {
   timer: null,
   activate: function() {
     var a = OpenLayers.Strategy.prototype.activate.call(this);
-    a &&
-      (!0 === this.layer.visibility && this.start(),
-      this.layer.events.on({ visibilitychanged: this.reset, scope: this }));
+    a && (!0 === this.layer.visibility && this.start(), this.layer.events.on({ visibilitychanged: this.reset, scope: this }));
     return a;
   },
   deactivate: function() {
@@ -22973,16 +21131,10 @@ OpenLayers.Strategy.Refresh = OpenLayers.Class(OpenLayers.Strategy, {
     !0 === this.layer.visibility ? this.start() : this.stop();
   },
   start: function() {
-    this.interval &&
-      'number' === typeof this.interval &&
-      0 < this.interval &&
-      (this.timer = window.setInterval(OpenLayers.Function.bind(this.refresh, this), this.interval));
+    this.interval && 'number' === typeof this.interval && 0 < this.interval && (this.timer = window.setInterval(OpenLayers.Function.bind(this.refresh, this), this.interval));
   },
   refresh: function() {
-    this.layer &&
-      this.layer.refresh &&
-      'function' == typeof this.layer.refresh &&
-      this.layer.refresh({ force: this.force });
+    this.layer && this.layer.refresh && 'function' == typeof this.layer.refresh && this.layer.refresh({ force: this.force });
   },
   stop: function() {
     null !== this.timer && (window.clearInterval(this.timer), (this.timer = null));
@@ -23000,8 +21152,7 @@ OpenLayers.Layer.ArcGIS93Rest = OpenLayers.Class(OpenLayers.Layer.Grid, {
     OpenLayers.Util.applyDefaults(this.params, OpenLayers.Util.upperCaseObject(this.DEFAULT_PARAMS));
     this.params.TRANSPARENT &&
       'true' == this.params.TRANSPARENT.toString().toLowerCase() &&
-      ((null != d && d.isBaseLayer) || (this.isBaseLayer = !1),
-      'jpg' == this.params.FORMAT && (this.params.FORMAT = OpenLayers.Util.alphaHack() ? 'gif' : 'png'));
+      ((null != d && d.isBaseLayer) || (this.isBaseLayer = !1), 'jpg' == this.params.FORMAT && (this.params.FORMAT = OpenLayers.Util.alphaHack() ? 'gif' : 'png'));
   },
   clone: function(a) {
     null == a && (a = new OpenLayers.Layer.ArcGIS93Rest(this.name, this.url, this.params, this.getOptions()));
@@ -23016,10 +21167,7 @@ OpenLayers.Layer.ArcGIS93Rest = OpenLayers.Class(OpenLayers.Layer.Grid, {
     if(this.layerDefs) {
       var b = [],
         d;
-      for(d in this.layerDefs)
-        this.layerDefs.hasOwnProperty(d) &&
-          this.layerDefs[d] &&
-          (b.push(d), b.push(':'), b.push(this.layerDefs[d]), b.push(';'));
+      for(d in this.layerDefs) this.layerDefs.hasOwnProperty(d) && this.layerDefs[d] && (b.push(d), b.push(':'), b.push(this.layerDefs[d]), b.push(';'));
       0 < b.length && (a.LAYERDEFS = b.join(''));
     }
     return this.getFullRequestString(a);
@@ -23058,10 +21206,7 @@ OpenLayers.Handler.Hover = OpenLayers.Class(OpenLayers.Handler, {
   },
   passesTolerance: function(a) {
     var b = !0;
-    this.pixelTolerance &&
-      this.px &&
-      Math.sqrt(Math.pow(this.px.x - a.x, 2) + Math.pow(this.px.y - a.y, 2)) < this.pixelTolerance &&
-      (b = !1);
+    this.pixelTolerance && this.px && Math.sqrt(Math.pow(this.px.x - a.x, 2) + Math.pow(this.px.y - a.y, 2)) < this.pixelTolerance && (b = !1);
     return b;
   },
   clearTimer: function() {
@@ -23101,18 +21246,8 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
     OpenLayers.Control.prototype.initialize.apply(this, [a]);
     this.features = {};
     this.handlers = {};
-    this.click &&
-      (this.handlers.click = new OpenLayers.Handler.Click(
-        this,
-        { click: this.selectClick },
-        this.handlerOptions.click || {}
-      ));
-    this.box &&
-      (this.handlers.box = new OpenLayers.Handler.Box(
-        this,
-        { done: this.selectBox },
-        OpenLayers.Util.extend(this.handlerOptions.box, { boxDivClassName: 'olHandlerBoxSelectFeature' })
-      ));
+    this.click && (this.handlers.click = new OpenLayers.Handler.Click(this, { click: this.selectClick }, this.handlerOptions.click || {}));
+    this.box && (this.handlers.box = new OpenLayers.Handler.Box(this, { done: this.selectBox }, OpenLayers.Util.extend(this.handlerOptions.box, { boxDivClassName: 'olHandlerBoxSelectFeature' })));
     this.hover &&
       (this.handlers.hover = new OpenLayers.Handler.Hover(
         this,
@@ -23136,9 +21271,7 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
   selectBox: function(a) {
     var b;
     if(a instanceof OpenLayers.Bounds)
-      (b = this.map.getLonLatFromPixel({ x: a.left, y: a.bottom })),
-        (a = this.map.getLonLatFromPixel({ x: a.right, y: a.top })),
-        (b = new OpenLayers.Bounds(b.lon, b.lat, a.lon, a.lat));
+      (b = this.map.getLonLatFromPixel({ x: a.left, y: a.bottom })), (a = this.map.getLonLatFromPixel({ x: a.right, y: a.top })), (b = new OpenLayers.Bounds(b.lon, b.lat, a.lon, a.lat));
     else {
       if(this.click) return;
       b = this.pixelToBounds(a);
@@ -23151,10 +21284,7 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
     this.request(a, { single: !0, hover: !0 });
   },
   cancelHover: function() {
-    this.hoverResponse &&
-      (this.protocol.abort(this.hoverResponse),
-      (this.hoverResponse = null),
-      OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olCursorWait'));
+    this.hoverResponse && (this.protocol.abort(this.hoverResponse), (this.hoverResponse = null), OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olCursorWait'));
   },
   request: function(a, b) {
     b = b || {};
@@ -23182,13 +21312,7 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
     c = c || {};
     if(a.length) {
       b = new OpenLayers.Geometry.Point(b.lon, b.lat);
-      for(
-        var d, e, f, g = Number.MAX_VALUE, h = 0;
-        h < a.length &&
-        !((d = a[h]),
-        d.geometry && ((f = b.distanceTo(d.geometry, { edge: !1 })), f < g && ((g = f), (e = d), 0 == g)));
-        ++h
-      );
+      for(var d, e, f, g = Number.MAX_VALUE, h = 0; h < a.length && !((d = a[h]), d.geometry && ((f = b.distanceTo(d.geometry, { edge: !1 })), f < g && ((g = f), (e = d), 0 == g))); ++h);
       !0 == c.hover ? this.hoverSelect(e) : this.select(e || a);
     }
   },
@@ -23208,10 +21332,7 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
           this.features[d.fid || d.id]
             ? this.modifiers.toggle && this.unselect(this.features[d.fid || d.id])
             : ((b = this.events.triggerEvent('beforefeatureselected', { feature: d })),
-              !1 !== b &&
-                ((this.features[d.fid || d.id] = d),
-                c.push(d),
-                this.events.triggerEvent('featureselected', { feature: d })));
+              !1 !== b && ((this.features[d.fid || d.id] = d), c.push(d), this.events.triggerEvent('featureselected', { feature: d })));
       this.events.triggerEvent('featuresselected', { features: c });
     }
   },
@@ -23302,8 +21423,7 @@ OpenLayers.Format.QueryStringFilter = (function () {
           } else OpenLayers.Console.warn('Unknown comparison filter type ' + c.type);
           break;
         case 'Logical':
-          if(c.type === OpenLayers.Filter.Logical.AND)
-            for(e = 0, f = c.filters.length; e < f; e++) d = this.write(c.filters[e], d);
+          if(c.type === OpenLayers.Filter.Logical.AND) for(e = 0, f = c.filters.length; e < f; e++) d = this.write(c.filters[e], d);
           else OpenLayers.Console.warn('Unsupported logical filter type ' + c.type);
           break;
         default:
@@ -23331,18 +21451,12 @@ OpenLayers.Control.MousePosition = OpenLayers.Class(OpenLayers.Control, {
   },
   activate: function() {
     return OpenLayers.Control.prototype.activate.apply(this, arguments)
-      ? (this.map.events.register('mousemove', this, this.redraw),
-        this.map.events.register('mouseout', this, this.reset),
-        this.redraw(),
-        !0)
+      ? (this.map.events.register('mousemove', this, this.redraw), this.map.events.register('mouseout', this, this.reset), this.redraw(), !0)
       : !1;
   },
   deactivate: function() {
     return OpenLayers.Control.prototype.deactivate.apply(this, arguments)
-      ? (this.map.events.unregister('mousemove', this, this.redraw),
-        this.map.events.unregister('mouseout', this, this.reset),
-        (this.element.innerHTML = ''),
-        !0)
+      ? (this.map.events.unregister('mousemove', this, this.redraw), this.map.events.unregister('mouseout', this, this.reset), (this.element.innerHTML = ''), !0)
       : !1;
   },
   draw: function() {
@@ -23353,12 +21467,7 @@ OpenLayers.Control.MousePosition = OpenLayers.Class(OpenLayers.Control, {
   redraw: function(a) {
     var b;
     if(null == a) this.reset();
-    else if(
-      null == this.lastXy ||
-      Math.abs(a.xy.x - this.lastXy.x) > this.granularity ||
-      Math.abs(a.xy.y - this.lastXy.y) > this.granularity
-    )
-      this.lastXy = a.xy;
+    else if(null == this.lastXy || Math.abs(a.xy.x - this.lastXy.x) > this.granularity || Math.abs(a.xy.y - this.lastXy.y) > this.granularity) this.lastXy = a.xy;
     else if((b = this.map.getLonLatFromPixel(a.xy)))
       this.displayProjection && b.transform(this.map.getProjectionObject(), this.displayProjection),
         (this.lastXy = a.xy),
@@ -23389,11 +21498,7 @@ OpenLayers.Control.Geolocate = OpenLayers.Class(OpenLayers.Control, {
     return this.geolocation
       ? OpenLayers.Control.prototype.activate.apply(this, arguments)
         ? (this.watch
-            ? (this.watchId = this.geolocation.watchPosition(
-                OpenLayers.Function.bind(this.geolocate, this),
-                OpenLayers.Function.bind(this.failure, this),
-                this.geolocationOptions
-              ))
+            ? (this.watchId = this.geolocation.watchPosition(OpenLayers.Function.bind(this.geolocate, this), OpenLayers.Function.bind(this.failure, this), this.geolocationOptions))
             : this.getCurrentLocation(),
           !0)
         : !1
@@ -23404,20 +21509,13 @@ OpenLayers.Control.Geolocate = OpenLayers.Class(OpenLayers.Control, {
     return OpenLayers.Control.prototype.deactivate.apply(this, arguments);
   },
   geolocate: function(a) {
-    var b = new OpenLayers.LonLat(a.coords.longitude, a.coords.latitude).transform(
-      new OpenLayers.Projection('EPSG:4326'),
-      this.map.getProjectionObject()
-    );
+    var b = new OpenLayers.LonLat(a.coords.longitude, a.coords.latitude).transform(new OpenLayers.Projection('EPSG:4326'), this.map.getProjectionObject());
     this.bind && this.map.setCenter(b);
     this.events.triggerEvent('locationupdated', { position: a, point: new OpenLayers.Geometry.Point(b.lon, b.lat) });
   },
   getCurrentLocation: function() {
     if(!this.active || this.watch) return !1;
-    this.geolocation.getCurrentPosition(
-      OpenLayers.Function.bind(this.geolocate, this),
-      OpenLayers.Function.bind(this.failure, this),
-      this.geolocationOptions
-    );
+    this.geolocation.getCurrentPosition(OpenLayers.Function.bind(this.geolocate, this), OpenLayers.Function.bind(this.failure, this), this.geolocationOptions);
     return !0;
   },
   failure: function(a) {
@@ -23438,9 +21536,7 @@ OpenLayers.Tile.UTFGrid = OpenLayers.Class(OpenLayers.Tile, {
     var a = OpenLayers.Tile.prototype.draw.apply(this, arguments);
     if(a)
       if(
-        (this.isLoading
-          ? (this.abortLoading(), this.events.triggerEvent('reload'))
-          : ((this.isLoading = !0), this.events.triggerEvent('loadstart')),
+        (this.isLoading ? (this.abortLoading(), this.events.triggerEvent('reload')) : ((this.isLoading = !0), this.events.triggerEvent('loadstart')),
         (this.url = this.layer.getURL(this.bounds)),
         this.layer.useJSONP)
       ) {
@@ -23608,8 +21704,7 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
     var c = a.priv;
     b.callback &&
       (200 <= c.status && 300 > c.status
-        ? ('delete' != a.requestType && (a.features = this.parseFeatures(c)),
-          (a.code = OpenLayers.Protocol.Response.SUCCESS))
+        ? ('delete' != a.requestType && (a.features = this.parseFeatures(c)), (a.code = OpenLayers.Protocol.Response.SUCCESS))
         : (a.code = OpenLayers.Protocol.Response.FAILURE),
       b.callback.call(b.scope, a));
   },
@@ -23628,10 +21723,7 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
       this.callUserCallback(a, b);
       q = q && a.success();
       f++;
-      f >= p &&
-        b.callback &&
-        ((r.code = q ? OpenLayers.Protocol.Response.SUCCESS : OpenLayers.Protocol.Response.FAILURE),
-        b.callback.apply(b.scope, [r]));
+      f >= p && b.callback && ((r.code = q ? OpenLayers.Protocol.Response.SUCCESS : OpenLayers.Protocol.Response.FAILURE), b.callback.apply(b.scope, [r]));
     }
     b = OpenLayers.Util.applyDefaults(b, this.options);
     var e = [],
@@ -23641,20 +21733,15 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
     g[OpenLayers.State.UPDATE] = [];
     g[OpenLayers.State.DELETE] = [];
     for(var h, k, l = [], m = 0, n = a.length; m < n; ++m) if(((h = a[m]), (k = g[h.state]))) k.push(h), l.push(h);
-    var p =
-        (0 < g[OpenLayers.State.INSERT].length ? 1 : 0) +
-        g[OpenLayers.State.UPDATE].length +
-        g[OpenLayers.State.DELETE].length,
+    var p = (0 < g[OpenLayers.State.INSERT].length ? 1 : 0) + g[OpenLayers.State.UPDATE].length + g[OpenLayers.State.DELETE].length,
       q = !0,
       r = new OpenLayers.Protocol.Response({ reqFeatures: l });
     h = g[OpenLayers.State.INSERT];
     0 < h.length && e.push(this.create(h, OpenLayers.Util.applyDefaults({ callback: c, scope: this }, b.create)));
     h = g[OpenLayers.State.UPDATE];
-    for(m = h.length - 1; 0 <= m; --m)
-      e.push(this.update(h[m], OpenLayers.Util.applyDefaults({ callback: d, scope: this }, b.update)));
+    for(m = h.length - 1; 0 <= m; --m) e.push(this.update(h[m], OpenLayers.Util.applyDefaults({ callback: d, scope: this }, b.update)));
     h = g[OpenLayers.State.DELETE];
-    for(m = h.length - 1; 0 <= m; --m)
-      e.push(this['delete'](h[m], OpenLayers.Util.applyDefaults({ callback: d, scope: this }, b['delete'])));
+    for(m = h.length - 1; 0 <= m; --m) e.push(this['delete'](h[m], OpenLayers.Util.applyDefaults({ callback: d, scope: this }, b['delete'])));
     return e;
   },
   abort: function(a) {
@@ -23705,11 +21792,7 @@ OpenLayers.Strategy.Cluster = OpenLayers.Class(OpenLayers.Strategy, {
     this.clustering || (this.features = null);
   },
   cluster: function(a) {
-    if(
-      (!a || a.zoomChanged) &&
-      this.features &&
-      ((a = this.layer.map.getResolution()), a != this.resolution || !this.clustersExist())
-    ) {
+    if((!a || a.zoomChanged) && this.features && ((a = this.layer.map.getResolution()), a != this.resolution || !this.clustersExist())) {
       this.resolution = a;
       a = [];
       for(var b, c, d, e = 0; e < this.features.length; ++e)
@@ -23727,9 +21810,7 @@ OpenLayers.Strategy.Cluster = OpenLayers.Class(OpenLayers.Strategy, {
       this.layer.removeAllFeatures();
       this.clustering = !1;
       if(0 < a.length) {
-        if(1 < this.threshold)
-          for(b = a.slice(), a = [], e = 0, d = b.length; e < d; ++e)
-            (c = b[e]), c.attributes.count < this.threshold ? Array.prototype.push.apply(a, c.cluster) : a.push(c);
+        if(1 < this.threshold) for(b = a.slice(), a = [], e = 0, d = b.length; e < d; ++e) (c = b[e]), c.attributes.count < this.threshold ? Array.prototype.push.apply(a, c.cluster) : a.push(c);
         this.clustering = !0;
         this.layer.addFeatures(a);
         this.clustering = !1;
@@ -23794,8 +21875,7 @@ OpenLayers.Strategy.Filter = OpenLayers.Class(OpenLayers.Strategy, {
     if(!this.caching && this.filter) {
       var b = a.features;
       a.features = [];
-      for(var c, d = 0, e = b.length; d < e; ++d)
-        (c = b[d]), this.filter.evaluate(c) ? a.features.push(c) : this.cache.push(c);
+      for(var c, d = 0, e = b.length; d < e; ++d) (c = b[d]), this.filter.evaluate(c) ? a.features.push(c) : this.cache.push(c);
     }
   },
   handleRemove: function(a) {
@@ -23807,10 +21887,7 @@ OpenLayers.Strategy.Filter = OpenLayers.Class(OpenLayers.Strategy, {
     this.cache = [];
     this.handleAdd({ features: this.layer.features });
     0 < this.cache.length && ((this.caching = !0), this.layer.removeFeatures(this.cache.slice()), (this.caching = !1));
-    0 < a.length &&
-      ((a = { features: a }),
-      this.handleAdd(a),
-      0 < a.features.length && ((this.caching = !0), this.layer.addFeatures(a.features), (this.caching = !1)));
+    0 < a.length && ((a = { features: a }), this.handleAdd(a), 0 < a.features.length && ((this.caching = !0), this.layer.addFeatures(a.features), (this.caching = !1)));
   },
   CLASS_NAME: 'OpenLayers.Strategy.Filter'
 });
@@ -23836,10 +21913,7 @@ OpenLayers.Format.WFSDescribeFeatureType = OpenLayers.Class(OpenLayers.Format.XM
           h,
           k;
         e = 0;
-        for(f = g.length; e < f; ++e)
-          (h = g[e]),
-            (k = h.name),
-            0 === k.indexOf('xmlns') ? this.setNamespace(k.split(':')[1] || '', h.value) : (b[k] = h.value);
+        for(f = g.length; e < f; ++e) (h = g[e]), (k = h.name), 0 === k.indexOf('xmlns') ? this.setNamespace(k.split(':')[1] || '', h.value) : (b[k] = h.value);
         b.featureTypes = c;
         b.targetPrefix = this.namespaceAlias[b.targetNamespace];
         e = 0;
@@ -23873,10 +21947,7 @@ OpenLayers.Format.WFSDescribeFeatureType = OpenLayers.Class(OpenLayers.Format.XM
           b.elements.push(d);
           this.readChildNodes(a, d);
         }
-        b.complexTypes &&
-          ((c = a.getAttribute('type')),
-          (d = c.split(':').pop()),
-          (b.customTypes[d] = { name: a.getAttribute('name'), type: c }));
+        b.complexTypes && ((c = a.getAttribute('type')), (d = c.split(':').pop()), (b.customTypes[d] = { name: a.getAttribute('name'), type: c }));
       },
       annotation: function(a, b) {
         b.annotation = {};
@@ -23902,11 +21973,7 @@ OpenLayers.Format.WFSDescribeFeatureType = OpenLayers.Class(OpenLayers.Format.XM
   },
   readRestriction: function(a, b) {
     for(var c = a.childNodes, d, e, f = 0, g = c.length; f < g; ++f)
-      (d = c[f]),
-        1 == d.nodeType &&
-          ((e = d.nodeName.split(':').pop()),
-          (d = d.getAttribute('value')),
-          b[e] ? ('string' == typeof b[e] && (b[e] = [b[e]]), b[e].push(d)) : (b[e] = d));
+      (d = c[f]), 1 == d.nodeType && ((e = d.nodeName.split(':').pop()), (d = d.getAttribute('value')), b[e] ? ('string' == typeof b[e] && (b[e] = [b[e]]), b[e].push(d)) : (b[e] = d));
   },
   read: function(a) {
     'string' == typeof a && (a = OpenLayers.Format.XML.prototype.read.apply(this, [a]));
@@ -23939,8 +22006,7 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
     a = this.getElementsByTagNameNS(a, this.georssns, 'box');
     if(0 < b.length || (0 < c.length && 0 < d.length)) {
       0 < b.length
-        ? ((c = OpenLayers.String.trim(b[0].firstChild.nodeValue).split(/\s+/)),
-          2 != c.length && (c = OpenLayers.String.trim(b[0].firstChild.nodeValue).split(/\s*,\s*/)))
+        ? ((c = OpenLayers.String.trim(b[0].firstChild.nodeValue).split(/\s+/)), 2 != c.length && (c = OpenLayers.String.trim(b[0].firstChild.nodeValue).split(/\s*,\s*/)))
         : (c = [parseFloat(c[0].firstChild.nodeValue), parseFloat(d[0].firstChild.nodeValue)]);
       var h = new OpenLayers.Geometry.Point(c[1], c[0]);
     } else if(0 < e.length) {
@@ -23957,8 +22023,7 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
       h = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(d)]);
     } else
       0 < g.length
-        ? (this.gmlParser || (this.gmlParser = new OpenLayers.Format.GML({ xy: this.xy })),
-          (h = this.gmlParser.parseFeature(g[0]).geometry))
+        ? (this.gmlParser || (this.gmlParser = new OpenLayers.Format.GML({ xy: this.xy })), (h = this.gmlParser.parseFeature(g[0]).geometry))
         : 0 < a.length &&
           ((c = OpenLayers.String.trim(a[0].firstChild.nodeValue).split(/\s+/)),
           (d = []),
@@ -23974,21 +22039,13 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
             (b = new OpenLayers.Geometry.Point(c[1], c[0])),
             d.push(b)),
           (h = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(d)])));
-    h &&
-      this.internalProjection &&
-      this.externalProjection &&
-      h.transform(this.externalProjection, this.internalProjection);
+    h && this.internalProjection && this.externalProjection && h.transform(this.externalProjection, this.internalProjection);
     return h;
   },
   createFeatureFromItem: function(a) {
     var b = this.createGeometryFromItem(a),
       c = this._getChildValue(a, '*', 'title', this.featureTitle),
-      d = this._getChildValue(
-        a,
-        '*',
-        'description',
-        this._getChildValue(a, '*', 'content', this._getChildValue(a, '*', 'summary', this.featureDescription))
-      ),
+      d = this._getChildValue(a, '*', 'description', this._getChildValue(a, '*', 'content', this._getChildValue(a, '*', 'summary', this.featureDescription))),
       e = this._getChildValue(a, '*', 'link');
     if(!e)
       try {
@@ -24002,11 +22059,7 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
     return b;
   },
   _getChildValue: function(a, b, c, d) {
-    return (a = this.getElementsByTagNameNS(a, b, c)) && a[0] && a[0].firstChild && a[0].firstChild.nodeValue
-      ? this.getChildValue(a[0])
-      : void 0 == d
-      ? ''
-      : d;
+    return (a = this.getElementsByTagNameNS(a, b, c)) && a[0] && a[0].firstChild && a[0].firstChild.nodeValue ? this.getChildValue(a[0]) : void 0 == d ? '' : d;
   },
   read: function(a) {
     'string' == typeof a && (a = OpenLayers.Format.XML.prototype.read.apply(this, [a]));
@@ -24034,10 +22087,7 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
     e.appendChild(this.createTextNode(a.attributes.description ? a.attributes.description : ''));
     c.appendChild(d);
     c.appendChild(e);
-    a.attributes.link &&
-      ((d = this.createElementNS(this.rssns, 'link')),
-      d.appendChild(this.createTextNode(a.attributes.link)),
-      c.appendChild(d));
+    a.attributes.link && ((d = this.createElementNS(this.rssns, 'link')), d.appendChild(this.createTextNode(a.attributes.link)), c.appendChild(d));
     for(var f in a.attributes)
       'link' != f &&
         'title' != f &&
@@ -24052,17 +22102,11 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
     return c;
   },
   buildGeometryNode: function(a) {
-    this.internalProjection &&
-      this.externalProjection &&
-      ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
+    this.internalProjection && this.externalProjection && ((a = a.clone()), a.transform(this.internalProjection, this.externalProjection));
     var b;
-    if('OpenLayers.Geometry.Polygon' == a.CLASS_NAME)
-      (b = this.createElementNS(this.georssns, 'georss:polygon')),
-        b.appendChild(this.buildCoordinatesNode(a.components[0]));
-    else if('OpenLayers.Geometry.LineString' == a.CLASS_NAME)
-      (b = this.createElementNS(this.georssns, 'georss:line')), b.appendChild(this.buildCoordinatesNode(a));
-    else if('OpenLayers.Geometry.Point' == a.CLASS_NAME)
-      (b = this.createElementNS(this.georssns, 'georss:point')), b.appendChild(this.buildCoordinatesNode(a));
+    if('OpenLayers.Geometry.Polygon' == a.CLASS_NAME) (b = this.createElementNS(this.georssns, 'georss:polygon')), b.appendChild(this.buildCoordinatesNode(a.components[0]));
+    else if('OpenLayers.Geometry.LineString' == a.CLASS_NAME) (b = this.createElementNS(this.georssns, 'georss:line')), b.appendChild(this.buildCoordinatesNode(a));
+    else if('OpenLayers.Geometry.Point' == a.CLASS_NAME) (b = this.createElementNS(this.georssns, 'georss:point')), b.appendChild(this.buildCoordinatesNode(a));
     else throw "Couldn't parse " + a.CLASS_NAME;
     return b;
   },
@@ -24140,11 +22184,7 @@ OpenLayers.Control.PinchZoom = OpenLayers.Class(OpenLayers.Control, {
   preserveCenter: !1,
   initialize: function(a) {
     OpenLayers.Control.prototype.initialize.apply(this, arguments);
-    this.handler = new OpenLayers.Handler.Pinch(
-      this,
-      { start: this.pinchStart, move: this.pinchMove, done: this.pinchDone },
-      this.handlerOptions
-    );
+    this.handler = new OpenLayers.Handler.Pinch(this, { start: this.pinchStart, move: this.pinchMove, done: this.pinchDone }, this.handlerOptions);
   },
   pinchStart: function(a, b) {
     var c = this.preserveCenter ? this.map.getPixelFromLonLat(this.map.getCenter()) : a.xy;
@@ -24196,22 +22236,16 @@ OpenLayers.Control.TouchNavigation = OpenLayers.Class(OpenLayers.Control, {
     OpenLayers.Control.prototype.destroy.apply(this, arguments);
   },
   activate: function() {
-    return OpenLayers.Control.prototype.activate.apply(this, arguments)
-      ? (this.dragPan.activate(), this.handlers.click.activate(), this.pinchZoom.activate(), !0)
-      : !1;
+    return OpenLayers.Control.prototype.activate.apply(this, arguments) ? (this.dragPan.activate(), this.handlers.click.activate(), this.pinchZoom.activate(), !0) : !1;
   },
   deactivate: function() {
-    return OpenLayers.Control.prototype.deactivate.apply(this, arguments)
-      ? (this.dragPan.deactivate(), this.handlers.click.deactivate(), this.pinchZoom.deactivate(), !0)
-      : !1;
+    return OpenLayers.Control.prototype.deactivate.apply(this, arguments) ? (this.dragPan.deactivate(), this.handlers.click.deactivate(), this.pinchZoom.deactivate(), !0) : !1;
   },
   draw: function() {
     var a = { click: this.defaultClick, dblclick: this.defaultDblClick },
       b = OpenLayers.Util.extend({ double: !0, stopDouble: !0, pixelTolerance: 2 }, this.clickHandlerOptions);
     this.handlers.click = new OpenLayers.Handler.Click(this, a, b);
-    this.dragPan = new OpenLayers.Control.DragPan(
-      OpenLayers.Util.extend({ map: this.map, documentDrag: this.documentDrag }, this.dragPanOptions)
-    );
+    this.dragPan = new OpenLayers.Control.DragPan(OpenLayers.Util.extend({ map: this.map, documentDrag: this.documentDrag }, this.dragPanOptions));
     this.dragPan.draw();
     this.pinchZoom = new OpenLayers.Control.PinchZoom(OpenLayers.Util.extend({ map: this.map }, this.pinchZoomOptions));
   },
@@ -24305,8 +22339,7 @@ OpenLayers.Rico.Color.createColorFromBackground = function(a) {
     : null == b
     ? new OpenLayers.Rico.Color(255, 255, 255)
     : 0 == b.indexOf('rgb(')
-    ? ((a = b.substring(4, b.length - 1).split(',')),
-      new OpenLayers.Rico.Color(parseInt(a[0]), parseInt(a[1]), parseInt(a[2])))
+    ? ((a = b.substring(4, b.length - 1).split(',')), new OpenLayers.Rico.Color(parseInt(a[0]), parseInt(a[1]), parseInt(a[2])))
     : 0 == b.indexOf('#')
     ? OpenLayers.Rico.Color.createFromHex(b)
     : new OpenLayers.Rico.Color(255, 255, 255);
@@ -24556,8 +22589,7 @@ OpenLayers.Format.SLD.v1_0_0_GeoServer = OpenLayers.Class(OpenLayers.Format.SLD.
     OpenLayers.Format.SLD.v1_0_0.prototype.writers
   ),
   addVendorOptions: function(a, b) {
-    if(b.vendorOptions)
-      for(var c in b.vendorOptions) this.writeNode('VendorOption', { name: c, value: b.vendorOptions[c] }, a);
+    if(b.vendorOptions) for(var c in b.vendorOptions) this.writeNode('VendorOption', { name: c, value: b.vendorOptions[c] }, a);
     return a;
   },
   CLASS_NAME: 'OpenLayers.Format.SLD.v1_0_0_GeoServer'
@@ -24566,10 +22598,7 @@ OpenLayers.Layer.Boxes = OpenLayers.Class(OpenLayers.Layer.Markers, {
   drawMarker: function(a) {
     var b = this.map.getLayerPxFromLonLat({ lon: a.bounds.left, lat: a.bounds.top }),
       c = this.map.getLayerPxFromLonLat({ lon: a.bounds.right, lat: a.bounds.bottom });
-    null == c || null == b
-      ? a.display(!1)
-      : ((b = a.draw(b, { w: Math.max(1, c.x - b.x), h: Math.max(1, c.y - b.y) })),
-        a.drawn || (this.div.appendChild(b), (a.drawn = !0)));
+    null == c || null == b ? a.display(!1) : ((b = a.draw(b, { w: Math.max(1, c.x - b.x), h: Math.max(1, c.y - b.y) })), a.drawn || (this.div.appendChild(b), (a.drawn = !0)));
   },
   removeMarker: function(a) {
     OpenLayers.Util.removeItem(this.markers, a);
@@ -24614,8 +22643,7 @@ OpenLayers.Format.WFSCapabilities.v1_0_0 = OpenLayers.Class(OpenLayers.Format.WF
           this.readChildNodes(a, b.getfeature);
         },
         ResultFormat: function(a, b) {
-          for(var c = a.childNodes, d, e = 0; e < c.length; e++)
-            (d = c[e]), 1 == d.nodeType && b.formats.push(d.nodeName);
+          for(var c = a.childNodes, d, e = 0; e < c.length; e++) (d = c[e]), 1 == d.nodeType && b.formats.push(d.nodeName);
         },
         DCPType: function(a, b) {
           this.readChildNodes(a, b);
@@ -24749,11 +22777,7 @@ OpenLayers.Layer.Zoomify = OpenLayers.Class(OpenLayers.Layer.Grid, {
     this.numberOfTiers = this.tierSizeInTiles.length;
     b = [1];
     this.tileCountUpToTier = [0];
-    for(a = 1; a < this.numberOfTiers; a++)
-      b.unshift(Math.pow(2, a)),
-        this.tileCountUpToTier.push(
-          this.tierSizeInTiles[a - 1].w * this.tierSizeInTiles[a - 1].h + this.tileCountUpToTier[a - 1]
-        );
+    for(a = 1; a < this.numberOfTiers; a++) b.unshift(Math.pow(2, a)), this.tileCountUpToTier.push(this.tierSizeInTiles[a - 1].w * this.tierSizeInTiles[a - 1].h + this.tileCountUpToTier[a - 1]);
     this.serverResolutions || (this.serverResolutions = b);
   },
   destroy: function() {
@@ -24772,16 +22796,7 @@ OpenLayers.Layer.Zoomify = OpenLayers.Class(OpenLayers.Layer.Grid, {
       c = Math.round((a.left - this.tileOrigin.lon) / (b * this.tileSize.w));
     a = Math.round((this.tileOrigin.lat - a.top) / (b * this.tileSize.h));
     b = this.getZoomForResolution(b);
-    c =
-      'TileGroup' +
-      Math.floor((c + a * this.tierSizeInTiles[b].w + this.tileCountUpToTier[b]) / 256) +
-      '/' +
-      b +
-      '-' +
-      c +
-      '-' +
-      a +
-      '.jpg';
+    c = 'TileGroup' + Math.floor((c + a * this.tierSizeInTiles[b].w + this.tileCountUpToTier[b]) / 256) + '/' + b + '-' + c + '-' + a + '.jpg';
     b = this.url;
     OpenLayers.Array.isArray(b) && (b = this.selectUrl(c, b));
     return b + c;
@@ -24812,8 +22827,7 @@ OpenLayers.Layer.MapServer = OpenLayers.Class(OpenLayers.Layer.Grid, {
   initialize: function(a, b, c, d) {
     OpenLayers.Layer.Grid.prototype.initialize.apply(this, arguments);
     this.params = OpenLayers.Util.applyDefaults(this.params, this.DEFAULT_PARAMS);
-    if(null == d || null == d.isBaseLayer)
-      this.isBaseLayer = 'true' != this.params.transparent && !0 != this.params.transparent;
+    if(null == d || null == d.isBaseLayer) this.isBaseLayer = 'true' != this.params.transparent && !0 != this.params.transparent;
   },
   clone: function(a) {
     null == a && (a = new OpenLayers.Layer.MapServer(this.name, this.url, this.params, this.getOptions()));
@@ -24844,9 +22858,7 @@ OpenLayers.Layer.MapServer = OpenLayers.Class(OpenLayers.Layer.Grid, {
     e = OpenLayers.Util.getParameterString(d);
     d = c;
     e = e.replace(/,/g, '+');
-    '' != e &&
-      ((f = c.charAt(c.length - 1)),
-      (d = '&' == f || '?' == f ? d + e : -1 == c.indexOf('?') ? d + ('?' + e) : d + ('&' + e)));
+    '' != e && ((f = c.charAt(c.length - 1)), (d = '&' == f || '?' == f ? d + e : -1 == c.indexOf('?') ? d + ('?' + e) : d + ('&' + e)));
     return d;
   },
   CLASS_NAME: 'OpenLayers.Layer.MapServer'
@@ -24859,14 +22871,7 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     if(this.supported()) {
       if(!document.namespaces.olv) {
         document.namespaces.add('olv', this.xmlns);
-        for(
-          var b = document.createStyleSheet(),
-            c = 'shape rect oval fill stroke imagedata group textbox'.split(' '),
-            d = 0,
-            e = c.length;
-          d < e;
-          d++
-        )
+        for(var b = document.createStyleSheet(), c = 'shape rect oval fill stroke imagedata group textbox'.split(' '), d = 0, e = c.length; d < e; d++)
           b.addRule('olv\\:' + c[d], 'behavior: url(#default#VML); position: absolute; display: inline-block;');
       }
       OpenLayers.Renderer.Elements.prototype.initialize.apply(this, arguments);
@@ -24882,23 +22887,13 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
       d = (a.top / d - this.size.h) | 0;
     b || !this.offset ? ((this.offset = { x: e, y: d }), (d = e = 0)) : ((e -= this.offset.x), (d -= this.offset.y));
     this.root.coordorigin = e - this.xOffset + ' ' + d;
-    for(var e = [this.root, this.vectorRoot, this.textRoot], f = 0, g = e.length; f < g; ++f)
-      (d = e[f]), (d.coordsize = this.size.w + ' ' + this.size.h);
+    for(var e = [this.root, this.vectorRoot, this.textRoot], f = 0, g = e.length; f < g; ++f) (d = e[f]), (d.coordsize = this.size.w + ' ' + this.size.h);
     this.root.style.flip = 'y';
     return c;
   },
   setSize: function(a) {
     OpenLayers.Renderer.prototype.setSize.apply(this, arguments);
-    for(
-      var b = [this.rendererRoot, this.root, this.vectorRoot, this.textRoot],
-        c = this.size.w + 'px',
-        d = this.size.h + 'px',
-        e,
-        f = 0,
-        g = b.length;
-      f < g;
-      ++f
-    )
+    for(var b = [this.rendererRoot, this.root, this.vectorRoot, this.textRoot], c = this.size.w + 'px', d = this.size.h + 'px', e, f = 0, g = b.length; f < g; ++f)
       (e = b[f]), (e.style.width = c), (e.style.height = d);
   },
   getNodeType: function(a, b) {
@@ -24959,18 +22954,12 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         (d.opacity = b.fillOpacity),
         'OpenLayers.Geometry.Point' === a._geometryClass &&
           b.externalGraphic &&
-          (b.graphicOpacity && (d.opacity = b.graphicOpacity),
-          (d.src = b.externalGraphic),
-          (d.type = 'frame'),
-          (b.graphicWidth && b.graphicHeight) || (d.aspect = 'atmost')),
+          (b.graphicOpacity && (d.opacity = b.graphicOpacity), (d.src = b.externalGraphic), (d.type = 'frame'), (b.graphicWidth && b.graphicHeight) || (d.aspect = 'atmost')),
         d.parentNode != a && a.appendChild(d))
       : d && a.removeChild(d);
     e = b.rotation;
     if(void 0 !== e || void 0 !== a._rotation)
-      (a._rotation = e),
-        b.externalGraphic
-          ? (this.graphicRotate(a, h, k, b), (d.opacity = 0))
-          : 'OpenLayers.Geometry.Point' === a._geometryClass && (a.style.rotation = e || 0);
+      (a._rotation = e), b.externalGraphic ? (this.graphicRotate(a, h, k, b), (d.opacity = 0)) : 'OpenLayers.Geometry.Point' === a._geometryClass && (a.style.rotation = e || 0);
     h = a.getElementsByTagName('stroke');
     h = 0 == h.length ? null : h[0];
     c.isStroked
@@ -25006,19 +22995,8 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
       l = (e * Math.PI) / 180;
       e = Math.sin(l);
       l = Math.cos(l);
-      e =
-        'progid:DXImageTransform.Microsoft.Matrix(M11=' +
-        l +
-        ',M12=' +
-        -e +
-        ',M21=' +
-        e +
-        ',M22=' +
-        l +
-        ",SizingMethod='auto expand')\n";
-      (l = d.graphicOpacity || d.fillOpacity) &&
-        1 != l &&
-        (e += 'progid:DXImageTransform.Microsoft.BasicImage(opacity=' + l + ')\n');
+      e = 'progid:DXImageTransform.Microsoft.Matrix(M11=' + l + ',M12=' + -e + ',M21=' + e + ',M22=' + l + ",SizingMethod='auto expand')\n";
+      (l = d.graphicOpacity || d.fillOpacity) && 1 != l && (e += 'progid:DXImageTransform.Microsoft.BasicImage(opacity=' + l + ')\n');
       a.style.filter = e;
       e = new OpenLayers.Geometry.Point(-b, -c);
       h = new OpenLayers.Bounds(0, 0, h, k).toGeometry();
@@ -25078,17 +23056,7 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
       default:
         return (
           (a = a.split(/[ ,]/)),
-          2 == a.length
-            ? 1 * a[0] >= 2 * a[1]
-              ? 'longdash'
-              : 1 == a[0] || 1 == a[1]
-              ? 'dot'
-              : 'dash'
-            : 4 == a.length
-            ? 1 * a[0] >= 2 * a[1]
-              ? 'longdashdot'
-              : 'dashdot'
-            : 'solid'
+          2 == a.length ? (1 * a[0] >= 2 * a[1] ? 'longdash' : 1 == a[0] || 1 == a[1] ? 'dot' : 'dash') : 4 == a.length ? (1 * a[0] >= 2 * a[1] ? 'longdashdot' : 'dashdot') : 'solid'
         );
     }
   },
@@ -25138,10 +23106,7 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
   drawLine: function(a, b, c) {
     this.setNodeDimension(a, b);
     for(var d = this.getResolution(), e = b.components.length, f = Array(e), g, h, k = 0; k < e; k++)
-      (g = b.components[k]),
-        (h = ((g.x - this.featureDx) / d - this.offset.x) | 0),
-        (g = (g.y / d - this.offset.y) | 0),
-        (f[k] = ' ' + h + ',' + g + ' l ');
+      (g = b.components[k]), (h = ((g.x - this.featureDx) / d - this.offset.x) | 0), (g = (g.y / d - this.offset.y) | 0), (f[k] = ' ' + h + ',' + g + ' l ');
     b = c ? ' x e' : ' e';
     a.path = 'm' + f.join('') + b;
     return a;
@@ -25204,8 +23169,7 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     b.fontSize && (e.style.fontSize = b.fontSize);
     b.fontWeight && (e.style.fontWeight = b.fontWeight);
     b.fontStyle && (e.style.fontStyle = b.fontStyle);
-    !0 === b.labelSelect &&
-      ((d._featureId = a), (e._featureId = a), (e._geometry = c), (e._geometryClass = c.CLASS_NAME));
+    !0 === b.labelSelect && ((d._featureId = a), (e._featureId = a), (e._geometry = c), (e._geometryClass = c.CLASS_NAME));
     e.style.whiteSpace = 'nowrap';
     e.inset = '1px,0px,0px,0px';
     d.parentNode || (d.appendChild(e), this.textRoot.appendChild(d));
@@ -25272,10 +23236,7 @@ OpenLayers.Control.CacheRead = OpenLayers.Class(OpenLayers.Control, {
     if(this.active && window.localStorage && a.tile instanceof OpenLayers.Tile.Image) {
       var b = a.tile,
         c = b.url;
-      !b.layer.crossOriginKeyword &&
-        OpenLayers.ProxyHost &&
-        0 === c.indexOf(OpenLayers.ProxyHost) &&
-        (c = OpenLayers.Control.CacheWrite.urlMap[c]);
+      !b.layer.crossOriginKeyword && OpenLayers.ProxyHost && 0 === c.indexOf(OpenLayers.ProxyHost) && (c = OpenLayers.Control.CacheWrite.urlMap[c]);
       if((c = window.localStorage.getItem('olCache_' + c))) (b.url = c), 'tileerror' === a.type && b.setImgSrc(c);
     }
   },
@@ -25342,9 +23303,7 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
           var k = e.attributes[g];
           f[k.nodeName] = k.nodeValue;
         }
-      else
-        for(e = e.childNodes, g = 0, h = e.length; g < h; ++g)
-          (k = e[g]), 3 != k.nodeType && (f[k.getAttribute('name')] = k.getAttribute('value'));
+      else for(e = e.childNodes, g = 0, h = e.length; g < h; ++g) (k = e[g]), 3 != k.nodeType && (f[k.getAttribute('name')] = k.getAttribute('value'));
       b.push(new OpenLayers.Feature.Vector(null, f, null));
     }
     return b;
@@ -25361,9 +23320,7 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
       for(var h = 0; h < f; h++) {
         for(g = d[h]; g && 1 != g.nodeType; ) (g = g.nextSibling), h++;
         e = g ? g.nodeName : '';
-        0 < e.length && -1 < e.indexOf(b)
-          ? c.push(g)
-          : ((e = this.getSiblingNodesByTagCriteria(g, b)), 0 < e.length && (0 == c.length ? (c = e) : c.push(e)));
+        0 < e.length && -1 < e.indexOf(b) ? c.push(g) : ((e = this.getSiblingNodesByTagCriteria(g, b)), 0 < e.length && (0 == c.length ? (c = e) : c.push(e)));
       }
     }
     return c;
@@ -25377,11 +23334,7 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
         if(1 == e.nodeType) {
           var f = e.childNodes,
             e = e.prefix ? e.nodeName.split(':')[1] : e.nodeName;
-          0 == f.length
-            ? (b[e] = null)
-            : 1 == f.length &&
-              ((f = f[0]), 3 == f.nodeType || 4 == f.nodeType) &&
-              ((f = f.nodeValue.replace(this.regExes.trimSpace, '')), (b[e] = f));
+          0 == f.length ? (b[e] = null) : 1 == f.length && ((f = f[0]), 3 == f.nodeType || 4 == f.nodeType) && ((f = f.nodeValue.replace(this.regExes.trimSpace, '')), (b[e] = f));
         }
       }
     }
@@ -25419,14 +23372,8 @@ OpenLayers.Control.WMTSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
     this.format || (this.format = new OpenLayers.Format.WMSGetFeatureInfo(a.formatOptions));
     !0 === this.drillDown && (this.hover = !1);
     this.hover
-      ? (this.handler = new OpenLayers.Handler.Hover(
-          this,
-          { move: this.cancelHover, pause: this.getInfoForHover },
-          OpenLayers.Util.extend(this.handlerOptions.hover || {}, { delay: 250 })
-        ))
-      : ((a = {}),
-        (a[this.clickCallback] = this.getInfoForClick),
-        (this.handler = new OpenLayers.Handler.Click(this, a, this.handlerOptions.click || {})));
+      ? (this.handler = new OpenLayers.Handler.Hover(this, { move: this.cancelHover, pause: this.getInfoForHover }, OpenLayers.Util.extend(this.handlerOptions.hover || {}, { delay: 250 })))
+      : ((a = {}), (a[this.clickCallback] = this.getInfoForClick), (this.handler = new OpenLayers.Handler.Click(this, a, this.handlerOptions.click || {})));
   },
   getInfoForClick: function(a) {
     this.request(a.xy, {});
@@ -25436,20 +23383,13 @@ OpenLayers.Control.WMTSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
   },
   cancelHover: function() {
     this.hoverRequest &&
-      (--this.pending,
-      0 >= this.pending && (OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olCursorWait'), (this.pending = 0)),
-      this.hoverRequest.abort(),
-      (this.hoverRequest = null));
+      (--this.pending, 0 >= this.pending && (OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olCursorWait'), (this.pending = 0)), this.hoverRequest.abort(), (this.hoverRequest = null));
   },
   findLayers: function() {
     for(
       var a = this.layers || this.map.layers, b = [], c, d = a.length - 1;
       0 <= d &&
-      ((c = a[d]),
-      !(c instanceof OpenLayers.Layer.WMTS) ||
-        c.requestEncoding !== this.requestEncoding ||
-        (this.queryVisible && !c.getVisibility()) ||
-        (b.push(c), this.drillDown && !this.hover));
+      ((c = a[d]), !(c instanceof OpenLayers.Layer.WMTS) || c.requestEncoding !== this.requestEncoding || (this.queryVisible && !c.getVisibility()) || (b.push(c), this.drillDown && !this.hover));
       --d
     );
     return b;
@@ -25484,19 +23424,14 @@ OpenLayers.Control.WMTSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
       for(var d, e, f = 0, g = c.length; f < g; f++)
         (e = c[f]),
           (d = this.events.triggerEvent('beforegetfeatureinfo', { xy: a, layer: e })),
-          !1 !== d &&
-            (++this.pending,
-            (d = this.buildRequestOptions(e, a)),
-            (d = OpenLayers.Request.GET(d)),
-            !0 === b.hover && (this.hoverRequest = d));
+          !1 !== d && (++this.pending, (d = this.buildRequestOptions(e, a)), (d = OpenLayers.Request.GET(d)), !0 === b.hover && (this.hoverRequest = d));
       0 < this.pending && OpenLayers.Element.addClass(this.map.viewPortDiv, 'olCursorWait');
     }
   },
   handleResponse: function(a, b, c) {
     --this.pending;
     0 >= this.pending && (OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olCursorWait'), (this.pending = 0));
-    if(b.status && (200 > b.status || 300 <= b.status))
-      this.events.triggerEvent('exception', { xy: a, request: b, layer: c });
+    if(b.status && (200 > b.status || 300 <= b.status)) this.events.triggerEvent('exception', { xy: a, request: b, layer: c });
     else {
       var d = b.responseXML;
       (d && d.documentElement) || (d = b.responseText);
@@ -25506,8 +23441,7 @@ OpenLayers.Control.WMTSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
       } catch(g) {
         (f = !0), this.events.triggerEvent('exception', { xy: a, request: b, error: g, layer: c });
       }
-      f ||
-        this.events.triggerEvent('getfeatureinfo', { text: b.responseText, features: e, request: b, xy: a, layer: c });
+      f || this.events.triggerEvent('getfeatureinfo', { text: b.responseText, features: e, request: b, xy: a, layer: c });
     }
   },
   CLASS_NAME: 'OpenLayers.Control.WMTSGetFeatureInfo'
@@ -25516,8 +23450,7 @@ OpenLayers.Protocol.CSW.v2_0_2 = OpenLayers.Class(OpenLayers.Protocol, {
   formatOptions: null,
   initialize: function(a) {
     OpenLayers.Protocol.prototype.initialize.apply(this, [a]);
-    a.format ||
-      (this.format = new OpenLayers.Format.CSWGetRecords.v2_0_2(OpenLayers.Util.extend({}, this.formatOptions)));
+    a.format || (this.format = new OpenLayers.Format.CSWGetRecords.v2_0_2(OpenLayers.Util.extend({}, this.formatOptions)));
   },
   destroy: function() {
     this.options && !this.options.format && this.format.destroy();
@@ -25541,9 +23474,7 @@ OpenLayers.Protocol.CSW.v2_0_2 = OpenLayers.Class(OpenLayers.Protocol, {
   handleRead: function(a, b) {
     if(b.callback) {
       var c = a.priv;
-      200 <= c.status && 300 > c.status
-        ? ((a.data = this.parseData(c)), (a.code = OpenLayers.Protocol.Response.SUCCESS))
-        : (a.code = OpenLayers.Protocol.Response.FAILURE);
+      200 <= c.status && 300 > c.status ? ((a.data = this.parseData(c)), (a.code = OpenLayers.Protocol.Response.SUCCESS)) : (a.code = OpenLayers.Protocol.Response.FAILURE);
       b.callback.call(b.scope, a);
     }
   },
@@ -25633,10 +23564,7 @@ OpenLayers.Control.Graticule = OpenLayers.Class(OpenLayers.Control, {
   draw: function() {
     OpenLayers.Control.prototype.draw.apply(this, arguments);
     if(!this.gratLayer) {
-      var a = new OpenLayers.Style(
-        {},
-        { rules: [new OpenLayers.Rule({ symbolizer: { Point: this.labelSymbolizer, Line: this.lineSymbolizer } })] }
-      );
+      var a = new OpenLayers.Style({}, { rules: [new OpenLayers.Rule({ symbolizer: { Point: this.labelSymbolizer, Line: this.lineSymbolizer } })] });
       this.gratLayer = new OpenLayers.Layer.Vector(this.layerName, {
         styleMap: new OpenLayers.StyleMap({ default: a }),
         visibility: this.visible,
@@ -25646,14 +23574,10 @@ OpenLayers.Control.Graticule = OpenLayers.Class(OpenLayers.Control, {
     return this.div;
   },
   activate: function() {
-    return OpenLayers.Control.prototype.activate.apply(this, arguments)
-      ? (this.map.addLayer(this.gratLayer), this.map.events.register('moveend', this, this.update), this.update(), !0)
-      : !1;
+    return OpenLayers.Control.prototype.activate.apply(this, arguments) ? (this.map.addLayer(this.gratLayer), this.map.events.register('moveend', this, this.update), this.update(), !0) : !1;
   },
   deactivate: function() {
-    return OpenLayers.Control.prototype.deactivate.apply(this, arguments)
-      ? (this.map.events.unregister('moveend', this, this.update), this.map.removeLayer(this.gratLayer), !0)
-      : !1;
+    return OpenLayers.Control.prototype.deactivate.apply(this, arguments) ? (this.map.events.unregister('moveend', this, this.update), this.map.removeLayer(this.gratLayer), !0) : !1;
   },
   update: function() {
     var a = this.map.getExtent();
@@ -25697,17 +23621,7 @@ OpenLayers.Control.Graticule = OpenLayers.Class(OpenLayers.Control, {
       g = [];
       for(d = 0; d < k.length; ++d) {
         l = k[d].x;
-        for(
-          var f = [],
-            m = null,
-            n = Math.min(e[0].y, 90),
-            h = Math.max(e[e.length - 1].y, -90),
-            p = (n - h) / this.numPoints,
-            n = h,
-            h = 0;
-          h <= this.numPoints;
-          ++h
-        ) {
+        for(var f = [], m = null, n = Math.min(e[0].y, 90), h = Math.max(e[e.length - 1].y, -90), p = (n - h) / this.numPoints, n = h, h = 0; h <= this.numPoints; ++h) {
           var q = new OpenLayers.Geometry.Point(l, n);
           q.transform(b, c);
           f.push(q);
@@ -25734,8 +23648,7 @@ OpenLayers.Control.Graticule = OpenLayers.Class(OpenLayers.Control, {
           p = (k[k.length - 1].x - d) / this.numPoints;
           l = d;
           m = null;
-          for(d = 0; d <= this.numPoints; ++d)
-            (q = new OpenLayers.Geometry.Point(l, n)), q.transform(b, c), f.push(q), (l += p), q.x < a.right && (m = q);
+          for(d = 0; d <= this.numPoints; ++d) (q = new OpenLayers.Geometry.Point(l, n)), q.transform(b, c), f.push(q), (l += p), q.x < a.right && (m = q);
           this.labelled &&
             ((m = new OpenLayers.Geometry.Point(a.right, m.y)),
             (l = {
@@ -25774,8 +23687,7 @@ OpenLayers.Rico.Corner = {
     var c = 'alpha(opacity=' + 100 * b + ')';
     a.style.opacity = b;
     a.style.filter = c;
-    for(var d = a.parentNode.getElementsByTagName('span'), e = 0; e < d.length; e++)
-      (d[e].style.opacity = b), (d[e].style.filter = c);
+    for(var d = a.parentNode.getElementsByTagName('span'), e = 0; e < d.length; e++) (d[e].style.opacity = b), (d[e].style.filter = c);
   },
   reRound: function(a, b) {
     var c = a.parentNode.childNodes[2];
@@ -25790,18 +23702,15 @@ OpenLayers.Rico.Corner = {
   },
   _renderBorder: function(a, b) {
     var c = '1px solid ' + this._borderColor(b);
-    a.innerHTML =
-      '<div ' + ("style='border-left: " + c + ';' + ('border-right: ' + c) + "'") + '>' + a.innerHTML + '</div>';
+    a.innerHTML = '<div ' + ("style='border-left: " + c + ';' + ('border-right: ' + c) + "'") + '>' + a.innerHTML + '</div>';
   },
   _roundTopCorners: function(a, b, c) {
-    for(var d = this._createCorner(c), e = 0; e < this.options.numSlices; e++)
-      d.appendChild(this._createCornerSlice(b, c, e, 'top'));
+    for(var d = this._createCorner(c), e = 0; e < this.options.numSlices; e++) d.appendChild(this._createCornerSlice(b, c, e, 'top'));
     a.style.paddingTop = 0;
     a.insertBefore(d, a.firstChild);
   },
   _roundBottomCorners: function(a, b, c) {
-    for(var d = this._createCorner(c), e = this.options.numSlices - 1; 0 <= e; e--)
-      d.appendChild(this._createCornerSlice(b, c, e, 'bottom'));
+    for(var d = this._createCorner(c), e = this.options.numSlices - 1; 0 <= e; e--) d.appendChild(this._createCornerSlice(b, c, e, 'bottom'));
     a.style.paddingBottom = 0;
     a.appendChild(d);
   },
@@ -25820,13 +23729,7 @@ OpenLayers.Rico.Corner = {
     f.fontSize = '1px';
     a = this._borderColor(a, b);
     this.options.border && 0 == c
-      ? ((f.borderTopStyle = 'solid'),
-        (f.borderTopWidth = '1px'),
-        (f.borderLeftWidth = '0px'),
-        (f.borderRightWidth = '0px'),
-        (f.borderBottomWidth = '0px'),
-        (f.height = '0px'),
-        (f.borderColor = a))
+      ? ((f.borderTopStyle = 'solid'), (f.borderTopWidth = '1px'), (f.borderLeftWidth = '0px'), (f.borderRightWidth = '0px'), (f.borderBottomWidth = '0px'), (f.height = '0px'), (f.borderColor = a))
       : a && ((f.borderColor = a), (f.borderStyle = 'solid'), (f.borderWidth = '0px 1px'));
     this.options.compact || c != this.options.numSlices - 1 || (f.height = '2px');
     this._setMargin(e, c, d);
@@ -25840,8 +23743,7 @@ OpenLayers.Rico.Corner = {
     this._isTransparent() && (this.options.blend = !1);
   },
   _whichSideTop: function() {
-    return this._hasString(this.options.corners, 'all', 'top') ||
-      (0 <= this.options.corners.indexOf('tl') && 0 <= this.options.corners.indexOf('tr'))
+    return this._hasString(this.options.corners, 'all', 'top') || (0 <= this.options.corners.indexOf('tl') && 0 <= this.options.corners.indexOf('tr'))
       ? ''
       : 0 <= this.options.corners.indexOf('tl')
       ? 'left'
@@ -25850,8 +23752,7 @@ OpenLayers.Rico.Corner = {
       : '';
   },
   _whichSideBottom: function() {
-    return this._hasString(this.options.corners, 'all', 'bottom') ||
-      (0 <= this.options.corners.indexOf('bl') && 0 <= this.options.corners.indexOf('br'))
+    return this._hasString(this.options.corners, 'all', 'bottom') || (0 <= this.options.corners.indexOf('bl') && 0 <= this.options.corners.indexOf('br'))
       ? ''
       : 0 <= this.options.corners.indexOf('bl')
       ? 'left'
@@ -25860,13 +23761,7 @@ OpenLayers.Rico.Corner = {
       : '';
   },
   _borderColor: function(a, b) {
-    return 'transparent' == a
-      ? b
-      : this.options.border
-      ? this.options.border
-      : this.options.blend
-      ? this._blend(b, a)
-      : '';
+    return 'transparent' == a ? b : this.options.border ? this.options.border : this.options.blend ? this._blend(b, a) : '';
   },
   _setMargin: function(a, b, c) {
     b = this._marginSize(b);
@@ -25893,13 +23788,7 @@ OpenLayers.Rico.Corner = {
       c = [3, 2, 1, 0],
       d = [2, 1],
       e = [1, 0];
-    return this.options.compact && this.options.blend
-      ? e[a]
-      : this.options.compact
-      ? d[a]
-      : this.options.blend
-      ? c[a]
-      : b[a];
+    return this.options.compact && this.options.blend ? e[a] : this.options.compact ? d[a] : this.options.blend ? c[a] : b[a];
   },
   _borderSize: function(a) {
     var b = [5, 3, 2, 1],
@@ -26042,16 +23931,13 @@ OpenLayers.Control.NavigationHistory = OpenLayers.Class(OpenLayers.Control, {
   },
   restore: function(a) {
     var b, c;
-    if(this.map.getProjectionObject() == a.projection)
-      (c = this.map.getZoomForResolution(a.resolution)), (b = a.center);
+    if(this.map.getProjectionObject() == a.projection) (c = this.map.getZoomForResolution(a.resolution)), (b = a.center);
     else {
       b = a.center.clone();
       b.transform(a.projection, this.map.getProjectionObject());
       c = a.units;
       var d = this.map.getProjectionObject().getUnits() || this.map.units || this.map.baseLayer.units;
-      c = this.map.getZoomForResolution(
-        (c && d ? OpenLayers.INCHES_PER_UNIT[c] / OpenLayers.INCHES_PER_UNIT[d] : 1) * a.resolution
-      );
+      c = this.map.getZoomForResolution((c && d ? OpenLayers.INCHES_PER_UNIT[c] / OpenLayers.INCHES_PER_UNIT[d] : 1) * a.resolution);
     }
     this.map.setCenter(b, c);
   },
@@ -26062,8 +23948,7 @@ OpenLayers.Control.NavigationHistory = OpenLayers.Class(OpenLayers.Control, {
         if(!this.restoring) {
           var b = this.registry[a].apply(this, arguments);
           this.previousStack.unshift(b);
-          if(1 < this.previousStack.length)
-            this.onPreviousChange(this.previousStack[1], this.previousStack.length - 1);
+          if(1 < this.previousStack.length) this.onPreviousChange(this.previousStack[1], this.previousStack.length - 1);
           this.previousStack.length > this.limit + 1 && this.previousStack.pop();
           0 < this.nextStack.length && ((this.nextStack = []), this.onNextChange(null, 0));
         }
@@ -26187,22 +24072,14 @@ OpenLayers.TileManager = OpenLayers.Class({
     if(a instanceof OpenLayers.Layer.Grid) {
       a.events.on({ addtile: this.addTile, retile: this.clearTileQueue, scope: this });
       var b, c, d;
-      for(b = a.grid.length - 1; 0 <= b; --b)
-        for(c = a.grid[b].length - 1; 0 <= c; --c)
-          (d = a.grid[b][c]), this.addTile({ tile: d }), d.url && !d.imgDiv && this.manageTileCache({ object: d });
+      for(b = a.grid.length - 1; 0 <= b; --b) for (c = a.grid[b].length - 1; 0 <= c; --c) (d = a.grid[b][c]), this.addTile({ tile: d }), d.url && !d.imgDiv && this.manageTileCache({ object: d });
     }
   },
   removeLayer: function(a) {
     a = a.layer;
-    if(
-      a instanceof OpenLayers.Layer.Grid &&
-      (this.clearTileQueue({ object: a }),
-      a.events && a.events.un({ addtile: this.addTile, retile: this.clearTileQueue, scope: this }),
-      a.grid)
-    ) {
+    if(a instanceof OpenLayers.Layer.Grid && (this.clearTileQueue({ object: a }), a.events && a.events.un({ addtile: this.addTile, retile: this.clearTileQueue, scope: this }), a.grid)) {
       var b, c, d;
-      for(b = a.grid.length - 1; 0 <= b; --b)
-        for(c = a.grid[b].length - 1; 0 <= c; --c) (d = a.grid[b][c]), this.unloadTile({ object: d });
+      for(b = a.grid.length - 1; 0 <= b; --b) for (c = a.grid[b].length - 1; 0 <= c; --c) (d = a.grid[b][c]), this.unloadTile({ object: d });
     }
   },
   updateTimeout: function(a, b, c) {
@@ -26245,12 +24122,8 @@ OpenLayers.TileManager = OpenLayers.Class({
       c = a.layer,
       d = c.getURL(a.bounds),
       e = this.tileCache[d];
-    e &&
-      'olTileImage' !== e.className &&
-      (delete this.tileCache[d], OpenLayers.Util.removeItem(this.tileCacheIndex, d), (e = null));
-    !c.url ||
-      (!c.async && e) ||
-      ((b = this.tileQueue[c.map.id]), ~OpenLayers.Util.indexOf(b, a) || b.push(a), (b = !0));
+    e && 'olTileImage' !== e.className && (delete this.tileCache[d], OpenLayers.Util.removeItem(this.tileCacheIndex, d), (e = null));
+    !c.url || (!c.async && e) || ((b = this.tileQueue[c.map.id]), ~OpenLayers.Util.indexOf(b, a) || b.push(a), (b = !0));
     return !b;
   },
   drawTilesFromQueue: function(a) {
@@ -26262,22 +24135,14 @@ OpenLayers.TileManager = OpenLayers.Class({
     a = a.object;
     var b = this.tileCache[a.url];
     b &&
-      (b.parentNode &&
-        OpenLayers.Element.hasClass(b.parentNode, 'olBackBuffer') &&
-        (b.parentNode.removeChild(b), (b.id = null)),
-      b.parentNode ||
-        ((b.style.visibility = 'hidden'),
-        (b.style.opacity = 0),
-        a.setImage(b),
-        OpenLayers.Util.removeItem(this.tileCacheIndex, a.url),
-        this.tileCacheIndex.push(a.url)));
+      (b.parentNode && OpenLayers.Element.hasClass(b.parentNode, 'olBackBuffer') && (b.parentNode.removeChild(b), (b.id = null)),
+      b.parentNode || ((b.style.visibility = 'hidden'), (b.style.opacity = 0), a.setImage(b), OpenLayers.Util.removeItem(this.tileCacheIndex, a.url), this.tileCacheIndex.push(a.url)));
   },
   addToCache: function(a) {
     a = a.object;
     this.tileCache[a.url] ||
       OpenLayers.Element.hasClass(a.imgDiv, 'olImageLoadError') ||
-      (this.tileCacheIndex.length >= this.cacheSize &&
-        (delete this.tileCache[this.tileCacheIndex[0]], this.tileCacheIndex.shift()),
+      (this.tileCacheIndex.length >= this.cacheSize && (delete this.tileCache[this.tileCacheIndex[0]], this.tileCacheIndex.shift()),
       (this.tileCache[a.url] = a.imgDiv),
       this.tileCacheIndex.push(a.url));
   },
@@ -26301,9 +24166,7 @@ OpenLayers.Layer.ArcGISCache = OpenLayers.Class(OpenLayers.Layer.XYZ, {
   overrideDPI: !1,
   initialize: function(a, b, c) {
     OpenLayers.Layer.XYZ.prototype.initialize.apply(this, arguments);
-    this.resolutions &&
-      ((this.serverResolutions = this.resolutions),
-      (this.maxExtent = this.getMaxExtentForResolution(this.resolutions[0])));
+    this.resolutions && ((this.serverResolutions = this.resolutions), (this.maxExtent = this.getMaxExtentForResolution(this.resolutions[0])));
     if(this.layerInfo) {
       var d = this.layerInfo,
         e = new OpenLayers.Bounds(d.fullExtent.xmin, d.fullExtent.ymin, d.fullExtent.xmax, d.fullExtent.ymax);
@@ -26336,20 +24199,12 @@ OpenLayers.Layer.ArcGISCache = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     }
   },
   getContainingTileCoords: function(a, b) {
-    return new OpenLayers.Pixel(
-      Math.max(Math.floor((a.x - this.tileOrigin.lon) / (this.tileSize.w * b)), 0),
-      Math.max(Math.floor((this.tileOrigin.lat - a.y) / (this.tileSize.h * b)), 0)
-    );
+    return new OpenLayers.Pixel(Math.max(Math.floor((a.x - this.tileOrigin.lon) / (this.tileSize.w * b)), 0), Math.max(Math.floor((this.tileOrigin.lat - a.y) / (this.tileSize.h * b)), 0));
   },
   calculateMaxExtentWithLOD: function(a) {
     var b = this.tileOrigin.lon + a.startTileCol * this.tileSize.w * a.resolution,
       c = this.tileOrigin.lat - a.startTileRow * this.tileSize.h * a.resolution;
-    return new OpenLayers.Bounds(
-      b,
-      c - (a.endTileRow - a.startTileRow + 1) * this.tileSize.h * a.resolution,
-      b + (a.endTileCol - a.startTileCol + 1) * this.tileSize.w * a.resolution,
-      c
-    );
+    return new OpenLayers.Bounds(b, c - (a.endTileRow - a.startTileRow + 1) * this.tileSize.h * a.resolution, b + (a.endTileCol - a.startTileCol + 1) * this.tileSize.w * a.resolution, c);
   },
   calculateMaxExtentWithExtent: function(a, b) {
     var c = new OpenLayers.Geometry.Point(a.left, a.top),
@@ -26377,12 +24232,7 @@ OpenLayers.Layer.ArcGISCache = OpenLayers.Class(OpenLayers.Layer.XYZ, {
       c = this.getLowerRightTileCoord(a),
       d = this.tileOrigin.lon + b.x * this.tileSize.w * a,
       e = this.tileOrigin.lat - b.y * this.tileSize.h * a;
-    return new OpenLayers.Bounds(
-      d,
-      e - (c.y - b.y + 1) * this.tileSize.h * a,
-      d + (c.x - b.x + 1) * this.tileSize.w * a,
-      e
-    );
+    return new OpenLayers.Bounds(d, e - (c.y - b.y + 1) * this.tileSize.h * a, d + (c.x - b.x + 1) * this.tileSize.w * a, e);
   },
   clone: function(a) {
     null == a && (a = new OpenLayers.Layer.ArcGISCache(this.name, this.url, this.options));
@@ -26412,11 +24262,7 @@ OpenLayers.Layer.ArcGISCache = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     d = Math.round(Math.abs((d - a.lat) / (b * this.tileSize.h)));
     a = this.map.getZoom();
     if(this.lods) {
-      if(
-        ((b = this.lods[this.map.getZoom()]),
-        c < b.startTileCol || c > b.endTileCol || d < b.startTileRow || d > b.endTileRow)
-      )
-        return null;
+      if(((b = this.lods[this.map.getZoom()]), c < b.startTileCol || c > b.endTileCol || d < b.startTileRow || d > b.endTileRow)) return null;
     } else {
       var e = this.getUpperLeftTileCoord(b),
         b = this.getLowerRightTileCoord(b);
@@ -26427,10 +24273,7 @@ OpenLayers.Layer.ArcGISCache = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     OpenLayers.Array.isArray(b) && (b = this.selectUrl(e, b));
     this.useArcGISServer
       ? (b += '/tile/${z}/${y}/${x}')
-      : ((c = 'C' + OpenLayers.Number.zeroPad(c, 8, 16)),
-        (d = 'R' + OpenLayers.Number.zeroPad(d, 8, 16)),
-        (a = 'L' + OpenLayers.Number.zeroPad(a, 2, 10)),
-        (b = b + '/${z}/${y}/${x}.' + this.type));
+      : ((c = 'C' + OpenLayers.Number.zeroPad(c, 8, 16)), (d = 'R' + OpenLayers.Number.zeroPad(d, 8, 16)), (a = 'L' + OpenLayers.Number.zeroPad(a, 2, 10)), (b = b + '/${z}/${y}/${x}.' + this.type));
     b = OpenLayers.String.format(b, { x: c, y: d, z: a });
     return OpenLayers.Util.urlAppend(b, OpenLayers.Util.getParameterString(this.params));
   },
@@ -26459,14 +24302,8 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
     this.format || (this.format = new OpenLayers.Format.WMSGetFeatureInfo(a.formatOptions));
     !0 === this.drillDown && (this.hover = !1);
     this.hover
-      ? (this.handler = new OpenLayers.Handler.Hover(
-          this,
-          { move: this.cancelHover, pause: this.getInfoForHover },
-          OpenLayers.Util.extend(this.handlerOptions.hover || {}, { delay: 250 })
-        ))
-      : ((a = {}),
-        (a[this.clickCallback] = this.getInfoForClick),
-        (this.handler = new OpenLayers.Handler.Click(this, a, this.handlerOptions.click || {})));
+      ? (this.handler = new OpenLayers.Handler.Hover(this, { move: this.cancelHover, pause: this.getInfoForHover }, OpenLayers.Util.extend(this.handlerOptions.hover || {}, { delay: 250 })))
+      : ((a = {}), (a[this.clickCallback] = this.getInfoForClick), (this.handler = new OpenLayers.Handler.Click(this, a, this.handlerOptions.click || {})));
   },
   getInfoForClick: function(a) {
     this.events.triggerEvent('beforegetfeatureinfo', { xy: a.xy });
@@ -26485,9 +24322,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
       (c = a[e]),
         c instanceof OpenLayers.Layer.WMS &&
           (!this.queryVisible || c.getVisibility()) &&
-          ((d = OpenLayers.Array.isArray(c.url) ? c.url[0] : c.url),
-          !1 !== this.drillDown || this.url || (this.url = d),
-          (!0 === this.drillDown || this.urlMatches(d)) && b.push(c));
+          ((d = OpenLayers.Array.isArray(c.url) ? c.url[0] : c.url), !1 !== this.drillDown || this.url || (this.url = d), (!0 === this.drillDown || this.urlMatches(d)) && b.push(c));
     return b;
   },
   urlMatches: function(a) {
@@ -26501,8 +24336,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
     return b;
   },
   buildWMSOptions: function(a, b, c, d) {
-    for(var e = [], f = [], g = 0, h = b.length; g < h; g++)
-      null != b[g].params.LAYERS && ((e = e.concat(b[g].params.LAYERS)), (f = f.concat(this.getStyleNames(b[g]))));
+    for(var e = [], f = [], g = 0, h = b.length; g < h; g++) null != b[g].params.LAYERS && ((e = e.concat(b[g].params.LAYERS)), (f = f.concat(this.getStyleNames(b[g]))));
     b = b[0];
     g = this.map.getProjection();
     (h = b.projection) && h.equals(this.map.getProjectionObject()) && (g = h.getCode());
@@ -26519,9 +24353,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
         format: d,
         info_format: b.params.INFO_FORMAT || this.infoFormat
       },
-      1.3 <= parseFloat(b.params.VERSION)
-        ? { crs: g, i: parseInt(c.x), j: parseInt(c.y) }
-        : { srs: g, x: parseInt(c.x), y: parseInt(c.y) }
+      1.3 <= parseFloat(b.params.VERSION) ? { crs: g, i: parseInt(c.x), j: parseInt(c.y) } : { srs: g, x: parseInt(c.x), y: parseInt(c.y) }
     );
     0 != e.length && (d = OpenLayers.Util.extend({ layers: e, query_layers: e, styles: f }, d));
     OpenLayers.Util.applyDefaults(d, this.vendorParams);
@@ -26535,17 +24367,11 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
     };
   },
   getStyleNames: function(a) {
-    return a.params.STYLES
-      ? a.params.STYLES
-      : OpenLayers.Array.isArray(a.params.LAYERS)
-      ? Array(a.params.LAYERS.length)
-      : a.params.LAYERS.replace(/[^,]/g, '');
+    return a.params.STYLES ? a.params.STYLES : OpenLayers.Array.isArray(a.params.LAYERS) ? Array(a.params.LAYERS.length) : a.params.LAYERS.replace(/[^,]/g, '');
   },
   request: function(a, b) {
     var c = this.findLayers();
-    if(0 == c.length)
-      this.events.triggerEvent('nogetfeatureinfo'),
-        OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olCursorWait');
+    if(0 == c.length) this.events.triggerEvent('nogetfeatureinfo'), OpenLayers.Element.removeClass(this.map.viewPortDiv, 'olCursorWait');
     else if(((b = b || {}), !1 === this.drillDown)) {
       var c = this.buildWMSOptions(this.url, c, a, c[0].params.FORMAT),
         d = OpenLayers.Request.GET(c);
@@ -26572,15 +24398,8 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
     !1 === this.drillDown
       ? this.triggerGetFeatureInfo(b, a, d)
       : (this._requestCount++,
-        (this._features =
-          'object' === this.output
-            ? (this._features || []).concat({ url: c, features: d })
-            : (this._features || []).concat(d)),
-        this._requestCount === this._numRequests &&
-          (this.triggerGetFeatureInfo(b, a, this._features.concat()),
-          delete this._features,
-          delete this._requestCount,
-          delete this._numRequests));
+        (this._features = 'object' === this.output ? (this._features || []).concat({ url: c, features: d }) : (this._features || []).concat(d)),
+        this._requestCount === this._numRequests && (this.triggerGetFeatureInfo(b, a, this._features.concat()), delete this._features, delete this._requestCount, delete this._numRequests));
   },
   CLASS_NAME: 'OpenLayers.Control.WMSGetFeatureInfo'
 });
@@ -26607,10 +24426,7 @@ OpenLayers.Format.SOSGetFeatureOfInterest = OpenLayers.Class(OpenLayers.Format.X
     a = [];
     for(var c = 0, d = b.features.length; c < d; c++) {
       var e = b.features[c];
-      this.internalProjection &&
-        this.externalProjection &&
-        e.components[0] &&
-        e.components[0].transform(this.externalProjection, this.internalProjection);
+      this.internalProjection && this.externalProjection && e.components[0] && e.components[0].transform(this.externalProjection, this.internalProjection);
       e = new OpenLayers.Feature.Vector(e.components[0], e.attributes);
       a.push(e);
     }
@@ -26749,9 +24565,7 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
       result: function(a, b) {
         var c = {};
         b.result = c;
-        '' !== this.getChildValue(a)
-          ? ((c.value = this.getChildValue(a)), (c.uom = a.getAttribute('uom')))
-          : this.readChildNodes(a, c);
+        '' !== this.getChildValue(a) ? ((c.value = this.getChildValue(a)), (c.uom = a.getAttribute('uom'))) : this.readChildNodes(a, c);
       }
     },
     sa: OpenLayers.Format.SOSGetFeatureOfInterest.prototype.readers.sa,
@@ -26859,19 +24673,10 @@ OpenLayers.Control.UTFGrid = OpenLayers.Class(OpenLayers.Control, {
   resetHandler: function() {
     this.handler && (this.handler.deactivate(), this.handler.destroy(), (this.handler = null));
     'hover' == this.handlerMode
-      ? (this.handler = new OpenLayers.Handler.Hover(
-          this,
-          { pause: this.handleEvent, move: this.reset },
-          this.handlerOptions
-        ))
+      ? (this.handler = new OpenLayers.Handler.Hover(this, { pause: this.handleEvent, move: this.reset }, this.handlerOptions))
       : 'click' == this.handlerMode
       ? (this.handler = new OpenLayers.Handler.Click(this, { click: this.handleEvent }, this.handlerOptions))
-      : 'move' == this.handlerMode &&
-        (this.handler = new OpenLayers.Handler.Hover(
-          this,
-          { pause: this.handleEvent, move: this.handleEvent },
-          this.handlerOptions
-        ));
+      : 'move' == this.handlerMode && (this.handler = new OpenLayers.Handler.Hover(this, { pause: this.handleEvent, move: this.handleEvent }, this.handlerOptions));
     return this.handler ? !0 : !1;
   },
   initialize: function(a) {
@@ -26887,8 +24692,7 @@ OpenLayers.Control.UTFGrid = OpenLayers.Class(OpenLayers.Control, {
       if(b) {
         var c = this.findLayers();
         if(0 < c.length) {
-          for(var d = {}, e, f, g = 0, h = c.length; g < h; g++)
-            (e = c[g]), (f = OpenLayers.Util.indexOf(this.map.layers, e)), (d[f] = e.getFeatureInfo(b));
+          for(var d = {}, e, f, g = 0, h = c.length; g < h; g++) (e = c[g]), (f = OpenLayers.Util.indexOf(this.map.layers, e)), (d[f] = e.getFeatureInfo(b));
           this.callback(d, b, a.xy);
         }
       }
@@ -26899,8 +24703,7 @@ OpenLayers.Control.UTFGrid = OpenLayers.Class(OpenLayers.Control, {
     this.callback(null);
   },
   findLayers: function() {
-    for(var a = this.layers || this.map.layers, b = [], c, d = a.length - 1; 0 <= d; --d)
-      (c = a[d]), c instanceof OpenLayers.Layer.UTFGrid && b.push(c);
+    for(var a = this.layers || this.map.layers, b = [], c, d = a.length - 1; 0 <= d; --d) (c = a[d]), c instanceof OpenLayers.Layer.UTFGrid && b.push(c);
     return b;
   },
   CLASS_NAME: 'OpenLayers.Control.UTFGrid'
@@ -26930,11 +24733,7 @@ OpenLayers.Format.CQL = (function () {
             })
           );
         case 'COMPARISON':
-          return (
-            (g = b()),
-            (c = b()),
-            new OpenLayers.Filter.Comparison({ property: c, value: g, type: d[a.text.toUpperCase()] })
-          );
+          return (g = b()), (c = b()), new OpenLayers.Filter.Comparison({ property: c, value: g, type: d[a.text.toUpperCase()] });
         case 'IS_NULL':
           return (c = b()), new OpenLayers.Filter.Comparison({ property: c, type: d[a.text.toUpperCase()] });
         case 'VALUE':
@@ -26953,23 +24752,11 @@ OpenLayers.Format.CQL = (function () {
                 value: OpenLayers.Bounds.fromArray([h, g, c, a])
               });
             case 'INTERSECTS':
-              return (
-                (g = b()),
-                (c = b()),
-                new OpenLayers.Filter.Spatial({ type: OpenLayers.Filter.Spatial.INTERSECTS, property: c, value: g })
-              );
+              return (g = b()), (c = b()), new OpenLayers.Filter.Spatial({ type: OpenLayers.Filter.Spatial.INTERSECTS, property: c, value: g });
             case 'WITHIN':
-              return (
-                (g = b()),
-                (c = b()),
-                new OpenLayers.Filter.Spatial({ type: OpenLayers.Filter.Spatial.WITHIN, property: c, value: g })
-              );
+              return (g = b()), (c = b()), new OpenLayers.Filter.Spatial({ type: OpenLayers.Filter.Spatial.WITHIN, property: c, value: g });
             case 'CONTAINS':
-              return (
-                (g = b()),
-                (c = b()),
-                new OpenLayers.Filter.Spatial({ type: OpenLayers.Filter.Spatial.CONTAINS, property: c, value: g })
-              );
+              return (g = b()), (c = b()), new OpenLayers.Filter.Spatial({ type: OpenLayers.Filter.Spatial.CONTAINS, property: c, value: g });
             case 'DWITHIN':
               return (
                 (a = b()),
@@ -27144,8 +24931,7 @@ OpenLayers.Format.CQL = (function () {
           }
         case 'OpenLayers.Filter.Logical':
           if(a.type == OpenLayers.Filter.Logical.NOT) return 'NOT (' + this.write(a.filters[0]) + ')';
-          for(var b = '(', c = !0, d = 0; d < a.filters.length; d++)
-            c ? (c = !1) : (b += ') ' + g[a.type] + ' ('), (b += this.write(a.filters[d]));
+          for(var b = '(', c = !0, d = 0; d < a.filters.length; d++) c ? (c = !1) : (b += ') ' + g[a.type] + ' ('), (b += this.write(a.filters[d]));
           return b + ')';
         case 'OpenLayers.Filter.Comparison':
           return a.type == OpenLayers.Filter.Comparison.BETWEEN
@@ -27180,12 +24966,7 @@ OpenLayers.Control.Split = OpenLayers.Class(OpenLayers.Control, {
     this.options.source && this.setSource(this.options.source);
   },
   setSource: function(a) {
-    this.active
-      ? (this.deactivate(),
-        this.handler && (this.handler.destroy(), delete this.handler),
-        (this.source = a),
-        this.activate())
-      : (this.source = a);
+    this.active ? (this.deactivate(), this.handler && (this.handler.destroy(), delete this.handler), (this.source = a), this.activate()) : (this.source = a);
   },
   activate: function() {
     var a = OpenLayers.Control.prototype.activate.call(this);
@@ -27227,9 +25008,7 @@ OpenLayers.Control.Split = OpenLayers.Class(OpenLayers.Control, {
     return !this.considerSplit(a.feature);
   },
   afterFeatureModified: function(a) {
-    a.modified &&
-      'function' === typeof a.feature.geometry.split &&
-      ((this.feature = a.feature), this.considerSplit(a.feature));
+    a.modified && 'function' === typeof a.feature.geometry.split && ((this.feature = a.feature), this.considerSplit(a.feature));
   },
   removeByGeometry: function(a, b) {
     for(var c = 0, d = a.length; c < d; ++c)
@@ -27239,12 +25018,7 @@ OpenLayers.Control.Split = OpenLayers.Class(OpenLayers.Control, {
       }
   },
   isEligible: function(a) {
-    return a.geometry
-      ? a.state !== OpenLayers.State.DELETE &&
-          'function' === typeof a.geometry.split &&
-          this.feature !== a &&
-          (!this.targetFilter || this.targetFilter.evaluate(a.attributes))
-      : !1;
+    return a.geometry ? a.state !== OpenLayers.State.DELETE && 'function' === typeof a.geometry.split && this.feature !== a && (!this.targetFilter || this.targetFilter.evaluate(a.attributes)) : !1;
   },
   considerSplit: function(a) {
     var b = !1,
@@ -27275,36 +25049,17 @@ OpenLayers.Control.Split = OpenLayers.Class(OpenLayers.Control, {
               if(((e = p[u]), q.getBounds().intersectsBounds(e.getBounds()) && (e = q.split(e, l))))
                 (f = this.events.triggerEvent('beforesplit', { source: a, target: n })),
                   !1 !== f &&
-                    (k &&
-                      ((f = e[0]),
-                      1 < f.length && (f.unshift(t, 1), Array.prototype.splice.apply(m, f), (t += f.length - 3)),
-                      (e = e[1])),
+                    (k && ((f = e[0]), 1 < f.length && (f.unshift(t, 1), Array.prototype.splice.apply(m, f), (t += f.length - 3)), (e = e[1])),
                     1 < e.length && (e.unshift(u, 1), Array.prototype.splice.apply(p, e), (u += e.length - 3)));
           }
-          p &&
-            1 < p.length &&
-            (this.geomsToFeatures(n, p),
-            this.events.triggerEvent('split', { original: n, features: p }),
-            Array.prototype.push.apply(g, p),
-            h.push(n),
-            (c = !0));
+          p && 1 < p.length && (this.geomsToFeatures(n, p), this.events.triggerEvent('split', { original: n, features: p }), Array.prototype.push.apply(g, p), h.push(n), (c = !0));
         }
-      m &&
-        1 < m.length &&
-        (this.geomsToFeatures(a, m),
-        this.events.triggerEvent('split', { original: a, features: m }),
-        Array.prototype.push.apply(g, m),
-        h.push(a),
-        (b = !0));
+      m && 1 < m.length && (this.geomsToFeatures(a, m), this.events.triggerEvent('split', { original: a, features: m }), Array.prototype.push.apply(g, m), h.push(a), (b = !0));
       if(b || c) {
         if(this.deferDelete) {
           d = [];
           r = 0;
-          for(s = h.length; r < s; ++r)
-            (c = h[r]),
-              c.state === OpenLayers.State.INSERT
-                ? d.push(c)
-                : ((c.state = OpenLayers.State.DELETE), this.layer.drawFeature(c));
+          for(s = h.length; r < s; ++r) (c = h[r]), c.state === OpenLayers.State.INSERT ? d.push(c) : ((c.state = OpenLayers.State.DELETE), this.layer.drawFeature(c));
           this.layer.destroyFeatures(d, { silent: !0 });
           r = 0;
           for(s = g.length; r < s; ++r) g[r].state = OpenLayers.State.INSERT;
@@ -27318,8 +25073,7 @@ OpenLayers.Control.Split = OpenLayers.Class(OpenLayers.Control, {
   geomsToFeatures: function(a, b) {
     var c = a.clone();
     delete c.geometry;
-    for(var d, e = 0, f = b.length; e < f; ++e)
-      (d = c.clone()), (d.geometry = b[e]), (d.state = OpenLayers.State.INSERT), (b[e] = d);
+    for(var d, e = 0, f = b.length; e < f; ++e) (d = c.clone()), (d.geometry = b[e]), (d.state = OpenLayers.State.INSERT), (b[e] = d);
   },
   destroy: function() {
     this.active && this.deactivate();
@@ -27372,9 +25126,7 @@ OpenLayers.Layer.WMTS = OpenLayers.Class(OpenLayers.Layer.Grid, {
   updateMatrixProperties: function() {
     if((this.matrix = this.getMatrix()))
       this.matrix.topLeftCorner && (this.tileOrigin = this.matrix.topLeftCorner),
-        this.matrix.tileWidth &&
-          this.matrix.tileHeight &&
-          (this.tileSize = new OpenLayers.Size(this.matrix.tileWidth, this.matrix.tileHeight)),
+        this.matrix.tileWidth && this.matrix.tileHeight && (this.tileSize = new OpenLayers.Size(this.matrix.tileWidth, this.matrix.tileHeight)),
         this.tileOrigin || (this.tileOrigin = new OpenLayers.LonLat(this.maxExtent.left, this.maxExtent.top)),
         this.tileFullExtent || (this.tileFullExtent = this.maxExtent);
   },
@@ -27394,13 +25146,7 @@ OpenLayers.Layer.WMTS = OpenLayers.Class(OpenLayers.Layer.Grid, {
     if(this.matrixIds && 0 !== this.matrixIds.length)
       if('scaleDenominator' in this.matrixIds[0])
         for(
-          var b =
-              (OpenLayers.METERS_PER_INCH * OpenLayers.INCHES_PER_UNIT[this.units] * this.getServerResolution()) /
-              2.8e-4,
-            c = Number.POSITIVE_INFINITY,
-            d,
-            e = 0,
-            f = this.matrixIds.length;
+          var b = (OpenLayers.METERS_PER_INCH * OpenLayers.INCHES_PER_UNIT[this.units] * this.getServerResolution()) / 2.8e-4, c = Number.POSITIVE_INFINITY, d, e = 0, f = this.matrixIds.length;
           e < f;
           ++e
         )
@@ -27425,12 +25171,7 @@ OpenLayers.Layer.WMTS = OpenLayers.Class(OpenLayers.Layer.Grid, {
       var c = this.getTileInfo(a);
       a = this.dimensions;
       var d,
-        b = OpenLayers.Array.isArray(this.url)
-          ? this.selectUrl(
-              [this.version, this.style, this.matrixSet, this.matrix.identifier, c.row, c.col].join(),
-              this.url
-            )
-          : this.url;
+        b = OpenLayers.Array.isArray(this.url) ? this.selectUrl([this.version, this.style, this.matrixSet, this.matrix.identifier, c.row, c.col].join(), this.url) : this.url;
       if('REST' === this.requestEncoding.toUpperCase())
         if(((d = this.params), -1 !== b.indexOf('{'))) {
           b = b.replace(/\{/g, '${');
@@ -27473,8 +25214,7 @@ OpenLayers.Layer.WMTS = OpenLayers.Class(OpenLayers.Layer.Grid, {
     return b;
   },
   mergeNewParams: function(a) {
-    if('KVP' === this.requestEncoding.toUpperCase())
-      return OpenLayers.Layer.Grid.prototype.mergeNewParams.apply(this, [OpenLayers.Util.upperCaseObject(a)]);
+    if('KVP' === this.requestEncoding.toUpperCase()) return OpenLayers.Layer.Grid.prototype.mergeNewParams.apply(this, [OpenLayers.Util.upperCaseObject(a)]);
   },
   CLASS_NAME: 'OpenLayers.Layer.WMTS'
 });
@@ -27495,18 +25235,14 @@ OpenLayers.Protocol.SOS.v1_0_0 = OpenLayers.Class(OpenLayers.Protocol, {
     OpenLayers.Util.applyDefaults(a, this.options || {});
     var b = new OpenLayers.Protocol.Response({ requestType: 'read' }),
       c = this.format,
-      c = OpenLayers.Format.XML.prototype.write.apply(c, [
-        c.writeNode('sos:GetFeatureOfInterest', { fois: this.fois })
-      ]);
+      c = OpenLayers.Format.XML.prototype.write.apply(c, [c.writeNode('sos:GetFeatureOfInterest', { fois: this.fois })]);
     b.priv = OpenLayers.Request.POST({ url: a.url, callback: this.createCallback(this.handleRead, b, a), data: c });
     return b;
   },
   handleRead: function(a, b) {
     if(b.callback) {
       var c = a.priv;
-      200 <= c.status && 300 > c.status
-        ? ((a.features = this.parseFeatures(c)), (a.code = OpenLayers.Protocol.Response.SUCCESS))
-        : (a.code = OpenLayers.Protocol.Response.FAILURE);
+      200 <= c.status && 300 > c.status ? ((a.features = this.parseFeatures(c)), (a.code = OpenLayers.Protocol.Response.SUCCESS)) : (a.code = OpenLayers.Protocol.Response.FAILURE);
       b.callback.call(b.scope, a);
     }
   },
@@ -27532,24 +25268,7 @@ OpenLayers.Layer.KaMapCache = OpenLayers.Class(OpenLayers.Layer.KaMap, {
     a = -Math.round(a.top / b);
     var b = Math.floor(d / this.tileSize.w / this.params.metaTileSize.w) * this.tileSize.w * this.params.metaTileSize.w,
       e = Math.floor(a / this.tileSize.h / this.params.metaTileSize.h) * this.tileSize.h * this.params.metaTileSize.h,
-      c = [
-        '/',
-        this.params.map,
-        '/',
-        c,
-        '/',
-        this.params.g.replace(/\s/g, '_'),
-        '/def/t',
-        e,
-        '/l',
-        b,
-        '/t',
-        a,
-        'l',
-        d,
-        '.',
-        this.extension
-      ],
+      c = ['/', this.params.map, '/', c, '/', this.params.g.replace(/\s/g, '_'), '/def/t', e, '/l', b, '/t', a, 'l', d, '.', this.extension],
       d = this.url;
     OpenLayers.Array.isArray(d) && (d = this.selectUrl(c.join(''), d));
     return d + c.join('');
@@ -27602,8 +25321,7 @@ OpenLayers.Format.WMSCapabilities.v1_1_1_WMSC = OpenLayers.Class(OpenLayers.Form
           b.tileSets.push(c);
         },
         Resolutions: function(a, b) {
-          for(var c = this.getChildValue(a).split(' '), d = 0, e = c.length; d < e; d++)
-            '' != c[d] && b.resolutions.push(parseFloat(c[d]));
+          for(var c = this.getChildValue(a).split(' '), d = 0, e = c.length; d < e; d++) '' != c[d] && b.resolutions.push(parseFloat(c[d]));
         },
         Width: function(a, b) {
           b.width = parseInt(this.getChildValue(a));
@@ -27661,9 +25379,7 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
       changebaselayer: this.redraw,
       scope: this
     });
-    this.outsideViewport
-      ? (this.events.attachToElement(this.div), this.events.register('buttonclick', this, this.onButtonClick))
-      : this.map.events.register('buttonclick', this, this.onButtonClick);
+    this.outsideViewport ? (this.events.attachToElement(this.div), this.events.register('buttonclick', this, this.onButtonClick)) : this.map.events.register('buttonclick', this, this.onButtonClick);
   },
   draw: function() {
     OpenLayers.Control.prototype.draw.apply(this);
@@ -27680,10 +25396,7 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
       ? this.maximizeControl()
       : a._layerSwitcher === this.id &&
         (a['for'] && (a = document.getElementById(a['for'])),
-        a.disabled ||
-          ('radio' == a.type
-            ? ((a.checked = !0), this.map.setBaseLayer(this.map.getLayer(a._layer)))
-            : ((a.checked = !a.checked), this.updateMap())));
+        a.disabled || ('radio' == a.type ? ((a.checked = !0), this.map.setBaseLayer(this.map.getLayer(a._layer))) : ((a.checked = !a.checked), this.updateMap())));
   },
   clearLayersArray: function(a) {
     this[a + 'LayersDiv'].innerHTML = '';
@@ -27791,14 +25504,8 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
     this.dataLayersDiv = document.createElement('div');
     OpenLayers.Element.addClass(this.dataLayersDiv, 'dataLayersDiv');
     this.ascending
-      ? (this.layersDiv.appendChild(this.baseLbl),
-        this.layersDiv.appendChild(this.baseLayersDiv),
-        this.layersDiv.appendChild(this.dataLbl),
-        this.layersDiv.appendChild(this.dataLayersDiv))
-      : (this.layersDiv.appendChild(this.dataLbl),
-        this.layersDiv.appendChild(this.dataLayersDiv),
-        this.layersDiv.appendChild(this.baseLbl),
-        this.layersDiv.appendChild(this.baseLayersDiv));
+      ? (this.layersDiv.appendChild(this.baseLbl), this.layersDiv.appendChild(this.baseLayersDiv), this.layersDiv.appendChild(this.dataLbl), this.layersDiv.appendChild(this.dataLayersDiv))
+      : (this.layersDiv.appendChild(this.dataLbl), this.layersDiv.appendChild(this.dataLayersDiv), this.layersDiv.appendChild(this.baseLbl), this.layersDiv.appendChild(this.baseLayersDiv));
     this.div.appendChild(this.layersDiv);
     var a = OpenLayers.Util.getImageLocation('layer-switcher-maximize.png');
     this.maximizeDiv = OpenLayers.Util.createAlphaImageDiv('OpenLayers_Control_MaximizeDiv', null, null, a, 'absolute');
@@ -27839,27 +25546,16 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
     else if('html' == a.type) {
       if('string' != typeof a.value) throw 'HTML content must be in form of an escaped string';
       b.appendChild(this.createTextNode(a.value));
-    } else
-      'xhtml' == a.type
-        ? b.appendChild(a.value)
-        : 'xhtml' == a.type || a.type.match(/(\+|\/)xml$/)
-        ? b.appendChild(a.value)
-        : b.appendChild(this.createTextNode(a.value));
+    } else 'xhtml' == a.type ? b.appendChild(a.value) : 'xhtml' == a.type || a.type.match(/(\+|\/)xml$/) ? b.appendChild(a.value) : b.appendChild(this.createTextNode(a.value));
     return b;
   },
   buildEntryNode: function(a) {
     var b = a.attributes,
       c = b.atom || {},
       d = this.createElementNSPlus('atom:entry');
-    if(c.authors)
-      for(var e = OpenLayers.Array.isArray(c.authors) ? c.authors : [c.authors], f = 0, g = e.length; f < g; f++)
-        d.appendChild(this.buildPersonConstructNode('author', e[f]));
+    if(c.authors) for(var e = OpenLayers.Array.isArray(c.authors) ? c.authors : [c.authors], f = 0, g = e.length; f < g; f++) d.appendChild(this.buildPersonConstructNode('author', e[f]));
     if(c.categories)
-      for(
-        var e = OpenLayers.Array.isArray(c.categories) ? c.categories : [c.categories], h, f = 0, g = e.length;
-        f < g;
-        f++
-      )
+      for(var e = OpenLayers.Array.isArray(c.categories) ? c.categories : [c.categories], h, f = 0, g = e.length; f < g; f++)
         (h = e[f]),
           d.appendChild(
             this.createElementNSPlus('atom:category', {
@@ -27868,12 +25564,7 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
           );
     c.content && d.appendChild(this.buildContentNode(c.content));
     if(c.contributors)
-      for(
-        e = OpenLayers.Array.isArray(c.contributors) ? c.contributors : [c.contributors], f = 0, g = e.length;
-        f < g;
-        f++
-      )
-        d.appendChild(this.buildPersonConstructNode('contributor', e[f]));
+      for(e = OpenLayers.Array.isArray(c.contributors) ? c.contributors : [c.contributors], f = 0, g = e.length; f < g; f++) d.appendChild(this.buildPersonConstructNode('contributor', e[f]));
     a.fid && d.appendChild(this.createElementNSPlus('atom:id', { value: a.fid }));
     if(c.links)
       for(e = OpenLayers.Array.isArray(c.links) ? c.links : [c.links], f = 0, g = e.length; f < g; f++)
@@ -27892,14 +25583,10 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
           );
     c.published && d.appendChild(this.createElementNSPlus('atom:published', { value: c.published }));
     c.rights && d.appendChild(this.createElementNSPlus('atom:rights', { value: c.rights }));
-    (c.summary || b.description) &&
-      d.appendChild(this.createElementNSPlus('atom:summary', { value: c.summary || b.description }));
+    (c.summary || b.description) && d.appendChild(this.createElementNSPlus('atom:summary', { value: c.summary || b.description }));
     d.appendChild(this.createElementNSPlus('atom:title', { value: c.title || b.title || this.defaultEntryTitle }));
     c.updated && d.appendChild(this.createElementNSPlus('atom:updated', { value: c.updated }));
-    a.geometry &&
-      ((b = this.createElementNSPlus('georss:where')),
-      b.appendChild(this.buildGeometryNode(a.geometry)),
-      d.appendChild(b));
+    a.geometry && ((b = this.createElementNSPlus('georss:where')), b.appendChild(this.buildGeometryNode(a.geometry)), d.appendChild(b));
     return d;
   },
   initGmlParser: function() {
@@ -27918,8 +25605,7 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
     var c = ['uri', 'email'],
       d = this.createElementNSPlus('atom:' + a);
     d.appendChild(this.createElementNSPlus('atom:name', { value: b.name }));
-    for(var e = 0, f = c.length; e < f; e++)
-      b[c[e]] && d.appendChild(this.createElementNSPlus('atom:' + c[e], { value: b[c[e]] }));
+    for(var e = 0, f = c.length; e < f; e++) b[c[e]] && d.appendChild(this.createElementNSPlus('atom:' + c[e], { value: b[c[e]] }));
     return d;
   },
   getFirstChildValue: function(a, b, c, d) {
@@ -28014,8 +25700,7 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
         for(m = d.length; l < m; l += 2) (g = new OpenLayers.Geometry.Point(d[l + 1], d[l])), k.push(g);
         c.push(new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(k)]));
       }
-    if(this.internalProjection && this.externalProjection)
-      for(e = 0, f = c.length; e < f; e++) c[e] && c[e].transform(this.externalProjection, this.internalProjection);
+    if(this.internalProjection && this.externalProjection) for(e = 0, f = c.length; e < f; e++) c[e] && c[e].transform(this.externalProjection, this.internalProjection);
     return c;
   },
   parsePersonConstructs: function(a, b, c) {
@@ -28040,11 +25725,7 @@ OpenLayers.Control.KeyboardDefaults = OpenLayers.Class(OpenLayers.Control, {
   slideFactor: 75,
   observeElement: null,
   draw: function() {
-    this.handler = new OpenLayers.Handler.Keyboard(
-      this,
-      { keydown: this.defaultKeyPress },
-      { observeElement: this.observeElement || document }
-    );
+    this.handler = new OpenLayers.Handler.Keyboard(this, { keydown: this.defaultKeyPress }, { observeElement: this.observeElement || document });
   },
   defaultKeyPress: function(a) {
     var b,
@@ -28171,9 +25852,7 @@ OpenLayers.Format.WMTSCapabilities.v1_0_0 = OpenLayers.Class(OpenLayers.Format.O
       TopLeftCorner: function(a, b) {
         var c = this.getChildValue(a).split(' '),
           d;
-        b.supportedCRS &&
-          ((d = b.supportedCRS.replace(/urn:ogc:def:crs:(\w+):.+:(\w+)$/, 'urn:ogc:def:crs:$1::$2')),
-          (d = !!this.yx[d]));
+        b.supportedCRS && ((d = b.supportedCRS.replace(/urn:ogc:def:crs:(\w+):.+:(\w+)$/, 'urn:ogc:def:crs:$1::$2')), (d = !!this.yx[d]));
         b.topLeftCorner = d ? new OpenLayers.LonLat(c[1], c[0]) : new OpenLayers.LonLat(c[0], c[1]);
       },
       TileWidth: function(a, b) {

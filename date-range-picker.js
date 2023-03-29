@@ -182,20 +182,7 @@ function cp() {
 
 var english = {
   days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  months: [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ],
+  months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   today: 'Today',
   clear: 'Clear',
   close: 'Close'
@@ -375,15 +362,7 @@ function render(dp) {
       className += isToday ? ' dp-day-today' : '';
       className += ' ' + opts.dateClass(date, dp);
 
-      return (
-        '<button tabindex="-1" type="button" class="' +
-        className +
-        '" data-date="' +
-        date.getTime() +
-        '">' +
-        date.getDate() +
-        '</button>'
-      );
+      return '<button tabindex="-1" type="button" class="' + className + '" data-date="' + date.getTime() + '">' + date.getDate() + '</button>';
     }) +
     '</div>' +
     '<footer class="dp-cal-footer">' +
@@ -531,9 +510,7 @@ function render$1(dp) {
         var className = 'dp-month';
         className += currentMonth === i ? ' dp-current' : '';
 
-        return (
-          '<button tabindex="-1" type="button" class="' + className + '" data-month="' + i + '">' + month + '</button>'
-        );
+        return '<button tabindex="-1" type="button" class="' + className + '" data-month="' + i + '">' + month + '</button>';
       })
       .join('') +
     '</div>'
@@ -592,9 +569,7 @@ function render$2(dp) {
       className += year === currentYear ? ' dp-current' : '';
       className += year === selectedYear ? ' dp-selected' : '';
 
-      return (
-        '<button tabindex="-1" type="button" class="' + className + '" data-year="' + year + '">' + year + '</button>'
-      );
+      return '<button tabindex="-1" type="button" class="' + className + '" data-year="' + year + '">' + year + '</button>';
     }) +
     '</div>'
   );
@@ -1340,8 +1315,7 @@ function renderInto(container) {
     container = document.querySelector(container);
   }
 
-  container.innerHTML =
-    '<div class="dr-cals">' + '<div class="dr-cal-start"></div>' + '<div class="dr-cal-end"></div>' + '</div>';
+  container.innerHTML = '<div class="dr-cals">' + '<div class="dr-cal-start"></div>' + '<div class="dr-cal-end"></div>' + '</div>';
 
   return container.querySelector('.dr-cals');
 }
