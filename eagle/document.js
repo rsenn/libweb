@@ -135,7 +135,7 @@ export class EagleDocument extends EagleNode {
       let { parts, sheets, libraries } = schematic;
       lazyProperties(this, {
         sheets: () => EagleNodeList.create(sheets, sheets.path.concat(['children'])),
-        parts: () => EagleNodeList.create(parts, parts.path.concat(['children'])),
+        parts: () => EagleNodeMap.create(parts.children, 'name'), // EagleNodeList.create(parts, parts.path.concat(['children'])),
         libraries: () => EagleNodeMap.create(libraries.children, 'name')
       });
     }
