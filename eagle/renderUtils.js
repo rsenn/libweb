@@ -20,15 +20,11 @@ export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
 export let DEBUG = false;
 
-export let log = DEBUG
-  ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
-  : () => {};
+export let log = DEBUG ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
 
 export const setDebug = state => {
   DEBUG = state;
-  log = state
-    ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
-    : () => {};
+  log = state ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
 };
 
 export const PinSizes = {
@@ -102,9 +98,7 @@ export const MakeRotation = (rot, f = 1) => {
 
 export const ExtractRotation = transformation => {
   let [sc] = transformation;
-  let t = transformation
-    .slice(sc.type == 'scale' && sc.x == 1 && sc.y == -1 ? 1 : 0)
-    .filter(t => t.type != 'translate');
+  let t = transformation.slice(sc.type == 'scale' && sc.x == 1 && sc.y == -1 ? 1 : 0).filter(t => t.type != 'translate');
 
   let angle = t.rotation ? t.rotation.angle : 0;
   let mirror = t.scaling && t.scaling.x == -1 && t.scaling.y == 1;
@@ -114,9 +108,7 @@ export const ExtractRotation = transformation => {
 
 export const InferRotation = transformation => {
   let [sc] = transformation;
-  let t = transformation
-    .slice(sc.type == 'scale' && sc.x == 1 && sc.y == -1 ? 1 : 0)
-    .filter(t => t.type != 'translate');
+  let t = transformation.slice(sc.type == 'scale' && sc.x == 1 && sc.y == -1 ? 1 : 0).filter(t => t.type != 'translate');
 
   let angle = t.rotation ? t.rotation.angle : 0;
   let mirror = t.scaling && t.scaling.x == -1 && t.scaling.y == 1;

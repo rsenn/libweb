@@ -23,8 +23,7 @@ export class ColorMap extends Map {
         if(typeof item == 'string') {
           console.log(type);
           item = type.fromString(item);
-        } else if(!(color instanceof type) && type === HSLA && Util.isObject(item) && typeof item.toHSLA == 'function')
-          item = item.toHSLA();
+        } else if(!(color instanceof type) && type === HSLA && Util.isObject(item) && typeof item.toHSLA == 'function') item = item.toHSLA();
         obj.set(key, item || color);
       }
     }

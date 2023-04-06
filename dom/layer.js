@@ -17,8 +17,7 @@ const PropSetterGetter = (obj, property) =>
   );
 const PropGetter = (obj, property) => () => obj[property];
 
-const cssSet = (elem, property) => value =>
-  Element.setCSS(elem, { [property]: typeof value == 'number' ? value + 'px' : value });
+const cssSet = (elem, property) => value => Element.setCSS(elem, { [property]: typeof value == 'number' ? value + 'px' : value });
 const cssGet = (elem, property) => () => Element.getCSS(elem, property);
 const cssGetSet = (elem, property) => GetSet(cssGet(elem, property), cssSet(elem, property));
 

@@ -1,6 +1,6 @@
-import Util from '../util.js';
+import { bindProperties, clamp, defineGetter, immutableClass, inspectSymbol, isObject, roundDigits, roundTo, tryCatch } from '../misc.js';
 
-const SymSpecies = Util.tryCatch(
+const SymSpecies = tryCatch(
   () => Symbol,
   sym => sym.species
 );
@@ -57,9 +57,7 @@ export function Point(...args) {
   }
 }
 
-Point.getOther = args => (
-  console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args
-);
+Point.getOther = args => (console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
 
 Object.defineProperties(Point.prototype, {
   X: {
@@ -169,10 +167,10 @@ Point.prototype.equals = function(other) {
 };
 Point.prototype.round = function(precision = 0.001, digits, type) {
   let { x, y } = this;
-  digits = digits || Util.roundDigits(precision);
+  digits = digits || roundDigits(precision);
   type = type || 'round';
-  this.x = Util.roundTo(x, precision, digits, type);
-  this.y = Util.roundTo(y, precision, digits, type);
+  this.x = roundTo(x, precision, digits, type);
+  this.y = roundTo(y, precision, digits, type);
   return this;
 };
 Point.prototype.ceil = function() {
@@ -218,7 +216,7 @@ Point.prototype.rotate = function(angle, origin = { x: 0, y: 0 }) {
   this.y = ynew;
   return this;
 };
-Util.defineGetter(Point.prototype, Symbol.iterator, function() {
+defineGetter(Point.prototype, Symbol.iterator, function() {
   const { x, y } = this;
   let a = [x, y];
   return a[Symbol.iterator].bind(a);
@@ -233,8 +231,8 @@ Point.prototype.valueOf = function(shl = 16) {
 };
 Point.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ',', left = '', right = '', pad = 0 } = opts;
-  let x = Util.roundTo(this.x, precision);
-  let y = Util.roundTo(this.y, precision);
+  let x = roundTo(this.x, precision);
+  let y = roundTo(this.y, precision);
   if(pad > 0) {
     x = x + '';
     y = y + '';
@@ -254,11 +252,7 @@ Point.prototype.toSource = function(opts = {}) {
   if(asArray) return `[${x},${y}]`;
   if(plainObj) return `{x:${x},y:${y}}`;
 
-  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(
-    y,
-    1,
-    32
-  )}${c(')', 1, 36)}`;
+  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(y, 1, 32)}${c(')', 1, 36)}`;
 };
 
 /*Point.prototype.toSource = function() {
@@ -272,8 +266,8 @@ Point.prototype.toObject = function(proto = Point.prototype) {
 };
 Point.prototype.toCSS = function(precision = 0.001, edges = ['left', 'top']) {
   return {
-    [edges[0]]: Util.roundTo(this.x, precision) + 'px',
-    [edges[1]]: Util.roundTo(this.y, precision) + 'px'
+    [edges[0]]: roundTo(this.x, precision) + 'px',
+    [edges[1]]: roundTo(this.y, precision) + 'px'
   };
 };
 Point.prototype.toFixed = function(digits) {
@@ -286,8 +280,8 @@ Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
 Point.prototype.transform = function(m, round = true) {
-  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
-  //if(Util.isObject(m) && typeof m.transform_point == 'function') return m.transform_point(this);
+  if(isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
+  //if(isObject(m) && typeof m.transform_point == 'function') return m.transform_point(this);
 
   const x = m[0] * this.x + m[1] * this.y + m[2];
   const y = m[3] * this.x + m[4] * this.y + m[5];
@@ -342,12 +336,11 @@ for(let name of [
   Point[name] = (point, ...args) => Point.prototype[name].call(Point(point), ...args);
 }
 Point.interpolate = (p1, p2, a) => {
-  a = Util.clamp(0, 1, a);
+  a = clamp(0, 1, a);
   return new Point(p1.x * (1.0 - a) + p2.x * a, p1.y * (1.0 - a) + p2.y * a);
 };
 
-Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) =>
-  `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;
+Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) => `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;
 
 export const isPoint = o =>
   o &&
@@ -358,7 +351,7 @@ export const isPoint = o =>
 
 Point.isPoint = isPoint;
 
-Point.prototype[Util.inspectSymbol] = function(depth, options) {
+Point.prototype[inspectSymbol] = function(depth, options) {
   const { x, y } = this;
   return /*Object.setPrototypeOf*/ { x, y } /*, Point.prototype*/;
 };
@@ -369,14 +362,14 @@ Point.bind = (o, keys, g) => {
   g ??= k => value => value !== undefined ? (o[k] = value) : o[k];
 
   const { x, y } = Array.isArray(keys) ? keys.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {}) : keys;
-  return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
+  return Object.setPrototypeOf(bindProperties({}, o, { x, y }), Point.prototype);
 };
 
 export default Point;
 
-Util.defineGetter(Point, Symbol.species, function() {
+defineGetter(Point, Symbol.species, function() {
   return this;
 });
 
-export const ImmutablePoint = Util.immutableClass(Point);
-Util.defineGetter(ImmutablePoint, Symbol.species, () => ImmutablePoint);
+export const ImmutablePoint = immutableClass(Point);
+defineGetter(ImmutablePoint, Symbol.species, () => ImmutablePoint);

@@ -1,10 +1,10 @@
-import Util from '../util.js';
+import { isObject, inspectSymbol, define, defineGetter, keys, getMethodNames, matchAll, bindProperties, immutableClass, roundTo } from '../misc.js';
 import { isPoint } from './point.js';
 
 export function Size(arg) {
   let obj = this instanceof Size ? this : {};
   let args = [...arguments];
-  if(args.length == 1 && Util.isObject(args[0]) && args[0].length !== undefined) {
+  if(args.length == 1 && isObject(args[0]) && args[0].length !== undefined) {
     args = args[0];
     arg = args[0];
   }
@@ -39,7 +39,9 @@ export function Size(arg) {
           width: typeof w == 'number' ? 'px' : w.replace(obj.width.toString(), ''),
           height: typeof h == 'number' ? 'px' : h.replace(obj.height.toString(), '')
         },
-        enumerable: false
+        enumerable: false,
+        configurable: true,
+        writable: true
       });
     }
   }
@@ -48,13 +50,10 @@ export function Size(arg) {
   if(!(obj instanceof Size)) return obj;
 }
 
-Size.getOther = args =>
-  /*console.debug('getOther', ...args), */ typeof args[0] == 'number'
-    ? [{ width: args[0], height: typeof args[1] == 'number' ? args[1] : args[0] }]
-    : args;
+Size.getOther = args => (/*console.debug('getOther', ...args), */ typeof args[0] == 'number' ? [{ width: args[0], height: typeof args[1] == 'number' ? args[1] : args[0] }] : args);
 
-Size.prototype.width = NaN;
-Size.prototype.height = NaN;
+/*Size.prototype.width = NaN;
+Size.prototype.height = NaN;*/
 Size.prototype.units = null;
 Size.prototype[Symbol.toStringTag] = 'Size';
 
@@ -82,8 +81,7 @@ Size.prototype.aspect = function() {
 };
 Size.prototype.toCSS = function(units) {
   let ret = {};
-  units =
-    typeof units == 'string' ? { width: units, height: units } : units || this.units || { width: 'px', height: 'px' };
+  units = typeof units == 'string' ? { width: units, height: units } : units || this.units || { width: 'px', height: 'px' };
   if(this.width !== undefined) ret.width = this.width + (units.width || 'px');
   if(this.height !== undefined) ret.height = this.height + (units.height || 'px');
   return ret;
@@ -170,8 +168,8 @@ Size.prototype.div = function(...args) {
 };
 Size.prototype.round = function(precision = 1, digits, type) {
   let { width, height } = this;
-  this.width = Util.roundTo(width, precision, digits, type);
-  this.height = Util.roundTo(height, precision, digits, type);
+  this.width = roundTo(width, precision, digits, type);
+  this.height = roundTo(height, precision, digits, type);
   return this;
 };
 Size.prototype.bounds = function(other) {
@@ -210,13 +208,11 @@ Size.prototype.fitFactors = function(other) {
 Size.prototype.toString = function(opts = {}) {
   const { unit = '', separator = ' \u2715 ', left = '', right = '' } = opts;
   const { width, height, units = { width: unit, height: unit } } = this;
-  return `${left}${width}${(Util.isObject(units) && units.width) || unit}${separator}${height}${
-    (Util.isObject(units) && units.height) || unit
-  }${right}`;
+  return `${left}${width}${(isObject(units) && units.width) || unit}${separator}${height}${(isObject(units) && units.height) || unit}${right}`;
 };
-Size.prototype[Util.inspectSymbol] = function(depth, options) {
+Size.prototype[inspectSymbol] = function(depth, options) {
   const { width, height } = this;
-  return Object.setPrototypeOf({ width, height }, Size.prototype);
+  return define({ width, height }, { [Symbol.toStringTag]: 'Size' });
 };
 /*Size.prototype[Symbol.iterator] = function() {
     let [width,height]= this;
@@ -238,17 +234,13 @@ Size.bind = (o, keys, g) => {
   o ??= new Size();
   g ??= k => value => value !== undefined ? (o[k] = value) : o[k];
 
-  const { width, height } = Array.isArray(keys)
-    ? keys.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})
-    : keys;
+  const { width, height } = Array.isArray(keys) ? keys.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {}) : keys;
   //console.debug('Size.bind', { keys, o, p, x, y });
   //
-  return Object.setPrototypeOf(Util.bindProperties({}, o, { width, height }), Size.prototype);
+  return Object.setPrototypeOf(bindProperties({}, o, { width, height }), Size.prototype);
 };
 
-for(let method of Util.getMethodNames(Size.prototype))
-  if(method != 'toString')
-    Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
+for(let method of getMethodNames(Size.prototype)) if(method != 'toString') Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
 
 export const isSize = o =>
   o &&
@@ -260,9 +252,9 @@ for(let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'pro
   Size[name] = (size, ...args) => Size.prototype[name].call(size || new Size(size), ...args);
 }
 
-Util.defineGetter(Size, Symbol.species, function() {
+defineGetter(Size, Symbol.species, function() {
   return this;
 });
 
-export const ImmutableSize = Util.immutableClass(Size);
-Util.defineGetter(ImmutableSize, Symbol.species, () => ImmutableSize);
+export const ImmutableSize = immutableClass(Size);
+defineGetter(ImmutableSize, Symbol.species, () => ImmutableSize);

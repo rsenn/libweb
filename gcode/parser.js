@@ -356,10 +356,7 @@ export class GCodeLineStream extends TransformStream {
   }
 
   push({ line, words }) {
-    let obj =
-      words.length > 0
-        ? words
-        : [[line.substring(0, 1), line.substring(1, line.length - 1), line.substring(line.length - 1)]];
+    let obj = words.length > 0 ? words : [[line.substring(0, 1), line.substring(1, line.length - 1), line.substring(line.length - 1)]];
     let a = line.split(/\s+/g).slice(0, obj.length);
     obj = obj.map((it, i) => {
       if(typeof it.join == 'function') it.word = a[i];

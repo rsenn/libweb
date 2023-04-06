@@ -335,11 +335,7 @@ export class Voronoi {
     let hl = lfocx - rfocx,
       aby2 = 1 / pby2 - 1 / plby2,
       b = hl / plby2;
-    if(aby2)
-      return (
-        (-b + this.sqrt(b * b - 2 * aby2 * ((hl * hl) / (-2 * plby2) - lfocy + plby2 / 2 + rfocy - pby2 / 2))) / aby2 +
-        rfocx
-      );
+    if(aby2) return (-b + this.sqrt(b * b - 2 * aby2 * ((hl * hl) / (-2 * plby2) - lfocy + plby2 / 2 + rfocy - pby2 / 2))) / aby2 + rfocx;
 
     //both parabolas have same distance to directrix, thus break point is midway
     return (rfocx + lfocx) / 2;
@@ -1020,11 +1016,7 @@ export class Voronoi {
       //edge is removed if:
       //it is wholly outside the bounding box
       //it is looking more like a point than a line
-      if(
-        !this.connectEdge(edge, bbox) ||
-        !this.clipEdge(edge, bbox) ||
-        (abs_fn(edge.va.x - edge.vb.x) < 1e-9 && abs_fn(edge.va.y - edge.vb.y) < 1e-9)
-      ) {
+      if(!this.connectEdge(edge, bbox) || !this.clipEdge(edge, bbox) || (abs_fn(edge.va.x - edge.vb.x) < 1e-9 && abs_fn(edge.va.y - edge.vb.y) < 1e-9)) {
         edge.va = edge.vb = null;
         edges.splice(iEdge, 1);
       }
@@ -1198,12 +1190,7 @@ export class Voronoi {
     } else {
       let bs = this.beachline.getFirst(this.beachline.root);
       while(bs) {
-        console.log(
-          '  site %d: xl: %f, xr: %f',
-          bs.site.voronoiId,
-          this.leftBreakPoint(bs, y),
-          this.rightBreakPoint(bs, y)
-        );
+        console.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
         bs = bs.rbNext;
       }
     }

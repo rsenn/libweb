@@ -1,4 +1,4 @@
-import Util from '../util.js';
+import { defineGetter, immutableClass } from '../misc.js';
 import { Rect } from './rect.js';
 
 /**
@@ -115,9 +115,7 @@ TRBL.union = (trbl, other) => ({
 TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
 TRBL.prototype.toString = function(unit = 'px') {
-  return (
-    '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit
-  );
+  return '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit;
 };
 TRBL.prototype.toSource = function() {
   return '{top:' + this.top + ',right:' + this.right + ',bottom:' + this.bottom + ',left:' + this.left + '}';
@@ -131,8 +129,8 @@ export function isTRBL(obj) {
   return top in obj && right in obj && bottom in obj && left in obj;
 }
 
-Util.defineGetter(TRBL, Symbol.species, function() {
+defineGetter(TRBL, Symbol.species, function() {
   return this;
 });
-export const ImmutableTRBL = Util.immutableClass(TRBL);
-Util.defineGetter(ImmutableTRBL, Symbol.species, () => ImmutableTRBL);
+export const ImmutableTRBL = immutableClass(TRBL);
+defineGetter(ImmutableTRBL, Symbol.species, () => ImmutableTRBL);

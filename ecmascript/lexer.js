@@ -33,10 +33,7 @@ export function Stack() {
 
   return stack
     .filter(s => s.functionName != 'esfactory')
-    .map(
-      ({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) =>
-        `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`
-    );
+    .map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) => `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`);
 
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName)g1);
@@ -370,12 +367,7 @@ export class Lexer {
   addToken(type, props = {}) {
     //if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
-    const token = new Token(
-      type,
-      source.substring(start, pos),
-      new Range(this.position(this.start), this.pos - this.start),
-      this.start
-    );
+    const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
     Object.assign(token, props);
     this.tokens.push(token);
     this.ignore();
@@ -410,8 +402,7 @@ export class Lexer {
       return this.lexText;
     }
 
-    if(isQuoteChar(c))
-      throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`);
+    if(isQuoteChar(c)) throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`);
 
     const word = this.getRange(this.start, this.pos);
     if(word === 'true' || word === 'false') this.addToken(Token.types.booleanLiteral);
@@ -459,9 +450,7 @@ export class Lexer {
 
     let indicator = indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
 
-    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
-      this.accepted.length
-    }\n${indent + source.slice(this.pos, this.pos + 10)}`;
+    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
   }
 
   lineRange(start, end) {
@@ -518,8 +507,7 @@ export class Lexer {
     //for identifiers or keywords. It also cannot be immediately followed by
     //a string.
     const c = this.peek();
-    if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c))
-      throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+    if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
 
     this.addToken(Token.types.numericLiteral);
 
@@ -854,63 +842,9 @@ function isPunctuatorChar(c) {
 function isPunctuator(word) {
   switch (word.length) {
     case 1:
-      return (
-        [
-          '=',
-          '.',
-          '-',
-          '%',
-          '}',
-          '>',
-          ',',
-          '*',
-          '[',
-          '<',
-          '!',
-          '/',
-          ']',
-          '~',
-          '&',
-          '(',
-          ';',
-          '?',
-          '|',
-          ')',
-          ':',
-          '+',
-          '^',
-          '{',
-          '@'
-        ].indexOf(word) >= 0
-      );
+      return ['=', '.', '-', '%', '}', '>', ',', '*', '[', '<', '!', '/', ']', '~', '&', '(', ';', '?', '|', ')', ':', '+', '^', '{', '@'].indexOf(word) >= 0;
     case 2:
-      return (
-        [
-          '!=',
-          '*=',
-          '&&',
-          '<<',
-          '/=',
-          '||',
-          '>>',
-          '&=',
-          '==',
-          '++',
-          '|=',
-          '<=',
-          '--',
-          '+=',
-          '^=',
-          '>=',
-          '-=',
-          '%=',
-          '=>',
-          '${',
-          '?.',
-          '**',
-          '??'
-        ].indexOf(word) >= 0
-      );
+      return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${', '?.', '**', '??'].indexOf(word) >= 0;
 
     case 3:
       return ['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(word) >= 0;

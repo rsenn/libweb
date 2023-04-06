@@ -30,9 +30,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   } else if(typeof args[0] == 'string') {
     const arg = args[0];
     if(typeof arg === 'string') {
-      let matches =
-        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
-        /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
+      let matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) c = [...matches].slice(1);
     }
@@ -246,12 +244,7 @@ HSLA.prototype.valid = function() {
   return [h, s, l, a].every(n => !isNaN(n) && typeof n == 'number');
 };
 HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Util.rng) {
-  return new HSLA(
-    Util.randInt(...[...h, 360].slice(0, 2), rng),
-    Util.randInt(...[...s, 100].slice(0, 2), rng),
-    Util.randInt(...[...l, 50].slice(0, 2), rng),
-    Util.randFloat(...a, rng)
-  );
+  return new HSLA(Util.randInt(...[...h, 360].slice(0, 2), rng), Util.randInt(...[...s, 100].slice(0, 2), rng), Util.randInt(...[...l, 50].slice(0, 2), rng), Util.randFloat(...a, rng));
 };
 HSLA.prototype.dump = function() {
   //console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
@@ -307,9 +300,7 @@ HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = HSLA.prototype.inspec
   const { h, s, l, a } = this;
   const haveAlpha = !isNaN(a) && a !== 1;
   let arr = haveAlpha ? [h, s, l, a] : [h, s, l];
-  let ret = arr
-    .map((n, i) => (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2, ' '))
-    .join(', ');
+  let ret = arr.map((n, i) => (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2, ' ')).join(', ');
   const color = this.toRGBA().toAnsi(/*256*/ true);
   let o = '';
   let c = colors ? (str, ...a) => `\x1b[${a.join(';')}m${str}\x1b[0m` : str => str;
@@ -323,12 +314,7 @@ HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = HSLA.prototype.inspec
 HSLA.blend = (a, b, o = 0.5) => {
   a = new HSLA(a);
   b = new HSLA(b);
-  return new HSLA(
-    Math.round(a.h * (1 - o) + b.h * o),
-    Math.round(a.s * (1 - o) + b.s * o),
-    Math.round(a.l * (1 - o) + b.l * o),
-    Math.round(a.a * (1 - o) + b.a * o)
-  );
+  return new HSLA(Math.round(a.h * (1 - o) + b.h * o), Math.round(a.s * (1 - o) + b.s * o), Math.round(a.l * (1 - o) + b.l * o), Math.round(a.a * (1 - o) + b.a * o));
 };
 
 for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {

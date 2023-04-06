@@ -41,12 +41,7 @@ function normalizeStringPosix(path, allowAboveRoot) {
       if(lastSlash === i - 1 || dots === 1) {
         // NOOP
       } else if(lastSlash !== i - 1 && dots === 2) {
-        if(
-          res.length < 2 ||
-          lastSegmentLength !== 2 ||
-          res.charCodeAt(res.length - 1) !== 46 /*.*/ ||
-          res.charCodeAt(res.length - 2) !== 46 /*.*/
-        ) {
+        if(res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== 46 /*.*/ || res.charCodeAt(res.length - 2) !== 46 /*.*/) {
           if(res.length > 2) {
             let lastSlashIndex = res.lastIndexOf('/');
             if(lastSlashIndex !== res.length - 1) {
@@ -306,8 +301,7 @@ export const posix = {
   },
 
   basename(path, ext) {
-    if(ext !== undefined && !(typeof ext == 'string' || ext instanceof RegExp))
-      throw new TypeError('"ext" argument must be a string or RegExp');
+    if(ext !== undefined && !(typeof ext == 'string' || ext instanceof RegExp)) throw new TypeError('"ext" argument must be a string or RegExp');
     assertPath(path);
 
     let start = 0;

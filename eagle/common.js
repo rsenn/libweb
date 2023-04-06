@@ -10,8 +10,7 @@ export const concat = coloring.concat.bind(coloring);
 export const ansi = coloring.code.bind(coloring);
 export const text = coloring.text.bind(coloring);
 
-export const dingbatCode = digit =>
-  digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1);
+export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
 
 export const Palette = {
   board: (m = (r, g, b) => [r, g, b]) =>

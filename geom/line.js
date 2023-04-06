@@ -1,6 +1,6 @@
 import { Point, isPoint } from './point.js';
 import { BBox } from './bbox.js';
-import Util from '../util.js';
+import { bindProperties, defineGetter, immutableClass, isObject, memoize, roundTo } from '../misc.js';
 
 export function Line(...args) {
   if(!new.target) if (args[0] instanceof Line) return args[0];
@@ -61,7 +61,7 @@ export function Line(...args) {
     });
 
   if(!isLine(obj)) {
-    //console.log('ERROR: is not a line: ', Util.inspect(arg), Util.inspect(obj));
+    console.log('ERROR: is not a line: ', obj);
   }
 
   if(!['x1', 'y1', 'x2', 'y2'].every(prop => !isNaN(+obj[prop]))) return null;
@@ -69,9 +69,7 @@ export function Line(...args) {
   /*  if(this !== obj)*/ return obj;
 }
 
-export const isLine = obj =>
-  (Util.isObject(obj) && ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined)) ||
-  ['a', 'b'].every(prop => isPoint(obj[prop]));
+export const isLine = obj => (isObject(obj) && ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined)) || ['a', 'b'].every(prop => isPoint(obj[prop]));
 
 /*
 Object.defineProperty(Line.prototype, 'a', { value: new Point(), enumerable: true });
@@ -230,10 +228,7 @@ Line.prototype.matchEndpoints = function(arr) {
   return [...arr.entries()].filter(
     ([i, otherLine]) =>
       !Line.prototype.equals.call(this, otherLine) &&
-      (Point.prototype.equals.call(a, otherLine.a) ||
-        Point.prototype.equals.call(b, otherLine.b) ||
-        Point.prototype.equals.call(b, otherLine.a) ||
-        Point.prototype.equals.call(a, otherLine.b))
+      (Point.prototype.equals.call(a, otherLine.a) || Point.prototype.equals.call(b, otherLine.b) || Point.prototype.equals.call(b, otherLine.a) || Point.prototype.equals.call(a, otherLine.b))
   );
 };
 
@@ -288,10 +283,6 @@ Line.prototype.points = function() {
   return [a, b];
 };
 
-Line.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, options = {}) {
-  const { x1, y1, x2, y2 } = this;
-  return this[Symbol.toStringTag] + ' ' + Util.inspect({ x1, y1, x2, y2 }, options) + ' }';
-};
 Line.prototype.toString = function(opts = {}) {
   let { separator = ', ', brackets, pad = 6, ...options } = opts;
 
@@ -344,10 +335,10 @@ Line.prototype.clone = function() {
 
 Line.prototype.round = function(precision = 0.001, digits, type) {
   let { x1, y1, x2, y2 } = this;
-  this.x1 = Util.roundTo(x1, precision, digits, type);
-  this.y1 = Util.roundTo(y1, precision, digits, type);
-  this.x2 = Util.roundTo(x2, precision, digits, type);
-  this.y2 = Util.roundTo(y2, precision, digits, type);
+  this.x1 = roundTo(x1, precision, digits, type);
+  this.y1 = roundTo(y1, precision, digits, type);
+  this.x2 = roundTo(x2, precision, digits, type);
+  this.y2 = roundTo(y2, precision, digits, type);
   return this;
 };
 Line.prototype.sum = function(...args) {
@@ -467,27 +458,13 @@ Line.prototype[Symbol.iterator] = function() {
   return [x1, y1, x2, y2][Symbol.iterator]();
 };
 
-for(let name of [
-  'direction',
-  'round',
-  'slope',
-  'angle',
-  'bbox',
-  'points',
-  'inspect',
-  'toString',
-  'toObject',
-  'toSource',
-  'distanceToPointSquared',
-  'distanceToPoint'
-]) {
+for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'toString', 'toObject', 'toSource', 'distanceToPointSquared', 'distanceToPoint']) {
   Line[name] = (line, ...args) => Line.prototype[name].call(line || new Line(line), ...args);
 }
 
-Util.defineInspect(Line.prototype, 'x1', 'y1', 'x2', 'y2');
+Line.a = memoize(line => Point.bind(line, ['x1', 'y1']), new WeakMap());
+Line.b = memoize(line => Point.bind(line, ['x2', 'y2']), new WeakMap());
 
-Line.a = Util.memoize(line => Point.bind(line, ['x1', 'y1']), new WeakMap());
-Line.b = Util.memoize(line => Point.bind(line, ['x2', 'y2']), new WeakMap());
 Line.from = obj => {
   let l = new Line(obj);
 
@@ -503,13 +480,13 @@ Line.bind = (o, p, gen) => {
   if(!gen) gen = k => v => v === undefined ? o[k] : (o[k] = v);
 
   let proxy = { a: Point.bind(o, [x1, y1]), b: Point.bind(o, [x2, y2]) };
-  Util.bindProperties(proxy, o, { x1, y1, x2, y2 }, gen);
+  bindProperties(proxy, o, { x1, y1, x2, y2 }, gen);
   return Object.setPrototypeOf(proxy, Line.prototype);
 };
 
-Util.defineGetter(Line, Symbol.species, function() {
+defineGetter(Line, Symbol.species, function() {
   return this;
 });
 
-export const ImmutableLine = Util.immutableClass(Line);
-Util.defineGetter(ImmutableLine, Symbol.species, () => ImmutableLine);
+export const ImmutableLine = immutableClass(Line);
+defineGetter(ImmutableLine, Symbol.species, () => ImmutableLine);

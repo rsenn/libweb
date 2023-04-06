@@ -79,9 +79,7 @@ ParseState.prototype.advance = function(n) {
 
 ParseState.prototype.parseNode = function(type) {
   if(this.ruleStart == this.offset) {
-    console.log(
-      'parseNode: type=' + type + ' ruleStart=' + this.ruleStart + ' start=' + this.start + ' offset=' + this.offset
-    );
+    console.log('parseNode: type=' + type + ' ruleStart=' + this.ruleStart + ' start=' + this.start + ' offset=' + this.offset);
     return null;
   }
   return new ParseNode(type, this.buffer, this.ruleStart, this.offset);
@@ -191,17 +189,7 @@ Parser.prototype.pushFrame = function(rule) {
 };
 
 Parser.prototype.popFrame = function(rule, pnode) {
-  log(
-    'stack',
-    'pop: rule: ' +
-      rule +
-      ' state: ' +
-      this.state.rule +
-      ' stack: ' +
-      this.stack.length +
-      ' pnode: ' +
-      (pnode == null ? 'null' : pnode.type)
-  );
+  log('stack', 'pop: rule: ' + rule + ' state: ' + this.state.rule + ' stack: ' + this.stack.length + ' pnode: ' + (pnode == null ? 'null' : pnode.type));
   this.stack.pop();
   this.state = this.stack[this.stack.length - 1];
   if(pnode != null && pnode.end > this.maxParseEnd) {

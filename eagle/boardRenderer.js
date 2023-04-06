@@ -130,16 +130,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const {
-      predicate = i => i.tagName != 'description',
-      transformation,
-      pos,
-      rot,
-      name,
-      layer,
-      props = {},
-      flat
-    } = opts;
+    const { predicate = i => i.tagName != 'description', transformation, pos, rot, name, layer, props = {}, flat } = opts;
 
     this.debug(`BoardRenderer.renderCollection(1)`, { coll, transformation, name });
 

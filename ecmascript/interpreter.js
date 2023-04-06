@@ -111,9 +111,7 @@ class Scope {
 
     return {
       depth: Scope.depth(this),
-      declarations: Object.fromEntries(
-        [...this.declarations.entries()].map(([name, value]) => [name, Util.className(value)])
-      )
+      declarations: Object.fromEntries([...this.declarations.entries()].map(([name, value]) => [name, Util.className(value)]))
     };
   }
 }

@@ -29,8 +29,7 @@ const ELEMENTS =
 
 const REACT_ELEMENT_TYPE = (typeof Symbol !== 'undefined' && Symbol.for && Symbol.for('react.element')) || 0xeac7;
 
-const COMPONENT_WRAPPER_KEY =
-  typeof Symbol !== 'undefined' && Symbol.for ? Symbol.for('__preactCompatWrapper') : '__preactCompatWrapper';
+const COMPONENT_WRAPPER_KEY = typeof Symbol !== 'undefined' && Symbol.for ? Symbol.for('__preactCompatWrapper') : '__preactCompatWrapper';
 
 // don't autobind these methods since they already have guaranteed context.
 const AUTOBIND_DENYLIST = {
@@ -264,12 +263,7 @@ function upgradeToVNodes(arr, offset) {
     let obj = arr[i];
     if(Array.isArray(obj)) {
       upgradeToVNodes(obj);
-    } else if(
-      obj &&
-      typeof obj === 'object' &&
-      !isValidElement(obj) &&
-      ((obj.props && obj.type) || (obj.attributes && obj.nodeName) || obj.children)
-    ) {
+    } else if(obj && typeof obj === 'object' && !isValidElement(obj) && ((obj.props && obj.type) || (obj.attributes && obj.nodeName) || obj.children)) {
       arr[i] = createElement(obj.type || obj.nodeName, obj.props || obj.attributes, obj.children);
     }
   }
@@ -333,11 +327,7 @@ function normalizeVNode(vnode) {
 function cloneElement(element, props, ...children) {
   if(!isValidElement(element)) return element;
   let elementProps = element.attributes || element.props;
-  let node = h(
-    element.nodeName || element.type,
-    extend({}, elementProps),
-    element.children || (elementProps && elementProps.children)
-  );
+  let node = h(element.nodeName || element.type, extend({}, elementProps), element.children || (elementProps && elementProps.children));
   // Only provide the 3rd argument if needed.
   // Arguments 3+ overwrite element.children in preactCloneElement
   let cloneArgs = [node, props];
@@ -379,10 +369,7 @@ function applyEventNormalization({ nodeName, attributes }) {
     delete attributes[props.ondoubleclick];
   }
   // for *textual inputs* (incl textarea), normalize `onChange` -> `onInput`:
-  if(
-    props.onchange &&
-    (nodeName === 'textarea' || (nodeName.toLowerCase() === 'input' && !/^fil|che|rad/i.test(attributes.type)))
-  ) {
+  if(props.onchange && (nodeName === 'textarea' || (nodeName.toLowerCase() === 'input' && !/^fil|che|rad/i.test(attributes.type)))) {
     let normalized = props.oninput || 'oninput';
     if(!attributes[normalized]) {
       attributes[normalized] = multihook([attributes[normalized], attributes[props.onchange]]);
@@ -485,10 +472,7 @@ function collateMixins(mixins) {
 function applyMixins(proto, mixins) {
   for(let key in mixins)
     if(mixins.hasOwnProperty(key)) {
-      proto[key] = multihook(
-        mixins[key].concat(proto[key] || ARR),
-        key === 'getDefaultProps' || key === 'getInitialState' || key === 'getChildContext'
-      );
+      proto[key] = multihook(mixins[key].concat(proto[key] || ARR), key === 'getDefaultProps' || key === 'getInitialState' || key === 'getChildContext');
     }
 }
 
@@ -530,10 +514,7 @@ function multihook(hooks, skipDuplicates) {
 
 function newComponentHook(props, context) {
   propsHook.call(this, props, context);
-  this.componentWillReceiveProps = multihook([
-    propsHook,
-    this.componentWillReceiveProps || 'componentWillReceiveProps'
-  ]);
+  this.componentWillReceiveProps = multihook([propsHook, this.componentWillReceiveProps || 'componentWillReceiveProps']);
   this.render = multihook([propsHook, beforeRender, this.render || 'render', afterRender]);
 }
 
@@ -542,12 +523,7 @@ function propsHook(props, context) {
 
   // React annoyingly special-cases single children, and some react components are ridiculously strict about this.
   let c = props.children;
-  if(
-    c &&
-    Array.isArray(c) &&
-    c.length === 1 &&
-    (typeof c[0] === 'string' || typeof c[0] === 'function' || c[0] instanceof VNode)
-  ) {
+  if(c && Array.isArray(c) && c.length === 1 && (typeof c[0] === 'string' || typeof c[0] === 'function' || c[0] instanceof VNode)) {
     props.children = c[0];
 
     // but its totally still going to be an Array.

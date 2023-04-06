@@ -546,4 +546,6 @@ SvgPath.prototype.toAbsolute = function() {
   return ret;
 };
 
+SvgPath.prototype[Symbol.toStringTag] = 'SvgPath';
+
 export default SvgPath;

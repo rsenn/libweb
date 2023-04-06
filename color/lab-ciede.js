@@ -8,8 +8,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -20,14 +19,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -48,9 +40,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -103,19 +93,9 @@ export function lab2ciede([L1, a1, b1], [L2, a2, b2]) {
     deltaBigHPrime = 0;
     hBarPrime = h1Prime + h2Prime;
   } else {
-    deltaSmallHPrime =
-      abs(h1Prime - h2Prime) <= 180
-        ? h2Prime - h1Prime
-        : h2Prime <= h1Prime
-        ? h2Prime - h1Prime + 360
-        : h2Prime - h1Prime - 360;
+    deltaSmallHPrime = abs(h1Prime - h2Prime) <= 180 ? h2Prime - h1Prime : h2Prime <= h1Prime ? h2Prime - h1Prime + 360 : h2Prime - h1Prime - 360;
     deltaBigHPrime = 2 * sqrt(c1Prime * c2Prime) * sind(deltaSmallHPrime / 2);
-    hBarPrime =
-      abs(h1Prime - h2Prime) <= 180
-        ? (h1Prime + h2Prime) / 2
-        : h1Prime + h2Prime < 360
-        ? (h1Prime + h2Prime + 360) / 2
-        : (h1Prime + h2Prime - 360) / 2;
+    hBarPrime = abs(h1Prime - h2Prime) <= 180 ? (h1Prime + h2Prime) / 2 : h1Prime + h2Prime < 360 ? (h1Prime + h2Prime + 360) / 2 : (h1Prime + h2Prime - 360) / 2;
   }
 
   const T =

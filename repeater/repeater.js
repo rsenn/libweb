@@ -214,9 +214,7 @@ function reject(r) {
 function push(r, value) {
   swallow(value);
   if(r.pushes.length >= MAX_QUEUE_LENGTH) {
-    throw new RepeaterOverflowError(
-      `No more than ${MAX_QUEUE_LENGTH} pending calls to push are allowed on a single repeater.`
-    );
+    throw new RepeaterOverflowError(`No more than ${MAX_QUEUE_LENGTH} pending calls to push are allowed on a single repeater.`);
   } else if(r.state >= Stopped) {
     return Promise.resolve(undefined);
   }
@@ -321,9 +319,7 @@ class Repeater {
       throw new Error('WeakMap error');
     }
     if(r.nexts.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError(
-        `No more than ${MAX_QUEUE_LENGTH} pending calls to next are allowed on a single repeater.`
-      );
+      throw new RepeaterOverflowError(`No more than ${MAX_QUEUE_LENGTH} pending calls to next are allowed on a single repeater.`);
     }
     if(r.state <= Initial) {
       execute(r);

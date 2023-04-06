@@ -20,8 +20,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   var ENVIRONMENT_IS_SHELL = false;
   ENVIRONMENT_IS_WEB = typeof window === 'object';
   ENVIRONMENT_IS_WORKER = typeof importScripts === 'function';
-  ENVIRONMENT_IS_NODE =
-    typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string';
+  ENVIRONMENT_IS_NODE = typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string';
   ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
   var scriptDirectory = '';
   function locateFile(path) {
@@ -359,13 +358,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
         });
     }
     function instantiateAsync() {
-      if(
-        !wasmBinary &&
-        typeof WebAssembly.instantiateStreaming === 'function' &&
-        !isDataURI(wasmBinaryFile) &&
-        !isFileURI(wasmBinaryFile) &&
-        typeof fetch === 'function'
-      ) {
+      if(!wasmBinary && typeof WebAssembly.instantiateStreaming === 'function' && !isDataURI(wasmBinaryFile) && !isFileURI(wasmBinaryFile) && typeof fetch === 'function') {
         return fetch(wasmBinaryFile, {
           credentials: 'same-origin'
         }).then(function (response) {
@@ -446,10 +439,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     return (_bpg_decoder_start = Module['_bpg_decoder_start'] = Module['asm']['j']).apply(null, arguments);
   });
   var _bpg_decoder_get_frame_duration = (Module['_bpg_decoder_get_frame_duration'] = function() {
-    return (_bpg_decoder_get_frame_duration = Module['_bpg_decoder_get_frame_duration'] = Module['asm']['k']).apply(
-      null,
-      arguments
-    );
+    return (_bpg_decoder_get_frame_duration = Module['_bpg_decoder_get_frame_duration'] = Module['asm']['k']).apply(null, arguments);
   });
   var _bpg_decoder_get_line = (Module['_bpg_decoder_get_line'] = function() {
     return (_bpg_decoder_get_line = Module['_bpg_decoder_get_line'] = Module['asm']['l']).apply(null, arguments);
@@ -525,11 +515,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     bpg_decoder_decode: Module['cwrap']('bpg_decoder_decode', 'number', ['number', 'array', 'number']),
     bpg_decoder_get_info: Module['cwrap']('bpg_decoder_get_info', 'number', ['number', 'number']),
     bpg_decoder_start: Module['cwrap']('bpg_decoder_start', 'number', ['number', 'number']),
-    bpg_decoder_get_frame_duration: Module['cwrap']('bpg_decoder_get_frame_duration', 'void', [
-      'number',
-      'number',
-      'number'
-    ]),
+    bpg_decoder_get_frame_duration: Module['cwrap']('bpg_decoder_get_frame_duration', 'void', ['number', 'number', 'number']),
     bpg_decoder_get_line: Module['cwrap']('bpg_decoder_get_line', 'number', ['number', 'number']),
     bpg_decoder_close: Module['cwrap']('bpg_decoder_close', 'void', ['number']),
     load: function(url) {

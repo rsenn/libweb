@@ -623,29 +623,14 @@ Lexer.prototype.scan = function() {
  * @private
  */
 Lexer.prototype.logAccept = function(state, expression, value) {
-  console.log(
-    ' - [' +
-      state +
-      '] accepting rule' +
-      ' /' +
-      this.encodeString(expression.source) +
-      '/' +
-      ' ("' +
-      this.encodeString(value) +
-      '")'
-  );
+  console.log(' - [' + state + '] accepting rule' + ' /' + this.encodeString(expression.source) + '/' + ' ("' + this.encodeString(value) + '")');
 };
 
 /**
  * @private
  */
 Lexer.prototype.encodeString = function(s) {
-  return s
-    .replace(/\r/g, '\\r')
-    .replace(/\n/g, '\\n')
-    .replace(/\t/g, '\\t')
-    .replace(/\f/g, '\\f')
-    .replace(/\0/g, '\\0');
+  return s.replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t').replace(/\f/g, '\\f').replace(/\0/g, '\\0');
 };
 
 /**

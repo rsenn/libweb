@@ -164,11 +164,7 @@ export class EagleSVGRenderer {
   layerOf(element) {
     let layer;
     do {
-      layer =
-        element.getAttribute('data-layer') ||
-        element.getAttribute('data-layer-id') ||
-        element.getAttribute('data-layer-name') ||
-        element.getAttribute('layer');
+      layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
       if(layer) {
         const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];

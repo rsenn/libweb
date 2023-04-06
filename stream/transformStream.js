@@ -63,11 +63,9 @@ function TransformStreamErrorIfNeeded(transformStream, e) {
 function TransformStreamErrorInternal(transformStream, e) {
   transformStream._errored = true;
   transformStream._storedError = e;
-  if(transformStream._writableDone === false)
-    WritableStreamDefaultControllerError(transformStream._writableController, e);
+  if(transformStream._writableDone === false) WritableStreamDefaultControllerError(transformStream._writableController, e);
 
-  if(transformStream._readableClosed === false)
-    ReadableStreamDefaultControllerError(transformStream._readableController, e);
+  if(transformStream._readableClosed === false) ReadableStreamDefaultControllerError(transformStream._readableController, e);
 }
 
 // Used for preventing the next write() call on TransformStreamSink until there
@@ -100,13 +98,7 @@ function TransformStreamTransform(transformStream, chunk) {
   transformStream._transforming = true;
   const transformer = transformStream._transformer;
   const controller = transformStream._transformStreamController;
-  const transformPromise = PromiseInvokeOrPerformFallback(
-    transformer,
-    'transform',
-    [chunk, controller],
-    TransformStreamDefaultTransform,
-    [chunk, controller]
-  );
+  const transformPromise = PromiseInvokeOrPerformFallback(transformer, 'transform', [chunk, controller], TransformStreamDefaultTransform, [chunk, controller]);
   return transformPromise.then(
     () => {
       transformStream._transforming = false;
@@ -161,9 +153,7 @@ export class TransformStreamSink {
   close() {
     const transformStream = this._transformStream;
     transformStream._writableDone = true;
-    const flushPromise = PromiseInvokeOrNoop(transformStream._transformer, 'flush', [
-      transformStream._transformStreamController
-    ]);
+    const flushPromise = PromiseInvokeOrNoop(transformStream._transformer, 'flush', [transformStream._transformStreamController]);
     // Return a promise that is fulfilled with undefined on success.
     return flushPromise
       .then(() => {
@@ -218,15 +208,11 @@ export class TransformStreamSource {
 export class TransformStreamDefaultController {
   constructor(transformStream) {
     if(IsTransformStream(transformStream) === false) {
-      throw new TypeError(
-        'TransformStreamDefaultController can only be ' + 'constructed with a TransformStream instance'
-      );
+      throw new TypeError('TransformStreamDefaultController can only be ' + 'constructed with a TransformStream instance');
     }
 
     if(transformStream._transformStreamController !== undefined) {
-      throw new TypeError(
-        'TransformStreamDefaultController instances can ' + 'only be created by the TransformStream constructor'
-      );
+      throw new TypeError('TransformStreamDefaultController instances can ' + 'only be created by the TransformStream constructor');
     }
 
     this._controlledTransformStream = transformStream;
@@ -342,9 +328,7 @@ export const TransformStream =
 // Helper functions for the TransformStreamDefaultController.
 
 function defaultControllerBrandCheckException(name) {
-  return new TypeError(
-    `TransformStreamDefaultController.prototype.${name} can only be used on a TransformStreamDefaultController`
-  );
+  return new TypeError(`TransformStreamDefaultController.prototype.${name} can only be used on a TransformStreamDefaultController`);
 }
 
 // Stubs for abstract operations used from ReadableStream and WritableStream.

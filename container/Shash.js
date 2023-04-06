@@ -37,8 +37,7 @@ Shash.prototype.check = function() {
   i = this.objects.length;
   while(i--) {
     var grob = this.objects[i];
-    grob.grid =
-      this.grid[Math.floor(grob.object.coords.x / this.gridSize.x)][Math.floor(grob.object.coords.y / this.gridSize.y)];
+    grob.grid = this.grid[Math.floor(grob.object.coords.x / this.gridSize.x)][Math.floor(grob.object.coords.y / this.gridSize.y)];
     grob.grid.push(grob);
   }
 

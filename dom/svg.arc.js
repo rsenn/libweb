@@ -54,10 +54,7 @@ import 'svgjs';
     },
 
     distanceToLine(pt1, pt2) {
-      return (
-        Math.abs((pt2.y - pt1.y) * this.x - (pt2.x - pt1.x) * this.y + pt2.x * pt1.y - pt2.y * pt1.x) /
-        Math.sqrt((pt2.y - pt1.y) * (pt2.y - pt1.y) + (pt2.x - pt1.x) * (pt2.x - pt1.x))
-      );
+      return Math.abs((pt2.y - pt1.y) * this.x - (pt2.x - pt1.x) * this.y + pt2.x * pt1.y - pt2.y * pt1.x) / Math.sqrt((pt2.y - pt1.y) * (pt2.y - pt1.y) + (pt2.x - pt1.x) * (pt2.x - pt1.x));
     },
     withinLineRange(pt1, pt2) {
       let minX = Math.min(pt1.x, pt2.x);
@@ -65,12 +62,7 @@ import 'svgjs';
       let maxX = Math.max(pt1.x, pt2.x);
       let maxY = Math.max(pt1.y, pt2.y);
 
-      return (
-        this.x >= minX - Trig.CLOSE_ENOUGH_DISTANCE &&
-        this.x <= maxX + Trig.CLOSE_ENOUGH_DISTANCE &&
-        this.y >= minY - Trig.CLOSE_ENOUGH_DISTANCE &&
-        this.y <= maxY + Trig.CLOSE_ENOUGH_DISTANCE
-      );
+      return this.x >= minX - Trig.CLOSE_ENOUGH_DISTANCE && this.x <= maxX + Trig.CLOSE_ENOUGH_DISTANCE && this.y >= minY - Trig.CLOSE_ENOUGH_DISTANCE && this.y <= maxY + Trig.CLOSE_ENOUGH_DISTANCE;
     },
     onArc(arc) {
       //x = cx + rx*cos(theta)
@@ -103,12 +95,7 @@ import 'svgjs';
 
   SVG.extend(SVG.Circle, {
     inside(x, y) {
-      return (
-        x >= this.cx() - this.rx() &&
-        y >= this.cy() - this.ry() &&
-        x <= this.cx() + this.rx() &&
-        y <= this.cy() + this.ry()
-      );
+      return x >= this.cx() - this.rx() && y >= this.cy() - this.ry() && x <= this.cx() + this.rx() && y <= this.cy() + this.ry();
     }
   });
 
@@ -140,15 +127,7 @@ import 'svgjs';
     //Add class methods
     extend: {
       plotRadius(x1, y1, r, largeArcFlag, sweepFlag, x2, y2) {
-        let p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(
-          x1.toFixed(2),
-          y1.toFixed(2),
-          r.toFixed(2),
-          largeArcFlag.toFixed(0),
-          sweepFlag.toFixed(0),
-          x2.toFixed(2),
-          y2.toFixed(2)
-        );
+        let p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(x1.toFixed(2), y1.toFixed(2), r.toFixed(2), largeArcFlag.toFixed(0), sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
         this.r = r;
         this.largeArcFlag = largeArcFlag;
         this.sweepFlag = sweepFlag;
@@ -181,15 +160,7 @@ import 'svgjs';
         this.y11 = y1;
         this.x12 = x2;
         this.y12 = y2;
-        let p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(
-          x1.toFixed(2),
-          y1.toFixed(2),
-          this.r.toFixed(2),
-          this.largeArcFlag.toFixed(0),
-          this.sweepFlag.toFixed(0),
-          x2.toFixed(2),
-          y2.toFixed(2)
-        );
+        let p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(x1.toFixed(2), y1.toFixed(2), this.r.toFixed(2), this.largeArcFlag.toFixed(0), this.sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
         return this.attr('d', (this._array = new SVG.PathArray(p)));
       },
       lineAngle(x1, y1, x2, y2) {

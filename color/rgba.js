@@ -29,10 +29,7 @@ export function RGBA(...args) {
       Object.assign(ret, RGBA.decode[args[1] !== undefined ? args[1] : RGBA.order.ABGR](arg));
     } else if(typeof arg === 'string') {
       if(arg.startsWith('#')) {
-        c =
-          arg.length >= 7
-            ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg)
-            : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
+        c = arg.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
 
         let mul = arg.length >= 7 ? 1 : 17;
 
@@ -131,12 +128,7 @@ RGBA.encode = [
   /*ARGB:*/ ({ r, g, b, a }) => [a, r, g, b].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
   /*ABGR:*/ ({ r, g, b, a }) => [a, b, g, r].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join('')
 ];
-RGBA.fmt = [
-  ({ r, g, b, a }) => [r, g, b, a],
-  ({ b, g, r, a }) => [b, g, r, a],
-  ({ a, r, g, b }) => [a, r, g, b],
-  ({ a, b, g, r }) => [a, b, g, r]
-];
+RGBA.fmt = [({ r, g, b, a }) => [r, g, b, a], ({ b, g, r, a }) => [b, g, r, a], ({ a, r, g, b }) => [a, r, g, b], ({ a, b, g, r }) => [a, b, g, r]];
 
 RGBA.calculators = [
   ({ r, g, b, a }) => ((r * 256 + g) * 256 + b) * 256 + a,
@@ -169,21 +161,13 @@ RGBA.prototype.compareTo = function(other) {
 RGBA.prototype.interpolate = function(other, a = 0.5) {
   a = Math.max(0, Math.min(1, 0.5));
 
-  return new RGBA(
-    this.r * (1 - a) + other.r * a,
-    this.g * (1 - a) + other.g * a,
-    this.b * (1 - a) + other.b * a,
-    this.a * (1 - a) + other.a * a
-  );
+  return new RGBA(this.r * (1 - a) + other.r * a, this.g * (1 - a) + other.g * a, this.b * (1 - a) + other.b * a, this.a * (1 - a) + other.a * a);
 };
 RGBA.fromHex = (hex, alpha = 255) => {
   if(hex[0] != '#') hex = ('ffffffff' + hex).slice(-8);
 
   const matches =
-    hex &&
-    (hex.length >= 7
-      ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex)
-      : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
+    hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
   if(matches === null) return null;
   let mul = hex.length >= 7 ? 1 : 17;
 
@@ -211,13 +195,7 @@ RGBA.prototype.toRGB = function() {
 
 RGBA.toHex = rgba => RGBA.prototype.hex.call(rgba);
 
-RGBA.clamp = rgba =>
-  RGBA(
-    Math.min(Math.max(rgba.r, 0), 255),
-    Math.min(Math.max(rgba.g, 0), 255),
-    Math.min(Math.max(rgba.b, 0), 255),
-    Math.min(Math.max(rgba.a, 0), 255)
-  );
+RGBA.clamp = rgba => RGBA(Math.min(Math.max(rgba.r, 0), 255), Math.min(Math.max(rgba.g, 0), 255), Math.min(Math.max(rgba.b, 0), 255), Math.min(Math.max(rgba.a, 0), 255));
 RGBA.round = rgba => RGBA.prototype.round.call(rgba);
 
 RGBA.prototype.round = function() {
@@ -242,8 +220,7 @@ RGBA.normalize = function(rgba, src = 255, dst = 1.0) {
     a: (rgba.a * dst) / src
   };
 };
-RGBA.prototype.css = () => prop =>
-  (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
+RGBA.prototype.css = () => prop => (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
 
 RGBA.prototype.toCSS = function(fmt = num => +num.toFixed(3)) {
   const { r, g, b, a } = this;
@@ -285,12 +262,7 @@ RGBA.prototype.normalize = function(src = 255, dst = 1.0) {
 RGBA.blend = (a, b, o = 0.5) => {
   a = new RGBA(a);
   b = new RGBA(b);
-  return new RGBA(
-    Math.round(a.r * (1 - o) + b.r * o),
-    Math.round(a.g * (1 - o) + b.g * o),
-    Math.round(a.b * (1 - o) + b.b * o),
-    Math.round(a.a * (1 - o) + b.a * o)
-  );
+  return new RGBA(Math.round(a.r * (1 - o) + b.r * o), Math.round(a.g * (1 - o) + b.g * o), Math.round(a.b * (1 - o) + b.b * o), Math.round(a.a * (1 - o) + b.a * o));
 };
 
 RGBA.prototype.toAlpha = Util.curry(function (other) {
@@ -378,12 +350,7 @@ RGBA.prototype.toHSLA = function() {
 
   //console.log("RGBA.toHSLA ", { h, s, l, a });
 
-  return new (Object.isFrozen(this) ? ImmutableHSLA : HSLA)(
-    Math.round(h),
-    Util.roundTo(s, 100 / 255),
-    Util.roundTo(l, 100 / 255),
-    Util.roundTo(a, 1 / 255)
-  );
+  return new (Object.isFrozen(this) ? ImmutableHSLA : HSLA)(Math.round(h), Util.roundTo(s, 100 / 255), Util.roundTo(l, 100 / 255), Util.roundTo(a, 1 / 255));
 };
 
 RGBA.prototype.toCMYK = function() {
@@ -442,12 +409,7 @@ RGBA.fromLAB = function(lab) {
   g = g > 0.0031308 ? 1.055 * Math.pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
   b = b > 0.0031308 ? 1.055 * Math.pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
 
-  return new this(
-    Math.round(Math.max(0, Math.min(1, r)) * 255),
-    Math.round(Math.max(0, Math.min(1, g)) * 255),
-    Math.round(Math.max(0, Math.min(1, b)) * 255),
-    lab.a || 255
-  );
+  return new this(Math.round(Math.max(0, Math.min(1, r)) * 255), Math.round(Math.max(0, Math.min(1, g)) * 255), Math.round(Math.max(0, Math.min(1, b)) * 255), lab.a || 255);
   return this;
 };
 
@@ -477,10 +439,7 @@ RGBA.prototype.blackwhite = function(a = this.a) {
   return this.luminanace() >= 0.558 ? new RGBA(255, 255, 255, a) : new RGBA(0, 0, 0, a);
 };
 RGBA.prototype.distance = function(other) {
-  return (
-    Math.sqrt(Math.pow(other.r - this.r, 2) + Math.pow(other.g - this.g, 2) + Math.pow(other.b - this.b, 2)) /
-    441.67295593006370984949
-  );
+  return Math.sqrt(Math.pow(other.r - this.r, 2) + Math.pow(other.g - this.g, 2) + Math.pow(other.b - this.b, 2)) / 441.67295593006370984949;
 };
 RGBA.prototype.luminanace = function() {
   const { r, g, b } = RGBA.prototype.normalize.call(this, 255);
@@ -505,15 +464,7 @@ RGBA.prototype.toConsole = function(fn = 'toString', css = []) {
     fn = () => method.call(this, this);
   }
   let text = fn();
-  let style = [
-    `text-shadow: 1px 1px 1px ${bgColor.hex()}`,
-    `border: 1px solid black`,
-    `padding: 2px`,
-    `background-color: ${this.hex()}`,
-    `color: ${textColor}`,
-    `background-color: none`,
-    ...css
-  ];
+  let style = [`text-shadow: 1px 1px 1px ${bgColor.hex()}`, `border: 1px solid black`, `padding: 2px`, `background-color: ${this.hex()}`, `color: ${textColor}`, `background-color: none`, ...css];
   return [`%c${text}%c`, style.join(';'), `color: inherit; background-color: inherit;`];
 };
 RGBA.prototype.dump = function(...args) {
@@ -566,11 +517,7 @@ RGBA.fromAnsi256 = function(n) {
     return new RGBA(...c);
   }
 };
-RGBA.nearestColor = (
-  color,
-  palette,
-  distFn = (a, b) => Math.sqrt(Math.pow(a.r - b.r, 2) + Math.pow(a.g - b.g, 2) + Math.pow(a.b - b.b, 2))
-) => {
+RGBA.nearestColor = (color, palette, distFn = (a, b) => Math.sqrt(Math.pow(a.r - b.r, 2) + Math.pow(a.g - b.g, 2) + Math.pow(a.b - b.b, 2))) => {
   if(!(color instanceof RGBA)) color = new RGBA(color);
   //console.log("RGBA.nearestColor", color.hex(),Util.className(color),Util.className(palette));
   if(!color) return null;

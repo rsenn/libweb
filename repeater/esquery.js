@@ -7,9 +7,7 @@ function _typeof(obj) {
     };
   } else {
     _typeof = function(obj) {
-      return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype
-        ? 'symbol'
-        : typeof obj;
+      return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
     };
   }
 
@@ -17,9 +15,7 @@ function _typeof(obj) {
 }
 
 function _slicedToArray(arr, i) {
-  return (
-    _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest()
-  );
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
 }
 
 function _toConsumableArray(arr) {
@@ -83,27 +79,14 @@ function _arrayLikeToArray(arr, len) {
 }
 
 function _nonIterableSpread() {
-  throw new TypeError(
-    'Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-  );
+  throw new TypeError('Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
 }
 
 function _nonIterableRest() {
-  throw new TypeError(
-    'Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-  );
+  throw new TypeError('Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
 }
 
-var commonjsGlobal =
-  typeof globalThis !== 'undefined'
-    ? globalThis
-    : typeof window !== 'undefined'
-    ? window
-    : typeof global !== 'undefined'
-    ? global
-    : typeof self !== 'undefined'
-    ? self
-    : {};
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function createCommonjsModule(fn, module) {
   return (module = { exports: {} }), fn(module, module.exports), module.exports;
@@ -608,19 +591,7 @@ var estraverse = createCommonjsModule(function (module, exports) {
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
-      var worklist,
-        leavelist,
-        node,
-        nodeType,
-        target,
-        element,
-        current,
-        current2,
-        candidates,
-        candidate,
-        sentinel,
-        outer,
-        key;
+      var worklist, leavelist, node, nodeType, target, element, current, current2, candidates, candidate, sentinel, outer, key;
 
       function removeElem(element) {
         var i, key, nextElem, parent;
@@ -745,12 +716,7 @@ var estraverse = createCommonjsModule(function (module, exports) {
               }
 
               if(isProperty(nodeType, candidates[current])) {
-                element = new Element(
-                  candidate[current2],
-                  [key, current2],
-                  'Property',
-                  new Reference(candidate, current2)
-                );
+                element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
               } else if(isNode(candidate[current2])) {
                 element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
               } else {
@@ -958,10 +924,7 @@ var parser = createCommonjsModule(function (module) {
             i;
 
           for(i = 0; i < expectation.parts.length; i++) {
-            escapedParts +=
-              expectation.parts[i] instanceof Array
-                ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1])
-                : classEscape(expectation.parts[i]);
+            escapedParts += expectation.parts[i] instanceof Array ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1]) : classEscape(expectation.parts[i]);
           }
 
           return '[' + (expectation.inverted ? '^' : '') + escapedParts + ']';
@@ -1082,11 +1045,7 @@ var parser = createCommonjsModule(function (module) {
         peg$c2 = ' ',
         peg$c3 = peg$literalExpectation(' ', false),
         peg$c4 = /^[^ [\],():#!=><~+.]/,
-        peg$c5 = peg$classExpectation(
-          [' ', '[', ']', ',', '(', ')', ':', '#', '!', '=', '>', '<', '~', '+', '.'],
-          true,
-          false
-        ),
+        peg$c5 = peg$classExpectation([' ', '[', ']', ',', '(', ')', ':', '#', '!', '=', '>', '<', '~', '+', '.'], true, false),
         peg$c6 = function peg$c6(i) {
           return i.join('');
         },
@@ -4020,9 +3979,7 @@ var parser = createCommonjsModule(function (module) {
         throw peg$buildStructuredError(
           peg$maxFailExpected,
           peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null,
-          peg$maxFailPos < input.length
-            ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1)
-            : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
+          peg$maxFailPos < input.length ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1) : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
         );
       }
     }
@@ -4289,17 +4246,13 @@ function matches(node, selector, ancestry) {
     case 'sibling':
       return (
         (matches(node, selector.right, ancestry) && sibling(node, selector.left, ancestry, LEFT_SIDE)) ||
-        (selector.left.subject &&
-          matches(node, selector.left, ancestry) &&
-          sibling(node, selector.right, ancestry, RIGHT_SIDE))
+        (selector.left.subject && matches(node, selector.left, ancestry) && sibling(node, selector.right, ancestry, RIGHT_SIDE))
       );
 
     case 'adjacent':
       return (
         (matches(node, selector.right, ancestry) && adjacent(node, selector.left, ancestry, LEFT_SIDE)) ||
-        (selector.right.subject &&
-          matches(node, selector.left, ancestry) &&
-          adjacent(node, selector.right, ancestry, RIGHT_SIDE))
+        (selector.right.subject && matches(node, selector.left, ancestry) && adjacent(node, selector.right, ancestry, RIGHT_SIDE))
       );
 
     case 'nth-child':
@@ -4340,11 +4293,7 @@ function matches(node, selector, ancestry) {
           );
 
         case 'function':
-          return (
-            node.type === 'FunctionDeclaration' ||
-            node.type === 'FunctionExpression' ||
-            node.type === 'ArrowFunctionExpression'
-          );
+          return node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression';
       }
 
       throw new Error('Unknown class name: '.concat(selector.name));

@@ -63,10 +63,7 @@
             let _this = _super.call(this, props, ctx) || this;
             _this._updateContext = function(value, bitmask) {
               let unstable_observedBits = _this.props.unstable_observedBits;
-              let observed =
-                unstable_observedBits === undefined || unstable_observedBits === null
-                  ? MAX_SIGNED_31_BIT_INT
-                  : unstable_observedBits;
+              let observed = unstable_observedBits === undefined || unstable_observedBits === null ? MAX_SIGNED_31_BIT_INT : unstable_observedBits;
               observed = observed | 0;
               if((observed & bitmask) === 0) {
                 return;

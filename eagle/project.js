@@ -314,4 +314,4 @@ export class EagleProject {
   }
 }
 
-EagleProject.prototype[Symbol.toStringTag]= 'EagleProject';
+EagleProject.prototype[Symbol.toStringTag] = 'EagleProject';

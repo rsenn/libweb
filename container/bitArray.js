@@ -11,8 +11,7 @@ BitArray.ELEMENT_WIDTH = 24;
 // Set a bit (1/0)
 BitArray.prototype.set = function(position, value) {
   if(value == 1) this.field[~~(position / BitArray.ELEMENT_WIDTH)] |= 1 << position % BitArray.ELEMENT_WIDTH;
-  else if(this.field[~~(position / BitArray.ELEMENT_WIDTH)] & (1 << position % BitArray.ELEMENT_WIDTH))
-    this.field[~~(position / BitArray.ELEMENT_WIDTH)] ^= 1 << position % BitArray.ELEMENT_WIDTH;
+  else if(this.field[~~(position / BitArray.ELEMENT_WIDTH)] & (1 << position % BitArray.ELEMENT_WIDTH)) this.field[~~(position / BitArray.ELEMENT_WIDTH)] ^= 1 << position % BitArray.ELEMENT_WIDTH;
 };
 
 // Read a bit (1/0)

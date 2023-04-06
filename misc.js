@@ -2,13 +2,7 @@
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
 
 const slice = (x, s, e) =>
-  typeof x == 'object'
-    ? isArrayBuffer(x)
-      ? dupArrayBuffer(x, s, e)
-      : Array.isArray(x)
-      ? Array.prototype.slice.call(x, s, e)
-      : x.slice(s, e)
-    : String.prototype.slice.call(x, s, e);
+  typeof x == 'object' ? (isArrayBuffer(x) ? dupArrayBuffer(x, s, e) : Array.isArray(x) ? Array.prototype.slice.call(x, s, e) : x.slice(s, e)) : String.prototype.slice.call(x, s, e);
 const stringify = v => `${v}`;
 const protoOf = Object.getPrototypeOf;
 const formatNumber = n => (n === -0 ? '-0' : `${n}`);
@@ -164,6 +158,14 @@ export const types = {
 export function isObject(arg) {
   return typeof arg == 'object' && arg !== null;
 }
+
+export function isAsync(fn) {
+  if(types.isAsyncFunction(fn) || types.isAsyncGeneratorFunction(fn)) return true;
+
+  if(isFunction(fn)) return /^async\s+function/.test(fn + '');
+}
+
+export const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 const UTF8FirstCodeMask = [0x1f, 0xf, 0x7, 0x3, 0x1];
 const UTF8MinCode = [0x80, 0x800, 0x10000, 0x00200000, 0x04000000];
@@ -368,8 +370,7 @@ export function btoa(bin) {
     asc = '';
   const pad = bin.length % 3;
   for(let i = 0; i < bin.length; i += 0) {
-    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255)
-      throw new TypeError('invalid character found');
+    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255) throw new TypeError('invalid character found');
     u32 = (c0 << 16) | (c1 << 8) | c2;
     asc += b64chs[(u32 >> 18) & 63] + b64chs[(u32 >> 12) & 63] + b64chs[(u32 >> 6) & 63] + b64chs[u32 & 63];
   }
@@ -385,17 +386,9 @@ export function atob(asc) {
     r1,
     r2;
   for(let i = 0; i < asc.length; i += 0) {
-    u24 =
-      (b64tab[asc.charAt(i++)] << 18) |
-      (b64tab[asc.charAt(i++)] << 12) |
-      ((r1 = b64tab[asc.charAt(i++)]) << 6) |
-      (r2 = b64tab[asc.charAt(i++)]);
+    u24 = (b64tab[asc.charAt(i++)] << 18) | (b64tab[asc.charAt(i++)] << 12) | ((r1 = b64tab[asc.charAt(i++)]) << 6) | (r2 = b64tab[asc.charAt(i++)]);
     bin +=
-      r1 === 64
-        ? String.fromCharCode((u24 >> 16) & 255)
-        : r2 === 64
-        ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255)
-        : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
+      r1 === 64 ? String.fromCharCode((u24 >> 16) & 255) : r2 === 64 ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255) : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
   }
   return bin;
 }
@@ -404,18 +397,9 @@ export function assert(actual, expected, message) {
 
   if(actual === expected) return;
 
-  if(
-    actual !== null &&
-    expected !== null &&
-    typeof actual == 'object' &&
-    typeof expected == 'object' &&
-    actual.toString() === expected.toString()
-  )
-    return;
+  if(actual !== null && expected !== null && typeof actual == 'object' && typeof expected == 'object' && actual.toString() === expected.toString()) return;
 
-  throw Error(
-    'assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : '')
-  );
+  throw Error('assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : ''));
 }
 
 export function escape(str, chars = []) {
@@ -628,21 +612,108 @@ export function define(obj, ...args) {
   return obj;
 }
 
-export function keys(obj, maxDepthOrPred = 1) {
-  let a = [],
-    depth = -1;
-  if(typeof maxDepthOrPred != 'function') {
-    let d = maxDepthOrPred;
-    maxDepthOrPred = (obj, currentDepth) => currentDepth < d;
+export function defineGetter(obj, key, fn, enumerable = false) {
+  if(!obj.hasOwnProperty(key))
+    Object.defineProperty(obj, key, {
+      enumerable,
+      configurable: true,
+      get: fn
+    });
+  return obj;
+}
+
+export function defineGetterSetter(obj, key, g, s, enumerable = false) {
+  if(!obj.hasOwnProperty(key))
+    Object.defineProperty(obj, key, {
+      get: g,
+      set: s,
+      enumerable
+    });
+  return obj;
+}
+
+export function defineGettersSetters(obj, gettersSetters) {
+  for(let name in gettersSetters) defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
+  return obj;
+}
+
+/*export function defineGettersSetters(obj, gettersSetters, enumerable = false) {
+  let props = {};
+  try {
+    for(let name in gettersSetters) props[name] = { get: gettersSetters[name], set: gettersSetters[name], enumerable };
+    return Object.defineProperties(obj, props);
+  } catch(e) {
+    for(let name in gettersSetters)
+      try {
+        defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
+      } catch(e) {
+        console.log(`Failed setting property '${name}'`);
+      }
+    return obj;
   }
+}*/
+
+export function* prototypeIterator(obj, pred = (obj, depth) => true) {
+  let depth = 0;
+
   while(obj) {
-    if(maxDepthOrPred(obj, ++depth) !== true) break;
-    a.push(...Object.getOwnPropertySymbols(obj).concat(Object.getOwnPropertyNames(obj)));
+    if(pred(obj, depth)) yield obj;
     let tmp = Object.getPrototypeOf(obj);
-    if(tmp === obj) tmp = null;
+    if(tmp === obj) break;
     obj = tmp;
+    ++depth;
   }
+}
+
+export function keys(obj, start = 0, end = obj => obj === Object.prototype) {
+  let pred,
+    a = [],
+    depth = 0;
+
+  if(!isFunction(end)) {
+    let n = end;
+    pred = (obj, depth) => depth >= start && depth < n;
+    end = () => false;
+  } else {
+    pred = (obj, depth) => depth >= start;
+  }
+
+  for(let proto of prototypeIterator(obj, pred)) {
+    if(end(proto, depth++)) break;
+    a.push(...Object.getOwnPropertySymbols(proto).concat(Object.getOwnPropertyNames(proto)));
+  }
+
+  return [...new Set(a)];
+}
+
+export function entries(obj, start = 0, end = obj => obj === Object.prototype) {
+  let a = [];
+  for(let key of keys(obj, start, end)) a.push([key, obj[key]]);
   return a;
+}
+
+export function values(obj, start = 0, end = obj => obj === Object.prototype) {
+  let a = [];
+  for(let key of keys(obj, start, end)) a.push(obj[key]);
+  return a;
+}
+
+export function getMethodNames(obj, depth = 1, start = 0) {
+  let names = [];
+  for(let n of keys(obj, start, start + depth)) {
+    try {
+      if(isFunction(obj[n])) names.push(n);
+    } catch(e) {}
+  }
+  return names;
+}
+
+export function getMethods(obj, depth = 1, start = 0) {
+  let methods = {};
+
+  for(let n of getMethodNames(obj, depth, start)) methods[n] = obj[n];
+
+  return methods;
 }
 
 export function properties(obj, options = { enumerable: true }) {
@@ -653,7 +724,7 @@ export function properties(obj, options = { enumerable: true }) {
     if(Array.isArray(obj[prop])) {
       const [get, set] = obj[prop];
       desc[prop] = { ...opts, get, set };
-    } else if(typeof obj[prop] == 'function') {
+    } else if(isFunction(obj[prop])) {
       desc[prop] = { ...opts, get: mfn(obj[prop]) };
     }
   }
@@ -664,17 +735,26 @@ export function weakAssign(obj, ...args) {
   let desc = {};
   for(let other of args) {
     let otherDesc = Object.getOwnPropertyDescriptors(other);
-    for(let key in otherDesc)
-      if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
+    for(let key in otherDesc) if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
   }
   return Object.defineProperties(obj, desc);
 }
 
-export function getConstructorChain(obj) {
+export function getPrototypeChain(obj, limit = -1, start = 0) {
+  let i = -1,
+    ret = [];
+  do {
+    if(i >= start && (limit == -1 || i < start + limit)) ret.push(obj);
+    if(obj === Object.prototype || obj.constructor === Object) break;
+    ++i;
+  } while((obj = obj.__proto__ || Object.getPrototypeOf(obj)));
+  return ret;
+}
+
+export function getConstructorChain(obj, ...range) {
   let ret = [];
-  let chain = getPrototypeChain(obj);
-  if(obj.constructor && obj.constructor != chain[0].constructor) chain.unshift(obj);
-  for(let proto of chain) ret.push(proto.constructor);
+  pushUnique(ret, obj.constructor);
+  for(let proto of getPrototypeChain(obj, ...range)) pushUnique(ret, proto.constructor);
   return ret;
 }
 
@@ -695,10 +775,28 @@ export function filter(seq, pred, thisArg) {
   return r;
 }
 
+export function filterKeys(r, needles, keep = true) {
+  let pred;
+  if(isFunction(needles)) {
+    pred = needles;
+  } else {
+    if(!Array.isArray(needles)) needles = [...needles];
+    pred = key => (needles.indexOf(key) != -1) === keep;
+  }
+  return Object.keys(r)
+    .filter(pred)
+    .reduce((obj, key) => {
+      obj[key] = r[key];
+      return obj;
+    }, {});
+}
+
 export const curry =
   (f, arr = [], length = f.length) =>
   (...args) =>
     (a => (a.length === length ? f(...a) : curry(f, a)))([...arr, ...args]);
+
+export const clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
 
 export function* split(buf, ...points) {
   points.sort();
@@ -719,12 +817,521 @@ export function* split(buf, ...points) {
   if(buf) yield buf;
 }
 
-export const unique = (arr, cmp) =>
-  arr.filter(
-    typeof cmp == 'function'
-      ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i
-      : (el, i, arr) => arr.indexOf(el) == i
+export const matchAll = curry(function* (re, str) {
+  let match;
+  re = re instanceof RegExp ? re : new RegExp(Array.isArray(re) ? '(' + re.join('|') + ')' : re, 'g');
+  do {
+    if((match = re.exec(str))) yield match;
+  } while(match != null);
+});
+
+export function bindProperties(obj, target, props, gen) {
+  if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
+  const [propMap, propNames] = Array.isArray(props) ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props] : [props, Object.keys(props)];
+  gen ??= p => v => v === undefined ? target[propMap[p]] : (target[propMap[p]] = v);
+  const propGetSet = propNames
+    .map(k => [k, propMap[k]])
+    .reduce(
+      (a, [k, v]) => ({
+        ...a,
+        [k]: isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k]))
+      }),
+      {}
+    );
+  Object.defineProperties(
+    obj,
+    propNames.reduce(
+      (a, k) => {
+        const prop = props[k];
+        const get_set = propGetSet[k];
+        return {
+          ...a,
+          [k]: {
+            get: get_set,
+            set: get_set,
+            enumerable: true
+          }
+        };
+      },
+      {
+        __getter_setter__: { value: gen, enumerable: false },
+        __bound_target__: { value: target, enumerable: false }
+      }
+    )
   );
+  return obj;
+}
+
+export function immutableClass(orig, ...proto) {
+  let name = functionName(orig).replace(/Mutable/g, '');
+  let imName = 'Immutable' + name;
+  proto = proto || [];
+  let initialProto = proto.map(p =>
+    isArrow(p)
+      ? p
+      : ctor => {
+          for(let n in p) ctor.prototype[n] = p[n];
+        }
+  );
+  let body = `class ${imName} extends ${name} {\n  constructor(...args) {\n    super(...args);\n    if(new.target === ${imName})\n      return Object.freeze(this);\n  }\n};\n\n${imName}.prototype.constructor = ${imName};\n\nreturn ${imName};`;
+  for(let p of initialProto) p(orig);
+  let ctor;
+  let imm = base => {
+    let cls;
+    cls = class extends base {
+      constructor(...args) {
+        super(...args);
+        if(new.target === cls) return Object.freeze(this);
+      }
+    };
+    return cls;
+  };
+  ctor = imm(orig);
+  let species = ctor;
+  return ctor;
+}
+
+// time a given function
+export function instrument(
+  fn,
+  log = (duration, name, args, ret) => console.log(`function '${name}'` + (ret !== undefined ? ` {= ${escape(ret + '').substring(0, 100) + '...'}}` : '') + ` timing: ${duration.toFixed(3)}ms`),
+  logInterval = 0 //1000
+) {
+  // const { now, hrtime, functionName } = Util;
+  let last = Date.now();
+  let duration = 0,
+    times = 0;
+  const name = functionName(fn) || '<anonymous>';
+  const asynchronous = isAsync(fn) || isAsync(now);
+  const doLog = asynchronous
+    ? async (args, ret) => {
+        let t = Date.now();
+        if(t - (await last) >= logInterval) {
+          log(duration / times, name, args, ret);
+          duration = times = 0;
+          last = t;
+        }
+      }
+    : (args, ret) => {
+        let t = Date.now();
+        //console.log('doLog', { passed: t - last, logInterval });
+        if(t - last >= logInterval) {
+          log(duration / times, name, args, ret);
+          duration = times = 0;
+          last = t;
+        }
+      };
+
+  return asynchronous
+    ? async function(...args) {
+        const start = Date.now();
+        let ret = await fn.apply(this, args);
+        duration += Date.now() - start;
+        times++;
+        await doLog(args, ret);
+        return ret;
+      }
+    : function(...args) {
+        const start = Date.now();
+        let ret = fn.apply(this, args);
+        duration += Date.now() - start;
+        times++;
+        doLog(args, ret);
+        return ret;
+      };
+}
+
+export const hash = (newMap = () => new Map()) => {
+  let map = newMap();
+  let cache = memoize((...args) => gettersetter(newMap(...args)), new Map());
+
+  // let [get, set] = getset(cache);
+
+  return {
+    get(path) {
+      let i = 0,
+        obj = map;
+      for(let part of path) {
+        let cachefn = cache(obj) ?? getter(obj);
+        console.log('cache', { i, cache });
+        obj = cachefn(part);
+        console.log('cachefn', { i, cachefn });
+      }
+      return obj;
+    },
+    set(path, value) {
+      let i = 0,
+        obj = map;
+      let key = path.pop();
+
+      for(let part of path) {
+        console.log('cache', { part, obj });
+        let cachefn = cache(obj.receiver ?? obj);
+        console.log('cachefn', { i, cachefn });
+        obj = cachefn(part) ?? (cachefn(part, gettersetter(newMap())), cachefn(part));
+        console.log('cachefn', { obj });
+      }
+      return obj(key, value);
+    }
+  };
+};
+
+export const catchable = function Catchable(self) {
+  assert(isFunction(self));
+
+  if(!(self instanceof catchable)) Object.setPrototypeOf(self, catchable.prototype);
+  if('constructor' in self) self.constructor = catchable;
+
+  return self;
+};
+
+Object.assign(catchable, {
+  [Symbol.species]: catchable,
+  prototype: Object.assign(function () {}, {
+    then(fn) {
+      return this.constructor[Symbol.species]((...args) => {
+        let result;
+        try {
+          result = this(...args);
+        } catch(e) {
+          throw e;
+          return;
+        }
+        return fn(result);
+      });
+    },
+    catch(fn) {
+      return this.constructor[Symbol.species]((...args) => {
+        let result;
+        try {
+          result = this(...args);
+        } catch(e) {
+          return fn(e);
+        }
+        return result;
+      });
+    }
+  })
+});
+
+export function isNumeric(value) {
+  for(let f of [v => +v, parseInt, parseFloat]) if(!isNaN(f(value))) return true;
+  return false;
+}
+
+export function isIndex(value) {
+  return !isNaN(+value) && Math.floor(+value) + '' == value + '';
+}
+
+export function numericIndex(value) {
+  return isIndex(value) ? +value : value;
+}
+
+export function histogram(arr, out = new Map()) {
+  let [get, set] = getset(out);
+
+  const incr = key => set(key, (get(key) ?? 0) + 1);
+  for(let item of arr) {
+    incr(item);
+  }
+  return out;
+}
+
+export function propertyLookupHandlers(handler = key => null) {
+  let handlers = {
+    get(target, key, receiver) {
+      return handler(key);
+    }
+  };
+  let tmp = handler();
+
+  if(!isString(tmp))
+    try {
+      let a = Array.isArray(tmp) ? tmp : [...tmp];
+      if(a)
+        handlers.ownKeys = function(target) {
+          return handler();
+        };
+    } catch(e) {}
+
+  return handlers;
+}
+
+export function propertyLookup(...args) {
+  let [obj = {}, handler = key => null] = args.length == 1 ? [{}, ...args] : args;
+
+  return new Proxy(
+    obj,
+    propertyLookupHandlers(function (...args) {
+      if(args.length >= 1 && args[0] !== undefined) {
+        let [key] = args;
+        if(key in obj) return obj[key];
+
+        return handler(key);
+      }
+      return handler();
+    })
+  );
+}
+
+export function abbreviate(str, max = 40, suffix = '...') {
+  max = +max;
+  if(isNaN(max)) max = Infinity;
+  if(Array.isArray(str)) {
+    return Array.prototype.slice.call(str, 0, Math.min(str.length, max)).concat([suffix]);
+  }
+  if(!isString(str) || !Number.isFinite(max) || max < 0) return str;
+  str = '' + str;
+  if(str.length > max) {
+    return str.substring(0, max - suffix.length) + suffix;
+  }
+  return str;
+}
+
+export function tryFunction(fn, resolve = a => a, reject = () => null) {
+  if(!isFunction(resolve)) {
+    let rval = resolve;
+    resolve = () => rval;
+  }
+  if(!isFunction(reject)) {
+    let cval = reject;
+    reject = () => cval;
+  }
+  return isAsync(fn)
+    ? async function(...args) {
+        let ret;
+        try {
+          ret = await fn(...args);
+        } catch(err) {
+          return reject(err, ...args);
+        }
+        return resolve(ret, ...args);
+      }
+    : function(...args) {
+        let ret;
+        try {
+          ret = fn(...args);
+        } catch(err) {
+          return reject(err, ...args);
+        }
+        return resolve(ret, ...args);
+      };
+}
+
+export function tryCatch(fn, resolve = a => a, reject = () => null, ...args) {
+  if(isAsync(fn))
+    return fn(...args)
+      .then(resolve)
+      .catch(reject);
+
+  return tryFunction(fn, resolve, reject)(...args);
+}
+
+export function mapAdapter(fn) {
+  let r = {
+    get(key) {
+      return fn(key);
+    },
+    set(key, value) {
+      fn(key, value);
+      return this;
+    }
+  };
+  let tmp = fn();
+  if(types.isIterable(tmp) || types.isPromise(tmp)) r.keys = () => fn();
+
+  if(fn[Symbol.iterator]) r.entries = fn[Symbol.iterator];
+  else {
+    let g = fn();
+    if(types.isIterable(g) || types.isGeneratorFunction(g)) r.entries = () => fn();
+  }
+
+  return mapFunction(r);
+}
+
+/**
+ * @param Array   forward
+ * @param Array   backward
+ *
+ * component2path,  path2eagle  => component2eagle
+ *  eagle2path, path2component =>
+ */
+export function mapFunction(map) {
+  let fn;
+  fn = function(...args) {
+    const [key, value] = args;
+    switch (args.length) {
+      case 0:
+        return fn.keys();
+      case 1:
+        return fn.get(key);
+      case 2:
+        return fn.set(key, value);
+    }
+  };
+
+  fn.map = (m => {
+    while(isFunction(m) && m.map !== undefined) m = m.map;
+    return m;
+  })(map);
+
+  if(map instanceof Map || (isObject(map) && isFunction(map.get) && isFunction(map.set))) {
+    fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
+    fn.get = key => map.get(key);
+  } else if(map instanceof Cache || (isObject(map) && isFunction(map.match) && isFunction(map.put))) {
+    fn.set = (key, value) => (map.put(key, value), (k, v) => fn(k, v));
+    fn.get = key => map.match(key);
+  } else if(isObject(map) && isFunction(map.getItem) && isFunction(map.setItem)) {
+    fn.set = (key, value) => (map.setItem(key, value), (k, v) => fn(k, v));
+    fn.get = key => map.getItem(key);
+  } else {
+    fn.set = (key, value) => ((map[key] = value), (k, v) => fn(k, v));
+    fn.get = key => map[key];
+  }
+
+  fn.update = function(key, fn = (k, v) => v) {
+    let oldValue = this.get(key);
+    let newValue = fn(oldValue, key);
+    if(oldValue != newValue) {
+      if(newValue === undefined && isFunction(map.delete)) map.delete(key);
+      else this.set(key, newValue);
+    }
+    return newValue;
+  };
+
+  if(isFunction(map.entries)) {
+    fn.entries = function* () {
+      for(let [key, value] of map.entries()) yield [key, value];
+    };
+    fn.values = function* () {
+      for(let [key, value] of map.entries()) yield value;
+    };
+    fn.keys = function* () {
+      for(let [key, value] of map.entries()) yield key;
+    };
+    fn[Symbol.iterator] = fn.entries;
+    fn[inspectSymbol] = function() {
+      return new Map(this.map(([key, value]) => [Array.isArray(key) ? key.join('.') : key, value]));
+    };
+  } else if(isFunction(map.keys)) {
+    if(isAsync(map.keys) || types.isPromise(map.keys())) {
+      fn.keys = async () => [...(await map.keys())];
+
+      fn.entries = async () => {
+        let r = [];
+        for(let key of await fn.keys()) r.push([key, await fn.get(key)]);
+        return r;
+      };
+      fn.values = async () => {
+        let r = [];
+        for(let key of await fn.keys()) r.push(await fn.get(key));
+        return r;
+      };
+    } else {
+      fn.keys = function* () {
+        for(let key of map.keys()) yield key;
+      };
+
+      fn.entries = function* () {
+        for(let key of fn.keys()) yield [key, fn(key)];
+      };
+      fn.values = function* () {
+        for(let key of fn.keys()) yield fn(key);
+      };
+    }
+  }
+
+  if(isFunction(fn.entries)) {
+    fn.filter = function(pred) {
+      return mapFunction(
+        new Map(
+          (function* () {
+            let i = 0;
+            for(let [key, value] of fn.entries()) if(pred([key, value], i++)) yield [key, value];
+          })()
+        )
+      );
+    };
+    fn.map = function(t) {
+      return mapFunction(
+        new Map(
+          (function* () {
+            let i = 0;
+
+            for(let [key, value] of fn.entries()) yield t([key, value], i++);
+          })()
+        )
+      );
+    };
+    fn.forEach = function(fn) {
+      let i = 0;
+
+      for(let [key, value] of this.entries()) fn([key, value], i++);
+    };
+  }
+  if(isFunction(map.delete)) fn.delete = key => map.delete(key);
+
+  if(isFunction(map.has)) fn.has = key => map.has(key);
+  return fn;
+}
+
+export function mapWrapper(map, toKey = key => key, fromKey = key => key) {
+  let fn = mapFunction(map);
+  fn.set = (key, value) => (map.set(toKey(key), value), (k, v) => fn(k, v));
+  fn.get = key => map.get(toKey(key));
+  if(isFunction(map.keys)) fn.keys = () => [...map.keys()].map(fromKey);
+  if(isFunction(map.entries))
+    fn.entries = function* () {
+      for(let [key, value] of map.entries()) yield [fromKey(key), value];
+    };
+  if(isFunction(map.values))
+    fn.values = function* () {
+      for(let value of map.values()) yield value;
+    };
+  if(isFunction(map.has)) fn.has = key => map.has(toKey(key));
+  if(isFunction(map.delete)) fn.delete = key => map.delete(toKey(key));
+
+  fn.map = (m => {
+    while(isFunction(m) && m.map !== undefined) m = m.map;
+    return m;
+  })(map);
+
+  return fn;
+}
+
+export function weakMapper(createFn, map = new WeakMap(), hitFn) {
+  let self = function(obj, ...args) {
+    let ret;
+    if(map.has(obj)) {
+      ret = map.get(obj);
+      if(isFunction(hitFn)) hitFn(obj, ret);
+    } else {
+      ret = createFn(obj, ...args);
+      map.set(obj, ret);
+    }
+    return ret;
+  };
+  self.set = (k, v) => map.set(k, v);
+  self.get = k => map.get(k);
+  self.map = map;
+  return self;
+}
+
+export function wrapGenerator(fn) {
+  return types.isGeneratorFunction(fn)
+    ? function(...args) {
+        return [...fn.call(this, ...args)];
+      }
+    : fn;
+}
+
+export function wrapGeneratorMethods(obj) {
+  for(let name of keys(obj, 1, 0)) if(isFunction(obj[name])) obj[name] = wrapGenerator(obj[name]);
+
+  return obj;
+}
+
+export const unique = (arr, cmp) => arr.filter(typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i : (el, i, arr) => arr.indexOf(el) == i);
 
 export const getFunctionArguments = fn =>
   (fn + '')
@@ -978,15 +1585,24 @@ export function toBigInt(arg) {
   return BigInt(arg);
 }
 
-export function roundTo(value, prec, digits, type) {
+export function roundDigits(precision) {
+  if(typeof precision == 'number') return -Math.log10(precision);
+
+  precision = precision + '';
+  let index = precision.indexOf('.');
+  let frac = index == -1 ? '' : precision.slice(index + 1);
+  return frac.length;
+
+  return -clamp(-Infinity, 0, Math.floor(Math.log10(precision - Number.EPSILON)));
+}
+
+export function roundTo(value, prec, digits, type = 'round') {
   if(!Number.isFinite(value)) return value;
-  type = type ?? 'round';
   const fn = Math[type];
   if(prec == 1) return fn(value);
-  let ret = prec > Number.EPSILON ? fn(value / prec) * prec : value;
-
+  if(prec < 1 && prec > 0 && !isNumber(digits)) digits = -Math.log10(prec);
+  let ret = prec >= Number.EPSILON ? fn(value / prec) * prec : value;
   if(isNumber(digits) && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
-  else ret = Math[type](ret);
   return ret;
 }
 
@@ -1030,8 +1646,7 @@ export function getOpt(options = {}, args) {
   let result = {};
   let positional = (result['@'] = []);
   if(!(options instanceof Array)) options = Object.entries(options);
-  const findOpt = arg =>
-    options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
+  const findOpt = arg => options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
   let [, params] = options.find(opt => opt[0] == '@') || [];
   if(typeof params == 'string') params = params.split(',');
   for(let i = 0; i < args.length; i++) {
@@ -1420,11 +2035,6 @@ function formatWithOptionsInternal(o, v) {
   return s;
 }
 
-export function isNumeric(value) {
-  for(let f of [v => +v, parseInt, parseFloat]) if(!isNaN(f(value))) return true;
-  return false;
-}
-
 export function functionName(fn) {
   if(typeof fn == 'function' && typeof fn.name == 'string') return fn.name;
   try {
@@ -1442,37 +2052,19 @@ export function className(obj) {
   return null;
 }
 
-export const isArrowFunction = fn =>
-  (isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+export const isArrowFunction = fn => (isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
-export function immutableClass(orig, ...proto) {
-  let name = functionName(orig).replace(/Mutable/g, '');
-  let imName = 'Immutable' + name;
-  proto = proto || [];
-  let initialProto = proto.map(p =>
-    isArrowFunction(p)
-      ? p
-      : ctor => {
-          for(let n in p) ctor.prototype[n] = p[n];
-        }
-  );
-  let body = `class ${imName} extends ${name} {\n  constructor(...args) {\n    super(...args);\n    if(new.target === ${imName})\n      return Object.freeze(this);\n  }\n};\n\n${imName}.prototype.constructor = ${imName};\n\nreturn ${imName};`;
-  for(let p of initialProto) p(orig);
-  let ctor; // = new Function(name, body)(orig);
-
-  let imm = base => {
-    let cls;
-    cls = class extends base {
-      constructor(...args) {
-        super(...args);
-        if(new.target === cls) return Object.freeze(this);
-      }
+export function predicate(fn_or_regex, pred) {
+  let fn = fn_or_regex;
+  if(typeof fn_or_regex == 'string') fn_or_regex = new RegExp('^' + fn_or_regex + '$');
+  if(isObject(fn_or_regex) && fn_or_regex instanceof RegExp) {
+    fn = arg => fn_or_regex.test(arg + '');
+    fn.valueOf = function() {
+      return fn_or_regex;
     };
-    return cls;
-  };
-  ctor = imm(orig);
-  let species = ctor;
-  return ctor;
+  }
+  if(isFunction(pred)) return arg => pred(arg, fn);
+  return fn;
 }
 
 export const isArray = a => Array.isArray(a);
@@ -1645,8 +2237,7 @@ export function randf() {
 export function srand(seed) {}
 
 export function toArrayBuffer(value) {
-  if(typeof value == 'object' && value !== null && 'buffer' in value && isArrayBuffer(value.buffer))
-    return value.buffer;
+  if(typeof value == 'object' && value !== null && 'buffer' in value && isArrayBuffer(value.buffer)) return value.buffer;
 
   if(typeof value == 'string') {
     const encoder = new TextEncoder();
@@ -1662,17 +2253,6 @@ Location.prototype.clone = function(freeze = false, withFilename = true) {
   return new Location(line, column, pos, withFilename ? file : null, freeze);
 };
 Location.prototype[Symbol.toStringTag] = 'Location';
-
-/*function(n, opts) {
-  const { showFilename = true, colors = false } = opts || {};
-  let c = Util.coloring(colors);
-
-  let v =
-    typeof this.column == 'number' ? [this.file, this.line, this.column] : [this.file, this.line];
-  if((!showFilename || v[0] == undefined) && v.length >= 3) v.shift();
-  v = v.map((f, i) => c.code(...(i == 0 ? [38, 5, 33] || [1, 33] : [1,  36])) + f);
-  return v.join(c.code(...([1, 30] || [1, 36])) + ':') + c.code(0);
-};*/
 
 Location.prototype[Symbol.iterator] = function* () {
   let { file, line, column } = this;
