@@ -49,7 +49,11 @@
                     : ((s = Math.floor(Math.log(n) / Math.LN2)),
                       n * (a = Math.pow(2, -s)) < 1 && (s--, (a *= 2)),
                       (n += s + c >= 1 ? l / a : l * Math.pow(2, 1 - c)) * a >= 2 && (s++, (a /= 2)),
-                      s + c >= f ? ((u = 0), (s = f)) : s + c >= 1 ? ((u = (n * a - 1) * Math.pow(2, e)), (s += c)) : ((u = n * Math.pow(2, c - 1) * Math.pow(2, e)), (s = 0)));
+                      s + c >= f
+                        ? ((u = 0), (s = f))
+                        : s + c >= 1
+                        ? ((u = (n * a - 1) * Math.pow(2, e)), (s += c))
+                        : ((u = n * Math.pow(2, c - 1) * Math.pow(2, e)), (s = 0)));
                 e >= 8;
                 t[i + v] = 255 & u, v += d, u /= 256, e -= 8
               );
@@ -110,11 +114,25 @@
           };
           t.exports = class {
             constructor(t) {
-              if(('number' == typeof t && (t = { max: t }), t || (t = {}), t.max && ('number' != typeof t.max || t.max < 0))) throw new TypeError('max must be a non-negative number');
+              if(
+                ('number' == typeof t && (t = { max: t }),
+                t || (t = {}),
+                t.max && ('number' != typeof t.max || t.max < 0))
+              )
+                throw new TypeError('max must be a non-negative number');
               this[e] = t.max || 1 / 0;
               const n = t.length || d;
-              if(((this[s] = 'function' != typeof n ? d : n), (this[u] = t.stale || !1), t.maxAge && 'number' != typeof t.maxAge)) throw new TypeError('maxAge must be a number');
-              (this[a] = t.maxAge || 0), (this[h] = t.dispose), (this[f] = t.noDisposeOnSet || !1), (this[v] = t.updateAgeOnGet || !1), this.reset();
+              if(
+                ((this[s] = 'function' != typeof n ? d : n),
+                (this[u] = t.stale || !1),
+                t.maxAge && 'number' != typeof t.maxAge)
+              )
+                throw new TypeError('maxAge must be a number');
+              (this[a] = t.maxAge || 0),
+                (this[h] = t.dispose),
+                (this[f] = t.noDisposeOnSet || !1),
+                (this[v] = t.updateAgeOnGet || !1),
+                this.reset();
             }
             set max(t) {
               if('number' != typeof t || t < 0) throw new TypeError('max must be a non-negative number');
@@ -176,7 +194,10 @@
               return this[c].toArray().map(t => t.value);
             }
             reset() {
-              this[h] && this[c] && this[c].length && this[c].forEach(t => this[h](t.key, t.value)), (this[l] = new Map()), (this[c] = new r()), (this[o] = 0);
+              this[h] && this[c] && this[c].length && this[c].forEach(t => this[h](t.key, t.value)),
+                (this[l] = new Map()),
+                (this[c] = new r()),
+                (this[o] = 0);
             }
             dump() {
               return this[c]
@@ -194,10 +215,22 @@
               if(this[l].has(t)) {
                 if(u > this[e]) return w(this, this[l].get(t)), !1;
                 const s = this[l].get(t).value;
-                return this[h] && (this[f] || this[h](t, s.value)), (s.now = r), (s.maxAge = i), (s.value = n), (this[o] += u - s.length), (s.length = u), this.get(t), m(this), !0;
+                return (
+                  this[h] && (this[f] || this[h](t, s.value)),
+                  (s.now = r),
+                  (s.maxAge = i),
+                  (s.value = n),
+                  (this[o] += u - s.length),
+                  (s.length = u),
+                  this.get(t),
+                  m(this),
+                  !0
+                );
               }
               const v = new g(t, n, u, r, i);
-              return v.length > this[e] ? (this[h] && this[h](t, n), !1) : ((this[o] += v.length), this[c].unshift(v), this[l].set(t, this[c].head), m(this), !0);
+              return v.length > this[e]
+                ? (this[h] && this[h](t, n), !1)
+                : ((this[o] += v.length), this[c].unshift(v), this[l].set(t, this[c].head), m(this), !0);
             }
             has(t) {
               if(!this[l].has(t)) return !1;
@@ -240,7 +273,10 @@
           t.exports = e;
           var r = i(226);
           function e(t) {
-            (this.buf = ArrayBuffer.isView && ArrayBuffer.isView(t) ? t : new Uint8Array(t || 0)), (this.pos = 0), (this.type = 0), (this.length = this.buf.length);
+            (this.buf = ArrayBuffer.isView && ArrayBuffer.isView(t) ? t : new Uint8Array(t || 0)),
+              (this.pos = 0),
+              (this.type = 0),
+              (this.length = this.buf.length);
           }
           (e.Varint = 0), (e.Fixed64 = 1), (e.Bytes = 2), (e.Fixed32 = 5);
           var o = 4294967296,
@@ -401,7 +437,11 @@
                           : 3 === f
                           ? ((o = t[e + 1]),
                             (s = t[e + 2]),
-                            128 == (192 & o) && 128 == (192 & s) && ((h = ((15 & a) << 12) | ((63 & o) << 6) | (63 & s)) <= 2047 || (h >= 55296 && h <= 57343)) && (h = null))
+                            128 == (192 & o) &&
+                              128 == (192 & s) &&
+                              ((h = ((15 & a) << 12) | ((63 & o) << 6) | (63 & s)) <= 2047 ||
+                                (h >= 55296 && h <= 57343)) &&
+                              (h = null))
                           : 4 === f &&
                             ((o = t[e + 1]),
                             (s = t[e + 2]),
@@ -409,9 +449,15 @@
                             128 == (192 & o) &&
                               128 == (192 & s) &&
                               128 == (192 & u) &&
-                              ((h = ((15 & a) << 18) | ((63 & o) << 12) | ((63 & s) << 6) | (63 & u)) <= 65535 || h >= 1114112) &&
+                              ((h = ((15 & a) << 18) | ((63 & o) << 12) | ((63 & s) << 6) | (63 & u)) <= 65535 ||
+                                h >= 1114112) &&
                               (h = null)),
-                          null === h ? ((h = 65533), (f = 1)) : h > 65535 && ((h -= 65536), (r += String.fromCharCode(((h >>> 10) & 1023) | 55296)), (h = 56320 | (1023 & h))),
+                          null === h
+                            ? ((h = 65533), (f = 1))
+                            : h > 65535 &&
+                              ((h -= 65536),
+                              (r += String.fromCharCode(((h >>> 10) & 1023) | 55296)),
+                              (h = 56320 | (1023 & h))),
                           (r += String.fromCharCode(h)),
                           (e += f);
                       }
@@ -508,10 +554,16 @@
               this.realloc(4), x(this.buf, t, this.pos), (this.pos += 4);
             },
             writeFixed64: function(t) {
-              this.realloc(8), x(this.buf, -1 & t, this.pos), x(this.buf, Math.floor(t * s), this.pos + 4), (this.pos += 8);
+              this.realloc(8),
+                x(this.buf, -1 & t, this.pos),
+                x(this.buf, Math.floor(t * s), this.pos + 4),
+                (this.pos += 8);
             },
             writeSFixed64: function(t) {
-              this.realloc(8), x(this.buf, -1 & t, this.pos), x(this.buf, Math.floor(t * s), this.pos + 4), (this.pos += 8);
+              this.realloc(8),
+                x(this.buf, -1 & t, this.pos),
+                x(this.buf, Math.floor(t * s), this.pos + 4),
+                (this.pos += 8);
             },
             writeVarint: function(t) {
               (t = +t || 0) > 268435455 || t < 0
@@ -519,8 +571,10 @@
                     var i, r;
                     t >= 0
                       ? ((i = t % 4294967296 | 0), (r = (t / 4294967296) | 0))
-                      : ((r = ~(-t / 4294967296)), 4294967295 ^ (i = ~(-t % 4294967296)) ? (i = (i + 1) | 0) : ((i = 0), (r = (r + 1) | 0)));
-                    if(t >= 0x10000000000000000 || t < -0x10000000000000000) throw new Error("Given varint doesn't fit into 10 bytes");
+                      : ((r = ~(-t / 4294967296)),
+                        4294967295 ^ (i = ~(-t % 4294967296)) ? (i = (i + 1) | 0) : ((i = 0), (r = (r + 1) | 0)));
+                    if(t >= 0x10000000000000000 || t < -0x10000000000000000)
+                      throw new Error("Given varint doesn't fit into 10 bytes");
                     n.realloc(10),
                       (function (t, n, i) {
                         (i.buf[i.pos++] = (127 & t) | 128),
@@ -547,7 +601,9 @@
                   (this.buf[this.pos++] = (127 & t) | (t > 127 ? 128 : 0)),
                   t <= 127 ||
                     ((this.buf[this.pos++] = (127 & (t >>>= 7)) | (t > 127 ? 128 : 0)),
-                    t <= 127 || ((this.buf[this.pos++] = (127 & (t >>>= 7)) | (t > 127 ? 128 : 0)), t <= 127 || (this.buf[this.pos++] = (t >>> 7) & 127))));
+                    t <= 127 ||
+                      ((this.buf[this.pos++] = (127 & (t >>>= 7)) | (t > 127 ? 128 : 0)),
+                      t <= 127 || (this.buf[this.pos++] = (t >>> 7) & 127))));
             },
             writeSVarint: function(t) {
               this.writeVarint(t < 0 ? 2 * -t - 1 : 2 * t);
@@ -575,7 +631,10 @@
                     ? (t[i++] = r)
                     : (r < 2048
                         ? (t[i++] = (r >> 6) | 192)
-                        : (r < 65536 ? (t[i++] = (r >> 12) | 224) : ((t[i++] = (r >> 18) | 240), (t[i++] = ((r >> 12) & 63) | 128)), (t[i++] = ((r >> 6) & 63) | 128)),
+                        : (r < 65536
+                            ? (t[i++] = (r >> 12) | 224)
+                            : ((t[i++] = (r >> 18) | 240), (t[i++] = ((r >> 12) & 63) | 128)),
+                          (t[i++] = ((r >> 6) & 63) | 128)),
                       (t[i++] = (63 & r) | 128));
                 }
                 return i;
@@ -678,7 +737,13 @@
                       h = Math.log(u),
                       f = 0.5 * Math.exp((2 * h) / 3),
                       c = 0.5 * Math.sqrt((h * f * (u - f)) / u) * (a - u / 2 < 0 ? -1 : 1);
-                    t(i, r, Math.max(e, Math.floor(r - (a * f) / u + c)), Math.min(o, Math.floor(r + ((u - a) * f) / u + c)), s);
+                    t(
+                      i,
+                      r,
+                      Math.max(e, Math.floor(r - (a * f) / u + c)),
+                      Math.min(o, Math.floor(r + ((u - a) * f) / u + c)),
+                      s
+                    );
                   }
                   var l = i[r],
                     v = e,
@@ -699,7 +764,10 @@
               return t < n ? -1 : t > n ? 1 : 0;
             }
             var r = function(t) {
-              void 0 === t && (t = 9), (this._maxEntries = Math.max(4, t)), (this._minEntries = Math.max(2, Math.ceil(0.4 * this._maxEntries))), this.clear();
+              void 0 === t && (t = 9),
+                (this._maxEntries = Math.max(4, t)),
+                (this._minEntries = Math.max(2, Math.ceil(0.4 * this._maxEntries))),
+                this.clear();
             };
             function e(t, n, i) {
               if(!i) return n.indexOf(t);
@@ -718,7 +786,13 @@
               return e;
             }
             function u(t, n) {
-              return (t.minX = Math.min(t.minX, n.minX)), (t.minY = Math.min(t.minY, n.minY)), (t.maxX = Math.max(t.maxX, n.maxX)), (t.maxY = Math.max(t.maxY, n.maxY)), t;
+              return (
+                (t.minX = Math.min(t.minX, n.minX)),
+                (t.minY = Math.min(t.minY, n.minY)),
+                (t.maxX = Math.max(t.maxX, n.maxX)),
+                (t.maxY = Math.max(t.maxY, n.maxY)),
+                t
+              );
             }
             function a(t, n) {
               return t.minX - n.minX;
@@ -814,7 +888,11 @@
                     var f = e(t, s.children, n);
                     if(-1 !== f) return s.children.splice(f, 1), a.push(s), this._condense(a), this;
                   }
-                  o || s.leaf || !l(s, u) ? (r ? (i++, (s = r.children[i]), (o = !1)) : (s = null)) : (a.push(s), h.push(i), (i = 0), (r = s), (s = s.children[0]));
+                  o || s.leaf || !l(s, u)
+                    ? r
+                      ? (i++, (s = r.children[i]), (o = !1))
+                      : (s = null)
+                    : (a.push(s), h.push(i), (i = 0), (r = s), (s = s.children[0]));
                 }
                 return this;
               }),
@@ -842,7 +920,9 @@
                   s = i - n + 1,
                   u = this._maxEntries;
                 if(s <= u) return o((e = d(t.slice(n, i + 1))), this.toBBox), e;
-                r || ((r = Math.ceil(Math.log(s) / Math.log(u))), (u = Math.ceil(s / Math.pow(u, r - 1)))), ((e = d([])).leaf = !1), (e.height = r);
+                r || ((r = Math.ceil(Math.log(s) / Math.log(u))), (u = Math.ceil(s / Math.pow(u, r - 1)))),
+                  ((e = d([])).leaf = !1),
+                  (e.height = r);
                 var a = Math.ceil(s / u),
                   h = a * Math.ceil(Math.sqrt(u));
                 p(t, n, i, h, this.compareMinX);
@@ -861,7 +941,12 @@
                   for(var e = 1 / 0, o = 1 / 0, s = void 0, u = 0; u < n.children.length; u++) {
                     var a = n.children[u],
                       h = f(a),
-                      c = ((l = t), (v = a), (Math.max(v.maxX, l.maxX) - Math.min(v.minX, l.minX)) * (Math.max(v.maxY, l.maxY) - Math.min(v.minY, l.minY)) - h);
+                      c =
+                        ((l = t),
+                        (v = a),
+                        (Math.max(v.maxX, l.maxX) - Math.min(v.minX, l.minX)) *
+                          (Math.max(v.maxY, l.maxY) - Math.min(v.minY, l.minY)) -
+                          h);
                     c < o ? ((o = c), (e = h < e ? h : e), (s = a)) : c === o && h < e && ((e = h), (s = a));
                   }
                   n = s || n.children[0];
@@ -873,7 +958,8 @@
                 var r = i ? t : this.toBBox(t),
                   e = [],
                   o = this._chooseSubtree(r, this.data, n, e);
-                for(o.children.push(t), u(o, r); n >= 0 && e[n].children.length > this._maxEntries; ) this._split(e, n), n--;
+                for(o.children.push(t), u(o, r); n >= 0 && e[n].children.length > this._maxEntries; )
+                  this._split(e, n), n--;
                 this._adjustParentBBoxes(r, e, n);
               }),
               (r.prototype._split = function(t, n) {
@@ -883,10 +969,17 @@
                 this._chooseSplitAxis(i, e, r);
                 var s = this._chooseSplitIndex(i, e, r),
                   u = d(i.children.splice(s, i.children.length - s));
-                (u.height = i.height), (u.leaf = i.leaf), o(i, this.toBBox), o(u, this.toBBox), n ? t[n - 1].children.push(u) : this._splitRoot(i, u);
+                (u.height = i.height),
+                  (u.leaf = i.leaf),
+                  o(i, this.toBBox),
+                  o(u, this.toBBox),
+                  n ? t[n - 1].children.push(u) : this._splitRoot(i, u);
               }),
               (r.prototype._splitRoot = function(t, n) {
-                (this.data = d([t, n])), (this.data.height = t.height + 1), (this.data.leaf = !1), o(this.data, this.toBBox);
+                (this.data = d([t, n])),
+                  (this.data.height = t.height + 1),
+                  (this.data.leaf = !1),
+                  o(this.data, this.toBBox);
               }),
               (r.prototype._chooseSplitIndex = function(t, n, i) {
                 for(var r, e, o, u, a, h, c, l = 1 / 0, v = 1 / 0, d = n; d <= i - n; d++) {
@@ -916,7 +1009,11 @@
               }),
               (r.prototype._allDistMargin = function(t, n, i, r) {
                 t.children.sort(r);
-                for(var e = this.toBBox, o = s(t, 0, n, e), a = s(t, i - n, i, e), h = c(o) + c(a), f = n; f < i - n; f++) {
+                for(
+                  var e = this.toBBox, o = s(t, 0, n, e), a = s(t, i - n, i, e), h = c(o) + c(a), f = n;
+                  f < i - n;
+                  f++
+                ) {
                   var l = t.children[f];
                   u(o, t.leaf ? e(l) : l), (h += c(o));
                 }
@@ -930,7 +1027,12 @@
                 for(var r = i; r >= 0; r--) u(n[r], t);
               }),
               (r.prototype._condense = function(t) {
-                for(var n = t.length - 1, i = void 0; n >= 0; n--) 0 === t[n].children.length ? (n > 0 ? (i = t[n - 1].children).splice(i.indexOf(t[n]), 1) : this.clear()) : o(t[n], this.toBBox);
+                for(var n = t.length - 1, i = void 0; n >= 0; n--)
+                  0 === t[n].children.length
+                    ? n > 0
+                      ? (i = t[n - 1].children).splice(i.indexOf(t[n]), 1)
+                      : this.clear()
+                    : o(t[n], this.toBBox);
               }),
               r
             );
@@ -1067,7 +1169,8 @@
               var r = t.iterator[i.method];
               if(r === n) {
                 if(((i.delegate = null), 'throw' === i.method)) {
-                  if(t.iterator.return && ((i.method = 'return'), (i.arg = n), O(t, i), 'throw' === i.method)) return p;
+                  if(t.iterator.return && ((i.method = 'return'), (i.arg = n), O(t, i), 'throw' === i.method))
+                    return p;
                   (i.method = 'throw'), (i.arg = new TypeError("The iterator does not provide a 'throw' method"));
                 }
                 return p;
@@ -1077,13 +1180,22 @@
               var o = e.arg;
               return o
                 ? o.done
-                  ? ((i[t.resultName] = o.value), (i.next = t.nextLoc), 'return' !== i.method && ((i.method = 'next'), (i.arg = n)), (i.delegate = null), p)
+                  ? ((i[t.resultName] = o.value),
+                    (i.next = t.nextLoc),
+                    'return' !== i.method && ((i.method = 'next'), (i.arg = n)),
+                    (i.delegate = null),
+                    p)
                   : o
-                : ((i.method = 'throw'), (i.arg = new TypeError('iterator result is not an object')), (i.delegate = null), p);
+                : ((i.method = 'throw'),
+                  (i.arg = new TypeError('iterator result is not an object')),
+                  (i.delegate = null),
+                  p);
             }
             function j(t) {
               var n = { tryLoc: t[0] };
-              1 in t && (n.catchLoc = t[1]), 2 in t && ((n.finallyLoc = t[2]), (n.afterLoc = t[3])), this.tryEntries.push(n);
+              1 in t && (n.catchLoc = t[1]),
+                2 in t && ((n.finallyLoc = t[2]), (n.afterLoc = t[3])),
+                this.tryEntries.push(n);
             }
             function E(t) {
               var n = t.completion || {};
@@ -1121,7 +1233,13 @@
                 return !!n && (n === m || 'GeneratorFunction' === (n.displayName || n.name));
               }),
               (t.mark = function(t) {
-                return Object.setPrototypeOf ? Object.setPrototypeOf(t, w) : ((t.__proto__ = w), a(t, u, 'GeneratorFunction')), (t.prototype = Object.create(M)), t;
+                return (
+                  Object.setPrototypeOf
+                    ? Object.setPrototypeOf(t, w)
+                    : ((t.__proto__ = w), a(t, u, 'GeneratorFunction')),
+                  (t.prototype = Object.create(M)),
+                  t
+                );
               }),
               (t.awrap = function(t) {
                 return { __await: t };
@@ -1167,7 +1285,15 @@
                 constructor: T,
                 reset: function(t) {
                   if(
-                    ((this.prev = 0), (this.next = 0), (this.sent = this._sent = n), (this.done = !1), (this.delegate = null), (this.method = 'next'), (this.arg = n), this.tryEntries.forEach(E), !t)
+                    ((this.prev = 0),
+                    (this.next = 0),
+                    (this.sent = this._sent = n),
+                    (this.done = !1),
+                    (this.delegate = null),
+                    (this.method = 'next'),
+                    (this.arg = n),
+                    this.tryEntries.forEach(E),
+                    !t)
                   )
                     for(var i in this) 't' === i.charAt(0) && r.call(this, i) && !isNaN(+i.slice(1)) && (this[i] = n);
                 },
@@ -1212,7 +1338,11 @@
                   }
                   o && ('break' === t || 'continue' === t) && o.tryLoc <= n && n <= o.finallyLoc && (o = null);
                   var s = o ? o.completion : {};
-                  return (s.type = t), (s.arg = n), o ? ((this.method = 'next'), (this.next = o.finallyLoc), p) : this.complete(s);
+                  return (
+                    (s.type = t),
+                    (s.arg = n),
+                    o ? ((this.method = 'next'), (this.next = o.finallyLoc), p) : this.complete(s)
+                  );
                 },
                 complete: function(t, n) {
                   if('throw' === t.type) throw t.arg;
@@ -1246,7 +1376,11 @@
                   throw new Error('illegal catch attempt');
                 },
                 delegateYield: function(t, i, r) {
-                  return (this.delegate = { iterator: A(t), resultName: i, nextLoc: r }), 'next' === this.method && (this.arg = n), p;
+                  return (
+                    (this.delegate = { iterator: A(t), resultName: i, nextLoc: r }),
+                    'next' === this.method && (this.arg = n),
+                    p
+                  );
                 }
               }),
               t
@@ -1255,7 +1389,9 @@
           try {
             regeneratorRuntime = n;
           } catch(t) {
-            'object' == typeof globalThis ? (globalThis.regeneratorRuntime = n) : Function('r', 'regeneratorRuntime = r')(n);
+            'object' == typeof globalThis
+              ? (globalThis.regeneratorRuntime = n)
+              : Function('r', 'regeneratorRuntime = r')(n);
           }
         },
         617: function(t, n, i) {
@@ -1274,7 +1410,9 @@
             if((e && console.log('end:', f), -1 === f)) return;
             const c = t.slice(s, f);
             let l;
-            return (l = h ? null : c.slice(c.indexOf('>') + 1, c.lastIndexOf('<'))), { inner: l, outer: c, start: s, end: f };
+            return (
+              (l = h ? null : c.slice(c.indexOf('>') + 1, c.lastIndexOf('<'))), { inner: l, outer: c, start: s, end: f }
+            );
           };
         },
         51: function(t, n, i) {
@@ -1317,7 +1455,13 @@
           'use strict';
           function r(t) {
             var n = this;
-            if((n instanceof r || (n = new r()), (n.tail = null), (n.head = null), (n.length = 0), t && 'function' == typeof t.forEach))
+            if(
+              (n instanceof r || (n = new r()),
+              (n.tail = null),
+              (n.head = null),
+              (n.length = 0),
+              t && 'function' == typeof t.forEach)
+            )
               t.forEach(function (t) {
                 n.push(t);
               });
@@ -1336,7 +1480,10 @@
           }
           function u(t, n, i, r) {
             if(!(this instanceof u)) return new u(t, n, i, r);
-            (this.list = r), (this.value = t), n ? ((n.next = this), (this.prev = n)) : (this.prev = null), i ? ((i.prev = this), (this.next = i)) : (this.next = null);
+            (this.list = r),
+              (this.value = t),
+              n ? ((n.next = this), (this.prev = n)) : (this.prev = null),
+              i ? ((i.prev = this), (this.next = i)) : (this.next = null);
           }
           (t.exports = r),
             (r.Node = u),
@@ -1346,21 +1493,39 @@
               var n = t.next,
                 i = t.prev;
               return (
-                n && (n.prev = i), i && (i.next = n), t === this.head && (this.head = n), t === this.tail && (this.tail = i), t.list.length--, (t.next = null), (t.prev = null), (t.list = null), n
+                n && (n.prev = i),
+                i && (i.next = n),
+                t === this.head && (this.head = n),
+                t === this.tail && (this.tail = i),
+                t.list.length--,
+                (t.next = null),
+                (t.prev = null),
+                (t.list = null),
+                n
               );
             }),
             (r.prototype.unshiftNode = function(t) {
               if(t !== this.head) {
                 t.list && t.list.removeNode(t);
                 var n = this.head;
-                (t.list = this), (t.next = n), n && (n.prev = t), (this.head = t), this.tail || (this.tail = t), this.length++;
+                (t.list = this),
+                  (t.next = n),
+                  n && (n.prev = t),
+                  (this.head = t),
+                  this.tail || (this.tail = t),
+                  this.length++;
               }
             }),
             (r.prototype.pushNode = function(t) {
               if(t !== this.tail) {
                 t.list && t.list.removeNode(t);
                 var n = this.tail;
-                (t.list = this), (t.prev = n), n && (n.next = t), (this.tail = t), this.head || (this.head = t), this.length++;
+                (t.list = this),
+                  (t.prev = n),
+                  n && (n.next = t),
+                  (this.tail = t),
+                  this.head || (this.head = t),
+                  this.length++;
               }
             }),
             (r.prototype.push = function() {
@@ -1374,13 +1539,23 @@
             (r.prototype.pop = function() {
               if(this.tail) {
                 var t = this.tail.value;
-                return (this.tail = this.tail.prev), this.tail ? (this.tail.next = null) : (this.head = null), this.length--, t;
+                return (
+                  (this.tail = this.tail.prev),
+                  this.tail ? (this.tail.next = null) : (this.head = null),
+                  this.length--,
+                  t
+                );
               }
             }),
             (r.prototype.shift = function() {
               if(this.head) {
                 var t = this.head.value;
-                return (this.head = this.head.next), this.head ? (this.head.prev = null) : (this.tail = null), this.length--, t;
+                return (
+                  (this.head = this.head.next),
+                  this.head ? (this.head.prev = null) : (this.tail = null),
+                  this.length--,
+                  t
+                );
               }
             }),
             (r.prototype.forEach = function(t, n) {
@@ -1432,11 +1607,13 @@
               return i;
             }),
             (r.prototype.toArray = function() {
-              for(var t = new Array(this.length), n = 0, i = this.head; null !== i; n++) (t[n] = i.value), (i = i.next);
+              for(var t = new Array(this.length), n = 0, i = this.head; null !== i; n++)
+                (t[n] = i.value), (i = i.next);
               return t;
             }),
             (r.prototype.toArrayReverse = function() {
-              for(var t = new Array(this.length), n = 0, i = this.tail; null !== i; n++) (t[n] = i.value), (i = i.prev);
+              for(var t = new Array(this.length), n = 0, i = this.tail; null !== i; n++)
+                (t[n] = i.value), (i = i.prev);
               return t;
             }),
             (r.prototype.slice = function(t, n) {
@@ -1463,7 +1640,8 @@
               var o = [];
               for(i = 0; r && i < n; i++) o.push(r.value), (r = this.removeNode(r));
               null === r && (r = this.tail), r !== this.head && r !== this.tail && (r = r.prev);
-              for(i = 0; i < (arguments.length <= 2 ? 0 : arguments.length - 2); i++) r = e(this, r, i + 2 < 2 || arguments.length <= i + 2 ? void 0 : arguments[i + 2]);
+              for(i = 0; i < (arguments.length <= 2 ? 0 : arguments.length - 2); i++)
+                r = e(this, r, i + 2 < 2 || arguments.length <= i + 2 ? void 0 : arguments[i + 2]);
               return o;
             }),
             (r.prototype.reverse = function() {
@@ -1511,7 +1689,8 @@
                   })(t, n);
               }),
               function(t, n) {
-                if('function' != typeof n && null !== n) throw new TypeError('Class extends value ' + String(n) + ' is not a constructor or null');
+                if('function' != typeof n && null !== n)
+                  throw new TypeError('Class extends value ' + String(n) + ' is not a constructor or null');
                 function i() {
                   this.constructor = t;
                 }
@@ -1520,7 +1699,12 @@
             h = (function (t) {
               function n(n) {
                 var i = this,
-                  r = 'Assertion failed. See https://openlayers.org/en/' + ('v' + u.split('-')[0]) + '/doc/errors/#' + n + ' for details.';
+                  r =
+                    'Assertion failed. See https://openlayers.org/en/' +
+                    ('v' + u.split('-')[0]) +
+                    '/doc/errors/#' +
+                    n +
+                    ' for details.';
                 return ((i = t.call(this, r) || this).code = n), (i.name = 'AssertionError'), (i.message = r), i;
               }
               return a(n, t), n;
@@ -1556,7 +1740,8 @@
               );
             })();
           function d(t, n, i) {
-            for(var r, e, o = i || p, s = 0, u = t.length, a = !1; s < u; ) (e = +o(t[(r = s + ((u - s) >> 1))], n)) < 0 ? (s = r + 1) : ((u = r), (a = !e));
+            for(var r, e, o = i || p, s = 0, u = t.length, a = !1; s < u; )
+              (e = +o(t[(r = s + ((u - s) >> 1))], n)) < 0 ? (s = r + 1) : ((u = r), (a = !e));
             return a ? s : ~s;
           }
           function p(t, n) {
@@ -1577,7 +1762,14 @@
             } else
               for(e = 1; e < r; ++e) {
                 if(t[e] == n) return e;
-                if(t[e] < n) return 'function' == typeof i ? (i(n, t[e - 1], t[e]) > 0 ? e - 1 : e) : t[e - 1] - n < n - t[e] ? e - 1 : e;
+                if(t[e] < n)
+                  return 'function' == typeof i
+                    ? i(n, t[e - 1], t[e]) > 0
+                      ? e - 1
+                      : e
+                    : t[e - 1] - n < n - t[e]
+                    ? e - 1
+                    : e;
               }
             return r - 1;
           }
@@ -1684,7 +1876,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -1717,7 +1910,10 @@
                       u = this._ || (this._ = {});
                     i in s || ((s[i] = 0), (u[i] = 0)), ++s[i];
                     for(var a = 0, h = r.length; a < h; ++a)
-                      if(!1 === (o = 'handleEvent' in r[a] ? r[a].handleEvent(e) : r[a].call(this, e)) || e.propagationStopped) {
+                      if(
+                        !1 === (o = 'handleEvent' in r[a] ? r[a].handleEvent(e) : r[a].call(this, e)) ||
+                        e.propagationStopped
+                      ) {
                         o = !1;
                         break;
                       }
@@ -1742,7 +1938,10 @@
                   var i = this.O && this.O[t];
                   if(i) {
                     var r = i.indexOf(n);
-                    -1 !== r && (this._ && t in this._ ? ((i[r] = j), ++this._[t]) : (i.splice(r, 1), 0 === i.length && delete this.O[t]));
+                    -1 !== r &&
+                      (this._ && t in this._
+                        ? ((i[r] = j), ++this._[t])
+                        : (i.splice(r, 1), 0 === i.length && delete this.O[t]));
                   }
                 }),
                 n
@@ -1791,7 +1990,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -1830,7 +2030,8 @@
                 (n.prototype.unInternal = function(t, n) {
                   var i = n.ol_key;
                   if(i) tt(i);
-                  else if(Array.isArray(t)) for(var r = 0, e = t.length; r < e; ++r) this.removeEventListener(t[r], n);
+                  else if(Array.isArray(t))
+                    for(var r = 0, e = t.length; r < e; ++r) this.removeEventListener(t[r], n);
                   else this.removeEventListener(t, n);
                 }),
                 n
@@ -1855,7 +2056,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -1891,7 +2093,10 @@
                 }),
                 (n.prototype.notify = function(t, n) {
                   var i;
-                  (i = 'change:'.concat(t)), this.hasListener(i) && this.dispatchEvent(new rt(i, t, n)), (i = l), this.hasListener(i) && this.dispatchEvent(new rt(i, t, n));
+                  (i = 'change:'.concat(t)),
+                    this.hasListener(i) && this.dispatchEvent(new rt(i, t, n)),
+                    (i = l),
+                    this.hasListener(i) && this.dispatchEvent(new rt(i, t, n));
                 }),
                 (n.prototype.addChangeListener = function(t, n) {
                   this.addEventListener('change:'.concat(t), n);
@@ -1937,7 +2142,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -1957,7 +2163,8 @@
                 var r = t.call(this) || this;
                 r.on, r.once, r.un;
                 var e = i || {};
-                if(((r.P = !!e.unique), (r.C = n || []), r.P)) for(var o = 0, s = r.C.length; o < s; ++o) r.R(r.C[o], o);
+                if(((r.P = !!e.unique), (r.C = n || []), r.P))
+                  for(var o = 0, s = r.C.length; o < s; ++o) r.R(r.C[o], o);
                 return r.G(), r;
               }
               return (
@@ -2049,7 +2256,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -2060,7 +2268,16 @@
               function n(n, i, r) {
                 var e = t.call(this) || this,
                   o = r || {};
-                return (e.tileCoord = n), (e.state = i), (e.interimTile = null), (e.key = ''), (e.D = void 0 === o.transition ? 250 : o.transition), (e.q = {}), (e.interpolate = !!o.interpolate), e;
+                return (
+                  (e.tileCoord = n),
+                  (e.state = i),
+                  (e.interimTile = null),
+                  (e.key = ''),
+                  (e.D = void 0 === o.transition ? 250 : o.transition),
+                  (e.q = {}),
+                  (e.interpolate = !!o.interpolate),
+                  e
+                );
               }
               return (
                 bt(n, t),
@@ -2089,7 +2306,8 @@
                         t.interimTile = null;
                         break;
                       }
-                      t.getState() == lt ? (n = t) : t.getState() == ct ? (n.interimTile = t.interimTile) : (n = t), (t = n.interimTile);
+                      t.getState() == lt ? (n = t) : t.getState() == ct ? (n.interimTile = t.interimTile) : (n = t),
+                        (t = n.interimTile);
                     } while(t);
                   }
                 }),
@@ -2137,7 +2355,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -2148,7 +2367,15 @@
               function n(n) {
                 var i = this,
                   r = ct;
-                return ((i = t.call(this, n.tileCoord, r, { transition: n.transition, interpolate: n.interpolate }) || this).U = n.loader), (i.B = null), (i.V = null), (i.W = n.size || [256, 256]), i;
+                return (
+                  ((i =
+                    t.call(this, n.tileCoord, r, { transition: n.transition, interpolate: n.interpolate }) || this).U =
+                    n.loader),
+                  (i.B = null),
+                  (i.V = null),
+                  (i.W = n.size || [256, 256]),
+                  i
+                );
               }
               return (
                 Mt(n, t),
@@ -2193,7 +2420,8 @@
                 })(n, i);
             };
             return function(n, i) {
-              if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+              if('function' != typeof i && null !== i)
+                throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
               function r() {
                 this.constructor = n;
               }
@@ -2212,7 +2440,18 @@
           var Et = (function (t) {
               function n(n) {
                 var i = t.call(this) || this;
-                if((i.on, i.once, i.un, (i.$ = void 0), (i.K = 'geometry'), (i.H = null), (i.tt = void 0), (i.nt = null), i.addChangeListener(i.K, i.it), n))
+                if(
+                  (i.on,
+                  i.once,
+                  i.un,
+                  (i.$ = void 0),
+                  (i.K = 'geometry'),
+                  (i.H = null),
+                  (i.tt = void 0),
+                  (i.nt = null),
+                  i.addChangeListener(i.K, i.it),
+                  n)
+                )
                   if('function' == typeof n.getSimplifiedGeometry) {
                     var r = n;
                     i.setGeometry(r);
@@ -2265,7 +2504,10 @@
                   (this.$ = t), this.changed();
                 }),
                 (n.prototype.setGeometryName = function(t) {
-                  this.removeChangeListener(this.K, this.it), (this.K = t), this.addChangeListener(this.K, this.it), this.it();
+                  this.removeChangeListener(this.K, this.it),
+                    (this.K = t),
+                    this.addChangeListener(this.K, this.it),
+                    this.it();
                 }),
                 n
               );
@@ -2288,17 +2530,27 @@
             return It[t];
           }
           var Lt = {};
-          (Lt[kt.RADIANS] = 6370997 / (2 * Math.PI)), (Lt[kt.DEGREES] = (2 * Math.PI * 6370997) / 360), (Lt[kt.FEET] = 0.3048), (Lt[kt.METERS] = 1), (Lt[kt.USFEET] = 1200 / 3937);
+          (Lt[kt.RADIANS] = 6370997 / (2 * Math.PI)),
+            (Lt[kt.DEGREES] = (2 * Math.PI * 6370997) / 360),
+            (Lt[kt.FEET] = 0.3048),
+            (Lt[kt.METERS] = 1),
+            (Lt[kt.USFEET] = 1200 / 3937);
           var zt,
             Rt = kt,
-            Ft = 'undefined' != typeof navigator && void 0 !== navigator.userAgent ? navigator.userAgent.toLowerCase() : '',
+            Ft =
+              'undefined' != typeof navigator && void 0 !== navigator.userAgent
+                ? navigator.userAgent.toLowerCase()
+                : '',
             Gt = -1 !== Ft.indexOf('firefox'),
             Dt = -1 !== Ft.indexOf('safari') && -1 == Ft.indexOf('chrom'),
             qt = Dt && !!(Ft.indexOf('version/15.4') >= 0 || Ft.match(/cpu (os|iphone os) 15_4 like mac os x/)),
             Ut = -1 !== Ft.indexOf('webkit') && -1 == Ft.indexOf('edge'),
             Bt = -1 !== Ft.indexOf('macintosh'),
             Xt = 'undefined' != typeof devicePixelRatio ? devicePixelRatio : 1,
-            Vt = 'undefined' != typeof WorkerGlobalScope && 'undefined' != typeof OffscreenCanvas && self instanceof WorkerGlobalScope,
+            Vt =
+              'undefined' != typeof WorkerGlobalScope &&
+              'undefined' != typeof OffscreenCanvas &&
+              self instanceof WorkerGlobalScope,
             Wt = 'undefined' != typeof Image && Image.prototype.decode,
             Yt = (function () {
               var t = !1;
@@ -2332,7 +2584,15 @@
               c = n[3],
               l = n[4],
               v = n[5];
-            return (t[0] = i * a + e * h), (t[1] = r * a + o * h), (t[2] = i * f + e * c), (t[3] = r * f + o * c), (t[4] = i * l + e * v + s), (t[5] = r * l + o * v + u), t;
+            return (
+              (t[0] = i * a + e * h),
+              (t[1] = r * a + o * h),
+              (t[2] = i * f + e * c),
+              (t[3] = r * f + o * c),
+              (t[4] = i * l + e * v + s),
+              (t[5] = r * l + o * v + u),
+              t
+            );
           }
           function Jt(t, n, i, r, e, o, s) {
             return (t[0] = n), (t[1] = i), (t[2] = r), (t[3] = e), (t[4] = o), (t[5] = s), t;
@@ -2362,7 +2622,15 @@
           function sn(t, n, i, r, e, o, s, u) {
             var a = Math.sin(o),
               h = Math.cos(o);
-            return (t[0] = r * h), (t[1] = e * a), (t[2] = -r * a), (t[3] = e * h), (t[4] = s * r * h - u * r * a + n), (t[5] = s * e * a + u * e * h + i), t;
+            return (
+              (t[0] = r * h),
+              (t[1] = e * a),
+              (t[2] = -r * a),
+              (t[3] = e * h),
+              (t[4] = s * r * h - u * r * a + n),
+              (t[5] = s * e * a + u * e * h + i),
+              t
+            );
           }
           function un(t, n) {
             var i = an(n);
@@ -2373,7 +2641,15 @@
               s = n[3],
               u = n[4],
               a = n[5];
-            return (t[0] = s / i), (t[1] = -e / i), (t[2] = -o / i), (t[3] = r / i), (t[4] = (o * a - s * u) / i), (t[5] = -(r * a - e * u) / i), t;
+            return (
+              (t[0] = s / i),
+              (t[1] = -e / i),
+              (t[2] = -o / i),
+              (t[3] = r / i),
+              (t[4] = (o * a - s * u) / i),
+              (t[5] = -(r * a - e * u) / i),
+              t
+            );
           }
           function an(t) {
             return t[0] * t[3] - t[1] * t[2];
@@ -2395,14 +2671,19 @@
             return n;
           }
           function mn(t, n, i) {
-            return i ? ((i[0] = t[0] - n), (i[1] = t[1] - n), (i[2] = t[2] + n), (i[3] = t[3] + n), i) : [t[0] - n, t[1] - n, t[2] + n, t[3] + n];
+            return i
+              ? ((i[0] = t[0] - n), (i[1] = t[1] - n), (i[2] = t[2] + n), (i[3] = t[3] + n), i)
+              : [t[0] - n, t[1] - n, t[2] + n, t[3] + n];
           }
           function wn(t, n) {
             return n ? ((n[0] = t[0]), (n[1] = t[1]), (n[2] = t[2]), (n[3] = t[3]), n) : t.slice();
           }
           function gn(t, n, i) {
             var r, e;
-            return (r = n < t[0] ? t[0] - n : t[2] < n ? n - t[2] : 0) * r + (e = i < t[1] ? t[1] - i : t[3] < i ? i - t[3] : 0) * e;
+            return (
+              (r = n < t[0] ? t[0] - n : t[2] < n ? n - t[2] : 0) * r +
+              (e = i < t[1] ? t[1] - i : t[3] < i ? i - t[3] : 0) * e
+            );
           }
           function bn(t, n) {
             return Mn(t, n[0], n[1]);
@@ -2421,7 +2702,9 @@
               s = n[0],
               u = n[1],
               a = fn;
-            return s < i ? (a |= pn) : s > e && (a |= vn), u < r ? (a |= dn) : u > o && (a |= ln), a === fn && (a = cn), a;
+            return (
+              s < i ? (a |= pn) : s > e && (a |= vn), u < r ? (a |= dn) : u > o && (a |= ln), a === fn && (a = cn), a
+            );
           }
           function Sn() {
             return [1 / 0, 1 / 0, -1 / 0, -1 / 0];
@@ -2444,13 +2727,27 @@
             return t[0] == n[0] && t[2] == n[2] && t[1] == n[1] && t[3] == n[3];
           }
           function Pn(t, n, i) {
-            return Math.abs(t[0] - n[0]) < i && Math.abs(t[2] - n[2]) < i && Math.abs(t[1] - n[1]) < i && Math.abs(t[3] - n[3]) < i;
+            return (
+              Math.abs(t[0] - n[0]) < i &&
+              Math.abs(t[2] - n[2]) < i &&
+              Math.abs(t[1] - n[1]) < i &&
+              Math.abs(t[3] - n[3]) < i
+            );
           }
           function Cn(t, n) {
-            return n[0] < t[0] && (t[0] = n[0]), n[2] > t[2] && (t[2] = n[2]), n[1] < t[1] && (t[1] = n[1]), n[3] > t[3] && (t[3] = n[3]), t;
+            return (
+              n[0] < t[0] && (t[0] = n[0]),
+              n[2] > t[2] && (t[2] = n[2]),
+              n[1] < t[1] && (t[1] = n[1]),
+              n[3] > t[3] && (t[3] = n[3]),
+              t
+            );
           }
           function kn(t, n) {
-            n[0] < t[0] && (t[0] = n[0]), n[0] > t[2] && (t[2] = n[0]), n[1] < t[1] && (t[1] = n[1]), n[1] > t[3] && (t[3] = n[1]);
+            n[0] < t[0] && (t[0] = n[0]),
+              n[0] > t[2] && (t[2] = n[0]),
+              n[1] < t[1] && (t[1] = n[1]),
+              n[1] > t[3] && (t[3] = n[1]);
           }
           function In(t, n) {
             for(var i = 0, r = n.length; i < r; ++i) kn(t, n[i]);
@@ -2465,7 +2762,10 @@
             return t;
           }
           function zn(t, n, i) {
-            (t[0] = Math.min(t[0], n)), (t[1] = Math.min(t[1], i)), (t[2] = Math.max(t[2], n)), (t[3] = Math.max(t[3], i));
+            (t[0] = Math.min(t[0], n)),
+              (t[1] = Math.min(t[1], i)),
+              (t[2] = Math.max(t[2], n)),
+              (t[3] = Math.max(t[3], i));
           }
           function Rn(t, n) {
             var i;
@@ -2486,7 +2786,18 @@
           }
           function Un(t, n) {
             var i;
-            return 'bottom-left' === n ? (i = Gn(t)) : 'bottom-right' === n ? (i = Dn(t)) : 'top-left' === n ? (i = Yn(t)) : 'top-right' === n ? (i = Zn(t)) : St(!1, 13), i;
+            return (
+              'bottom-left' === n
+                ? (i = Gn(t))
+                : 'bottom-right' === n
+                ? (i = Dn(t))
+                : 'top-left' === n
+                ? (i = Yn(t))
+                : 'top-right' === n
+                ? (i = Zn(t))
+                : St(!1, 13),
+              i
+            );
           }
           function Bn(t, n, i, r, e) {
             var o = Xn(t, n, i, r),
@@ -2511,7 +2822,18 @@
               c = o * u,
               l = t[0],
               v = t[1];
-            return [l - a + c, v - h - f, l - a - c, v - h + f, l + a - c, v + h + f, l + a + c, v + h - f, l - a + c, v - h - f];
+            return [
+              l - a + c,
+              v - h - f,
+              l - a - c,
+              v - h + f,
+              l + a - c,
+              v + h + f,
+              l + a + c,
+              v + h - f,
+              l - a + c,
+              v - h - f
+            ];
           }
           function Vn(t) {
             return t[3] - t[1];
@@ -2520,7 +2842,10 @@
             var r = i || [1 / 0, 1 / 0, -1 / 0, -1 / 0];
             return (
               Kn(t, n)
-                ? (t[0] > n[0] ? (r[0] = t[0]) : (r[0] = n[0]), t[1] > n[1] ? (r[1] = t[1]) : (r[1] = n[1]), t[2] < n[2] ? (r[2] = t[2]) : (r[2] = n[2]), t[3] < n[3] ? (r[3] = t[3]) : (r[3] = n[3]))
+                ? (t[0] > n[0] ? (r[0] = t[0]) : (r[0] = n[0]),
+                  t[1] > n[1] ? (r[1] = t[1]) : (r[1] = n[1]),
+                  t[2] < n[2] ? (r[2] = t[2]) : (r[2] = n[2]),
+                  t[3] < n[3] ? (r[3] = t[3]) : (r[3] = n[3]))
                 : jn(r),
               r
             );
@@ -2574,12 +2899,29 @@
           }
           function ni(t, n, i, r) {
             var e = [];
-            if(r > 1) for(var o = t[2] - t[0], s = t[3] - t[1], u = 0; u < r; ++u) e.push(t[0] + (o * u) / r, t[1], t[2], t[1] + (s * u) / r, t[2] - (o * u) / r, t[3], t[0], t[3] - (s * u) / r);
+            if(r > 1)
+              for(var o = t[2] - t[0], s = t[3] - t[1], u = 0; u < r; ++u)
+                e.push(
+                  t[0] + (o * u) / r,
+                  t[1],
+                  t[2],
+                  t[1] + (s * u) / r,
+                  t[2] - (o * u) / r,
+                  t[3],
+                  t[0],
+                  t[3] - (s * u) / r
+                );
             else e = [t[0], t[1], t[2], t[1], t[2], t[3], t[0], t[3]];
             n(e, e, 2);
             for(var a = [], h = [], f = ((u = 0), e.length); u < f; u += 2) a.push(e[u]), h.push(e[u + 1]);
             return (function (t, n, i) {
-              return On(Math.min.apply(null, t), Math.min.apply(null, n), Math.max.apply(null, t), Math.max.apply(null, n), i);
+              return On(
+                Math.min.apply(null, t),
+                Math.min.apply(null, n),
+                Math.max.apply(null, t),
+                Math.max.apply(null, n),
+                i
+              );
             })(a, h, i);
           }
           function ii(t, n) {
@@ -2713,7 +3055,9 @@
               if(0 === e) return null;
               var u = t[r];
               (t[r] = t[i]), (t[i] = u);
-              for(var a = i + 1; a < n; a++) for (var h = -t[a][i] / t[i][i], f = i; f < n + 1; f++) i == f ? (t[a][f] = 0) : (t[a][f] += h * t[i][f]);
+              for(var a = i + 1; a < n; a++)
+                for(var h = -t[a][i] / t[i][i], f = i; f < n + 1; f++)
+                  i == f ? (t[a][f] = 0) : (t[a][f] += h * t[i][f]);
             }
             for(var c = new Array(n), l = n - 1; l >= 0; l--) {
               c[l] = t[l][n] / t[l][l];
@@ -2760,7 +3104,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -2814,7 +3159,8 @@
               e = i > 1 ? i : 2,
               o = n;
             void 0 === o && (o = e > 2 ? t.slice() : new Array(r));
-            for(var s = 0; s < r; s += e) (o[s] = (180 * t[s]) / xi), (o[s + 1] = (360 * Math.atan(Math.exp(t[s + 1] / bi))) / Math.PI - 90);
+            for(var s = 0; s < r; s += e)
+              (o[s] = (180 * t[s]) / xi), (o[s + 1] = (360 * Math.atan(Math.exp(t[s + 1] / bi))) / Math.PI - 90);
             return o;
           }
           var Ai = (function () {
@@ -2830,7 +3176,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -2930,7 +3277,9 @@
               l = f - a,
               v = c - h,
               d = 0 === l && 0 === v ? 0 : (l * (e - a) + v * (o - h)) / (l * l + v * v || 0);
-            return d <= 0 ? ((i = a), (r = h)) : d >= 1 ? ((i = f), (r = c)) : ((i = a + d * l), (r = h + d * v)), [i, r];
+            return (
+              d <= 0 ? ((i = a), (r = h)) : d >= 1 ? ((i = f), (r = c)) : ((i = a + d * l), (r = h + d * v)), [i, r]
+            );
           }
           function Zi(t, n, i) {
             var r = vi(n + 180, 360) - 180,
@@ -2941,7 +3290,9 @@
               a = Math.floor((e - 3600 * u) / 60),
               h = e - 3600 * u - 60 * a;
             return (
-              (h = Math.ceil(h * s) / s) >= 60 && ((h = 0), (a += 1)), a >= 60 && ((a = 0), (u += 1)), u + '° ' + Bi(a, 2) + '′ ' + Bi(h, 2, o) + '″' + (0 == r ? '' : ' ' + t.charAt(r < 0 ? 1 : 0))
+              (h = Math.ceil(h * s) / s) >= 60 && ((h = 0), (a += 1)),
+              a >= 60 && ((a = 0), (u += 1)),
+              u + '° ' + Bi(a, 2) + '′ ' + Bi(h, 2, o) + '″' + (0 == r ? '' : ' ' + t.charAt(r < 0 ? 1 : 0))
             );
           }
           function $i(t, n, i) {
@@ -3024,7 +3375,10 @@
               s = li(t[0]),
               u = n / e,
               a = Math.asin(Math.sin(o) * Math.cos(u) + Math.cos(o) * Math.sin(u) * Math.cos(i));
-            return [ci(s + Math.atan2(Math.sin(i) * Math.sin(u) * Math.cos(o), Math.cos(u) - Math.sin(o) * Math.sin(a))), ci(a)];
+            return [
+              ci(s + Math.atan2(Math.sin(i) * Math.sin(u) * Math.cos(o), Math.cos(u) - Math.sin(o) * Math.sin(a))),
+              ci(a)
+            ];
           }
           var fr = !0;
           function cr(t) {
@@ -3095,8 +3449,13 @@
           }
           function xr(t) {
             return function(n, i, r) {
-              for(var e = n.length, o = void 0 !== r ? r : 2, s = void 0 !== i ? i : new Array(e), u = 0; u < e; u += o)
-                for(var a = t(n.slice(u, u + o)), h = a.length, f = 0, c = o; f < c; ++f) s[u + f] = f >= h ? n[u + f] : a[f];
+              for(
+                var e = n.length, o = void 0 !== r ? r : 2, s = void 0 !== i ? i : new Array(e), u = 0;
+                u < e;
+                u += o
+              )
+                for(var a = t(n.slice(u, u + o)), h = a.length, f = 0, c = o; f < c; ++f)
+                  s[u + f] = f >= h ? n[u + f] : a[f];
               return s;
             };
           }
@@ -3145,7 +3504,10 @@
                   t[0] <= 180 &&
                   t[1] >= -90 &&
                   t[1] <= 90 &&
-                  ((fr = !1), console.warn('Call useGeographic() from ol/proj once to work with [longitude, latitude] coordinates.')),
+                  ((fr = !1),
+                  console.warn(
+                    'Call useGeographic() from ol/proj once to work with [longitude, latitude] coordinates.'
+                  )),
                 t);
           }
           function Nr(t, n) {
@@ -3172,7 +3534,10 @@
               if(t.canWrapX()) {
                 var s = t.getExtent(),
                   u = $n(s);
-                (o = er((r = r.slice(0)), t, u)) && (r[0] = r[0] - o * u), (r[0] = oi(r[0], s[0], s[2])), (r[1] = oi(r[1], s[1], s[3])), (e = i(r));
+                (o = er((r = r.slice(0)), t, u)) && (r[0] = r[0] - o * u),
+                  (r[0] = oi(r[0], s[0], s[2])),
+                  (r[1] = oi(r[1], s[1], s[3])),
+                  (e = i(r));
               } else e = i(r);
               return o && n.canWrapX() && (e[0] += o * $n(n.getExtent())), e;
             };
@@ -3227,7 +3592,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -3336,7 +3702,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -3382,12 +3749,18 @@
               }),
               (n.prototype.getSimplifiedGeometry = function(t) {
                 if(
-                  (this.simplifiedGeometryRevision !== this.getRevision() && ((this.simplifiedGeometryMaxMinSquaredTolerance = 0), (this.simplifiedGeometryRevision = this.getRevision())),
-                  t < 0 || (0 !== this.simplifiedGeometryMaxMinSquaredTolerance && t <= this.simplifiedGeometryMaxMinSquaredTolerance))
+                  (this.simplifiedGeometryRevision !== this.getRevision() &&
+                    ((this.simplifiedGeometryMaxMinSquaredTolerance = 0),
+                    (this.simplifiedGeometryRevision = this.getRevision())),
+                  t < 0 ||
+                    (0 !== this.simplifiedGeometryMaxMinSquaredTolerance &&
+                      t <= this.simplifiedGeometryMaxMinSquaredTolerance))
                 )
                   return this;
                 var n = this.getSimplifiedGeometryInternal(t);
-                return n.getFlatCoordinates().length < this.flatCoordinates.length ? n : ((this.simplifiedGeometryMaxMinSquaredTolerance = t), this);
+                return n.getFlatCoordinates().length < this.flatCoordinates.length
+                  ? n
+                  : ((this.simplifiedGeometryMaxMinSquaredTolerance = t), this);
               }),
               (n.prototype.getSimplifiedGeometryInternal = function(t) {
                 return this;
@@ -3560,7 +3933,11 @@
             var a = new Array(u);
             (a[0] = 1), (a[u - 1] = 1);
             for(var h = [n, i - r], f = 0; h.length > 0; ) {
-              for(var c = h.pop(), l = h.pop(), v = 0, d = t[l], p = t[l + 1], y = t[c], m = t[c + 1], w = l + r; w < c; w += r) {
+              for(
+                var c = h.pop(), l = h.pop(), v = 0, d = t[l], p = t[l + 1], y = t[c], m = t[c + 1], w = l + r;
+                w < c;
+                w += r
+              ) {
                 var g = ai(t[w], t[w + 1], d, p, y, m);
                 g > v && ((f = w), (v = g));
               }
@@ -3586,7 +3963,8 @@
             (o[s++] = u), (o[s++] = a);
             var h = u,
               f = a;
-            for(n += r; n < i; n += r) hi(u, a, (h = t[n]), (f = t[n + 1])) > e && ((o[s++] = h), (o[s++] = f), (u = h), (a = f));
+            for(n += r; n < i; n += r)
+              hi(u, a, (h = t[n]), (f = t[n + 1])) > e && ((o[s++] = h), (o[s++] = f), (u = h), (a = f));
             return (h == u && f == a) || ((o[s++] = h), (o[s++] = f)), s;
           }
           function ce(t, n) {
@@ -3610,7 +3988,9 @@
                   d = a - f,
                   p = c - h,
                   y = l - f;
-                v * y == d * p && ((v < 0 && p < v) || v == p || (v > 0 && p > v)) && ((d < 0 && y < d) || d == y || (d > 0 && y > d))
+                v * y == d * p &&
+                ((v < 0 && p < v) || v == p || (v > 0 && p > v)) &&
+                ((d < 0 && y < d) || d == y || (d > 0 && y > d))
                   ? ((u = c), (a = l))
                   : ((o[s++] = u), (o[s++] = a), (h = u), (f = a), (u = c), (a = l));
               }
@@ -3685,7 +4065,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -3695,7 +4076,12 @@
             Me = (function (t) {
               function n(n, i) {
                 var r = t.call(this) || this;
-                return (r.wt = -1), (r.gt = -1), void 0 === i || Array.isArray(n[0]) ? r.setCoordinates(n, i) : r.setFlatCoordinates(i, n), r;
+                return (
+                  (r.wt = -1),
+                  (r.gt = -1),
+                  void 0 === i || Array.isArray(n[0]) ? r.setCoordinates(n, i) : r.setFlatCoordinates(i, n),
+                  r
+                );
               }
               return (
                 xe(n, t),
@@ -3705,7 +4091,11 @@
                 (n.prototype.closestPointXY = function(t, n, i, r) {
                   return r < gn(this.getExtent(), t, n)
                     ? r
-                    : (this.gt != this.getRevision() && ((this.wt = Math.sqrt(Jr(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, 0))), (this.gt = this.getRevision())),
+                    : (this.gt != this.getRevision() &&
+                        ((this.wt = Math.sqrt(
+                          Jr(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, 0)
+                        )),
+                        (this.gt = this.getRevision())),
                       ne(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, this.wt, !0, t, n, i, r));
                 }),
                 (n.prototype.getArea = function() {
@@ -3716,7 +4106,10 @@
                 }),
                 (n.prototype.getSimplifiedGeometryInternal = function(t) {
                   var i = [];
-                  return (i.length = ae(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, t, i, 0)), new n(i, Tt);
+                  return (
+                    (i.length = ae(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, t, i, 0)),
+                    new n(i, Tt)
+                  );
                 }),
                 (n.prototype.getType = function() {
                   return 'LinearRing';
@@ -3725,7 +4118,10 @@
                   return !1;
                 }),
                 (n.prototype.setCoordinates = function(t, n) {
-                  this.setLayout(n, t, 1), this.flatCoordinates || (this.flatCoordinates = []), (this.flatCoordinates.length = oe(this.flatCoordinates, 0, t, this.stride)), this.changed();
+                  this.setLayout(n, t, 1),
+                    this.flatCoordinates || (this.flatCoordinates = []),
+                    (this.flatCoordinates.length = oe(this.flatCoordinates, 0, t, this.stride)),
+                    this.changed();
                 }),
                 n
               );
@@ -3743,7 +4139,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -3783,7 +4180,10 @@
                   return Mn(t, this.flatCoordinates[0], this.flatCoordinates[1]);
                 }),
                 (n.prototype.setCoordinates = function(t, n) {
-                  this.setLayout(n, t, 0), this.flatCoordinates || (this.flatCoordinates = []), (this.flatCoordinates.length = ee(this.flatCoordinates, 0, t, this.stride)), this.changed();
+                  this.setLayout(n, t, 0),
+                    this.flatCoordinates || (this.flatCoordinates = []),
+                    (this.flatCoordinates.length = ee(this.flatCoordinates, 0, t, this.stride)),
+                    this.changed();
                 }),
                 n
               );
@@ -3797,7 +4197,11 @@
             for(var s = 0, u = t[i - r], a = t[i - r + 1]; n < i; n += r) {
               var h = t[n],
                 f = t[n + 1];
-              a <= o ? f > o && (h - u) * (o - a) - (e - u) * (f - a) > 0 && s++ : f <= o && (h - u) * (o - a) - (e - u) * (f - a) < 0 && s--, (u = h), (a = f);
+              a <= o
+                ? f > o && (h - u) * (o - a) - (e - u) * (f - a) > 0 && s++
+                : f <= o && (h - u) * (o - a) - (e - u) * (f - a) < 0 && s--,
+                (u = h),
+                (a = f);
             }
             return 0 !== s;
           }
@@ -3820,7 +4224,11 @@
             for(var u, a, h, f, c, l, v, d = e[o + 1], y = [], m = 0, w = i.length; m < w; ++m) {
               var g = i[m];
               for(f = t[g - r], l = t[g - r + 1], u = n; u < g; u += r)
-                (c = t[u]), (v = t[u + 1]), ((d <= l && v <= d) || (l <= d && d <= v)) && ((h = ((d - l) / (v - l)) * (c - f) + f), y.push(h)), (f = c), (l = v);
+                (c = t[u]),
+                  (v = t[u + 1]),
+                  ((d <= l && v <= d) || (l <= d && d <= v)) && ((h = ((d - l) / (v - l)) * (c - f) + f), y.push(h)),
+                  (f = c),
+                  (l = v);
             }
             var b = NaN,
               x = -1 / 0;
@@ -3863,12 +4271,19 @@
             return !1;
           }
           function Ne(t, n, i, r, e) {
-            return !!ke(t, n, i, r, e) || !!je(t, n, i, r, e[0], e[1]) || !!je(t, n, i, r, e[0], e[3]) || !!je(t, n, i, r, e[2], e[1]) || !!je(t, n, i, r, e[2], e[3]);
+            return (
+              !!ke(t, n, i, r, e) ||
+              !!je(t, n, i, r, e[0], e[1]) ||
+              !!je(t, n, i, r, e[0], e[3]) ||
+              !!je(t, n, i, r, e[2], e[1]) ||
+              !!je(t, n, i, r, e[2], e[3])
+            );
           }
           function Le(t, n, i, r, e) {
             if(!Ne(t, n, i[0], r, e)) return !1;
             if(1 === i.length) return !0;
-            for(var o = 1, s = i.length; o < s; ++o) if(Oe(t, i[o - 1], i[o], r, e) && !ke(t, i[o - 1], i[o], r, e)) return !1;
+            for(var o = 1, s = i.length; o < s; ++o)
+              if(Oe(t, i[o - 1], i[o], r, e) && !ke(t, i[o - 1], i[o], r, e)) return !1;
             return !0;
           }
           function ze(t, n, i, r, e) {
@@ -3951,7 +4366,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -3976,7 +4392,9 @@
               return (
                 Xe(n, t),
                 (n.prototype.appendLinearRing = function(t) {
-                  this.flatCoordinates ? g(this.flatCoordinates, t.getFlatCoordinates()) : (this.flatCoordinates = t.getFlatCoordinates().slice()),
+                  this.flatCoordinates
+                    ? g(this.flatCoordinates, t.getFlatCoordinates())
+                    : (this.flatCoordinates = t.getFlatCoordinates().slice()),
                     this.bt.push(this.flatCoordinates.length),
                     this.changed();
                 }),
@@ -3987,7 +4405,9 @@
                 (n.prototype.closestPointXY = function(t, n, i, r) {
                   return r < gn(this.getExtent(), t, n)
                     ? r
-                    : (this.gt != this.getRevision() && ((this.wt = Math.sqrt(Qr(this.flatCoordinates, 0, this.bt, this.stride, 0))), (this.gt = this.getRevision())),
+                    : (this.gt != this.getRevision() &&
+                        ((this.wt = Math.sqrt(Qr(this.flatCoordinates, 0, this.bt, this.stride, 0))),
+                        (this.gt = this.getRevision())),
                       ie(this.flatCoordinates, 0, this.bt, this.stride, this.wt, !0, t, n, i, r));
                 }),
                 (n.prototype.containsXY = function(t, n) {
@@ -3998,7 +4418,12 @@
                 }),
                 (n.prototype.getCoordinates = function(t) {
                   var n;
-                  return void 0 !== t ? qe((n = this.getOrientedFlatCoordinates().slice()), 0, this.bt, this.stride, t) : (n = this.flatCoordinates), ye(n, 0, this.bt, this.stride);
+                  return (
+                    void 0 !== t
+                      ? qe((n = this.getOrientedFlatCoordinates().slice()), 0, this.bt, this.stride, t)
+                      : (n = this.flatCoordinates),
+                    ye(n, 0, this.bt, this.stride)
+                  );
                 }),
                 (n.prototype.getEnds = function() {
                   return this.bt;
@@ -4006,7 +4431,8 @@
                 (n.prototype.getFlatInteriorPoint = function() {
                   if(this.xt != this.getRevision()) {
                     var t = qn(this.getExtent());
-                    (this.Mt = Ae(this.getOrientedFlatCoordinates(), 0, this.bt, this.stride, t, 0)), (this.xt = this.getRevision());
+                    (this.Mt = Ae(this.getOrientedFlatCoordinates(), 0, this.bt, this.stride, t, 0)),
+                      (this.xt = this.getRevision());
                   }
                   return this.Mt;
                 }),
@@ -4017,10 +4443,16 @@
                   return this.bt.length;
                 }),
                 (n.prototype.getLinearRing = function(t) {
-                  return t < 0 || this.bt.length <= t ? null : new Me(this.flatCoordinates.slice(0 === t ? 0 : this.bt[t - 1], this.bt[t]), this.layout);
+                  return t < 0 || this.bt.length <= t
+                    ? null
+                    : new Me(this.flatCoordinates.slice(0 === t ? 0 : this.bt[t - 1], this.bt[t]), this.layout);
                 }),
                 (n.prototype.getLinearRings = function() {
-                  for(var t = this.layout, n = this.flatCoordinates, i = this.bt, r = [], e = 0, o = 0, s = i.length; o < s; ++o) {
+                  for(
+                    var t = this.layout, n = this.flatCoordinates, i = this.bt, r = [], e = 0, o = 0, s = i.length;
+                    o < s;
+                    ++o
+                  ) {
                     var u = i[o],
                       a = new Me(n.slice(e, u), t);
                     r.push(a), (e = u);
@@ -4030,14 +4462,20 @@
                 (n.prototype.getOrientedFlatCoordinates = function() {
                   if(this._t != this.getRevision()) {
                     var t = this.flatCoordinates;
-                    Ge(t, 0, this.bt, this.stride) ? (this.St = t) : ((this.St = t.slice()), (this.St.length = qe(this.St, 0, this.bt, this.stride))), (this._t = this.getRevision());
+                    Ge(t, 0, this.bt, this.stride)
+                      ? (this.St = t)
+                      : ((this.St = t.slice()), (this.St.length = qe(this.St, 0, this.bt, this.stride))),
+                      (this._t = this.getRevision());
                   }
                   return this.St;
                 }),
                 (n.prototype.getSimplifiedGeometryInternal = function(t) {
                   var i = [],
                     r = [];
-                  return (i.length = ve(this.flatCoordinates, 0, this.bt, this.stride, Math.sqrt(t), i, 0, r)), new n(i, Tt, r);
+                  return (
+                    (i.length = ve(this.flatCoordinates, 0, this.bt, this.stride, Math.sqrt(t), i, 0, r)),
+                    new n(i, Tt, r)
+                  );
                 }),
                 (n.prototype.getType = function() {
                   return 'Polygon';
@@ -4067,7 +4505,17 @@
             return new Ve(o, Tt, [o.length]);
           }
           function $e(t, n, i) {
-            for(var r = n || 32, e = t.getStride(), o = t.getLayout(), s = t.getCenter(), u = e * (r + 1), a = new Array(u), h = 0; h < u; h += e) {
+            for(
+              var r = n || 32,
+                e = t.getStride(),
+                o = t.getLayout(),
+                s = t.getCenter(),
+                u = e * (r + 1),
+                a = new Array(u),
+                h = 0;
+              h < u;
+              h += e
+            ) {
               (a[h] = 0), (a[h + 1] = 0);
               for(var f = 2; f < e; f++) a[h + f] = s[f];
             }
@@ -4076,7 +4524,11 @@
             return Ke(l, s, t.getRadius(), i), l;
           }
           function Ke(t, n, i, r) {
-            for(var e = t.getFlatCoordinates(), o = t.getStride(), s = e.length / o - 1, u = r || 0, a = 0; a <= s; ++a) {
+            for(
+              var e = t.getFlatCoordinates(), o = t.getStride(), s = e.length / o - 1, u = r || 0, a = 0;
+              a <= s;
+              ++a
+            ) {
               var h = a * o,
                 f = u + (2 * vi(a, s) * Math.PI) / s;
               (e[h] = n[0] + i * Math.cos(f)), (e[h + 1] = n[1] + i * Math.sin(f));
@@ -4096,7 +4548,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -4150,7 +4603,11 @@
                   if('geolocation' in navigator) {
                     var t = this.getTracking();
                     t && void 0 === this.Et
-                      ? (this.Et = navigator.geolocation.watchPosition(this.Pt.bind(this), this.Ct.bind(this), this.getTrackingOptions()))
+                      ? (this.Et = navigator.geolocation.watchPosition(
+                          this.Pt.bind(this),
+                          this.Ct.bind(this),
+                          this.getTrackingOptions()
+                        ))
                       : t || void 0 === this.Et || (navigator.geolocation.clearWatch(this.Et), (this.Et = void 0));
                   }
                 }),
@@ -4160,7 +4617,9 @@
                     this.set(to, null === n.altitude ? void 0 : n.altitude),
                     this.set(no, null === n.altitudeAccuracy ? void 0 : n.altitudeAccuracy),
                     this.set(io, null === n.heading ? void 0 : li(n.heading)),
-                    this.Ot ? ((this.Ot[0] = n.longitude), (this.Ot[1] = n.latitude)) : (this.Ot = [n.longitude, n.latitude]);
+                    this.Ot
+                      ? ((this.Ot[0] = n.longitude), (this.Ot[1] = n.latitude))
+                      : (this.Ot = [n.longitude, n.latitude]);
                   var i = this.jt(this.Ot);
                   this.set(ro, i), this.set(oo, null === n.speed ? void 0 : n.speed);
                   var r = Ye(this.Ot, n.accuracy);
@@ -4224,7 +4683,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -4280,7 +4740,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -4317,7 +4778,15 @@
           var bo = (function (t) {
               function n(n, i, r, e, o, s) {
                 var u = t.call(this, n, i, r, lo) || this;
-                return (u.Nt = e), (u.Lt = new Image()), null !== o && (u.Lt.crossOrigin = o), (u.zt = null), (u.state = lo), (u.Rt = s), u;
+                return (
+                  (u.Nt = e),
+                  (u.Lt = new Image()),
+                  null !== o && (u.Lt.crossOrigin = o),
+                  (u.zt = null),
+                  (u.state = lo),
+                  (u.Rt = s),
+                  u
+                );
               }
               return (
                 wo(n, t),
@@ -4328,10 +4797,17 @@
                   (this.state = yo), this.Gt(), this.changed();
                 }),
                 (n.prototype.Dt = function() {
-                  void 0 === this.resolution && (this.resolution = Vn(this.extent) / this.Lt.height), (this.state = po), this.Gt(), this.changed();
+                  void 0 === this.resolution && (this.resolution = Vn(this.extent) / this.Lt.height),
+                    (this.state = po),
+                    this.Gt(),
+                    this.changed();
                 }),
                 (n.prototype.load = function() {
-                  (this.state != lo && this.state != yo) || ((this.state = vo), this.changed(), this.Rt(this, this.Nt), (this.zt = go(this.Lt, this.Dt.bind(this), this.Ft.bind(this))));
+                  (this.state != lo && this.state != yo) ||
+                    ((this.state = vo),
+                    this.changed(),
+                    this.Rt(this, this.Nt),
+                    (this.zt = go(this.Lt, this.Dt.bind(this), this.Ft.bind(this))));
                 }),
                 (n.prototype.setImage = function(t) {
                   (this.Lt = t), (this.resolution = Vn(this.extent) / this.Lt.height);
@@ -4355,7 +4831,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -4366,7 +4843,9 @@
               function n(n, i, r, e, o) {
                 var s = this,
                   u = void 0 !== o ? lo : po;
-                return ((s = t.call(this, n, i, r, u) || this).U = void 0 !== o ? o : null), (s.qt = e), (s.V = null), s;
+                return (
+                  ((s = t.call(this, n, i, r, u) || this).U = void 0 !== o ? o : null), (s.qt = e), (s.V = null), s
+                );
               }
               return (
                 xo(n, t),
@@ -4387,7 +4866,17 @@
             })(co);
           function _o(t, n, i, r) {
             var e;
-            return (e = i && i.length ? i.shift() : Vt ? new OffscreenCanvas(t || 300, n || 300) : document.createElement('canvas')), t && (e.width = t), n && (e.height = n), e.getContext('2d', r);
+            return (
+              (e =
+                i && i.length
+                  ? i.shift()
+                  : Vt
+                  ? new OffscreenCanvas(t || 300, n || 300)
+                  : document.createElement('canvas')),
+              t && (e.width = t),
+              n && (e.height = n),
+              e.getContext('2d', r)
+            );
           }
           function So(t) {
             var n = t.canvas;
@@ -4434,7 +4923,8 @@
                 })(n, i);
             };
             return function(n, i) {
-              if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+              if('function' != typeof i && null !== i)
+                throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
               function r() {
                 this.constructor = n;
               }
@@ -4444,7 +4934,16 @@
           var ko = (function (t) {
               function n(n, i, r, e, o, s) {
                 var u = t.call(this, n, i, s) || this;
-                return (u.Bt = e), (u.Nt = r), (u.key = r), (u.Lt = new Image()), null !== e && (u.Lt.crossOrigin = e), (u.zt = null), (u.Xt = o), u;
+                return (
+                  (u.Bt = e),
+                  (u.Nt = r),
+                  (u.key = r),
+                  (u.Lt = new Image()),
+                  null !== e && (u.Lt.crossOrigin = e),
+                  (u.zt = null),
+                  (u.Xt = o),
+                  u
+                );
               }
               return (
                 Co(n, t),
@@ -4456,15 +4955,23 @@
                 }),
                 (n.prototype.Ft = function() {
                   var t;
-                  (this.state = dt), this.Gt(), (this.Lt = (((t = _o(1, 1)).fillStyle = 'rgba(0,0,0,0)'), t.fillRect(0, 0, 1, 1), t.canvas)), this.changed();
+                  (this.state = dt),
+                    this.Gt(),
+                    (this.Lt = (((t = _o(1, 1)).fillStyle = 'rgba(0,0,0,0)'), t.fillRect(0, 0, 1, 1), t.canvas)),
+                    this.changed();
                 }),
                 (n.prototype.Dt = function() {
                   var t = this.Lt;
                   t.naturalWidth && t.naturalHeight ? (this.state = vt) : (this.state = pt), this.Gt(), this.changed();
                 }),
                 (n.prototype.load = function() {
-                  this.state == dt && ((this.state = ct), (this.Lt = new Image()), null !== this.Bt && (this.Lt.crossOrigin = this.Bt)),
-                    this.state == ct && ((this.state = lt), this.changed(), this.Xt(this, this.Nt), (this.zt = go(this.Lt, this.Dt.bind(this), this.Ft.bind(this))));
+                  this.state == dt &&
+                    ((this.state = ct), (this.Lt = new Image()), null !== this.Bt && (this.Lt.crossOrigin = this.Bt)),
+                    this.state == ct &&
+                      ((this.state = lt),
+                      this.changed(),
+                      this.Xt(this, this.Nt),
+                      (this.zt = go(this.Lt, this.Dt.bind(this), this.Ft.bind(this))));
                 }),
                 (n.prototype.Gt = function() {
                   this.zt && (this.zt(), (this.zt = null));
@@ -4543,7 +5050,12 @@
                       (e = a ? parseInt(t.substr(1 + 3 * u, u), 16) : 255),
                       1 == u && ((n = (n << 4) + n), (i = (i << 4) + i), (r = (r << 4) + r), a && (e = (e << 4) + e)),
                       (o = [n, i, r, e / 255]);
-                  } else 0 == t.indexOf('rgba(') ? Do((o = t.slice(5, -1).split(',').map(Number))) : 0 == t.indexOf('rgb(') ? ((o = t.slice(4, -1).split(',').map(Number)).push(1), Do(o)) : St(!1, 14);
+                  } else
+                    0 == t.indexOf('rgba(')
+                      ? Do((o = t.slice(5, -1).split(',').map(Number)))
+                      : 0 == t.indexOf('rgb(')
+                      ? ((o = t.slice(4, -1).split(',').map(Number)).push(1), Do(o))
+                      : St(!1, 14);
                   return o;
                 })(i)),
                   (t[i] = r),
@@ -4556,7 +5068,13 @@
             return Array.isArray(t) ? t : Fo(t);
           }
           function Do(t) {
-            return (t[0] = oi((t[0] + 0.5) | 0, 0, 255)), (t[1] = oi((t[1] + 0.5) | 0, 0, 255)), (t[2] = oi((t[2] + 0.5) | 0, 0, 255)), (t[3] = oi(t[3], 0, 1)), t;
+            return (
+              (t[0] = oi((t[0] + 0.5) | 0, 0, 255)),
+              (t[1] = oi((t[1] + 0.5) | 0, 0, 255)),
+              (t[2] = oi((t[2] + 0.5) | 0, 0, 255)),
+              (t[3] = oi(t[3], 0, 1)),
+              t
+            );
           }
           function qo(t) {
             var n = t[0];
@@ -4564,7 +5082,10 @@
             var i = t[1];
             i != (0 | i) && (i = (i + 0.5) | 0);
             var r = t[2];
-            return r != (0 | r) && (r = (r + 0.5) | 0), 'rgba(' + n + ',' + i + ',' + r + ',' + (void 0 === t[3] ? 1 : Math.round(100 * t[3]) / 100) + ')';
+            return (
+              r != (0 | r) && (r = (r + 0.5) | 0),
+              'rgba(' + n + ',' + i + ',' + r + ',' + (void 0 === t[3] ? 1 : Math.round(100 * t[3]) / 100) + ')'
+            );
           }
           function Uo(t) {
             return Lo.test(t) && (t = Ro(t)), No.test(t) || 0 === t.indexOf('rgba(') || 0 === t.indexOf('rgb(');
@@ -4631,7 +5152,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -4768,7 +5290,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -4889,7 +5412,9 @@
                   return null;
                 }),
                 (n.prototype.disposeInternal = function() {
-                  this.hn && (this.hn.dispose(), delete this.hn), this.setSource(null), t.prototype.disposeInternal.call(this);
+                  this.hn && (this.hn.dispose(), delete this.hn),
+                    this.setSource(null),
+                    t.prototype.disposeInternal.call(this);
                 }),
                 n
               );
@@ -4907,7 +5432,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -4931,7 +5457,17 @@
                   var n = t.viewState,
                     i = t.coordinateToPixelTransform,
                     r = t.pixelToCoordinateTransform;
-                  sn(i, t.size[0] / 2, t.size[1] / 2, 1 / n.resolution, -1 / n.resolution, -n.rotation, -n.center[0], -n.center[1]), un(r, i);
+                  sn(
+                    i,
+                    t.size[0] / 2,
+                    t.size[1] / 2,
+                    1 / n.resolution,
+                    -1 / n.resolution,
+                    -n.rotation,
+                    -n.center[0],
+                    -n.center[1]
+                  ),
+                    un(r, i);
                 }),
                 (n.prototype.forEachFeatureAtCoordinate = function(t, n, i, r, e, o, s, u) {
                   var a,
@@ -4956,7 +5492,9 @@
                         if(_ && S) {
                           var O = S.getWrapX() ? l : t,
                             j = f.bind(null, x.managed);
-                          (w[0] = O[0] + v[g][0]), (w[1] = O[1] + v[g][1]), (a = _.forEachFeatureAtCoordinate(w, n, i, j, m));
+                          (w[0] = O[0] + v[g][0]),
+                            (w[1] = O[1] + v[g][1]),
+                            (a = _.forEachFeatureAtCoordinate(w, n, i, j, m));
                         }
                         if(a) return a;
                       }
@@ -5008,7 +5546,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -5044,7 +5583,13 @@
             js = function(t) {
               var n = t.match(Ss);
               if(!n) return null;
-              for(var i = { lineHeight: 'normal', size: '1.2em', style: 'normal', weight: 'normal', variant: 'normal' }, r = 0, e = Os.length; r < e; ++r) {
+              for(
+                var i = { lineHeight: 'normal', size: '1.2em', style: 'normal', weight: 'normal', variant: 'normal' },
+                  r = 0,
+                  e = Os.length;
+                r < e;
+                ++r
+              ) {
                 var o = n[r + 1];
                 void 0 !== o && (i[Os[r]] = o);
               }
@@ -5089,7 +5634,10 @@
               function u() {
                 for(var n = !0, i = Rs.getKeys(), r = 0, e = i.length; r < e; ++r) {
                   var o = i[r];
-                  Rs.get(o) < 100 && (s.apply(this, o.split('\n')) ? (P(Us), (qs = null), (Gs = void 0), Rs.set(o, 100)) : (Rs.set(o, Rs.get(o) + 1, !0), (n = !1)));
+                  Rs.get(o) < 100 &&
+                    (s.apply(this, o.split('\n'))
+                      ? (P(Us), (qs = null), (Gs = void 0), Rs.set(o, 100))
+                      : (Rs.set(o, Rs.get(o) + 1, !0), (n = !1)));
                 }
                 n && (clearInterval(t), (t = void 0));
               }
@@ -5099,7 +5647,9 @@
                   for(var r = i.families, e = 0, o = r.length; e < o; ++e) {
                     var a = r[e],
                       h = i.style + '\n' + i.weight + '\n' + a;
-                    void 0 === Rs.get(h) && (Rs.set(h, 100, !0), s(i.style, i.weight, a) || (Rs.set(h, 0, !0), void 0 === t && (t = setInterval(u, 32))));
+                    void 0 === Rs.get(h) &&
+                      (Rs.set(h, 100, !0),
+                      s(i.style, i.weight, a) || (Rs.set(h, 0, !0), void 0 === t && (t = setInterval(u, 32))));
                   }
               };
             })(),
@@ -5109,7 +5659,9 @@
                 if(Vt) {
                   var i = js(t),
                     r = Vs(t, 'Žg');
-                  n = (isNaN(Number(i.lineHeight)) ? 1.2 : Number(i.lineHeight)) * (r.actualBoundingBoxAscent + r.actualBoundingBoxDescent);
+                  n =
+                    (isNaN(Number(i.lineHeight)) ? 1.2 : Number(i.lineHeight)) *
+                    (r.actualBoundingBoxAscent + r.actualBoundingBoxDescent);
                 } else
                   Ds ||
                     (((Ds = document.createElement('div')).innerHTML = 'M'),
@@ -5163,7 +5715,8 @@
                 ? (t.translate(a, h),
                   t.scale(f[0], f[1]),
                   (function (t, n) {
-                    for(var i = t.contextInstructions, r = 0, e = i.length; r < e; r += 2) Array.isArray(i[r + 1]) ? n[i[r]].apply(n, i[r + 1]) : (n[i[r]] = i[r + 1]);
+                    for(var i = t.contextInstructions, r = 0, e = i.length; r < e; r += 2)
+                      Array.isArray(i[r + 1]) ? n[i[r]].apply(n, i[r + 1]) : (n[i[r]] = i[r + 1]);
                   })(r, t))
                 : f[0] < 0 || f[1] < 0
                 ? (t.translate(a, h), t.scale(f[0], f[1]), t.drawImage(r, e, o, s, u, 0, 0, s, u))
@@ -5183,7 +5736,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -5195,7 +5749,11 @@
                 var i = t.call(this, n) || this;
                 (i.dn = $(Rs, l, n.redrawText.bind(n))), (i.pn = document.createElement('div'));
                 var r = i.pn.style;
-                (r.position = 'absolute'), (r.width = '100%'), (r.height = '100%'), (r.zIndex = '0'), (i.pn.className = 'ol-unselectable ol-layers');
+                (r.position = 'absolute'),
+                  (r.width = '100%'),
+                  (r.height = '100%'),
+                  (r.zIndex = '0'),
+                  (i.pn.className = 'ol-unselectable ol-layers');
                 var e = n.getViewport();
                 return e.insertBefore(i.pn, e.firstChild || null), (i.yn = []), (i.mn = !0), i;
               }
@@ -5231,7 +5789,10 @@
                       }
                     }
                     for(o = r.length - 1; o >= 0; --o) r[o].renderDeclutter(t);
-                    Po(this.pn, this.yn), this.dispatchRenderEvent(as, t), this.mn || ((this.pn.style.display = ''), (this.mn = !0)), this.scheduleExpireIconCache(t);
+                    Po(this.pn, this.yn),
+                      this.dispatchRenderEvent(as, t),
+                      this.mn || ((this.pn.style.display = ''), (this.mn = !0)),
+                      this.scheduleExpireIconCache(t);
                   } else this.mn && ((this.pn.style.display = 'none'), (this.mn = !1));
                 }),
                 (n.prototype.forEachLayerAtPixel = function(t, n, i, r, e) {
@@ -5263,7 +5824,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -5292,7 +5854,11 @@
                   (i.wn = []),
                   (i.gn = {}),
                   i.addChangeListener(tu, i.bn),
-                  o ? (Array.isArray(o) ? (o = new ft(o.slice(), { unique: !0 })) : St('function' == typeof o.getArray, 43)) : (o = new ft(void 0, { unique: !0 })),
+                  o
+                    ? Array.isArray(o)
+                      ? (o = new ft(o.slice(), { unique: !0 }))
+                      : St('function' == typeof o.getArray, 43)
+                    : (o = new ft(void 0, { unique: !0 })),
                   i.setLayers(o),
                   i
                 );
@@ -5305,7 +5871,8 @@
                 (n.prototype.bn = function() {
                   this.wn.forEach(H), (this.wn.length = 0);
                   var t = this.getLayers();
-                  for(var n in (this.wn.push($(t, ot, this.Mn, this), $(t, st, this._n, this)), this.gn)) this.gn[n].forEach(H);
+                  for(var n in (this.wn.push($(t, ot, this.Mn, this), $(t, st, this._n, this)), this.gn))
+                    this.gn[n].forEach(H);
                   P(this.gn);
                   for(var i = t.getArray(), r = 0, e = i.length; r < e; r++) {
                     var o = i[r];
@@ -5315,7 +5882,8 @@
                 }),
                 (n.prototype.Sn = function(t) {
                   var i = [$(t, l, this.xn, this), $(t, L, this.xn, this)];
-                  t instanceof n && i.push($(t, 'addlayer', this.On, this), $(t, 'removelayer', this.jn, this)), (this.gn[o(t)] = i);
+                  t instanceof n && i.push($(t, 'addlayer', this.On, this), $(t, 'removelayer', this.jn, this)),
+                    (this.gn[o(t)] = i);
                 }),
                 (n.prototype.On = function(t) {
                   this.dispatchEvent(new Qs('addlayer', t.layer));
@@ -5330,14 +5898,19 @@
                 (n.prototype._n = function(t) {
                   var n = t.element,
                     i = o(n);
-                  this.gn[i].forEach(H), delete this.gn[i], this.dispatchEvent(new Qs('removelayer', n)), this.changed();
+                  this.gn[i].forEach(H),
+                    delete this.gn[i],
+                    this.dispatchEvent(new Qs('removelayer', n)),
+                    this.changed();
                 }),
                 (n.prototype.getLayers = function() {
                   return this.get(tu);
                 }),
                 (n.prototype.setLayers = function(t) {
                   var n = this.getLayers();
-                  if(n) for(var i = n.getArray(), r = 0, e = i.length; r < e; ++r) this.dispatchEvent(new Qs('removelayer', i[r]));
+                  if(n)
+                    for(var i = n.getArray(), r = 0, e = i.length; r < e; ++r)
+                      this.dispatchEvent(new Qs('removelayer', i[r]));
                   this.set(tu, t);
                 }),
                 (n.prototype.getLayersArray = function(t) {
@@ -5366,7 +5939,8 @@
                       (u.minResolution = Math.max(u.minResolution, r.minResolution)),
                       (u.minZoom = Math.max(u.minZoom, r.minZoom)),
                       (u.maxZoom = Math.min(u.maxZoom, r.maxZoom)),
-                      void 0 !== r.extent && (void 0 !== u.extent ? (u.extent = Wn(u.extent, r.extent)) : (u.extent = r.extent)),
+                      void 0 !== r.extent &&
+                        (void 0 !== u.extent ? (u.extent = Wn(u.extent, r.extent)) : (u.extent = r.extent)),
                       void 0 === u.zIndex && (u.zIndex = e);
                   }
                   return n;
@@ -5390,7 +5964,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -5417,7 +5992,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -5427,7 +6003,14 @@
             ou = (function (t) {
               function n(n, i, r, e, o, s) {
                 var u = t.call(this, n, i, o) || this;
-                return (u.originalEvent = r), (u.En = null), (u.Tn = null), (u.dragging = void 0 !== e && e), (u.activePointers = s), u;
+                return (
+                  (u.originalEvent = r),
+                  (u.En = null),
+                  (u.Tn = null),
+                  (u.dragging = void 0 !== e && e),
+                  (u.activePointers = s),
+                  u
+                );
               }
               return (
                 eu(n, t),
@@ -5452,10 +6035,12 @@
                   configurable: !0
                 }),
                 (n.prototype.preventDefault = function() {
-                  t.prototype.preventDefault.call(this), 'preventDefault' in this.originalEvent && this.originalEvent.preventDefault();
+                  t.prototype.preventDefault.call(this),
+                    'preventDefault' in this.originalEvent && this.originalEvent.preventDefault();
                 }),
                 (n.prototype.stopPropagation = function() {
-                  t.prototype.stopPropagation.call(this), 'stopPropagation' in this.originalEvent && this.originalEvent.stopPropagation();
+                  t.prototype.stopPropagation.call(this),
+                    'stopPropagation' in this.originalEvent && this.originalEvent.stopPropagation();
                 }),
                 n
               );
@@ -5491,7 +6076,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -5504,7 +6090,15 @@
                 (r.vn = n), r.An, (r.Pn = !1), (r.Cn = !1), (r.kn = []), (r.In = void 0 === i ? 1 : i), (r.Nn = null);
                 var e = r.vn.getViewport();
                 return (
-                  (r.Ln = []), (r.zn = {}), (r.pn = e), (r.Rn = $(e, au, r.Fn, r)), r.Gn, (r.Dn = $(e, uu, r.qn, r)), (r.Un = r.Bn.bind(r)), r.pn.addEventListener(Y, r.Un, !!Yt && { passive: !1 }), r
+                  (r.Ln = []),
+                  (r.zn = {}),
+                  (r.pn = e),
+                  (r.Rn = $(e, au, r.Fn, r)),
+                  r.Gn,
+                  (r.Dn = $(e, uu, r.qn, r)),
+                  (r.Un = r.Bn.bind(r)),
+                  r.pn.addEventListener(Y, r.Un, !!Yt && { passive: !1 }),
+                  r
                 );
               }
               return (
@@ -5513,7 +6107,10 @@
                   var n = new ou(su.CLICK, this.vn, t);
                   this.dispatchEvent(n),
                     void 0 !== this.An
-                      ? (clearTimeout(this.An), (this.An = void 0), (n = new ou(su.DBLCLICK, this.vn, t)), this.dispatchEvent(n))
+                      ? (clearTimeout(this.An),
+                        (this.An = void 0),
+                        (n = new ou(su.DBLCLICK, this.vn, t)),
+                        this.dispatchEvent(n))
                       : (this.An = setTimeout(
                           function() {
                             this.An = void 0;
@@ -5540,7 +6137,8 @@
                   var n = new ou(su.POINTERUP, this.vn, t, void 0, void 0, this.Ln);
                   this.dispatchEvent(n),
                     this.Pn && !n.defaultPrevented && !this.Cn && this.Yn(t) && this.Xn(this.Nn),
-                    0 === this.Ln.length && (this.kn.forEach(H), (this.kn.length = 0), (this.Cn = !1), (this.Nn = null));
+                    0 === this.Ln.length &&
+                      (this.kn.forEach(H), (this.kn.length = 0), (this.Cn = !1), (this.Nn = null));
                 }),
                 (n.prototype.Yn = function(t) {
                   return 0 === t.button;
@@ -5554,8 +6152,14 @@
                   }
                   if(0 === this.kn.length) {
                     var e = this.vn.getOwnerDocument();
-                    this.kn.push($(e, su.POINTERMOVE, this.Zn, this), $(e, su.POINTERUP, this.Wn, this), $(this.pn, su.POINTERCANCEL, this.Wn, this)),
-                      this.pn.getRootNode && this.pn.getRootNode() !== e && this.kn.push($(this.pn.getRootNode(), su.POINTERUP, this.Wn, this));
+                    this.kn.push(
+                      $(e, su.POINTERMOVE, this.Zn, this),
+                      $(e, su.POINTERUP, this.Wn, this),
+                      $(this.pn, su.POINTERCANCEL, this.Wn, this)
+                    ),
+                      this.pn.getRootNode &&
+                        this.pn.getRootNode() !== e &&
+                        this.kn.push($(this.pn.getRootNode(), su.POINTERUP, this.Wn, this));
                   }
                 }),
                 (n.prototype.Zn = function(t) {
@@ -5572,10 +6176,16 @@
                 }),
                 (n.prototype.Bn = function(t) {
                   var n = this.Gn;
-                  (n && !n.defaultPrevented) || ('boolean' == typeof t.cancelable && !0 !== t.cancelable) || t.preventDefault();
+                  (n && !n.defaultPrevented) ||
+                    ('boolean' == typeof t.cancelable && !0 !== t.cancelable) ||
+                    t.preventDefault();
                 }),
                 (n.prototype.$n = function(t) {
-                  return this.Cn || Math.abs(t.clientX - this.Nn.clientX) > this.In || Math.abs(t.clientY - this.Nn.clientY) > this.In;
+                  return (
+                    this.Cn ||
+                    Math.abs(t.clientX - this.Nn.clientX) > this.In ||
+                    Math.abs(t.clientY - this.Nn.clientY) > this.In
+                  );
                 }),
                 (n.prototype.disposeInternal = function() {
                   this.Dn && (H(this.Dn), (this.Dn = null)),
@@ -5618,7 +6228,10 @@
                 (t.prototype.enqueue = function(t) {
                   St(!(this.Hn(t) in this.ti), 31);
                   var n = this.Kn(t);
-                  return n != Mu && (this.Jn.push(t), this.Qn.push(n), (this.ti[this.Hn(t)] = !0), this.ii(0, this.Jn.length - 1), !0);
+                  return (
+                    n != Mu &&
+                    (this.Jn.push(t), this.Qn.push(n), (this.ti[this.Hn(t)] = !0), this.ii(0, this.Jn.length - 1), !0)
+                  );
                 }),
                 (t.prototype.getCount = function() {
                   return this.Jn.length;
@@ -5671,7 +6284,8 @@
                     o = this.Qn,
                     s = 0,
                     u = e.length;
-                  for(n = 0; n < u; ++n) (i = r((t = e[n]))) == Mu ? delete this.ti[this.Hn(t)] : ((o[s] = i), (e[s++] = t));
+                  for(n = 0; n < u; ++n)
+                    (i = r((t = e[n]))) == Mu ? delete this.ti[this.Hn(t)] : ((o[s] = i), (e[s++] = t));
                   (e.length = s), (o.length = s), this.si();
                 }),
                 t
@@ -5690,7 +6304,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -5732,7 +6347,8 @@
                 }),
                 (n.prototype.loadMoreTiles = function(t, n) {
                   for(var i, r, e = 0; this.hi < t && e < n && this.getCount() > 0; )
-                    (r = (i = this.dequeue()[0]).getKey()), i.getState() !== ct || r in this.fi || ((this.fi[r] = !0), ++this.hi, ++e, i.load());
+                    (r = (i = this.dequeue()[0]).getKey()),
+                      i.getState() !== ct || r in this.fi || ((this.fi[r] = !0), ++this.hi, ++e, i.load());
                 }),
                 n
               );
@@ -5783,7 +6399,11 @@
           }
           function Nu(t, n, i) {
             var r = Math.min(t, n);
-            return (r *= Math.log(1 + 50 * Math.max(0, t / n - 1)) / 50 + 1), i && ((r = Math.max(r, i)), (r /= Math.log(1 + 50 * Math.max(0, i / t - 1)) / 50 + 1)), oi(r, i / 2, 2 * n);
+            return (
+              (r *= Math.log(1 + 50 * Math.max(0, t / n - 1)) / 50 + 1),
+              i && ((r = Math.max(r, i)), (r /= Math.log(1 + 50 * Math.max(0, i / t - 1)) / 50 + 1)),
+              oi(r, i / 2, 2 * n)
+            );
           }
           function Lu(t, n, i, r) {
             return function(e, o, s, u) {
@@ -5852,7 +6472,8 @@
                 })(n, i);
             };
             return function(n, i) {
-              if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+              if('function' != typeof i && null !== i)
+                throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
               function r() {
                 this.constructor = n;
               }
@@ -5892,12 +6513,17 @@
               v = t.extent;
             if((u || v || !f.isGlobal() || ((l = !1), (v = c)), void 0 !== t.resolutions)) {
               var d = t.resolutions;
-              (i = d[e]), (r = void 0 !== d[o] ? d[o] : d[d.length - 1]), (n = t.constrainResolution ? Lu(d, a, !l && v, h) : Ru(i, r, a, !l && v, h));
+              (i = d[e]),
+                (r = void 0 !== d[o] ? d[o] : d[d.length - 1]),
+                (n = t.constrainResolution ? Lu(d, a, !l && v, h) : Ru(i, r, a, !l && v, h));
             } else {
-              var p = (c ? Math.max($n(c), Vn(c)) : (360 * Lt[Rt.DEGREES]) / f.getMetersPerUnit()) / Pu / Math.pow(2, 0),
+              var p =
+                  (c ? Math.max($n(c), Vn(c)) : (360 * Lt[Rt.DEGREES]) / f.getMetersPerUnit()) / Pu / Math.pow(2, 0),
                 y = p / Math.pow(2, 28);
               void 0 !== (i = t.maxResolution) ? (e = 0) : (i = p / Math.pow(s, e)),
-                void 0 === (r = t.minResolution) && (r = void 0 !== t.maxZoom ? (void 0 !== t.maxResolution ? i / Math.pow(s, o) : p / Math.pow(s, o)) : y),
+                void 0 === (r = t.minResolution) &&
+                  (r =
+                    void 0 !== t.maxZoom ? (void 0 !== t.maxResolution ? i / Math.pow(s, o) : p / Math.pow(s, o)) : y),
                 (o = e + Math.floor(Math.log(i / r) / Math.log(s))),
                 (r = i / Math.pow(s, o - e)),
                 (n = t.constrainResolution ? zu(s, i, r, a, !l && v, h) : Ru(i, r, a, !l && v, h));
@@ -5912,7 +6538,11 @@
             return Fu;
           }
           function Yu(t) {
-            return !(t.sourceCenter && t.targetCenter && !Ki(t.sourceCenter, t.targetCenter)) && t.sourceResolution === t.targetResolution && t.sourceRotation === t.targetRotation;
+            return (
+              !(t.sourceCenter && t.targetCenter && !Ki(t.sourceCenter, t.targetCenter)) &&
+              t.sourceResolution === t.targetResolution &&
+              t.sourceRotation === t.targetRotation
+            );
           }
           function Zu(t, n, i, r, e) {
             var o = Math.cos(-e),
@@ -5953,14 +6583,21 @@
                 for(var i in Au) delete n[i];
                 this.setProperties(n, !0);
                 var r = Vu(t);
-                (this.Oi = r.maxResolution), (this.ji = r.minResolution), (this.Ei = r.zoomFactor), (this.Ti = t.resolutions), (this.Ai = t.padding), (this.Pi = r.minZoom);
+                (this.Oi = r.maxResolution),
+                  (this.ji = r.minResolution),
+                  (this.Ei = r.zoomFactor),
+                  (this.Ti = t.resolutions),
+                  (this.Ai = t.padding),
+                  (this.Pi = r.minZoom);
                 var e = Xu(t),
                   o = r.constraint,
                   s = Wu(t);
                 (this.Ci = { center: e, resolution: o, rotation: s }),
                   this.setRotation(void 0 !== t.rotation ? t.rotation : 0),
                   this.setCenterInternal(void 0 !== t.center ? t.center : null),
-                  void 0 !== t.resolution ? this.setResolution(t.resolution) : void 0 !== t.zoom && this.setZoom(t.zoom);
+                  void 0 !== t.resolution
+                    ? this.setResolution(t.resolution)
+                    : void 0 !== t.zoom && this.setZoom(t.zoom);
               }),
               Object.defineProperty(n.prototype, 'padding', {
                 get: function() {
@@ -5985,14 +6622,19 @@
               (n.prototype.ki = function(t) {
                 var n = this.getProperties();
                 return (
-                  void 0 !== n.resolution ? (n.resolution = this.getResolution()) : (n.zoom = this.getZoom()), (n.center = this.getCenterInternal()), (n.rotation = this.getRotation()), A({}, n, t)
+                  void 0 !== n.resolution ? (n.resolution = this.getResolution()) : (n.zoom = this.getZoom()),
+                  (n.center = this.getCenterInternal()),
+                  (n.rotation = this.getRotation()),
+                  A({}, n, t)
                 );
               }),
               (n.prototype.animate = function(t) {
                 this.isDef() && !this.getAnimating() && this.resolveConstraints(0);
                 for(var n = new Array(arguments.length), i = 0; i < n.length; ++i) {
                   var r = arguments[i];
-                  r.center && ((r = A({}, r)).center = Ir(r.center, this.getProjection())), r.anchor && ((r = A({}, r)).anchor = Ir(r.anchor, this.getProjection())), (n[i] = r);
+                  r.center && ((r = A({}, r)).center = Ir(r.center, this.getProjection())),
+                    r.anchor && ((r = A({}, r)).anchor = Ir(r.anchor, this.getProjection())),
+                    (n[i] = r);
                 }
                 this.animateInternal.apply(this, n);
               }),
@@ -6020,8 +6662,11 @@
                     if(
                       (f.center && ((c.sourceCenter = s), (c.targetCenter = f.center.slice()), (s = c.targetCenter)),
                       void 0 !== f.zoom
-                        ? ((c.sourceResolution = u), (c.targetResolution = this.getResolutionForZoom(f.zoom)), (u = c.targetResolution))
-                        : f.resolution && ((c.sourceResolution = u), (c.targetResolution = f.resolution), (u = c.targetResolution)),
+                        ? ((c.sourceResolution = u),
+                          (c.targetResolution = this.getResolutionForZoom(f.zoom)),
+                          (u = c.targetResolution))
+                        : f.resolution &&
+                          ((c.sourceResolution = u), (c.targetResolution = f.resolution), (u = c.targetResolution)),
                       void 0 !== f.rotation)
                     ) {
                       c.sourceRotation = a;
@@ -6076,7 +6721,10 @@
                           this.mi = [p, y];
                         }
                         if(u.sourceResolution && u.targetResolution) {
-                          var m = 1 === f ? u.targetResolution : u.sourceResolution + f * (u.targetResolution - u.sourceResolution);
+                          var m =
+                            1 === f
+                              ? u.targetResolution
+                              : u.sourceResolution + f * (u.targetResolution - u.sourceResolution);
                           if(u.anchor) {
                             var w = this.Ni(this.getRotation()),
                               g = this.Ci.resolution(m, 0, w, !0);
@@ -6085,7 +6733,10 @@
                           (this.xi = u.targetResolution), (this.wi = m), this.Li(!0);
                         }
                         if(void 0 !== u.sourceRotation && void 0 !== u.targetRotation) {
-                          var b = 1 === f ? vi(u.targetRotation + Math.PI, 2 * Math.PI) - Math.PI : u.sourceRotation + f * (u.targetRotation - u.sourceRotation);
+                          var b =
+                            1 === f
+                              ? vi(u.targetRotation + Math.PI, 2 * Math.PI) - Math.PI
+                              : u.sourceRotation + f * (u.targetRotation - u.sourceRotation);
                           if(u.anchor) {
                             var x = this.Ci.rotation(b, !0);
                             this.mi = this.calculateCenterRotate(x, u.anchor);
@@ -6101,7 +6752,8 @@
                       M && Bu(M, !0);
                     }
                   }
-                  (this.li = this.li.filter(Boolean)), n && void 0 === this.vi && (this.vi = requestAnimationFrame(this.Ii.bind(this)));
+                  (this.li = this.li.filter(Boolean)),
+                    n && void 0 === this.vi && (this.vi = requestAnimationFrame(this.Ii.bind(this)));
                 }
               }),
               (n.prototype.calculateCenterRotate = function(t, n) {
@@ -6121,12 +6773,16 @@
                 if(t) {
                   var i = n[0],
                     r = n[1];
-                  return [Math.abs(i * Math.cos(t)) + Math.abs(r * Math.sin(t)), Math.abs(i * Math.sin(t)) + Math.abs(r * Math.cos(t))];
+                  return [
+                    Math.abs(i * Math.cos(t)) + Math.abs(r * Math.sin(t)),
+                    Math.abs(i * Math.sin(t)) + Math.abs(r * Math.cos(t))
+                  ];
                 }
                 return n;
               }),
               (n.prototype.setViewportSize = function(t) {
-                (this.yi = Array.isArray(t) ? t.slice() : [100, 100]), this.getAnimating() || this.resolveConstraints(0);
+                (this.yi = Array.isArray(t) ? t.slice() : [100, 100]),
+                  this.getAnimating() || this.resolveConstraints(0);
               }),
               (n.prototype.getCenter = function() {
                 var t = this.getCenterInternal();
@@ -6268,7 +6924,8 @@
               }),
               (n.prototype.fit = function(t, n) {
                 var i;
-                if((St(Array.isArray(t) || 'function' == typeof t.getSimplifiedGeometry, 24), Array.isArray(t))) St(!Hn(t), 25), (i = Ze((r = Lr(t, this.getProjection()))));
+                if((St(Array.isArray(t) || 'function' == typeof t.getSimplifiedGeometry, 24), Array.isArray(t)))
+                  St(!Hn(t), 25), (i = Ze((r = Lr(t, this.getProjection()))));
                 else if('Circle' === t.getType()) {
                   var r;
                   (i = Ze((r = Lr(t.getExtent(), this.getProjection())))).rotate(this.getRotation(), qn(r));
@@ -6280,7 +6937,17 @@
               }),
               (n.prototype.rotatedExtentForGeometry = function(t) {
                 for(
-                  var n = this.getRotation(), i = Math.cos(n), r = Math.sin(-n), e = t.getFlatCoordinates(), o = t.getStride(), s = 1 / 0, u = 1 / 0, a = -1 / 0, h = -1 / 0, f = 0, c = e.length;
+                  var n = this.getRotation(),
+                    i = Math.cos(n),
+                    r = Math.sin(-n),
+                    e = t.getFlatCoordinates(),
+                    o = t.getStride(),
+                    s = 1 / 0,
+                    u = 1 / 0,
+                    a = -1 / 0,
+                    h = -1 / 0,
+                    f = 0,
+                    c = e.length;
                   f < c;
                   f += o
                 ) {
@@ -6297,7 +6964,12 @@
                 var e,
                   o = void 0 !== i.padding ? i.padding : [0, 0, 0, 0],
                   s = void 0 !== i.nearest && i.nearest;
-                e = void 0 !== i.minResolution ? i.minResolution : void 0 !== i.maxZoom ? this.getResolutionForZoom(i.maxZoom) : 0;
+                e =
+                  void 0 !== i.minResolution
+                    ? i.minResolution
+                    : void 0 !== i.maxZoom
+                    ? this.getResolutionForZoom(i.maxZoom)
+                    : 0;
                 var u = this.rotatedExtentForGeometry(t),
                   a = this.getResolutionForExtentInternal(u, [r[0] - o[1] - o[3], r[1] - o[0] - o[2]]);
                 (a = isNaN(a) ? e : Math.max(a, e)), (a = this.getConstrainedResolution(a, s ? 0 : 1));
@@ -6310,7 +6982,9 @@
                   d = l[1] * c + l[0] * f,
                   p = this.getConstrainedCenter([v, d], a),
                   y = i.callback ? i.callback : j;
-                void 0 !== i.duration ? this.animateInternal({ resolution: a, center: p, duration: i.duration, easing: i.easing }, y) : ((this.wi = a), (this.mi = p), this.Li(!1, !0), Bu(y, !0));
+                void 0 !== i.duration
+                  ? this.animateInternal({ resolution: a, center: p, duration: i.duration, easing: i.easing }, y)
+                  : ((this.wi = a), (this.mi = p), this.Li(!1, !0), Bu(y, !0));
               }),
               (n.prototype.centerOn = function(t, n, i) {
                 this.centerOnInternal(Ir(t, this.getProjection()), n, i);
@@ -6400,7 +7074,10 @@
                 if(0 === r && !this._i) return (this.wi = u), (this.gi = o), (this.mi = a), void this.Li();
                 var h = i || (0 === r ? this._i : void 0);
                 (this._i = void 0),
-                  (this.getResolution() === u && this.getRotation() === o && this.getCenterInternal() && Ki(this.getCenterInternal(), a)) ||
+                  (this.getResolution() === u &&
+                    this.getRotation() === o &&
+                    this.getCenterInternal() &&
+                    Ki(this.getCenterInternal(), a)) ||
                     (this.getAnimating() && this.cancelAnimations(),
                     this.animateInternal({
                       rotation: o,
@@ -6462,7 +7139,8 @@
                 })(n, i);
             };
             return function(n, i) {
-              if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+              if('function' != typeof i && null !== i)
+                throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
               function r() {
                 this.constructor = n;
               }
@@ -6474,7 +7152,8 @@
           }
           function ia(t, n) {
             if(t instanceof ls) t.setMapInternal(n);
-            else if(t instanceof nu) for(var i = t.getLayers().getArray(), r = 0, e = i.length; r < e; ++r) ia(i[r], n);
+            else if(t instanceof nu)
+              for(var i = t.getLayers().getArray(), r = 0, e = i.length; r < e; ++r) ia(i[r], n);
           }
           var ra = (function (t) {
               function n(n) {
@@ -6482,7 +7161,11 @@
                 i.on, i.once, i.un;
                 var r = (function (t) {
                   var n = null;
-                  void 0 !== t.keyboardEventTarget && (n = 'string' == typeof t.keyboardEventTarget ? document.getElementById(t.keyboardEventTarget) : t.keyboardEventTarget);
+                  void 0 !== t.keyboardEventTarget &&
+                    (n =
+                      'string' == typeof t.keyboardEventTarget
+                        ? document.getElementById(t.keyboardEventTarget)
+                        : t.keyboardEventTarget);
                   var i,
                     r,
                     e,
@@ -6491,9 +7174,19 @@
                   (o[wu] = s),
                     (o[bu] = t.target),
                     (o[xu] = t.view instanceof $u ? t.view : new $u()),
-                    void 0 !== t.controls && (Array.isArray(t.controls) ? (i = new ft(t.controls.slice())) : (St('function' == typeof t.controls.getArray, 47), (i = t.controls)));
-                  void 0 !== t.interactions && (Array.isArray(t.interactions) ? (r = new ft(t.interactions.slice())) : (St('function' == typeof t.interactions.getArray, 48), (r = t.interactions)));
-                  void 0 !== t.overlays ? (Array.isArray(t.overlays) ? (e = new ft(t.overlays.slice())) : (St('function' == typeof t.overlays.getArray, 49), (e = t.overlays))) : (e = new ft());
+                    void 0 !== t.controls &&
+                      (Array.isArray(t.controls)
+                        ? (i = new ft(t.controls.slice()))
+                        : (St('function' == typeof t.controls.getArray, 47), (i = t.controls)));
+                  void 0 !== t.interactions &&
+                    (Array.isArray(t.interactions)
+                      ? (r = new ft(t.interactions.slice()))
+                      : (St('function' == typeof t.interactions.getArray, 48), (r = t.interactions)));
+                  void 0 !== t.overlays
+                    ? Array.isArray(t.overlays)
+                      ? (e = new ft(t.overlays.slice()))
+                      : (St('function' == typeof t.overlays.getArray, 49), (e = t.overlays))
+                    : (e = new ft());
                   return { controls: i, interactions: r, keyboardEventTarget: n, overlays: e, values: o };
                 })(n);
                 i.Ri,
@@ -6635,7 +7328,11 @@
                   void 0 !== n && (this.ur[n.toString()] = t), t.setMap(this);
                 }),
                 (n.prototype.disposeInternal = function() {
-                  this.controls.clear(), this.interactions.clear(), this.sr.clear(), this.setTarget(null), t.prototype.disposeInternal.call(this);
+                  this.controls.clear(),
+                    this.interactions.clear(),
+                    this.sr.clear(),
+                    this.setTarget(null),
+                    t.prototype.disposeInternal.call(this);
                 }),
                 (n.prototype.forEachFeatureAtPixel = function(t, n, i) {
                   if(this.Zi && this.hn) {
@@ -6801,7 +7498,8 @@
                     if(((t.frameState = this.Zi), !1 !== this.dispatchEvent(t)))
                       for(var s = this.getInteractions().getArray().slice(), u = s.length - 1; u >= 0; u--) {
                         var a = s[u];
-                        if(a.getMap() === this && a.getActive() && this.getTargetElement()) if (!a.handleEvent(t) || t.propagationStopped) break;
+                        if(a.getMap() === this && a.getActive() && this.getTargetElement())
+                          if(!a.handleEvent(t) || t.propagationStopped) break;
                       }
                   }
                 }),
@@ -6824,29 +7522,50 @@
                     this.hn &&
                     !t.animate &&
                     (!0 === this.Ri
-                      ? (this.hasListener(hs) && this.hn.dispatchRenderEvent(hs, t), !1 === this.Fi && ((this.Fi = !0), this.dispatchEvent(new ru(mu, this, t))))
+                      ? (this.hasListener(hs) && this.hn.dispatchRenderEvent(hs, t),
+                        !1 === this.Fi && ((this.Fi = !0), this.dispatchEvent(new ru(mu, this, t))))
                       : !0 === this.Fi && ((this.Fi = !1), this.dispatchEvent(new ru(yu, this, t))));
                   for(var s = this.ar, u = 0, a = s.length; u < a; ++u) s[u](this, t);
                   s.length = 0;
                 }),
                 (n.prototype.dr = function() {
-                  this.getView() && !this.getView().getAnimating() && this.getView().resolveConstraints(0), this.render();
+                  this.getView() && !this.getView().getAnimating() && this.getView().resolveConstraints(0),
+                    this.render();
                 }),
                 (n.prototype.pr = function() {
                   if(this.ir) {
                     for(var t = 0, n = this.er.length; t < n; ++t) H(this.er[t]);
-                    (this.er = null), this.Qi.removeEventListener(R, this.Gi), this.Qi.removeEventListener(Z, this.Gi), this.ir.dispose(), (this.ir = null), To(this.Qi);
+                    (this.er = null),
+                      this.Qi.removeEventListener(R, this.Gi),
+                      this.Qi.removeEventListener(Z, this.Gi),
+                      this.ir.dispose(),
+                      (this.ir = null),
+                      To(this.Qi);
                   }
                   var i = this.getTargetElement();
                   if(i) {
-                    for(var r in (i.appendChild(this.Qi), this.hn || (this.hn = this.createRenderer()), (this.ir = new lu(this, this.In)), su))
+                    for(var r in (i.appendChild(this.Qi),
+                    this.hn || (this.hn = this.createRenderer()),
+                    (this.ir = new lu(this, this.In)),
+                    su))
                       this.ir.addEventListener(su[r], this.handleMapBrowserEvent.bind(this));
-                    this.Qi.addEventListener(R, this.Gi, !1), this.Qi.addEventListener(Z, this.Gi, !!Yt && { passive: !1 });
+                    this.Qi.addEventListener(R, this.Gi, !1),
+                      this.Qi.addEventListener(Z, this.Gi, !!Yt && { passive: !1 });
                     var e = this.getOwnerDocument().defaultView,
                       o = this.rr ? this.rr : i;
-                    this.er = [$(o, B, this.handleBrowserEvent, this), $(o, X, this.handleBrowserEvent, this), $(e, W, this.updateSize, this)];
+                    this.er = [
+                      $(o, B, this.handleBrowserEvent, this),
+                      $(o, X, this.handleBrowserEvent, this),
+                      $(e, W, this.updateSize, this)
+                    ];
                   } else
-                    this.hn && (clearTimeout(this.qi), (this.qi = void 0), (this.ar.length = 0), this.hn.dispose(), (this.hn = null)), this.Ui && (cancelAnimationFrame(this.Ui), (this.Ui = void 0));
+                    this.hn &&
+                      (clearTimeout(this.qi),
+                      (this.qi = void 0),
+                      (this.ar.length = 0),
+                      this.hn.dispose(),
+                      (this.hn = null)),
+                      this.Ui && (cancelAnimationFrame(this.Ui), (this.Ui = void 0));
                   this.updateSize();
                 }),
                 (n.prototype.cr = function() {
@@ -6858,12 +7577,24 @@
                 (n.prototype.vr = function() {
                   this.Ki && (H(this.Ki), (this.Ki = null)), this.Hi && (H(this.Hi), (this.Hi = null));
                   var t = this.getView();
-                  t && (this.gr(), (this.Ki = $(t, l, this.wr, this)), (this.Hi = $(t, L, this.wr, this)), t.resolveConstraints(0)), this.render();
+                  t &&
+                    (this.gr(),
+                    (this.Ki = $(t, l, this.wr, this)),
+                    (this.Hi = $(t, L, this.wr, this)),
+                    t.resolveConstraints(0)),
+                    this.render();
                 }),
                 (n.prototype.lr = function() {
                   this.Ji && (this.Ji.forEach(H), (this.Ji = null));
                   var t = this.getLayerGroup();
-                  t && (this.mr(new Qs('addlayer', t)), (this.Ji = [$(t, l, this.render, this), $(t, L, this.render, this), $(t, 'addlayer', this.mr, this), $(t, 'removelayer', this.br, this)])),
+                  t &&
+                    (this.mr(new Qs('addlayer', t)),
+                    (this.Ji = [
+                      $(t, l, this.render, this),
+                      $(t, L, this.render, this),
+                      $(t, 'addlayer', this.mr, this),
+                      $(t, 'removelayer', this.br, this)
+                    ])),
                     this.render();
                 }),
                 (n.prototype.isRendered = function() {
@@ -6935,11 +7666,19 @@
                   }
                   if(((this.Zi = s), this.hn.renderFrame(s), s)) {
                     if((s.animate && this.render(), Array.prototype.push.apply(this.ar, s.postRenderFunctions), e))
-                      (!this.$i || (!Hn(this.$i) && !An(s.extent, this.$i))) && (this.dispatchEvent(new ru(du, this, e)), (this.$i = jn(this.$i)));
-                    this.$i && !s.viewHints[Eu] && !s.viewHints[Tu] && !An(s.extent, this.$i) && (this.dispatchEvent(new ru(pu, this, s)), wn(s.extent, this.$i));
+                      (!this.$i || (!Hn(this.$i) && !An(s.extent, this.$i))) &&
+                        (this.dispatchEvent(new ru(du, this, e)), (this.$i = jn(this.$i)));
+                    this.$i &&
+                      !s.viewHints[Eu] &&
+                      !s.viewHints[Tu] &&
+                      !An(s.extent, this.$i) &&
+                      (this.dispatchEvent(new ru(pu, this, s)), wn(s.extent, this.$i));
                   }
                   this.dispatchEvent(new ru(vu, this, s)),
-                    (this.Ri = this.hasListener(yu) || this.hasListener(mu) || this.hasListener(hs) ? !this.hr.getTilesLoading() && !this.hr.getCount() && !this.getLoadingOrNotReady() : void 0),
+                    (this.Ri =
+                      this.hasListener(yu) || this.hasListener(mu) || this.hasListener(hs)
+                        ? !this.hr.getTilesLoading() && !this.hr.getCount() && !this.getLoadingOrNotReady()
+                        : void 0),
                     this.qi ||
                       (this.qi = setTimeout(function () {
                         (n.qi = void 0), n.handlePostRender();
@@ -6970,11 +7709,23 @@
                     n = void 0;
                   if(t) {
                     var i = getComputedStyle(t),
-                      r = t.offsetWidth - parseFloat(i.borderLeftWidth) - parseFloat(i.paddingLeft) - parseFloat(i.paddingRight) - parseFloat(i.borderRightWidth),
-                      e = t.offsetHeight - parseFloat(i.borderTopWidth) - parseFloat(i.paddingTop) - parseFloat(i.paddingBottom) - parseFloat(i.borderBottomWidth);
+                      r =
+                        t.offsetWidth -
+                        parseFloat(i.borderLeftWidth) -
+                        parseFloat(i.paddingLeft) -
+                        parseFloat(i.paddingRight) -
+                        parseFloat(i.borderRightWidth),
+                      e =
+                        t.offsetHeight -
+                        parseFloat(i.borderTopWidth) -
+                        parseFloat(i.paddingTop) -
+                        parseFloat(i.paddingBottom) -
+                        parseFloat(i.borderBottomWidth);
                     isNaN(r) ||
                       isNaN(e) ||
-                      (!Hu((n = [r, e])) && (t.offsetWidth || t.offsetHeight || t.getClientRects().length) && console.warn("No map visible because the map container's width or height are 0."));
+                      (!Hu((n = [r, e])) &&
+                        (t.offsetWidth || t.offsetHeight || t.getClientRects().length) &&
+                        console.warn("No map visible because the map container's width or height are 0."));
                   }
                   this.setSize(n), this.gr();
                 }),
@@ -7002,7 +7753,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7036,7 +7788,9 @@
                   this.vn && To(this.element);
                   for(var n = 0, i = this.listenerKeys.length; n < i; ++n) H(this.listenerKeys[n]);
                   ((this.listenerKeys.length = 0), (this.vn = t), t) &&
-                    ((this.Mr ? this.Mr : t.getOverlayContainerStopEvent()).appendChild(this.element), this.render !== j && this.listenerKeys.push($(t, vu, this.render, this)), t.render());
+                    ((this.Mr ? this.Mr : t.getOverlayContainerStopEvent()).appendChild(this.element),
+                    this.render !== j && this.listenerKeys.push($(t, vu, this.render, this)),
+                    t.render());
                 }),
                 (n.prototype.render = function(t) {}),
                 (n.prototype.setTarget = function(t) {
@@ -7058,7 +7812,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7069,7 +7824,9 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                ((i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this)._r = document.createElement('ul')),
+                ((i =
+                  t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) ||
+                  this)._r = document.createElement('ul')),
                   (i.Sr = void 0 === r.collapsed || r.collapsed),
                   (i.jr = i.Sr),
                   (i.Er = void 0 !== r.collapsible),
@@ -7080,9 +7837,13 @@
                   s = void 0 !== r.expandClassName ? r.expandClassName : e + '-expand',
                   u = void 0 !== r.collapseLabel ? r.collapseLabel : '›',
                   a = void 0 !== r.collapseClassName ? r.collapseClassName : e + '-collapse';
-                'string' == typeof u ? ((i.Ar = document.createElement('span')), (i.Ar.textContent = u), (i.Ar.className = a)) : (i.Ar = u);
+                'string' == typeof u
+                  ? ((i.Ar = document.createElement('span')), (i.Ar.textContent = u), (i.Ar.className = a))
+                  : (i.Ar = u);
                 var h = void 0 !== r.label ? r.label : 'i';
-                'string' == typeof h ? ((i.Pr = document.createElement('span')), (i.Pr.textContent = h), (i.Pr.className = s)) : (i.Pr = h);
+                'string' == typeof h
+                  ? ((i.Pr = document.createElement('span')), (i.Pr.textContent = h), (i.Pr.className = s))
+                  : (i.Pr = h);
                 var f = i.Tr && !i.Sr ? i.Ar : i.Pr;
                 (i.Cr = document.createElement('button')),
                   i.Cr.setAttribute('type', 'button'),
@@ -7090,7 +7851,13 @@
                   (i.Cr.title = o),
                   i.Cr.appendChild(f),
                   i.Cr.addEventListener(F, i.kr.bind(i), !1);
-                var c = e + ' ' + 'ol-unselectable ' + Ms + (i.Sr && i.Tr ? ' ol-collapsed' : '') + (i.Tr ? '' : ' ol-uncollapsible'),
+                var c =
+                    e +
+                    ' ' +
+                    'ol-unselectable ' +
+                    Ms +
+                    (i.Sr && i.Tr ? ' ol-collapsed' : '') +
+                    (i.Tr ? '' : ' ol-uncollapsible'),
                   l = i.element;
                 return (l.className = c), l.appendChild(i.Cr), l.appendChild(i._r), (i.Ir = []), (i.mn = !0), i;
               }
@@ -7106,7 +7873,8 @@
                         if(h) {
                           var f = h(t);
                           if(f)
-                            if(((r = r && !1 !== a.getAttributionsCollapsible()), Array.isArray(f))) for(var c = 0, l = f.length; c < l; ++c) f[c] in n || (i.push(f[c]), (n[f[c]] = !0));
+                            if(((r = r && !1 !== a.getAttributionsCollapsible()), Array.isArray(f)))
+                              for(var c = 0, l = f.length; c < l; ++c) f[c] in n || (i.push(f[c]), (n[f[c]] = !0));
                             else f in n || (i.push(f), (n[f] = !0));
                         }
                       }
@@ -7118,7 +7886,9 @@
                   if(t) {
                     var n = this.Nr(t),
                       i = n.length > 0;
-                    if((this.mn != i && ((this.element.style.display = i ? '' : 'none'), (this.mn = i)), !x(n, this.Ir))) {
+                    if(
+                      (this.mn != i && ((this.element.style.display = i ? '' : 'none'), (this.mn = i)), !x(n, this.Ir))
+                    ) {
                       Ao(this._r);
                       for(var r = 0, e = n.length; r < e; ++r) {
                         var o = document.createElement('li');
@@ -7132,13 +7902,17 @@
                   t.preventDefault(), this.zr(), (this.jr = this.Sr);
                 }),
                 (n.prototype.zr = function() {
-                  this.element.classList.toggle(_s), this.Sr ? Eo(this.Ar, this.Pr) : Eo(this.Pr, this.Ar), (this.Sr = !this.Sr), this.Cr.setAttribute('aria-expanded', String(!this.Sr));
+                  this.element.classList.toggle(_s),
+                    this.Sr ? Eo(this.Ar, this.Pr) : Eo(this.Pr, this.Ar),
+                    (this.Sr = !this.Sr),
+                    this.Cr.setAttribute('aria-expanded', String(!this.Sr));
                 }),
                 (n.prototype.getCollapsible = function() {
                   return this.Tr;
                 }),
                 (n.prototype.setCollapsible = function(t) {
-                  this.Tr !== t && ((this.Tr = t), this.element.classList.toggle('ol-uncollapsible'), this.jr && this.zr());
+                  this.Tr !== t &&
+                    ((this.Tr = t), this.element.classList.toggle('ol-uncollapsible'), this.jr && this.zr());
                 }),
                 (n.prototype.setCollapsed = function(t) {
                   (this.jr = t), this.Tr && this.Sr !== t && this.zr();
@@ -7165,7 +7939,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7176,14 +7951,22 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this;
+                i =
+                  t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this;
                 var e = void 0 !== r.className ? r.className : 'ol-rotate',
                   o = void 0 !== r.label ? r.label : '⇧',
                   s = void 0 !== r.compassClassName ? r.compassClassName : 'ol-compass';
-                (i.Pr = null), 'string' == typeof o ? ((i.Pr = document.createElement('span')), (i.Pr.className = s), (i.Pr.textContent = o)) : ((i.Pr = o), i.Pr.classList.add(s));
+                (i.Pr = null),
+                  'string' == typeof o
+                    ? ((i.Pr = document.createElement('span')), (i.Pr.className = s), (i.Pr.textContent = o))
+                    : ((i.Pr = o), i.Pr.classList.add(s));
                 var u = r.tipLabel ? r.tipLabel : 'Reset rotation',
                   a = document.createElement('button');
-                (a.className = e + '-reset'), a.setAttribute('type', 'button'), (a.title = u), a.appendChild(i.Pr), a.addEventListener(F, i.kr.bind(i), !1);
+                (a.className = e + '-reset'),
+                  a.setAttribute('type', 'button'),
+                  (a.title = u),
+                  a.appendChild(i.Pr),
+                  a.addEventListener(F, i.kr.bind(i), !1);
                 var h = e + ' ' + 'ol-unselectable ' + Ms,
                   f = i.element;
                 return (
@@ -7206,7 +7989,10 @@
                   var t = this.getMap().getView();
                   if(t) {
                     var n = t.getRotation();
-                    void 0 !== n && (this.Fr > 0 && n % (2 * Math.PI) != 0 ? t.animate({ rotation: 0, duration: this.Fr, easing: mt }) : t.setRotation(0));
+                    void 0 !== n &&
+                      (this.Fr > 0 && n % (2 * Math.PI) != 0
+                        ? t.animate({ rotation: 0, duration: this.Fr, easing: mt })
+                        : t.setRotation(0));
                   }
                 }),
                 (n.prototype.render = function(t) {
@@ -7217,7 +8003,9 @@
                       var r = 'rotate(' + i + 'rad)';
                       if(this.Gr) {
                         var e = this.element.classList.contains(ws);
-                        e || 0 !== i ? e && 0 !== i && this.element.classList.remove(ws) : this.element.classList.add(ws);
+                        e || 0 !== i
+                          ? e && 0 !== i && this.element.classList.remove(ws)
+                          : this.element.classList.add(ws);
                       }
                       this.Pr.style.transform = r;
                     }
@@ -7240,7 +8028,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7261,12 +8050,26 @@
                   f = void 0 !== r.zoomInTipLabel ? r.zoomInTipLabel : 'Zoom in',
                   c = void 0 !== r.zoomOutTipLabel ? r.zoomOutTipLabel : 'Zoom out',
                   l = document.createElement('button');
-                (l.className = s), l.setAttribute('type', 'button'), (l.title = f), l.appendChild('string' == typeof a ? document.createTextNode(a) : a), l.addEventListener(F, i.kr.bind(i, o), !1);
+                (l.className = s),
+                  l.setAttribute('type', 'button'),
+                  (l.title = f),
+                  l.appendChild('string' == typeof a ? document.createTextNode(a) : a),
+                  l.addEventListener(F, i.kr.bind(i, o), !1);
                 var v = document.createElement('button');
-                (v.className = u), v.setAttribute('type', 'button'), (v.title = c), v.appendChild('string' == typeof h ? document.createTextNode(h) : h), v.addEventListener(F, i.kr.bind(i, -o), !1);
+                (v.className = u),
+                  v.setAttribute('type', 'button'),
+                  (v.title = c),
+                  v.appendChild('string' == typeof h ? document.createTextNode(h) : h),
+                  v.addEventListener(F, i.kr.bind(i, -o), !1);
                 var d = e + ' ' + 'ol-unselectable ' + Ms,
                   p = i.element;
-                return (p.className = d), p.appendChild(l), p.appendChild(v), (i.Fr = void 0 !== r.duration ? r.duration : 250), i;
+                return (
+                  (p.className = d),
+                  p.appendChild(l),
+                  p.appendChild(v),
+                  (i.Fr = void 0 !== r.duration ? r.duration : 250),
+                  i
+                );
               }
               return (
                 fa(n, t),
@@ -7279,7 +8082,10 @@
                     var i = n.getZoom();
                     if(void 0 !== i) {
                       var r = n.getConstrainedZoom(i + t);
-                      this.Fr > 0 ? (n.getAnimating() && n.cancelAnimations(), n.animate({ zoom: r, duration: this.Fr, easing: mt })) : n.setZoom(r);
+                      this.Fr > 0
+                        ? (n.getAnimating() && n.cancelAnimations(),
+                          n.animate({ zoom: r, duration: this.Fr, easing: mt }))
+                        : n.setZoom(r);
                     }
                   }
                 }),
@@ -7310,7 +8116,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7329,13 +8136,22 @@
             if(void 0 !== e) {
               var o = t.getConstrainedZoom(e + n),
                 s = t.getResolutionForZoom(o);
-              t.getAnimating() && t.cancelAnimations(), t.animate({ resolution: s, anchor: i, duration: void 0 !== r ? r : 250, easing: mt });
+              t.getAnimating() && t.cancelAnimations(),
+                t.animate({ resolution: s, anchor: i, duration: void 0 !== r ? r : 250, easing: mt });
             }
           }
           var ma = (function (t) {
               function n(n) {
                 var i = t.call(this) || this;
-                return i.on, i.once, i.un, n && n.handleEvent && (i.handleEvent = n.handleEvent), (i.vn = null), i.setActive(!0), i;
+                return (
+                  i.on,
+                  i.once,
+                  i.un,
+                  n && n.handleEvent && (i.handleEvent = n.handleEvent),
+                  (i.vn = null),
+                  i.setActive(!0),
+                  i
+                );
               }
               return (
                 da(n, t),
@@ -7370,7 +8186,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7412,7 +8229,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7542,7 +8360,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7591,7 +8410,13 @@
                 (n.prototype.handleDownEvent = function(t) {
                   if(this.targetPointers.length > 0 && this.Zr(t)) {
                     var n = t.map.getView();
-                    return (this.lastCentroid = null), n.getAnimating() && n.cancelAnimations(), this.Vr && this.Vr.begin(), (this.$r = this.targetPointers.length > 1), !0;
+                    return (
+                      (this.lastCentroid = null),
+                      n.getAnimating() && n.cancelAnimations(),
+                      this.Vr && this.Vr.begin(),
+                      (this.$r = this.targetPointers.length > 1),
+                      !0
+                    );
                   }
                   return !1;
                 }),
@@ -7611,7 +8436,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7622,7 +8448,12 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                return ((i = t.call(this, { stopDown: O }) || this).Zr = r.condition ? r.condition : Oa), (i.Kr = void 0), (i.Fr = void 0 !== r.duration ? r.duration : 250), i;
+                return (
+                  ((i = t.call(this, { stopDown: O }) || this).Zr = r.condition ? r.condition : Oa),
+                  (i.Kr = void 0),
+                  (i.Fr = void 0 !== r.duration ? r.duration : 250),
+                  i
+                );
               }
               return (
                 Ga(n, t),
@@ -7646,7 +8477,9 @@
                   return !La(t) || (t.map.getView().endInteraction(this.Fr), !1);
                 }),
                 (n.prototype.handleDownEvent = function(t) {
-                  return !!La(t) && !(!Aa(t) || !this.Zr(t)) && (t.map.getView().beginInteraction(), (this.Kr = void 0), !0);
+                  return (
+                    !!La(t) && !(!Aa(t) || !this.Zr(t)) && (t.map.getView().beginInteraction(), (this.Kr = void 0), !0)
+                  );
                 }),
                 n
               );
@@ -7664,7 +8497,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7696,7 +8530,10 @@
                     n = this.Qr,
                     i = 'px',
                     r = this.pn.style;
-                  (r.left = Math.min(t[0], n[0]) + i), (r.top = Math.min(t[1], n[1]) + i), (r.width = Math.abs(n[0] - t[0]) + i), (r.height = Math.abs(n[1] - t[1]) + i);
+                  (r.left = Math.min(t[0], n[0]) + i),
+                    (r.top = Math.min(t[1], n[1]) + i),
+                    (r.width = Math.abs(n[0] - t[0]) + i),
+                    (r.height = Math.abs(n[1] - t[1]) + i);
                 }),
                 (n.prototype.setMap = function(t) {
                   if(this.vn) {
@@ -7734,7 +8571,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7786,7 +8624,14 @@
                   return n && this.onBoxEnd(t), this.dispatchEvent(new Za(n ? Wa : Ya, t.coordinate, t)), !1;
                 }),
                 (n.prototype.handleDownEvent = function(t) {
-                  return !!this.Zr(t) && ((this.Jr = t.pixel), this.ne.setMap(t.map), this.ne.setPixels(this.Jr, this.Jr), this.dispatchEvent(new Za(Xa, t.coordinate, t)), !0);
+                  return (
+                    !!this.Zr(t) &&
+                    ((this.Jr = t.pixel),
+                    this.ne.setMap(t.map),
+                    this.ne.setPixels(this.Jr, this.Jr),
+                    this.dispatchEvent(new Za(Xa, t.coordinate, t)),
+                    !0)
+                  );
                 }),
                 (n.prototype.onBoxEnd = function(t) {}),
                 n
@@ -7805,7 +8650,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7818,7 +8664,9 @@
                   r = n || {},
                   e = r.condition ? r.condition : Ia;
                 return (
-                  ((i = t.call(this, { condition: e, className: r.className || 'ol-dragzoom', minArea: r.minArea }) || this).Fr = void 0 !== r.duration ? r.duration : 200),
+                  ((i =
+                    t.call(this, { condition: e, className: r.className || 'ol-dragzoom', minArea: r.minArea }) ||
+                    this).Fr = void 0 !== r.duration ? r.duration : 200),
                   (i.ee = void 0 !== r.out && r.out),
                   i
                 );
@@ -7856,7 +8704,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7912,7 +8761,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7923,7 +8773,12 @@
               function n(n) {
                 var i = t.call(this) || this,
                   r = n || {};
-                return (i.Zr = r.condition ? r.condition : Na), (i.Br = r.delta ? r.delta : 1), (i.Fr = void 0 !== r.duration ? r.duration : 100), i;
+                return (
+                  (i.Zr = r.condition ? r.condition : Na),
+                  (i.Br = r.delta ? r.delta : 1),
+                  (i.Fr = void 0 !== r.duration ? r.duration : 100),
+                  i
+                );
               }
               return (
                 eh(n, t),
@@ -7956,7 +8811,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -7977,7 +8833,17 @@
                   (i.fe = void 0 === r.useAnchor || r.useAnchor),
                   (i.ce = void 0 !== r.constrainResolution && r.constrainResolution);
                 var e = r.condition ? r.condition : Ta;
-                return (i.Zr = r.onFocusOnly ? _a(Ea, e) : e), (i.le = null), (i.ve = void 0), i.de, (i.pe = void 0), (i.ye = 400), i.me, (i.we = 300), i;
+                return (
+                  (i.Zr = r.onFocusOnly ? _a(Ea, e) : e),
+                  (i.le = null),
+                  (i.ve = void 0),
+                  i.de,
+                  (i.pe = void 0),
+                  (i.ye = 400),
+                  i.me,
+                  (i.we = 300),
+                  i
+                );
               }
               return (
                 sh(n, t),
@@ -7995,17 +8861,23 @@
                   if(
                     (r.preventDefault(),
                     this.fe && (this.le = t.coordinate),
-                    t.type == Z && ((n = r.deltaY), Gt && r.deltaMode === WheelEvent.DOM_DELTA_PIXEL && (n /= Xt), r.deltaMode === WheelEvent.DOM_DELTA_LINE && (n *= 40)),
+                    t.type == Z &&
+                      ((n = r.deltaY),
+                      Gt && r.deltaMode === WheelEvent.DOM_DELTA_PIXEL && (n /= Xt),
+                      r.deltaMode === WheelEvent.DOM_DELTA_LINE && (n *= 40)),
                     0 === n)
                   )
                     return !1;
                   this.ae = n;
                   var e = Date.now();
-                  void 0 === this.ve && (this.ve = e), (!this.pe || e - this.ve > this.ye) && (this.pe = Math.abs(n) < 4 ? uh : ah);
+                  void 0 === this.ve && (this.ve = e),
+                    (!this.pe || e - this.ve > this.ye) && (this.pe = Math.abs(n) < 4 ? uh : ah);
                   var o = i.getView();
                   if(this.pe === uh && !o.getConstrainResolution() && !this.ce)
                     return (
-                      this.me ? clearTimeout(this.me) : (o.getAnimating() && o.cancelAnimations(), o.beginInteraction()),
+                      this.me
+                        ? clearTimeout(this.me)
+                        : (o.getAnimating() && o.cancelAnimations(), o.beginInteraction()),
                       (this.me = setTimeout(this.ge.bind(this), this.he)),
                       o.adjustZoom(-n / this.we, this.le),
                       (this.ve = e),
@@ -8046,7 +8918,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8086,7 +8959,10 @@
                   if(u.getConstraints().rotation !== Fu) {
                     var a = s.getViewport().getBoundingClientRect(),
                       h = xa(this.targetPointers);
-                    (h[0] -= a.left), (h[1] -= a.top), (this.xe = s.getCoordinateFromPixelInternal(h)), this.Me && (s.render(), u.adjustRotationInternal(n, this.xe));
+                    (h[0] -= a.left),
+                      (h[1] -= a.top),
+                      (this.xe = s.getCoordinateFromPixelInternal(h)),
+                      this.Me && (s.render(), u.adjustRotationInternal(n, this.xe));
                   }
                 }),
                 (n.prototype.handleUpEvent = function(t) {
@@ -8095,7 +8971,14 @@
                 (n.prototype.handleDownEvent = function(t) {
                   if(this.targetPointers.length >= 2) {
                     var n = t.map;
-                    return (this.xe = null), (this.Kr = void 0), (this.Me = !1), (this._e = 0), this.handlingDownUpSequence || n.getView().beginInteraction(), !0;
+                    return (
+                      (this.xe = null),
+                      (this.Kr = void 0),
+                      (this.Me = !1),
+                      (this._e = 0),
+                      this.handlingDownUpSequence || n.getView().beginInteraction(),
+                      !0
+                    );
                   }
                   return !1;
                 }),
@@ -8115,7 +8998,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8127,7 +9011,14 @@
                 var i = this,
                   r = n || {},
                   e = r;
-                return e.stopDown || (e.stopDown = O), ((i = t.call(this, e) || this).xe = null), (i.Fr = void 0 !== r.duration ? r.duration : 400), (i.Oe = void 0), (i.je = 1), i;
+                return (
+                  e.stopDown || (e.stopDown = O),
+                  ((i = t.call(this, e) || this).xe = null),
+                  (i.Fr = void 0 !== r.duration ? r.duration : 400),
+                  (i.Oe = void 0),
+                  (i.je = 1),
+                  i
+                );
               }
               return (
                 lh(n, t),
@@ -8144,7 +9035,11 @@
                   1 != n && (this.je = n);
                   var h = u.getViewport().getBoundingClientRect(),
                     f = xa(this.targetPointers);
-                  (f[0] -= h.left), (f[1] -= h.top), (this.xe = u.getCoordinateFromPixelInternal(f)), u.render(), a.adjustResolutionInternal(n, this.xe);
+                  (f[0] -= h.left),
+                    (f[1] -= h.top),
+                    (this.xe = u.getCoordinateFromPixelInternal(f)),
+                    u.render(),
+                    a.adjustResolutionInternal(n, this.xe);
                 }),
                 (n.prototype.handleUpEvent = function(t) {
                   if(this.targetPointers.length < 2) {
@@ -8157,7 +9052,13 @@
                 (n.prototype.handleDownEvent = function(t) {
                   if(this.targetPointers.length >= 2) {
                     var n = t.map;
-                    return (this.xe = null), (this.Oe = void 0), (this.je = 1), this.handlingDownUpSequence || n.getView().beginInteraction(), !0;
+                    return (
+                      (this.xe = null),
+                      (this.Oe = void 0),
+                      (this.je = 1),
+                      this.handlingDownUpSequence || n.getView().beginInteraction(),
+                      !0
+                    );
                   }
                   return !1;
                 }),
@@ -8170,12 +9071,15 @@
               r = new Io(-0.005, 0.05, 100);
             return (
               (void 0 === n.altShiftDragRotate || n.altShiftDragRotate) && i.push(new Da()),
-              (void 0 === n.doubleClickZoom || n.doubleClickZoom) && i.push(new ga({ delta: n.zoomDelta, duration: n.zoomDuration })),
+              (void 0 === n.doubleClickZoom || n.doubleClickZoom) &&
+                i.push(new ga({ delta: n.zoomDelta, duration: n.zoomDuration })),
               (void 0 === n.dragPan || n.dragPan) && i.push(new Fa({ onFocusOnly: n.onFocusOnly, kinetic: r })),
               (void 0 === n.pinchRotate || n.pinchRotate) && i.push(new ch()),
               (void 0 === n.pinchZoom || n.pinchZoom) && i.push(new vh({ duration: n.zoomDuration })),
-              (void 0 === n.keyboard || n.keyboard) && (i.push(new rh()), i.push(new oh({ delta: n.zoomDelta, duration: n.zoomDuration }))),
-              (void 0 === n.mouseWheelZoom || n.mouseWheelZoom) && i.push(new hh({ onFocusOnly: n.onFocusOnly, duration: n.zoomDuration })),
+              (void 0 === n.keyboard || n.keyboard) &&
+                (i.push(new rh()), i.push(new oh({ delta: n.zoomDelta, duration: n.zoomDuration }))),
+              (void 0 === n.mouseWheelZoom || n.mouseWheelZoom) &&
+                i.push(new hh({ onFocusOnly: n.onFocusOnly, duration: n.zoomDuration })),
               (void 0 === n.shiftDragZoom || n.shiftDragZoom) && i.push(new Ha({ duration: n.zoomDuration })),
               i
             );
@@ -8193,7 +9097,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8202,7 +9107,11 @@
             })(),
             yh = (function (t) {
               function n(n) {
-                return (n = A({}, n)).controls || (n.controls = la()), n.interactions || (n.interactions = dh({ onFocusOnly: !0 })), t.call(this, n) || this;
+                return (
+                  (n = A({}, n)).controls || (n.controls = la()),
+                  n.interactions || (n.interactions = dh({ onFocusOnly: !0 })),
+                  t.call(this, n) || this
+                );
               }
               return (
                 ph(n, t),
@@ -8225,7 +9134,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8295,12 +9205,16 @@
                   t && this.element.appendChild(t);
                 }),
                 (n.prototype.handleMapChanged = function() {
-                  this.mapPostrenderListenerKey && (To(this.element), H(this.mapPostrenderListenerKey), (this.mapPostrenderListenerKey = null));
+                  this.mapPostrenderListenerKey &&
+                    (To(this.element), H(this.mapPostrenderListenerKey), (this.mapPostrenderListenerKey = null));
                   var t = this.getMap();
                   if(t) {
                     (this.mapPostrenderListenerKey = $(t, vu, this.render, this)), this.updatePixelPosition();
                     var n = this.stopEvent ? t.getOverlayContainerStopEvent() : t.getOverlayContainer();
-                    this.insertFirst ? n.insertBefore(this.element, n.childNodes[0] || null) : n.appendChild(this.element), this.performAutoPan();
+                    this.insertFirst
+                      ? n.insertBefore(this.element, n.childNodes[0] || null)
+                      : n.appendChild(this.element),
+                      this.performAutoPan();
                   }
                 }),
                 (n.prototype.render = function() {
@@ -8344,7 +9258,11 @@
                         h = e[1] - i[1],
                         f = i[3] - e[3],
                         c = [0, 0];
-                      if((u < 0 ? (c[0] = u - s) : a < 0 && (c[0] = Math.abs(a) + s), h < 0 ? (c[1] = h - s) : f < 0 && (c[1] = Math.abs(f) + s), 0 !== c[0] || 0 !== c[1])) {
+                      if(
+                        (u < 0 ? (c[0] = u - s) : a < 0 && (c[0] = Math.abs(a) + s),
+                        h < 0 ? (c[1] = h - s) : f < 0 && (c[1] = Math.abs(f) + s),
+                        0 !== c[0] || 0 !== c[1])
+                      ) {
                         var l = n.getView().getCenterInternal(),
                           v = n.getPixelFromCoordinateInternal(l);
                         if(!v) return;
@@ -8369,7 +9287,8 @@
                   this.set(Mh, t);
                 }),
                 (n.prototype.setVisible = function(t) {
-                  this.rendered.visible !== t && ((this.element.style.display = t ? '' : 'none'), (this.rendered.visible = t));
+                  this.rendered.visible !== t &&
+                    ((this.element.style.display = t ? '' : 'none'), (this.rendered.visible = t));
                 }),
                 (n.prototype.updatePixelPosition = function() {
                   var t = this.getMap(),
@@ -8389,8 +9308,12 @@
                     s = Math.round(t[1] + r[1]) + 'px',
                     u = '0%',
                     a = '0%';
-                  'bottom-right' == e || 'center-right' == e || 'top-right' == e ? (u = '-100%') : ('bottom-center' != e && 'center-center' != e && 'top-center' != e) || (u = '-50%'),
-                    'bottom-left' == e || 'bottom-center' == e || 'bottom-right' == e ? (a = '-100%') : ('center-left' != e && 'center-center' != e && 'center-right' != e) || (a = '-50%');
+                  'bottom-right' == e || 'center-right' == e || 'top-right' == e
+                    ? (u = '-100%')
+                    : ('bottom-center' != e && 'center-center' != e && 'top-center' != e) || (u = '-50%'),
+                    'bottom-left' == e || 'bottom-center' == e || 'bottom-right' == e
+                      ? (a = '-100%')
+                      : ('center-left' != e && 'center-center' != e && 'center-right' != e) || (a = '-50%');
                   var h = 'translate('.concat(u, ', ').concat(a, ') translate(').concat(o, ', ').concat(s, ')');
                   this.rendered.jt != h && ((this.rendered.jt = h), (i.transform = h), (i.msTransform = h));
                 }),
@@ -8402,7 +9325,11 @@
             })(et),
             Sh = (function () {
               function t(t) {
-                (this.highWaterMark = void 0 !== t ? t : 2048), (this.Ee = 0), (this.Te = {}), (this.Ae = null), (this.Pe = null);
+                (this.highWaterMark = void 0 !== t ? t : 2048),
+                  (this.Ee = 0),
+                  (this.Te = {}),
+                  (this.Ae = null),
+                  (this.Pe = null);
               }
               return (
                 (t.prototype.canExpireCache = function() {
@@ -8425,7 +9352,9 @@
                   return (
                     St(void 0 !== i, 15),
                     i === this.Pe ||
-                      (i === this.Ae ? ((this.Ae = this.Ae.newer), (this.Ae.older = null)) : ((i.newer.older = i.older), (i.older.newer = i.newer)),
+                      (i === this.Ae
+                        ? ((this.Ae = this.Ae.newer), (this.Ae.older = null))
+                        : ((i.newer.older = i.older), (i.older.newer = i.newer)),
                       (i.newer = null),
                       (i.older = this.Pe),
                       (this.Pe.newer = i),
@@ -8478,7 +9407,14 @@
                 }),
                 (t.prototype.pop = function() {
                   var t = this.Ae;
-                  return delete this.Te[t.ke], t.newer && (t.newer.older = null), (this.Ae = t.newer), this.Ae || (this.Pe = null), --this.Ee, t.Ce;
+                  return (
+                    delete this.Te[t.ke],
+                    t.newer && (t.newer.older = null),
+                    (this.Ae = t.newer),
+                    this.Ae || (this.Pe = null),
+                    --this.Ee,
+                    t.Ce
+                  );
                 }),
                 (t.prototype.replace = function(t, n) {
                   this.get(t), (this.Te[t].Ce = n);
@@ -8537,7 +9473,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8587,7 +9524,10 @@
                   return this.minX == t.minX && this.minY == t.minY && this.maxX == t.maxX && this.maxY == t.maxY;
                 }),
                 (t.prototype.extend = function(t) {
-                  t.minX < this.minX && (this.minX = t.minX), t.maxX > this.maxX && (this.maxX = t.maxX), t.minY < this.minY && (this.minY = t.minY), t.maxY > this.maxY && (this.maxY = t.maxY);
+                  t.minX < this.minX && (this.minX = t.minX),
+                    t.maxX > this.maxX && (this.maxX = t.maxX),
+                    t.minY < this.minY && (this.minY = t.minY),
+                    t.maxY > this.maxY && (this.maxY = t.maxY);
                 }),
                 (t.prototype.getHeight = function() {
                   return this.maxY - this.minY + 1;
@@ -8621,7 +9561,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8701,7 +9642,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8711,7 +9653,18 @@
             qh = (function (t) {
               function n(n, i, r, e, o, s) {
                 var u = t.call(this, n, i, s) || this;
-                return (u.extent = null), (u.ze = e), (u.Re = null), u.U, (u.projection = null), u.resolution, (u.Xt = o), (u.Fe = r), (u.key = r), u;
+                return (
+                  (u.extent = null),
+                  (u.ze = e),
+                  (u.Re = null),
+                  u.U,
+                  (u.projection = null),
+                  u.resolution,
+                  (u.Xt = o),
+                  (u.Fe = r),
+                  (u.key = r),
+                  u
+                );
               }
               return (
                 Dh(n, t),
@@ -8722,7 +9675,10 @@
                   return this.Re;
                 }),
                 (n.prototype.load = function() {
-                  this.state == ct && (this.setState(lt), this.Xt(this, this.Fe), this.U && this.U(this.extent, this.resolution, this.projection));
+                  this.state == ct &&
+                    (this.setState(lt),
+                    this.Xt(this, this.Fe),
+                    this.U && this.U(this.extent, this.resolution, this.projection));
                 }),
                 (n.prototype.onLoad = function(t, n) {
                   this.setFeatures(t);
@@ -8795,7 +9751,8 @@
                 })(n, i);
             };
             return function(n, i) {
-              if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+              if('function' != typeof i && null !== i)
+                throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
               function r() {
                 this.constructor = n;
               }
@@ -8895,7 +9852,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -8964,7 +9922,17 @@
                           o.setTransform.apply(o, s),
                           o.translate(v, d),
                           o.scale(this.io[0], this.io[1]),
-                          o.drawImage(this.Lt, this.He, this.Je, this.ro, this.$e, -this.Ye, -this.Ze, this.ro, this.$e),
+                          o.drawImage(
+                            this.Lt,
+                            this.He,
+                            this.Je,
+                            this.ro,
+                            this.$e,
+                            -this.Ye,
+                            -this.Ze,
+                            this.ro,
+                            this.$e
+                          ),
                           o.setTransform(1, 0, 0, 1, 0, 0);
                       } else o.drawImage(this.Lt, this.He, this.Je, this.ro, this.$e, c, l, this.ro, this.$e);
                     }
@@ -9020,7 +9988,9 @@
                   }
                 }),
                 (n.prototype.setStyle = function(t) {
-                  this.setFillStrokeStyle(t.getFill(), t.getStroke()), this.setImageStyle(t.getImage()), this.setTextStyle(t.getText());
+                  this.setFillStrokeStyle(t.getFill(), t.getStroke()),
+                    this.setImageStyle(t.getImage()),
+                    this.setTextStyle(t.getText());
                 }),
                 (n.prototype.setTransform = function(t) {
                   this.jt = t;
@@ -9111,7 +10081,10 @@
                     if(this.We || this.Ve) {
                       this.Ve && this.mo(this.Ve), this.We && this.wo(this.We);
                       var n = this.Ne;
-                      n.beginPath(), this.Mo(t.getOrientedFlatCoordinates(), 0, t.getEnds(), t.getStride()), this.Ve && n.fill(), this.We && n.stroke();
+                      n.beginPath(),
+                        this.Mo(t.getOrientedFlatCoordinates(), 0, t.getEnds(), t.getStride()),
+                        this.Ve && n.fill(),
+                        this.We && n.stroke();
                     }
                     if('' !== this.eo) {
                       var i = t.getFlatInteriorPoint();
@@ -9144,7 +10117,9 @@
                 (n.prototype.mo = function(t) {
                   var n = this.Ne,
                     i = this.Ue;
-                  i ? i.fillStyle != t.fillStyle && ((i.fillStyle = t.fillStyle), (n.fillStyle = t.fillStyle)) : ((n.fillStyle = t.fillStyle), (this.Ue = { fillStyle: t.fillStyle }));
+                  i
+                    ? i.fillStyle != t.fillStyle && ((i.fillStyle = t.fillStyle), (n.fillStyle = t.fillStyle))
+                    : ((n.fillStyle = t.fillStyle), (this.Ue = { fillStyle: t.fillStyle }));
                 }),
                 (n.prototype.wo = function(t) {
                   var n = this.Ne,
@@ -9153,11 +10128,13 @@
                     ? (i.lineCap != t.lineCap && ((i.lineCap = t.lineCap), (n.lineCap = t.lineCap)),
                       n.setLineDash &&
                         (x(i.lineDash, t.lineDash) || n.setLineDash((i.lineDash = t.lineDash)),
-                        i.lineDashOffset != t.lineDashOffset && ((i.lineDashOffset = t.lineDashOffset), (n.lineDashOffset = t.lineDashOffset))),
+                        i.lineDashOffset != t.lineDashOffset &&
+                          ((i.lineDashOffset = t.lineDashOffset), (n.lineDashOffset = t.lineDashOffset))),
                       i.lineJoin != t.lineJoin && ((i.lineJoin = t.lineJoin), (n.lineJoin = t.lineJoin)),
                       i.lineWidth != t.lineWidth && ((i.lineWidth = t.lineWidth), (n.lineWidth = t.lineWidth)),
                       i.miterLimit != t.miterLimit && ((i.miterLimit = t.miterLimit), (n.miterLimit = t.miterLimit)),
-                      i.strokeStyle != t.strokeStyle && ((i.strokeStyle = t.strokeStyle), (n.strokeStyle = t.strokeStyle)))
+                      i.strokeStyle != t.strokeStyle &&
+                        ((i.strokeStyle = t.strokeStyle), (n.strokeStyle = t.strokeStyle)))
                     : ((n.lineCap = t.lineCap),
                       n.setLineDash && (n.setLineDash(t.lineDash), (n.lineDashOffset = t.lineDashOffset)),
                       (n.lineJoin = t.lineJoin),
@@ -9181,8 +10158,12 @@
                   i
                     ? (i.font != t.font && ((i.font = t.font), (n.font = t.font)),
                       i.textAlign != r && ((i.textAlign = r), (n.textAlign = r)),
-                      i.textBaseline != t.textBaseline && ((i.textBaseline = t.textBaseline), (n.textBaseline = t.textBaseline)))
-                    : ((n.font = t.font), (n.textAlign = r), (n.textBaseline = t.textBaseline), (this.Xe = { font: t.font, textAlign: r, textBaseline: t.textBaseline }));
+                      i.textBaseline != t.textBaseline &&
+                        ((i.textBaseline = t.textBaseline), (n.textBaseline = t.textBaseline)))
+                    : ((n.font = t.font),
+                      (n.textAlign = r),
+                      (n.textBaseline = t.textBaseline),
+                      (this.Xe = { font: t.font, textAlign: r, textBaseline: t.textBaseline }));
                 }),
                 (n.prototype.setFillStrokeStyle = function(t, n) {
                   var i = this;
@@ -9445,25 +10426,37 @@
             );
           }
           function hf(t, n, i, r) {
-            if('GeometryCollection' != n.getType()) t.getBuilder(i.getZIndex(), 'Default').drawCustom(n, r, i.getRenderer(), i.getHitDetectionRenderer());
+            if('GeometryCollection' != n.getType())
+              t.getBuilder(i.getZIndex(), 'Default').drawCustom(n, r, i.getRenderer(), i.getHitDetectionRenderer());
             else for(var e = n.getGeometries(), o = 0, s = e.length; o < s; ++o) hf(t, e[o], i, r);
           }
           function ff(t) {
-            if(!(t.context instanceof CanvasRenderingContext2D)) throw new Error('Only works for render events from Canvas 2D layers');
+            if(!(t.context instanceof CanvasRenderingContext2D))
+              throw new Error('Only works for render events from Canvas 2D layers');
             var n,
               i = t.inversePixelTransform[0],
               r = t.frameState,
               e = Ht(t.inversePixelTransform.slice(), r.coordinateToPixelTransform),
               o = sf(r.viewState.resolution, i),
               s = Cr();
-            return s && (n = Or(s, r.viewState.projection)), new rf(t.context, i, r.extent, e, r.viewState.rotation, o, n);
+            return (
+              s && (n = Or(s, r.viewState.projection)), new rf(t.context, i, r.extent, e, r.viewState.rotation, o, n)
+            );
           }
           var cf,
             lf = { imageSmoothingEnabled: !1, msImageSmoothingEnabled: !1 },
             vf = { imageSmoothingEnabled: !0, msImageSmoothingEnabled: !0 },
             df = [];
           function pf(t, n, i, r, e) {
-            t.beginPath(), t.moveTo(0, 0), t.lineTo(n, i), t.lineTo(r, e), t.closePath(), t.save(), t.clip(), t.fillRect(0, 0, Math.max(n, r) + 1, Math.max(i, e)), t.restore();
+            t.beginPath(),
+              t.moveTo(0, 0),
+              t.lineTo(n, i),
+              t.lineTo(r, e),
+              t.closePath(),
+              t.save(),
+              t.clip(),
+              t.fillRect(0, 0, Math.max(n, r) + 1, Math.max(i, e)),
+              t.restore();
           }
           function yf(t, n) {
             return Math.abs(t[4 * n] - 210) > 2 || Math.abs(t[4 * n + 3] - 191.25) > 2;
@@ -9514,7 +10507,9 @@
                 e = -(t.extent[3] - d[3]),
                 o = $n(t.extent),
                 s = Vn(t.extent);
-              t.image.width > 0 && t.image.height > 0 && m.drawImage(t.image, h, h, t.image.width - 2 * h, t.image.height - 2 * h, r * w, e * w, o * w, s * w);
+              t.image.width > 0 &&
+                t.image.height > 0 &&
+                m.drawImage(t.image, h, h, t.image.width - 2 * h, t.image.height - 2 * h, r * w, e * w, o * w, s * w);
             });
             var g = Yn(s);
             return (
@@ -9549,7 +10544,10 @@
                     (function () {
                       if(void 0 === cf) {
                         var t = document.createElement('canvas').getContext('2d');
-                        (t.globalCompositeOperation = 'lighter'), (t.fillStyle = 'rgba(210, 0, 0, 0.75)'), pf(t, 4, 5, 4, 0), pf(t, 4, 5, 0, 5);
+                        (t.globalCompositeOperation = 'lighter'),
+                          (t.fillStyle = 'rgba(210, 0, 0, 0.75)'),
+                          pf(t, 4, 5, 4, 0),
+                          pf(t, 4, 5, 0, 5);
                         var n = t.getImageData(0, 0, 3, 3).data;
                         cf = yf(n, 0) || yf(n, 4) || yf(n, 8);
                       }
@@ -9557,10 +10555,17 @@
                     })() || !c)
                   ) {
                     l.moveTo(M, _);
-                    for(var A = b - M, P = x - _, C = 0; C < 4; C++) l.lineTo(M + v(((C + 1) * A) / 4), _ + v((C * P) / 3)), 3 != C && l.lineTo(M + v(((C + 1) * A) / 4), _ + v(((C + 1) * P) / 3));
+                    for(var A = b - M, P = x - _, C = 0; C < 4; C++)
+                      l.lineTo(M + v(((C + 1) * A) / 4), _ + v((C * P) / 3)),
+                        3 != C && l.lineTo(M + v(((C + 1) * A) / 4), _ + v(((C + 1) * P) / 3));
                     l.lineTo(S, O);
                   } else l.moveTo(M, _), l.lineTo(b, x), l.lineTo(S, O);
-                  l.clip(), l.transform(T[0], T[2], T[1], T[3], b, x), l.translate(d[0] - j, d[3] - E), l.scale(r / i, -r / i), l.drawImage(m.canvas, 0, 0), l.restore();
+                  l.clip(),
+                    l.transform(T[0], T[2], T[1], T[3], b, x),
+                    l.translate(d[0] - j, d[3] - E),
+                    l.scale(r / i, -r / i),
+                    l.drawImage(m.canvas, 0, 0),
+                    l.restore();
                 }
               }),
               f &&
@@ -9626,10 +10631,18 @@
                   (this.Ao = [0, 0, 0, 0]),
                   void 0 !== t.sizes
                     ? (this.Eo = t.sizes.map(function (t, n) {
-                        var i = new zh(Math.min(0, t[0]), Math.max(t[0] - 1, -1), Math.min(0, t[1]), Math.max(t[1] - 1, -1));
+                        var i = new zh(
+                          Math.min(0, t[0]),
+                          Math.max(t[0] - 1, -1),
+                          Math.min(0, t[1]),
+                          Math.max(t[1] - 1, -1)
+                        );
                         if(e) {
                           var r = this.getTileRangeForExtentAndZ(e, n);
-                          (i.minX = Math.max(r.minX, i.minX)), (i.maxX = Math.min(r.maxX, i.maxX)), (i.minY = Math.max(r.minY, i.minY)), (i.maxY = Math.min(r.maxY, i.maxY));
+                          (i.minX = Math.max(r.minX, i.minX)),
+                            (i.maxX = Math.min(r.maxX, i.maxX)),
+                            (i.minY = Math.max(r.minY, i.minY)),
+                            (i.maxY = Math.min(r.maxY, i.maxY));
                         }
                         return i;
                       }, this))
@@ -9637,15 +10650,28 @@
               }
               return (
                 (t.prototype.forEachTileCoord = function(t, n, i) {
-                  for(var r = this.getTileRangeForExtentAndZ(t, n), e = r.minX, o = r.maxX; e <= o; ++e) for (var s = r.minY, u = r.maxY; s <= u; ++s) i([n, e, s]);
+                  for(var r = this.getTileRangeForExtentAndZ(t, n), e = r.minX, o = r.maxX; e <= o; ++e)
+                    for(var s = r.minY, u = r.maxY; s <= u; ++s) i([n, e, s]);
                 }),
                 (t.prototype.forEachTileCoordParentTileRange = function(t, n, i, r) {
                   var e,
                     o,
                     s = null,
                     u = t[0] - 1;
-                  for(2 === this.Ei ? ((e = t[1]), (o = t[2])) : (s = this.getTileCoordExtent(t, r)); u >= this.minZoom; ) {
-                    if(n(u, 2 === this.Ei ? Lh((e = Math.floor(e / 2)), e, (o = Math.floor(o / 2)), o, i) : this.getTileRangeForExtentAndZ(s, u, i))) return !0;
+                  for(
+                    2 === this.Ei ? ((e = t[1]), (o = t[2])) : (s = this.getTileCoordExtent(t, r));
+                    u >= this.minZoom;
+
+                  ) {
+                    if(
+                      n(
+                        u,
+                        2 === this.Ei
+                          ? Lh((e = Math.floor(e / 2)), e, (o = Math.floor(o / 2)), o, i)
+                          : this.getTileRangeForExtentAndZ(s, u, i)
+                      )
+                    )
+                      return !0;
                     --u;
                   }
                   return !1;
@@ -9690,7 +10716,9 @@
                     var s = Math.pow(this.Ei, n - r),
                       u = Math.floor(e * s),
                       a = Math.floor(o * s);
-                    return n < r ? Lh(u, u, a, a, i) : Lh(u, Math.floor(s * (e + 1)) - 1, a, Math.floor(s * (o + 1)) - 1, i);
+                    return n < r
+                      ? Lh(u, u, a, a, i)
+                      : Lh(u, Math.floor(s * (e + 1)) - 1, a, Math.floor(s * (o + 1)) - 1, i);
                   }
                   var h = this.getTileCoordExtent(t, this.Ao);
                   return this.getTileRangeForExtentAndZ(h, n, i);
@@ -9734,7 +10762,9 @@
                     a = Qu(this.getTileSize(o), this.To),
                     h = (s * (t - u[0])) / i / a[0],
                     f = (s * (u[1] - n)) / i / a[1];
-                  return r ? ((h = wi(h, 5) - 1), (f = wi(f, 5) - 1)) : ((h = mi(h, 5)), (f = mi(f, 5))), Oh(o, h, f, e);
+                  return (
+                    r ? ((h = wi(h, 5) - 1), (f = wi(f, 5) - 1)) : ((h = mi(h, 5)), (f = mi(f, 5))), Oh(o, h, f, e)
+                  );
                 }),
                 (t.prototype.Co = function(t, n, i, r, e) {
                   var o = this.getOrigin(i),
@@ -9742,7 +10772,9 @@
                     u = Qu(this.getTileSize(i), this.To),
                     a = (t - o[0]) / s / u[0],
                     h = (o[1] - n) / s / u[1];
-                  return r ? ((a = wi(a, 5) - 1), (h = wi(h, 5) - 1)) : ((a = mi(a, 5)), (h = mi(h, 5))), Oh(i, a, h, e);
+                  return (
+                    r ? ((a = wi(a, 5) - 1), (h = wi(h, 5) - 1)) : ((a = mi(a, 5)), (h = mi(h, 5))), Oh(i, a, h, e)
+                  );
                 }),
                 (t.prototype.getTileCoordForCoordAndZ = function(t, n, i) {
                   return this.Co(t[0], t[1], n, !1, i);
@@ -9763,7 +10795,8 @@
                   return Ne(n, 0, n.length, 2, this.getTileCoordExtent(t));
                 }),
                 (t.prototype.Po = function(t) {
-                  for(var n = this.Ti.length, i = new Array(n), r = this.minZoom; r < n; ++r) i[r] = this.getTileRangeForExtentAndZ(t, r);
+                  for(var n = this.Ti.length, i = new Array(n), r = this.minZoom; r < n; ++r)
+                    i[r] = this.getTileRangeForExtentAndZ(t, r);
                   this.Eo = i;
                 }),
                 t
@@ -9799,7 +10832,18 @@
             return new xf(r);
           }
           function jf(t, n, i, r) {
-            for(var e = void 0 !== n ? n : 42, o = Vn(t), s = $n(t), u = Qu(void 0 !== i ? i : Pu), a = r > 0 ? r : Math.max(s / u[0], o / u[1]), h = e + 1, f = new Array(h), c = 0; c < h; ++c)
+            for(
+              var e = void 0 !== n ? n : 42,
+                o = Vn(t),
+                s = $n(t),
+                u = Qu(void 0 !== i ? i : Pu),
+                a = r > 0 ? r : Math.max(s / u[0], o / u[1]),
+                h = e + 1,
+                f = new Array(h),
+                c = 0;
+              c < h;
+              ++c
+            )
               f[c] = a / Math.pow(2, c);
             return f;
           }
@@ -9859,7 +10903,8 @@
               return n;
             }
             if((i = /\{(\d+)-(\d+)\}/.exec(t))) {
-              for(var s = parseInt(i[2], 10), u = parseInt(i[1], 10); u <= s; u++) n.push(t.replace(i[0], u.toString()));
+              for(var s = parseInt(i[2], 10), u = parseInt(i[1], 10); u <= s; u++)
+                n.push(t.replace(i[0], u.toString()));
               return n;
             }
             return n.push(t), n;
@@ -9895,7 +10940,8 @@
             return Wf(t, n, []).join('');
           }
           function Wf(t, n, i) {
-            if(t.nodeType == Node.CDATA_SECTION_NODE || t.nodeType == Node.TEXT_NODE) n ? i.push(String(t.nodeValue).replace(/(\r\n|\r|\n)/g, '')) : i.push(t.nodeValue);
+            if(t.nodeType == Node.CDATA_SECTION_NODE || t.nodeType == Node.TEXT_NODE)
+              n ? i.push(String(t.nodeValue).replace(/(\r\n|\r|\n)/g, '')) : i.push(t.nodeValue);
             else {
               var r = void 0;
               for(r = t.firstChild; r; r = r.nextSibling) Wf(r, n, i);
@@ -9997,7 +11043,9 @@
           }
           function hc(t, n, i, r, e, o) {
             for(var s, u, a = (void 0 !== e ? e : i).length, h = 0; h < a; ++h)
-              void 0 !== (s = i[h]) && void 0 !== (u = n.call(void 0 !== o ? o : this, s, r, void 0 !== e ? e[h] : void 0)) && t[u.namespaceURI][u.localName].call(o, u, s, r);
+              void 0 !== (s = i[h]) &&
+                void 0 !== (u = n.call(void 0 !== o ? o : this, s, r, void 0 !== e ? e[h] : void 0)) &&
+                t[u.namespaceURI][u.localName].call(o, u, s, r);
           }
           function fc(t, n, i, r, e, o, s) {
             return e.push(t), hc(n, i, r, e, o, s), e.pop();
@@ -10008,7 +11056,12 @@
           }
           var vc = void 0;
           function dc() {
-            return void 0 === vc && 'undefined' != typeof document && (vc = document.implementation.createDocument('', '', null)), vc;
+            return (
+              void 0 === vc &&
+                'undefined' != typeof document &&
+                (vc = document.implementation.createDocument('', '', null)),
+              vc
+            );
           }
           var pc = Ff;
           function yc(t) {
@@ -10023,7 +11076,10 @@
           }
           var mc = (function () {
               function t(t, n) {
-                (this.array = null), (this.type = t), St(t === zf || t === Rf, 62), (this.usage = void 0 !== n ? n : pc);
+                (this.array = null),
+                  (this.type = t),
+                  St(t === zf || t === Rf, 62),
+                  (this.usage = void 0 !== n ? n : pc);
               }
               return (
                 (t.prototype.ofSize = function(t) {
@@ -10057,7 +11113,10 @@
               function t(t) {
                 this.Io = t.webGlContext;
                 var n = this.Io;
-                (this.No = t.scaleRatio || 1), (this.Lo = n.createTexture()), (this.zo = null), (this.Ro = n.createFramebuffer());
+                (this.No = t.scaleRatio || 1),
+                  (this.Lo = n.createTexture()),
+                  (this.zo = null),
+                  (this.Ro = n.createFramebuffer());
                 var i = n.createShader(n.VERTEX_SHADER);
                 n.shaderSource(
                   i,
@@ -10078,7 +11137,11 @@
                   n.linkProgram(this.Fo),
                   (this.Go = n.createBuffer());
                 n.bindBuffer(n.ARRAY_BUFFER, this.Go),
-                  n.bufferData(n.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1]), n.STATIC_DRAW),
+                  n.bufferData(
+                    n.ARRAY_BUFFER,
+                    new Float32Array([-1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1]),
+                    n.STATIC_DRAW
+                  ),
                   (this.Do = n.getAttribLocation(this.Fo, 'a_position')),
                   (this.qo = n.getUniformLocation(this.Fo, 'u_screenSize')),
                   (this.Uo = n.getUniformLocation(this.Fo, 'u_opacity')),
@@ -10098,7 +11161,11 @@
                 (t.prototype.init = function(t) {
                   var n = this.getGL(),
                     i = [n.drawingBufferWidth * this.No, n.drawingBufferHeight * this.No];
-                  if((n.bindFramebuffer(n.FRAMEBUFFER, this.getFrameBuffer()), n.viewport(0, 0, i[0], i[1]), !this.zo || this.zo[0] !== i[0] || this.zo[1] !== i[1])) {
+                  if(
+                    (n.bindFramebuffer(n.FRAMEBUFFER, this.getFrameBuffer()),
+                    n.viewport(0, 0, i[0], i[1]),
+                    !this.zo || this.zo[0] !== i[0] || this.zo[1] !== i[1])
+                  ) {
                     this.zo = i;
                     var r = n.RGBA,
                       e = n.RGBA,
@@ -10114,11 +11181,17 @@
                 (t.prototype.apply = function(t, n, i, r) {
                   var e = this.getGL(),
                     s = t.size;
-                  if((e.bindFramebuffer(e.FRAMEBUFFER, n ? n.getFrameBuffer() : null), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, this.Lo), !n)) {
+                  if(
+                    (e.bindFramebuffer(e.FRAMEBUFFER, n ? n.getFrameBuffer() : null),
+                    e.activeTexture(e.TEXTURE0),
+                    e.bindTexture(e.TEXTURE_2D, this.Lo),
+                    !n)
+                  ) {
                     var u = o(e.canvas);
                     if(!t.renderTargets[u]) {
                       var a = e.getContextAttributes();
-                      a && a.preserveDrawingBuffer && (e.clearColor(0, 0, 0, 0), e.clear(e.COLOR_BUFFER_BIT)), (t.renderTargets[u] = !0);
+                      a && a.preserveDrawingBuffer && (e.clearColor(0, 0, 0, 0), e.clear(e.COLOR_BUFFER_BIT)),
+                        (t.renderTargets[u] = !0);
                     }
                   }
                   e.enable(e.BLEND),
@@ -10131,7 +11204,11 @@
                     e.uniform2f(this.qo, s[0], s[1]),
                     e.uniform1i(this.Bo, 0);
                   var h = t.layerStatesArray[t.layerIndex].opacity;
-                  e.uniform1f(this.Uo, h), this.applyUniforms(t), i && i(e, t), e.drawArrays(e.TRIANGLES, 0, 6), r && r(e, t);
+                  e.uniform1f(this.Uo, h),
+                    this.applyUniforms(t),
+                    i && i(e, t),
+                    e.drawArrays(e.TRIANGLES, 0, 6),
+                    r && r(e, t);
                 }),
                 (t.prototype.getFrameBuffer = function() {
                   return this.Ro;
@@ -10141,7 +11218,10 @@
                     i = this.getGL(),
                     r = 1;
                   this.Xo.forEach(function (e) {
-                    if((n = 'function' == typeof e.value ? e.value(t) : e.value) instanceof HTMLCanvasElement || n instanceof ImageData)
+                    if(
+                      (n = 'function' == typeof e.value ? e.value(t) : e.value) instanceof HTMLCanvasElement ||
+                      n instanceof ImageData
+                    )
                       e.texture || (e.texture = i.createTexture()),
                         i.activeTexture(i['TEXTURE'.concat(r)]),
                         i.bindTexture(i.TEXTURE_2D, e.texture),
@@ -10149,7 +11229,17 @@
                         i.texParameteri(i.TEXTURE_2D, i.TEXTURE_WRAP_S, i.CLAMP_TO_EDGE),
                         i.texParameteri(i.TEXTURE_2D, i.TEXTURE_WRAP_T, i.CLAMP_TO_EDGE),
                         n instanceof ImageData
-                          ? i.texImage2D(i.TEXTURE_2D, 0, i.RGBA, i.RGBA, n.width, n.height, 0, i.UNSIGNED_BYTE, new Uint8Array(n.data))
+                          ? i.texImage2D(
+                              i.TEXTURE_2D,
+                              0,
+                              i.RGBA,
+                              i.RGBA,
+                              n.width,
+                              n.height,
+                              0,
+                              i.UNSIGNED_BYTE,
+                              new Uint8Array(n.data)
+                            )
                           : i.texImage2D(i.TEXTURE_2D, 0, i.RGBA, i.RGBA, i.UNSIGNED_BYTE, n),
                         i.uniform1i(e.location, r++);
                     else if(Array.isArray(n))
@@ -10188,7 +11278,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -10323,7 +11414,11 @@
                     r = this.getCanvas(),
                     e = t.size,
                     o = t.pixelRatio;
-                  (r.width = e[0] * o), (r.height = e[1] * o), (r.style.width = e[0] + 'px'), (r.style.height = e[1] + 'px'), i.useProgram(this.Ko);
+                  (r.width = e[0] * o),
+                    (r.height = e[1] * o),
+                    (r.style.width = e[0] + 'px'),
+                    (r.style.height = e[1] + 'px'),
+                    i.useProgram(this.Ko);
                   for(var s = this.rs.length - 1; s >= 0; s--) this.rs[s].init(t);
                   i.bindTexture(i.TEXTURE_2D, null),
                     i.clearColor(0, 0, 0, 0),
@@ -10357,7 +11452,8 @@
                   i.drawElements(i.TRIANGLES, e, r, o);
                 }),
                 (n.prototype.finalizeDraw = function(t, n, i) {
-                  for(var r = 0, e = this.rs.length; r < e; r++) r === e - 1 ? this.rs[r].apply(t, null, n, i) : this.rs[r].apply(t, this.rs[r + 1]);
+                  for(var r = 0, e = this.rs.length; r < e; r++)
+                    r === e - 1 ? this.rs[r].apply(t, null, n, i) : this.rs[r].apply(t, this.rs[r + 1]);
                 }),
                 (n.prototype.getCanvas = function() {
                   return this.qt;
@@ -10384,14 +11480,20 @@
                     r = 0;
                   this.Xo.forEach(
                     function(e) {
-                      if((n = 'function' == typeof e.value ? e.value(t) : e.value) instanceof HTMLCanvasElement || n instanceof HTMLImageElement || n instanceof ImageData)
+                      if(
+                        (n = 'function' == typeof e.value ? e.value(t) : e.value) instanceof HTMLCanvasElement ||
+                        n instanceof HTMLImageElement ||
+                        n instanceof ImageData
+                      )
                         e.texture || ((e.prevValue = void 0), (e.texture = i.createTexture())),
                           i.activeTexture(i['TEXTURE'.concat(r)]),
                           i.bindTexture(i.TEXTURE_2D, e.texture),
                           i.texParameteri(i.TEXTURE_2D, i.TEXTURE_MIN_FILTER, i.LINEAR),
                           i.texParameteri(i.TEXTURE_2D, i.TEXTURE_WRAP_S, i.CLAMP_TO_EDGE),
                           i.texParameteri(i.TEXTURE_2D, i.TEXTURE_WRAP_T, i.CLAMP_TO_EDGE),
-                          (!(n instanceof HTMLImageElement) || n.complete) && e.prevValue !== n && ((e.prevValue = n), i.texImage2D(i.TEXTURE_2D, 0, i.RGBA, i.RGBA, i.UNSIGNED_BYTE, n)),
+                          (!(n instanceof HTMLImageElement) || n.complete) &&
+                            e.prevValue !== n &&
+                            ((e.prevValue = n), i.texImage2D(i.TEXTURE_2D, 0, i.RGBA, i.RGBA, i.UNSIGNED_BYTE, n)),
                           i.uniform1i(this.getUniformLocation(e.name), r++);
                       else if(Array.isArray(n) && 6 === n.length) this.setUniformMatrixValue(e.name, Mc(this.Qo, n));
                       else if(Array.isArray(n) && n.length <= 4)
@@ -10410,7 +11512,9 @@
                   );
                 }),
                 (n.prototype.useProgram = function(t) {
-                  return t != this.Ko && (this.getGL().useProgram(t), (this.Ko = t), (this.ts = {}), (this.ns = {}), !0);
+                  return (
+                    t != this.Ko && (this.getGL().useProgram(t), (this.Ko = t), (this.ts = {}), (this.ns = {}), !0)
+                  );
                 }),
                 (n.prototype.compileShader = function(t, n) {
                   var i = this.getGL(),
@@ -10422,7 +11526,12 @@
                     r = this.compileShader(t, i.FRAGMENT_SHADER),
                     e = this.compileShader(n, i.VERTEX_SHADER),
                     o = i.createProgram();
-                  if((i.attachShader(o, r), i.attachShader(o, e), i.linkProgram(o), !i.getShaderParameter(r, i.COMPILE_STATUS))) {
+                  if(
+                    (i.attachShader(o, r),
+                    i.attachShader(o, e),
+                    i.linkProgram(o),
+                    !i.getShaderParameter(r, i.COMPILE_STATUS))
+                  ) {
                     var s = 'Fragment shader compliation failed: '.concat(i.getShaderInfoLog(r));
                     throw new Error(s);
                   }
@@ -10437,7 +11546,9 @@
                   return o;
                 }),
                 (n.prototype.getUniformLocation = function(t) {
-                  return void 0 === this.ts[t] && (this.ts[t] = this.getGL().getUniformLocation(this.Ko, t)), this.ts[t];
+                  return (
+                    void 0 === this.ts[t] && (this.ts[t] = this.getGL().getUniformLocation(this.Ko, t)), this.ts[t]
+                  );
                 }),
                 (n.prototype.getAttributeLocation = function(t) {
                   return void 0 === this.ns[t] && (this.ns[t] = this.getGL().getAttribLocation(this.Ko, t)), this.ns[t];
@@ -10460,7 +11571,8 @@
                 }),
                 (n.prototype.os = function(t, n, i, r, e) {
                   var o = this.getAttributeLocation(t);
-                  o < 0 || (this.getGL().enableVertexAttribArray(o), this.getGL().vertexAttribPointer(o, n, i, !1, r, e));
+                  o < 0 ||
+                    (this.getGL().enableVertexAttribArray(o), this.getGL().vertexAttribPointer(o, n, i, !1, r, e));
                 }),
                 (n.prototype.enableAttributes = function(t) {
                   for(var n = Nc(t), i = 0, r = 0; r < t.length; r++) {
@@ -10480,7 +11592,9 @@
                     u = r.UNSIGNED_BYTE;
                   return (
                     r.bindTexture(r.TEXTURE_2D, e),
-                    n ? r.texImage2D(r.TEXTURE_2D, 0, o, s, u, n) : r.texImage2D(r.TEXTURE_2D, 0, o, t[0], t[1], 0, s, u, null),
+                    n
+                      ? r.texImage2D(r.TEXTURE_2D, 0, o, s, u, n)
+                      : r.texImage2D(r.TEXTURE_2D, 0, o, t[0], t[1], 0, s, u, null),
                     r.texParameteri(r.TEXTURE_2D, r.TEXTURE_MIN_FILTER, r.LINEAR),
                     r.texParameteri(r.TEXTURE_2D, r.TEXTURE_WRAP_S, r.CLAMP_TO_EDGE),
                     r.texParameteri(r.TEXTURE_2D, r.TEXTURE_WRAP_T, r.CLAMP_TO_EDGE),
@@ -10503,7 +11617,17 @@
                       t.texParameteri(t.TEXTURE_2D, t.TEXTURE_WRAP_T, t.CLAMP_TO_EDGE),
                       t.texParameteri(t.TEXTURE_2D, t.TEXTURE_MIN_FILTER, t.NEAREST),
                       t.texParameteri(t.TEXTURE_2D, t.TEXTURE_MAG_FILTER, t.NEAREST),
-                      t.texImage2D(t.TEXTURE_2D, 0, t.RGBA, this.data.length / 4, 1, 0, t.RGBA, t.UNSIGNED_BYTE, this.data),
+                      t.texImage2D(
+                        t.TEXTURE_2D,
+                        0,
+                        t.RGBA,
+                        this.data.length / 4,
+                        1,
+                        0,
+                        t.RGBA,
+                        t.UNSIGNED_BYTE,
+                        this.data
+                      ),
                       (this.ss = n);
                   }
                   return this.ss;
@@ -10516,7 +11640,12 @@
               function t(t, n) {
                 this.us = t;
                 var i = t.getGL();
-                (this.ss = i.createTexture()), (this.hs = i.createFramebuffer()), (this.W = n || [1, 1]), (this.B = new Uint8Array(0)), (this.fs = !0), this.cs();
+                (this.ss = i.createTexture()),
+                  (this.hs = i.createFramebuffer()),
+                  (this.W = n || [1, 1]),
+                  (this.B = new Uint8Array(0)),
+                  (this.fs = !0),
+                  this.cs();
               }
               return (
                 (t.prototype.setSize = function(t) {
@@ -10532,15 +11661,24 @@
                   if(this.fs) {
                     var t = this.W,
                       n = this.us.getGL();
-                    n.bindFramebuffer(n.FRAMEBUFFER, this.hs), n.readPixels(0, 0, t[0], t[1], n.RGBA, n.UNSIGNED_BYTE, this.B), (this.fs = !1);
+                    n.bindFramebuffer(n.FRAMEBUFFER, this.hs),
+                      n.readPixels(0, 0, t[0], t[1], n.RGBA, n.UNSIGNED_BYTE, this.B),
+                      (this.fs = !1);
                   }
                   return this.B;
                 }),
                 (t.prototype.readPixel = function(t, n) {
-                  if(t < 0 || n < 0 || t > this.W[0] || n >= this.W[1]) return (Fc[0] = 0), (Fc[1] = 0), (Fc[2] = 0), (Fc[3] = 0), Fc;
+                  if(t < 0 || n < 0 || t > this.W[0] || n >= this.W[1])
+                    return (Fc[0] = 0), (Fc[1] = 0), (Fc[2] = 0), (Fc[3] = 0), Fc;
                   this.readAll();
                   var i = Math.floor(t) + (this.W[1] - Math.floor(n) - 1) * this.W[0];
-                  return (Fc[0] = this.B[4 * i]), (Fc[1] = this.B[4 * i + 1]), (Fc[2] = this.B[4 * i + 2]), (Fc[3] = this.B[4 * i + 3]), Fc;
+                  return (
+                    (Fc[0] = this.B[4 * i]),
+                    (Fc[1] = this.B[4 * i + 1]),
+                    (Fc[2] = this.B[4 * i + 2]),
+                    (Fc[3] = this.B[4 * i + 3]),
+                    Fc
+                  );
                 }),
                 (t.prototype.getTexture = function() {
                   return this.ss;
@@ -10599,7 +11737,9 @@
                             [t.source[1][0], t.source[1][1]],
                             [t.source[2][0], t.source[2][1]]
                           ];
-                          n[0][0] - m > this.xs / 2 && (n[0][0] -= this.xs), n[1][0] - m > this.xs / 2 && (n[1][0] -= this.xs), n[2][0] - m > this.xs / 2 && (n[2][0] -= this.xs);
+                          n[0][0] - m > this.xs / 2 && (n[0][0] -= this.xs),
+                            n[1][0] - m > this.xs / 2 && (n[1][0] -= this.xs),
+                            n[2][0] - m > this.xs / 2 && (n[2][0] -= this.xs);
                           var i = Math.min(n[0][0], n[1][0], n[2][0]);
                           Math.max(n[0][0], n[1][0], n[2][0]) - i < this.xs / 2 && (t.source = n);
                         }
@@ -10622,9 +11762,24 @@
                     if(this.vs.isGlobal() && this.Ms) v = $n(yn([t, n, i, r])) / this.Ms > 0.25 || v;
                     !l && this.ls.isGlobal() && f && (v = f > 0.25 || v);
                   }
-                  if(!(!v && this.ps && isFinite(h[0]) && isFinite(h[1]) && isFinite(h[2]) && isFinite(h[3])) || Kn(h, this.ps)) {
+                  if(
+                    !(!v && this.ps && isFinite(h[0]) && isFinite(h[1]) && isFinite(h[2]) && isFinite(h[3])) ||
+                    Kn(h, this.ps)
+                  ) {
                     var d = 0;
-                    if(!(v || (isFinite(e[0]) && isFinite(e[1]) && isFinite(o[0]) && isFinite(o[1]) && isFinite(s[0]) && isFinite(s[1]) && isFinite(u[0]) && isFinite(u[1]))))
+                    if(
+                      !(
+                        v ||
+                        (isFinite(e[0]) &&
+                          isFinite(e[1]) &&
+                          isFinite(o[0]) &&
+                          isFinite(o[1]) &&
+                          isFinite(s[0]) &&
+                          isFinite(s[1]) &&
+                          isFinite(u[0]) &&
+                          isFinite(u[1]))
+                      )
+                    )
                       if(a > 0) v = !0;
                       else if(
                         1 !=
@@ -10703,7 +11858,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -10713,7 +11869,16 @@
             Bc = (function (t) {
               function n(n, i, r, e, o, s, u, a, h, f, c, l) {
                 var v = t.call(this, o, ct, { interpolate: !!l }) || this;
-                (v.Os = void 0 !== c && c), (v.kt = u), (v.js = a), (v.qt = null), (v.Es = i), (v.Ts = e), (v.As = s || o), (v.Ps = []), (v.Cs = null), (v.ks = 0);
+                (v.Os = void 0 !== c && c),
+                  (v.kt = u),
+                  (v.js = a),
+                  (v.qt = null),
+                  (v.Es = i),
+                  (v.Ts = e),
+                  (v.As = s || o),
+                  (v.Ps = []),
+                  (v.Cs = null),
+                  (v.ks = 0);
                 var d = e.getTileCoordExtent(v.As),
                   p = v.Ts.getExtent(),
                   y = v.Es.getExtent(),
@@ -10728,7 +11893,11 @@
                 if(((v.Is = new qc(n, r, m, y, b * x, g)), 0 === v.Is.getTriangles().length)) return (v.state = pt), v;
                 v.ks = i.getZForResolution(b);
                 var M = v.Is.calculateSourceExtent();
-                if((y && (n.canWrapX() ? ((M[1] = oi(M[1], y[1], y[3])), (M[3] = oi(M[3], y[1], y[3]))) : (M = Wn(M, y))), Fn(M))) {
+                if(
+                  (y &&
+                    (n.canWrapX() ? ((M[1] = oi(M[1], y[1], y[3])), (M[3] = oi(M[3], y[1], y[3]))) : (M = Wn(M, y))),
+                  Fn(M))
+                ) {
                   for(var _ = i.getTileRangeForExtentAndZ(M, v.ks), S = _.minX; S <= _.maxX; S++)
                     for(var O = _.minY; O <= _.maxY; O++) {
                       var j = h(v.ks, S, O, u);
@@ -10748,7 +11917,9 @@
                   if(
                     (this.Ps.forEach(
                       function(n, i, r) {
-                        n && n.getState() == vt && t.push({ extent: this.Es.getTileCoordExtent(n.tileCoord), image: n.getImage() });
+                        n &&
+                          n.getState() == vt &&
+                          t.push({ extent: this.Es.getTileCoordExtent(n.tileCoord), image: n.getImage() });
                       }.bind(this)
                     ),
                     (this.Ps.length = 0),
@@ -10763,7 +11934,21 @@
                       o = this.Ts.getResolution(n),
                       s = this.Es.getResolution(this.ks),
                       u = this.Ts.getTileCoordExtent(this.As);
-                    (this.qt = gf(r, e, this.kt, s, this.Es.getExtent(), o, u, this.Is, t, this.js, this.Os, this.interpolate)), (this.state = vt);
+                    (this.qt = gf(
+                      r,
+                      e,
+                      this.kt,
+                      s,
+                      this.Es.getExtent(),
+                      o,
+                      u,
+                      this.Is,
+                      t,
+                      this.js,
+                      this.Os,
+                      this.interpolate
+                    )),
+                      (this.state = vt);
                   }
                   this.changed();
                 }),
@@ -10801,7 +11986,8 @@
                   this.Cs.forEach(H), (this.Cs = null);
                 }),
                 (n.prototype.release = function() {
-                  this.qt && (So(this.qt.getContext('2d')), df.push(this.qt), (this.qt = null)), t.prototype.release.call(this);
+                  this.qt && (So(this.qt.getContext('2d')), df.push(this.qt), (this.qt = null)),
+                    t.prototype.release.call(this);
                 }),
                 n
               );
@@ -10819,7 +12005,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -10838,7 +12025,11 @@
             var s,
               u,
               a = t.getGL();
-            i instanceof Float32Array ? ((s = a.FLOAT), t.getExtension('OES_texture_float'), (u = null !== t.getExtension('OES_texture_float_linear'))) : ((s = a.UNSIGNED_BYTE), (u = !0));
+            i instanceof Float32Array
+              ? ((s = a.FLOAT),
+                t.getExtension('OES_texture_float'),
+                (u = null !== t.getExtension('OES_texture_float_linear')))
+              : ((s = a.UNSIGNED_BYTE), (u = !0));
             Vc(a, n, o && u);
             var h,
               f = i.byteLength / r[1],
@@ -10860,21 +12051,38 @@
                 throw new Error('Unsupported number of bands: '.concat(e));
             }
             var l = a.getParameter(a.UNPACK_ALIGNMENT);
-            a.pixelStorei(a.UNPACK_ALIGNMENT, c), a.texImage2D(a.TEXTURE_2D, 0, h, r[0], r[1], 0, h, s, i), a.pixelStorei(a.UNPACK_ALIGNMENT, l);
+            a.pixelStorei(a.UNPACK_ALIGNMENT, c),
+              a.texImage2D(a.TEXTURE_2D, 0, h, r[0], r[1], 0, h, s, i),
+              a.pixelStorei(a.UNPACK_ALIGNMENT, l);
           }
           var Yc = null;
           var Zc = (function (t) {
               function n(n) {
                 var i = t.call(this) || this;
-                i.tile, (i.textures = []), (i.cr = i.cr.bind(i)), (i.zs = Qu(n.grid.getTileSize(n.tile.tileCoord[0]))), (i.js = n.gutter || 0), (i.bandCount = NaN), (i.us = n.helper);
+                i.tile,
+                  (i.textures = []),
+                  (i.cr = i.cr.bind(i)),
+                  (i.zs = Qu(n.grid.getTileSize(n.tile.tileCoord[0]))),
+                  (i.js = n.gutter || 0),
+                  (i.bandCount = NaN),
+                  (i.us = n.helper);
                 var r = new mc(zf, Ff);
-                return r.fromArray([0, 1, 1, 1, 1, 0, 0, 0]), i.us.flushBufferData(r), (i.coords = r), i.setTile(n.tile), i;
+                return (
+                  r.fromArray([0, 1, 1, 1, 1, 0, 0, 0]), i.us.flushBufferData(r), (i.coords = r), i.setTile(n.tile), i
+                );
               }
               return (
                 Xc(n, t),
                 (n.prototype.setTile = function(t) {
                   if(t !== this.tile)
-                    if((this.tile && this.tile.removeEventListener(L, this.cr), (this.tile = t), (this.textures.length = 0), (this.loaded = t.getState() === vt), this.loaded)) this.Rs();
+                    if(
+                      (this.tile && this.tile.removeEventListener(L, this.cr),
+                      (this.tile = t),
+                      (this.textures.length = 0),
+                      (this.loaded = t.getState() === vt),
+                      this.loaded)
+                    )
+                      this.Rs();
                     else {
                       if(t instanceof ko) {
                         var n = t.getImage();
@@ -10964,7 +12172,8 @@
                     var m = this.bandCount * (l * h + c);
                     return v.slice(m, m + this.bandCount);
                   }
-                  Yc || (((i = document.createElement('canvas')).width = 1), (i.height = 1), (Yc = i.getContext('2d'))), Yc.clearRect(0, 0, 1, 1);
+                  Yc || (((i = document.createElement('canvas')).width = 1), (i.height = 1), (Yc = i.getContext('2d'))),
+                    Yc.clearRect(0, 0, 1, 1);
                   var w,
                     g = this.tile.getImage(),
                     b = g.width - 2 * o,
@@ -10994,7 +12203,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -11042,7 +12252,11 @@
                 }),
                 (n.prototype.loadImage = function(t) {
                   var n = t.getState();
-                  return n != po && n != yo && t.addEventListener(L, this.Fs), n == lo && (t.load(), (n = t.getState())), n == po;
+                  return (
+                    n != po && n != yo && t.addEventListener(L, this.Fs),
+                    n == lo && (t.load(), (n = t.getState())),
+                    n == po
+                  );
                 }),
                 (n.prototype.renderIfReadyAndVisible = function() {
                   var t = this.getLayer();
@@ -11067,7 +12281,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -11189,13 +12404,24 @@
             var i = n || [],
               r = 256,
               e = 255;
-            return (i[0] = Math.floor(t / r / r / r) / e), (i[1] = (Math.floor(t / r / r) % r) / e), (i[2] = (Math.floor(t / r) % r) / e), (i[3] = (t % r) / e), i;
+            return (
+              (i[0] = Math.floor(t / r / r / r) / e),
+              (i[1] = (Math.floor(t / r / r) % r) / e),
+              (i[2] = (Math.floor(t / r) % r) / e),
+              (i[3] = (t % r) / e),
+              i
+            );
           }
           function el(t) {
             var n = 0,
               i = 256,
               r = 255;
-            return (n += Math.round(t[0] * i * i * i * r)), (n += Math.round(t[1] * i * i * r)), (n += Math.round(t[2] * i * r)), (n += Math.round(t[3] * r));
+            return (
+              (n += Math.round(t[0] * i * i * i * r)),
+              (n += Math.round(t[1] * i * i * r)),
+              (n += Math.round(t[2] * i * r)),
+              (n += Math.round(t[3] * r))
+            );
           }
           var ol = Qc,
             sl = (function () {
@@ -11211,7 +12437,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -11301,8 +12528,19 @@
                     h = u.getGutterForProjection(e.projection),
                     f = o(u);
                   f in t.wantedTiles || (t.wantedTiles[f] = {});
-                  for(var c = t.wantedTiles[f], l = this.tu, v = Math.max(i - s.getPreload(), a.getMinZoom(), s.getMinZoom()), d = i; d >= v; --d)
-                    for(var p = a.getTileRangeForExtentAndZ(n, d, this.Ys), y = a.getResolution(d), m = p.minX; m <= p.maxX; ++m)
+                  for(
+                    var c = t.wantedTiles[f],
+                      l = this.tu,
+                      v = Math.max(i - s.getPreload(), a.getMinZoom(), s.getMinZoom()),
+                      d = i;
+                    d >= v;
+                    --d
+                  )
+                    for(
+                      var p = a.getTileRangeForExtentAndZ(n, d, this.Ys), y = a.getResolution(d), m = p.minX;
+                      m <= p.maxX;
+                      ++m
+                    )
                       for(var w = p.minY; w <= p.maxY; ++w) {
                         var g = Oh(d, m, w, this.Zs),
                           b = dl(u, g),
@@ -11318,7 +12556,9 @@
                           else (x = new Zc({ tile: M, grid: a, helper: this.helper, gutter: h })), l.set(b, x);
                         ll(r, x, d);
                         var S = M.getKey();
-                        (c[S] = !0), M.getState() === ct && (t.tileQueue.isKeyQueued(S) || t.tileQueue.enqueue([M, f, a.getTileCoordCenter(g), y]));
+                        (c[S] = !0),
+                          M.getState() === ct &&
+                            (t.tileQueue.isKeyQueued(S) || t.tileQueue.enqueue([M, f, a.getTileCoordCenter(g), y]));
                       }
                 }),
                 (n.prototype.renderFrame = function(t) {
@@ -11353,7 +12593,11 @@
                       }
                   }
                   this.helper.useProgram(this.Ks), this.helper.prepareDraw(t, !y);
-                  for(var _ = Object.keys(h).map(Number).sort(p), S = i.center[0], O = i.center[1], j = 0, E = _.length; j < E; ++j) {
+                  for(
+                    var _ = Object.keys(h).map(Number).sort(p), S = i.center[0], O = i.center[1], j = 0, E = _.length;
+                    j < E;
+                    ++j
+                  ) {
                     var T = _[j],
                       A = e.getResolution(T),
                       P = Qu(e.getTileSize(T), this.$s),
@@ -11385,7 +12629,10 @@
                         for(var V = 0; V < tt.textures.length; ) {
                           var W = 'TEXTURE' + V,
                             Y = ''.concat(ul.TILE_TEXTURE_ARRAY, '[').concat(V, ']');
-                          n.activeTexture(n[W]), n.bindTexture(n.TEXTURE_2D, tt.textures[V]), n.uniform1i(this.helper.getUniformLocation(Y), V), ++V;
+                          n.activeTexture(n[W]),
+                            n.bindTexture(n.TEXTURE_2D, tt.textures[V]),
+                            n.uniform1i(this.helper.getUniformLocation(Y), V),
+                            ++V;
                         }
                         for(var Z = 0; Z < this.nu.length; ++Z) {
                           var $ = this.nu[Z];
@@ -11513,7 +12760,8 @@
               })
             )
               return 3 === n.length || 4 === n.length ? wl | bl : bl;
-            if('string' != typeof n[0]) throw new Error('Expected an expression operator but received: '.concat(JSON.stringify(n)));
+            if('string' != typeof n[0])
+              throw new Error('Expected an expression operator but received: '.concat(JSON.stringify(n)));
             var i = _l[n[0]];
             if(void 0 === i) throw new Error('Unrecognized expression operator: '.concat(JSON.stringify(n)));
             return i.getReturnType(n.slice(1));
@@ -11526,7 +12774,8 @@
             return -1 === n.indexOf('.') ? n + '.0' : n;
           }
           function El(t) {
-            if(t.length < 2 || t.length > 4) throw new Error('`formatArray` can only output `vec2`, `vec3` or `vec4` arrays.');
+            if(t.length < 2 || t.length > 4)
+              throw new Error('`formatArray` can only output `vec2`, `vec3` or `vec4` arrays.');
             return 'vec'.concat(t.length, '(').concat(t.map(jl).join(', '), ')');
           }
           function Tl(t) {
@@ -11541,7 +12790,10 @@
             );
           }
           function Al(t, n) {
-            return void 0 === t.stringLiteralsMap[n] && (t.stringLiteralsMap[n] = Object.keys(t.stringLiteralsMap).length), t.stringLiteralsMap[n];
+            return (
+              void 0 === t.stringLiteralsMap[n] && (t.stringLiteralsMap[n] = Object.keys(t.stringLiteralsMap).length),
+              t.stringLiteralsMap[n]
+            );
           }
           function Pl(t, n) {
             return jl(Al(t, n));
@@ -11561,31 +12813,41 @@
             throw new Error('Unexpected expression '.concat(n, ' (expected type ').concat(i, ')'));
           }
           function kl(t) {
-            if(!(Sl(t) & yl)) throw new Error('A numeric value was expected, got '.concat(JSON.stringify(t), ' instead'));
+            if(!(Sl(t) & yl))
+              throw new Error('A numeric value was expected, got '.concat(JSON.stringify(t), ' instead'));
           }
           function Il(t) {
             for(var n = 0; n < t.length; n++) kl(t[n]);
           }
           function Nl(t) {
-            if(!(Sl(t) & ml)) throw new Error('A string value was expected, got '.concat(JSON.stringify(t), ' instead'));
+            if(!(Sl(t) & ml))
+              throw new Error('A string value was expected, got '.concat(JSON.stringify(t), ' instead'));
           }
           function Ll(t) {
-            if(!(Sl(t) & gl)) throw new Error('A boolean value was expected, got '.concat(JSON.stringify(t), ' instead'));
+            if(!(Sl(t) & gl))
+              throw new Error('A boolean value was expected, got '.concat(JSON.stringify(t), ' instead'));
           }
           function zl(t, n) {
-            if(t.length !== n) throw new Error('Exactly '.concat(n, ' arguments were expected, got ').concat(t.length, ' instead'));
+            if(t.length !== n)
+              throw new Error('Exactly '.concat(n, ' arguments were expected, got ').concat(t.length, ' instead'));
           }
           function Rl(t, n) {
-            if(t.length < n) throw new Error('At least '.concat(n, ' arguments were expected, got ').concat(t.length, ' instead'));
+            if(t.length < n)
+              throw new Error('At least '.concat(n, ' arguments were expected, got ').concat(t.length, ' instead'));
           }
           function Fl(t, n) {
-            if(t.length > n) throw new Error('At most '.concat(n, ' arguments were expected, got ').concat(t.length, ' instead'));
+            if(t.length > n)
+              throw new Error('At most '.concat(n, ' arguments were expected, got ').concat(t.length, ' instead'));
           }
           function Gl(t) {
-            if(t.length % 2 != 0) throw new Error('An even amount of arguments was expected, got '.concat(t, ' instead'));
+            if(t.length % 2 != 0)
+              throw new Error('An even amount of arguments was expected, got '.concat(t, ' instead'));
           }
           function Dl(t, n) {
-            if(!Ol(n)) throw new Error('Could not infer only one type from the following expression: '.concat(JSON.stringify(t)));
+            if(!Ol(n))
+              throw new Error(
+                'Could not infer only one type from the following expression: '.concat(JSON.stringify(t))
+              );
           }
           function ql(t) {
             return 'u_var_' + t;
@@ -11625,7 +12887,8 @@
                   a = void 0;
                 if('string' == typeof u) a = Fo(u);
                 else {
-                  if(!Array.isArray(u)) throw new Error('The second argument of palette must be an array of strings or colors');
+                  if(!Array.isArray(u))
+                    throw new Error('The second argument of palette must be an array of strings or colors');
                   var h = u.length;
                   if(4 === h) a = u;
                   else {
@@ -11639,7 +12902,10 @@
               t.paletteTextures || (t.paletteTextures = []);
               var c = ''.concat(Ul, '[').concat(t.paletteTextures.length, ']'),
                 l = new Rc(c, o);
-              return t.paletteTextures.push(l), 'texture2D('.concat(c, ', vec2((').concat(i, ' + 0.5) / ').concat(e, '.0, 0.5))');
+              return (
+                t.paletteTextures.push(l),
+                'texture2D('.concat(c, ', vec2((').concat(i, ' + 0.5) / ').concat(e, '.0, 0.5))')
+              );
             }
           };
           var Bl = 'getBandValue';
@@ -11651,7 +12917,10 @@
               toGlsl: function(n, i) {
                 zl(i, 2);
                 for(var r = xl, e = 0; e < i.length; e++) r &= Sl(i[e]);
-                if(r === Ml) throw new Error('All arguments should be of compatible type, got '.concat(JSON.stringify(i), ' instead'));
+                if(r === Ml)
+                  throw new Error(
+                    'All arguments should be of compatible type, got '.concat(JSON.stringify(i), ' instead')
+                  );
                 return (r &= ~wl), '('.concat(Cl(n, i[0], r), ' ').concat(t, ' ').concat(Cl(n, i[1], r), ')');
               }
             };
@@ -11694,10 +12963,11 @@
                     .concat(a, ', v_textureCoord + vec2(dx, dy))[')
                     .concat(u, '];\n          }\n        ');
                 }
-                t.functions.getBandValue = '\n        float getBandValue(float band, float xOffset, float yOffset) {\n          float dx = xOffset / '
-                  .concat(ul.TEXTURE_PIXEL_WIDTH, ';\n          float dy = yOffset / ')
-                  .concat(ul.TEXTURE_PIXEL_HEIGHT, ';\n          ')
-                  .concat(r, '\n        }\n      ');
+                t.functions.getBandValue =
+                  '\n        float getBandValue(float band, float xOffset, float yOffset) {\n          float dx = xOffset / '
+                    .concat(ul.TEXTURE_PIXEL_WIDTH, ';\n          float dy = yOffset / ')
+                    .concat(ul.TEXTURE_PIXEL_HEIGHT, ';\n          ')
+                    .concat(r, '\n        }\n      ');
               }
               var h = Cl(t, i),
                 f = Cl(t, n[1] || 0),
@@ -11841,7 +13111,14 @@
                 return yl;
               },
               toGlsl: function(t, n) {
-                return Rl(n, 1), Fl(n, 2), Il(n), 2 === n.length ? 'atan('.concat(Cl(t, n[0]), ', ').concat(Cl(t, n[1]), ')') : 'atan('.concat(Cl(t, n[0]), ')');
+                return (
+                  Rl(n, 1),
+                  Fl(n, 2),
+                  Il(n),
+                  2 === n.length
+                    ? 'atan('.concat(Cl(t, n[0]), ', ').concat(Cl(t, n[1]), ')')
+                    : 'atan('.concat(Cl(t, n[0]), ')')
+                );
               }
             }),
             (_l['>'] = {
@@ -11945,7 +13222,10 @@
                   default:
                     r = null;
                 }
-                if(!r) throw new Error('Invalid interpolation type for "interpolate" operator, received: '.concat(JSON.stringify(e)));
+                if(!r)
+                  throw new Error(
+                    'Invalid interpolation type for "interpolate" operator, received: '.concat(JSON.stringify(e))
+                  );
                 var o = void 0 !== i ? i : xl,
                   s = _l.interpolate.getReturnType(n) & o;
                 Dl(n, s);
@@ -11954,7 +13234,14 @@
                     l = h || Cl(t, n[f + 1], s),
                     v = Cl(t, n[f + 2]),
                     d = Cl(t, n[f + 3], s);
-                  h = 'mix('.concat(l, ', ').concat(d, ', pow(clamp((').concat(u, ' - ').concat(c, ') / (').concat(v, ' - ').concat(c, '), 0.0, 1.0), ').concat(a, '))');
+                  h = 'mix('
+                    .concat(l, ', ')
+                    .concat(d, ', pow(clamp((')
+                    .concat(u, ' - ')
+                    .concat(c, ') / (')
+                    .concat(v, ' - ')
+                    .concat(c, '), 0.0, 1.0), ')
+                    .concat(a, '))');
                 }
                 return h;
               }
@@ -11988,7 +13275,8 @@
               },
               toGlsl: function(t, n, i) {
                 !(function (t) {
-                  if(t.length % 2 == 0) throw new Error('An odd amount of arguments was expected, got '.concat(t, ' instead'));
+                  if(t.length % 2 == 0)
+                    throw new Error('An odd amount of arguments was expected, got '.concat(t, ' instead'));
                 })(n),
                   Rl(n, 3);
                 var r = void 0 !== i ? i : xl,
@@ -12072,7 +13360,9 @@
                   i = this.attributes,
                   r = this.varyings;
                 return (
-                  t && ((i = i.concat('vec4 a_hitColor')), (r = r.concat({ name: 'v_hitColor', type: 'vec4', expression: 'a_hitColor' }))),
+                  t &&
+                    ((i = i.concat('vec4 a_hitColor')),
+                    (r = r.concat({ name: 'v_hitColor', type: 'vec4', expression: 'a_hitColor' }))),
                   'precision mediump float;\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\n'
                     .concat(
                       this.uniforms
@@ -12183,7 +13473,11 @@
               case 'triangle':
                 var w = '(v_quadCoord*2.-1.)',
                   g = '(atan('.concat(w, '.x,').concat(w, '.y))');
-                y = '(1.0-smoothstep(.5-3./'.concat(m, ',.5,cos(floor(.5+').concat(g, '/2.094395102)*2.094395102-').concat(g, ')*length(').concat(w, ')))');
+                y = '(1.0-smoothstep(.5-3./'
+                  .concat(m, ',.5,cos(floor(.5+')
+                  .concat(g, '/2.094395102)*2.094395102-')
+                  .concat(g, ')*length(')
+                  .concat(w, ')))');
                 break;
               default:
                 throw new Error('Unexpected symbol type: ' + n.symbolType);
@@ -12205,7 +13499,8 @@
                 var i = ql(n);
                 b.addUniform('float '.concat(i)),
                   (M[i] = function() {
-                    if(!t.variables || void 0 === t.variables[n]) throw new Error('The following variable is missing from the style: '.concat(n));
+                    if(!t.variables || void 0 === t.variables[n])
+                      throw new Error('The following variable is missing from the style: '.concat(n));
                     var i = t.variables[n];
                     return 'string' == typeof i && (i = Al(a, i)), void 0 !== i ? i : -9999999;
                   });
@@ -12215,12 +13510,15 @@
               var _ = new Image();
               (_.crossOrigin = void 0 === n.crossOrigin ? 'anonymous' : n.crossOrigin),
                 (_.src = n.src),
-                b.addUniform('sampler2D u_texture').setColorExpression(b.getColorExpression() + ' * texture2D(u_texture, v_texCoord)'),
+                b
+                  .addUniform('sampler2D u_texture')
+                  .setColorExpression(b.getColorExpression() + ' * texture2D(u_texture, v_texCoord)'),
                 (M.u_texture = _);
             }
             return (
               v.attributes.forEach(function (t) {
-                -1 === a.attributes.indexOf(t) && a.attributes.push(t), b.addVarying('v_'.concat(t), 'float', 'a_'.concat(t));
+                -1 === a.attributes.indexOf(t) && a.attributes.push(t),
+                  b.addVarying('v_'.concat(t), 'float', 'a_'.concat(t));
               }),
               a.attributes.forEach(function (t) {
                 b.addAttribute('float a_'.concat(t));
@@ -12253,7 +13551,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -12304,14 +13603,20 @@
                 if(
                   !(a.length > 0) ||
                   b(a, function(i) {
-                    return n.Identifier == i.TileMatrix || (-1 === n.Identifier.indexOf(':') && t.Identifier + ':' + n.Identifier === i.TileMatrix);
+                    return (
+                      n.Identifier == i.TileMatrix ||
+                      (-1 === n.Identifier.indexOf(':') && t.Identifier + ':' + n.Identifier === i.TileMatrix)
+                    );
                   })
                 ) {
                   e.push(n.Identifier);
                   var i = (28e-5 * n.ScaleDenominator) / f,
                     h = n.TileWidth,
                     l = n.TileHeight;
-                  c ? o.push([n.TopLeftCorner[1], n.TopLeftCorner[0]]) : o.push(n.TopLeftCorner), r.push(i), s.push(h == l ? h : [h, l]), u.push([n.MatrixWidth, n.MatrixHeight]);
+                  c ? o.push([n.TopLeftCorner[1], n.TopLeftCorner[0]]) : o.push(n.TopLeftCorner),
+                    r.push(i),
+                    s.push(h == l ? h : [h, l]),
+                    u.push([n.MatrixWidth, n.MatrixHeight]);
                 }
               }),
               new $l({ extent: n, origins: o, resolutions: r, matrixIds: e, tileSizes: s, sizes: u })
@@ -12319,7 +13624,13 @@
           }
           var Jl = (function () {
               function t(t) {
-                (this.ou = t.opacity), (this.su = t.rotateWithView), (this.Dr = t.rotation), (this.uu = t.scale), (this.au = Qu(t.scale)), (this.hu = t.displacement), (this.fu = t.declutterMode);
+                (this.ou = t.opacity),
+                  (this.su = t.rotateWithView),
+                  (this.Dr = t.rotation),
+                  (this.uu = t.scale),
+                  (this.au = Qu(t.scale)),
+                  (this.hu = t.displacement),
+                  (this.fu = t.declutterMode);
               }
               return (
                 (t.prototype.clone = function() {
@@ -12418,7 +13729,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -12609,7 +13921,11 @@
                   if(this.lu) {
                     var n = this.lu.getColor(),
                       i = 0;
-                    if(('string' == typeof n && (n = Go(n)), null === n ? (i = 1) : Array.isArray(n) && (i = 4 === n.length ? n[3] : 1), 0 === i)) {
+                    if(
+                      ('string' == typeof n && (n = Go(n)),
+                      null === n ? (i = 1) : Array.isArray(n) && (i = 4 === n.length ? n[3] : 1),
+                      0 === i)
+                    ) {
                       var r = _o(t.size, t.size);
                       (this.cu = r.canvas), this.xu(t, r);
                     }
@@ -12660,7 +13976,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -12744,7 +14061,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -12755,7 +14073,19 @@
             lv = (function (t) {
               function n(n, i, r, e, o, s) {
                 var u = t.call(this) || this;
-                return (u._u = null), (u.Lt = n || new Image()), null !== e && (u.Lt.crossOrigin = e), (u.qt = {}), (u.Mu = s), (u.zt = null), (u.Su = o), (u.W = r), (u.Nt = i), u.Ou, u;
+                return (
+                  (u._u = null),
+                  (u.Lt = n || new Image()),
+                  null !== e && (u.Lt.crossOrigin = e),
+                  (u.qt = {}),
+                  (u.Mu = s),
+                  (u.zt = null),
+                  (u.Su = o),
+                  (u.W = r),
+                  (u.Nt = i),
+                  u.Ou,
+                  u
+                );
               }
               return (
                 fv(n, t),
@@ -12777,7 +14107,12 @@
                   (this.Su = yo), this.Gt(), this.Eu();
                 }),
                 (n.prototype.Dt = function() {
-                  (this.Su = po), this.W ? ((this.Lt.width = this.W[0]), (this.Lt.height = this.W[1])) : (this.W = [this.Lt.width, this.Lt.height]), this.Gt(), this.Eu();
+                  (this.Su = po),
+                    this.W
+                      ? ((this.Lt.width = this.W[0]), (this.Lt.height = this.W[1]))
+                      : (this.W = [this.Lt.width, this.Lt.height]),
+                    this.Gt(),
+                    this.Eu();
                 }),
                 (n.prototype.getImage = function(t) {
                   return this.Tu(t), this.qt[t] ? this.qt[t] : this.Lt;
@@ -12818,13 +14153,30 @@
                 (n.prototype.Tu = function(t) {
                   if(this.Mu && !this.qt[t] && this.Su === po) {
                     var n = document.createElement('canvas');
-                    (this.qt[t] = n), (n.width = Math.ceil(this.Lt.width * t)), (n.height = Math.ceil(this.Lt.height * t));
+                    (this.qt[t] = n),
+                      (n.width = Math.ceil(this.Lt.width * t)),
+                      (n.height = Math.ceil(this.Lt.height * t));
                     var i = n.getContext('2d');
-                    if((i.scale(t, t), i.drawImage(this.Lt, 0, 0), (i.globalCompositeOperation = 'multiply'), 'multiply' === i.globalCompositeOperation || this.ju()))
-                      (i.fillStyle = zo(this.Mu)), i.fillRect(0, 0, n.width / t, n.height / t), (i.globalCompositeOperation = 'destination-in'), i.drawImage(this.Lt, 0, 0);
+                    if(
+                      (i.scale(t, t),
+                      i.drawImage(this.Lt, 0, 0),
+                      (i.globalCompositeOperation = 'multiply'),
+                      'multiply' === i.globalCompositeOperation || this.ju())
+                    )
+                      (i.fillStyle = zo(this.Mu)),
+                        i.fillRect(0, 0, n.width / t, n.height / t),
+                        (i.globalCompositeOperation = 'destination-in'),
+                        i.drawImage(this.Lt, 0, 0);
                     else {
                       for(
-                        var r = i.getImageData(0, 0, n.width, n.height), e = r.data, o = this.Mu[0] / 255, s = this.Mu[1] / 255, u = this.Mu[2] / 255, a = this.Mu[3], h = 0, f = e.length;
+                        var r = i.getImageData(0, 0, n.width, n.height),
+                          e = r.data,
+                          o = this.Mu[0] / 255,
+                          s = this.Mu[1] / 255,
+                          u = this.Mu[2] / 255,
+                          a = this.Mu[3],
+                          h = 0,
+                          f = e.length;
                         h < f;
                         h += 4
                       )
@@ -12857,7 +14209,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -12889,7 +14242,10 @@
                 var h = void 0 !== r.img ? r.img : null;
                 i.Iu = r.imgSize;
                 var f = r.src;
-                St(!(void 0 !== f && h), 4), St(!h || (h && i.Iu), 5), (void 0 !== f && 0 !== f.length) || !h || (f = h.src || o(h)), St(void 0 !== f && f.length > 0, 6);
+                St(!(void 0 !== f && h), 4),
+                  St(!h || (h && i.Iu), 5),
+                  (void 0 !== f && 0 !== f.length) || !h || (f = h.src || o(h)),
+                  St(void 0 !== f && f.length > 0, 6);
                 var c = void 0 !== r.src ? lo : po;
                 return (
                   (i.Mu = void 0 !== r.color ? Go(r.color) : null),
@@ -12936,7 +14292,9 @@
                     }
                     if(this.Pu != av) {
                       if(!n) return null;
-                      t === this.xe && (t = this.xe.slice()), (this.Pu != hv && this.Pu != uv) || (t[0] = -t[0] + n[0]), (this.Pu != sv && this.Pu != uv) || (t[1] = -t[1] + n[1]);
+                      t === this.xe && (t = this.xe.slice()),
+                        (this.Pu != hv && this.Pu != uv) || (t[0] = -t[0] + n[0]),
+                        (this.Pu != sv && this.Pu != uv) || (t[1] = -t[1] + n[1]);
                     }
                     this.Au = t;
                   }
@@ -12971,7 +14329,9 @@
                     var n = this.getSize(),
                       i = this.Nu.getSize();
                     if(!n || !i) return null;
-                    (t = t.slice()), (this.zu != hv && this.zu != uv) || (t[0] = i[0] - n[0] - t[0]), (this.zu != sv && this.zu != uv) || (t[1] = i[1] - n[1] - t[1]);
+                    (t = t.slice()),
+                      (this.zu != hv && this.zu != uv) || (t[0] = i[0] - n[0] - t[0]),
+                      (this.zu != sv && this.zu != uv) || (t[1] = i[1] - n[1] - t[1]);
                   }
                   return (this._o = t), this._o;
                 }),
@@ -13187,7 +14547,10 @@
             return (
               (t.Polygon = [new wv({ fill: new rv({ color: [255, 255, 255, 0.5] }) })]),
               (t.MultiPolygon = t.Polygon),
-              (t.LineString = [new wv({ stroke: new mv({ color: n, width: 5 }) }), new wv({ stroke: new mv({ color: i, width: 3 }) })]),
+              (t.LineString = [
+                new wv({ stroke: new mv({ color: n, width: 5 }) }),
+                new wv({ stroke: new mv({ color: i, width: 3 }) })
+              ]),
               (t.MultiLineString = t.LineString),
               (t.Circle = t.Polygon.concat(t.LineString)),
               (t.Point = [
@@ -13518,7 +14881,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -13609,7 +14973,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -13627,7 +14992,12 @@
                     wrapX: n.wrapX,
                     interpolate: n.interpolate
                   }) || this;
-                i.on, i.once, i.un, (i.ya = void 0 !== n.opaque && n.opaque), (i.ma = void 0 !== n.tilePixelRatio ? n.tilePixelRatio : 1), (i.tileGrid = void 0 !== n.tileGrid ? n.tileGrid : null);
+                i.on,
+                  i.once,
+                  i.un,
+                  (i.ya = void 0 !== n.opaque && n.opaque),
+                  (i.ma = void 0 !== n.tilePixelRatio ? n.tilePixelRatio : 1),
+                  (i.tileGrid = void 0 !== n.tileGrid ? n.tileGrid : null);
                 return (
                   i.tileGrid && Qu(i.tileGrid.getTileSize(i.tileGrid.getMinZoom()), [256, 256]),
                   (i.tileCache = new Ih(n.cacheSize || 0)),
@@ -13651,7 +15021,11 @@
                   var e = this.getTileCacheForProjection(t);
                   if(!e) return !1;
                   for(var o, s, u, a = !0, h = i.minX; h <= i.maxX; ++h)
-                    for(var f = i.minY; f <= i.maxY; ++f) (s = jh(n, h, f)), (u = !1), e.containsKey(s) && (u = (o = e.get(s)).getState() === vt) && (u = !1 !== r(o)), u || (a = !1);
+                    for(var f = i.minY; f <= i.maxY; ++f)
+                      (s = jh(n, h, f)),
+                        (u = !1),
+                        e.containsKey(s) && (u = (o = e.get(s)).getState() === vt) && (u = !1 !== r(o)),
+                        u || (a = !1);
                   return a;
                 }),
                 (n.prototype.getGutterForProjection = function(t) {
@@ -13731,7 +15105,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -13772,7 +15147,9 @@
                   return this.tileLoadFunction;
                 }),
                 (n.prototype.getTileUrlFunction = function() {
-                  return Object.getPrototypeOf(this).tileUrlFunction === this.tileUrlFunction ? this.tileUrlFunction.bind(this) : this.tileUrlFunction;
+                  return Object.getPrototypeOf(this).tileUrlFunction === this.tileUrlFunction
+                    ? this.tileUrlFunction.bind(this)
+                    : this.tileUrlFunction;
                 }),
                 (n.prototype.getUrls = function() {
                   return this.urls;
@@ -13782,13 +15159,18 @@
                     i = t.target,
                     r = o(i),
                     e = i.getState();
-                  e == lt ? ((this.ga[r] = !0), (n = Cv)) : r in this.ga && (delete this.ga[r], (n = e == dt ? Iv : e == vt ? kv : void 0)), null != n && this.dispatchEvent(new Gv(n, i));
+                  e == lt
+                    ? ((this.ga[r] = !0), (n = Cv))
+                    : r in this.ga && (delete this.ga[r], (n = e == dt ? Iv : e == vt ? kv : void 0)),
+                    null != n && this.dispatchEvent(new Gv(n, i));
                 }),
                 (n.prototype.setTileLoadFunction = function(t) {
                   this.tileCache.clear(), (this.tileLoadFunction = t), this.changed();
                 }),
                 (n.prototype.setTileUrlFunction = function(t, n) {
-                  (this.tileUrlFunction = t), this.tileCache.pruneExceptNewestZ(), void 0 !== n ? this.setKey(n) : this.changed();
+                  (this.tileUrlFunction = t),
+                    this.tileCache.pruneExceptNewestZ(),
+                    void 0 !== n ? this.setKey(n) : this.changed();
                 }),
                 (n.prototype.setUrl = function(t) {
                   var n = If(t);
@@ -13820,7 +15202,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -13868,12 +15251,14 @@
                 Bv(n, t),
                 (n.prototype.canExpireCache = function() {
                   if(this.tileCache.canExpireCache()) return !0;
-                  for(var t in this.tileCacheForProjection) if(this.tileCacheForProjection[t].canExpireCache()) return !0;
+                  for(var t in this.tileCacheForProjection)
+                    if(this.tileCacheForProjection[t].canExpireCache()) return !0;
                   return !1;
                 }),
                 (n.prototype.expireCache = function(t, n) {
                   var i = this.getTileCacheForProjection(t);
-                  for(var r in (this.tileCache.expireCache(this.tileCache == i ? n : {}), this.tileCacheForProjection)) {
+                  for(var r in (this.tileCache.expireCache(this.tileCache == i ? n : {}),
+                  this.tileCacheForProjection)) {
                     var e = this.tileCacheForProjection[r];
                     e.expireCache(e == i ? n : {});
                   }
@@ -13889,13 +15274,18 @@
                   return this.getInterpolate() || (n += ':disable-interpolation'), n;
                 }),
                 (n.prototype.getOpaque = function(n) {
-                  return !(this.getProjection() && n && !Sr(this.getProjection(), n)) && t.prototype.getOpaque.call(this, n);
+                  return (
+                    !(this.getProjection() && n && !Sr(this.getProjection(), n)) && t.prototype.getOpaque.call(this, n)
+                  );
                 }),
                 (n.prototype.getTileGridForProjection = function(t) {
                   var n = this.getProjection();
                   if(!this.tileGrid || (n && !Sr(n, t))) {
                     var i = o(t);
-                    return i in this.tileGridForProjection || (this.tileGridForProjection[i] = Mf(t)), this.tileGridForProjection[i];
+                    return (
+                      i in this.tileGridForProjection || (this.tileGridForProjection[i] = Mf(t)),
+                      this.tileGridForProjection[i]
+                    );
                   }
                   return this.tileGrid;
                 }),
@@ -13903,13 +15293,24 @@
                   var n = this.getProjection();
                   if(!n || Sr(n, t)) return this.tileCache;
                   var i = o(t);
-                  return i in this.tileCacheForProjection || (this.tileCacheForProjection[i] = new Ih(this.tileCache.highWaterMark)), this.tileCacheForProjection[i];
+                  return (
+                    i in this.tileCacheForProjection ||
+                      (this.tileCacheForProjection[i] = new Ih(this.tileCache.highWaterMark)),
+                    this.tileCacheForProjection[i]
+                  );
                 }),
                 (n.prototype.Ma = function(t, n, i, r, e, o) {
                   var s = [t, n, i],
                     u = this.getTileCoordForTileUrlFunction(s, e),
                     a = u ? this.tileUrlFunction(u, r, e) : void 0,
-                    h = new this.tileClass(s, void 0 !== a ? ct : pt, void 0 !== a ? a : '', this.crossOrigin, this.tileLoadFunction, this.tileOptions);
+                    h = new this.tileClass(
+                      s,
+                      void 0 !== a ? ct : pt,
+                      void 0 !== a ? a : '',
+                      this.crossOrigin,
+                      this.tileLoadFunction,
+                      this.tileOptions
+                    );
                   return (h.key = o), h.addEventListener(L, this.handleTileChange.bind(this)), h;
                 }),
                 (n.prototype.getTile = function(t, n, i, r, e) {
@@ -13941,7 +15342,9 @@
                         this.xa,
                         this.getInterpolate()
                       );
-                    return (d.key = f), a ? ((d.interimTile = a), d.refreshInterimChain(), s.replace(h, d)) : s.set(h, d), d;
+                    return (
+                      (d.key = f), a ? ((d.interimTile = a), d.refreshInterimChain(), s.replace(h, d)) : s.set(h, d), d
+                    );
                   }
                   return this.getTileInternal(t, n, i, r, o || e);
                 }),
@@ -13952,7 +15355,10 @@
                   if(this.tileCache.containsKey(s)) {
                     if((o = this.tileCache.get(s)).key != u) {
                       var a = o;
-                      (o = this.Ma(t, n, i, r, e, u)), a.getState() == ct ? (o.interimTile = a.interimTile) : (o.interimTile = a), o.refreshInterimChain(), this.tileCache.replace(s, o);
+                      (o = this.Ma(t, n, i, r, e, u)),
+                        a.getState() == ct ? (o.interimTile = a.interimTile) : (o.interimTile = a),
+                        o.refreshInterimChain(),
+                        this.tileCache.replace(s, o);
                     }
                   } else (o = this.Ma(t, n, i, r, e, u)), this.tileCache.set(s, o);
                   return o;
@@ -13986,7 +15392,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -13999,7 +15406,8 @@
               r = t[0],
               e = new Array(r),
               o = 1 << (r - 1);
-            for(n = 0; n < r; ++n) (i = 48), t[1] & o && (i += 1), t[2] & o && (i += 2), (e[n] = String.fromCharCode(i)), (o >>= 1);
+            for(n = 0; n < r; ++n)
+              (i = 48), t[1] & o && (i += 1), t[2] & o && (i += 2), (e[n] = String.fromCharCode(i)), (o >>= 1);
             return e.join('');
           }
           var Zv = (function (t) {
@@ -14029,7 +15437,12 @@
                   (i.ja = n.key),
                   (i.Ea = n.imagerySet),
                   Zh(
-                    'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/' + i.Ea + '?uriScheme=https&include=ImageryProviders&key=' + i.ja + '&c=' + i.Sa,
+                    'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/' +
+                      i.Ea +
+                      '?uriScheme=https&include=ImageryProviders&key=' +
+                      i.ja +
+                      '&c=' +
+                      i.Sa,
                     i.handleImageryMetadataResponse.bind(i),
                     void 0,
                     'jsonp'
@@ -14046,7 +15459,13 @@
                   return this.Ea;
                 }),
                 (n.prototype.handleImageryMetadataResponse = function(t) {
-                  if(200 == t.statusCode && 'OK' == t.statusDescription && 'ValidCredentials' == t.authenticationResultCode && 1 == t.resourceSets.length && 1 == t.resourceSets[0].resources.length) {
+                  if(
+                    200 == t.statusCode &&
+                    'OK' == t.statusDescription &&
+                    'ValidCredentials' == t.authenticationResultCode &&
+                    1 == t.resourceSets.length &&
+                    1 == t.resourceSets[0].resources.length
+                  ) {
                     var n = t.resourceSets[0].resources[0],
                       i = -1 == this.Oa ? n.zoomMax : this.Oa,
                       r = Tf(this.getProjection()),
@@ -14094,7 +15513,9 @@
                               }
                               r && i.push(n.attribution);
                             }),
-                            i.push('<a class="ol-attribution-bing-tos" href="https://www.microsoft.com/maps/product/terms.html" target="_blank">Terms of Use</a>'),
+                            i.push(
+                              '<a class="ol-attribution-bing-tos" href="https://www.microsoft.com/maps/product/terms.html" target="_blank">Terms of Use</a>'
+                            ),
                             i
                           );
                         }.bind(this)
@@ -14119,7 +15540,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -14188,7 +15610,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -14252,7 +15675,8 @@
                   this.setState('error');
                 }),
                 (n.prototype.Ia = function(t) {
-                  var n = 'https://' + t.cdn_url.https + '/' + this.Ta + '/api/v1/map/' + t.layergroupid + '/{z}/{x}/{y}.png';
+                  var n =
+                    'https://' + t.cdn_url.https + '/' + this.Ta + '/api/v1/map/' + t.layergroupid + '/{z}/{x}/{y}.png';
                   this.setUrl(n);
                 }),
                 n
@@ -14278,7 +15702,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -14354,7 +15779,11 @@
                 (n.prototype.Ya = function(t, n) {
                   var i = !0,
                     r = n.getId();
-                  return void 0 !== r && (r.toString() in this.Ua ? (i = !1) : (this.Ua[r.toString()] = n)), i && (St(!(t in this.Ba), 30), (this.Ba[t] = n)), i;
+                  return (
+                    void 0 !== r && (r.toString() in this.Ua ? (i = !1) : (this.Ua[r.toString()] = n)),
+                    i && (St(!(t in this.Ba), 30), (this.Ba[t] = n)),
+                    i
+                  );
                 }),
                 (n.prototype.addFeatures = function(t) {
                   this.addFeaturesInternal(t), this.changed();
@@ -14445,7 +15874,12 @@
                 }),
                 (n.prototype.getFeatures = function() {
                   var t;
-                  return this.Va ? (t = this.Va.getArray().slice(0)) : this.Fa && ((t = this.Fa.getAll()), k(this.qa) || g(t, C(this.qa))), t;
+                  return (
+                    this.Va
+                      ? (t = this.Va.getArray().slice(0))
+                      : this.Fa && ((t = this.Fa.getAll()), k(this.qa) || g(t, C(this.qa))),
+                    t
+                  );
                 }),
                 (n.prototype.getFeaturesAtCoordinate = function(t) {
                   var n = [];
@@ -14519,7 +15953,9 @@
                     r = n.getGeometry();
                   if(r) {
                     var e = r.getExtent();
-                    i in this.qa ? (delete this.qa[i], this.Fa && this.Fa.insert(e, n)) : this.Fa && this.Fa.update(e, n);
+                    i in this.qa
+                      ? (delete this.qa[i], this.Fa && this.Fa.insert(e, n))
+                      : this.Fa && this.Fa.update(e, n);
                   } else i in this.qa || (this.Fa && this.Fa.remove(n), (this.qa[i] = n));
                   var s = n.getId();
                   if(void 0 !== s) {
@@ -14583,7 +16019,8 @@
                 (n.prototype.removeFeature = function(t) {
                   if(t) {
                     var n = o(t);
-                    n in this.qa ? delete this.qa[n] : this.Fa && this.Fa.remove(t), this.removeFeatureInternal(t) && this.changed();
+                    n in this.qa ? delete this.qa[n] : this.Fa && this.Fa.remove(t),
+                      this.removeFeatureInternal(t) && this.changed();
                   }
                 }),
                 (n.prototype.removeFeatureInternal = function(t) {
@@ -14592,7 +16029,12 @@
                   if(i) {
                     i.forEach(H), delete this.Xa[n];
                     var r = t.getId();
-                    return void 0 !== r && delete this.Ua[r.toString()], delete this.Ba[n], this.dispatchEvent(new ud(id, t)), t;
+                    return (
+                      void 0 !== r && delete this.Ua[r.toString()],
+                      delete this.Ba[n],
+                      this.dispatchEvent(new ud(id, t)),
+                      t
+                    );
                   }
                 }),
                 (n.prototype.Ka = function(t) {
@@ -14626,7 +16068,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -14680,7 +16123,10 @@
                   return this.minDistance;
                 }),
                 (n.prototype.setSource = function(t) {
-                  this.source && this.source.removeEventListener(L, this.Ja), (this.source = t), t && t.addEventListener(L, this.Ja), this.refresh();
+                  this.source && this.source.removeEventListener(L, this.Ja),
+                    (this.source = t),
+                    t && t.addEventListener(L, this.Ja),
+                    this.refresh();
                 }),
                 (n.prototype.refresh = function() {
                   this.clear(), this.cluster(), this.addFeatures(this.features);
@@ -14692,7 +16138,16 @@
                 }),
                 (n.prototype.cluster = function() {
                   if(void 0 !== this.resolution && this.source)
-                    for(var t = [1 / 0, 1 / 0, -1 / 0, -1 / 0], n = this.distance * this.resolution, i = this.source.getFeatures(), r = {}, e = 0, s = i.length; e < s; e++) {
+                    for(
+                      var t = [1 / 0, 1 / 0, -1 / 0, -1 / 0],
+                        n = this.distance * this.resolution,
+                        i = this.source.getFeatures(),
+                        r = {},
+                        e = 0,
+                        s = i.length;
+                      e < s;
+                      e++
+                    ) {
                       var u = i[e];
                       if(!(o(u) in r)) {
                         var a = this.geometryFunction(u);
@@ -14734,7 +16189,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -14776,7 +16232,14 @@
                   var o = Qu(e.getTileSize(0));
                   i.jo = [o[0] * n.tilePixelRatio, o[1] * n.tilePixelRatio];
                 }
-                return (i.Oo = null), (i.ga = {}), (i.U = n.loader), (i.cr = i.cr.bind(i)), (i.bandCount = void 0 === n.bandCount ? 4 : n.bandCount), i;
+                return (
+                  (i.Oo = null),
+                  (i.ga = {}),
+                  (i.U = n.loader),
+                  (i.cr = i.cr.bind(i)),
+                  (i.bandCount = void 0 === n.bandCount ? 4 : n.bandCount),
+                  i
+                );
               }
               return (
                 cd(n, t),
@@ -14820,7 +16283,10 @@
                     i = t.target,
                     r = o(i),
                     e = i.getState();
-                  e == lt ? ((this.ga[r] = !0), (n = Cv)) : r in this.ga && (delete this.ga[r], (n = e == dt ? Iv : e == vt ? kv : void 0)), n && this.dispatchEvent(new Gv(n, i));
+                  e == lt
+                    ? ((this.ga[r] = !0), (n = Cv))
+                    : r in this.ga && (delete this.ga[r], (n = e == dt ? Iv : e == vt ? kv : void 0)),
+                    n && this.dispatchEvent(new Gv(n, i));
                 }),
                 n
               );
@@ -14835,7 +16301,10 @@
             n < -27
               ? ((yd[t] = 0), (yd[256 | t] = 32768), (md[t] = 24), (md[256 | t] = 24))
               : n < -14
-              ? ((yd[t] = 1024 >> (-n - 14)), (yd[256 | t] = (1024 >> (-n - 14)) | 32768), (md[t] = -n - 1), (md[256 | t] = -n - 1))
+              ? ((yd[t] = 1024 >> (-n - 14)),
+                (yd[256 | t] = (1024 >> (-n - 14)) | 32768),
+                (md[t] = -n - 1),
+                (md[256 | t] = -n - 1))
               : n <= 15
               ? ((yd[t] = (n + 15) << 10), (yd[256 | t] = ((n + 15) << 10) | 32768), (md[t] = 13), (md[256 | t] = 13))
               : n < 128
@@ -15051,9 +16520,18 @@
             );
           var Ud = class {
             constructor(t, n, i, r, e, o) {
-              (this.fileDirectory = t), (this.geoKeys = n), (this.dataView = i), (this.littleEndian = r), (this.tiles = e ? {} : null), (this.isTiled = !t.StripOffsets);
+              (this.fileDirectory = t),
+                (this.geoKeys = n),
+                (this.dataView = i),
+                (this.littleEndian = r),
+                (this.tiles = e ? {} : null),
+                (this.isTiled = !t.StripOffsets);
               const s = t.PlanarConfiguration;
-              if(((this.planarConfiguration = void 0 === s ? 1 : s), 1 !== this.planarConfiguration && 2 !== this.planarConfiguration)) throw new Error('Invalid planar configuration.');
+              if(
+                ((this.planarConfiguration = void 0 === s ? 1 : s),
+                1 !== this.planarConfiguration && 2 !== this.planarConfiguration)
+              )
+                throw new Error('Invalid planar configuration.');
               this.source = o;
             }
             getFileDirectory() {
@@ -15075,13 +16553,19 @@
               return this.isTiled ? this.fileDirectory.TileWidth : this.getWidth();
             }
             getTileHeight() {
-              return this.isTiled ? this.fileDirectory.TileLength : void 0 !== this.fileDirectory.RowsPerStrip ? Math.min(this.fileDirectory.RowsPerStrip, this.getHeight()) : this.getHeight();
+              return this.isTiled
+                ? this.fileDirectory.TileLength
+                : void 0 !== this.fileDirectory.RowsPerStrip
+                ? Math.min(this.fileDirectory.RowsPerStrip, this.getHeight())
+                : this.getHeight();
             }
             getBlockWidth() {
               return this.getTileWidth();
             }
             getBlockHeight(t) {
-              return this.isTiled || (t + 1) * this.getTileHeight() <= this.getHeight() ? this.getTileHeight() : this.getHeight() - t * this.getTileHeight();
+              return this.isTiled || (t + 1) * this.getTileHeight() <= this.getHeight()
+                ? this.getTileHeight()
+                : this.getHeight() - t * this.getTileHeight();
             }
             getBytesPerPixel() {
               let t = 0;
@@ -15089,7 +16573,8 @@
               return t;
             }
             getSampleByteSize(t) {
-              if(t >= this.fileDirectory.BitsPerSample.length) throw new RangeError(`Sample index ${t} is out of range.`);
+              if(t >= this.fileDirectory.BitsPerSample.length)
+                throw new RangeError(`Sample index ${t} is out of range.`);
               return Math.ceil(this.fileDirectory.BitsPerSample[t] / 8);
             }
             getReaderForSample(t) {
@@ -15137,7 +16622,9 @@
               let u;
               const { tiles: a } = this;
               let h, f;
-              1 === this.planarConfiguration ? (u = n * o + t) : 2 === this.planarConfiguration && (u = i * o * s + n * o + t),
+              1 === this.planarConfiguration
+                ? (u = n * o + t)
+                : 2 === this.planarConfiguration && (u = i * o * s + n * o + t),
                 this.isTiled
                   ? ((h = this.fileDirectory.TileOffsets[u]), (f = this.fileDirectory.TileByteCounts[u]))
                   : ((h = this.fileDirectory.StripOffsets[u]), (f = this.fileDirectory.StripByteCounts[u]));
@@ -15152,7 +16639,10 @@
                         e = this.getBitsPerSample();
                       return (
                         (function (t, n) {
-                          return ((1 !== t && 2 !== t) || !(n <= 32) || n % 8 != 0) && (3 !== t || (16 !== n && 32 !== n && 64 !== n));
+                          return (
+                            ((1 !== t && 2 !== t) || !(n <= 32) || n % 8 != 0) &&
+                            (3 !== t || (16 !== n && 32 !== n && 64 !== n))
+                          );
                         })(i, e) &&
                           (t = (function (t, n, i, r, e, o, s) {
                             const u = new DataView(t),
@@ -15184,7 +16674,15 @@
                               }
                             }
                             return h.buffer;
-                          })(t, i, this.planarConfiguration, this.getSamplesPerPixel(), e, this.getTileWidth(), this.getBlockHeight(n))),
+                          })(
+                            t,
+                            i,
+                            this.planarConfiguration,
+                            this.getSamplesPerPixel(),
+                            e,
+                            this.getTileWidth(),
+                            this.getBlockHeight(n)
+                          )),
                         t
                       );
                     })()),
@@ -15205,7 +16703,9 @@
               let w = this.getBytesPerPixel();
               const g = [],
                 b = [];
-              for(let t = 0; t < n.length; ++t) 1 === this.planarConfiguration ? g.push(Dd(this.fileDirectory.BitsPerSample, 0, n[t]) / 8) : g.push(0), b.push(this.getReaderForSample(n[t]));
+              for(let t = 0; t < n.length; ++t)
+                1 === this.planarConfiguration ? g.push(Dd(this.fileDirectory.BitsPerSample, 0, n[t]) / 8) : g.push(0),
+                  b.push(this.getReaderForSample(n[t]));
               const x = [],
                 { littleEndian: M } = this;
               for(let o = p; o < y; ++o)
@@ -15232,7 +16732,9 @@
                             const u = (e * h + o) * w,
                               f = x.call(s, u + g[v], M);
                             let c;
-                            r ? ((c = (e + a - t[1]) * m * n.length + (o + d - t[0]) * n.length + v), (i[c] = f)) : ((c = (e + a - t[1]) * m + o + d - t[0]), (i[v][c] = f));
+                            r
+                              ? ((c = (e + a - t[1]) * m * n.length + (o + d - t[0]) * n.length + v), (i[c] = f))
+                              : ((c = (e + a - t[1]) * m + o + d - t[0]), (i[v][c] = f));
                           }
                       });
                   }
@@ -15288,11 +16790,16 @@
               const f = (h[2] - h[0]) * (h[3] - h[1]),
                 c = this.getSamplesPerPixel();
               if(n && n.length) {
-                for(let t = 0; t < n.length; ++t) if(n[t] >= c) return Promise.reject(new RangeError(`Invalid sample index '${n[t]}'.`));
+                for(let t = 0; t < n.length; ++t)
+                  if(n[t] >= c) return Promise.reject(new RangeError(`Invalid sample index '${n[t]}'.`));
               } else for(let t = 0; t < c; ++t) n.push(t);
               let l;
               if(i) {
-                (l = qd(this.fileDirectory.SampleFormat ? Math.max.apply(null, this.fileDirectory.SampleFormat) : 1, Math.max.apply(null, this.fileDirectory.BitsPerSample), f * n.length)),
+                (l = qd(
+                  this.fileDirectory.SampleFormat ? Math.max.apply(null, this.fileDirectory.SampleFormat) : 1,
+                  Math.max.apply(null, this.fileDirectory.BitsPerSample),
+                  f * n.length
+                )),
                   u && l.fill(u);
               } else {
                 l = [];
@@ -15372,7 +16879,8 @@
                     const { width: i, height: r } = t,
                       e = new Uint8Array(i * r * 3);
                     let o;
-                    for(let i = 0, r = 0; i < t.length; ++i, r += 3) (o = 256 - (t[i] / n) * 256), (e[r] = o), (e[r + 1] = o), (e[r + 2] = o);
+                    for(let i = 0, r = 0; i < t.length; ++i, r += 3)
+                      (o = 256 - (t[i] / n) * 256), (e[r] = o), (e[r + 1] = o), (e[r + 2] = o);
                     return e;
                   })(v, d);
                   break;
@@ -15381,7 +16889,8 @@
                     const { width: i, height: r } = t,
                       e = new Uint8Array(i * r * 3);
                     let o;
-                    for(let i = 0, r = 0; i < t.length; ++i, r += 3) (o = (t[i] / n) * 256), (e[r] = o), (e[r + 1] = o), (e[r + 2] = o);
+                    for(let i = 0, r = 0; i < t.length; ++i, r += 3)
+                      (o = (t[i] / n) * 256), (e[r] = o), (e[r + 1] = o), (e[r + 2] = o);
                     return e;
                   })(v, d);
                   break;
@@ -15393,7 +16902,9 @@
                       s = (n.length / 3) * 2;
                     for(let i = 0, r = 0; i < t.length; ++i, r += 3) {
                       const u = t[i];
-                      (e[r] = (n[u] / 65536) * 256), (e[r + 1] = (n[u + o] / 65536) * 256), (e[r + 2] = (n[u + s] / 65536) * 256);
+                      (e[r] = (n[u] / 65536) * 256),
+                        (e[r + 1] = (n[u + o] / 65536) * 256),
+                        (e[r + 2] = (n[u + s] / 65536) * 256);
                     }
                     return e;
                   })(v, l.ColorMap);
@@ -15407,7 +16918,9 @@
                         o = t[n + 1],
                         s = t[n + 2],
                         u = t[n + 3];
-                      (r[i] = ((255 - e) / 256) * 255 * ((255 - u) / 256)), (r[i + 1] = ((255 - o) / 256) * 255 * ((255 - u) / 256)), (r[i + 2] = ((255 - s) / 256) * 255 * ((255 - u) / 256));
+                      (r[i] = ((255 - e) / 256) * 255 * ((255 - u) / 256)),
+                        (r[i + 1] = ((255 - o) / 256) * 255 * ((255 - u) / 256)),
+                        (r[i + 2] = ((255 - s) / 256) * 255 * ((255 - u) / 256));
                     }
                     return r;
                   })(v);
@@ -15420,7 +16933,9 @@
                       const e = t[n],
                         o = t[n + 1],
                         s = t[n + 2];
-                      (r[i] = e + 1.402 * (s - 128)), (r[i + 1] = e - 0.34414 * (o - 128) - 0.71414 * (s - 128)), (r[i + 2] = e + 1.772 * (o - 128));
+                      (r[i] = e + 1.402 * (s - 128)),
+                        (r[i + 1] = e - 0.34414 * (o - 128) - 0.71414 * (s - 128)),
+                        (r[i + 2] = e + 1.772 * (o - 128));
                     }
                     return r;
                   })(v);
@@ -15511,7 +17026,11 @@
               if(i) return [i[0], i[5], i[10]];
               if(t) {
                 const [n, i, r] = t.getResolution();
-                return [(n * t.getWidth()) / this.getWidth(), (i * t.getHeight()) / this.getHeight(), (r * t.getWidth()) / this.getWidth()];
+                return [
+                  (n * t.getWidth()) / this.getWidth(),
+                  (i * t.getHeight()) / this.getHeight(),
+                  (r * t.getWidth()) / this.getWidth()
+                ];
               }
               throw new Error('The image does not have an affine transformation.');
             }
@@ -15541,11 +17060,15 @@
               let e;
               if(n) {
                 if(((e = i + 2 ** 32 * r), !Number.isSafeInteger(e)))
-                  throw new Error(`${e} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`);
+                  throw new Error(
+                    `${e} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`
+                  );
                 return e;
               }
               if(((e = 2 ** 32 * i + r), !Number.isSafeInteger(e)))
-                throw new Error(`${e} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`);
+                throw new Error(
+                  `${e} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`
+                );
               return e;
             }
             getInt64(t, n) {
@@ -15588,7 +17111,10 @@
           }
           class Xd {
             constructor(t, n, i, r) {
-              (this._dataView = new DataView(t)), (this._sliceOffset = n), (this._littleEndian = i), (this._bigTiff = r);
+              (this._dataView = new DataView(t)),
+                (this._sliceOffset = n),
+                (this._littleEndian = i),
+                (this._bigTiff = r);
             }
             get sliceOffset() {
               return this._sliceOffset;
@@ -15638,11 +17164,15 @@
               let r;
               if(this._littleEndian) {
                 if(((r = n + 2 ** 32 * i), !Number.isSafeInteger(r)))
-                  throw new Error(`${r} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`);
+                  throw new Error(
+                    `${r} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`
+                  );
                 return r;
               }
               if(((r = 2 ** 32 * n + i), !Number.isSafeInteger(r)))
-                throw new Error(`${r} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`);
+                throw new Error(
+                  `${r} exceeds MAX_SAFE_INTEGER. Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues`
+                );
               return r;
             }
             readInt64(t) {
@@ -15676,7 +17206,14 @@
           }
           function Zd(t) {
             let n, i, r;
-            return t && (([, n, i, r] = t.match(/bytes (\d+)-(\d+)\/(\d+)/)), (n = parseInt(n, 10)), (i = parseInt(i, 10)), (r = parseInt(r, 10))), { start: n, end: i, total: r };
+            return (
+              t &&
+                (([, n, i, r] = t.match(/bytes (\d+)-(\d+)\/(\d+)/)),
+                (n = parseInt(n, 10)),
+                (i = parseInt(i, 10)),
+                (r = parseInt(r, 10))),
+              { start: n, end: i, total: r }
+            );
           }
           class $d {
             async fetch(t) {
@@ -15724,8 +17261,14 @@
           }
           class rp extends $d {
             constructor(t) {
-              let { blockSize: n = 65536, cacheSize: i = 100 } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-              super(), (this.source = t), (this.blockSize = n), (this.blockCache = new Kd({ max: i })), (this.blockRequests = new Map()), (this.blockIdsToFetch = new Set());
+              let { blockSize: n = 65536, cacheSize: i = 100 } =
+                arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+              super(),
+                (this.source = t),
+                (this.blockSize = n),
+                (this.blockCache = new Kd({ max: i })),
+                (this.blockRequests = new Map()),
+                (this.blockIdsToFetch = new Set());
             }
             get fileSize() {
               return this.source.fileSize;
@@ -15823,7 +17366,10 @@
               let i = [],
                 r = null;
               const e = [];
-              for(const t of n) null === r || r + 1 === t ? (i.push(t), (r = t)) : (e.push(new ip(i[0] * this.blockSize, i.length * this.blockSize, i)), (i = [t]), (r = t));
+              for(const t of n)
+                null === r || r + 1 === t
+                  ? (i.push(t), (r = t))
+                  : (e.push(new ip(i[0] * this.blockSize, i.length * this.blockSize, i)), (i = [t]), (r = t));
               return e.push(new ip(i[0] * this.blockSize, i.length * this.blockSize, i)), e;
             }
             readSliceData(t, n) {
@@ -15867,7 +17413,11 @@
               this.url = t;
             }
             async request() {
-              let { headers: t, credentials: n, signal: i } = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+              let {
+                headers: t,
+                credentials: n,
+                signal: i
+              } = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
               throw new Error('request is not implemented');
             }
           }
@@ -15882,7 +17432,9 @@
               return this.response.headers.get(t);
             }
             async getData() {
-              return this.response.arrayBuffer ? await this.response.arrayBuffer() : (await this.response.buffer()).buffer;
+              return this.response.arrayBuffer
+                ? await this.response.arrayBuffer()
+                : (await this.response.buffer()).buffer;
             }
           }
           class up extends op {
@@ -15890,7 +17442,11 @@
               super(t), (this.credentials = n);
             }
             async request() {
-              let { headers: t, credentials: n, signal: i } = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+              let {
+                headers: t,
+                credentials: n,
+                signal: i
+              } = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
               const r = await fetch(this.url, { headers: t, credentials: n, signal: i });
               return new sp(r);
             }
@@ -15949,7 +17505,9 @@
           }
           class dp extends op {
             constructor(t) {
-              super(t), (this.parsedUrl = lp.parse(this.url)), (this.httpApi = 'http:' === this.parsedUrl.protocol ? fp : cp);
+              super(t),
+                (this.parsedUrl = lp.parse(this.url)),
+                (this.httpApi = 'http:' === this.parsedUrl.protocol ? fp : cp);
             }
             constructRequest(t, n) {
               return new Promise((i, r) => {
@@ -15967,7 +17525,10 @@
                   });
                   i(new vp(t, n));
                 });
-                e.on('error', r), n && (n.aborted && e.destroy(new Jd('Request aborted')), n.addEventListener('abort', () => e.destroy(new Jd('Request aborted'))));
+                e.on('error', r),
+                  n &&
+                    (n.aborted && e.destroy(new Jd('Request aborted')),
+                    n.addEventListener('abort', () => e.destroy(new Jd('Request aborted'))));
               });
             }
             async request() {
@@ -15977,10 +17538,17 @@
           }
           class pp extends $d {
             constructor(t, n, i, r) {
-              super(), (this.client = t), (this.headers = n), (this.maxRanges = i), (this.allowFullFile = r), (this._fileSize = null);
+              super(),
+                (this.client = t),
+                (this.headers = n),
+                (this.maxRanges = i),
+                (this.allowFullFile = r),
+                (this._fileSize = null);
             }
             async fetch(t, n) {
-              return this.maxRanges >= t.length ? this.fetchSlices(t, n) : (this.maxRanges > 0 && t.length, Promise.all(t.map(t => this.fetchSlice(t, n))));
+              return this.maxRanges >= t.length
+                ? this.fetchSlices(t, n)
+                : (this.maxRanges > 0 && t.length, Promise.all(t.map(t => this.fetchSlice(t, n))));
             }
             async fetchSlices(t, n) {
               const i = await this.client.request({
@@ -16021,7 +17589,8 @@
                           { start: f, end: c, total: l } = Zd(h['content-range']),
                           v = i + o.length + a + Vd.length,
                           d = parseInt(c, 10) + 1 - parseInt(f, 10);
-                        e.push({ headers: h, data: t.slice(v, v + d), offset: f, length: d, fileSize: l }), (i = v + d + 4);
+                        e.push({ headers: h, data: t.slice(v, v + d), offset: f, length: d, fileSize: l }),
+                          (i = v + d + 4);
                       }
                       return e;
                     })(await i.getData(), e.boundary);
@@ -16074,26 +17643,46 @@
             return null === i ? t : new rp(t, i, r);
           }
           function mp(t) {
-            let { headers: n = {}, credentials: i, maxRanges: r = 0, allowFullFile: e = !1, ...o } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+            let {
+              headers: n = {},
+              credentials: i,
+              maxRanges: r = 0,
+              allowFullFile: e = !1,
+              ...o
+            } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
             const s = new up(t, i),
               u = new pp(s, n, r, e);
             return yp(u, o);
           }
           function wp(t) {
-            let { headers: n = {}, maxRanges: i = 0, allowFullFile: r = !1, ...e } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+            let {
+              headers: n = {},
+              maxRanges: i = 0,
+              allowFullFile: r = !1,
+              ...e
+            } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
             const o = new hp(t),
               s = new pp(o, n, i, r);
             return yp(s, e);
           }
           function gp(t) {
-            let { headers: n = {}, maxRanges: i = 0, allowFullFile: r = !1, ...e } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+            let {
+              headers: n = {},
+              maxRanges: i = 0,
+              allowFullFile: r = !1,
+              ...e
+            } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
             const o = new dp(t),
               s = new pp(o, n, i, r);
             return yp(s, e);
           }
           function bp(t) {
             let { forceXHR: n = !1, ...i } = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-            return 'function' != typeof fetch || n ? ('undefined' != typeof XMLHttpRequest ? wp(t, i) : gp(t, i)) : mp(t, i);
+            return 'function' != typeof fetch || n
+              ? 'undefined' != typeof XMLHttpRequest
+                ? wp(t, i)
+                : gp(t, i)
+              : mp(t, i);
           }
           class xp extends $d {
             constructor(t) {
@@ -16103,7 +17692,11 @@
               return new Promise((i, r) => {
                 const e = this.file.slice(t.offset, t.offset + t.length),
                   o = new FileReader();
-                (o.onload = t => i(t.target.result)), (o.onerror = r), (o.onabort = r), o.readAsArrayBuffer(e), n && n.addEventListener('abort', () => o.abort());
+                (o.onload = t => i(t.target.result)),
+                  (o.onerror = r),
+                  (o.onabort = r),
+                  o.readAsArrayBuffer(e),
+                  n && n.addEventListener('abort', () => o.abort());
               });
             }
           }
@@ -16240,7 +17833,12 @@
               if(s) {
                 const [t, n] = u.getOrigin(),
                   [i, r] = a.getResolution(u);
-                (c = [Math.round((s[0] - t) / i), Math.round((s[1] - n) / r), Math.round((s[2] - t) / i), Math.round((s[3] - n) / r)]),
+                (c = [
+                  Math.round((s[0] - t) / i),
+                  Math.round((s[1] - n) / r),
+                  Math.round((s[2] - t) / i),
+                  Math.round((s[3] - n) / r)
+                ]),
                   (c = [Math.min(c[0], c[2]), Math.min(c[1], c[3]), Math.max(c[0], c[2]), Math.max(c[1], c[3])]);
               }
               return a.readRasters({ ...t, window: c });
@@ -16249,11 +17847,23 @@
           class Ep extends jp {
             constructor(t, n, i, r) {
               let e = arguments.length > 4 && void 0 !== arguments[4] ? arguments[4] : {};
-              super(), (this.source = t), (this.littleEndian = n), (this.bigTiff = i), (this.firstIFDOffset = r), (this.cache = e.cache || !1), (this.ifdRequests = []), (this.ghostValues = null);
+              super(),
+                (this.source = t),
+                (this.littleEndian = n),
+                (this.bigTiff = i),
+                (this.firstIFDOffset = r),
+                (this.cache = e.cache || !1),
+                (this.ifdRequests = []),
+                (this.ghostValues = null);
             }
             async getSlice(t, n) {
               const i = this.bigTiff ? 4048 : 1024;
-              return new Xd((await this.source.fetch([{ offset: t, length: void 0 !== n ? n : i }]))[0], t, this.littleEndian, this.bigTiff);
+              return new Xd(
+                (await this.source.fetch([{ offset: t, length: void 0 !== n ? n : i }]))[0],
+                t,
+                this.littleEndian,
+                this.bigTiff
+              );
             }
             async parseFileDirectoryAt(t) {
               const n = this.bigTiff ? 20 : 12,
@@ -16280,7 +17890,8 @@
                     e = _p(await this.getSlice(t, o), n, i, t);
                   }
                 }
-                (o = 1 === i && -1 === Pd.It.indexOf(t) && n !== Pd.sf.RATIONAL && n !== Pd.sf.SRATIONAL ? e[0] : e), (s[Pd.L[t]] = o);
+                (o = 1 === i && -1 === Pd.It.indexOf(t) && n !== Pd.sf.RATIONAL && n !== Pd.sf.SRATIONAL ? e[0] : e),
+                  (s[Pd.L[t]] = o);
               }
               const a = (function (t) {
                   const n = t.GeoKeyDirectory;
@@ -16294,7 +17905,9 @@
                     let a = null;
                     if(o) {
                       if(((a = t[o]), null == a)) throw new Error(`Could not get value of geoKey '${e}'.`);
-                      'string' == typeof a ? (a = a.substring(u, u + s - 1)) : a.subarray && ((a = a.subarray(u, u + s)), 1 === s && (a = a[0]));
+                      'string' == typeof a
+                        ? (a = a.substring(u, u + s - 1))
+                        : a.subarray && ((a = a.subarray(u, u + s)), 1 === s && (a = a[0]));
                     } else a = u;
                     i[e] = a;
                   }
@@ -16305,7 +17918,8 @@
             }
             async requestIFD(t) {
               if(this.ifdRequests[t]) return this.ifdRequests[t];
-              if(0 === t) return (this.ifdRequests[t] = this.parseFileDirectoryAt(this.firstIFDOffset)), this.ifdRequests[t];
+              if(0 === t)
+                return (this.ifdRequests[t] = this.parseFileDirectoryAt(this.firstIFDOffset)), this.ifdRequests[t];
               if(!this.ifdRequests[t - 1])
                 try {
                   this.ifdRequests[t - 1] = this.requestIFD(t - 1);
@@ -16325,7 +17939,14 @@
             async getImage() {
               let t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0;
               const n = await this.requestIFD(t);
-              return new Ud(n.fileDirectory, n.geoKeyDirectory, this.dataView, this.littleEndian, this.cache, this.source);
+              return new Ud(
+                n.fileDirectory,
+                n.geoKeyDirectory,
+                this.dataView,
+                this.littleEndian,
+                this.cache,
+                this.source
+              );
             }
             async getImageCount() {
               let t = 0,
@@ -16398,7 +18019,9 @@
                 (this.imageCount = null);
             }
             async parseFileDirectoriesPerFile() {
-              const t = [this.mainFile.parseFileDirectoryAt(this.mainFile.firstIFDOffset)].concat(this.overviewFiles.map(t => t.parseFileDirectoryAt(t.firstIFDOffset)));
+              const t = [this.mainFile.parseFileDirectoryAt(this.mainFile.firstIFDOffset)].concat(
+                this.overviewFiles.map(t => t.parseFileDirectoryAt(t.firstIFDOffset))
+              );
               return (this.fileDirectoriesPerFile = await Promise.all(t)), this.fileDirectoriesPerFile;
             }
             async getImage() {
@@ -16422,7 +18045,11 @@
             async getImageCount() {
               if(null !== this.imageCount) return this.imageCount;
               const t = [this.mainFile.getImageCount()].concat(this.overviewFiles.map(t => t.getImageCount()));
-              return (this.imageCounts = await Promise.all(t)), (this.imageCount = this.imageCounts.reduce((t, n) => t + n, 0)), this.imageCount;
+              return (
+                (this.imageCounts = await Promise.all(t)),
+                (this.imageCount = this.imageCounts.reduce((t, n) => t + n, 0)),
+                this.imageCount
+              );
             }
           }
           async function Ap(t, n) {
@@ -16463,9 +18090,11 @@
                         r.idle = !1;
                         const e = this.messageId++,
                           o = t => {
-                            t.data.id === e && ((r.idle = !0), i(t.data.decoded), r.worker.removeEventListener('message', o));
+                            t.data.id === e &&
+                              ((r.idle = !0), i(t.data.decoded), r.worker.removeEventListener('message', o));
                           };
-                        r.worker.addEventListener('message', o), r.worker.postMessage({ fileDirectory: t, buffer: n, id: e }, [n]);
+                        r.worker.addEventListener('message', o),
+                          r.worker.postMessage({ fileDirectory: t, buffer: n, id: e }, [n]);
                       })
                 );
               }
@@ -16490,7 +18119,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -16518,19 +18148,24 @@
             try {
               return t.getResolution(n);
             } catch(i) {
-              return [n.fileDirectory.ImageWidth / t.fileDirectory.ImageWidth, n.fileDirectory.ImageHeight / t.fileDirectory.ImageHeight];
+              return [
+                n.fileDirectory.ImageWidth / t.fileDirectory.ImageWidth,
+                n.fileDirectory.ImageHeight / t.fileDirectory.ImageHeight
+              ];
             }
           }
           function Gp(t) {
             var n = t.geoKeys;
             if(!n) return null;
             if(n.ProjectedCSTypeGeoKey) {
-              if(!(r = yr((i = 'EPSG:' + n.ProjectedCSTypeGeoKey)))) (e = Nt(n.ProjLinearUnitsGeoKey)) && (r = new ei({ code: i, units: e }));
+              if(!(r = yr((i = 'EPSG:' + n.ProjectedCSTypeGeoKey))))
+                (e = Nt(n.ProjLinearUnitsGeoKey)) && (r = new ei({ code: i, units: e }));
               return r;
             }
             if(n.GeographicTypeGeoKey) {
               var i, r, e;
-              if(!(r = yr((i = 'EPSG:' + n.GeographicTypeGeoKey)))) (e = Nt(n.GeogAngularUnitsGeoKey)) && (r = new ei({ code: i, units: e }));
+              if(!(r = yr((i = 'EPSG:' + n.GeographicTypeGeoKey))))
+                (e = Nt(n.GeogAngularUnitsGeoKey)) && (r = new ei({ code: i, units: e }));
               return r;
             }
             return null;
@@ -16572,7 +18207,15 @@
             } else if(((n = n), Math.abs(t - n) > i * t)) throw new Error(r);
           }
           function Bp(t) {
-            return t instanceof Int8Array ? -128 : t instanceof Int16Array ? -32768 : t instanceof Int32Array ? -2147483648 : t instanceof Float32Array ? 12e-39 : 0;
+            return t instanceof Int8Array
+              ? -128
+              : t instanceof Int16Array
+              ? -32768
+              : t instanceof Int32Array
+              ? -2147483648
+              : t instanceof Float32Array
+              ? 12e-39
+              : 0;
           }
           function Xp(t) {
             return t instanceof Int8Array
@@ -16674,7 +18317,10 @@
                         m[_] = [O[0], O[1] / j];
                       }
                       if((n ? Wn(n, d, n) : (n = d), i)) {
-                        var E = 'Origin mismatch for source '.concat(f, ', got [').concat(p, '] but expected [').concat(i, ']');
+                        var E = 'Origin mismatch for source '
+                          .concat(f, ', got [')
+                          .concat(p, '] but expected [')
+                          .concat(i, ']');
                         Up(i, p, 0, E, l.viewRejector);
                       } else i = p;
                       if(o) {
@@ -16684,11 +18330,18 @@
                         var A = w.map(function (t) {
                           return t * T;
                         });
-                        E = 'Resolution mismatch for source '.concat(f, ', got [').concat(A, '] but expected [').concat(o, ']');
+                        E = 'Resolution mismatch for source '
+                          .concat(f, ', got [')
+                          .concat(A, '] but expected [')
+                          .concat(o, ']');
                         Up(o.slice(h, o.length), A, 0.02, E, l.viewRejector);
                       } else (o = w), (l.ih[f] = 1);
-                      r ? Up(r.slice(h, r.length), m, 0.01, 'Tile size mismatch for source '.concat(f), l.viewRejector) : (r = m),
-                        e ? Up(e.slice(h, e.length), y, 0, 'Tile size mismatch for source '.concat(f), l.viewRejector) : (e = y),
+                      r
+                        ? Up(r.slice(h, r.length), m, 0.01, 'Tile size mismatch for source '.concat(f), l.viewRejector)
+                        : (r = m),
+                        e
+                          ? Up(e.slice(h, e.length), y, 0, 'Tile size mismatch for source '.concat(f), l.viewRejector)
+                          : (e = y),
                         (l.nh[f] = c.reverse());
                     },
                     l = this,
@@ -16697,7 +18350,8 @@
                   ++v
                 )
                   c(v);
-                for(var d = 0, p = this.nh.length; d < p; ++d) for (var y = this.nh[d]; y.length < o.length; ) y.unshift(void 0);
+                for(var d = 0, p = this.nh.length; d < p; ++d)
+                  for(var y = this.nh[d]; y.length < o.length; ) y.unshift(void 0);
                 if(!this.getProjection()) {
                   var m = t[0];
                   for(d = m.length - 1; d >= 0; --d) {
@@ -16760,7 +18414,12 @@
                     c = function(e) {
                       var s = f[e],
                         u = l.ih[e],
-                        a = [Math.round(n * (r[0] * u)), Math.round(i * (r[1] * u)), Math.round((n + 1) * (r[0] * u)), Math.round((i + 1) * (r[1] * u))],
+                        a = [
+                          Math.round(n * (r[0] * u)),
+                          Math.round(i * (r[1] * u)),
+                          Math.round((n + 1) * (r[0] * u)),
+                          Math.round((i + 1) * (r[1] * u))
+                        ],
                         c = l.nh[e][t],
                         v = void 0;
                       s.bands &&
@@ -16854,7 +18513,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -16903,17 +18563,22 @@
                     for(; a > l || h > l; ) f.push([Math.ceil(a / l), Math.ceil(h / l)]), (l += l);
                     break;
                   case $p:
-                    for(var v = a, d = h; v > l || d > l; ) f.push([Math.ceil(v / l), Math.ceil(d / l)]), (v >>= 1), (d >>= 1);
+                    for(var v = a, d = h; v > l || d > l; )
+                      f.push([Math.ceil(v / l), Math.ceil(d / l)]), (v >>= 1), (d >>= 1);
                     break;
                   default:
                     St(!1, 53);
                 }
                 f.push([1, 1]), f.reverse();
-                for(var p = [u], y = [0], m = 1, w = f.length; m < w; m++) p.push(u << m), y.push(f[m - 1][0] * f[m - 1][1] + y[m - 1]);
+                for(var p = [u], y = [0], m = 1, w = f.length; m < w; m++)
+                  p.push(u << m), y.push(f[m - 1][0] * f[m - 1][1] + y[m - 1]);
                 p.reverse();
                 var g = new xf({ tileSize: c, extent: r.extent || [0, -h, a, 0], resolutions: p }),
                   b = r.url;
-                b && -1 == b.indexOf('{TileGroup}') && -1 == b.indexOf('{tileIndex}') && (b += '{TileGroup}/{z}-{x}-{y}.jpg');
+                b &&
+                  -1 == b.indexOf('{TileGroup}') &&
+                  -1 == b.indexOf('{tileIndex}') &&
+                  (b += '{TileGroup}/{z}-{x}-{y}.jpg');
                 var x = If(b),
                   M = c * u;
                 var _ = Cf(
@@ -16963,7 +18628,9 @@
               return Yp(n, t), n;
             })(Vv),
             Jp = function(t, n, i) {
-              if(i || 2 === arguments.length) for(var r, e = 0, o = n.length; e < o; e++) (!r && e in n) || (r || (r = Array.prototype.slice.call(n, 0, e)), (r[e] = n[e]));
+              if(i || 2 === arguments.length)
+                for(var r, e = 0, o = n.length; e < o; e++)
+                  (!r && e in n) || (r || (r = Array.prototype.slice.call(n, 0, e)), (r[e] = n[e]));
               return t.concat(r || Array.prototype.slice.call(n));
             },
             Qp = 'version1',
@@ -16978,7 +18645,15 @@
               qualities: ['native']
             },
             level2: {
-              supports: ['regionByPx', 'regionByPct', 'sizeByW', 'sizeByH', 'sizeByPct', 'sizeByConfinedWh', 'sizeByWh'],
+              supports: [
+                'regionByPx',
+                'regionByPct',
+                'sizeByW',
+                'sizeByH',
+                'sizeByPct',
+                'sizeByConfinedWh',
+                'sizeByWh'
+              ],
               formats: ['jpg', 'png'],
               qualities: ['native', 'color', 'grey', 'bitonal']
             }
@@ -16991,7 +18666,16 @@
                 qualities: ['default']
               },
               level2: {
-                supports: ['regionByPx', 'regionByPct', 'sizeByW', 'sizeByH', 'sizeByPct', 'sizeByConfinedWh', 'sizeByDistortedWh', 'sizeByWh'],
+                supports: [
+                  'regionByPx',
+                  'regionByPct',
+                  'sizeByW',
+                  'sizeByH',
+                  'sizeByPct',
+                  'sizeByConfinedWh',
+                  'sizeByDistortedWh',
+                  'sizeByWh'
+                ],
                 formats: ['jpg', 'png'],
                 qualities: ['default', 'bitonal']
               }
@@ -17004,7 +18688,16 @@
                 qualities: ['default']
               },
               level2: {
-                supports: ['regionByPx', 'regionSquare', 'regionByPct', 'sizeByW', 'sizeByH', 'sizeByPct', 'sizeByConfinedWh', 'sizeByWh'],
+                supports: [
+                  'regionByPx',
+                  'regionSquare',
+                  'regionByPct',
+                  'sizeByW',
+                  'sizeByH',
+                  'sizeByPct',
+                  'sizeByConfinedWh',
+                  'sizeByWh'
+                ],
                 formats: ['jpg', 'png'],
                 qualities: ['default']
               }
@@ -17022,7 +18715,11 @@
                 url: void 0 === t.imageInfo['@id'] ? void 0 : t.imageInfo['@id'].replace(/\/?(?:info\.json)?$/g, ''),
                 supports: n.supports,
                 formats: Jp(Jp([], n.formats, !0), [void 0 === t.imageInfo.formats ? [] : t.imageInfo.formats], !1),
-                qualities: Jp(Jp([], n.qualities, !0), [void 0 === t.imageInfo.qualities ? [] : t.imageInfo.qualities], !1),
+                qualities: Jp(
+                  Jp([], n.qualities, !0),
+                  [void 0 === t.imageInfo.qualities ? [] : t.imageInfo.qualities],
+                  !1
+                ),
                 resolutions: t.imageInfo.scale_factors,
                 tileSize:
                   void 0 !== t.imageInfo.tile_width
@@ -17073,9 +18770,14 @@
             }),
             (sy[ny] = function(t) {
               var n = t.getComplianceLevelSupportedFeatures(),
-                i = void 0 === t.imageInfo.extraFormats ? n.formats : Jp(Jp([], n.formats, !0), t.imageInfo.extraFormats, !0),
+                i =
+                  void 0 === t.imageInfo.extraFormats
+                    ? n.formats
+                    : Jp(Jp([], n.formats, !0), t.imageInfo.extraFormats, !0),
                 r =
-                  void 0 !== t.imageInfo.preferredFormats && Array.isArray(t.imageInfo.preferredFormats) && t.imageInfo.preferredFormats.length > 0
+                  void 0 !== t.imageInfo.preferredFormats &&
+                  Array.isArray(t.imageInfo.preferredFormats) &&
+                  t.imageInfo.preferredFormats.length > 0
                     ? t.imageInfo.preferredFormats
                         .filter(function (t) {
                           return y(['jpg', 'png', 'gif'], t);
@@ -17109,9 +18811,15 @@
                     : t.imageInfo.tiles.map(function (t) {
                         return t.scaleFactors;
                       })[0],
-                supports: void 0 === t.imageInfo.extraFeatures ? n.supports : Jp(Jp([], n.supports, !0), t.imageInfo.extraFeatures, !0),
+                supports:
+                  void 0 === t.imageInfo.extraFeatures
+                    ? n.supports
+                    : Jp(Jp([], n.supports, !0), t.imageInfo.extraFeatures, !0),
                 formats: i,
-                qualities: void 0 === t.imageInfo.extraQualities ? n.qualities : Jp(Jp([], n.qualities, !0), t.imageInfo.extraQualities, !0),
+                qualities:
+                  void 0 === t.imageInfo.extraQualities
+                    ? n.qualities
+                    : Jp(Jp([], n.qualities, !0), t.imageInfo.extraQualities, !0),
                 preferredFormat: r
               };
             });
@@ -17152,8 +18860,14 @@
                         if(oy.test(this.imageInfo.profile)) return this.imageInfo.profile;
                         break;
                       case ty:
-                        if('string' == typeof this.imageInfo.profile && ey.test(this.imageInfo.profile)) return this.imageInfo.profile;
-                        if(Array.isArray(this.imageInfo.profile) && this.imageInfo.profile.length > 0 && 'string' == typeof this.imageInfo.profile[0] && ey.test(this.imageInfo.profile[0]))
+                        if('string' == typeof this.imageInfo.profile && ey.test(this.imageInfo.profile))
+                          return this.imageInfo.profile;
+                        if(
+                          Array.isArray(this.imageInfo.profile) &&
+                          this.imageInfo.profile.length > 0 &&
+                          'string' == typeof this.imageInfo.profile[0] &&
+                          ey.test(this.imageInfo.profile[0])
+                        )
                           return this.imageInfo.profile[0];
                     }
                 }),
@@ -17182,9 +18896,19 @@
                         version: i,
                         size: [this.imageInfo.width, this.imageInfo.height],
                         sizes: r.sizes,
-                        format: void 0 !== n.format && y(r.formats, n.format) ? n.format : void 0 !== r.preferredFormat ? r.preferredFormat : 'jpg',
+                        format:
+                          void 0 !== n.format && y(r.formats, n.format)
+                            ? n.format
+                            : void 0 !== r.preferredFormat
+                            ? r.preferredFormat
+                            : 'jpg',
                         supports: r.supports,
-                        quality: n.quality && y(r.qualities, n.quality) ? n.quality : y(r.qualities, 'native') ? 'native' : 'default',
+                        quality:
+                          n.quality && y(r.qualities, n.quality)
+                            ? n.quality
+                            : y(r.qualities, 'native')
+                            ? 'native'
+                            : 'default',
                         resolutions: Array.isArray(r.resolutions)
                           ? r.resolutions.sort(function (t, n) {
                               return n - t;
@@ -17210,7 +18934,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17231,7 +18956,16 @@
                 var s = r.version || ty,
                   u = r.sizes || [],
                   a = r.size;
-                St(null != a && Array.isArray(a) && 2 == a.length && !isNaN(a[0]) && a[0] > 0 && !isNaN(a[1]) && a[1] > 0, 60);
+                St(
+                  null != a &&
+                    Array.isArray(a) &&
+                    2 == a.length &&
+                    !isNaN(a[0]) &&
+                    a[0] > 0 &&
+                    !isNaN(a[1]) &&
+                    a[1] > 0,
+                  60
+                );
                 var h,
                   f,
                   c,
@@ -17245,8 +18979,14 @@
                   b = r.supports || [],
                   x = r.extent || [0, -v, l, 0],
                   M = null != u && Array.isArray(u) && u.length > 0,
-                  _ = void 0 !== d && (('number' == typeof d && Number.isInteger(d) && d > 0) || (Array.isArray(d) && d.length > 0)),
-                  S = null != b && Array.isArray(b) && (y(b, 'regionByPx') || y(b, 'regionByPct')) && (y(b, 'sizeByWh') || y(b, 'sizeByH') || y(b, 'sizeByW') || y(b, 'sizeByPct'));
+                  _ =
+                    void 0 !== d &&
+                    (('number' == typeof d && Number.isInteger(d) && d > 0) || (Array.isArray(d) && d.length > 0)),
+                  S =
+                    null != b &&
+                    Array.isArray(b) &&
+                    (y(b, 'regionByPx') || y(b, 'regionByPct')) &&
+                    (y(b, 'sizeByWh') || y(b, 'sizeByH') || y(b, 'sizeByW') || y(b, 'sizeByPct'));
                 if(
                   (g.sort(function (t, n) {
                     return n - t;
@@ -17260,11 +19000,22 @@
                         : Array.isArray(d) &&
                           d.length > 0 &&
                           ((1 == d.length || (null == d[1] && Number.isInteger(d[0]))) && ((h = d[0]), (f = d[0])),
-                          2 == d.length && (Number.isInteger(d[0]) && Number.isInteger(d[1]) ? ((h = d[0]), (f = d[1])) : null == d[0] && Number.isInteger(d[1]) && ((h = d[1]), (f = d[1]))))),
+                          2 == d.length &&
+                            (Number.isInteger(d[0]) && Number.isInteger(d[1])
+                              ? ((h = d[0]), (f = d[1]))
+                              : null == d[0] && Number.isInteger(d[1]) && ((h = d[1]), (f = d[1]))))),
                     (void 0 !== h && void 0 !== f) || ((h = Pu), (f = Pu)),
                     0 == g.length)
                   )
-                    for(var O = (c = Math.max(Math.ceil(Math.log(l / h) / Math.LN2), Math.ceil(Math.log(v / f) / Math.LN2))); O >= 0; O--) g.push(Math.pow(2, O));
+                    for(
+                      var O = (c = Math.max(
+                        Math.ceil(Math.log(l / h) / Math.LN2),
+                        Math.ceil(Math.log(v / f) / Math.LN2)
+                      ));
+                      O >= 0;
+                      O--
+                    )
+                      g.push(Math.pow(2, O));
                   else {
                     var j = Math.max.apply(Math, g);
                     c = Math.round(Math.log(j) / Math.LN2);
@@ -17310,7 +19061,17 @@
                           var d = t[1],
                             p = t[2],
                             x = g[a];
-                          if(!(void 0 === d || void 0 === p || void 0 === x || d < 0 || Math.ceil(l / x / h) <= d || p < 0 || Math.ceil(v / x / f) <= p)) {
+                          if(
+                            !(
+                              void 0 === d ||
+                              void 0 === p ||
+                              void 0 === x ||
+                              d < 0 ||
+                              Math.ceil(l / x / h) <= d ||
+                              p < 0 ||
+                              Math.ceil(v / x / f) <= p
+                            )
+                          ) {
                             if(S || _) {
                               var O = d * h * x,
                                 j = p * f * x,
@@ -17328,7 +19089,15 @@
                                 r = 'full';
                               else if(!S || y(b, 'regionByPx')) r = O + ',' + j + ',' + E + ',' + T;
                               else if(y(b, 'regionByPct')) {
-                                r = 'pct:' + hy((O / l) * 100) + ',' + hy((j / v) * 100) + ',' + hy((E / l) * 100) + ',' + hy((T / v) * 100);
+                                r =
+                                  'pct:' +
+                                  hy((O / l) * 100) +
+                                  ',' +
+                                  hy((j / v) * 100) +
+                                  ',' +
+                                  hy((E / l) * 100) +
+                                  ',' +
+                                  hy((T / v) * 100);
                               }
                               s != ny || (S && !y(b, 'sizeByWh'))
                                 ? !S || y(b, 'sizeByW')
@@ -17368,7 +19137,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17386,7 +19156,19 @@
                   d = s(v.calculateSourceExtent(), l, o),
                   p = d ? lo : mo,
                   y = d ? d.getPixelRatio() : 1;
-                return ((a = t.call(this, r, e, y, p) || this).vs = i), (a.ps = h), (a.Is = v), (a.wi = e), (a.dh = r), (a.ph = d), (a.yh = y), (a.da = u), (a.qt = null), (a.mh = null), a;
+                return (
+                  ((a = t.call(this, r, e, y, p) || this).vs = i),
+                  (a.ps = h),
+                  (a.Is = v),
+                  (a.wi = e),
+                  (a.dh = r),
+                  (a.ph = d),
+                  (a.yh = y),
+                  (a.da = u),
+                  (a.qt = null),
+                  (a.mh = null),
+                  a
+                );
               }
               return (
                 cy(n, t),
@@ -17404,7 +19186,20 @@
                   if(t == po) {
                     var n = $n(this.dh) / this.wi,
                       i = Vn(this.dh) / this.wi;
-                    this.qt = gf(n, i, this.yh, this.ph.getResolution(), this.ps, this.wi, this.dh, this.Is, [{ extent: this.ph.getExtent(), image: this.ph.getImage() }], 0, void 0, this.da);
+                    this.qt = gf(
+                      n,
+                      i,
+                      this.yh,
+                      this.ph.getResolution(),
+                      this.ps,
+                      this.wi,
+                      this.dh,
+                      this.Is,
+                      [{ extent: this.ph.getExtent(), image: this.ph.getImage() }],
+                      0,
+                      void 0,
+                      this.da
+                    );
                   }
                   (this.state = t), this.changed();
                 }),
@@ -17445,7 +19240,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17502,7 +19298,13 @@
                   var e = this.getProjection();
                   if(e && r && !Sr(e, r)) {
                     if(this.gh) {
-                      if(this.bh == this.getRevision() && Sr(this.gh.getProjection(), r) && this.gh.getResolution() == n && An(this.gh.getExtent(), t)) return this.gh;
+                      if(
+                        this.bh == this.getRevision() &&
+                        Sr(this.gh.getProjection(), r) &&
+                        this.gh.getResolution() == n &&
+                        An(this.gh.getExtent(), t)
+                      )
+                        return this.gh;
                       this.gh.dispose(), (this.gh = null);
                     }
                     return (
@@ -17560,7 +19362,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17601,7 +19404,14 @@
                   if(void 0 === this.Fe) return null;
                   (n = this.findNearestResolution(n)), (i = this._a ? i : 1);
                   var e = this.Lt;
-                  if(e && this._h == this.getRevision() && e.getResolution() == n && e.getPixelRatio() == i && xn(e.getExtent(), t)) return e;
+                  if(
+                    e &&
+                    this._h == this.getRevision() &&
+                    e.getResolution() == n &&
+                    e.getPixelRatio() == i &&
+                    xn(e.getExtent(), t)
+                  )
+                    return e;
                   var o = { F: 'image', FORMAT: 'PNG32', TRANSPARENT: !0 };
                   A(o, this.xh);
                   var s = ((t = t.slice())[0] + t[2]) / 2,
@@ -17614,9 +19424,19 @@
                   var f = n / i,
                     c = Math.ceil($n(t) / f),
                     l = Math.ceil(Vn(t) / f);
-                  (t[0] = s - (f * c) / 2), (t[2] = s + (f * c) / 2), (t[1] = u - (f * l) / 2), (t[3] = u + (f * l) / 2), (this.Mh[0] = c), (this.Mh[1] = l);
+                  (t[0] = s - (f * c) / 2),
+                    (t[2] = s + (f * c) / 2),
+                    (t[1] = u - (f * l) / 2),
+                    (t[3] = u + (f * l) / 2),
+                    (this.Mh[0] = c),
+                    (this.Mh[1] = l);
                   var v = this.Oh(t, this.Mh, i, r, o);
-                  return (this.Lt = new bo(t, n, i, v, this.Bt, this.Rt)), (this._h = this.getRevision()), this.Lt.addEventListener(L, this.handleImageChange.bind(this)), this.Lt;
+                  return (
+                    (this.Lt = new bo(t, n, i, v, this.Bt, this.Rt)),
+                    (this._h = this.getRevision()),
+                    this.Lt.addEventListener(L, this.handleImageChange.bind(this)),
+                    this.Lt
+                  );
                 }),
                 (n.prototype.getImageLoadFunction = function() {
                   return this.Rt;
@@ -17626,9 +19446,15 @@
                     .getCode()
                     .split(/:(?=\d+$)/)
                     .pop();
-                  (e.SIZE = n[0] + ',' + n[1]), (e.BBOX = t.join(',')), (e.BBOXSR = o), (e.IMAGESR = o), (e.DPI = Math.round(90 * i));
+                  (e.SIZE = n[0] + ',' + n[1]),
+                    (e.BBOX = t.join(',')),
+                    (e.BBOXSR = o),
+                    (e.IMAGESR = o),
+                    (e.DPI = Math.round(90 * i));
                   var s = this.Fe,
-                    u = s.replace(/MapServer\/?$/, 'MapServer/export').replace(/ImageServer\/?$/, 'ImageServer/exportImage');
+                    u = s
+                      .replace(/MapServer\/?$/, 'MapServer/export')
+                      .replace(/ImageServer\/?$/, 'ImageServer/exportImage');
                   return u == s && St(!1, 50), Nf(u, e);
                 }),
                 (n.prototype.getUrl = function() {
@@ -17659,7 +19485,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17692,7 +19519,14 @@
                 (n.prototype.getImageInternal = function(t, n, i, r) {
                   n = this.findNearestResolution(n);
                   var e = this.qt;
-                  if(e && this._h == this.getRevision() && e.getResolution() == n && e.getPixelRatio() == i && xn(e.getExtent(), t)) return e;
+                  if(
+                    e &&
+                    this._h == this.getRevision() &&
+                    e.getResolution() == n &&
+                    e.getPixelRatio() == i &&
+                    xn(e.getExtent(), t)
+                  )
+                    return e;
                   Qn((t = t.slice()), this.Sh);
                   var o = [($n(t) / n) * i, (Vn(t) / n) * i],
                     s = this.jh.call(this, t, n, i, o, r);
@@ -17714,7 +19548,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17727,7 +19562,9 @@
                   r = void 0 === n.imageSmoothing || n.imageSmoothing;
                 return (
                   void 0 !== n.interpolate && (r = n.interpolate),
-                  ((i = t.call(this, { interpolate: r, projection: n.projection, resolutions: n.resolutions }) || this).Bt = void 0 !== n.crossOrigin ? n.crossOrigin : null),
+                  ((i =
+                    t.call(this, { interpolate: r, projection: n.projection, resolutions: n.resolutions }) || this).Bt =
+                    void 0 !== n.crossOrigin ? n.crossOrigin : null),
                   (i.Eh = void 0 !== n.displayDpi ? n.displayDpi : 96),
                   (i.xh = n.params || {}),
                   (i.Fe = n.url),
@@ -17749,7 +19586,14 @@
                 (n.prototype.getImageInternal = function(t, n, i, r) {
                   (n = this.findNearestResolution(n)), (i = this._a ? i : 1);
                   var e = this.Lt;
-                  if(e && this._h == this.getRevision() && e.getResolution() == n && e.getPixelRatio() == i && xn(e.getExtent(), t)) return e;
+                  if(
+                    e &&
+                    this._h == this.getRevision() &&
+                    e.getResolution() == n &&
+                    e.getPixelRatio() == i &&
+                    xn(e.getExtent(), t)
+                  )
+                    return e;
                   1 != this.Sh && Qn((t = t.slice()), this.Sh);
                   var o = [($n(t) / n) * i, (Vn(t) / n) * i];
                   if(void 0 !== this.Fe) {
@@ -17808,7 +19652,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17823,7 +19668,9 @@
                   o = void 0 === n.imageSmoothing || n.imageSmoothing;
                 return (
                   void 0 !== n.interpolate && (o = n.interpolate),
-                  ((i = t.call(this, { attributions: n.attributions, interpolate: o, projection: yr(n.projection) }) || this).Fe = n.url),
+                  ((i =
+                    t.call(this, { attributions: n.attributions, interpolate: o, projection: yr(n.projection) }) ||
+                    this).Fe = n.url),
                   (i.Ah = n.imageExtent),
                   (i.Lt = new bo(i.Ah, void 0, 1, i.Fe, r, e)),
                   (i.Mh = n.imageSize ? n.imageSize : null),
@@ -17881,7 +19728,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -17965,17 +19813,34 @@
                     s = Bn(o, e, 0, [wi($n(t) / e, 4), wi(Vn(t) / e, 4)]),
                     u = Bn(o, e, 0, [wi((this.Sh * $n(t)) / e, 4), wi((this.Sh * Vn(t)) / e, 4)]),
                     a = this.Lt;
-                  if(a && this._h == this.getRevision() && a.getResolution() == n && a.getPixelRatio() == i && xn(a.getExtent(), s)) return a;
+                  if(
+                    a &&
+                    this._h == this.getRevision() &&
+                    a.getResolution() == n &&
+                    a.getPixelRatio() == i &&
+                    xn(a.getExtent(), s)
+                  )
+                    return a;
                   var h = { SERVICE: 'WMS', VERSION: Ty, REQUEST: 'GetMap', FORMAT: 'image/png', TRANSPARENT: !0 };
                   A(h, this.xh), (this.Mh[0] = yi($n(u) / e, 4)), (this.Mh[1] = yi(Vn(u) / e, 4));
                   var f = this.Oh(u, this.Mh, i, r, h);
-                  return (this.Lt = new bo(u, n, i, f, this.Bt, this.Rt)), (this._h = this.getRevision()), this.Lt.addEventListener(L, this.handleImageChange.bind(this)), this.Lt;
+                  return (
+                    (this.Lt = new bo(u, n, i, f, this.Bt, this.Rt)),
+                    (this._h = this.getRevision()),
+                    this.Lt.addEventListener(L, this.handleImageChange.bind(this)),
+                    this.Lt
+                  );
                 }),
                 (n.prototype.getImageLoadFunction = function() {
                   return this.Rt;
                 }),
                 (n.prototype.Oh = function(t, n, i, r, e) {
-                  if((St(void 0 !== this.Fe, 9), (e[this.Ph ? 'CRS' : 'SRS'] = r.getCode()), 'STYLES' in this.xh || (e.STYLES = ''), 1 != i))
+                  if(
+                    (St(void 0 !== this.Fe, 9),
+                    (e[this.Ph ? 'CRS' : 'SRS'] = r.getCode()),
+                    'STYLES' in this.xh || (e.STYLES = ''),
+                    1 != i)
+                  )
                     switch (this.kh) {
                       case 'geoserver':
                         var o = (90 * i + 0.5) | 0;
@@ -17994,7 +19859,11 @@
                   (e.WIDTH = n[0]), (e.HEIGHT = n[1]);
                   var s,
                     u = r.getAxisOrientation();
-                  return (s = this.Ph && 'ne' == u.substr(0, 2) ? [t[1], t[0], t[3], t[2]] : t), (e.BBOX = s.join(',')), Nf(this.Fe, e);
+                  return (
+                    (s = this.Ph && 'ne' == u.substr(0, 2) ? [t[1], t[0], t[3], t[2]] : t),
+                    (e.BBOX = s.join(',')),
+                    Nf(this.Fe, e)
+                  );
                 }),
                 (n.prototype.getUrl = function() {
                   return this.Fe;
@@ -18062,7 +19931,11 @@
           function zy(t, n, i, r) {
             var e = t.projection;
             if(!e && !(e = yr(n.crs))) throw new Error('Unsupported CRS: '.concat(n.crs));
-            for(var o = 'en' !== e.getAxisOrientation().substr(0, 2), s = n.tileMatrices, u = {}, a = 0; a < s.length; ++a) {
+            for(
+              var o = 'en' !== e.getAxisOrientation().substr(0, 2), s = n.tileMatrices, u = {}, a = 0;
+              a < s.length;
+              ++a
+            ) {
               var h = s[a];
               u[h.id] = h;
             }
@@ -18088,7 +19961,13 @@
               l = c[a];
               var g,
                 b = (h = u[l]).pointOfOrigin;
-              if(((d[a] = o ? [b[1], b[0]] : b), (p[a] = h.cellSize), (y[a] = [h.matrixWidth, h.matrixHeight]), (m[a] = [h.tileWidth, h.tileHeight]), (g = f[l]))) {
+              if(
+                ((d[a] = o ? [b[1], b[0]] : b),
+                (p[a] = h.cellSize),
+                (y[a] = [h.matrixWidth, h.matrixHeight]),
+                (m[a] = [h.tileWidth, h.tileHeight]),
+                (g = f[l]))
+              ) {
                 var x = h.cellSize * h.tileWidth,
                   M = d[a][0] + g.minTileCol * x,
                   _ = d[a][0] + (g.maxTileCol + 1) * x,
@@ -18115,7 +19994,13 @@
                     h = { tileMatrix: o, tileCol: t[1], tileRow: a ? -t[2] - 1 : t[2] };
                   if(r) {
                     var l = f[s.id];
-                    if(h.tileCol < l.minTileCol || h.tileCol > l.maxTileCol || h.tileRow < l.minTileRow || h.tileRow > l.maxTileRow) return;
+                    if(
+                      h.tileCol < l.minTileCol ||
+                      h.tileCol > l.maxTileCol ||
+                      h.tileRow < l.minTileRow ||
+                      h.tileRow > l.maxTileRow
+                    )
+                      return;
                   }
                   A(h, T);
                   var v = i.replace(/\{(\w+?)\}/g, function(t, n) {
@@ -18140,7 +20025,10 @@
                 var e = n.links.find(function (t) {
                   return 'http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme' === t.rel;
                 });
-                if(!e) throw new Error('Expected http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme link or tileMatrixSet');
+                if(!e)
+                  throw new Error(
+                    'Expected http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme link or tileMatrixSet'
+                  );
                 var o = e.href;
                 return Jh(Qh(t.url, o)).then(function (n) {
                   return zy(t, n, i, r);
@@ -18161,7 +20049,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18196,7 +20085,9 @@
               return (
                 Fy(n, t),
                 (n.prototype.Ih = function(t) {
-                  (this.tileGrid = t.grid), this.setTileUrlFunction(t.urlFunction, t.urlTemplate), this.setState('ready');
+                  (this.tileGrid = t.grid),
+                    this.setTileUrlFunction(t.urlFunction, t.urlTemplate),
+                    this.setState('ready');
                 }),
                 (n.prototype.Nh = function(t) {
                   console.error(t), this.setState('error');
@@ -18217,7 +20108,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18324,7 +20216,9 @@
                     var c = h.getZForResolution(a, this.zDirection);
                     h.forEachTileCoord(s, c, function(e) {
                       var o = r.tileUrlFunction(e, t, n),
-                        s = r.sourceTileCache.containsKey(o) ? r.sourceTileCache.get(o) : new r.tileClass(e, o ? ct : pt, o, r.ze, r.tileLoadFunction);
+                        s = r.sourceTileCache.containsKey(o)
+                          ? r.sourceTileCache.get(o)
+                          : new r.tileClass(e, o ? ct : pt, o, r.ze, r.tileLoadFunction);
                       i.sourceTiles.push(s);
                       var u = s.getState();
                       if(u < vt) {
@@ -18333,14 +20227,21 @@
                           var n = s.getState();
                           if(n === vt || n === dt) {
                             var e = s.getKey();
-                            e in i.errorTileKeys ? s.getState() === vt && delete i.errorTileKeys[e] : i.loadingSourceTiles--,
+                            e in i.errorTileKeys
+                              ? s.getState() === vt && delete i.errorTileKeys[e]
+                              : i.loadingSourceTiles--,
                               n === dt ? (i.errorTileKeys[e] = !0) : s.removeEventListener(L, a),
                               0 === i.loadingSourceTiles && i.setState(k(i.errorTileKeys) ? vt : dt);
                           }
                         };
                         s.addEventListener(L, a), i.loadingSourceTiles++;
                       }
-                      u === ct && ((s.extent = h.getTileCoordExtent(e)), (s.projection = n), (s.resolution = h.getResolution(e[0])), r.sourceTileCache.set(o, s), s.load());
+                      u === ct &&
+                        ((s.extent = h.getTileCoordExtent(e)),
+                        (s.projection = n),
+                        (s.resolution = h.getResolution(e[0])),
+                        r.sourceTileCache.set(o, s),
+                        s.load());
                     }),
                       i.loadingSourceTiles ||
                         i.setState(
@@ -18382,7 +20283,13 @@
                       );
                   }
                   var w = new Gh(a, v ? pt : ct, h, this.getSourceTiles.bind(this, r, e));
-                  return (w.key = u), o ? ((w.interimTile = o), w.refreshInterimChain(), this.tileCache.replace(s, w)) : this.tileCache.set(s, w), w;
+                  return (
+                    (w.key = u),
+                    o
+                      ? ((w.interimTile = o), w.refreshInterimChain(), this.tileCache.replace(s, w))
+                      : this.tileCache.set(s, w),
+                    w
+                  );
                 }),
                 (n.prototype.getTileGridForProjection = function(t) {
                   var n = t.getCode(),
@@ -18414,7 +20321,8 @@
                   return [Math.round(r[0] * n), Math.round(r[1] * n)];
                 }),
                 (n.prototype.updateCacheSize = function(n, i) {
-                  t.prototype.updateCacheSize.call(this, 2 * n, i), (this.sourceTileCache.highWaterMark = this.getTileCacheForProjection(i).highWaterMark);
+                  t.prototype.updateCacheSize.call(this, 2 * n, i),
+                    (this.sourceTileCache.highWaterMark = this.getTileCacheForProjection(i).highWaterMark);
                 }),
                 n
               );
@@ -18437,7 +20345,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18476,7 +20385,9 @@
               return (
                 By(n, t),
                 (n.prototype.Ih = function(t) {
-                  (this.tileGrid = t.grid), this.setTileUrlFunction(t.urlFunction, t.urlTemplate), this.setState('ready');
+                  (this.tileGrid = t.grid),
+                    this.setTileUrlFunction(t.urlFunction, t.urlTemplate),
+                    this.setState('ready');
                 }),
                 (n.prototype.Nh = function(t) {
                   console.error(t), this.setState('error');
@@ -18497,20 +20408,23 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
                 t(n, i), (n.prototype = null === i ? Object.create(i) : ((r.prototype = i.prototype), new r()));
               };
             })(),
-            Wy = '&#169; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors.',
+            Wy =
+              '&#169; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors.',
             Yy = (function (t) {
               function n(n) {
                 var i,
                   r = n || {},
                   e = void 0 === r.imageSmoothing || r.imageSmoothing;
-                void 0 !== r.interpolate && (e = r.interpolate), (i = void 0 !== r.attributions ? r.attributions : [Wy]);
+                void 0 !== r.interpolate && (e = r.interpolate),
+                  (i = void 0 !== r.attributions ? r.attributions : [Wy]);
                 var o = void 0 !== r.crossOrigin ? r.crossOrigin : 'anonymous',
                   s = void 0 !== r.url ? r.url : 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png';
                 return (
@@ -18546,7 +20460,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18573,7 +20488,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18603,7 +20519,8 @@
                 Ky(n, t),
                 (n.prototype.getImageData = function(t, n, i) {
                   var r, e;
-                  Jy || (((r = document.createElement('canvas')).width = 1), (r.height = 1), (Jy = r.getContext('2d'))), Jy.clearRect(0, 0, 1, 1);
+                  Jy || (((r = document.createElement('canvas')).width = 1), (r.height = 1), (Jy = r.getContext('2d'))),
+                    Jy.clearRect(0, 0, 1, 1);
                   try {
                     Jy.drawImage(t, n, i, 1, 1, 0, 0, 1, 1), (e = Jy.getImageData(0, 0, 1, 1).data);
                   } catch(t) {
@@ -18627,23 +20544,35 @@
                   if(
                     (e && e.canvas.style.transform === n
                       ? ((this.container = t), (this.context = e), (this.containerReused = !0))
-                      : this.containerReused && ((this.container = null), (this.context = null), (this.containerReused = !1)),
+                      : this.containerReused &&
+                        ((this.container = null), (this.context = null), (this.containerReused = !1)),
                     !this.container)
                   ) {
                     (r = document.createElement('div')).className = o;
                     var s = r.style;
                     (s.position = 'absolute'), (s.width = '100%'), (s.height = '100%');
                     var u = (e = _o()).canvas;
-                    r.appendChild(u), ((s = u.style).position = 'absolute'), (s.left = '0'), (s.transformOrigin = 'top left'), (this.container = r), (this.context = e);
+                    r.appendChild(u),
+                      ((s = u.style).position = 'absolute'),
+                      (s.left = '0'),
+                      (s.transformOrigin = 'top left'),
+                      (this.container = r),
+                      (this.context = e);
                   }
-                  this.containerReused || !i || this.container.style.backgroundColor || (this.container.style.backgroundColor = i);
+                  this.containerReused ||
+                    !i ||
+                    this.container.style.backgroundColor ||
+                    (this.container.style.backgroundColor = i);
                 }),
                 (n.prototype.clipUnrotated = function(t, n, i) {
                   var r = Yn(i),
                     e = Zn(i),
                     o = Dn(i),
                     s = Gn(i);
-                  tn(n.coordinateToPixelTransform, r), tn(n.coordinateToPixelTransform, e), tn(n.coordinateToPixelTransform, o), tn(n.coordinateToPixelTransform, s);
+                  tn(n.coordinateToPixelTransform, r),
+                    tn(n.coordinateToPixelTransform, e),
+                    tn(n.coordinateToPixelTransform, o),
+                    tn(n.coordinateToPixelTransform, s);
                   var u = this.inversePixelTransform;
                   tn(u, r),
                     tn(u, e),
@@ -18719,7 +20648,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18783,12 +20713,15 @@
                     v = a.rotation,
                     d = Math.round(($n(c) / l) * u),
                     p = Math.round((Vn(c) / l) * u);
-                  sn(this.pixelTransform, t.size[0] / 2, t.size[1] / 2, 1 / u, 1 / u, v, -d / 2, -p / 2), un(this.inversePixelTransform, this.pixelTransform);
+                  sn(this.pixelTransform, t.size[0] / 2, t.size[1] / 2, 1 / u, 1 / u, v, -d / 2, -p / 2),
+                    un(this.inversePixelTransform, this.pixelTransform);
                   var y = hn(this.pixelTransform);
                   this.useContainer(n, y, this.getBackground(t));
                   var m = this.context,
                     w = m.canvas;
-                  w.width != d || w.height != p ? ((w.width = d), (w.height = p)) : this.containerReused || m.clearRect(0, 0, d, p);
+                  w.width != d || w.height != p
+                    ? ((w.width = d), (w.height = p))
+                    : this.containerReused || m.clearRect(0, 0, d, p);
                   var g = !1,
                     b = !0;
                   if(s.extent) {
@@ -18800,14 +20733,26 @@
                   this.renderedResolution = (e * u) / o;
                   var S = M.width * _[0],
                     O = M.height * _[3];
-                  if((this.getLayer().getSource().getInterpolate() || A(m, lf), this.preRender(m, t), b && S >= 0.5 && O >= 0.5)) {
+                  if(
+                    (this.getLayer().getSource().getInterpolate() || A(m, lf),
+                    this.preRender(m, t),
+                    b && S >= 0.5 && O >= 0.5)
+                  ) {
                     var j = _[4],
                       E = _[5],
                       T = s.opacity,
                       P = void 0;
-                    1 !== T && ((P = m.globalAlpha), (m.globalAlpha = T)), m.drawImage(M, 0, 0, +M.width, +M.height, j, E, S, O), 1 !== T && (m.globalAlpha = P);
+                    1 !== T && ((P = m.globalAlpha), (m.globalAlpha = T)),
+                      m.drawImage(M, 0, 0, +M.width, +M.height, j, E, S, O),
+                      1 !== T && (m.globalAlpha = P);
                   }
-                  return this.postRender(m, t), g && m.restore(), A(m, vf), y !== w.style.transform && (w.style.transform = y), this.container;
+                  return (
+                    this.postRender(m, t),
+                    g && m.restore(),
+                    A(m, vf),
+                    y !== w.style.transform && (w.style.transform = y),
+                    this.container
+                  );
                 }),
                 n
               );
@@ -18825,7 +20770,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18862,7 +20808,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18918,7 +20865,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -18954,7 +20902,12 @@
                     o = r.viewState.projection,
                     s = this.getLayer(),
                     u = s.getSource().getTile(t, n, i, e, o);
-                  return u.getState() == dt && (s.getUseInterimTilesOnError() ? s.getPreload() > 0 && (this.Rh = !0) : u.setState(vt)), this.isDrawableTile(u) || (u = u.getInterimTile()), u;
+                  return (
+                    u.getState() == dt &&
+                      (s.getUseInterimTilesOnError() ? s.getPreload() > 0 && (this.Rh = !0) : u.setState(vt)),
+                    this.isDrawableTile(u) || (u = u.getInterimTile()),
+                    u
+                  );
                 }),
                 (n.prototype.getData = function(t) {
                   var n = this.frameState;
@@ -19050,7 +21003,9 @@
                     U = q.canvas;
                   un(this.inversePixelTransform, this.pixelTransform),
                     sn(this.tempTransform, b / 2, x / 2, G, G, 0, -b / 2, -x / 2),
-                    U.width != b || U.height != x ? ((U.width = b), (U.height = x)) : this.containerReused || q.clearRect(0, 0, b, x),
+                    U.width != b || U.height != x
+                      ? ((U.width = b), (U.height = x))
+                      : this.containerReused || q.clearRect(0, 0, b, x),
                     M && this.clipUnrotated(q, t, M),
                     c.getInterpolate() || A(q, lf),
                     this.preRender(q, t),
@@ -19059,7 +21014,10 @@
                     X,
                     V,
                     W = Object.keys(E).map(Number);
-                  W.sort(p), 1 !== i.opacity || (this.containerReused && !c.getOpaque(t.viewState.projection)) ? ((B = []), (X = [])) : (W = W.reverse());
+                  W.sort(p),
+                    1 !== i.opacity || (this.containerReused && !c.getOpaque(t.viewState.projection))
+                      ? ((B = []), (X = []))
+                      : (W = W.reverse());
                   for(var Y = W.length - 1; Y >= 0; --Y) {
                     var Z = W[Y],
                       $ = c.getTilePixelSize(Z, h, e),
@@ -19178,7 +21136,9 @@
                         (b && !i.tileCoordIntersectsViewport([y, d, p], x)) ||
                           (u - y <= a
                             ? (++M,
-                              (c = n.getTile(y, d, p, r, e)).getState() == ct && ((m[c.getKey()] = !0), w.isKeyQueued(c.getKey()) || w.enqueue([c, f, i.getTileCoordCenter(c.tileCoord), v])),
+                              (c = n.getTile(y, d, p, r, e)).getState() == ct &&
+                                ((m[c.getKey()] = !0),
+                                w.isKeyQueued(c.getKey()) || w.enqueue([c, f, i.getTileCoordCenter(c.tileCoord), v])),
                               void 0 !== h && h(c))
                             : n.useTile(y, d, p, e));
                   n.updateCacheSize(M, e);
@@ -19199,7 +21159,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -19231,7 +21192,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -19302,7 +21264,9 @@
                   '});'
                 ]),
               r = new Worker(
-                'undefined' == typeof Blob ? 'data:text/javascript;base64,' + Buffer.from(i.join('\n'), 'binary').toString('base64') : URL.createObjectURL(new Blob(i, { type: 'text/javascript' }))
+                'undefined' == typeof Blob
+                  ? 'data:text/javascript;base64,' + Buffer.from(i.join('\n'), 'binary').toString('base64')
+                  : URL.createObjectURL(new Blob(i, { type: 'text/javascript' }))
               );
             return r.addEventListener('message', n), r;
           }
@@ -19328,7 +21292,15 @@
                       }
                     };
                   })(n, r._onWorkerMessage.bind(r, 0));
-                return (r._workers = e), (r._queue = []), (r._maxQueueLength = n.queue || 1 / 0), (r._running = 0), (r._dataLookup = {}), (r._job = null), r;
+                return (
+                  (r._workers = e),
+                  (r._queue = []),
+                  (r._maxQueueLength = n.queue || 1 / 0),
+                  (r._running = 0),
+                  (r._dataLookup = {}),
+                  (r._job = null),
+                  r
+                );
               }
               return (
                 vm(n, t),
@@ -19336,7 +21308,8 @@
                   this._enqueue({ inputs: t, meta: n, callback: i }), this._dispatch();
                 }),
                 (n.prototype._enqueue = function(t) {
-                  for(this._queue.push(t); this._queue.length > this._maxQueueLength; ) this._queue.shift().callback(null, null);
+                  for(this._queue.push(t); this._queue.length > this._maxQueueLength; )
+                    this._queue.shift().callback(null, null);
                 }),
                 (n.prototype._dispatch = function() {
                   if(!this._running && 0 !== this._queue.length) {
@@ -19351,13 +21324,21 @@
                     if(((this._running = e), 1 !== e))
                       for(var o = t.inputs[0].data.length, s = 4 * Math.ceil(o / 4 / e), u = 0; u < e; ++u) {
                         for(var a = u * s, h = [], f = 0, c = r.length; f < c; ++f) h.push(r[f].slice(a, a + s));
-                        this._workers[u].postMessage({ buffers: h, meta: t.meta, imageOps: this._imageOps, width: n, height: i }, h);
+                        this._workers[u].postMessage(
+                          { buffers: h, meta: t.meta, imageOps: this._imageOps, width: n, height: i },
+                          h
+                        );
                       }
-                    else this._workers[0].postMessage({ buffers: r, meta: t.meta, imageOps: this._imageOps, width: n, height: i }, r);
+                    else
+                      this._workers[0].postMessage(
+                        { buffers: r, meta: t.meta, imageOps: this._imageOps, width: n, height: i },
+                        r
+                      );
                   }
                 }),
                 (n.prototype._onWorkerMessage = function(t, n) {
-                  this.disposed || ((this._dataLookup[t] = n.data), --this._running, 0 === this._running && this._resolveJob());
+                  this.disposed ||
+                    ((this._dataLookup[t] = n.data), --this._running, 0 === this._running && this._resolveJob());
                 }),
                 (n.prototype._resolveJob = function() {
                   var t,
@@ -19374,7 +21355,10 @@
                       t.set(new Uint8ClampedArray(u), a), (n[s] = this._dataLookup[s].meta);
                     }
                   }
-                  (this._job = null), (this._dataLookup = {}), i.callback(null, pm(t, i.inputs[0].width, i.inputs[0].height), n), this._dispatch();
+                  (this._job = null),
+                    (this._dataLookup = {}),
+                    i.callback(null, pm(t, i.inputs[0].width, i.inputs[0].height), n),
+                    this._dispatch();
                 }),
                 (n.prototype.disposeInternal = function() {
                   for(var t = 0; t < this._workers.length; ++t) this._workers[t].terminate();
@@ -19458,13 +21442,18 @@
               return (
                 vm(n, t),
                 (n.prototype.setOperation = function(t, n) {
-                  this.Gh && this.Gh.dispose(), (this.Gh = new wm({ operation: t, imageOps: this.Dh === Mm, queue: 1, lib: n, threads: this.qh })), this.changed();
+                  this.Gh && this.Gh.dispose(),
+                    (this.Gh = new wm({ operation: t, imageOps: this.Dh === Mm, queue: 1, lib: n, threads: this.qh })),
+                    this.changed();
                 }),
                 (n.prototype.Vh = function(t, n, i) {
                   var r = A({}, this.Zi);
                   r.viewState = A({}, r.viewState);
                   var e = qn(t);
-                  (r.extent = t.slice()), (r.size[0] = Math.round($n(t) / n)), (r.size[1] = Math.round(Vn(t) / n)), (r.time = Date.now());
+                  (r.extent = t.slice()),
+                    (r.size[0] = Math.round($n(t) / n)),
+                    (r.size[1] = Math.round(Vn(t) / n)),
+                    (r.time = Date.now());
                   var o = r.viewState;
                   return (o.center = e), (o.projection = i), (o.resolution = n), r;
                 }),
@@ -19484,7 +21473,12 @@
                       s = this.Xh.getExtent();
                     (n === o && An(t, s)) || (this.Xh = null);
                   }
-                  return (this.Xh && this.getRevision() === this._h) || this.Yh(), e.tileQueue.loadMoreTiles(16, 16), e.animate && requestAnimationFrame(this.changed.bind(this)), this.Xh;
+                  return (
+                    (this.Xh && this.getRevision() === this._h) || this.Yh(),
+                    e.tileQueue.loadMoreTiles(16, 16),
+                    e.animate && requestAnimationFrame(this.changed.bind(this)),
+                    this.Xh
+                  );
                 }),
                 (n.prototype.Yh = function() {
                   for(var t = this.Bh, n = this.Uh.length, i = new Array(n), r = 0; r < n; ++r) {
@@ -19503,8 +21497,13 @@
                     if(o === this.Bh.viewState.resolution && An(e, this.Bh.extent)) {
                       var s;
                       if(this.Xh) s = this.Xh.getImage().getContext('2d');
-                      else (s = _o(Math.round($n(e) / o), Math.round(Vn(e) / o))), (this.Xh = new Mo(e, o, 1, s.canvas));
-                      s.putImageData(i, 0, 0), this.changed(), (this._h = this.getRevision()), this.dispatchEvent(new _m(bm, t, r)), t.animate && requestAnimationFrame(this.changed.bind(this));
+                      else
+                        (s = _o(Math.round($n(e) / o), Math.round(Vn(e) / o))), (this.Xh = new Mo(e, o, 1, s.canvas));
+                      s.putImageData(i, 0, 0),
+                        this.changed(),
+                        (this._h = this.getRevision()),
+                        this.dispatchEvent(new _m(bm, t, r)),
+                        t.animate && requestAnimationFrame(this.changed.bind(this));
                     }
                   }
                 }),
@@ -19527,7 +21526,8 @@
               s = i.renderFrame(n, null);
             if(s instanceof HTMLCanvasElement) o = s;
             else {
-              if((s && (o = s.firstElementChild), !(o instanceof HTMLCanvasElement))) throw new Error('Unsupported rendered element: ' + o);
+              if((s && (o = s.firstElementChild), !(o instanceof HTMLCanvasElement)))
+                throw new Error('Unsupported rendered element: ' + o);
               if(o.width === r && o.height === e) return o.getContext('2d').getImageData(0, 0, r, e);
             }
             if(Om) {
@@ -19538,7 +21538,14 @@
           }
           function Em(t) {
             var n;
-            return t instanceof zv ? (t instanceof Dv ? (n = new lm({ source: t })) : t instanceof gy && (n = new em({ source: t }))) : (n = t), n;
+            return (
+              t instanceof zv
+                ? t instanceof Dv
+                  ? (n = new lm({ source: t }))
+                  : t instanceof gy && (n = new em({ source: t }))
+                : (n = t),
+              n
+            );
           }
           var Tm = Sm,
             Am = (function () {
@@ -19554,14 +21561,18 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
                 t(n, i), (n.prototype = null === i ? Object.create(i) : ((r.prototype = i.prototype), new r()));
               };
             })(),
-            Pm = ['Map tiles by <a href="https://stamen.com/" target="_blank">Stamen Design</a>, under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>.', Wy],
+            Pm = [
+              'Map tiles by <a href="https://stamen.com/" target="_blank">Stamen Design</a>, under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>.',
+              Wy
+            ],
             Cm = {
               terrain: { extension: 'jpg', opaque: !0 },
               'terrain-background': { extension: 'jpg', opaque: !0 },
@@ -19588,7 +21599,10 @@
                   e = -1 == r ? n.layer : n.layer.slice(0, r),
                   o = km[e],
                   s = Cm[n.layer],
-                  u = void 0 !== n.url ? n.url : 'https://stamen-tiles-{a-d}.a.ssl.fastly.net/' + n.layer + '/{z}/{x}/{y}.' + s.extension;
+                  u =
+                    void 0 !== n.url
+                      ? n.url
+                      : 'https://stamen-tiles-{a-d}.a.ssl.fastly.net/' + n.layer + '/{z}/{x}/{y}.' + s.extension;
                 return (
                   t.call(this, {
                     attributions: Pm,
@@ -19622,7 +21636,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -19677,9 +21692,22 @@
                         .getCode()
                         .split(/:(?=\d+$)/)
                         .pop();
-                    if(((o.SIZE = n[0] + ',' + n[1]), (o.BBOX = i.join(',')), (o.BBOXSR = a), (o.IMAGESR = a), (o.DPI = Math.round(o.DPI ? o.DPI * r : 90 * r)), 1 == s.length)) u = s[0];
+                    if(
+                      ((o.SIZE = n[0] + ',' + n[1]),
+                      (o.BBOX = i.join(',')),
+                      (o.BBOXSR = a),
+                      (o.IMAGESR = a),
+                      (o.DPI = Math.round(o.DPI ? o.DPI * r : 90 * r)),
+                      1 == s.length)
+                    )
+                      u = s[0];
                     else u = s[vi(Ph(t), s.length)];
-                    return Nf(u.replace(/MapServer\/?$/, 'MapServer/export').replace(/ImageServer\/?$/, 'ImageServer/exportImage'), o);
+                    return Nf(
+                      u
+                        .replace(/MapServer\/?$/, 'MapServer/export')
+                        .replace(/ImageServer\/?$/, 'ImageServer/exportImage'),
+                      o
+                    );
                   }
                 }),
                 (n.prototype.getTilePixelRatio = function(t) {
@@ -19715,7 +21743,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -19767,7 +21796,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -19800,7 +21830,10 @@
                   if(n.jsonp) Zh(n.url, i.handleTileJSONResponse.bind(i), i.handleTileJSONError.bind(i));
                   else {
                     var e = new XMLHttpRequest();
-                    e.addEventListener('load', i.Hh.bind(i)), e.addEventListener('error', i.Jh.bind(i)), e.open('GET', n.url), e.send();
+                    e.addEventListener('load', i.Hh.bind(i)),
+                      e.addEventListener('error', i.Jh.bind(i)),
+                      e.open('GET', n.url),
+                      e.send();
                   }
                 else n.tileJSON ? i.handleTileJSONResponse(n.tileJSON) : St(!1, 51);
                 return i;
@@ -19836,7 +21869,11 @@
                   var o = Tf(r),
                     s = t.minzoom || 0,
                     u = Of({ extent: o, maxZoom: t.maxzoom || 22, minZoom: s, tileSize: this.jo });
-                  if(((this.tileGrid = u), (this.tileUrlFunction = Pf(t.tiles, u)), void 0 !== t.attribution && !this.getAttributions())) {
+                  if(
+                    ((this.tileGrid = u),
+                    (this.tileUrlFunction = Pf(t.tiles, u)),
+                    void 0 !== t.attribution && !this.getAttributions())
+                  ) {
                     var a = void 0 !== n ? n : o;
                     this.setAttributions(function (n) {
                       return Kn(a, n.extent) ? [t.attribution] : null;
@@ -19863,7 +21900,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -19922,7 +21960,8 @@
                       f = s.getTileCoordExtent(a, this.Ao),
                       c = Qu(s.getTileSize(a[0]), this.tmpSize),
                       l = this.js;
-                    0 !== l && ((c = Ku(c, l, this.tmpSize)), (f = mn(f, h * l, f))), o && o !== e && ((h = mf(o, e, t, h)), (f = Tr(f, e, o)), (t = Er(t, e, o)));
+                    0 !== l && ((c = Ku(c, l, this.tmpSize)), (f = mn(f, h * l, f))),
+                      o && o !== e && ((h = mf(o, e, t, h)), (f = Tr(f, e, o)), (t = Er(t, e, o)));
                     var v = {
                       SERVICE: 'WMS',
                       VERSION: Ty,
@@ -19961,7 +22000,13 @@
                 (n.prototype.Oh = function(t, n, i, r, e, o) {
                   var s = this.urls;
                   if(s) {
-                    if(((o.WIDTH = n[0]), (o.HEIGHT = n[1]), (o[this.Ph ? 'CRS' : 'SRS'] = e.getCode()), 'STYLES' in this.xh || (o.STYLES = ''), 1 != r))
+                    if(
+                      ((o.WIDTH = n[0]),
+                      (o.HEIGHT = n[1]),
+                      (o[this.Ph ? 'CRS' : 'SRS'] = e.getCode()),
+                      'STYLES' in this.xh || (o.STYLES = ''),
+                      1 != r)
+                    )
                       switch (this.kh) {
                         case 'geoserver':
                           var u = (90 * r + 0.5) | 0;
@@ -20013,7 +22058,8 @@
                       o = r.getTileCoordExtent(t, this.Ao),
                       s = Qu(r.getTileSize(t[0]), this.tmpSize),
                       u = this.js;
-                    0 !== u && ((s = Ku(s, u, this.tmpSize)), (o = mn(o, e * u, o))), 1 != n && (s = Ju(s, n, this.tmpSize));
+                    0 !== u && ((s = Ku(s, u, this.tmpSize)), (o = mn(o, e * u, o))),
+                      1 != n && (s = Ju(s, n, this.tmpSize));
                     var a = { SERVICE: 'WMS', VERSION: Ty, REQUEST: 'GetMap', FORMAT: 'image/png', TRANSPARENT: !0 };
                     return A(a, this.xh), this.Oh(t, s, o, n, i, a);
                   }
@@ -20034,7 +22080,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -20101,7 +22148,10 @@
                     if(((this.state = lt), this.if)) Zh(this.Nt, this.Ut.bind(this), this.Nh.bind(this));
                     else {
                       var t = new XMLHttpRequest();
-                      t.addEventListener('load', this.Hh.bind(this)), t.addEventListener('error', this.Jh.bind(this)), t.open('GET', this.Nt), t.send();
+                      t.addEventListener('load', this.Hh.bind(this)),
+                        t.addEventListener('error', this.Jh.bind(this)),
+                        t.open('GET', this.Nt),
+                        t.send();
                     }
                 }),
                 (n.prototype.Hh = function(t) {
@@ -20127,12 +22177,22 @@
             })(xt),
             Xm = (function (t) {
               function n(n) {
-                var i = t.call(this, { projection: yr('EPSG:3857'), state: 'loading', zDirection: n.zDirection }) || this;
-                if(((i.Qh = void 0 === n.preemptive || n.preemptive), (i.ef = kf), (i.uf = void 0), (i.if = n.jsonp || !1), n.url))
+                var i =
+                  t.call(this, { projection: yr('EPSG:3857'), state: 'loading', zDirection: n.zDirection }) || this;
+                if(
+                  ((i.Qh = void 0 === n.preemptive || n.preemptive),
+                  (i.ef = kf),
+                  (i.uf = void 0),
+                  (i.if = n.jsonp || !1),
+                  n.url)
+                )
                   if(i.if) Zh(n.url, i.handleTileJSONResponse.bind(i), i.handleTileJSONError.bind(i));
                   else {
                     var r = new XMLHttpRequest();
-                    r.addEventListener('load', i.Hh.bind(i)), r.addEventListener('error', i.Jh.bind(i)), r.open('GET', n.url), r.send();
+                    r.addEventListener('load', i.Hh.bind(i)),
+                      r.addEventListener('error', i.Jh.bind(i)),
+                      r.open('GET', n.url),
+                      r.send();
                   }
                 else n.tileJSON ? i.handleTileJSONResponse(n.tileJSON) : St(!1, 51);
                 return i;
@@ -20201,7 +22261,14 @@
                   var s = [t, n, i],
                     u = this.getTileCoordForTileUrlFunction(s, e),
                     a = this.ef(u, r, e),
-                    h = new Bm(s, void 0 !== a ? ct : pt, void 0 !== a ? a : '', this.tileGrid.getTileCoordExtent(s), this.Qh, this.if);
+                    h = new Bm(
+                      s,
+                      void 0 !== a ? ct : pt,
+                      void 0 !== a ? a : '',
+                      this.tileGrid.getTileCoordExtent(s),
+                      this.Qh,
+                      this.if
+                    );
                   return this.tileCache.set(o, h), h;
                 }),
                 (n.prototype.useTile = function(t, n, i) {
@@ -20224,7 +22291,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -20349,7 +22417,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -20428,7 +22497,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -20501,7 +22571,8 @@
                           un(this.Ef, this.jf),
                           n.hitDetection
                             ? (this.Af = new Float32Array(t.data.renderInstructions))
-                            : ((this.Tf = new Float32Array(t.data.renderInstructions)), n.generateBuffersRun === this.Cf && (this.ready = !0)),
+                            : ((this.Tf = new Float32Array(t.data.renderInstructions)),
+                              n.generateBuffersRun === this.Cf && (this.ready = !0)),
                           this.getLayer().changed();
                       }
                     }.bind(r)
@@ -20513,7 +22584,8 @@
                   (r.Lf = [$(a, Qv, r.zf, r), $(a, td, r.Rf, r), $(a, id, r.Ff, r), $(a, nd, r.Gf, r)]),
                   a.forEachFeature(
                     function(t) {
-                      (this.If[o(t)] = { feature: t, properties: t.getProperties(), geometry: t.getGeometry() }), this.Nf++;
+                      (this.If[o(t)] = { feature: t, properties: t.getProperties(), geometry: t.getGeometry() }),
+                        this.Nf++;
                     }.bind(r)
                   ),
                   r
@@ -20522,7 +22594,8 @@
               return (
                 Km(n, t),
                 (n.prototype.afterHelperCreated = function() {
-                  (this.Ks = this.helper.getProgram(this.Js, this.Hs)), this.xf && ((this.Sf = this.helper.getProgram(this._f, this.Mf)), (this.Pf = new Gc(this.helper)));
+                  (this.Ks = this.helper.getProgram(this.Js, this.Hs)),
+                    this.xf && ((this.Sf = this.helper.getProgram(this._f, this.Mf)), (this.Pf = new Gc(this.helper)));
                 }),
                 (n.prototype.zf = function(t) {
                   var n = t.feature;
@@ -20552,11 +22625,19 @@
                     h = a,
                     f = this.bf.getSize();
                   do {
-                    this.helper.makeProjectionTransform(t, this.Of), on(this.Of, h * s, 0), Ht(this.Of, this.Ef), this.helper.applyUniforms(t), this.helper.drawElements(0, f);
+                    this.helper.makeProjectionTransform(t, this.Of),
+                      on(this.Of, h * s, 0),
+                      Ht(this.Of, this.Ef),
+                      this.helper.applyUniforms(t),
+                      this.helper.drawElements(0, f);
                   } while(++h < u);
                   this.helper.finalizeDraw(t, this.dispatchPreComposeEvent, this.dispatchPostComposeEvent);
                   var c = this.helper.getCanvas();
-                  return this.xf && (this.renderHitDetection(t, a, u, s), this.Pf.clearCachedData()), this.postRender(n, t), c;
+                  return (
+                    this.xf && (this.renderHitDetection(t, a, u, s), this.Pf.clearCachedData()),
+                    this.postRender(n, t),
+                    c
+                  );
                 }),
                 (n.prototype.prepareFrameInternal = function(t) {
                   var n = this.getLayer(),
@@ -20573,7 +22654,12 @@
                     i.loadFeatures(f, a, u), this.Df(t), (this.$i = t.extent.slice());
                   }
                   return (
-                    this.helper.useProgram(this.Ks), this.helper.prepareDraw(t), this.helper.bindBuffer(this.wf), this.helper.bindBuffer(this.bf), this.helper.enableAttributes(this.attributes), !0
+                    this.helper.useProgram(this.Ks),
+                    this.helper.prepareDraw(t),
+                    this.helper.bindBuffer(this.wf),
+                    this.helper.bindBuffer(this.bf),
+                    this.helper.enableAttributes(this.attributes),
+                    !0
                   );
                 }),
                 (n.prototype.Df = function(t) {
@@ -20600,22 +22686,40 @@
                         (this.Tf[h++] = u[0]),
                         (this.Tf[h++] = u[1]),
                         this.xf &&
-                          ((this.Af[f++] = u[0]), (this.Af[f++] = u[1]), (this.Af[f++] = s[0]), (this.Af[f++] = s[1]), (this.Af[f++] = s[2]), (this.Af[f++] = s[3]), (this.Af[f++] = Number(c)));
+                          ((this.Af[f++] = u[0]),
+                          (this.Af[f++] = u[1]),
+                          (this.Af[f++] = s[0]),
+                          (this.Af[f++] = s[1]),
+                          (this.Af[f++] = s[2]),
+                          (this.Af[f++] = s[3]),
+                          (this.Af[f++] = Number(c)));
                       for(var l = void 0, v = 0; v < this.customAttributes.length; v++)
-                        (l = this.customAttributes[v].callback(i.feature, i.properties)), (this.Tf[h++] = l), this.xf && (this.Af[f++] = l);
+                        (l = this.customAttributes[v].callback(i.feature, i.properties)),
+                          (this.Tf[h++] = l),
+                          this.xf && (this.Af[f++] = l);
                     }
                   var d = {
                     type: Jc,
                     renderInstructions: this.Tf.buffer,
                     customAttributesCount: this.customAttributes.length
                   };
-                  if(((d.projectionTransform = n), (d.generateBuffersRun = ++this.Cf), (this.ready = !1), this.kf.postMessage(d, [this.Tf.buffer]), (this.Tf = null), this.xf)) {
+                  if(
+                    ((d.projectionTransform = n),
+                    (d.generateBuffersRun = ++this.Cf),
+                    (this.ready = !1),
+                    this.kf.postMessage(d, [this.Tf.buffer]),
+                    (this.Tf = null),
+                    this.xf)
+                  ) {
                     var p = {
                       type: Jc,
                       renderInstructions: this.Af.buffer,
                       customAttributesCount: 5 + this.customAttributes.length
                     };
-                    (p.projectionTransform = n), (p.hitDetection = !0), this.kf.postMessage(p, [this.Af.buffer]), (this.Af = null);
+                    (p.projectionTransform = n),
+                      (p.hitDetection = !0),
+                      this.kf.postMessage(p, [this.Af.buffer]),
+                      (this.Af = null);
                   }
                 }),
                 (n.prototype.forEachFeatureAtCoordinate = function(t, n, i, r, e) {
@@ -20639,7 +22743,10 @@
                       this.helper.bindBuffer(this.bf),
                       this.helper.enableAttributes(this.hitDetectionAttributes);
                     do {
-                      this.helper.makeProjectionTransform(t, this.Of), on(this.Of, e * r, 0), Ht(this.Of, this.Ef), this.helper.applyUniforms(t);
+                      this.helper.makeProjectionTransform(t, this.Of),
+                        on(this.Of, e * r, 0),
+                        Ht(this.Of, this.Ef),
+                        this.helper.applyUniforms(t);
                       var o = this.bf.getSize();
                       this.helper.drawElements(0, o);
                     } while(++e < i);
@@ -20690,7 +22797,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -20728,7 +22836,16 @@
                       });
                 }),
                 (n.prototype.appendFlatPointCoordinates = function(t, n) {
-                  for(var i = this.getBufferedMaxExtent(), r = this.Xf, e = this.coordinates, o = e.length, s = 0, u = t.length; s < u; s += n)
+                  for(
+                    var i = this.getBufferedMaxExtent(),
+                      r = this.Xf,
+                      e = this.coordinates,
+                      o = e.length,
+                      s = 0,
+                      u = t.length;
+                    s < u;
+                    s += n
+                  )
                     (r[0] = t[s]), (r[1] = t[s + 1]), bn(i, r) && ((e[o++] = r[0]), (e[o++] = r[1]));
                   return o;
                 }),
@@ -20747,7 +22864,11 @@
                   for(h = n + r; h < i; h += r)
                     (d[0] = t[h]),
                       (d[1] = t[h + 1]),
-                      (c = _n(a, d)) !== f ? (p && ((s[u++] = l), (s[u++] = v), (p = !1)), (s[u++] = d[0]), (s[u++] = d[1])) : c === cn ? ((s[u++] = d[0]), (s[u++] = d[1]), (p = !1)) : (p = !0),
+                      (c = _n(a, d)) !== f
+                        ? (p && ((s[u++] = l), (s[u++] = v), (p = !1)), (s[u++] = d[0]), (s[u++] = d[1]))
+                        : c === cn
+                        ? ((s[u++] = d[0]), (s[u++] = d[1]), (p = !1))
+                        : (p = !0),
                       (l = d[0]),
                       (v = d[1]),
                       (f = c);
@@ -20780,7 +22901,8 @@
                         var p = [];
                         (a = this.Vf(e, a, l[v], f, p)), u.push(p);
                       }
-                      this.instructions.push([rw.CUSTOM, c, u, t, i, me]), this.hitDetectionInstructions.push([rw.CUSTOM, c, u, t, r || i, me]);
+                      this.instructions.push([rw.CUSTOM, c, u, t, i, me]),
+                        this.hitDetectionInstructions.push([rw.CUSTOM, c, u, t, r || i, me]);
                       break;
                     case 'Polygon':
                     case 'MultiLineString':
@@ -20799,7 +22921,9 @@
                       break;
                     case 'MultiPoint':
                       (e = t.getFlatCoordinates()),
-                        (o = this.appendFlatPointCoordinates(e, f)) > c && (this.instructions.push([rw.CUSTOM, c, o, t, i, pe]), this.hitDetectionInstructions.push([rw.CUSTOM, c, o, t, r || i, pe]));
+                        (o = this.appendFlatPointCoordinates(e, f)) > c &&
+                          (this.instructions.push([rw.CUSTOM, c, o, t, i, pe]),
+                          this.hitDetectionInstructions.push([rw.CUSTOM, c, o, t, r || i, pe]));
                       break;
                     case 'Point':
                       (e = t.getFlatCoordinates()),
@@ -20811,7 +22935,10 @@
                   this.endGeometry(n);
                 }),
                 (n.prototype.beginGeometry = function(t, n) {
-                  (this.qf = [rw.BEGIN_GEOMETRY, n, 0, t]), this.instructions.push(this.qf), (this.Uf = [rw.BEGIN_GEOMETRY, n, 0, t]), this.hitDetectionInstructions.push(this.Uf);
+                  (this.qf = [rw.BEGIN_GEOMETRY, n, 0, t]),
+                    this.instructions.push(this.qf),
+                    (this.Uf = [rw.BEGIN_GEOMETRY, n, 0, t]),
+                    this.hitDetectionInstructions.push(this.Uf);
                 }),
                 (n.prototype.finish = function() {
                   return {
@@ -20828,7 +22955,10 @@
                     r,
                     e = n.length,
                     o = -1;
-                  for(t = 0; t < e; ++t) (r = (i = n[t])[0]) == rw.END_GEOMETRY ? (o = t) : r == rw.BEGIN_GEOMETRY && ((i[2] = t), w(this.hitDetectionInstructions, o, t), (o = -1));
+                  for(t = 0; t < e; ++t)
+                    (r = (i = n[t])[0]) == rw.END_GEOMETRY
+                      ? (o = t)
+                      : r == rw.BEGIN_GEOMETRY && ((i[2] = t), w(this.hitDetectionInstructions, o, t), (o = -1));
                 }),
                 (n.prototype.setFillStrokeStyle = function(t, n) {
                   var i = this.state;
@@ -20850,8 +22980,16 @@
                     var h = n.getWidth();
                     i.lineWidth = void 0 !== h ? h : 1;
                     var f = n.getMiterLimit();
-                    (i.miterLimit = void 0 !== f ? f : ks), i.lineWidth > this.maxLineWidth && ((this.maxLineWidth = i.lineWidth), (this.Bf = null));
-                  } else (i.strokeStyle = void 0), (i.lineCap = void 0), (i.lineDash = null), (i.lineDashOffset = void 0), (i.lineJoin = void 0), (i.lineWidth = void 0), (i.miterLimit = void 0);
+                    (i.miterLimit = void 0 !== f ? f : ks),
+                      i.lineWidth > this.maxLineWidth && ((this.maxLineWidth = i.lineWidth), (this.Bf = null));
+                  } else
+                    (i.strokeStyle = void 0),
+                      (i.lineCap = void 0),
+                      (i.lineDash = null),
+                      (i.lineDashOffset = void 0),
+                      (i.lineJoin = void 0),
+                      (i.lineWidth = void 0),
+                      (i.miterLimit = void 0);
                 }),
                 (n.prototype.createFill = function(t) {
                   var n = t.fillStyle,
@@ -20862,11 +23000,21 @@
                   this.instructions.push(this.createStroke(t));
                 }),
                 (n.prototype.createStroke = function(t) {
-                  return [rw.SET_STROKE_STYLE, t.strokeStyle, t.lineWidth * this.pixelRatio, t.lineCap, t.lineJoin, t.miterLimit, this.applyPixelRatio(t.lineDash), t.lineDashOffset * this.pixelRatio];
+                  return [
+                    rw.SET_STROKE_STYLE,
+                    t.strokeStyle,
+                    t.lineWidth * this.pixelRatio,
+                    t.lineCap,
+                    t.lineJoin,
+                    t.miterLimit,
+                    this.applyPixelRatio(t.lineDash),
+                    t.lineDashOffset * this.pixelRatio
+                  ];
                 }),
                 (n.prototype.updateFillStyle = function(t, n) {
                   var i = t.fillStyle;
-                  ('string' == typeof i && t.currentFillStyle == i) || (void 0 !== i && this.instructions.push(n.call(this, t)), (t.currentFillStyle = i));
+                  ('string' == typeof i && t.currentFillStyle == i) ||
+                    (void 0 !== i && this.instructions.push(n.call(this, t)), (t.currentFillStyle = i));
                 }),
                 (n.prototype.updateStrokeStyle = function(t, n) {
                   var i = t.strokeStyle,
@@ -20893,7 +23041,10 @@
                     (t.currentMiterLimit = a));
                 }),
                 (n.prototype.endGeometry = function(t) {
-                  (this.qf[2] = this.instructions.length), (this.qf = null), (this.Uf[2] = this.hitDetectionInstructions.length), (this.Uf = null);
+                  (this.qf[2] = this.instructions.length),
+                    (this.qf = null),
+                    (this.Uf[2] = this.hitDetectionInstructions.length),
+                    (this.Uf = null);
                   var n = [rw.END_GEOMETRY, t];
                   this.instructions.push(n), this.hitDetectionInstructions.push(n);
                 }),
@@ -20920,7 +23071,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -20976,7 +23128,24 @@
                       this.fu,
                       this.Jf
                     ]),
-                      this.hitDetectionInstructions.push([rw.DRAW_IMAGE, e, o, this._u, this.Yf, this.Zf, this.$f, this.ou, this.Kf, this.Hf, this.su, this.Dr, this.uu, this.Uu, this.fu, this.Jf]),
+                      this.hitDetectionInstructions.push([
+                        rw.DRAW_IMAGE,
+                        e,
+                        o,
+                        this._u,
+                        this.Yf,
+                        this.Zf,
+                        this.$f,
+                        this.ou,
+                        this.Kf,
+                        this.Hf,
+                        this.su,
+                        this.Dr,
+                        this.uu,
+                        this.Uu,
+                        this.fu,
+                        this.Jf
+                      ]),
                       this.endGeometry(n);
                   }
                 }),
@@ -21005,7 +23174,24 @@
                       this.fu,
                       this.Jf
                     ]),
-                      this.hitDetectionInstructions.push([rw.DRAW_IMAGE, e, o, this._u, this.Yf, this.Zf, this.$f, this.ou, this.Kf, this.Hf, this.su, this.Dr, this.uu, this.Uu, this.fu, this.Jf]),
+                      this.hitDetectionInstructions.push([
+                        rw.DRAW_IMAGE,
+                        e,
+                        o,
+                        this._u,
+                        this.Yf,
+                        this.Zf,
+                        this.$f,
+                        this.ou,
+                        this.Kf,
+                        this.Hf,
+                        this.su,
+                        this.Dr,
+                        this.uu,
+                        this.Uu,
+                        this.fu,
+                        this.Jf
+                      ]),
                       this.endGeometry(n);
                   }
                 }),
@@ -21064,7 +23250,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -21090,7 +23277,10 @@
                   if(void 0 !== r && void 0 !== e) {
                     this.updateStrokeStyle(i, this.applyStroke),
                       this.beginGeometry(t, n),
-                      this.hitDetectionInstructions.push([rw.SET_STROKE_STYLE, i.strokeStyle, i.lineWidth, i.lineCap, i.lineJoin, i.miterLimit, Ps, 0], nw);
+                      this.hitDetectionInstructions.push(
+                        [rw.SET_STROKE_STYLE, i.strokeStyle, i.lineWidth, i.lineCap, i.lineJoin, i.miterLimit, Ps, 0],
+                        nw
+                      );
                     var o = t.getFlatCoordinates(),
                       s = t.getStride();
                     this.Qf(o, 0, o.length, s), this.hitDetectionInstructions.push(tw), this.endGeometry(n);
@@ -21103,8 +23293,25 @@
                   if(void 0 !== r && void 0 !== e) {
                     this.updateStrokeStyle(i, this.applyStroke),
                       this.beginGeometry(t, n),
-                      this.hitDetectionInstructions.push([rw.SET_STROKE_STYLE, i.strokeStyle, i.lineWidth, i.lineCap, i.lineJoin, i.miterLimit, i.lineDash, i.lineDashOffset], nw);
-                    for(var o = t.getEnds(), s = t.getFlatCoordinates(), u = t.getStride(), a = 0, h = 0, f = o.length; h < f; ++h) a = this.Qf(s, a, o[h], u);
+                      this.hitDetectionInstructions.push(
+                        [
+                          rw.SET_STROKE_STYLE,
+                          i.strokeStyle,
+                          i.lineWidth,
+                          i.lineCap,
+                          i.lineJoin,
+                          i.miterLimit,
+                          i.lineDash,
+                          i.lineDashOffset
+                        ],
+                        nw
+                      );
+                    for(
+                      var o = t.getEnds(), s = t.getFlatCoordinates(), u = t.getStride(), a = 0, h = 0, f = o.length;
+                      h < f;
+                      ++h
+                    )
+                      a = this.Qf(s, a, o[h], u);
                     this.hitDetectionInstructions.push(tw), this.endGeometry(n);
                   }
                 }),
@@ -21118,7 +23325,9 @@
                   );
                 }),
                 (n.prototype.applyStroke = function(n) {
-                  null != n.lastStroke && n.lastStroke != this.coordinates.length && (this.instructions.push(tw), (n.lastStroke = this.coordinates.length)),
+                  null != n.lastStroke &&
+                    n.lastStroke != this.coordinates.length &&
+                    (this.instructions.push(tw), (n.lastStroke = this.coordinates.length)),
                     (n.lastStroke = 0),
                     t.prototype.applyStroke.call(this, n),
                     this.instructions.push(nw);
@@ -21139,7 +23348,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -21163,9 +23373,16 @@
                       f = this.coordinates.length,
                       c = this.appendFlatLineCoordinates(t, n, h, r, !0, !s),
                       l = [rw.MOVE_TO_LINE_TO, f, c];
-                    this.instructions.push(l), this.hitDetectionInstructions.push(l), s && (this.instructions.push(iw), this.hitDetectionInstructions.push(iw)), (n = h);
+                    this.instructions.push(l),
+                      this.hitDetectionInstructions.push(l),
+                      s && (this.instructions.push(iw), this.hitDetectionInstructions.push(iw)),
+                      (n = h);
                   }
-                  return o && (this.instructions.push(Qm), this.hitDetectionInstructions.push(Qm)), s && (this.instructions.push(tw), this.hitDetectionInstructions.push(tw)), n;
+                  return (
+                    o && (this.instructions.push(Qm), this.hitDetectionInstructions.push(Qm)),
+                    s && (this.instructions.push(tw), this.hitDetectionInstructions.push(tw)),
+                    n
+                  );
                 }),
                 (n.prototype.drawCircle = function(t, n) {
                   var i = this.state,
@@ -21176,7 +23393,16 @@
                       this.beginGeometry(t, n),
                       void 0 !== i.fillStyle && this.hitDetectionInstructions.push([rw.SET_FILL_STYLE, Ts]),
                       void 0 !== i.strokeStyle &&
-                        this.hitDetectionInstructions.push([rw.SET_STROKE_STYLE, i.strokeStyle, i.lineWidth, i.lineCap, i.lineJoin, i.miterLimit, i.lineDash, i.lineDashOffset]);
+                        this.hitDetectionInstructions.push([
+                          rw.SET_STROKE_STYLE,
+                          i.strokeStyle,
+                          i.lineWidth,
+                          i.lineCap,
+                          i.lineJoin,
+                          i.miterLimit,
+                          i.lineDash,
+                          i.lineDashOffset
+                        ]);
                     var o = t.getFlatCoordinates(),
                       s = t.getStride(),
                       u = this.coordinates.length;
@@ -21198,7 +23424,16 @@
                       this.beginGeometry(t, n),
                       void 0 !== i.fillStyle && this.hitDetectionInstructions.push([rw.SET_FILL_STYLE, Ts]),
                       void 0 !== i.strokeStyle &&
-                        this.hitDetectionInstructions.push([rw.SET_STROKE_STYLE, i.strokeStyle, i.lineWidth, i.lineCap, i.lineJoin, i.miterLimit, i.lineDash, i.lineDashOffset]);
+                        this.hitDetectionInstructions.push([
+                          rw.SET_STROKE_STYLE,
+                          i.strokeStyle,
+                          i.lineWidth,
+                          i.lineCap,
+                          i.lineJoin,
+                          i.miterLimit,
+                          i.lineDash,
+                          i.lineDashOffset
+                        ]);
                     var o = t.getEnds(),
                       s = t.getOrientedFlatCoordinates(),
                       u = t.getStride();
@@ -21214,8 +23449,27 @@
                       this.beginGeometry(t, n),
                       void 0 !== i.fillStyle && this.hitDetectionInstructions.push([rw.SET_FILL_STYLE, Ts]),
                       void 0 !== i.strokeStyle &&
-                        this.hitDetectionInstructions.push([rw.SET_STROKE_STYLE, i.strokeStyle, i.lineWidth, i.lineCap, i.lineJoin, i.miterLimit, i.lineDash, i.lineDashOffset]);
-                    for(var o = t.getEndss(), s = t.getOrientedFlatCoordinates(), u = t.getStride(), a = 0, h = 0, f = o.length; h < f; ++h) a = this.tc(s, a, o[h], u);
+                        this.hitDetectionInstructions.push([
+                          rw.SET_STROKE_STYLE,
+                          i.strokeStyle,
+                          i.lineWidth,
+                          i.lineCap,
+                          i.lineJoin,
+                          i.miterLimit,
+                          i.lineDash,
+                          i.lineDashOffset
+                        ]);
+                    for(
+                      var o = t.getEndss(),
+                        s = t.getOrientedFlatCoordinates(),
+                        u = t.getStride(),
+                        a = 0,
+                        h = 0,
+                        f = o.length;
+                      h < f;
+                      ++h
+                    )
+                      a = this.tc(s, a, o[h], u);
                     this.endGeometry(n);
                   }
                 }),
@@ -21227,7 +23481,8 @@
                 }),
                 (n.prototype.ic = function() {
                   var t = this.state;
-                  void 0 !== t.fillStyle && this.updateFillStyle(t, this.createFill), void 0 !== t.strokeStyle && this.updateStrokeStyle(t, this.applyStroke);
+                  void 0 !== t.fillStyle && this.updateFillStyle(t, this.createFill),
+                    void 0 !== t.strokeStyle && this.updateStrokeStyle(t, this.applyStroke);
                 }),
                 n
               );
@@ -21254,7 +23509,10 @@
                 ((l = g - a),
                 (v = b - h),
                 (u = Math.sqrt(l * l + v * v)),
-                void 0 !== f && ((m += s), Math.acos((f * l + c * v) / (s * u)) > t && (m > y && ((y = m), (d = w), (p = o)), (m = 0), (w = o - e))),
+                void 0 !== f &&
+                  ((m += s),
+                  Math.acos((f * l + c * v) / (s * u)) > t &&
+                    (m > y && ((y = m), (d = w), (p = o)), (m = 0), (w = o - e))),
                 (s = u),
                 (f = l),
                 (c = v)),
@@ -21276,7 +23534,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -21323,7 +23582,12 @@
                 vw(n, t),
                 (n.prototype.finish = function() {
                   var n = t.prototype.finish.call(this);
-                  return (n.textStates = this.textStates), (n.fillStates = this.fillStates), (n.strokeStates = this.strokeStates), n;
+                  return (
+                    (n.textStates = this.textStates),
+                    (n.fillStates = this.fillStates),
+                    (n.strokeStates = this.strokeStates),
+                    n
+                  );
                 }),
                 (n.prototype.drawText = function(t, n) {
                   var i = this.fo,
@@ -21335,7 +23599,10 @@
                       u = t.getType(),
                       a = null,
                       h = t.getStride();
-                    if(e.placement !== jv || ('LineString' != u && 'MultiLineString' != u && 'Polygon' != u && 'MultiPolygon' != u)) {
+                    if(
+                      e.placement !== jv ||
+                      ('LineString' != u && 'MultiLineString' != u && 'Polygon' != u && 'MultiPolygon' != u)
+                    ) {
                       var f = e.overflow ? null : [];
                       switch (u) {
                         case 'Point':
@@ -21357,7 +23624,8 @@
                         case 'MultiPolygon':
                           var c = t.getFlatInteriorPoints();
                           a = [];
-                          for(M = 0, _ = c.length; M < _; M += 3) e.overflow || f.push(c[M + 2] / this.resolution), a.push(c[M], c[M + 1]);
+                          for(M = 0, _ = c.length; M < _; M += 3)
+                            e.overflow || f.push(c[M + 2] / this.resolution), a.push(c[M], c[M + 1]);
                           if(0 === a.length) return;
                           h = 2;
                       }
@@ -21372,8 +23640,12 @@
                       this.uc(),
                         (e.backgroundFill || e.backgroundStroke) &&
                           (this.setFillStrokeStyle(e.backgroundFill, e.backgroundStroke),
-                          e.backgroundFill && (this.updateFillStyle(this.state, this.createFill), this.hitDetectionInstructions.push(this.createFill(this.state))),
-                          e.backgroundStroke && (this.updateStrokeStyle(this.state, this.applyStroke), this.hitDetectionInstructions.push(this.createStroke(this.state)))),
+                          e.backgroundFill &&
+                            (this.updateFillStyle(this.state, this.createFill),
+                            this.hitDetectionInstructions.push(this.createFill(this.state))),
+                          e.backgroundStroke &&
+                            (this.updateStrokeStyle(this.state, this.applyStroke),
+                            this.hitDetectionInstructions.push(this.createStroke(this.state)))),
                         this.beginGeometry(t, n);
                       var v = e.padding;
                       if(v != zs && (e.scale[0] < 0 || e.scale[1] < 0)) {
@@ -21381,7 +23653,9 @@
                           p = e.padding[1],
                           y = e.padding[2],
                           m = e.padding[3];
-                        e.scale[0] < 0 && ((p = -p), (m = -m)), e.scale[1] < 0 && ((d = -d), (y = -y)), (v = [d, p, y, m]);
+                        e.scale[0] < 0 && ((p = -p), (m = -m)),
+                          e.scale[1] < 0 && ((d = -d), (y = -y)),
+                          (v = [d, p, y, m]);
                       }
                       var w = this.pixelRatio;
                       this.instructions.push([
@@ -21512,13 +23786,30 @@
                     f = this.eo,
                     c = i ? (i.lineWidth * Math.abs(r.scale[0])) / 2 : 0;
                   this.instructions.push([rw.DRAW_CHARS, t, n, a, r.overflow, s, r.maxAngle, u, h, e, c * u, f, o, 1]),
-                    this.hitDetectionInstructions.push([rw.DRAW_CHARS, t, n, a, r.overflow, s, r.maxAngle, 1, h, e, c, f, o, 1 / u]);
+                    this.hitDetectionInstructions.push([
+                      rw.DRAW_CHARS,
+                      t,
+                      n,
+                      a,
+                      r.overflow,
+                      s,
+                      r.maxAngle,
+                      1,
+                      h,
+                      e,
+                      c,
+                      f,
+                      o,
+                      1 / u
+                    ]);
                 }),
                 (n.prototype.setTextStyle = function(t, n) {
                   var i, r, e;
                   if(t) {
                     var s = t.getFill();
-                    s ? ((r = this.fo) || ((r = {}), (this.fo = r)), (r.fillStyle = Uh(s.getColor() || Ts))) : ((r = null), (this.fo = r));
+                    s
+                      ? ((r = this.fo) || ((r = {}), (this.fo = r)), (r.fillStyle = Uh(s.getColor() || Ts)))
+                      : ((r = null), (this.fo = r));
                     var u = t.getStroke();
                     if(u) {
                       (e = this.co) || ((e = {}), (this.co = e));
@@ -21570,7 +23861,8 @@
                           e.lineDash.join() +
                           ']'
                         : ''),
-                      (this.ec = i.font + i.scale + (i.textAlign || '?') + (i.justify || '?') + (i.textBaseline || '?')),
+                      (this.ec =
+                        i.font + i.scale + (i.textAlign || '?') + (i.justify || '?') + (i.textBaseline || '?')),
                       (this.oc = r ? ('string' == typeof r.fillStyle ? r.fillStyle : '|' + o(r.fillStyle)) : '');
                   } else this.eo = '';
                   this.Jf = n;
@@ -21615,12 +23907,27 @@
               y = 0,
               m = 0;
             function w() {
-              (d = l), (p = v), (l = t[(n += r)]), (v = t[n + 1]), (m += y), (y = Math.sqrt((l - d) * (l - d) + (v - p) * (v - p)));
+              (d = l),
+                (p = v),
+                (l = t[(n += r)]),
+                (v = t[n + 1]),
+                (m += y),
+                (y = Math.sqrt((l - d) * (l - d) + (v - p) * (v - p)));
             }
             do {
               w();
             } while(n < i - r && m + y < o);
-            for(var g = 0 === y ? 0 : (o - m) / y, b = di(d, l, g), x = di(p, v, g), M = n - r, _ = m, S = o + u * a(h, e, f); n < i - r && m + y < S; ) w();
+            for(
+              var g = 0 === y ? 0 : (o - m) / y,
+                b = di(d, l, g),
+                x = di(p, v, g),
+                M = n - r,
+                _ = m,
+                S = o + u * a(h, e, f);
+              n < i - r && m + y < S;
+
+            )
+              w();
             var O,
               j = di(d, l, (g = 0 === y ? 0 : (S - m) / y)),
               E = di(p, v, g);
@@ -21753,9 +24060,26 @@
                     x.push('lineCap', o.lineCap),
                     x.push('lineJoin', o.lineJoin),
                     x.push('miterLimit', o.miterLimit),
-                    (Vt ? OffscreenCanvasRenderingContext2D : CanvasRenderingContext2D).prototype.setLineDash && (x.push('setLineDash', [o.lineDash]), x.push('lineDashOffset', o.lineDashOffset)));
-                  i && x.push('fillStyle', s.fillStyle), x.push('textBaseline', 'middle'), x.push('textAlign', 'center');
-                  for(var O, j = 0.5 - c, E = c * b + j * l, T = [], A = [], P = 0, C = 0, k = 0, I = 0, N = 0, L = v.length; N < L; N += 2) {
+                    (Vt ? OffscreenCanvasRenderingContext2D : CanvasRenderingContext2D).prototype.setLineDash &&
+                      (x.push('setLineDash', [o.lineDash]), x.push('lineDashOffset', o.lineDashOffset)));
+                  i && x.push('fillStyle', s.fillStyle),
+                    x.push('textBaseline', 'middle'),
+                    x.push('textAlign', 'center');
+                  for(
+                    var O,
+                      j = 0.5 - c,
+                      E = c * b + j * l,
+                      T = [],
+                      A = [],
+                      P = 0,
+                      C = 0,
+                      k = 0,
+                      I = 0,
+                      N = 0,
+                      L = v.length;
+                    N < L;
+                    N += 2
+                  ) {
                     var z = v[N];
                     if('\n' !== z) {
                       var R = v[N + 1] || u.font;
@@ -21787,13 +24111,27 @@
                     _ = m - v[3],
                     S = w - v[0];
                   return (
-                    (d || 0 !== f) && ((xw[0] = _), (Sw[0] = _), (xw[1] = S), (Mw[1] = S), (Mw[0] = _ + x), (_w[0] = Mw[0]), (_w[1] = S + M), (Sw[1] = _w[1])),
+                    (d || 0 !== f) &&
+                      ((xw[0] = _),
+                      (Sw[0] = _),
+                      (xw[1] = S),
+                      (Mw[1] = S),
+                      (Mw[0] = _ + x),
+                      (_w[0] = Mw[0]),
+                      (_w[1] = S + M),
+                      (Sw[1] = _w[1])),
                     0 !== f
                       ? (tn((y = sn([1, 0, 0, 1, 0, 0], i, r, 1, 1, f, -i, -r)), xw),
                         tn(y, Mw),
                         tn(y, _w),
                         tn(y, Sw),
-                        On(Math.min(xw[0], Mw[0], _w[0], Sw[0]), Math.min(xw[1], Mw[1], _w[1], Sw[1]), Math.max(xw[0], Mw[0], _w[0], Sw[0]), Math.max(xw[1], Mw[1], _w[1], Sw[1]), bw))
+                        On(
+                          Math.min(xw[0], Mw[0], _w[0], Sw[0]),
+                          Math.min(xw[1], Mw[1], _w[1], Sw[1]),
+                          Math.max(xw[0], Mw[0], _w[0], Sw[0]),
+                          Math.max(xw[1], Mw[1], _w[1], Sw[1]),
+                          bw
+                        ))
                       : On(Math.min(_, _ + x), Math.min(S, S + M), Math.max(_, _ + x), Math.max(S, S + M), bw),
                     l && ((m = Math.round(m)), (w = Math.round(w))),
                     {
@@ -21819,7 +24157,20 @@
                       a.maxX + f >= 0 &&
                       a.minY - f <= h.height / n &&
                       a.maxY + f >= 0 &&
-                      (u && this.wc(t, xw, Mw, _w, Sw, o, s), $s(t, r.canvasTransform, e, i, r.originX, r.originY, r.drawImageW, r.drawImageH, r.drawImageX, r.drawImageY, r.scale)),
+                      (u && this.wc(t, xw, Mw, _w, Sw, o, s),
+                      $s(
+                        t,
+                        r.canvasTransform,
+                        e,
+                        i,
+                        r.originX,
+                        r.originY,
+                        r.drawImageW,
+                        r.drawImageH,
+                        r.drawImageX,
+                        r.drawImageY,
+                        r.scale
+                      )),
                     !0
                   );
                 }),
@@ -21832,7 +24183,12 @@
                   t.fill(), this.vc && t.restore();
                 }),
                 (t.prototype.gc = function(t, n) {
-                  (t.strokeStyle = n[1]), (t.lineWidth = n[2]), (t.lineCap = n[3]), (t.lineJoin = n[4]), (t.miterLimit = n[5]), t.setLineDash && ((t.lineDashOffset = n[7]), t.setLineDash(n[6]));
+                  (t.strokeStyle = n[1]),
+                    (t.lineWidth = n[2]),
+                    (t.lineCap = n[3]),
+                    (t.lineJoin = n[4]),
+                    (t.miterLimit = n[5]),
+                    t.setLineDash && ((t.lineDashOffset = n[7]), t.setLineDash(n[6]));
                 }),
                 (t.prototype.Mc = function(t, n, i, r) {
                   var e = this.textStates[n],
@@ -21850,7 +24206,11 @@
                 }),
                 (t.prototype._c = function(t, n, i, r, e, o, s, u) {
                   var a;
-                  this.vo && x(i, this.yc) ? (a = this.vo) : (this.vo || (this.vo = []), (a = Dr(this.coordinates, 0, this.coordinates.length, 2, i, this.vo)), Qt(this.yc, i));
+                  this.vo && x(i, this.yc)
+                    ? (a = this.vo)
+                    : (this.vo || (this.vo = []),
+                      (a = Dr(this.coordinates, 0, this.coordinates.length, 2, i, this.vo)),
+                      Qt(this.yc, i));
                   for(
                     var h,
                       f,
@@ -21886,10 +24246,15 @@
                     var F = r[j];
                     switch (F[0]) {
                       case rw.BEGIN_GEOMETRY:
-                        (M = F[1]), (O = F[3]), M.getGeometry() ? (void 0 === s || Kn(s, O.getExtent()) ? ++j : (j = F[2] + 1)) : (j = F[2]);
+                        (M = F[1]),
+                          (O = F[3]),
+                          M.getGeometry() ? (void 0 === s || Kn(s, O.getExtent()) ? ++j : (j = F[2] + 1)) : (j = F[2]);
                         break;
                       case rw.BEGIN_PATH:
-                        A > R && (this.lu(t), (A = 0)), P > R && (t.stroke(), (P = 0)), A || P || (t.beginPath(), (l = NaN), (v = NaN)), ++j;
+                        A > R && (this.lu(t), (A = 0)),
+                          P > R && (t.stroke(), (P = 0)),
+                          A || P || (t.beginPath(), (l = NaN), (v = NaN)),
+                          ++j;
                         break;
                       case rw.CIRCLE:
                         var G = a[(T = F[1])],
@@ -21930,17 +24295,48 @@
                           var ot = F[23];
                           (f = (et.anchorX - ot) * this.pixelRatio), (F[4] = f);
                           var st = F[24];
-                          (c = (et.anchorY - st) * this.pixelRatio), (F[5] = c), (Z = y.height), (F[6] = Z), (nt = y.width), (F[13] = nt);
+                          (c = (et.anchorY - st) * this.pixelRatio),
+                            (F[5] = c),
+                            (Z = y.height),
+                            (F[6] = Z),
+                            (nt = y.width),
+                            (F[13] = nt);
                         }
                         var ut = void 0;
                         F.length > 25 && (ut = F[25]);
                         var at = void 0,
                           ht = void 0,
                           ft = void 0;
-                        F.length > 17 ? ((at = F[16]), (ht = F[17]), (ft = F[18])) : ((at = zs), (ht = !1), (ft = !1)), J && L ? (Q += N) : J || L || (Q -= N);
+                        F.length > 17 ? ((at = F[16]), (ht = F[17]), (ft = F[18])) : ((at = zs), (ht = !1), (ft = !1)),
+                          J && L ? (Q += N) : J || L || (Q -= N);
                         for(var ct = 0; T < h; T += 2)
                           if(!(ut && ut[ct++] < nt / this.pixelRatio)) {
-                            var lt = [t, n, y, (Gt = this.bc(y.width, y.height, a[T], a[T + 1], nt, Z, f, c, K, H, Q, tt, e, at, ht || ft, M)), $, ht ? C : null, ft ? k : null];
+                            var lt = [
+                              t,
+                              n,
+                              y,
+                              (Gt = this.bc(
+                                y.width,
+                                y.height,
+                                a[T],
+                                a[T + 1],
+                                nt,
+                                Z,
+                                f,
+                                c,
+                                K,
+                                H,
+                                Q,
+                                tt,
+                                e,
+                                at,
+                                ht || ft,
+                                M
+                              )),
+                              $,
+                              ht ? C : null,
+                              ft ? k : null
+                            ];
                             if(u) {
                               if('none' === it) continue;
                               if('obstacle' === it) {
@@ -21986,7 +24382,20 @@
                           Pt = Math.abs(Et[0]) * Ys(jt, m, Tt);
                         if(gt || Pt <= At) {
                           var Ct = this.textStates[w].textAlign,
-                            kt = ww(a, yt, mt, 2, m, (At - Pt) * dw[Ct], bt, Math.abs(Et[0]), Ys, jt, Tt, L ? 0 : this.Ge);
+                            kt = ww(
+                              a,
+                              yt,
+                              mt,
+                              2,
+                              m,
+                              (At - Pt) * dw[Ct],
+                              bt,
+                              Math.abs(Et[0]),
+                              Ys,
+                              jt,
+                              Tt,
+                              L ? 0 : this.Ge
+                            );
                           t: if(kt) {
                             var It = [],
                               Nt = void 0,
@@ -21996,15 +24405,55 @@
                               Ft = void 0;
                             if(g)
                               for(Nt = 0, Lt = kt.length; Nt < Lt; ++Nt) {
-                                (zt = (Ft = kt[Nt])[4]), (Rt = this.createLabel(zt, w, '', g)), (f = Ft[2] + (Et[0] < 0 ? -_t : _t)), (c = wt * Rt.height + (2 * (0.5 - wt) * _t * Et[1]) / Et[0] - Mt);
-                                var Gt = this.bc(Rt.width, Rt.height, Ft[0], Ft[1], Rt.width, Rt.height, f, c, 0, 0, Ft[3], St, !1, zs, !1, M);
+                                (zt = (Ft = kt[Nt])[4]),
+                                  (Rt = this.createLabel(zt, w, '', g)),
+                                  (f = Ft[2] + (Et[0] < 0 ? -_t : _t)),
+                                  (c = wt * Rt.height + (2 * (0.5 - wt) * _t * Et[1]) / Et[0] - Mt);
+                                var Gt = this.bc(
+                                  Rt.width,
+                                  Rt.height,
+                                  Ft[0],
+                                  Ft[1],
+                                  Rt.width,
+                                  Rt.height,
+                                  f,
+                                  c,
+                                  0,
+                                  0,
+                                  Ft[3],
+                                  St,
+                                  !1,
+                                  zs,
+                                  !1,
+                                  M
+                                );
                                 if(u && u.collides(Gt.declutterBox)) break t;
                                 It.push([t, n, Rt, Gt, 1, null, null]);
                               }
                             if(b)
                               for(Nt = 0, Lt = kt.length; Nt < Lt; ++Nt) {
-                                (zt = (Ft = kt[Nt])[4]), (Rt = this.createLabel(zt, w, b, '')), (f = Ft[2]), (c = wt * Rt.height - Mt);
-                                Gt = this.bc(Rt.width, Rt.height, Ft[0], Ft[1], Rt.width, Rt.height, f, c, 0, 0, Ft[3], St, !1, zs, !1, M);
+                                (zt = (Ft = kt[Nt])[4]),
+                                  (Rt = this.createLabel(zt, w, b, '')),
+                                  (f = Ft[2]),
+                                  (c = wt * Rt.height - Mt);
+                                Gt = this.bc(
+                                  Rt.width,
+                                  Rt.height,
+                                  Ft[0],
+                                  Ft[1],
+                                  Rt.width,
+                                  Rt.height,
+                                  f,
+                                  c,
+                                  0,
+                                  0,
+                                  Ft[3],
+                                  St,
+                                  !1,
+                                  zs,
+                                  !1,
+                                  M
+                                );
                                 if(u && u.collides(Gt.declutterBox)) break t;
                                 It.push([t, n, Rt, Gt, 1, null, null]);
                               }
@@ -22025,12 +24474,27 @@
                         R ? A++ : this.lu(t), ++j;
                         break;
                       case rw.MOVE_TO_LINE_TO:
-                        for(T = F[1], h = F[2], _ = a[T], p = ((S = a[T + 1]) + 0.5) | 0, ((d = (_ + 0.5) | 0) === l && p === v) || (t.moveTo(_, S), (l = d), (v = p)), T += 2; T < h; T += 2)
-                          (d = ((_ = a[T]) + 0.5) | 0), (p = ((S = a[T + 1]) + 0.5) | 0), (T != h - 2 && d === l && p === v) || (t.lineTo(_, S), (l = d), (v = p));
+                        for(
+                          T = F[1],
+                            h = F[2],
+                            _ = a[T],
+                            p = ((S = a[T + 1]) + 0.5) | 0,
+                            ((d = (_ + 0.5) | 0) === l && p === v) || (t.moveTo(_, S), (l = d), (v = p)),
+                            T += 2;
+                          T < h;
+                          T += 2
+                        )
+                          (d = ((_ = a[T]) + 0.5) | 0),
+                            (p = ((S = a[T + 1]) + 0.5) | 0),
+                            (T != h - 2 && d === l && p === v) || (t.lineTo(_, S), (l = d), (v = p));
                         ++j;
                         break;
                       case rw.SET_FILL_STYLE:
-                        (C = F), (this.vc = F[2]), A && (this.lu(t), (A = 0), P && (t.stroke(), (P = 0))), (t.fillStyle = F[1]), ++j;
+                        (C = F),
+                          (this.vc = F[2]),
+                          A && (this.lu(t), (A = 0), P && (t.stroke(), (P = 0))),
+                          (t.fillStyle = F[1]),
+                          ++j;
                         break;
                       case rw.SET_STROKE_STYLE:
                         (k = F), P && (t.stroke(), (P = 0)), this.gc(t, F), ++j;
@@ -22056,12 +24520,25 @@
             Pw = ['Polygon', 'Circle', 'LineString', 'Image', 'Text', 'Default'],
             Cw = (function () {
               function t(t, n, i, r, e, o) {
-                (this.fc = t), (this.za = r), (this.kt = i), (this.cc = n), (this.df = o), (this.Sc = {}), (this.Oc = null), (this.jc = [1, 0, 0, 1, 0, 0]), this.Ec(e);
+                (this.fc = t),
+                  (this.za = r),
+                  (this.kt = i),
+                  (this.cc = n),
+                  (this.df = o),
+                  (this.Sc = {}),
+                  (this.Oc = null),
+                  (this.jc = [1, 0, 0, 1, 0, 0]),
+                  this.Ec(e);
               }
               return (
                 (t.prototype.clip = function(t, n) {
                   var i = this.getClipCoords(n);
-                  t.beginPath(), t.moveTo(i[0], i[1]), t.lineTo(i[2], i[3]), t.lineTo(i[4], i[5]), t.lineTo(i[6], i[7]), t.clip();
+                  t.beginPath(),
+                    t.moveTo(i[0], i[1]),
+                    t.lineTo(i[2], i[3]),
+                    t.lineTo(i[4], i[5]),
+                    t.lineTo(i[6], i[7]),
+                    t.clip();
                 }),
                 (t.prototype.Ec = function(t) {
                   for(var n in t) {
@@ -22075,7 +24552,8 @@
                   }
                 }),
                 (t.prototype.hasExecutors = function(t) {
-                  for(var n in this.Sc) for (var i = this.Sc[n], r = 0, e = t.length; r < e; ++r) if(t[r] in i) return !0;
+                  for(var n in this.Sc)
+                    for(var i = this.Sc[n], r = 0, e = t.length; r < e; ++r) if(t[r] in i) return !0;
                   return !1;
                 }),
                 (t.prototype.forEachFeatureAtCoordinate = function(t, n, i, r, e, o) {
@@ -22085,7 +24563,9 @@
                   a && (this.Oc = _o(s, s));
                   var h,
                     f = this.Oc;
-                  f.canvas.width !== s || f.canvas.height !== s ? ((f.canvas.width = s), (f.canvas.height = s)) : a || f.clearRect(0, 0, s, s),
+                  f.canvas.width !== s || f.canvas.height !== s
+                    ? ((f.canvas.width = s), (f.canvas.height = s))
+                    : a || f.clearRect(0, 0, s, s),
                     void 0 !== this.df && (kn((h = [1 / 0, 1 / 0, -1 / 0, -1 / 0]), t), mn(h, n * (this.df + r), h));
                   var c,
                     l = Iw(r);
@@ -22111,7 +24591,8 @@
                     b = Object.keys(this.Sc).map(Number);
                   for(b.sort(p), d = b.length - 1; d >= 0; --d) {
                     var x = b[d].toString();
-                    for(m = this.Sc[x], y = Pw.length - 1; y >= 0; --y) if(void 0 !== (w = m[(c = Pw[y])]) && (g = w.executeHitDetection(f, u, i, v, h))) return g;
+                    for(m = this.Sc[x], y = Pw.length - 1; y >= 0; --y)
+                      if(void 0 !== (w = m[(c = Pw[y])]) && (g = w.executeHitDetection(f, u, i, v, h))) return g;
                   }
                 }),
                 (t.prototype.getClipCoords = function(t) {
@@ -22169,7 +24650,16 @@
           function zw(t, n, i, r, e, o, s) {
             var u = _o(t[0] * Lw, t[1] * Lw);
             u.imageSmoothingEnabled = !1;
-            for(var a = u.canvas, h = new rf(u, Lw, e, null, s), f = i.length, c = Math.floor(16777215 / f), l = {}, v = 1; v <= f; ++v) {
+            for(
+              var a = u.canvas,
+                h = new rf(u, Lw, e, null, s),
+                f = i.length,
+                c = Math.floor(16777215 / f),
+                l = {},
+                v = 1;
+              v <= f;
+              ++v
+            ) {
               var d = i[v - 1],
                 y = d.getStyleFunction() || r;
               if(r) {
@@ -22210,7 +24700,9 @@
                           );
                       }
                       var P = _.getZIndex() || 0;
-                      (I = l[P]) || ((I = {}), (l[P] = I), (I.Polygon = []), (I.Circle = []), (I.LineString = []), (I.Point = [])), I[M.getType().replace('Multi', '')].push(M, _);
+                      (I = l[P]) ||
+                        ((I = {}), (l[P] = I), (I.Polygon = []), (I.Circle = []), (I.LineString = []), (I.Point = [])),
+                        I[M.getType().replace('Multi', '')].push(M, _);
                     }
                   }
                 }
@@ -22255,7 +24747,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -22322,11 +24815,17 @@
                 (n.prototype.Uc = function() {
                   if(1 !== this.ou) {
                     var t = this.context.globalAlpha;
-                    (this.context.globalAlpha = this.ou), this.context.drawImage(this.Dc.canvas, 0, 0), (this.context.globalAlpha = t), So(this.Dc), Hy.push(this.Dc.canvas), (this.Dc = null);
+                    (this.context.globalAlpha = this.ou),
+                      this.context.drawImage(this.Dc.canvas, 0, 0),
+                      (this.context.globalAlpha = t),
+                      So(this.Dc),
+                      Hy.push(this.Dc.canvas),
+                      (this.Dc = null);
                   }
                 }),
                 (n.prototype.renderDeclutter = function(t) {
-                  this.declutterExecutorGroup && (this.qc(), this.renderWorlds(this.declutterExecutorGroup, t, t.declutterTree), this.Uc());
+                  this.declutterExecutorGroup &&
+                    (this.qc(), this.renderWorlds(this.declutterExecutorGroup, t, t.declutterTree), this.Uc());
                 }),
                 (n.prototype.renderFrame = function(t, n) {
                   var i = t.pixelRatio,
@@ -22341,7 +24840,9 @@
                   if((!u || u.isEmpty()) && (!a || a.isEmpty())) return null;
                   var h = Math.round(t.size[0] * i),
                     f = Math.round(t.size[1] * i);
-                  s.width != h || s.height != f ? ((s.width = h), (s.height = f), s.style.transform !== e && (s.style.transform = e)) : this.containerReused || o.clearRect(0, 0, h, f),
+                  s.width != h || s.height != f
+                    ? ((s.width = h), (s.height = f), s.style.transform !== e && (s.style.transform = e))
+                    : this.containerReused || o.clearRect(0, 0, h, f),
                     this.preRender(o, t);
                   var c = t.viewState,
                     l = c.projection;
@@ -22352,7 +24853,14 @@
                     var p = Lr(r.extent, l);
                     (v = (d = Kn(p, t.extent)) && !xn(p, t.extent)) && this.clipUnrotated(this.Dc, t, p);
                   }
-                  return d && this.renderWorlds(u, t), v && this.Dc.restore(), this.Uc(), this.postRender(o, t), this.Lc !== c.rotation && ((this.Lc = c.rotation), (this.Cc = null)), this.container;
+                  return (
+                    d && this.renderWorlds(u, t),
+                    v && this.Dc.restore(),
+                    this.Uc(),
+                    this.postRender(o, t),
+                    this.Lc !== c.rotation && ((this.Lc = c.rotation), (this.Cc = null)),
+                    this.container
+                  );
                 }),
                 (n.prototype.getFeatures = function(t) {
                   return new Promise(
@@ -22373,8 +24881,10 @@
                         var l = a.getSource(),
                           v = s.getExtent();
                         if(l.getWrapX() && s.canWrapX() && !xn(v, u)) {
-                          for(var d = u[0], p = $n(v), y = 0, m = void 0; d < v[0]; ) (m = p * --y), h.push(this.getRenderTransform(r, e, o, Lw, f, c, m).slice()), (d += p);
-                          for(y = 0, d = u[2]; d > v[2]; ) (m = p * ++y), h.push(this.getRenderTransform(r, e, o, Lw, f, c, m).slice()), (d -= p);
+                          for(var d = u[0], p = $n(v), y = 0, m = void 0; d < v[0]; )
+                            (m = p * --y), h.push(this.getRenderTransform(r, e, o, Lw, f, c, m).slice()), (d += p);
+                          for(y = 0, d = u[2]; d > v[2]; )
+                            (m = p * ++y), h.push(this.getRenderTransform(r, e, o, Lw, f, c, m).slice()), (d -= p);
                         }
                         this.Cc = zw(i, h, this.kc, a.getStyleFunction(), u, e, o);
                       }
@@ -22460,10 +24970,17 @@
                       M = Math.max($n(y) / 2, b);
                     (y[0] = g[0] - M), (y[2] = g[2] + M), rr(p, h);
                     var _ = ii(w[0], h);
-                    _[0] < g[0] && _[2] < g[2] ? w.push([_[0] + b, _[1], _[2] + b, _[3]]) : _[0] > g[0] && _[2] > g[2] && w.push([_[0] - b, _[1], _[2] - b, _[3]]);
+                    _[0] < g[0] && _[2] < g[2]
+                      ? w.push([_[0] + b, _[1], _[2] + b, _[3]])
+                      : _[0] > g[0] && _[2] > g[2] && w.push([_[0] - b, _[1], _[2] - b, _[3]]);
                   }
                   if(this.ready && this.Ic == f && this._h == l && this.Fc == d && xn(this.Nc, y))
-                    return x(this.zh, m) || ((this.Cc = null), (this.zh = m)), (this.zc = p), (this.replayGroupChanged = !1), !0;
+                    return (
+                      x(this.zh, m) || ((this.Cc = null), (this.zh = m)),
+                      (this.zc = p),
+                      (this.replayGroupChanged = !1),
+                      !0
+                    );
                   this.Gc = null;
                   var S,
                     O = new mw(uf(f, c), y, f, c);
@@ -22495,7 +25012,8 @@
                   var z = O.finish(),
                     R = new Nw(y, f, c, i.getOverlaps(), z, n.getRenderBuffer());
                   return (
-                    S && (this.declutterExecutorGroup = new Nw(y, f, c, i.getOverlaps(), S.finish(), n.getRenderBuffer())),
+                    S &&
+                      (this.declutterExecutorGroup = new Nw(y, f, c, i.getOverlaps(), S.finish(), n.getRenderBuffer())),
                     (this.Ic = f),
                     (this._h = l),
                     (this.Fc = d),
@@ -22512,7 +25030,8 @@
                 (n.prototype.renderFeature = function(t, n, i, r, e, o) {
                   if(!i) return !1;
                   var s = !1;
-                  if(Array.isArray(i)) for(var u = 0, a = i.length; u < a; ++u) s = af(r, t, i[u], n, this.Tc, e, o) || s;
+                  if(Array.isArray(i))
+                    for(var u = 0, a = i.length; u < a; ++u) s = af(r, t, i[u], n, this.Tc, e, o) || s;
                   else s = af(r, t, i, n, this.Tc, e, o);
                   return s;
                 }),
@@ -22532,7 +25051,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -22586,7 +25106,9 @@
                       }),
                       v = !0,
                       d = new Mo(s, r, n, h.canvas, function(t) {
-                        o.prepareFrame(l) && o.replayGroupChanged && ((o.clipping = !1), o.renderFrame(l, null) && (o.renderDeclutter(l), (v = !1)), t());
+                        o.prepareFrame(l) &&
+                          o.replayGroupChanged &&
+                          ((o.clipping = !1), o.renderFrame(l, null) && (o.renderDeclutter(l), (v = !1)), t());
                       });
                     d.addEventListener(
                       L,
@@ -22596,7 +25118,8 @@
                           var t = d.getResolution(),
                             r = d.getPixelRatio(),
                             e = (t * n) / r;
-                          (this.renderedResolution = e), (this.Vc = sn(this.Vc, u / 2, a / 2, 1 / e, -1 / e, 0, -i.center[0], -i.center[1]));
+                          (this.renderedResolution = e),
+                            (this.Vc = sn(this.Vc, u / 2, a / 2, 1 / e, -1 / e, 0, -i.center[0], -i.center[1]));
                         }
                       }.bind(this)
                     ),
@@ -22608,7 +25131,9 @@
                 (n.prototype.postRender = function() {}),
                 (n.prototype.renderDeclutter = function() {}),
                 (n.prototype.forEachFeatureAtCoordinate = function(n, i, r, e, o) {
-                  return this.Bc ? this.Bc.forEachFeatureAtCoordinate(n, i, r, e, o) : t.prototype.forEachFeatureAtCoordinate.call(this, n, i, r, e, o);
+                  return this.Bc
+                    ? this.Bc.forEachFeatureAtCoordinate(n, i, r, e, o)
+                    : t.prototype.forEachFeatureAtCoordinate.call(this, n, i, r, e, o);
                 }),
                 n
               );
@@ -22629,7 +25154,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -22668,20 +25194,29 @@
                     l = !(c[Eu] || c[Tu]);
                   return (
                     (!l && f.wantedResolution) || (f.wantedResolution = u),
-                    this.prepareTile(f, o, a) && (l || Date.now() - e.time < 8) && h.getRenderMode() !== Xw && this.Hc(f, e),
+                    this.prepareTile(f, o, a) &&
+                      (l || Date.now() - e.time < 8) &&
+                      h.getRenderMode() !== Xw &&
+                      this.Hc(f, e),
                     t.prototype.getTile.call(this, n, i, r, e)
                   );
                 }),
                 (n.prototype.isDrawableTile = function(n) {
                   var i = this.getLayer();
-                  return t.prototype.isDrawableTile.call(this, n) && (i.getRenderMode() === Xw ? o(i) in n.executorGroups : n.hasContext(i));
+                  return (
+                    t.prototype.isDrawableTile.call(this, n) &&
+                    (i.getRenderMode() === Xw ? o(i) in n.executorGroups : n.hasContext(i))
+                  );
                 }),
                 (n.prototype.getTileImage = function(t) {
                   return t.getImage(this.getLayer());
                 }),
                 (n.prototype.prepareFrame = function(n) {
                   var i = this.getLayer().getRevision();
-                  return this.Yc !== i && ((this.Yc = i), (this.renderedTiles.length = 0)), t.prototype.prepareFrame.call(this, n);
+                  return (
+                    this.Yc !== i && ((this.Yc = i), (this.renderedTiles.length = 0)),
+                    t.prototype.prepareFrame.call(this, n)
+                  );
                 }),
                 (n.prototype.$c = function(t, n, i) {
                   var r = this.getLayer(),
@@ -22696,7 +25231,10 @@
                       l = h.getTileGridForProjection(i).getTileCoordExtent(t.wrappedTileCoord),
                       v = h.getSourceTiles(n, i, t),
                       d = o(r);
-                    delete t.hitDetectionImageData[d], (t.executorGroups[d] = []), f && (t.declutterExecutorGroups[d] = []), (a.dirty = !1);
+                    delete t.hitDetectionImageData[d],
+                      (t.executorGroups[d] = []),
+                      f && (t.declutterExecutorGroups[d] = []),
+                      (a.dirty = !1);
                     for(
                       var p = function(i, e) {
                           var o = v[i];
@@ -22840,7 +25378,17 @@
                             M = this.Lc;
                           (b = zw(
                             x,
-                            [this.getRenderTransform(c.getTileCoordCenter(r.wrappedTileCoord), f, 0, Lw, x[0] * Lw, x[1] * Lw, 0)],
+                            [
+                              this.getRenderTransform(
+                                c.getTileCoordCenter(r.wrappedTileCoord),
+                                f,
+                                0,
+                                Lw,
+                                x[0] * Lw,
+                                x[1] * Lw,
+                                0
+                              )
+                            ],
                             g,
                             e.getStyleFunction(),
                             c.getTileCoordExtent(r.wrappedTileCoord),
@@ -22865,10 +25413,24 @@
                   var n = this.context,
                     i = n.globalAlpha;
                   n.globalAlpha = this.getLayer().getOpacity();
-                  for(var r = t.viewHints, e = !(r[Eu] || r[Tu]), s = this.renderedTiles, u = 0, a = s.length; u < a; ++u) {
+                  for(
+                    var r = t.viewHints, e = !(r[Eu] || r[Tu]), s = this.renderedTiles, u = 0, a = s.length;
+                    u < a;
+                    ++u
+                  ) {
                     var h = s[u],
                       f = h.declutterExecutorGroups[o(this.getLayer())];
-                    if(f) for(var c = f.length - 1; c >= 0; --c) f[c].execute(this.context, 1, this.getTileRenderTransform(h, t), t.viewState.rotation, e, void 0, t.declutterTree);
+                    if(f)
+                      for(var c = f.length - 1; c >= 0; --c)
+                        f[c].execute(
+                          this.context,
+                          1,
+                          this.getTileRenderTransform(h, t),
+                          t.viewState.rotation,
+                          e,
+                          void 0,
+                          t.declutterTree
+                        );
                   }
                   n.globalAlpha = i;
                 }),
@@ -22885,12 +25447,17 @@
                     c = t.tileCoord,
                     l = f.getTileCoordExtent(t.wrappedTileCoord),
                     v = f.getTileCoordExtent(c, this.tmpExtent)[0] - l[0];
-                  return Ht(rn(this.inversePixelTransform.slice(), 1 / i, 1 / i), this.getRenderTransform(e, o, s, i, a, h, v));
+                  return Ht(
+                    rn(this.inversePixelTransform.slice(), 1 / i, 1 / i),
+                    this.getRenderTransform(e, o, s, i, a, h, v)
+                  );
                 }),
                 (n.prototype.renderFrame = function(n, i) {
                   var r = n.viewHints,
                     e = !(r[Eu] || r[Tu]);
-                  t.prototype.renderFrame.call(this, n, i), (this.Wc = n.pixelToCoordinateTransform.slice()), (this.Lc = n.viewState.rotation);
+                  t.prototype.renderFrame.call(this, n, i),
+                    (this.Wc = n.pixelToCoordinateTransform.slice()),
+                    (this.Lc = n.viewState.rotation);
                   var s = this.getLayer(),
                     u = s.getRenderMode(),
                     a = this.context,
@@ -22950,7 +25517,8 @@
                 (n.prototype.renderFeature = function(t, n, i, r, e) {
                   if(!i) return !1;
                   var o = !1;
-                  if(Array.isArray(i)) for(var s = 0, u = i.length; s < u; ++s) o = af(r, t, i[s], n, this.Tc, void 0, e) || o;
+                  if(Array.isArray(i))
+                    for(var s = 0, u = i.length; s < u; ++s) o = af(r, t, i[s], n, this.Tc, void 0, e) || o;
                   else o = af(r, t, i, n, this.Tc, void 0, e);
                   return o;
                 }),
@@ -23011,7 +25579,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -23026,7 +25595,10 @@
               return (
                 $w(n, t),
                 (n.prototype.appendPoint = function(t) {
-                  this.flatCoordinates ? g(this.flatCoordinates, t.getFlatCoordinates()) : (this.flatCoordinates = t.getFlatCoordinates().slice()), this.changed();
+                  this.flatCoordinates
+                    ? g(this.flatCoordinates, t.getFlatCoordinates())
+                    : (this.flatCoordinates = t.getFlatCoordinates().slice()),
+                    this.changed();
                 }),
                 (n.prototype.clone = function() {
                   var t = new n(this.flatCoordinates.slice(), this.layout);
@@ -23049,10 +25621,16 @@
                 }),
                 (n.prototype.getPoint = function(t) {
                   var n = this.flatCoordinates ? this.flatCoordinates.length / this.stride : 0;
-                  return t < 0 || n <= t ? null : new Se(this.flatCoordinates.slice(t * this.stride, (t + 1) * this.stride), this.layout);
+                  return t < 0 || n <= t
+                    ? null
+                    : new Se(this.flatCoordinates.slice(t * this.stride, (t + 1) * this.stride), this.layout);
                 }),
                 (n.prototype.getPoints = function() {
-                  for(var t = this.flatCoordinates, n = this.layout, i = this.stride, r = [], e = 0, o = t.length; e < o; e += i) {
+                  for(
+                    var t = this.flatCoordinates, n = this.layout, i = this.stride, r = [], e = 0, o = t.length;
+                    e < o;
+                    e += i
+                  ) {
                     var s = new Se(t.slice(e, e + i), n);
                     r.push(s);
                   }
@@ -23068,7 +25646,10 @@
                   return !1;
                 }),
                 (n.prototype.setCoordinates = function(t, n) {
-                  this.setLayout(n, t, 1), this.flatCoordinates || (this.flatCoordinates = []), (this.flatCoordinates.length = oe(this.flatCoordinates, 0, t, this.stride)), this.changed();
+                  this.setLayout(n, t, 1),
+                    this.flatCoordinates || (this.flatCoordinates = []),
+                    (this.flatCoordinates.length = oe(this.flatCoordinates, 0, t, this.stride)),
+                    this.changed();
                 }),
                 n
               );
@@ -23139,7 +25720,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -23149,12 +25731,20 @@
             ng = (function (t) {
               function n(n, i) {
                 var r = t.call(this) || this;
-                return (r.Jc = null), (r.Qc = -1), (r.wt = -1), (r.gt = -1), void 0 === i || Array.isArray(n[0]) ? r.setCoordinates(n, i) : r.setFlatCoordinates(i, n), r;
+                return (
+                  (r.Jc = null),
+                  (r.Qc = -1),
+                  (r.wt = -1),
+                  (r.gt = -1),
+                  void 0 === i || Array.isArray(n[0]) ? r.setCoordinates(n, i) : r.setFlatCoordinates(i, n),
+                  r
+                );
               }
               return (
                 tg(n, t),
                 (n.prototype.appendCoordinate = function(t) {
-                  this.flatCoordinates ? g(this.flatCoordinates, t) : (this.flatCoordinates = t.slice()), this.changed();
+                  this.flatCoordinates ? g(this.flatCoordinates, t) : (this.flatCoordinates = t.slice()),
+                    this.changed();
                 }),
                 (n.prototype.clone = function() {
                   var t = new n(this.flatCoordinates.slice(), this.layout);
@@ -23163,7 +25753,11 @@
                 (n.prototype.closestPointXY = function(t, n, i, r) {
                   return r < gn(this.getExtent(), t, n)
                     ? r
-                    : (this.gt != this.getRevision() && ((this.wt = Math.sqrt(Jr(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, 0))), (this.gt = this.getRevision())),
+                    : (this.gt != this.getRevision() &&
+                        ((this.wt = Math.sqrt(
+                          Jr(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, 0)
+                        )),
+                        (this.gt = this.getRevision())),
                       ne(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, this.wt, !1, t, n, i, r));
                 }),
                 (n.prototype.forEachSegment = function(t) {
@@ -23184,11 +25778,18 @@
                   return gw(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride);
                 }),
                 (n.prototype.getFlatMidpoint = function() {
-                  return this.Qc != this.getRevision() && ((this.Jc = this.getCoordinateAt(0.5, this.Jc)), (this.Qc = this.getRevision())), this.Jc;
+                  return (
+                    this.Qc != this.getRevision() &&
+                      ((this.Jc = this.getCoordinateAt(0.5, this.Jc)), (this.Qc = this.getRevision())),
+                    this.Jc
+                  );
                 }),
                 (n.prototype.getSimplifiedGeometryInternal = function(t) {
                   var i = [];
-                  return (i.length = ae(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, t, i, 0)), new n(i, Tt);
+                  return (
+                    (i.length = ae(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, t, i, 0)),
+                    new n(i, Tt)
+                  );
                 }),
                 (n.prototype.getType = function() {
                   return 'LineString';
@@ -23197,7 +25798,10 @@
                   return ke(this.flatCoordinates, 0, this.flatCoordinates.length, this.stride, t);
                 }),
                 (n.prototype.setCoordinates = function(t, n) {
-                  this.setLayout(n, t, 1), this.flatCoordinates || (this.flatCoordinates = []), (this.flatCoordinates.length = oe(this.flatCoordinates, 0, t, this.stride)), this.changed();
+                  this.setLayout(n, t, 1),
+                    this.flatCoordinates || (this.flatCoordinates = []),
+                    (this.flatCoordinates.length = oe(this.flatCoordinates, 0, t, this.stride)),
+                    this.changed();
                 }),
                 n
               );
@@ -23215,7 +25819,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -23239,7 +25844,9 @@
               return (
                 ig(n, t),
                 (n.prototype.appendLineString = function(t) {
-                  this.flatCoordinates ? g(this.flatCoordinates, t.getFlatCoordinates().slice()) : (this.flatCoordinates = t.getFlatCoordinates().slice()),
+                  this.flatCoordinates
+                    ? g(this.flatCoordinates, t.getFlatCoordinates().slice())
+                    : (this.flatCoordinates = t.getFlatCoordinates().slice()),
                     this.bt.push(this.flatCoordinates.length),
                     this.changed();
                 }),
@@ -23250,7 +25857,9 @@
                 (n.prototype.closestPointXY = function(t, n, i, r) {
                   return r < gn(this.getExtent(), t, n)
                     ? r
-                    : (this.gt != this.getRevision() && ((this.wt = Math.sqrt(Qr(this.flatCoordinates, 0, this.bt, this.stride, 0))), (this.gt = this.getRevision())),
+                    : (this.gt != this.getRevision() &&
+                        ((this.wt = Math.sqrt(Qr(this.flatCoordinates, 0, this.bt, this.stride, 0))),
+                        (this.gt = this.getRevision())),
                       ie(this.flatCoordinates, 0, this.bt, this.stride, this.wt, !1, t, n, i, r));
                 }),
                 (n.prototype.getCoordinateAtM = function(t, n, i) {
@@ -23266,10 +25875,16 @@
                   return this.bt;
                 }),
                 (n.prototype.getLineString = function(t) {
-                  return t < 0 || this.bt.length <= t ? null : new ng(this.flatCoordinates.slice(0 === t ? 0 : this.bt[t - 1], this.bt[t]), this.layout);
+                  return t < 0 || this.bt.length <= t
+                    ? null
+                    : new ng(this.flatCoordinates.slice(0 === t ? 0 : this.bt[t - 1], this.bt[t]), this.layout);
                 }),
                 (n.prototype.getLineStrings = function() {
-                  for(var t = this.flatCoordinates, n = this.bt, i = this.layout, r = [], e = 0, o = 0, s = n.length; o < s; ++o) {
+                  for(
+                    var t = this.flatCoordinates, n = this.bt, i = this.layout, r = [], e = 0, o = 0, s = n.length;
+                    o < s;
+                    ++o
+                  ) {
                     var u = n[o],
                       a = new ng(t.slice(e, u), i);
                     r.push(a), (e = u);
@@ -23277,7 +25892,11 @@
                   return r;
                 }),
                 (n.prototype.getFlatMidpoints = function() {
-                  for(var t = [], n = this.flatCoordinates, i = 0, r = this.bt, e = this.stride, o = 0, s = r.length; o < s; ++o) {
+                  for(
+                    var t = [], n = this.flatCoordinates, i = 0, r = this.bt, e = this.stride, o = 0, s = r.length;
+                    o < s;
+                    ++o
+                  ) {
                     var u = r[o];
                     g(t, Hw(n, i, u, e, 0.5)), (i = u);
                   }
@@ -23322,7 +25941,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -23332,7 +25952,16 @@
             sg = (function (t) {
               function n(n, i, r) {
                 var e = t.call(this) || this;
-                if(((e.tl = []), (e.nl = -1), (e.il = null), (e.wt = -1), (e.gt = -1), (e._t = -1), (e.St = null), !r && !Array.isArray(n[0]))) {
+                if(
+                  ((e.tl = []),
+                  (e.nl = -1),
+                  (e.il = null),
+                  (e.wt = -1),
+                  (e.gt = -1),
+                  (e._t = -1),
+                  (e.St = null),
+                  !r && !Array.isArray(n[0]))
+                ) {
                   for(var o = e.getLayout(), s = n, u = [], a = [], h = 0, f = s.length; h < f; ++h) {
                     var c = s[h];
                     0 === h && (o = c.getLayout());
@@ -23351,7 +25980,8 @@
                     var i = this.flatCoordinates.length;
                     g(this.flatCoordinates, t.getFlatCoordinates());
                     for(var r = 0, e = (n = t.getEnds().slice()).length; r < e; ++r) n[r] += i;
-                  } else (this.flatCoordinates = t.getFlatCoordinates().slice()), (n = t.getEnds().slice()), this.tl.push();
+                  } else
+                    (this.flatCoordinates = t.getFlatCoordinates().slice()), (n = t.getEnds().slice()), this.tl.push();
                   this.tl.push(n), this.changed();
                 }),
                 (n.prototype.clone = function() {
@@ -23362,7 +25992,9 @@
                 (n.prototype.closestPointXY = function(t, n, i, r) {
                   return r < gn(this.getExtent(), t, n)
                     ? r
-                    : (this.gt != this.getRevision() && ((this.wt = Math.sqrt(te(this.flatCoordinates, 0, this.tl, this.stride, 0))), (this.gt = this.getRevision())),
+                    : (this.gt != this.getRevision() &&
+                        ((this.wt = Math.sqrt(te(this.flatCoordinates, 0, this.tl, this.stride, 0))),
+                        (this.gt = this.getRevision())),
                       re(this.getOrientedFlatCoordinates(), 0, this.tl, this.stride, this.wt, !0, t, n, i, r));
                 }),
                 (n.prototype.containsXY = function(t, n) {
@@ -23373,7 +26005,12 @@
                 }),
                 (n.prototype.getCoordinates = function(t) {
                   var n;
-                  return void 0 !== t ? Ue((n = this.getOrientedFlatCoordinates().slice()), 0, this.tl, this.stride, t) : (n = this.flatCoordinates), me(n, 0, this.tl, this.stride);
+                  return (
+                    void 0 !== t
+                      ? Ue((n = this.getOrientedFlatCoordinates().slice()), 0, this.tl, this.stride, t)
+                      : (n = this.flatCoordinates),
+                    me(n, 0, this.tl, this.stride)
+                  );
                 }),
                 (n.prototype.getEndss = function() {
                   return this.tl;
@@ -23381,7 +26018,8 @@
                 (n.prototype.getFlatInteriorPoints = function() {
                   if(this.nl != this.getRevision()) {
                     var t = eg(this.flatCoordinates, 0, this.tl, this.stride);
-                    (this.il = Pe(this.getOrientedFlatCoordinates(), 0, this.tl, this.stride, t)), (this.nl = this.getRevision());
+                    (this.il = Pe(this.getOrientedFlatCoordinates(), 0, this.tl, this.stride, t)),
+                      (this.nl = this.getRevision());
                   }
                   return this.il;
                 }),
@@ -23391,14 +26029,20 @@
                 (n.prototype.getOrientedFlatCoordinates = function() {
                   if(this._t != this.getRevision()) {
                     var t = this.flatCoordinates;
-                    De(t, 0, this.tl, this.stride) ? (this.St = t) : ((this.St = t.slice()), (this.St.length = Ue(this.St, 0, this.tl, this.stride))), (this._t = this.getRevision());
+                    De(t, 0, this.tl, this.stride)
+                      ? (this.St = t)
+                      : ((this.St = t.slice()), (this.St.length = Ue(this.St, 0, this.tl, this.stride))),
+                      (this._t = this.getRevision());
                   }
                   return this.St;
                 }),
                 (n.prototype.getSimplifiedGeometryInternal = function(t) {
                   var i = [],
                     r = [];
-                  return (i.length = de(this.flatCoordinates, 0, this.tl, this.stride, Math.sqrt(t), i, 0, r)), new n(i, Tt, r);
+                  return (
+                    (i.length = de(this.flatCoordinates, 0, this.tl, this.stride, Math.sqrt(t), i, 0, r)),
+                    new n(i, Tt, r)
+                  );
                 }),
                 (n.prototype.getPolygon = function(t) {
                   if(t < 0 || this.tl.length <= t) return null;
@@ -23414,7 +26058,11 @@
                   return new We(this.flatCoordinates.slice(n, e), this.layout, r);
                 }),
                 (n.prototype.getPolygons = function() {
-                  for(var t = this.layout, n = this.flatCoordinates, i = this.tl, r = [], e = 0, o = 0, s = i.length; o < s; ++o) {
+                  for(
+                    var t = this.layout, n = this.flatCoordinates, i = this.tl, r = [], e = 0, o = 0, s = i.length;
+                    o < s;
+                    ++o
+                  ) {
                     var u = i[o].slice(),
                       a = u[u.length - 1];
                     if(0 !== e) for(var h = 0, f = u.length; h < f; ++h) u[h] -= e;
@@ -23445,14 +26093,25 @@
             ug = [1, 0, 0, 1, 0, 0],
             ag = (function () {
               function t(t, n, i, r, e) {
-                this.styleFunction, this.st, (this.$ = e), (this.rl = t), (this.el = n), (this.il = null), (this.sl = null), (this.bt = i), (this.ul = r);
+                this.styleFunction,
+                  this.st,
+                  (this.$ = e),
+                  (this.rl = t),
+                  (this.el = n),
+                  (this.il = null),
+                  (this.sl = null),
+                  (this.bt = i),
+                  (this.ul = r);
               }
               return (
                 (t.prototype.get = function(t) {
                   return this.ul[t];
                 }),
                 (t.prototype.getExtent = function() {
-                  return this.st || (this.st = 'Point' === this.rl ? En(this.el) : Tn(this.el, 0, this.el.length, 2)), this.st;
+                  return (
+                    this.st || (this.st = 'Point' === this.rl ? En(this.el) : Tn(this.el, 0, this.el.length, 2)),
+                    this.st
+                  );
                 }),
                 (t.prototype.getFlatInteriorPoint = function() {
                   if(!this.il) {
@@ -23543,7 +26202,8 @@
                 throw new Error('Invalid geometry type:' + n);
             }
           }
-          (ag.prototype.getEndss = ag.prototype.getEnds), (ag.prototype.getFlatCoordinates = ag.prototype.getOrientedFlatCoordinates);
+          (ag.prototype.getEndss = ag.prototype.getEnds),
+            (ag.prototype.getFlatCoordinates = ag.prototype.getOrientedFlatCoordinates);
           var fg = ag;
           var cg = (function () {
               var t = function(n, i) {
@@ -23558,7 +26218,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -23578,7 +26239,26 @@
               );
             })($m);
           function vg(t, n, i) {
-            for(var r, e, o, s, u, a, h = [], f = t(0), c = t(1), l = n(f), v = n(c), d = [c, f], p = [v, l], y = [1, 0], m = {}, w = 1e5; --w > 0 && y.length > 0; )
+            for(
+              var r,
+                e,
+                o,
+                s,
+                u,
+                a,
+                h = [],
+                f = t(0),
+                c = t(1),
+                l = n(f),
+                v = n(c),
+                d = [c, f],
+                p = [v, l],
+                y = [1, 0],
+                m = {},
+                w = 1e5;
+              --w > 0 && y.length > 0;
+
+            )
               (o = y.pop()),
                 (f = d.pop()),
                 (l = p.pop()),
@@ -23622,7 +26302,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -23733,7 +26414,12 @@
                 yg(n, t),
                 (n.prototype.strategyFunction = function(t, n) {
                   var i = t.slice();
-                  return this.di && this.getSource().getWrapX() && ii(i, this.di), this.Ul && (Pn(this.Ul, i, n) ? (i = this.Ul.slice()) : this.getSource().removeLoadedExtent(this.Ul)), [i];
+                  return (
+                    this.di && this.getSource().getWrapX() && ii(i, this.di),
+                    this.Ul &&
+                      (Pn(this.Ul, i, n) ? (i = this.Ul.slice()) : this.getSource().removeLoadedExtent(this.Ul)),
+                    [i]
+                  );
                 }),
                 (n.prototype.loaderFunction = function(t, n, i) {
                   this.Ul = t;
@@ -23745,14 +26431,17 @@
                     (!this.di || !Sr(this.di, i)) && this.Bl(i), this.Xl(e, o, n, s);
                     var u,
                       a = this.wl.length + this.gl.length;
-                    for(this.Tl && (a += this.wl.length), this.Al && (a += this.gl.length); a > this.Dl.length; ) (u = new Et()), this.Dl.push(u);
+                    for(this.Tl && (a += this.wl.length), this.Al && (a += this.gl.length); a > this.Dl.length; )
+                      (u = new Et()), this.Dl.push(u);
                     var h = r.getFeaturesCollection();
                     h.clear();
                     var f,
                       c,
                       l = 0;
-                    for(f = 0, c = this.wl.length; f < c; ++f) (u = this.Dl[l++]).setGeometry(this.wl[f]), u.setStyle(this.ql), h.push(u);
-                    for(f = 0, c = this.gl.length; f < c; ++f) (u = this.Dl[l++]).setGeometry(this.gl[f]), u.setStyle(this.ql), h.push(u);
+                    for(f = 0, c = this.wl.length; f < c; ++f)
+                      (u = this.Dl[l++]).setGeometry(this.wl[f]), u.setStyle(this.ql), h.push(u);
+                    for(f = 0, c = this.gl.length; f < c; ++f)
+                      (u = this.Dl[l++]).setGeometry(this.gl[f]), u.setStyle(this.ql), h.push(u);
                   }
                 }),
                 (n.prototype.Vl = function(t, n, i, r, e, o) {
@@ -23794,7 +26483,12 @@
                     c = this.Il < 0.5,
                     l = this.di.getExtent(),
                     v = $n(l);
-                  this.getSource().getWrapX() && this.di.canWrapX() && !xn(l, e) && ((h = Math.floor((e[0] - l[0]) / v)), (f = Math.ceil((e[2] - l[2]) / v)), (c = c !== Math.abs(n) > Math.PI / 2));
+                  this.getSource().getWrapX() &&
+                    this.di.canWrapX() &&
+                    !xn(l, e) &&
+                    ((h = Math.floor((e[0] - l[0]) / v)),
+                    (f = Math.ceil((e[2] - l[2]) / v)),
+                    (c = c !== Math.abs(n) > Math.PI / 2));
                   for(var d = ff(t), p = h; p <= f; ++p) {
                     var y = this.wl.length + this.gl.length,
                       m = void 0,
@@ -23804,27 +26498,42 @@
                     if(this.Tl)
                       for(w = 0, g = this.Tl.length; w < g; ++w) {
                         var x = this.wl[w];
-                        if(n || 0 !== p) (M = x.clone()).translate(p * v, 0), M.rotate(-n, o), (b = this.$l(M, s, w)).rotate(n, o);
+                        if(n || 0 !== p)
+                          (M = x.clone()).translate(p * v, 0), M.rotate(-n, o), (b = this.$l(M, s, w)).rotate(n, o);
                         else b = this.$l(x, e, w);
-                        (m = this.Dl[y++]).setGeometry(b), m.set('graticule_label', this.Tl[w].text), d.drawFeature(m, this.Ll(m));
+                        (m = this.Dl[y++]).setGeometry(b),
+                          m.set('graticule_label', this.Tl[w].text),
+                          d.drawFeature(m, this.Ll(m));
                       }
                     if(this.Al && ((p === h && c) || (p === f && !c)))
                       for(w = 0, g = this.gl.length; w < g; ++w) {
                         var M;
                         x = this.gl[w];
-                        if(n || 0 !== p) (M = x.clone()).translate(p * v, 0), M.rotate(-n, o), (b = this.Kl(M, s, w)).rotate(n, o);
+                        if(n || 0 !== p)
+                          (M = x.clone()).translate(p * v, 0), M.rotate(-n, o), (b = this.Kl(M, s, w)).rotate(n, o);
                         else b = this.Kl(x, e, w);
-                        (m = this.Dl[y++]).setGeometry(b), m.set('graticule_label', this.Al[w].text), d.drawFeature(m, this.Rl(m));
+                        (m = this.Dl[y++]).setGeometry(b),
+                          m.set('graticule_label', this.Al[w].text),
+                          d.drawFeature(m, this.Rl(m));
                       }
                   }
                 }),
                 (n.prototype.Xl = function(t, n, i, r) {
                   var e = this.Hl(i);
-                  if(-1 == e) return (this.wl.length = 0), (this.gl.length = 0), this.Tl && (this.Tl.length = 0), void (this.Al && (this.Al.length = 0));
+                  if(-1 == e)
+                    return (
+                      (this.wl.length = 0),
+                      (this.gl.length = 0),
+                      this.Tl && (this.Tl.length = 0),
+                      void (this.Al && (this.Al.length = 0))
+                    );
                   var o = !1,
                     s = this.di.getExtent(),
                     u = $n(s);
-                  this.getSource().getWrapX() && this.di.canWrapX() && !xn(s, t) && ($n(t) >= u ? ((t[0] = s[0]), (t[2] = s[2])) : (o = !0));
+                  this.getSource().getWrapX() &&
+                    this.di.canWrapX() &&
+                    !xn(s, t) &&
+                    ($n(t) >= u ? ((t[0] = s[0]), (t[2] = s[2])) : (o = !0));
                   var a = [oi(n[0], this.dl, this.ll), oi(n[1], this.pl, this.vl)],
                     h = this.Ml(a);
                   isNaN(h[1]) && (h[1] = Math.abs(this.al) >= Math.abs(this.fl) ? this.al : this.fl);
@@ -23836,7 +26545,13 @@
                     p = oi(h[1], this.fl, this.al),
                     y = this.ml,
                     m = t;
-                  o || (m = [oi(t[0], this.dl, this.ll), oi(t[1], this.pl, this.vl), oi(t[2], this.dl, this.ll), oi(t[3], this.pl, this.vl)]);
+                  o ||
+                    (m = [
+                      oi(t[0], this.dl, this.ll),
+                      oi(t[1], this.pl, this.vl),
+                      oi(t[2], this.dl, this.ll),
+                      oi(t[3], this.pl, this.vl)
+                    ]);
                   var w = ni(m, this.Ml, void 0, 8),
                     g = w[3],
                     b = w[2],
@@ -23858,19 +26573,51 @@
                     o)
                   )
                     for(; (v -= e) >= M && f++ < y; ) c = this.Vl(v, x, g, r, t, c);
-                  else for(; v != this.cl && f++ < y; ) (v = Math.max(v - e, this.cl)), (c = this.Vl(v, x, g, r, t, c));
-                  if(((v = oi(d, this.cl, this.hl)), (f = 0), o)) for(; (v += e) <= b && f++ < y; ) c = this.Vl(v, x, g, r, t, c);
-                  else for(; v != this.hl && f++ < y; ) (v = Math.min(v + e, this.hl)), (c = this.Vl(v, x, g, r, t, c));
-                  for(this.wl.length = c, this.Tl && (this.Tl.length = c), l = oi((p = Math.floor(p / e) * e), this.fl, this.al), c = this.Yl(l, M, b, r, t, 0), f = 0; l != this.fl && f++ < y; )
+                  else
+                    for(; v != this.cl && f++ < y; ) (v = Math.max(v - e, this.cl)), (c = this.Vl(v, x, g, r, t, c));
+                  if(((v = oi(d, this.cl, this.hl)), (f = 0), o))
+                    for(; (v += e) <= b && f++ < y; ) c = this.Vl(v, x, g, r, t, c);
+                  else
+                    for(; v != this.hl && f++ < y; ) (v = Math.min(v + e, this.hl)), (c = this.Vl(v, x, g, r, t, c));
+                  for(
+                    this.wl.length = c,
+                      this.Tl && (this.Tl.length = c),
+                      l = oi((p = Math.floor(p / e) * e), this.fl, this.al),
+                      c = this.Yl(l, M, b, r, t, 0),
+                      f = 0;
+                    l != this.fl && f++ < y;
+
+                  )
                     (l = Math.max(l - e, this.fl)), (c = this.Yl(l, M, b, r, t, c));
-                  for(l = oi(p, this.fl, this.al), f = 0; l != this.al && f++ < y; ) (l = Math.min(l + e, this.al)), (c = this.Yl(l, M, b, r, t, c));
+                  for(l = oi(p, this.fl, this.al), f = 0; l != this.al && f++ < y; )
+                    (l = Math.min(l + e, this.al)), (c = this.Yl(l, M, b, r, t, c));
                   (this.gl.length = c), this.Al && (this.Al.length = c);
                 }),
                 (n.prototype.Hl = function(t) {
-                  for(var n = this._l[0], i = this._l[1], r = -1, e = Math.pow(this.yl * t, 2), o = [], s = [], u = 0, a = this.Gl.length; u < a; ++u) {
+                  for(
+                    var n = this._l[0],
+                      i = this._l[1],
+                      r = -1,
+                      e = Math.pow(this.yl * t, 2),
+                      o = [],
+                      s = [],
+                      u = 0,
+                      a = this.Gl.length;
+                    u < a;
+                    ++u
+                  ) {
                     var h = oi(this.Gl[u] / 2, 0, 90),
                       f = oi(i, -90 + h, 90 - h);
-                    if(((o[0] = n - h), (o[1] = f - h), (s[0] = n + h), (s[1] = f + h), this.xl(o, o), this.xl(s, s), Math.pow(s[0] - o[0], 2) + Math.pow(s[1] - o[1], 2) <= e)) break;
+                    if(
+                      ((o[0] = n - h),
+                      (o[1] = f - h),
+                      (s[0] = n + h),
+                      (s[1] = f + h),
+                      this.xl(o, o),
+                      this.xl(s, s),
+                      Math.pow(s[0] - o[0], 2) + Math.pow(s[1] - o[1], 2) <= e)
+                    )
+                      break;
                     r = this.Gl[u];
                   }
                   return r;
@@ -23925,7 +26672,8 @@
                     var e = this.cl + this.hl / 2;
                     (this.hl += 360),
                       (this.Ml = function(t, n, i) {
-                        for(var o = i || 2, s = r(t, n, o), u = 0, a = s.length; u < a; u += o) s[u] < e && (s[u] += 360);
+                        for(var o = i || 2, s = r(t, n, o), u = 0, a = s.length; u < a; u += o)
+                          s[u] < e && (s[u] += 360);
                         return s;
                       });
                   }
@@ -23959,7 +26707,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -24009,7 +26758,18 @@
                 }),
                 (n.prototype.Ql = function() {
                   this.Jl = (function (t) {
-                    for(var n = 1, i = 256, r = _o(n, i), e = r.createLinearGradient(0, 0, n, i), o = 1 / (t.length - 1), s = 0, u = t.length; s < u; ++s) e.addColorStop(s * o, t[s]);
+                    for(
+                      var n = 1,
+                        i = 256,
+                        r = _o(n, i),
+                        e = r.createLinearGradient(0, 0, n, i),
+                        o = 1 / (t.length - 1),
+                        s = 0,
+                        u = t.length;
+                      s < u;
+                      ++s
+                    )
+                      e.addColorStop(s * o, t[s]);
                     return (r.fillStyle = e), r.fillRect(0, 0, n, i), r.canvas;
                   })(this.getGradient());
                 }),
@@ -24072,19 +26832,25 @@
             })($m),
             jg = (function () {
               function t() {
-                (this.dataProjection = void 0), (this.defaultFeatureProjection = void 0), (this.supportedMediaTypes = null);
+                (this.dataProjection = void 0),
+                  (this.defaultFeatureProjection = void 0),
+                  (this.supportedMediaTypes = null);
               }
               return (
                 (t.prototype.getReadOptions = function(t, n) {
                   var i;
                   if(n) {
                     var r = n.dataProjection ? yr(n.dataProjection) : this.readProjection(t);
-                    n.extent && r && r.getUnits() === Rt.TILE_PIXELS && (r = yr(r)).setWorldExtent(n.extent), (i = { dataProjection: r, featureProjection: n.featureProjection });
+                    n.extent && r && r.getUnits() === Rt.TILE_PIXELS && (r = yr(r)).setWorldExtent(n.extent),
+                      (i = { dataProjection: r, featureProjection: n.featureProjection });
                   }
                   return this.adaptOptions(i);
                 }),
                 (t.prototype.adaptOptions = function(t) {
-                  return A({ dataProjection: this.dataProjection, featureProjection: this.defaultFeatureProjection }, t);
+                  return A(
+                    { dataProjection: this.dataProjection, featureProjection: this.defaultFeatureProjection },
+                    t
+                  );
                 }),
                 (t.prototype.getType = function() {
                   return r();
@@ -24117,7 +26883,10 @@
             var r,
               e = i ? yr(i.featureProjection) : null,
               o = i ? yr(i.dataProjection) : null;
-            if(((r = e && o && !Sr(e, o) ? (n ? t.clone() : t).transform(n ? e : o, n ? o : e) : t), n && i && void 0 !== i.decimals)) {
+            if(
+              ((r = e && o && !Sr(e, o) ? (n ? t.clone() : t).transform(n ? e : o, n ? o : e) : t),
+              n && i && void 0 !== i.decimals)
+            ) {
               var s = Math.pow(10, i.decimals);
               r === t && (r = t.clone()),
                 r.applyTransform(function (t) {
@@ -24146,7 +26915,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -24229,7 +26999,11 @@
                     }
                     s--,
                       1 === o || 2 === o
-                        ? ((u += t.readSVarint()), (a += t.readSVarint()), 1 === o && h > f && (r.push(h), (f = h)), i.push(u, a), (h += 2))
+                        ? ((u += t.readSVarint()),
+                          (a += t.readSVarint()),
+                          1 === o && h > f && (r.push(h), (f = h)),
+                          i.push(u, a),
+                          (h += 2))
                         : 7 === o
                         ? h > f && (i.push(i[f], i[f + 1]), (h += 2))
                         : St(!1, 59);
@@ -24248,7 +27022,11 @@
                   this.ev(t, n, u, a);
                   var h = (function (t, n) {
                     var i;
-                    1 === t ? (i = 1 === n ? 'Point' : 'MultiPoint') : 2 === t ? (i = 1 === n ? 'LineString' : 'MultiLineString') : 3 === t && (i = 'Polygon');
+                    1 === t
+                      ? (i = 1 === n ? 'Point' : 'MultiPoint')
+                      : 2 === t
+                      ? (i = 1 === n ? 'LineString' : 'MultiLineString')
+                      : 3 === t && (i = 'Polygon');
                     return i;
                   })(e, a.length);
                   if(this.nv === fg) (r = new this.nv(h, u, a, s, o)).transform(i.dataProjection);
@@ -24257,7 +27035,17 @@
                     if('Polygon' == h) {
                       var c = Be(u, a);
                       f = c.length > 1 ? new sg(u, Tt, c) : new We(u, Tt, a);
-                    } else f = 'Point' === h ? new Se(u, Tt) : 'LineString' === h ? new ng(u, Tt) : 'MultiPoint' === h ? new Kw(u, Tt) : 'MultiLineString' === h ? new rg(u, Tt, a) : null;
+                    } else
+                      f =
+                        'Point' === h
+                          ? new Se(u, Tt)
+                          : 'LineString' === h
+                          ? new ng(u, Tt)
+                          : 'MultiPoint' === h
+                          ? new Kw(u, Tt)
+                          : 'MultiLineString' === h
+                          ? new rg(u, Tt, a)
+                          : null;
                     (r = new (0, this.nv)()), this.K && r.setGeometryName(this.K);
                     var l = Eg(f, !1, i);
                     r.setGeometry(l), void 0 !== o && r.setId(o), r.setProperties(s, !0);
@@ -24310,7 +27098,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -24327,7 +27116,8 @@
                   (i = t.call(this, e) || this).on,
                   i.once,
                   i.un,
-                  r.renderMode === Uw && (console.warn('renderMode: "image" is deprecated. Option ignored.'), (r.renderMode = void 0));
+                  r.renderMode === Uw &&
+                    (console.warn('renderMode: "image" is deprecated. Option ignored.'), (r.renderMode = void 0));
                 var o = r.renderMode || Bw;
                 return (
                   St(o == Bw || o == Xw, 28),
@@ -24378,7 +27168,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -24400,7 +27191,8 @@
                   this.av.forEach(H), (this.av.length = 0);
                 }),
                 (n.prototype.hv = function() {
-                  if(this.uv) for(var t = 0, n = this.uv.length; t < n; ++t) this.av.push($(this.uv[t], L, this.changed, this));
+                  if(this.uv)
+                    for(var t = 0, n = this.uv.length; t < n; ++t) this.av.push($(this.uv[t], L, this.changed, this));
                 }),
                 (n.prototype.clone = function() {
                   var t = new n(null);
@@ -24427,13 +27219,20 @@
                   return this.uv;
                 }),
                 (n.prototype.getGeometriesArrayRecursive = function() {
-                  for(var t = [], n = this.uv, i = 0, r = n.length; i < r; ++i) n[i].getType() === this.getType() ? (t = t.concat(n[i].getGeometriesArrayRecursive())) : t.push(n[i]);
+                  for(var t = [], n = this.uv, i = 0, r = n.length; i < r; ++i)
+                    n[i].getType() === this.getType()
+                      ? (t = t.concat(n[i].getGeometriesArrayRecursive()))
+                      : t.push(n[i]);
                   return t;
                 }),
                 (n.prototype.getSimplifiedGeometry = function(t) {
                   if(
-                    (this.simplifiedGeometryRevision !== this.getRevision() && ((this.simplifiedGeometryMaxMinSquaredTolerance = 0), (this.simplifiedGeometryRevision = this.getRevision())),
-                    t < 0 || (0 !== this.simplifiedGeometryMaxMinSquaredTolerance && t < this.simplifiedGeometryMaxMinSquaredTolerance))
+                    (this.simplifiedGeometryRevision !== this.getRevision() &&
+                      ((this.simplifiedGeometryMaxMinSquaredTolerance = 0),
+                      (this.simplifiedGeometryRevision = this.getRevision())),
+                    t < 0 ||
+                      (0 !== this.simplifiedGeometryMaxMinSquaredTolerance &&
+                        t < this.simplifiedGeometryMaxMinSquaredTolerance))
                   )
                     return this;
                   for(var i = [], r = this.uv, e = !1, o = 0, s = r.length; o < s; ++o) {
@@ -24500,7 +27299,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -24581,7 +27381,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -24710,10 +27511,15 @@
                 Xg(n, t),
                 (n.prototype.readFeatureFromObject = function(t, n) {
                   var i = null,
-                    r = Vg((i = 'Feature' === t.type ? t : { type: 'Feature', geometry: t, properties: null }).geometry, n),
+                    r = Vg(
+                      (i = 'Feature' === t.type ? t : { type: 'Feature', geometry: t, properties: null }).geometry,
+                      n
+                    ),
                     e = new Et();
                   return (
-                    this.K ? e.setGeometryName(this.K) : this.cv && 'geometry_name' in i !== void 0 && e.setGeometryName(i.geometry_name),
+                    this.K
+                      ? e.setGeometryName(this.K)
+                      : this.cv && 'geometry_name' in i !== void 0 && e.setGeometryName(i.geometry_name),
                     e.setGeometry(r),
                     'id' in i && e.setId(i.id),
                     i.properties && e.setProperties(i.properties, !0),
@@ -24724,7 +27530,8 @@
                   var i = null;
                   if('FeatureCollection' === t.type) {
                     i = [];
-                    for(var r = t.features, e = 0, o = r.length; e < o; ++e) i.push(this.readFeatureFromObject(r[e], n));
+                    for(var r = t.features, e = 0, o = r.length; e < o; ++e)
+                      i.push(this.readFeatureFromObject(r[e], n));
                   } else i = [this.readFeatureFromObject(t, n)];
                   return i;
                 }),
@@ -24734,7 +27541,16 @@
                 (n.prototype.readProjectionFromObject = function(t) {
                   var n,
                     i = t.crs;
-                  return i ? ('name' == i.type ? (n = yr(i.properties.name)) : 'EPSG' === i.type ? (n = yr('EPSG:' + i.properties.code)) : St(!1, 36)) : (n = this.dataProjection), n;
+                  return (
+                    i
+                      ? 'name' == i.type
+                        ? (n = yr(i.properties.name))
+                        : 'EPSG' === i.type
+                        ? (n = yr('EPSG:' + i.properties.code))
+                        : St(!1, 36)
+                      : (n = this.dataProjection),
+                    n
+                  );
                 }),
                 (n.prototype.writeFeatureObject = function(t, n) {
                   n = this.adaptOptions(n);
@@ -24920,7 +27736,10 @@
             return '%' === t[t.length - 1] ? Hg(parseFloat(t) / 100) : Hg(parseFloat(t));
           }
           function tb(t, n, i) {
-            return i < 0 ? (i += 1) : i > 1 && (i -= 1), 6 * i < 1 ? t + (n - t) * i * 6 : 2 * i < 1 ? n : 3 * i < 2 ? t + (n - t) * (2 / 3 - i) * 6 : t;
+            return (
+              i < 0 ? (i += 1) : i > 1 && (i -= 1),
+              6 * i < 1 ? t + (n - t) * i * 6 : 2 * i < 1 ? n : 3 * i < 2 ? t + (n - t) * (2 / 3 - i) * 6 : t
+            );
           }
           try {
             Yg = {}.parseCSSColor = function(t) {
@@ -24930,7 +27749,12 @@
               if('#' === i[0])
                 return 4 === i.length
                   ? (n = parseInt(i.substr(1), 16)) >= 0 && n <= 4095
-                    ? [((3840 & n) >> 4) | ((3840 & n) >> 8), (240 & n) | ((240 & n) >> 4), (15 & n) | ((15 & n) << 4), 1]
+                    ? [
+                        ((3840 & n) >> 4) | ((3840 & n) >> 8),
+                        (240 & n) | ((240 & n) >> 4),
+                        (15 & n) | ((15 & n) << 4),
+                        1
+                      ]
                     : null
                   : 7 === i.length && (n = parseInt(i.substr(1), 16)) >= 0 && n <= 16777215
                   ? [(16711680 & n) >> 16, (65280 & n) >> 8, 255 & n, 1]
@@ -24993,7 +27817,11 @@
                     for(var r = {}, e = {}, o = [], s = 0; s < i.length; s++) {
                       var u = i[s],
                         a = u[0].zoom;
-                      void 0 === r[a] && ((r[a] = { zoom: a, type: t.type, property: t.property, default: t.default }), (e[a] = []), o.push(a)), e[a].push([u[0].value, u[1]]);
+                      void 0 === r[a] &&
+                        ((r[a] = { zoom: a, type: t.type, property: t.property, default: t.default }),
+                        (e[a] = []),
+                        o.push(a)),
+                        e[a].push([u[0].value, u[1]]);
                     }
                     if('exponential' === hb({}, n)) {
                       for(var h = [eb(t), ['linear'], ['zoom']], f = 0, c = o; f < c.length; f += 1) {
@@ -25070,7 +27898,14 @@
               return ub(v), void 0 === t.default ? v : ['case', ['==', ['typeof', e], 'number'], v, ib(t.default)];
             }
             if('exponential' === r) {
-              for(var m = void 0 !== t.base ? t.base : 1, w = [eb(t), 1 === m ? ['linear'] : ['exponential', m], ['number', e]], g = 0, b = i; g < b.length; g += 1) {
+              for(
+                var m = void 0 !== t.base ? t.base : 1,
+                  w = [eb(t), 1 === m ? ['linear'] : ['exponential', m], ['number', e]],
+                  g = 0,
+                  b = i;
+                g < b.length;
+                g += 1
+              ) {
                 var x = b[g];
                 ab(w, x[0], x[1], !1);
               }
@@ -25131,7 +27966,12 @@
               function n(n, i) {
                 t.call(this, i), (this.message = i), (this.key = n);
               }
-              return t && (n.__proto__ = t), (n.prototype = Object.create(t && t.prototype)), (n.prototype.constructor = n), n;
+              return (
+                t && (n.__proto__ = t),
+                (n.prototype = Object.create(t && t.prototype)),
+                (n.prototype.constructor = n),
+                n
+              );
             })(Error),
             lb = function(t, n) {
               void 0 === n && (n = []), (this.parent = t), (this.bindings = {});
@@ -25169,7 +28009,11 @@
           function Sb(t) {
             if('array' === t.kind) {
               var n = Sb(t.itemType);
-              return 'number' == typeof t.N ? 'array<' + n + ', ' + t.N + '>' : 'value' === t.itemType.kind ? 'array' : 'array<' + n + '>';
+              return 'number' == typeof t.N
+                ? 'array<' + n + ', ' + t.N + '>'
+                : 'value' === t.itemType.kind
+                ? 'array'
+                : 'array<' + n + '>';
             }
             return t.kind;
           }
@@ -25177,7 +28021,12 @@
           function jb(t, n) {
             if('error' === n.kind) return null;
             if('array' === t.kind) {
-              if('array' === n.kind && ((0 === n.N && 'value' === n.itemType.kind) || !jb(t.itemType, n.itemType)) && ('number' != typeof t.N || t.N === n.N)) return null;
+              if(
+                'array' === n.kind &&
+                ((0 === n.N && 'value' === n.itemType.kind) || !jb(t.itemType, n.itemType)) &&
+                ('number' != typeof t.N || t.N === n.N)
+              )
+                return null;
             } else {
               if(t.kind === n.kind) return null;
               if('value' === t.kind)
@@ -25194,7 +28043,13 @@
           }
           function Tb(t, n) {
             return n.some(function (n) {
-              return 'null' === n ? null === t : 'array' === n ? Array.isArray(t) : 'object' === n ? t && !Array.isArray(t) && 'object' == typeof t : n === typeof t;
+              return 'null' === n
+                ? null === t
+                : 'array' === n
+                ? Array.isArray(t)
+                : 'object' === n
+                ? t && !Array.isArray(t) && 'object' == typeof t
+                : n === typeof t;
             });
           }
           var Ab = function(t, n, i) {
@@ -25212,7 +28067,11 @@
               return new Intl.Collator(this.locale ? this.locale : []).resolvedOptions().locale;
             });
           var Pb = function(t, n, i, r, e) {
-              (this.text = t.normalize ? t.normalize() : t), (this.image = n), (this.scale = i), (this.fontStack = r), (this.textColor = e);
+              (this.text = t.normalize ? t.normalize() : t),
+                (this.image = n),
+                (this.scale = i),
+                (this.fontStack = r),
+                (this.textColor = e);
             },
             Cb = function(t) {
               this.sections = t;
@@ -25259,11 +28118,21 @@
             (this.name = t.name), (this.available = t.available);
           };
           function Ib(t, n, i, r) {
-            return 'number' == typeof t && t >= 0 && t <= 255 && 'number' == typeof n && n >= 0 && n <= 255 && 'number' == typeof i && i >= 0 && i <= 255
+            return 'number' == typeof t &&
+              t >= 0 &&
+              t <= 255 &&
+              'number' == typeof n &&
+              n >= 0 &&
+              n <= 255 &&
+              'number' == typeof i &&
+              i >= 0 &&
+              i <= 255
               ? void 0 === r || ('number' == typeof r && r >= 0 && r <= 1)
                 ? null
                 : 'Invalid rgba value [' + [t, n, i, r].join(', ') + "]: 'a' must be between 0 and 1."
-              : 'Invalid rgba value [' + ('number' == typeof r ? [t, n, i, r] : [t, n, i]).join(', ') + "]: 'r', 'g', and 'b' must be between 0 and 255.";
+              : 'Invalid rgba value [' +
+                  ('number' == typeof r ? [t, n, i, r] : [t, n, i]).join(', ') +
+                  "]: 'r', 'g', and 'b' must be between 0 and 255.";
           }
           function Nb(t) {
             if(null === t) return !0;
@@ -25311,7 +28180,13 @@
           }
           function zb(t) {
             var n = typeof t;
-            return null === t ? '' : 'string' === n || 'number' === n || 'boolean' === n ? String(t) : t instanceof nb || t instanceof Cb || t instanceof kb ? t.toString() : JSON.stringify(t);
+            return null === t
+              ? ''
+              : 'string' === n || 'number' === n || 'boolean' === n
+              ? String(t)
+              : t instanceof nb || t instanceof Cb || t instanceof kb
+              ? t.toString()
+              : JSON.stringify(t);
           }
           (kb.prototype.toString = function() {
             return this.name;
@@ -25326,12 +28201,23 @@
             (this.type = t), (this.value = n);
           };
           (Rb.parse = function(t, n) {
-            if(2 !== t.length) return n.error("'literal' expression requires exactly one argument, but found " + (t.length - 1) + ' instead.');
+            if(2 !== t.length)
+              return n.error(
+                "'literal' expression requires exactly one argument, but found " + (t.length - 1) + ' instead.'
+              );
             if(!Nb(t[1])) return n.error('invalid value');
             var i = t[1],
               r = Lb(i),
               e = n.expectedType;
-            return 'array' !== r.kind || 0 !== r.N || !e || 'array' !== e.kind || ('number' == typeof e.N && 0 !== e.N) || (r = e), new Rb(r, i);
+            return (
+              'array' !== r.kind ||
+                0 !== r.N ||
+                !e ||
+                'array' !== e.kind ||
+                ('number' == typeof e.N && 0 !== e.N) ||
+                (r = e),
+              new Rb(r, i)
+            );
           }),
             (Rb.prototype.evaluate = function() {
               return this.value;
@@ -25368,11 +28254,13 @@
               var o, s;
               if(t.length > 2) {
                 var u = t[1];
-                if('string' != typeof u || !(u in Gb) || 'object' === u) return n.error('The item type argument of "array" must be one of string, number, boolean', 1);
+                if('string' != typeof u || !(u in Gb) || 'object' === u)
+                  return n.error('The item type argument of "array" must be one of string, number, boolean', 1);
                 (o = Gb[u]), r++;
               } else o = gb;
               if(t.length > 3) {
-                if(null !== t[2] && ('number' != typeof t[2] || t[2] < 0 || t[2] !== Math.floor(t[2]))) return n.error('The length argument to "array" must be a positive integer literal', 2);
+                if(null !== t[2] && ('number' != typeof t[2] || t[2] < 0 || t[2] !== Math.floor(t[2])))
+                  return n.error('The length argument to "array" must be a positive integer literal', 2);
                 (s = t[2]), r++;
               }
               i = _b(o, s);
@@ -25388,7 +28276,10 @@
               for(var n = 0; n < this.args.length; n++) {
                 var i = this.args[n].evaluate(t);
                 if(!jb(this.type, Lb(i))) return i;
-                if(n === this.args.length - 1) throw new Fb('Expected value to be of type ' + Sb(this.type) + ', but found ' + Sb(Lb(i)) + ' instead.');
+                if(n === this.args.length - 1)
+                  throw new Fb(
+                    'Expected value to be of type ' + Sb(this.type) + ', but found ' + Sb(Lb(i)) + ' instead.'
+                  );
               }
               return null;
             }),
@@ -25423,7 +28314,8 @@
           (qb.parse = function(t, n) {
             if(t.length < 2) return n.error('Expected at least one argument.');
             var i = t[1];
-            if(!Array.isArray(i) && 'object' == typeof i) return n.error('First argument must be an image or text section.');
+            if(!Array.isArray(i) && 'object' == typeof i)
+              return n.error('First argument must be an image or text section.');
             for(var r = [], e = !1, o = 1; o <= t.length - 1; ++o) {
               var s = t[o];
               if(e && 'object' == typeof s && !Array.isArray(s)) {
@@ -25440,7 +28332,8 @@
                 var c = n.parse(t[o], 1, gb);
                 if(!c) return null;
                 var l = c.type.kind;
-                if('string' !== l && 'value' !== l && 'null' !== l && 'resolvedImage' !== l) return n.error("Formatted text type must be 'string', 'value', 'image' or 'null'.");
+                if('string' !== l && 'value' !== l && 'null' !== l && 'resolvedImage' !== l)
+                  return n.error("Formatted text type must be 'string', 'value', 'image' or 'null'.");
                 (e = !0), r.push({ content: c, scale: null, font: null, textColor: null });
               }
             }
@@ -25452,7 +28345,13 @@
                   var i = n.content.evaluate(t);
                   return Lb(i) === Mb
                     ? new Pb('', i, null, null, null)
-                    : new Pb(zb(i), null, n.scale ? n.scale.evaluate(t) : null, n.font ? n.font.evaluate(t).join(',') : null, n.textColor ? n.textColor.evaluate(t) : null);
+                    : new Pb(
+                        zb(i),
+                        null,
+                        n.scale ? n.scale.evaluate(t) : null,
+                        n.font ? n.font.evaluate(t).join(',') : null,
+                        n.textColor ? n.textColor.evaluate(t) : null
+                      );
                 })
               );
             }),
@@ -25470,7 +28369,10 @@
                 var r = i[n];
                 t.push(r.content.serialize());
                 var e = {};
-                r.scale && (e['font-scale'] = r.scale.serialize()), r.font && (e['text-font'] = r.font.serialize()), r.textColor && (e['text-color'] = r.textColor.serialize()), t.push(e);
+                r.scale && (e['font-scale'] = r.scale.serialize()),
+                  r.font && (e['text-font'] = r.font.serialize()),
+                  r.textColor && (e['text-color'] = r.textColor.serialize()),
+                  t.push(e);
               }
               return t;
             });
@@ -25521,11 +28423,19 @@
                     if(o) return o;
                   } else if(
                     Array.isArray(n) &&
-                    !(i = n.length < 3 || n.length > 4 ? 'Invalid rbga value ' + JSON.stringify(n) + ': expected an array containing either three or four numeric values.' : Ib(n[0], n[1], n[2], n[3]))
+                    !(i =
+                      n.length < 3 || n.length > 4
+                        ? 'Invalid rbga value ' +
+                          JSON.stringify(n) +
+                          ': expected an array containing either three or four numeric values.'
+                        : Ib(n[0], n[1], n[2], n[3]))
                   )
                     return new nb(n[0] / 255, n[1] / 255, n[2] / 255, n[3]);
                 }
-                throw new Fb(i || "Could not parse color from value '" + ('string' == typeof n ? n : String(JSON.stringify(n))) + "'");
+                throw new Fb(
+                  i ||
+                    "Could not parse color from value '" + ('string' == typeof n ? n : String(JSON.stringify(n))) + "'"
+                );
               }
               if('number' === this.type.kind) {
                 for(var s = null, u = 0, a = this.args; u < a.length; u += 1) {
@@ -25550,7 +28460,8 @@
               });
             }),
             (Xb.prototype.serialize = function() {
-              if('formatted' === this.type.kind) return new qb([{ content: this.args[0], scale: null, font: null, textColor: null }]).serialize();
+              if('formatted' === this.type.kind)
+                return new qb([{ content: this.args[0], scale: null, font: null, textColor: null }]).serialize();
               if('resolvedImage' === this.type.kind) return new Ub(this.args[0]).serialize();
               var t = ['to-' + this.type.kind];
               return (
@@ -25576,7 +28487,11 @@
             return this.feature && 'id' in this.feature && this.feature.id ? this.feature.id : null;
           }),
             (Wb.prototype.geometryType = function() {
-              return this.feature ? ('number' == typeof this.feature.type ? Vb[this.feature.type] : this.feature.type) : null;
+              return this.feature
+                ? 'number' == typeof this.feature.type
+                  ? Vb[this.feature.type]
+                  : this.feature.type
+                : null;
             }),
             (Wb.prototype.geometry = function() {
               return this.feature && 'geometry' in this.feature ? this.feature.geometry : null;
@@ -25627,7 +28542,11 @@
               var i,
                 r = t[0],
                 e = Yb.definitions[r];
-              if(!e) return n.error('Unknown expression "' + r + '". If you wanted a literal array, use ["literal", [...]].', 0);
+              if(!e)
+                return n.error(
+                  'Unknown expression "' + r + '". If you wanted a literal array, use ["literal", [...]].',
+                  0
+                );
               for(
                 var o = Array.isArray(e) ? e[0] : e.type,
                   s = Array.isArray(e) ? [[e[1], e[2]]] : e.overloads,
@@ -25656,7 +28575,8 @@
                   d.push(g);
                 }
                 if(!p)
-                  if(Array.isArray(l) && l.length !== d.length) a.error('Expected ' + l.length + ' arguments, but found ' + d.length + ' instead.');
+                  if(Array.isArray(l) && l.length !== d.length)
+                    a.error('Expected ' + l.length + ' arguments, but found ' + d.length + ' instead.');
                   else {
                     for(var b = 0; b < d.length; b++) {
                       var x = Array.isArray(l) ? l[b] : l.type,
@@ -25698,7 +28618,8 @@
           (Zb.parse = function(t, n) {
             if(2 !== t.length) return n.error('Expected one argument.');
             var i = t[1];
-            if('object' != typeof i || Array.isArray(i)) return n.error('Collator options argument must be an object.');
+            if('object' != typeof i || Array.isArray(i))
+              return n.error('Collator options argument must be an object.');
             var r = n.parse(void 0 !== i['case-sensitive'] && i['case-sensitive'], 1, yb);
             if(!r) return null;
             var e = n.parse(void 0 !== i['diacritic-sensitive'] && i['diacritic-sensitive'], 1, yb);
@@ -25707,7 +28628,11 @@
             return i.locale && !(o = n.parse(i.locale, 1, pb)) ? null : new Zb(r, e, o);
           }),
             (Zb.prototype.evaluate = function(t) {
-              return new Ab(this.caseSensitive.evaluate(t), this.diacriticSensitive.evaluate(t), this.locale ? this.locale.evaluate(t) : null);
+              return new Ab(
+                this.caseSensitive.evaluate(t),
+                this.diacriticSensitive.evaluate(t),
+                this.locale ? this.locale.evaluate(t) : null
+              );
             }),
             (Zb.prototype.eachChild = function(t) {
               t(this.caseSensitive), t(this.diacriticSensitive), this.locale && t(this.locale);
@@ -25726,7 +28651,10 @@
             });
           var $b = 8192;
           function Kb(t, n) {
-            (t[0] = Math.min(t[0], n[0])), (t[1] = Math.min(t[1], n[1])), (t[2] = Math.max(t[2], n[0])), (t[3] = Math.max(t[3], n[1]));
+            (t[0] = Math.min(t[0], n[0])),
+              (t[1] = Math.min(t[1], n[1])),
+              (t[2] = Math.max(t[2], n[0])),
+              (t[3] = Math.max(t[3], n[1]));
           }
           function Hb(t, n) {
             return !(t[0] <= n[0]) && !(t[2] >= n[2]) && !(t[1] <= n[1]) && !(t[3] >= n[3]);
@@ -25903,7 +28831,10 @@
             );
           }
           (lx.parse = function(t, n) {
-            if(2 !== t.length) return n.error("'within' expression requires exactly one argument, but found " + (t.length - 1) + ' instead.');
+            if(2 !== t.length)
+              return n.error(
+                "'within' expression requires exactly one argument, but found " + (t.length - 1) + ' instead.'
+              );
             if(Nb(t[1])) {
               var i = t[1];
               if('FeatureCollection' === i.type)
@@ -25974,9 +28905,19 @@
             (this.type = n.type), (this.name = t), (this.boundExpression = n);
           };
           (yx.parse = function(t, n) {
-            if(2 !== t.length || 'string' != typeof t[1]) return n.error("'var' expression requires exactly one string literal argument.");
+            if(2 !== t.length || 'string' != typeof t[1])
+              return n.error("'var' expression requires exactly one string literal argument.");
             var i = t[1];
-            return n.scope.has(i) ? new yx(i, n.scope.get(i)) : n.error('Unknown variable "' + i + '". Make sure "' + i + '" has been bound in an enclosing "let" expression before using it.', 1);
+            return n.scope.has(i)
+              ? new yx(i, n.scope.get(i))
+              : n.error(
+                  'Unknown variable "' +
+                    i +
+                    '". Make sure "' +
+                    i +
+                    '" has been bound in an enclosing "let" expression before using it.',
+                  1
+                );
           }),
             (yx.prototype.evaluate = function(t) {
               return this.boundExpression.evaluate(t);
@@ -26014,7 +28955,18 @@
               t.eachChild(function (t) {
                 i = n ? i && wx(t) : i && t instanceof Rb;
               }),
-              !!i && vx(t) && px(t, ['zoom', 'heatmap-density', 'line-progress', 'sky-radial-progress', 'accumulated', 'is-supported-script', 'pitch', 'distance-from-center'])
+              !!i &&
+                vx(t) &&
+                px(t, [
+                  'zoom',
+                  'heatmap-density',
+                  'line-progress',
+                  'sky-radial-progress',
+                  'accumulated',
+                  'is-supported-script',
+                  'pitch',
+                  'distance-from-center'
+                ])
             );
           }
           function gx(t, n) {
@@ -26035,10 +28987,26 @@
               function i(t, n, i) {
                 return 'assert' === i ? new Db(n, [t]) : 'coerce' === i ? new Xb(n, [t]) : t;
               }
-              if(((null !== t && 'string' != typeof t && 'boolean' != typeof t && 'number' != typeof t) || (t = ['literal', t]), Array.isArray(t))) {
-                if(0 === t.length) return this.error('Expected an array with at least one element. If you wanted a literal array, use ["literal", []].');
+              if(
+                ((null !== t && 'string' != typeof t && 'boolean' != typeof t && 'number' != typeof t) ||
+                  (t = ['literal', t]),
+                Array.isArray(t))
+              ) {
+                if(0 === t.length)
+                  return this.error(
+                    'Expected an array with at least one element. If you wanted a literal array, use ["literal", []].'
+                  );
                 var r = t[0];
-                if('string' != typeof r) return this.error('Expression name must be a string, but found ' + typeof r + ' instead. If you wanted a literal array, use ["literal", [...]].', 0), null;
+                if('string' != typeof r)
+                  return (
+                    this.error(
+                      'Expression name must be a string, but found ' +
+                        typeof r +
+                        ' instead. If you wanted a literal array, use ["literal", [...]].',
+                      0
+                    ),
+                    null
+                  );
                 var e = this.registry[r];
                 if(e) {
                   var o = e.parse(t, this);
@@ -26046,8 +29014,18 @@
                   if(this.expectedType) {
                     var s = this.expectedType,
                       u = o.type;
-                    if(('string' !== s.kind && 'number' !== s.kind && 'boolean' !== s.kind && 'object' !== s.kind && 'array' !== s.kind) || 'value' !== u.kind)
-                      if(('color' !== s.kind && 'formatted' !== s.kind && 'resolvedImage' !== s.kind) || ('value' !== u.kind && 'string' !== u.kind)) {
+                    if(
+                      ('string' !== s.kind &&
+                        'number' !== s.kind &&
+                        'boolean' !== s.kind &&
+                        'object' !== s.kind &&
+                        'array' !== s.kind) ||
+                      'value' !== u.kind
+                    )
+                      if(
+                        ('color' !== s.kind && 'formatted' !== s.kind && 'resolvedImage' !== s.kind) ||
+                        ('value' !== u.kind && 'string' !== u.kind)
+                      ) {
                         if(this.checkSubtype(s, u)) return null;
                       } else o = i(o, s, n.typeAnnotation || 'coerce');
                     else o = i(o, s, n.typeAnnotation || 'assert');
@@ -26062,7 +29040,10 @@
                   }
                   return o;
                 }
-                return this.error('Unknown expression "' + r + '". If you wanted a literal array, use ["literal", [...]].', 0);
+                return this.error(
+                  'Unknown expression "' + r + '". If you wanted a literal array, use ["literal", [...]].',
+                  0
+                );
               }
               return void 0 === t
                 ? this.error("'undefined' value invalid. Use null instead.")
@@ -26101,7 +29082,8 @@
             }
           };
           (bx.parse = function(t, n) {
-            if(t.length - 1 < 4) return n.error('Expected at least 4 arguments, but found only ' + (t.length - 1) + '.');
+            if(t.length - 1 < 4)
+              return n.error('Expected at least 4 arguments, but found only ' + (t.length - 1) + '.');
             if((t.length - 1) % 2 != 0) return n.error('Expected an even number of arguments.');
             var i = n.parse(t[1], 1, db);
             if(!i) return null;
@@ -26113,8 +29095,16 @@
                 u = t[o + 1],
                 a = o,
                 h = o + 1;
-              if('number' != typeof s) return n.error('Input/output pairs for "step" expressions must be defined using literal numeric values (not computed expressions) for the input values.', a);
-              if(r.length && r[r.length - 1][0] >= s) return n.error('Input/output pairs for "step" expressions must be arranged with input values in strictly ascending order.', a);
+              if('number' != typeof s)
+                return n.error(
+                  'Input/output pairs for "step" expressions must be defined using literal numeric values (not computed expressions) for the input values.',
+                  a
+                );
+              if(r.length && r[r.length - 1][0] >= s)
+                return n.error(
+                  'Input/output pairs for "step" expressions must be arranged with input values in strictly ascending order.',
+                  a
+                );
               var f = n.parse(u, h, e);
               if(!f) return null;
               (e = e || f.type), r.push([s, f]);
@@ -26142,7 +29132,8 @@
               });
             }),
             (bx.prototype.serialize = function() {
-              for(var t = ['step', this.input.serialize()], n = 0; n < this.labels.length; n++) n > 0 && t.push(this.labels[n]), t.push(this.outputs[n].serialize());
+              for(var t = ['step', this.input.serialize()], n = 0; n < this.labels.length; n++)
+                n > 0 && t.push(this.labels[n]), t.push(this.outputs[n].serialize());
               return t;
             });
           var xx = Mx;
@@ -26241,7 +29232,12 @@
               (n = 1 * Ix(n)),
               (i = Ox * Ix(i)),
               (r = jx * Ix(r)),
-              new nb(Nx(3.2404542 * i - 1.5371385 * n - 0.4985314 * r), Nx(-0.969266 * i + 1.8760108 * n + 0.041556 * r), Nx(0.0556434 * i - 0.2040259 * n + 1.0572252 * r), t.alpha)
+              new nb(
+                Nx(3.2404542 * i - 1.5371385 * n - 0.4985314 * r),
+                Nx(-0.969266 * i + 1.8760108 * n + 0.041556 * r),
+                Nx(0.0556434 * i - 0.2040259 * n + 1.0572252 * r),
+                t.alpha
+              )
             );
           }
           function Fx(t, n, i) {
@@ -26274,7 +29270,12 @@
               }
             },
             qx = function(t, n, i, r, e) {
-              (this.type = t), (this.operator = n), (this.interpolation = i), (this.input = r), (this.labels = []), (this.outputs = []);
+              (this.type = t),
+                (this.operator = n),
+                (this.interpolation = i),
+                (this.input = r),
+                (this.labels = []),
+                (this.outputs = []);
               for(var o = 0, s = e; o < s.length; o += 1) {
                 var u = s[o],
                   a = u[0],
@@ -26317,28 +29318,43 @@
                     return 'number' != typeof t || t < 0 || t > 1;
                   })
                 )
-                  return n.error('Cubic bezier interpolation requires four numeric arguments with values between 0 and 1.', 1);
+                  return n.error(
+                    'Cubic bezier interpolation requires four numeric arguments with values between 0 and 1.',
+                    1
+                  );
                 r = { name: 'cubic-bezier', controlPoints: u };
               }
-              if(t.length - 1 < 4) return n.error('Expected at least 4 arguments, but found only ' + (t.length - 1) + '.');
+              if(t.length - 1 < 4)
+                return n.error('Expected at least 4 arguments, but found only ' + (t.length - 1) + '.');
               if((t.length - 1) % 2 != 0) return n.error('Expected an even number of arguments.');
               if(!(e = n.parse(e, 2, db))) return null;
               var a = [],
                 h = null;
-              'interpolate-hcl' === i || 'interpolate-lab' === i ? (h = mb) : n.expectedType && 'value' !== n.expectedType.kind && (h = n.expectedType);
+              'interpolate-hcl' === i || 'interpolate-lab' === i
+                ? (h = mb)
+                : n.expectedType && 'value' !== n.expectedType.kind && (h = n.expectedType);
               for(var f = 0; f < o.length; f += 2) {
                 var c = o[f],
                   l = o[f + 1],
                   v = f + 3,
                   d = f + 4;
                 if('number' != typeof c)
-                  return n.error('Input/output pairs for "interpolate" expressions must be defined using literal numeric values (not computed expressions) for the input values.', v);
-                if(a.length && a[a.length - 1][0] >= c) return n.error('Input/output pairs for "interpolate" expressions must be arranged with input values in strictly ascending order.', v);
+                  return n.error(
+                    'Input/output pairs for "interpolate" expressions must be defined using literal numeric values (not computed expressions) for the input values.',
+                    v
+                  );
+                if(a.length && a[a.length - 1][0] >= c)
+                  return n.error(
+                    'Input/output pairs for "interpolate" expressions must be arranged with input values in strictly ascending order.',
+                    v
+                  );
                 var p = n.parse(l, d, h);
                 if(!p) return null;
                 (h = h || p.type), a.push([c, p]);
               }
-              return 'number' === h.kind || 'color' === h.kind || ('array' === h.kind && 'number' === h.itemType.kind && 'number' == typeof h.N)
+              return 'number' === h.kind ||
+                'color' === h.kind ||
+                ('array' === h.kind && 'number' === h.itemType.kind && 'number' == typeof h.N)
                 ? new qx(h, i, r, e, a)
                 : n.error('Type ' + Sb(h) + ' is not interpolatable.');
             }),
@@ -26383,7 +29399,8 @@
                     ? ['linear']
                     : ['exponential', this.interpolation.base]
                   : ['cubic-bezier'].concat(this.interpolation.controlPoints);
-              for(var n = [this.operator, t, this.input.serialize()], i = 0; i < this.labels.length; i++) n.push(this.labels[i], this.outputs[i].serialize());
+              for(var n = [this.operator, t, this.input.serialize()], i = 0; i < this.labels.length; i++)
+                n.push(this.labels[i], this.outputs[i].serialize());
               return n;
             });
           var Bx = function(t, n) {
@@ -26409,7 +29426,14 @@
           }),
             (Bx.prototype.evaluate = function(t) {
               for(var n, i = null, r = 0, e = 0, o = this.args; e < o.length; e += 1) {
-                if((r++, (i = o[e].evaluate(t)) && i instanceof kb && !i.available && (n || (n = i), (i = null), r === this.args.length))) return n;
+                if(
+                  (r++,
+                  (i = o[e].evaluate(t)) &&
+                    i instanceof kb &&
+                    !i.available &&
+                    (n || (n = i), (i = null), r === this.args.length))
+                )
+                  return n;
                 if(null !== i) break;
               }
               return i;
@@ -26444,11 +29468,13 @@
               t(this.result);
             }),
             (Xx.parse = function(t, n) {
-              if(t.length < 4) return n.error('Expected at least 3 arguments, but found ' + (t.length - 1) + ' instead.');
+              if(t.length < 4)
+                return n.error('Expected at least 3 arguments, but found ' + (t.length - 1) + ' instead.');
               for(var i = [], r = 1; r < t.length - 1; r += 2) {
                 var e = t[r];
                 if('string' != typeof e) return n.error('Expected string, but found ' + typeof e + ' instead.', r);
-                if(/[^a-zA-Z0-9_]/.test(e)) return n.error("Variable names must contain only alphanumeric characters or '_'.", r);
+                if(/[^a-zA-Z0-9_]/.test(e))
+                  return n.error("Variable names must contain only alphanumeric characters or '_'.", r);
                 var o = n.parse(t[r + 1], r + 1);
                 if(!o) return null;
                 i.push([e, o]);
@@ -26506,15 +29532,27 @@
             return i && r
               ? Eb(i.type, [yb, pb, db, vb, gb])
                 ? new Wx(i, r)
-                : n.error('Expected first argument to be of type boolean, string, number or null, but found ' + Sb(i.type) + ' instead')
+                : n.error(
+                    'Expected first argument to be of type boolean, string, number or null, but found ' +
+                      Sb(i.type) +
+                      ' instead'
+                  )
               : null;
           }),
             (Wx.prototype.evaluate = function(t) {
               var n = this.needle.evaluate(t),
                 i = this.haystack.evaluate(t);
               if(null == i) return !1;
-              if(!Tb(n, ['boolean', 'string', 'number', 'null'])) throw new Fb('Expected first argument to be of type boolean, string, number or null, but found ' + Sb(Lb(n)) + ' instead.');
-              if(!Tb(i, ['string', 'array'])) throw new Fb('Expected second argument to be of type array or string, but found ' + Sb(Lb(i)) + ' instead.');
+              if(!Tb(n, ['boolean', 'string', 'number', 'null']))
+                throw new Fb(
+                  'Expected first argument to be of type boolean, string, number or null, but found ' +
+                    Sb(Lb(n)) +
+                    ' instead.'
+                );
+              if(!Tb(i, ['string', 'array']))
+                throw new Fb(
+                  'Expected second argument to be of type array or string, but found ' + Sb(Lb(i)) + ' instead.'
+                );
               return i.indexOf(n) >= 0;
             }),
             (Wx.prototype.eachChild = function(t) {
@@ -26530,11 +29568,17 @@
             (this.type = db), (this.needle = t), (this.haystack = n), (this.fromIndex = i);
           };
           (Yx.parse = function(t, n) {
-            if(t.length <= 2 || t.length >= 5) return n.error('Expected 3 or 4 arguments, but found ' + (t.length - 1) + ' instead.');
+            if(t.length <= 2 || t.length >= 5)
+              return n.error('Expected 3 or 4 arguments, but found ' + (t.length - 1) + ' instead.');
             var i = n.parse(t[1], 1, gb),
               r = n.parse(t[2], 2, gb);
             if(!i || !r) return null;
-            if(!Eb(i.type, [yb, pb, db, vb, gb])) return n.error('Expected first argument to be of type boolean, string, number or null, but found ' + Sb(i.type) + ' instead');
+            if(!Eb(i.type, [yb, pb, db, vb, gb]))
+              return n.error(
+                'Expected first argument to be of type boolean, string, number or null, but found ' +
+                  Sb(i.type) +
+                  ' instead'
+              );
             if(4 === t.length) {
               var e = n.parse(t[3], 3, db);
               return e ? new Yx(i, r, e) : null;
@@ -26544,8 +29588,16 @@
             (Yx.prototype.evaluate = function(t) {
               var n = this.needle.evaluate(t),
                 i = this.haystack.evaluate(t);
-              if(!Tb(n, ['boolean', 'string', 'number', 'null'])) throw new Fb('Expected first argument to be of type boolean, string, number or null, but found ' + Sb(Lb(n)) + ' instead.');
-              if(!Tb(i, ['string', 'array'])) throw new Fb('Expected second argument to be of type array or string, but found ' + Sb(Lb(i)) + ' instead.');
+              if(!Tb(n, ['boolean', 'string', 'number', 'null']))
+                throw new Fb(
+                  'Expected first argument to be of type boolean, string, number or null, but found ' +
+                    Sb(Lb(n)) +
+                    ' instead.'
+                );
+              if(!Tb(i, ['string', 'array']))
+                throw new Fb(
+                  'Expected second argument to be of type array or string, but found ' + Sb(Lb(i)) + ' instead.'
+                );
               if(this.fromIndex) {
                 var r = this.fromIndex.evaluate(t);
                 return i.indexOf(n, r);
@@ -26566,7 +29618,12 @@
               return ['index-of', this.needle.serialize(), this.haystack.serialize()];
             });
           var Zx = function(t, n, i, r, e, o) {
-            (this.inputType = t), (this.type = n), (this.input = i), (this.cases = r), (this.outputs = e), (this.otherwise = o);
+            (this.inputType = t),
+              (this.type = n),
+              (this.input = i),
+              (this.cases = r),
+              (this.outputs = e),
+              (this.otherwise = o);
           };
           (Zx.parse = function(t, n) {
             if(t.length < 5) return n.error('Expected at least 4 arguments, but found only ' + (t.length - 1) + '.');
@@ -26581,9 +29638,12 @@
               if(0 === u.length) return h.error('Expected at least one branch label.');
               for(var f = 0, c = u; f < c.length; f += 1) {
                 var l = c[f];
-                if('number' != typeof l && 'string' != typeof l) return h.error('Branch labels must be numbers or strings.');
-                if('number' == typeof l && Math.abs(l) > Number.MAX_SAFE_INTEGER) return h.error('Branch labels must be integers no larger than ' + Number.MAX_SAFE_INTEGER + '.');
-                if('number' == typeof l && Math.floor(l) !== l) return h.error('Numeric branch labels must be integer values.');
+                if('number' != typeof l && 'string' != typeof l)
+                  return h.error('Branch labels must be numbers or strings.');
+                if('number' == typeof l && Math.abs(l) > Number.MAX_SAFE_INTEGER)
+                  return h.error('Branch labels must be integers no larger than ' + Number.MAX_SAFE_INTEGER + '.');
+                if('number' == typeof l && Math.floor(l) !== l)
+                  return h.error('Numeric branch labels must be integer values.');
                 if(i) {
                   if(h.checkSubtype(i, Lb(l))) return null;
                 } else i = Lb(l);
@@ -26597,7 +29657,11 @@
             var d = n.parse(t[1], 1, gb);
             if(!d) return null;
             var p = n.parse(t[t.length - 1], t.length - 1, r);
-            return p ? ('value' !== d.type.kind && n.concat(1).checkSubtype(i, d.type) ? null : new Zx(i, r, d, e, o, p)) : null;
+            return p
+              ? 'value' !== d.type.kind && n.concat(1).checkSubtype(i, d.type)
+                ? null
+                : new Zx(i, r, d, e, o, p)
+              : null;
           }),
             (Zx.prototype.evaluate = function(t) {
               var n = this.input.evaluate(t);
@@ -26614,9 +29678,20 @@
               );
             }),
             (Zx.prototype.serialize = function() {
-              for(var t = this, n = ['match', this.input.serialize()], i = [], r = {}, e = 0, o = Object.keys(this.cases).sort(); e < o.length; e += 1) {
+              for(
+                var t = this,
+                  n = ['match', this.input.serialize()],
+                  i = [],
+                  r = {},
+                  e = 0,
+                  o = Object.keys(this.cases).sort();
+                e < o.length;
+                e += 1
+              ) {
                 var s = o[e];
-                void 0 === (c = r[this.cases[s]]) ? ((r[this.cases[s]] = i.length), i.push([this.cases[s], [s]])) : i[c][1].push(s);
+                void 0 === (c = r[this.cases[s]])
+                  ? ((r[this.cases[s]] = i.length), i.push([this.cases[s], [s]]))
+                  : i[c][1].push(s);
               }
               for(
                 var u = function(n) {
@@ -26691,7 +29766,11 @@
           };
           function Hx(t, n) {
             return '==' === t || '!=' === t
-              ? 'boolean' === n.kind || 'string' === n.kind || 'number' === n.kind || 'null' === n.kind || 'value' === n.kind
+              ? 'boolean' === n.kind ||
+                  'string' === n.kind ||
+                  'number' === n.kind ||
+                  'null' === n.kind ||
+                  'value' === n.kind
               : 'string' === n.kind || 'number' === n.kind || 'value' === n.kind;
           }
           function Jx(t, n, i, r) {
@@ -26701,7 +29780,11 @@
             var r = '==' !== t && '!=' !== t;
             return (function () {
               function e(t, n, i) {
-                (this.type = yb), (this.lhs = t), (this.rhs = n), (this.collator = i), (this.hasUntypedArgument = 'value' === t.type.kind || 'value' === n.type.kind);
+                (this.type = yb),
+                  (this.lhs = t),
+                  (this.rhs = n),
+                  (this.collator = i),
+                  (this.hasUntypedArgument = 'value' === t.type.kind || 'value' === n.type.kind);
               }
               return (
                 (e.parse = function(t, n) {
@@ -26709,15 +29792,31 @@
                   var i = t[0],
                     o = n.parse(t[1], 1, gb);
                   if(!o) return null;
-                  if(!Hx(i, o.type)) return n.concat(1).error('"' + i + '" comparisons are not supported for type \'' + Sb(o.type) + "'.");
+                  if(!Hx(i, o.type))
+                    return n
+                      .concat(1)
+                      .error('"' + i + '" comparisons are not supported for type \'' + Sb(o.type) + "'.");
                   var s = n.parse(t[2], 2, gb);
                   if(!s) return null;
-                  if(!Hx(i, s.type)) return n.concat(2).error('"' + i + '" comparisons are not supported for type \'' + Sb(s.type) + "'.");
-                  if(o.type.kind !== s.type.kind && 'value' !== o.type.kind && 'value' !== s.type.kind) return n.error("Cannot compare types '" + Sb(o.type) + "' and '" + Sb(s.type) + "'.");
-                  r && ('value' === o.type.kind && 'value' !== s.type.kind ? (o = new Db(s.type, [o])) : 'value' !== o.type.kind && 'value' === s.type.kind && (s = new Db(o.type, [s])));
+                  if(!Hx(i, s.type))
+                    return n
+                      .concat(2)
+                      .error('"' + i + '" comparisons are not supported for type \'' + Sb(s.type) + "'.");
+                  if(o.type.kind !== s.type.kind && 'value' !== o.type.kind && 'value' !== s.type.kind)
+                    return n.error("Cannot compare types '" + Sb(o.type) + "' and '" + Sb(s.type) + "'.");
+                  r &&
+                    ('value' === o.type.kind && 'value' !== s.type.kind
+                      ? (o = new Db(s.type, [o]))
+                      : 'value' !== o.type.kind && 'value' === s.type.kind && (s = new Db(o.type, [s])));
                   var u = null;
                   if(4 === t.length) {
-                    if('string' !== o.type.kind && 'string' !== s.type.kind && 'value' !== o.type.kind && 'value' !== s.type.kind) return n.error('Cannot use collator to compare non-string types.');
+                    if(
+                      'string' !== o.type.kind &&
+                      'string' !== s.type.kind &&
+                      'value' !== o.type.kind &&
+                      'value' !== s.type.kind
+                    )
+                      return n.error('Cannot use collator to compare non-string types.');
                     if(!(u = n.parse(t[3], 3, bb))) return null;
                   }
                   return new e(o, s, u);
@@ -26729,7 +29828,15 @@
                     var u = Lb(o),
                       a = Lb(s);
                     if(u.kind !== a.kind || ('string' !== u.kind && 'number' !== u.kind))
-                      throw new Fb('Expected arguments for "' + t + '" to be (string, string) or (number, number), but found (' + u.kind + ', ' + a.kind + ') instead.');
+                      throw new Fb(
+                        'Expected arguments for "' +
+                          t +
+                          '" to be (string, string) or (number, number), but found (' +
+                          u.kind +
+                          ', ' +
+                          a.kind +
+                          ') instead.'
+                      );
                   }
                   if(this.collator && !r && this.hasUntypedArgument) {
                     var h = Lb(o),
@@ -26758,11 +29865,15 @@
             })();
           }
           (Kx.parse = function(t, n) {
-            if(t.length <= 2 || t.length >= 5) return n.error('Expected 3 or 4 arguments, but found ' + (t.length - 1) + ' instead.');
+            if(t.length <= 2 || t.length >= 5)
+              return n.error('Expected 3 or 4 arguments, but found ' + (t.length - 1) + ' instead.');
             var i = n.parse(t[1], 1, gb),
               r = n.parse(t[2], 2, db);
             if(!i || !r) return null;
-            if(!Eb(i.type, [_b(gb), pb, gb])) return n.error('Expected first argument to be of type array or string, but found ' + Sb(i.type) + ' instead');
+            if(!Eb(i.type, [_b(gb), pb, gb]))
+              return n.error(
+                'Expected first argument to be of type array or string, but found ' + Sb(i.type) + ' instead'
+              );
             if(4 === t.length) {
               var e = n.parse(t[3], 3, db);
               return e ? new Kx(i.type, i, r, e) : null;
@@ -26772,7 +29883,10 @@
             (Kx.prototype.evaluate = function(t) {
               var n = this.input.evaluate(t),
                 i = this.beginIndex.evaluate(t);
-              if(!Tb(n, ['string', 'array'])) throw new Fb('Expected first argument to be of type array or string, but found ' + Sb(Lb(n)) + ' instead.');
+              if(!Tb(n, ['string', 'array']))
+                throw new Fb(
+                  'Expected first argument to be of type array or string, but found ' + Sb(Lb(n)) + ' instead.'
+                );
               if(this.endIndex) {
                 var r = this.endIndex.evaluate(t);
                 return n.slice(i, r);
@@ -26845,14 +29959,20 @@
               }
             ),
             sM = function(t, n, i, r, e) {
-              (this.type = pb), (this.number = t), (this.locale = n), (this.currency = i), (this.minFractionDigits = r), (this.maxFractionDigits = e);
+              (this.type = pb),
+                (this.number = t),
+                (this.locale = n),
+                (this.currency = i),
+                (this.minFractionDigits = r),
+                (this.maxFractionDigits = e);
             };
           (sM.parse = function(t, n) {
             if(3 !== t.length) return n.error('Expected two arguments.');
             var i = n.parse(t[1], 1, db);
             if(!i) return null;
             var r = t[2];
-            if('object' != typeof r || Array.isArray(r)) return n.error('NumberFormat options argument must be an object.');
+            if('object' != typeof r || Array.isArray(r))
+              return n.error('NumberFormat options argument must be an object.');
             var e = null;
             if(r.locale && !(e = n.parse(r.locale, 1, pb))) return null;
             var o = null;
@@ -26860,7 +29980,9 @@
             var s = null;
             if(r['min-fraction-digits'] && !(s = n.parse(r['min-fraction-digits'], 1, db))) return null;
             var u = null;
-            return r['max-fraction-digits'] && !(u = n.parse(r['max-fraction-digits'], 1, db)) ? null : new sM(i, e, o, s, u);
+            return r['max-fraction-digits'] && !(u = n.parse(r['max-fraction-digits'], 1, db))
+              ? null
+              : new sM(i, e, o, s, u);
           }),
             (sM.prototype.evaluate = function(t) {
               return new Intl.NumberFormat(this.locale ? this.locale.evaluate(t) : [], {
@@ -27613,7 +30735,13 @@
               (this._evaluator = new Wb()),
               (this._defaultValue = n
                 ? (function (t) {
-                    return 'color' === t.type && pM(t.default) ? new nb(0, 0, 0, 0) : 'color' === t.type ? nb.parse(t.default) || null : void 0 === t.default ? null : t.default;
+                    return 'color' === t.type && pM(t.default)
+                      ? new nb(0, 0, 0, 0)
+                      : 'color' === t.type
+                      ? nb.parse(t.default) || null
+                      : void 0 === t.default
+                      ? null
+                      : t.default;
                   })(n)
                 : null),
               (this._enumValues = n && 'enum' === n.type ? n.values : null);
@@ -27680,11 +30808,17 @@
                   );
                 return a;
               } catch(t) {
-                return this._warningHistory[t.message] || ((this._warningHistory[t.message] = !0), 'undefined' != typeof console && console.warn(t.message)), this._defaultValue;
+                return (
+                  this._warningHistory[t.message] ||
+                    ((this._warningHistory[t.message] = !0), 'undefined' != typeof console && console.warn(t.message)),
+                  this._defaultValue
+                );
               }
             });
           var wM = function(t, n) {
-            (this.kind = t), (this._styleExpression = n), (this.isStateDependent = 'constant' !== t && !dx(n.expression));
+            (this.kind = t),
+              (this._styleExpression = n),
+              (this.isStateDependent = 'constant' !== t && !dx(n.expression));
           };
           (wM.prototype.evaluateWithoutErrorHandling = function(t, n, i, r, e, o) {
             return this._styleExpression.evaluateWithoutErrorHandling(t, n, i, r, e, o);
@@ -27693,7 +30827,11 @@
               return this._styleExpression.evaluate(t, n, i, r, e, o);
             });
           var gM = function(t, n, i, r) {
-            (this.kind = t), (this.zoomStops = i), (this._styleExpression = n), (this.isStateDependent = 'camera' !== t && !dx(n.expression)), (this.interpolationType = r);
+            (this.kind = t),
+              (this.zoomStops = i),
+              (this._styleExpression = n),
+              (this.isStateDependent = 'camera' !== t && !dx(n.expression)),
+              (this.interpolationType = r);
           };
           function bM(t, n) {
             if('error' === (t = mM(t, n)).result) return t;
@@ -27715,7 +30853,13 @@
             )
               return dM([new cb('', 'zoom expressions not supported')]);
             var o = xM(i);
-            if(!o && !e) return dM([new cb('', '"zoom" expression may only be used as input to a top-level "step" or "interpolate" expression.')]);
+            if(!o && !e)
+              return dM([
+                new cb(
+                  '',
+                  '"zoom" expression may only be used as input to a top-level "step" or "interpolate" expression.'
+                )
+              ]);
             if(o instanceof cb) return dM([o]);
             if(
               o instanceof qx &&
@@ -27744,8 +30888,17 @@
                   i instanceof cb
                     ? (n = i)
                     : !n && i
-                    ? (n = new cb('', '"zoom" expression may only be used as input to a top-level "step" or "interpolate" expression.'))
-                    : n && i && n !== i && (n = new cb('', 'Only one zoom-based "step" or "interpolate" subexpression may be used in an expression.'));
+                    ? (n = new cb(
+                        '',
+                        '"zoom" expression may only be used as input to a top-level "step" or "interpolate" expression.'
+                      ))
+                    : n &&
+                      i &&
+                      n !== i &&
+                      (n = new cb(
+                        '',
+                        'Only one zoom-based "step" or "interpolate" subexpression may be used in an expression.'
+                      ));
                 }),
               n
             );
@@ -27791,7 +30944,14 @@
               layers: { required: !0, type: 'array', value: 'layer' }
             },
             sources: { '*': { type: 'source' } },
-            source: ['source_vector', 'source_raster', 'source_raster_dem', 'source_geojson', 'source_video', 'source_image'],
+            source: [
+              'source_vector',
+              'source_raster',
+              'source_raster_dem',
+              'source_geojson',
+              'source_video',
+              'source_image'
+            ],
             source_vector: {
               type: { required: !0, type: 'enum', values: { vector: {} } },
               url: { type: 'string' },
@@ -27895,7 +31055,18 @@
               layout: { type: 'layout' },
               paint: { type: 'paint' }
             },
-            layout: ['layout_fill', 'layout_line', 'layout_circle', 'layout_heatmap', 'layout_fill-extrusion', 'layout_symbol', 'layout_raster', 'layout_hillshade', 'layout_background', 'layout_sky'],
+            layout: [
+              'layout_fill',
+              'layout_line',
+              'layout_circle',
+              'layout_heatmap',
+              'layout_fill-extrusion',
+              'layout_symbol',
+              'layout_raster',
+              'layout_hillshade',
+              'layout_background',
+              'layout_sky'
+            ],
             layout_background: {
               visibility: {
                 type: 'enum',
@@ -28113,7 +31284,11 @@
               'icon-keep-upright': {
                 type: 'boolean',
                 default: !1,
-                requires: ['icon-image', { 'icon-rotation-alignment': 'map' }, { 'symbol-placement': ['line', 'line-center'] }],
+                requires: [
+                  'icon-image',
+                  { 'icon-rotation-alignment': 'map' },
+                  { 'symbol-placement': ['line', 'line-center'] }
+                ],
                 expression: { interpolated: !1, parameters: ['zoom'] },
                 'property-type': 'data-constant'
               },
@@ -28306,7 +31481,11 @@
               'text-keep-upright': {
                 type: 'boolean',
                 default: !0,
-                requires: ['text-field', { 'text-rotation-alignment': 'map' }, { 'symbol-placement': ['line', 'line-center'] }],
+                requires: [
+                  'text-field',
+                  { 'text-rotation-alignment': 'map' },
+                  { 'symbol-placement': ['line', 'line-center'] }
+                ],
                 expression: { interpolated: !1, parameters: ['zoom'] },
                 'property-type': 'data-constant'
               },
@@ -28649,7 +31828,18 @@
                 transition: !0
               }
             },
-            paint: ['paint_fill', 'paint_line', 'paint_circle', 'paint_heatmap', 'paint_fill-extrusion', 'paint_symbol', 'paint_raster', 'paint_hillshade', 'paint_background', 'paint_sky'],
+            paint: [
+              'paint_fill',
+              'paint_line',
+              'paint_circle',
+              'paint_heatmap',
+              'paint_fill-extrusion',
+              'paint_symbol',
+              'paint_raster',
+              'paint_hillshade',
+              'paint_background',
+              'paint_sky'
+            ],
             paint_fill: {
               'fill-antialias': {
                 type: 'boolean',
@@ -28989,7 +32179,23 @@
               },
               'heatmap-color': {
                 type: 'color',
-                default: ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0, 0, 255, 0)', 0.1, 'royalblue', 0.3, 'cyan', 0.5, 'lime', 0.7, 'yellow', 1, 'red'],
+                default: [
+                  'interpolate',
+                  ['linear'],
+                  ['heatmap-density'],
+                  0,
+                  'rgba(0, 0, 255, 0)',
+                  0.1,
+                  'royalblue',
+                  0.3,
+                  'cyan',
+                  0.5,
+                  'lime',
+                  0.7,
+                  'yellow',
+                  1,
+                  'red'
+                ],
                 transition: !1,
                 expression: { interpolated: !0, parameters: ['heatmap-density'] },
                 'property-type': 'color-ramp'
@@ -29666,7 +32872,11 @@
           function YM(t, n, i, r) {
             var e = new URL(t, r),
               o = VM(t);
-            return o ? 'https://{a-d}.tiles.mapbox.com/v4/' + o + '/{z}/{x}/{y}.vector.pbf?access_token=' + n : n ? (e.searchParams.set(i, n), decodeURI(e.href)) : decodeURI(e.href);
+            return o
+              ? 'https://{a-d}.tiles.mapbox.com/v4/' + o + '/{z}/{x}/{y}.vector.pbf?access_token=' + n
+              : n
+              ? (e.searchParams.set(i, n), decodeURI(e.href))
+              : decodeURI(e.href);
           }
           function ZM(t) {
             return (t * Math.PI) / 180;
@@ -29676,7 +32886,12 @@
             return t;
           })();
           function KM(t, n) {
-            if('undefined' != typeof WorkerGlobalScope && self instanceof WorkerGlobalScope && 'undefined' != typeof OffscreenCanvas) return new OffscreenCanvas(t, n);
+            if(
+              'undefined' != typeof WorkerGlobalScope &&
+              self instanceof WorkerGlobalScope &&
+              'undefined' != typeof OffscreenCanvas
+            )
+              return new OffscreenCanvas(t, n);
             var i = document.createElement('canvas');
             return (i.width = t), (i.height = n), i;
           }
@@ -29746,7 +32961,8 @@
             r_ = Array(256).join(' ');
           function e_(t, n) {
             if(n >= 0.05) {
-              for(var i = '', r = t.split('\n'), e = r_.slice(0, Math.round(n / 0.1)), o = 0, s = r.length; o < s; ++o) o > 0 && (i += '\n'), (i += r[o].split('').join(e));
+              for(var i = '', r = t.split('\n'), e = r_.slice(0, Math.round(n / 0.1)), o = 0, s = r.length; o < s; ++o)
+                o > 0 && (i += '\n'), (i += r[o].split('').join(e));
               return i;
             }
             return t;
@@ -29896,10 +33112,19 @@
             return (b_.zoom = r), h[i](b_, e, s);
           }
           function M_(t, n, i, r) {
-            return x_(t, 'layout', 'icon-allow-overlap', n, i, r) ? (x_(t, 'layout', 'icon-ignore-placement', n, i, r) ? 'none' : 'obstacle') : 'declutter';
+            return x_(t, 'layout', 'icon-allow-overlap', n, i, r)
+              ? x_(t, 'layout', 'icon-ignore-placement', n, i, r)
+                ? 'none'
+                : 'obstacle'
+              : 'declutter';
           }
           function __(t, n, i, r, e) {
-            return e || console.warn('No filterCache provided to evaluateFilter()'), t in e || (e[t] = OM(n).filter), (b_.zoom = r), e[t](b_, i);
+            return (
+              e || console.warn('No filterCache provided to evaluateFilter()'),
+              t in e || (e[t] = OM(n).filter),
+              (b_.zoom = r),
+              e[t](b_, i)
+            );
           }
           var S_ = !1;
           function O_(t, n) {
@@ -29907,7 +33132,18 @@
               if(!S_ && (0 === t.a || 0 === n)) return;
               var i = t.a;
               return (
-                (n = void 0 === n ? 1 : n), 0 === i ? 'transparent' : 'rgba(' + Math.round((255 * t.r) / i) + ',' + Math.round((255 * t.g) / i) + ',' + Math.round((255 * t.b) / i) + ',' + i * n + ')'
+                (n = void 0 === n ? 1 : n),
+                0 === i
+                  ? 'transparent'
+                  : 'rgba(' +
+                    Math.round((255 * t.r) / i) +
+                    ',' +
+                    Math.round((255 * t.g) / i) +
+                    ',' +
+                    Math.round((255 * t.b) / i) +
+                    ',' +
+                    i * n +
+                    ')'
               );
             }
             return t;
@@ -29925,7 +33161,14 @@
           }
           var T_ = !1;
           function A_(t, n, i, r, e, o, s) {
-            if((void 0 === r && (r = $M), void 0 === e && (e = void 0), void 0 === o && (o = void 0), void 0 === s && (s = void 0), 'string' == typeof n && (n = JSON.parse(n)), 8 != n.version))
+            if(
+              (void 0 === r && (r = $M),
+              void 0 === e && (e = void 0),
+              void 0 === o && (o = void 0),
+              void 0 === s && (s = void 0),
+              'string' == typeof n && (n = JSON.parse(n)),
+              8 != n.version)
+            )
               throw new Error('glStyle version 8 required.');
             var u, a;
             if(o)
@@ -29940,7 +33183,9 @@
                 var f = self;
                 f.postMessage({ action: 'loadImage', src: o }),
                   f.addEventListener('message', function(t) {
-                    'imageLoaded' === t.data.action && t.data.src === o && ((u = t.data.image), (a = [u.width, u.height]));
+                    'imageLoaded' === t.data.action &&
+                      t.data.src === o &&
+                      ((u = t.data.image), (a = [u.width, u.height]));
                   });
               }
             for(
@@ -29973,7 +33218,8 @@
                   var S = n.sources[c];
                   if(!S) throw new Error('Source "' + c + '" is not defined');
                   var O = S.type;
-                  if('vector' !== O && 'geojson' !== O) throw new Error('Source "' + c + '" is not of type "vector" or "geojson", but "' + O + '"');
+                  if('vector' !== O && 'geojson' !== O)
+                    throw new Error('Source "' + c + '" is not of type "vector" or "geojson", but "' + O + '"');
                 }
                 var j = v[_];
                 j || ((j = []), (v[_] = j)), j.push({ layer: x, index: g }), d.push(M);
@@ -29996,13 +33242,29 @@
                         }
                       return r - 1;
                     })(i, r));
-                  for(var c, l = m_[n.getGeometry().getType()], d = { properties: o, type: l }, g = t.get('mapbox-featurestate')[n.getId()], b = -1, x = 0, M = h.length; x < M; ++x) {
+                  for(
+                    var c,
+                      l = m_[n.getGeometry().getType()],
+                      d = { properties: o, type: l },
+                      g = t.get('mapbox-featurestate')[n.getId()],
+                      b = -1,
+                      x = 0,
+                      M = h.length;
+                    x < M;
+                    ++x
+                  ) {
                     var _ = h[x],
                       S = _.layer,
                       O = S.id,
                       j = S.layout || g_,
                       P = S.paint || g_;
-                    if(!('none' === j.visibility || ('minzoom' in S && f < S.minzoom) || ('maxzoom' in S && f >= S.maxzoom))) {
+                    if(
+                      !(
+                        'none' === j.visibility ||
+                        ('minzoom' in S && f < S.minzoom) ||
+                        ('maxzoom' in S && f >= S.maxzoom)
+                      )
+                    ) {
                       var C = S.filter;
                       if(!C || __(O, C, d, f, w)) {
                         c = S;
@@ -30019,36 +33281,54 @@
                             if(G) {
                               var D = 'string' == typeof G ? E_(G, o) : G.toString();
                               if(u && e && e[D]) {
-                                ++b, ((R = A[b]) && R.getFill() && !R.getStroke() && !R.getText()) || ((R = new Sv({ fill: new rv() })), (A[b] = R)), (N = R.getFill()), R.setZIndex(F);
+                                ++b,
+                                  ((R = A[b]) && R.getFill() && !R.getStroke() && !R.getText()) ||
+                                    ((R = new Sv({ fill: new rv() })), (A[b] = R)),
+                                  (N = R.getFill()),
+                                  R.setZIndex(F);
                                 var q = D + '.' + I,
                                   U = y[q];
                                 if(!U) {
                                   var B = e[D],
                                     X = KM(B.width, B.height),
                                     V = X.getContext('2d');
-                                  (V.globalAlpha = I), V.drawImage(u, B.x, B.y, B.width, B.height, 0, 0, B.width, B.height), (U = V.createPattern(X, 'repeat')), (y[q] = U);
+                                  (V.globalAlpha = I),
+                                    V.drawImage(u, B.x, B.y, B.width, B.height, 0, 0, B.width, B.height),
+                                    (U = V.createPattern(X, 'repeat')),
+                                    (y[q] = U);
                                 }
                                 N.setColor(U);
                               }
                             }
                           } else
                             (k = O_(x_(S, 'paint', S.type + '-color', f, d, m, g), I)),
-                              S.type + '-outline-color' in P && (z = O_(x_(S, 'paint', S.type + '-outline-color', f, d, m, g), I)),
+                              S.type + '-outline-color' in P &&
+                                (z = O_(x_(S, 'paint', S.type + '-outline-color', f, d, m, g), I)),
                               z || (z = k),
                               (k || z) &&
                                 (++b,
-                                (!(R = A[b]) || (k && !R.getFill()) || (!k && R.getFill()) || (z && !R.getStroke()) || (!z && R.getStroke()) || R.getText()) &&
-                                  ((R = new Sv({ fill: k ? new rv() : void 0, stroke: z ? new mv() : void 0 })), (A[b] = R)),
+                                (!(R = A[b]) ||
+                                  (k && !R.getFill()) ||
+                                  (!k && R.getFill()) ||
+                                  (z && !R.getStroke()) ||
+                                  (!z && R.getStroke()) ||
+                                  R.getText()) &&
+                                  ((R = new Sv({ fill: k ? new rv() : void 0, stroke: z ? new mv() : void 0 })),
+                                  (A[b] = R)),
                                 k && (N = R.getFill()).setColor(k),
                                 z && ((L = R.getStroke()).setColor(z), L.setWidth(0.5)),
                                 R.setZIndex(F));
                         if(1 != l && 'line' == S.type) {
-                          k = !('line-pattern' in P) && 'line-color' in P ? O_(x_(S, 'paint', 'line-color', f, d, m, g), x_(S, 'paint', 'line-opacity', f, d, m, g)) : void 0;
+                          k =
+                            !('line-pattern' in P) && 'line-color' in P
+                              ? O_(x_(S, 'paint', 'line-color', f, d, m, g), x_(S, 'paint', 'line-opacity', f, d, m, g))
+                              : void 0;
                           var W = x_(S, 'paint', 'line-width', f, d, m, g);
                           k &&
                             W > 0 &&
                             (++b,
-                            ((R = A[b]) && R.getStroke() && !R.getFill() && !R.getText()) || ((R = new Sv({ stroke: new mv() })), (A[b] = R)),
+                            ((R = A[b]) && R.getStroke() && !R.getFill() && !R.getText()) ||
+                              ((R = new Sv({ stroke: new mv() })), (A[b] = R)),
                             (L = R.getStroke()).setLineCap(x_(S, 'layout', 'line-cap', f, d, m, g)),
                             L.setLineJoin(x_(S, 'layout', 'line-join', f, d, m, g)),
                             L.setMiterLimit(x_(S, 'layout', 'line-miter-limit', f, d, m, g)),
@@ -30080,8 +33360,13 @@
                                 var it = n.getGeometry();
                                 if(it.getFlatMidpoint || it.getFlatMidpoints) {
                                   var rt = it.getExtent();
-                                  if(Math.sqrt(Math.max(Math.pow((rt[2] - rt[0]) / i, 2), Math.pow((rt[3] - rt[1]) / i, 2))) > 150) {
-                                    var et = 'MultiLineString' === it.getType() ? it.getFlatMidpoints() : it.getFlatMidpoint();
+                                  if(
+                                    Math.sqrt(
+                                      Math.max(Math.pow((rt[2] - rt[0]) / i, 2), Math.pow((rt[3] - rt[1]) / i, 2))
+                                    ) > 150
+                                  ) {
+                                    var et =
+                                      'MultiLineString' === it.getType() ? it.getFlatMidpoints() : it.getFlatMidpoint();
                                     if(
                                       (y_ || (y_ = new fg('Point', (p_ = [NaN, NaN]), [], {}, null)),
                                       (tt = y_),
@@ -30089,7 +33374,14 @@
                                       (p_[1] = et[1]),
                                       'line' === x_(S, 'layout', 'symbol-placement', f, d, m, g) && 'map' === nt)
                                     )
-                                      for(var ot = it.getStride(), st = it.getFlatCoordinates(), ut = 0, at = st.length - ot; ut < at; ut += ot) {
+                                      for(
+                                        var ot = it.getStride(),
+                                          st = it.getFlatCoordinates(),
+                                          ut = 0,
+                                          at = st.length - ot;
+                                        ut < at;
+                                        ut += ot
+                                      ) {
                                         var ht = st[ut],
                                           ft = st[ut + 1],
                                           ct = st[ut + ot],
@@ -30135,7 +33427,8 @@
                                 }
                                 H &&
                                   (++b,
-                                  ((R = A[b]) && R.getImage() && !R.getFill() && !R.getStroke()) || ((R = new Sv()), (A[b] = R)),
+                                  ((R = A[b]) && R.getImage() && !R.getFill() && !R.getStroke()) ||
+                                    ((R = new Sv()), (A[b] = R)),
                                   R.setGeometry(tt),
                                   H.setRotation($ + ZM(x_(S, 'layout', 'icon-rotate', f, d, m, g))),
                                   H.setOpacity(x_(S, 'paint', 'icon-opacity', f, d, m, g)),
@@ -30151,10 +33444,18 @@
                           }
                         }
                         if(1 == l && 'circle' === S.type) {
-                          ++b, ((R = A[b]) && R.getImage() && !R.getFill() && !R.getStroke()) || ((R = new Sv()), (A[b] = R));
+                          ++b,
+                            ((R = A[b]) && R.getImage() && !R.getFill() && !R.getStroke()) ||
+                              ((R = new Sv()), (A[b] = R));
                           var Mt = 'circle-radius' in P ? x_(S, 'paint', 'circle-radius', f, d, m, g) : 5,
-                            _t = O_(x_(S, 'paint', 'circle-stroke-color', f, d, m, g), x_(S, 'paint', 'circle-stroke-opacity', f, d, m, g)),
-                            St = O_(x_(S, 'paint', 'circle-color', f, d, m, g), x_(S, 'paint', 'circle-opacity', f, d, m, g)),
+                            _t = O_(
+                              x_(S, 'paint', 'circle-stroke-color', f, d, m, g),
+                              x_(S, 'paint', 'circle-stroke-opacity', f, d, m, g)
+                            ),
+                            St = O_(
+                              x_(S, 'paint', 'circle-color', f, d, m, g),
+                              x_(S, 'paint', 'circle-opacity', f, d, m, g)
+                            ),
                             Ot = x_(S, 'paint', 'circle-stroke-width', f, d, m, g),
                             jt = Mt + '.' + _t + '.' + St + '.' + Ot;
                           (H = p[jt]) ||
@@ -30196,7 +33497,8 @@
                                       o = n.text;
                                     if('\n' === o) return t.push('\n', ''), t;
                                     if(2 != l) {
-                                      for(var u = 0, a = (o = a_(o, e, kt, Ct).split('\n')).length; u < a; ++u) u > 0 && t.push('\n', ''), t.push(o[u], e);
+                                      for(var u = 0, a = (o = a_(o, e, kt, Ct).split('\n')).length; u < a; ++u)
+                                        u > 0 && t.push('\n', ''), t.push(o[u], e);
                                       return t;
                                     }
                                     t.push(e_(o, Ct), e);
@@ -30205,7 +33507,12 @@
                             (I = x_(S, 'paint', 'text-opacity', f, d, m, g));
                         }
                         if(Et && I && !J) {
-                          Y || (++b, ((R = A[b]) && R.getText() && !R.getFill() && !R.getStroke()) || ((R = new Sv()), (A[b] = R)), R.setImage(void 0), R.setGeometry(void 0)),
+                          Y ||
+                            (++b,
+                            ((R = A[b]) && R.getText() && !R.getFill() && !R.getStroke()) ||
+                              ((R = new Sv()), (A[b] = R)),
+                            R.setImage(void 0),
+                            R.setGeometry(void 0)),
                             R.getText() || R.setText(Z || new Ev({ padding: [2, 2, 2, 2] })),
                             (Z = R.getText());
                           var Lt = j['text-transform'];
@@ -30233,12 +33540,20 @@
                             Bt = 0;
                           if('point' == Ft) {
                             var Xt = 'center';
-                            -1 !== Rt.indexOf('left') ? ((Xt = 'left'), (Bt = Gt)) : -1 !== Rt.indexOf('right') && ((Xt = 'right'), (Bt = -Gt)), Z.setTextAlign(Xt);
+                            -1 !== Rt.indexOf('left')
+                              ? ((Xt = 'left'), (Bt = Gt))
+                              : -1 !== Rt.indexOf('right') && ((Xt = 'right'), (Bt = -Gt)),
+                              Z.setTextAlign(Xt);
                             var Vt = x_(S, 'layout', 'text-rotation-alignment', f, d, m, g);
                             Z.setRotateWithView('map' == Vt);
-                          } else Z.setMaxAngle((ZM(x_(S, 'layout', 'text-max-angle', f, d, m, g)) * Et.length) / zt.length), Z.setTextAlign(), Z.setRotateWithView(!1);
+                          } else
+                            Z.setMaxAngle((ZM(x_(S, 'layout', 'text-max-angle', f, d, m, g)) * Et.length) / zt.length),
+                              Z.setTextAlign(),
+                              Z.setRotateWithView(!1);
                           var Wt = 'middle';
-                          0 == Rt.indexOf('bottom') ? ((Wt = 'bottom'), (Ut = -Gt - 0.5 * (At - 1) * Pt)) : 0 == Rt.indexOf('top') && ((Wt = 'top'), (Ut = Gt + 0.5 * (At - 1) * Pt)),
+                          0 == Rt.indexOf('bottom')
+                            ? ((Wt = 'bottom'), (Ut = -Gt - 0.5 * (At - 1) * Pt))
+                            : 0 == Rt.indexOf('top') && ((Wt = 'top'), (Ut = Gt + 0.5 * (At - 1) * Pt)),
                             Z.setTextBaseline(Wt),
                             Z.setOffsetX(Dt[0] * Pt + Bt + qt[0]),
                             Z.setOffsetY(Dt[1] * Pt + Ut + qt[1]),
@@ -30257,10 +33572,19 @@
                       }
                     }
                   }
-                  return b > -1 ? ((A.length = b + 1), T_ && ('function' == typeof n.set ? n.set('mapbox-layer', c) : (n.getProperties()['mapbox-layer'] = c)), A) : void 0;
+                  return b > -1
+                    ? ((A.length = b + 1),
+                      T_ &&
+                        ('function' == typeof n.set
+                          ? n.set('mapbox-layer', c)
+                          : (n.getProperties()['mapbox-layer'] = c)),
+                      A)
+                    : void 0;
                 }
               };
-            return t.setStyle(P), t.set('mapbox-source', c), t.set('mapbox-layers', d), t.set('mapbox-featurestate', {}), P;
+            return (
+              t.setStyle(P), t.set('mapbox-source', c), t.set('mapbox-layers', d), t.set('mapbox-featurestate', {}), P
+            );
           }
           function P_(t, n) {
             n.accessToken ||
@@ -30284,7 +33608,8 @@
                 QM(n, u)
                   .then(function (n) {
                     if(8 != n.version) return a(new Error('glStyle version 8 required.'));
-                    if(!(t instanceof lg || t instanceof Rg)) return a(new Error('Can only apply to VectorLayer or VectorTileLayer'));
+                    if(!(t instanceof lg || t instanceof Rg))
+                      return a(new Error('Can only apply to VectorLayer or VectorTileLayer'));
                     var h,
                       f,
                       c,
@@ -30326,14 +33651,23 @@
                         r = t.getSource();
                       (r && r.get('mapbox-source') === i) || (r = F_(i, o, u));
                       var e = t.getSource();
-                      return e ? r !== e && (e.getAttributions() || e.setAttributions(r.getAttributions()), e.ze || (e.ze = r.getFormat()), (e.Fe = r.getUrl())) : t.setSource(r), Promise.resolve();
+                      return (
+                        e
+                          ? r !== e &&
+                            (e.getAttributions() || e.setAttributions(r.getAttributions()),
+                            e.ze || (e.ze = r.getFormat()),
+                            (e.Fe = r.getUrl()))
+                          : t.setSource(r),
+                        Promise.resolve()
+                      );
                     }
                     function d() {
                       c || (n.sprite && !h)
                         ? c
                           ? (t.setStyle(c), v().then(r).catch(a))
                           : a(new Error('Something went wrong trying to apply style.'))
-                        : ((c = A_(t, n, i, e, h, f, d_)), t.getStyle() ? v().then(r).catch(a) : a(new Error('Nothing to show for source [' + s + ']')));
+                        : ((c = A_(t, n, i, e, h, f, d_)),
+                          t.getStyle() ? v().then(r).catch(a) : a(new Error('Nothing to show for source [' + s + ']')));
                     }
                     if(n.sprite) {
                       var p = new URL(
@@ -30358,7 +33692,10 @@
                           });
                       })
                         .then(function (t) {
-                          void 0 === t && a(new Error('No sprites found.')), (h = t), (f = p.origin + p.pathname + y + '.png' + p.search), d();
+                          void 0 === t && a(new Error('No sprites found.')),
+                            (h = t),
+                            (f = p.origin + p.pathname + y + '.png' + p.search),
+                            d();
                         })
                         .catch(function (t) {
                           a(new Error('Sprites cannot be loaded: ' + m + ': ' + t.message));
@@ -30379,17 +33716,24 @@
               i.paint = s;
               var u,
                 a,
-                h = 'function' == typeof t.getSource ? t.getSource().getTileGrid().getZForResolution(e) : t.getView().getZoom(),
+                h =
+                  'function' == typeof t.getSource
+                    ? t.getSource().getTileGrid().getZForResolution(e)
+                    : t.getView().getZoom(),
                 f = 'function' == typeof t.getTargetElement ? t.getTargetElement() : void 0;
               if(
-                (void 0 !== s['background-color'] && ((u = x_(i, 'paint', 'background-color', h, k_, r)), f && (f.style.background = nb.parse(u).toString())),
-                void 0 !== s['background-opacity'] && ((a = x_(i, 'paint', 'background-opacity', h, k_, r)), f && (f.style.opacity = a)),
+                (void 0 !== s['background-color'] &&
+                  ((u = x_(i, 'paint', 'background-color', h, k_, r)),
+                  f && (f.style.background = nb.parse(u).toString())),
+                void 0 !== s['background-opacity'] &&
+                  ((a = x_(i, 'paint', 'background-opacity', h, k_, r)), f && (f.style.opacity = a)),
                 'none' != o.visibility)
               )
                 return O_(u, a);
               f && ((f.style.backgroundColor = ''), (f.style.opacity = ''));
             }
-            if('function' == typeof t.getTargetElement) t.getTargetElement() && e(), t.on(['change:resolution', 'change:target'], e);
+            if('function' == typeof t.getTargetElement)
+              t.getTargetElement() && e(), t.on(['change:resolution', 'change:target'], e);
             else {
               if('function' != typeof t.setBackground) throw new Error('Unable to apply background.');
               t.setBackground(e);
@@ -30429,7 +33773,9 @@
                         tileSize: 512
                       })
                     };
-                  Array.isArray(i.tiles) ? (a.urls = i.tiles) : (a.url = i.tiles), t.olSourceOptions && Object.assign(a, t.olSourceOptions), r(new qy(a));
+                  Array.isArray(i.tiles) ? (a.urls = i.tiles) : (a.url = i.tiles),
+                    t.olSourceOptions && Object.assign(a, t.olSourceOptions),
+                    r(new qy(a));
                 })
                 .catch(e);
             });
@@ -30462,7 +33808,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -30541,7 +33888,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -30553,7 +33901,11 @@
                 var i = this,
                   r = n || {},
                   e = A({}, r);
-                return delete e.imageRatio, ((i = t.call(this, e) || this).lv = void 0 !== r.imageRatio ? r.imageRatio : 1), i;
+                return (
+                  delete e.imageRatio,
+                  ((i = t.call(this, e) || this).lv = void 0 !== r.imageRatio ? r.imageRatio : 1),
+                  i
+                );
               }
               return (
                 U_(n, t),
@@ -30579,7 +33931,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -30590,7 +33943,12 @@
               function n(n) {
                 var i = this,
                   r = A({}, n);
-                return ((i = t.call(this, r) || this).vv = Yl(n.style)), (i.dv = n.style.variables || {}), (i.pv = !!n.disableHitDetection), i;
+                return (
+                  ((i = t.call(this, r) || this).vv = Yl(n.style)),
+                  (i.dv = n.style.variables || {}),
+                  (i.pv = !!n.disableHitDetection),
+                  i
+                );
               }
               return (
                 X_(n, t),
@@ -30623,7 +33981,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -30639,7 +33998,10 @@
                 .concat(ul.TEXTURE_RESOLUTION, ';\n    uniform float ')
                 .concat(ul.TEXTURE_ORIGIN_X, ';\n    uniform float ')
                 .concat(ul.TEXTURE_ORIGIN_Y, ';\n    uniform float ')
-                .concat(ul.DEPTH, ';\n\n    varying vec2 v_textureCoord;\n    varying vec2 v_mapCoord;\n\n    void main() {\n      v_textureCoord = ')
+                .concat(
+                  ul.DEPTH,
+                  ';\n\n    varying vec2 v_textureCoord;\n    varying vec2 v_mapCoord;\n\n    void main() {\n      v_textureCoord = '
+                )
                 .concat(al.TEXTURE_COORD, ';\n      v_mapCoord = vec2(\n        ')
                 .concat(ul.TEXTURE_ORIGIN_X, ' + ')
                 .concat(ul.TEXTURE_RESOLUTION, ' * ')
@@ -30665,11 +34027,17 @@
             }
             if(void 0 !== t.contrast) {
               var s = Cl(r, t.contrast, yl);
-              e.push('color.rgb = clamp(('.concat(s, ' + 1.0) * color.rgb - (').concat(s, ' / 2.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));'));
+              e.push(
+                'color.rgb = clamp(('
+                  .concat(s, ' + 1.0) * color.rgb - (')
+                  .concat(s, ' / 2.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));')
+              );
             }
             if(void 0 !== t.exposure) {
               var u = Cl(r, t.exposure, yl);
-              e.push('color.rgb = clamp(('.concat(u, ' + 1.0) * color.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));'));
+              e.push(
+                'color.rgb = clamp(('.concat(u, ' + 1.0) * color.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));')
+              );
             }
             if(void 0 !== t.saturation) {
               var a = Cl(r, t.saturation, yl);
@@ -30690,7 +34058,8 @@
             }
             var c = {},
               l = r.variables.length;
-            if(l > 1 && !t.variables) throw new Error('Missing variables in style (expected '.concat(r.variables, ')'));
+            if(l > 1 && !t.variables)
+              throw new Error('Missing variables in style (expected '.concat(r.variables, ')'));
             for(
               var v = function(n) {
                   var i = r.variables[n];
@@ -30710,7 +34079,8 @@
                 return 'uniform float '.concat(t, ';');
               }),
               y = Math.ceil(n / 4);
-            p.push('uniform sampler2D '.concat(ul.TILE_TEXTURE_ARRAY, '[').concat(y, '];')), r.paletteTextures && p.push('uniform sampler2D '.concat(Ul, '[').concat(r.paletteTextures.length, '];'));
+            p.push('uniform sampler2D '.concat(ul.TILE_TEXTURE_ARRAY, '[').concat(y, '];')),
+              r.paletteTextures && p.push('uniform sampler2D '.concat(Ul, '[').concat(r.paletteTextures.length, '];'));
             var m = Object.keys(r.functions).map(function (t) {
               return r.functions[t];
             });
@@ -30729,9 +34099,15 @@
                   .concat(ul.RENDER_EXTENT, '[0] ||\n        v_mapCoord[1] < ')
                   .concat(ul.RENDER_EXTENT, '[1] ||\n        v_mapCoord[0] > ')
                   .concat(ul.RENDER_EXTENT, '[2] ||\n        v_mapCoord[1] > ')
-                  .concat(ul.RENDER_EXTENT, '[3]\n      ) {\n        discard;\n      }\n\n      vec4 color = texture2D(')
+                  .concat(
+                    ul.RENDER_EXTENT,
+                    '[3]\n      ) {\n        discard;\n      }\n\n      vec4 color = texture2D('
+                  )
                   .concat(ul.TILE_TEXTURE_ARRAY, '[0],  v_textureCoord);\n\n      ')
-                  .concat(e.join('\n'), '\n\n      if(color.a == 0.0) {\n        discard;\n      }\n\n      gl_FragColor = color;\n      gl_FragColor.rgb *= gl_FragColor.a;\n      gl_FragColor *= ')
+                  .concat(
+                    e.join('\n'),
+                    '\n\n      if(color.a == 0.0) {\n        discard;\n      }\n\n      gl_FragColor = color;\n      gl_FragColor.rgb *= gl_FragColor.a;\n      gl_FragColor *= '
+                  )
                   .concat(ul.TRANSITION_ALPHA, ';\n    }'),
               uniforms: c,
               paletteTextures: r.paletteTextures
@@ -30745,7 +34121,15 @@
               delete r.style;
               var o = r.cacheSize;
               return (
-                delete r.cacheSize, ((i = t.call(this, r) || this).yv = r.sources), (i.mv = null), (i.Ic = NaN), (i.H = e), (i.Jt = o), (i.dv = i.H.variables || {}), i.addChangeListener(ns, i.wv), i
+                delete r.cacheSize,
+                ((i = t.call(this, r) || this).yv = r.sources),
+                (i.mv = null),
+                (i.Ic = NaN),
+                (i.H = e),
+                (i.Jt = o),
+                (i.dv = i.H.variables || {}),
+                i.addChangeListener(ns, i.wv),
+                i
               );
             }
             return (
@@ -30780,7 +34164,8 @@
                 });
               }),
               (n.prototype.renderSources = function(t, n) {
-                for(var i, r = this.getRenderer(), e = 0, o = n.length; e < o; ++e) (this.mv = n[e]), r.prepareFrame(t) && (i = r.renderFrame(t));
+                for(var i, r = this.getRenderer(), e = 0, o = n.length; e < o; ++e)
+                  (this.mv = n[e]), r.prepareFrame(t) && (i = r.renderFrame(t));
                 return i;
               }),
               (n.prototype.render = function(t, n) {
@@ -30849,7 +34234,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -30873,7 +34259,13 @@
                   var u = e[o];
                   'function' == typeof u && (u = new u()), i.xv.push(u), (i.bv = i.bv || 'arraybuffer' === u.getType());
                 }
-                return (i.di = r.projection ? yr(r.projection) : null), (i.Mv = null), (i._v = r.source || null), (i.target = r.target ? r.target : null), i;
+                return (
+                  (i.di = r.projection ? yr(r.projection) : null),
+                  (i.Mv = null),
+                  (i._v = r.source || null),
+                  (i.target = r.target ? r.target : null),
+                  i
+                );
               }
               return (
                 K_(n, t),
@@ -30886,7 +34278,9 @@
                   for(var s = this.xv, u = 0, a = s.length; u < a; ++u) {
                     var h = s[u],
                       f = r;
-                    this.bv && 'arraybuffer' !== h.getType() && (void 0 === i && (i = new TextDecoder().decode(r)), (f = i));
+                    this.bv &&
+                      'arraybuffer' !== h.getType() &&
+                      (void 0 === i && (i = new TextDecoder().decode(r)), (f = i));
                     var c = this.Ov(h, f, { featureProjection: o });
                     if(c && c.length > 0) {
                       this._v && (this._v.clear(), this._v.addFeatures(c)), this.dispatchEvent(new J_(H_, t, c, o));
@@ -30898,11 +34292,18 @@
                   var t = this.getMap();
                   if(t) {
                     var n = this.target ? this.target : t.getViewport();
-                    this.Mv = [$(n, U, this.handleDrop, this), $(n, D, this.handleStop, this), $(n, q, this.handleStop, this), $(n, U, this.handleStop, this)];
+                    this.Mv = [
+                      $(n, U, this.handleDrop, this),
+                      $(n, D, this.handleStop, this),
+                      $(n, q, this.handleStop, this),
+                      $(n, U, this.handleStop, this)
+                    ];
                   }
                 }),
                 (n.prototype.setActive = function(n) {
-                  !this.getActive() && n && this.jv(), this.getActive() && !n && this.Ev(), t.prototype.setActive.call(this, n);
+                  !this.getActive() && n && this.jv(),
+                    this.getActive() && !n && this.Ev(),
+                    t.prototype.setActive.call(this, n);
                 }),
                 (n.prototype.setMap = function(n) {
                   this.Ev(), t.prototype.setMap.call(this, n), this.getActive() && this.jv();
@@ -30943,7 +34344,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -30954,7 +34356,14 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                return ((i = t.call(this, r) || this).Zr = r.condition ? r.condition : Ia), (i.Kr = void 0), (i.Tv = void 0), (i.je = 0), (i.Fr = void 0 !== r.duration ? r.duration : 400), i;
+                return (
+                  ((i = t.call(this, r) || this).Zr = r.condition ? r.condition : Ia),
+                  (i.Kr = void 0),
+                  (i.Tv = void 0),
+                  (i.je = 0),
+                  (i.Fr = void 0 !== r.duration ? r.duration : 400),
+                  i
+                );
               }
               return (
                 tS(n, t),
@@ -30972,7 +34381,10 @@
                       var h = this.Kr - s;
                       a.adjustRotationInternal(h);
                     }
-                    (this.Kr = s), void 0 !== this.Tv && a.adjustResolutionInternal(this.Tv / u), void 0 !== this.Tv && (this.je = this.Tv / u), (this.Tv = u);
+                    (this.Kr = s),
+                      void 0 !== this.Tv && a.adjustResolutionInternal(this.Tv / u),
+                      void 0 !== this.Tv && (this.je = this.Tv / u),
+                      (this.Tv = u);
                   }
                 }),
                 (n.prototype.handleUpEvent = function(t) {
@@ -30982,7 +34394,11 @@
                   return n.endInteraction(this.Fr, i), (this.je = 0), !1;
                 }),
                 (n.prototype.handleDownEvent = function(t) {
-                  return !!La(t) && !!this.Zr(t) && (t.map.getView().beginInteraction(), (this.Kr = void 0), (this.Tv = void 0), !0);
+                  return (
+                    !!La(t) &&
+                    !!this.Zr(t) &&
+                    (t.map.getView().beginInteraction(), (this.Kr = void 0), (this.Tv = void 0), !0)
+                  );
                 }),
                 n
               );
@@ -31000,7 +34416,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -31067,7 +34484,11 @@
                 (n.prototype.intersectsExtent = function(t) {
                   if(Kn(t, this.getExtent())) {
                     var n = this.getCenter();
-                    return (t[0] <= n[0] && t[2] >= n[0]) || (t[1] <= n[1] && t[3] >= n[1]) || Rn(t, this.intersectsCoordinate.bind(this));
+                    return (
+                      (t[0] <= n[0] && t[2] >= n[0]) ||
+                      (t[1] <= n[1] && t[3] >= n[1]) ||
+                      Rn(t, this.intersectsCoordinate.bind(this))
+                    );
                   }
                   return !1;
                 }),
@@ -31122,7 +34543,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -31201,7 +34623,13 @@
                     u === sS ? (s = Se) : u === uS ? (s = ng) : u === aS && (s = We),
                       (o = function(t, n, i) {
                         return (
-                          n ? (u === aS ? (t[0].length ? n.setCoordinates([t[0].concat([t[0][0]])], this.qv) : n.setCoordinates([], this.qv)) : n.setCoordinates(t, this.qv)) : (n = new s(t, this.qv)),
+                          n
+                            ? u === aS
+                              ? t[0].length
+                                ? n.setCoordinates([t[0].concat([t[0][0]])], this.qv)
+                                : n.setCoordinates([], this.qv)
+                              : n.setCoordinates(t, this.qv)
+                            : (n = new s(t, this.qv)),
                           n
                         );
                       });
@@ -31243,13 +34671,16 @@
                   return this.Kv;
                 }),
                 (n.prototype.handleEvent = function(n) {
-                  n.originalEvent.type === R && n.originalEvent.preventDefault(), (this.Lv = this.pe !== sS && this.Hv(n));
+                  n.originalEvent.type === R && n.originalEvent.preventDefault(),
+                    (this.Lv = this.pe !== sS && this.Hv(n));
                   var i = n.type === su.POINTERMOVE,
                     r = !0;
                   !this.Lv &&
                     this.Iv &&
                     n.type === su.POINTERDRAG &&
-                    (Date.now() - this.Iv >= this.Uv ? ((this.Cv = n.pixel), (this.Pv = !this.Lv), (i = !0)) : (this.Iv = void 0),
+                    (Date.now() - this.Iv >= this.Uv
+                      ? ((this.Cv = n.pixel), (this.Pv = !this.Lv), (i = !0))
+                      : (this.Iv = void 0),
                     this.Pv && void 0 !== this.kv && (clearTimeout(this.kv), (this.kv = void 0)));
                   return (
                     this.Lv && n.type === su.POINTERDRAG && null !== this.Xv
@@ -31259,7 +34690,9 @@
                       : i && this.getPointerCount() < 2
                       ? (r = n.type === su.POINTERMOVE) && this.Lv
                         ? (this.Zn(n), this.Pv && n.originalEvent.preventDefault())
-                        : ('mouse' === n.originalEvent.pointerType || (n.type === su.POINTERDRAG && void 0 === this.kv)) && this.Zn(n)
+                        : ('mouse' === n.originalEvent.pointerType ||
+                            (n.type === su.POINTERDRAG && void 0 === this.kv)) &&
+                          this.Zn(n)
                       : n.type === su.DBLCLICK && (r = !1),
                     t.prototype.handleEvent.call(this, n) && r
                   );
@@ -31288,13 +34721,20 @@
                     if((this.kv && (clearTimeout(this.kv), (this.kv = void 0)), this.Zn(t), this.Pv)) {
                       var i = !this.Bv;
                       i && this.td(t.coordinate),
-                        !i && this.Lv ? this.finishDrawing() : this.Lv || (i && this.pe !== sS) || (this.rd(t.pixel) ? this.Dv(t) && this.finishDrawing() : this.Qv(t.coordinate)),
+                        !i && this.Lv
+                          ? this.finishDrawing()
+                          : this.Lv ||
+                            (i && this.pe !== sS) ||
+                            (this.rd(t.pixel) ? this.Dv(t) && this.finishDrawing() : this.Qv(t.coordinate)),
                         (n = !1);
                     } else this.Lv && this.abortDrawing();
                   return !n && this.Rv && t.preventDefault(), n;
                 }),
                 (n.prototype.Zn = function(t) {
-                  if(((this.Nv = t.originalEvent.pointerType), this.Cv && ((!this.Lv && this.Pv) || (this.Lv && !this.Pv)))) {
+                  if(
+                    ((this.Nv = t.originalEvent.pointerType),
+                    this.Cv && ((!this.Lv && this.Pv) || (this.Lv && !this.Pv)))
+                  ) {
                     var n = this.Cv,
                       i = t.pixel,
                       r = n[0] - i[0],
@@ -31339,22 +34779,43 @@
                   this.Yv || (this.Yv = new Et());
                   var n = t.getLinearRing(0),
                     i = this.Yv.getGeometry();
-                  i ? (i.setFlatCoordinates(n.getLayout(), n.getFlatCoordinates()), i.changed()) : ((i = new ng(n.getFlatCoordinates(), n.getLayout())), this.Yv.setGeometry(i));
+                  i
+                    ? (i.setFlatCoordinates(n.getLayout(), n.getFlatCoordinates()), i.changed())
+                    : ((i = new ng(n.getFlatCoordinates(), n.getLayout())), this.Yv.setGeometry(i));
                 }),
                 (n.prototype.td = function(t) {
                   for(var n = this.getMap().getView().getProjection(), i = Zr(this.qv); t.length < i; ) t.push(0);
                   (this.Bv = t),
-                    this.pe === sS ? (this.Wv = t.slice()) : this.pe === aS ? ((this.Wv = [[t.slice(), t.slice()]]), (this.Zv = this.Wv[0])) : (this.Wv = [t.slice(), t.slice()]),
+                    this.pe === sS
+                      ? (this.Wv = t.slice())
+                      : this.pe === aS
+                      ? ((this.Wv = [[t.slice(), t.slice()]]), (this.Zv = this.Wv[0]))
+                      : (this.Wv = [t.slice(), t.slice()]),
                     this.Zv && (this.Yv = new Et(new ng(this.Zv)));
                   var r = this.Bu(this.Wv, void 0, n);
-                  (this.Xv = new Et()), this.K && this.Xv.setGeometryName(this.K), this.Xv.setGeometry(r), this.sd(), this.dispatchEvent(new vS(fS, this.Xv));
+                  (this.Xv = new Et()),
+                    this.K && this.Xv.setGeometryName(this.K),
+                    this.Xv.setGeometry(r),
+                    this.sd(),
+                    this.dispatchEvent(new vS(fS, this.Xv));
                 }),
                 (n.prototype.ed = function(t) {
-                  for(var n, i, r = this.getMap(), e = this.Xv.getGeometry(), o = r.getView().getProjection(), s = Zr(this.qv); t.length < s; ) t.push(0);
+                  for(
+                    var n,
+                      i,
+                      r = this.getMap(),
+                      e = this.Xv.getGeometry(),
+                      o = r.getView().getProjection(),
+                      s = Zr(this.qv);
+                    t.length < s;
+
+                  )
+                    t.push(0);
                   (this.pe === sS
                     ? (i = this.Wv)
                     : this.pe === aS
-                    ? ((i = (n = this.Wv[0])[n.length - 1]), this.rd(r.getPixelFromCoordinate(t)) && (t = this.Bv.slice()))
+                    ? ((i = (n = this.Wv[0])[n.length - 1]),
+                      this.rd(r.getPixelFromCoordinate(t)) && (t = this.Bv.slice()))
                     : (i = (n = this.Wv)[n.length - 1]),
                   (i[0] = t[0]),
                   (i[1] = t[1]),
@@ -31373,8 +34834,15 @@
                     e = this.getMap().getView().getProjection(),
                     o = this.pe;
                   o === uS || o === hS
-                    ? ((this.Bv = t.slice()), (i = this.Wv).length >= this.Gv && (this.Lv ? i.pop() : (n = !0)), i.push(t.slice()), this.Bu(i, r, e))
-                    : o === aS && ((i = this.Wv[0]).length >= this.Gv && (this.Lv ? i.pop() : (n = !0)), i.push(t.slice()), n && (this.Bv = i[0]), this.Bu(this.Wv, r, e)),
+                    ? ((this.Bv = t.slice()),
+                      (i = this.Wv).length >= this.Gv && (this.Lv ? i.pop() : (n = !0)),
+                      i.push(t.slice()),
+                      this.Bu(i, r, e))
+                    : o === aS &&
+                      ((i = this.Wv[0]).length >= this.Gv && (this.Lv ? i.pop() : (n = !0)),
+                      i.push(t.slice()),
+                      n && (this.Bv = i[0]),
+                      this.Bu(this.Wv, r, e)),
                     this.od(t.slice()),
                     this.sd(),
                     n && this.finishDrawing();
@@ -31410,8 +34878,14 @@
                     var n = this.Wv,
                       i = t.getGeometry(),
                       r = this.getMap().getView().getProjection();
-                    this.pe === uS ? (n.pop(), this.Bu(n, i, r)) : this.pe === aS && (n[0].pop(), this.Bu(n, i, r), (n = i.getCoordinates())),
-                      'MultiPoint' === this.rl ? t.setGeometry(new Kw([n])) : 'MultiLineString' === this.rl ? t.setGeometry(new rg([n])) : 'MultiPolygon' === this.rl && t.setGeometry(new sg([n])),
+                    this.pe === uS
+                      ? (n.pop(), this.Bu(n, i, r))
+                      : this.pe === aS && (n[0].pop(), this.Bu(n, i, r), (n = i.getCoordinates())),
+                      'MultiPoint' === this.rl
+                        ? t.setGeometry(new Kw([n]))
+                        : 'MultiLineString' === this.rl
+                        ? t.setGeometry(new rg([n]))
+                        : 'MultiPolygon' === this.rl && t.setGeometry(new sg([n])),
                       this.dispatchEvent(new vS(cS, t)),
                       this.Re && this.Re.push(t),
                       this._v && this._v.addFeature(t);
@@ -31444,7 +34918,11 @@
                   var n = t.getGeometry();
                   (this.Xv = t), (this.Wv = n.getCoordinates());
                   var i = this.Wv[this.Wv.length - 1];
-                  (this.Bv = i.slice()), this.Wv.push(i.slice()), (this.Vv = new Et(new Se(i))), this.sd(), this.dispatchEvent(new vS(fS, this.Xv));
+                  (this.Bv = i.slice()),
+                    this.Wv.push(i.slice()),
+                    (this.Vv = new Et(new Se(i))),
+                    this.sd(),
+                    this.dispatchEvent(new vS(fS, this.Xv));
                 }),
                 (n.prototype.sd = function() {
                   var t = [];
@@ -31473,7 +34951,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -31599,15 +35078,30 @@
                 }),
                 (n.prototype.bd = function(t) {
                   var n = this.vd;
-                  return n ? (t ? n.setGeometry(Ze(t)) : n.setGeometry(void 0)) : ((n = new Et(t ? Ze(t) : {})), (this.vd = n), this.yd.getSource().addFeature(n)), n;
+                  return (
+                    n
+                      ? t
+                        ? n.setGeometry(Ze(t))
+                        : n.setGeometry(void 0)
+                      : ((n = new Et(t ? Ze(t) : {})), (this.vd = n), this.yd.getSource().addFeature(n)),
+                    n
+                  );
                 }),
                 (n.prototype.gd = function(t) {
                   var n = this.dd;
-                  n ? n.getGeometry().setCoordinates(t) : ((n = new Et(new Se(t))), (this.dd = n), this.md.getSource().addFeature(n));
+                  n
+                    ? n.getGeometry().setCoordinates(t)
+                    : ((n = new Et(new Se(t))), (this.dd = n), this.md.getSource().addFeature(n));
                   return n;
                 }),
                 (n.prototype.handleEvent = function(n) {
-                  return !n.originalEvent || !this.Zr(n) || (n.type != su.POINTERMOVE || this.handlingDownUpSequence || this.Zn(n), t.prototype.handleEvent.call(this, n), !1);
+                  return (
+                    !n.originalEvent ||
+                    !this.Zr(n) ||
+                    (n.type != su.POINTERMOVE || this.handlingDownUpSequence || this.Zn(n),
+                    t.prototype.handleEvent.call(this, n),
+                    !1)
+                  );
                 }),
                 (n.prototype.handleDownEvent = function(t) {
                   var n = t.pixel,
@@ -31617,13 +35111,24 @@
                     o = function(t) {
                       var n = null,
                         i = null;
-                      return t[0] == r[0] ? (n = r[2]) : t[0] == r[2] && (n = r[0]), t[1] == r[1] ? (i = r[3]) : t[1] == r[3] && (i = r[1]), null !== n && null !== i ? [n, i] : null;
+                      return (
+                        t[0] == r[0] ? (n = r[2]) : t[0] == r[2] && (n = r[0]),
+                        t[1] == r[1] ? (i = r[3]) : t[1] == r[3] && (i = r[1]),
+                        null !== n && null !== i ? [n, i] : null
+                      );
                     };
                   if(e && r) {
                     var s = e[0] == r[0] || e[0] == r[2] ? e[0] : null,
                       u = e[1] == r[1] || e[1] == r[3] ? e[1] : null;
-                    null !== s && null !== u ? (this.hd = gS(o(e))) : null !== s ? (this.hd = bS(o([s, r[1]]), o([s, r[3]]))) : null !== u && (this.hd = bS(o([r[0], u]), o([r[2], u])));
-                  } else (e = i.getCoordinateFromPixelInternal(n)), this.setExtent([e[0], e[1], e[0], e[1]]), (this.hd = gS(e));
+                    null !== s && null !== u
+                      ? (this.hd = gS(o(e)))
+                      : null !== s
+                      ? (this.hd = bS(o([s, r[1]]), o([s, r[3]])))
+                      : null !== u && (this.hd = bS(o([r[0], u]), o([r[2], u])));
+                  } else
+                    (e = i.getCoordinateFromPixelInternal(n)),
+                      this.setExtent([e[0], e[1], e[0], e[1]]),
+                      (this.hd = gS(e));
                   return !0;
                 }),
                 (n.prototype.handleDragEvent = function(t) {
@@ -31665,7 +35170,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -31688,7 +35194,16 @@
                 var i,
                   r = t.call(this) || this,
                   e = A({ animate: !0, replace: !1, prefix: '' }, n || {});
-                return (i = !0 === e.animate ? { duration: 250 } : e.animate ? e.animate : null), (r.xd = i), (r.Md = e.replace), (r._d = e.prefix), (r.gn = []), (r.Sd = !0), (r.Jv = r.Jv.bind(r)), r;
+                return (
+                  (i = !0 === e.animate ? { duration: 250 } : e.animate ? e.animate : null),
+                  (r.xd = i),
+                  (r.Md = e.replace),
+                  (r._d = e.prefix),
+                  (r.gn = []),
+                  (r.Sd = !0),
+                  (r.Jv = r.Jv.bind(r)),
+                  r
+                );
               }
               return (
                 MS(n, t),
@@ -31706,17 +35221,28 @@
                 }),
                 (n.prototype.setMap = function(n) {
                   var i = this.getMap();
-                  t.prototype.setMap.call(this, n), n !== i && (i && this.Ev(i), n && ((this.Sd = !0), this.Jv(), this.jv(n)));
+                  t.prototype.setMap.call(this, n),
+                    n !== i && (i && this.Ev(i), n && ((this.Sd = !0), this.Jv(), this.jv(n)));
                 }),
                 (n.prototype.jv = function(t) {
-                  this.gn.push($(t, pu, this.Ad, this), $(t.getLayerGroup(), L, this.Ad, this), $(t, 'change:layergroup', this.Pd, this)), this.Md || addEventListener('popstate', this.Jv);
+                  this.gn.push(
+                    $(t, pu, this.Ad, this),
+                    $(t.getLayerGroup(), L, this.Ad, this),
+                    $(t, 'change:layergroup', this.Pd, this)
+                  ),
+                    this.Md || addEventListener('popstate', this.Jv);
                 }),
                 (n.prototype.Ev = function(t) {
                   for(var n = 0, i = this.gn.length; n < i; ++n) H(this.gn[n]);
                   (this.gn.length = 0), this.Md || removeEventListener('popstate', this.Jv);
                   var r = new URL(window.location.href),
                     e = r.searchParams;
-                  this.Td(e, 'x'), this.Td(e, 'y'), this.Td(e, 'z'), this.Td(e, 'r'), this.Td(e, 'l'), window.history.replaceState(null, '', r);
+                  this.Td(e, 'x'),
+                    this.Td(e, 'y'),
+                    this.Td(e, 'z'),
+                    this.Td(e, 'r'),
+                    this.Td(e, 'l'),
+                    window.history.replaceState(null, '', r);
                 }),
                 (n.prototype.Pd = function() {
                   var t = this.getMap();
@@ -31740,7 +35266,12 @@
                       (u = h),
                         (a = n.getCenter()),
                         (OS(u[0], a[0]) || OS(u[1], a[1])) && ((r = !0), (e.center = h)),
-                        r && (!this.Sd && this.xd ? n.animate(A(e, this.xd)) : (e.center && n.setCenter(e.center), 'zoom' in e && n.setZoom(e.zoom), 'rotation' in e && n.setRotation(e.rotation)));
+                        r &&
+                          (!this.Sd && this.xd
+                            ? n.animate(A(e, this.xd))
+                            : (e.center && n.setCenter(e.center),
+                              'zoom' in e && n.setZoom(e.zoom),
+                              'rotation' in e && n.setRotation(e.rotation)));
                       var f = t.getAllLayers(),
                         c = this.jd(i, 'l');
                       if(c && c.length === f.length)
@@ -31762,7 +35293,17 @@
                     if(n) {
                       var i = this.Sd;
                       this.Sd = !1;
-                      for(var r = n.getCenter(), e = n.getZoom(), o = n.getRotation(), s = t.getAllLayers(), u = new Array(s.length), a = 0, h = s.length; a < h; ++a)
+                      for(
+                        var r = n.getCenter(),
+                          e = n.getZoom(),
+                          o = n.getRotation(),
+                          s = t.getAllLayers(),
+                          u = new Array(s.length),
+                          a = 0,
+                          h = s.length;
+                        a < h;
+                        ++a
+                      )
                         u[a] = s[a].getVisible() ? '1' : '0';
                       var f = new URL(window.location.href),
                         c = f.searchParams;
@@ -31771,7 +35312,10 @@
                         this.Ed(c, 'z', SS(e)),
                         this.Ed(c, 'r', SS(o)),
                         this.Ed(c, 'l', u.join('')),
-                        f.href !== window.location.href && (i || this.Md ? window.history.replaceState(null, '', f) : window.history.pushState(null, '', f));
+                        f.href !== window.location.href &&
+                          (i || this.Md
+                            ? window.history.replaceState(null, '', f)
+                            : window.history.pushState(null, '', f));
                     }
                   }
                 }),
@@ -31791,7 +35335,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -31887,7 +35432,13 @@
                   }),
                   (e._v = null),
                   (e.Hd = null),
-                  n.features ? (r = n.features) : n.source && ((e._v = n.source), (r = new ft(e._v.getFeatures())), e._v.addEventListener(Qv, e.Jd.bind(e)), e._v.addEventListener(id, e.Qd.bind(e))),
+                  n.features
+                    ? (r = n.features)
+                    : n.source &&
+                      ((e._v = n.source),
+                      (r = new ft(e._v.getFeatures())),
+                      e._v.addEventListener(Qv, e.Jd.bind(e)),
+                      e._v.addEventListener(id, e.Qd.bind(e))),
                   !r)
                 )
                   throw new Error('The modify interaction requires features, a source or a layer');
@@ -31926,7 +35477,11 @@
                   }
                 }),
                 (n.prototype.up = function(t) {
-                  this.ap(t), this.dd && 0 === this.Re.getLength() && (this.Kv.getSource().removeFeature(this.dd), (this.dd = null)), t.removeEventListener(L, this.Cd);
+                  this.ap(t),
+                    this.dd &&
+                      0 === this.Re.getLength() &&
+                      (this.Kv.getSource().removeFeature(this.dd), (this.dd = null)),
+                    t.removeEventListener(L, this.Cd);
                 }),
                 (n.prototype.ap = function(t) {
                   var n = this.Gd,
@@ -31940,7 +35495,8 @@
                   }
                 }),
                 (n.prototype.setActive = function(n) {
-                  this.dd && !n && (this.Kv.getSource().removeFeature(this.dd), (this.dd = null)), t.prototype.setActive.call(this, n);
+                  this.dd && !n && (this.Kv.getSource().removeFeature(this.dd), (this.dd = null)),
+                    t.prototype.setActive.call(this, n);
                 }),
                 (n.prototype.setMap = function(n) {
                   this.Kv.setMap(n), t.prototype.setMap.call(this, n);
@@ -32033,14 +35589,19 @@
                 }),
                 (n.prototype.hp = function(t, n, i) {
                   var r = this.dd;
-                  r ? r.getGeometry().setCoordinates(t) : ((r = new Et(new Se(t))), (this.dd = r), this.Kv.getSource().addFeature(r));
+                  r
+                    ? r.getGeometry().setCoordinates(t)
+                    : ((r = new Et(new Se(t))), (this.dd = r), this.Kv.getSource().addFeature(r));
                   return r.set('features', n), r.set('geometries', i), r;
                 }),
                 (n.prototype.handleEvent = function(n) {
                   return (
                     !n.originalEvent ||
                     ((this.rp = n),
-                    n.map.getView().getInteracting() || n.type != su.POINTERMOVE || this.handlingDownUpSequence || this.Zn(n),
+                    n.map.getView().getInteracting() ||
+                      n.type != su.POINTERMOVE ||
+                      this.handlingDownUpSequence ||
+                      this.Zn(n),
                     this.dd && this.Id(n) && (i = !(n.type != su.SINGLECLICK || !this.Rd) || this.removePoint()),
                     n.type == su.SINGLECLICK && (this.Rd = !1),
                     t.prototype.handleEvent.call(this, n) && !i)
@@ -32049,14 +35610,23 @@
                 }),
                 (n.prototype.handleDragEvent = function(t) {
                   (this.Rd = !1), this.sp(t, this.qd);
-                  for(var n = [t.coordinate[0] + this.Br[0], t.coordinate[1] + this.Br[1]], i = [], r = [], e = 0, o = this.qd.length; e < o; ++e) {
+                  for(
+                    var n = [t.coordinate[0] + this.Br[0], t.coordinate[1] + this.Br[1]],
+                      i = [],
+                      r = [],
+                      e = 0,
+                      o = this.qd.length;
+                    e < o;
+                    ++e
+                  ) {
                     var s = this.qd[e],
                       u = s[0],
                       a = u.feature;
                     -1 === i.indexOf(a) && i.push(a);
                     var h = u.geometry;
                     -1 === r.indexOf(h) && r.push(h);
-                    for(var f = u.depth, c = void 0, l = u.segment, v = s[1]; n.length < h.getStride(); ) n.push(l[v][n.length]);
+                    for(var f = u.depth, c = void 0, l = u.segment, v = s[1]; n.length < h.getStride(); )
+                      n.push(l[v][n.length]);
                     switch (h.getType()) {
                       case 'Point':
                         (c = n), (l[0] = n), (l[1] = n);
@@ -32110,9 +35680,14 @@
                         v = l.segment,
                         d = o(l.geometry),
                         p = l.depth;
-                      if((p && (d += '-' + p.join('-')), h[d] || (h[d] = new Array(2)), 'Circle' !== l.geometry.getType() || 1 !== l.index))
+                      if(
+                        (p && (d += '-' + p.join('-')),
+                        h[d] || (h[d] = new Array(2)),
+                        'Circle' !== l.geometry.getType() || 1 !== l.index)
+                      )
                         if(!Ki(v[0], s) || h[d][0])
-                          if(!Ki(v[1], s) || h[d][1]) o(v) in this.Ld && !h[d][0] && !h[d][1] && this.Nd(t) && e.push(l);
+                          if(!Ki(v[1], s) || h[d][1])
+                            o(v) in this.Ld && !h[d][0] && !h[d][1] && this.Nd(t) && e.push(l);
                           else {
                             if(h[d][0] && 0 === h[d][0].index) {
                               var y = l.geometry.getCoordinates();
@@ -32144,7 +35719,11 @@
                       var e = r.getCenter(),
                         o = i.featureSegments[0],
                         s = i.featureSegments[1];
-                      (o.segment[0] = e), (o.segment[1] = e), (s.segment[0] = e), (s.segment[1] = e), this.Gd.update(En(e), o);
+                      (o.segment[0] = e),
+                        (o.segment[1] = e),
+                        (s.segment[0] = e),
+                        (s.segment[1] = e),
+                        this.Gd.update(En(e), o);
                       var u = r,
                         a = Cr();
                       if(a) {
@@ -32199,14 +35778,21 @@
                       p = tr(t, d);
                     if(e || p <= this.fd) {
                       var m = {};
-                      if(((m[o(l)] = !0), this.ep || ((this.Br[0] = v[0] - u[0]), (this.Br[1] = v[1] - u[1])), 'Circle' === c.geometry.getType() && 1 === c.index))
+                      if(
+                        ((m[o(l)] = !0),
+                        this.ep || ((this.Br[0] = v[0] - u[0]), (this.Br[1] = v[1] - u[1])),
+                        'Circle' === c.geometry.getType() && 1 === c.index)
+                      )
                         (this.ld = !0), this.hp(v, [c.feature], [c.geometry]);
                       else {
                         var w = n.getPixelFromCoordinate(l[0]),
                           g = n.getPixelFromCoordinate(l[1]),
                           b = Qi(d, w),
                           x = Qi(d, g);
-                        (p = Math.sqrt(Math.min(b, x))), (this.ld = p <= this.fd), this.ld && (v = b > x ? l[1] : l[0]), this.hp(v, [c.feature], [c.geometry]);
+                        (p = Math.sqrt(Math.min(b, x))),
+                          (this.ld = p <= this.fd),
+                          this.ld && (v = b > x ? l[1] : l[0]),
+                          this.hp(v, [c.feature], [c.geometry]);
                         var M = {};
                         M[o(c.geometry)] = !0;
                         for(var _ = 1, S = r.length; _ < S; ++_) {
@@ -32222,7 +35808,12 @@
                   this.dd && (this.Kv.getSource().removeFeature(this.dd), (this.dd = null));
                 }),
                 (n.prototype.cp = function(t, n) {
-                  for(var i, r = t.segment, e = t.feature, o = t.geometry, s = t.depth, u = t.index; n.length < o.getStride(); ) n.push(0);
+                  for(
+                    var i, r = t.segment, e = t.feature, o = t.geometry, s = t.depth, u = t.index;
+                    n.length < o.getStride();
+
+                  )
+                    n.push(0);
                   switch (o.getType()) {
                     case 'MultiLineString':
                     case 'Polygon':
@@ -32273,10 +35864,17 @@
                     (c = o((f = (i = l[e])[0]).feature)),
                       f.depth && (c += '-' + f.depth.join('-')),
                       c in v || (v[c] = {}),
-                      0 === i[1] ? ((v[c].right = f), (v[c].index = f.index)) : 1 == i[1] && ((v[c].left = f), (v[c].index = f.index + 1));
+                      0 === i[1]
+                        ? ((v[c].right = f), (v[c].index = f.index))
+                        : 1 == i[1] && ((v[c].left = f), (v[c].index = f.index + 1));
                   for(c in v) {
                     switch (
-                      ((h = v[c].right), (u = v[c].left), (a = (s = v[c].index) - 1) < 0 && (a = 0), (t = n = (r = (f = void 0 !== u ? u : h).geometry).getCoordinates()), (d = !1), r.getType())
+                      ((h = v[c].right),
+                      (u = v[c].left),
+                      (a = (s = v[c].index) - 1) < 0 && (a = 0),
+                      (t = n = (r = (f = void 0 !== u ? u : h).geometry).getCoordinates()),
+                      (d = !1),
+                      r.getType())
                     ) {
                       case 'MultiLineString':
                         n[f.depth[0]].length > 2 && (n[f.depth[0]].splice(s, 1), (d = !0));
@@ -32287,16 +35885,26 @@
                       case 'MultiPolygon':
                         t = t[f.depth[1]];
                       case 'Polygon':
-                        (t = t[f.depth[0]]).length > 4 && (s == t.length - 1 && (s = 0), t.splice(s, 1), (d = !0), 0 === s && (t.pop(), t.push(t[0]), (a = t.length - 1)));
+                        (t = t[f.depth[0]]).length > 4 &&
+                          (s == t.length - 1 && (s = 0),
+                          t.splice(s, 1),
+                          (d = !0),
+                          0 === s && (t.pop(), t.push(t[0]), (a = t.length - 1)));
                     }
                     if(d) {
                       this.fp(r, n);
                       var p = [];
-                      if((void 0 !== u && (this.Gd.remove(u), p.push(u.segment[0])), void 0 !== h && (this.Gd.remove(h), p.push(h.segment[1])), void 0 !== u && void 0 !== h)) {
+                      if(
+                        (void 0 !== u && (this.Gd.remove(u), p.push(u.segment[0])),
+                        void 0 !== h && (this.Gd.remove(h), p.push(h.segment[1])),
+                        void 0 !== u && void 0 !== h)
+                      ) {
                         var y = { depth: f.depth, feature: f.feature, geometry: f.geometry, index: a, segment: p };
                         this.Gd.insert(yn(y.segment), y);
                       }
-                      this.lp(r, s, f.depth, -1), this.dd && (this.Kv.getSource().removeFeature(this.dd), (this.dd = null)), (l.length = 0);
+                      this.lp(r, s, f.depth, -1),
+                        this.dd && (this.Kv.getSource().removeFeature(this.dd), (this.dd = null)),
+                        (l.length = 0);
                     }
                   }
                   return d;
@@ -32306,7 +35914,10 @@
                 }),
                 (n.prototype.lp = function(t, n, i, r) {
                   this.Gd.forEachInExtent(t.getExtent(), function(e) {
-                    e.geometry === t && (void 0 === i || void 0 === e.depth || x(e.depth, i)) && e.index > n && (e.index += r);
+                    e.geometry === t &&
+                      (void 0 === i || void 0 === e.depth || x(e.depth, i)) &&
+                      e.index > n &&
+                      (e.index += r);
                   });
                 }),
                 n
@@ -32325,7 +35936,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -32400,7 +36012,9 @@
                   this.getMap() && this.H && this.Re.forEach(this.Op.bind(this)),
                     t.prototype.setMap.call(this, n),
                     n
-                      ? (this.Re.addEventListener(ot, this.dp), this.Re.addEventListener(st, this.pp), this.H && this.Re.forEach(this.jp.bind(this)))
+                      ? (this.Re.addEventListener(ot, this.dp),
+                        this.Re.addEventListener(st, this.pp),
+                        this.H && this.Re.forEach(this.jp.bind(this)))
                       : (this.Re.removeEventListener(ot, this.dp), this.Re.removeEventListener(st, this.pp));
                 }),
                 (n.prototype.tp = function(t) {
@@ -32428,7 +36042,13 @@
                 (n.prototype.Op = function(t) {
                   for(var i = this.getMap().getInteractions().getArray(), r = i.length - 1; r >= 0; --r) {
                     var e = i[r];
-                    if(e !== this && e instanceof n && e.getStyle() && -1 !== e.getFeatures().getArray().lastIndexOf(t)) return void t.setStyle(e.getStyle());
+                    if(
+                      e !== this &&
+                      e instanceof n &&
+                      e.getStyle() &&
+                      -1 !== e.getFeatures().getArray().lastIndexOf(t)
+                    )
+                      return void t.setStyle(e.getStyle());
                   }
                   var s = o(t);
                   t.setStyle(DS[s]), delete DS[s];
@@ -32465,7 +36085,13 @@
                     o.forEachFeatureAtPixel(
                       t.pixel,
                       function(t, e) {
-                        if(this.bp(t, e)) return (!n && !r) || y(s.getArray(), t) ? (i || r) && y(s.getArray(), t) && (u.push(t), this.Ep(t)) : (this.Sp(t, e), a.push(t)), !this.gp;
+                        if(this.bp(t, e))
+                          return (
+                            (!n && !r) || y(s.getArray(), t)
+                              ? (i || r) && y(s.getArray(), t) && (u.push(t), this.Ep(t))
+                              : (this.Sp(t, e), a.push(t)),
+                            !this.gp
+                          );
                       }.bind(this),
                       { layerFilter: this.Mp, hitTolerance: this.xp }
                     );
@@ -32490,7 +36116,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -32570,7 +36197,10 @@
                 }),
                 (n.prototype.handleEvent = function(n) {
                   var i = this.snapTo(n.pixel, n.coordinate, n.map);
-                  return i && ((n.coordinate = i.vertex.slice(0, 2)), (n.pixel = i.vertexPixel)), t.prototype.handleEvent.call(this, n);
+                  return (
+                    i && ((n.coordinate = i.vertex.slice(0, 2)), (n.pixel = i.vertexPixel)),
+                    t.prototype.handleEvent.call(this, n)
+                  );
                 }),
                 (n.prototype.np = function(t) {
                   var n = BS(t);
@@ -32612,11 +36242,16 @@
                   i && (r.forEach(H), (r.length = 0), e.forEach(this.Xp.bind(this))),
                     t.prototype.setMap.call(this, n),
                     n &&
-                      (this.Re ? r.push($(this.Re, ot, this.np, this), $(this.Re, st, this.ip, this)) : this._v && r.push($(this._v, Qv, this.np, this), $(this._v, id, this.ip, this)),
+                      (this.Re
+                        ? r.push($(this.Re, ot, this.np, this), $(this.Re, st, this.ip, this))
+                        : this._v && r.push($(this._v, Qv, this.np, this), $(this._v, id, this.ip, this)),
                       e.forEach(this.Bp.bind(this)));
                 }),
                 (n.prototype.snapTo = function(t, n, i) {
-                  var r = yn([i.getCoordinateFromPixel([t[0] - this.fd, t[1] + this.fd]), i.getCoordinateFromPixel([t[0] + this.fd, t[1] - this.fd])]),
+                  var r = yn([
+                      i.getCoordinateFromPixel([t[0] - this.fd, t[1] + this.fd]),
+                      i.getCoordinateFromPixel([t[0] + this.fd, t[1] - this.fd])
+                    ]),
                     e = this.Gd.getInExtent(r),
                     o = e.length;
                   if(0 === o) return null;
@@ -32689,7 +36324,8 @@
                   for(var i = n.getCoordinates(), r = 0, e = i.length - 1; r < e; ++r) t.push(i.slice(r, r + 2));
                 }),
                 (n.prototype.Gp = function(t, n) {
-                  for(var i = n.getCoordinates(), r = 0, e = i.length; r < e; ++r) for (var o = i[r], s = 0, u = o.length - 1; s < u; ++s) t.push(o.slice(s, s + 2));
+                  for(var i = n.getCoordinates(), r = 0, e = i.length; r < e; ++r)
+                    for(var o = i[r], s = 0, u = o.length - 1; s < u; ++s) t.push(o.slice(s, s + 2));
                 }),
                 (n.prototype.Fp = function(t, n) {
                   n.getCoordinates().forEach(function (n) {
@@ -32698,13 +36334,15 @@
                 }),
                 (n.prototype.Dp = function(t, n) {
                   for(var i = n.getCoordinates(), r = 0, e = i.length; r < e; ++r)
-                    for(var o = i[r], s = 0, u = o.length; s < u; ++s) for (var a = o[s], h = 0, f = a.length - 1; h < f; ++h) t.push(a.slice(h, h + 2));
+                    for(var o = i[r], s = 0, u = o.length; s < u; ++s)
+                      for(var a = o[s], h = 0, f = a.length - 1; h < f; ++h) t.push(a.slice(h, h + 2));
                 }),
                 (n.prototype.Lp = function(t, n) {
                   t.push([n.getCoordinates()]);
                 }),
                 (n.prototype.Rp = function(t, n) {
-                  for(var i = n.getCoordinates(), r = 0, e = i.length; r < e; ++r) for (var o = i[r], s = 0, u = o.length - 1; s < u; ++s) t.push(o.slice(s, s + 2));
+                  for(var i = n.getCoordinates(), r = 0, e = i.length; r < e; ++r)
+                    for(var o = i[r], s = 0, u = o.length - 1; s < u; ++s) t.push(o.slice(s, s + 2));
                 }),
                 n
               );
@@ -32722,7 +36360,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -32744,7 +36383,15 @@
                 var i,
                   r = this,
                   e = n || {};
-                if(((r = t.call(this, e) || this).on, r.once, r.un, (r.Yp = null), (r.Zp = null), (r.Re = void 0 !== e.features ? e.features : null), e.layers && !r.Re))
+                if(
+                  ((r = t.call(this, e) || this).on,
+                  r.once,
+                  r.un,
+                  (r.Yp = null),
+                  (r.Zp = null),
+                  (r.Re = void 0 !== e.features ? e.features : null),
+                  e.layers && !r.Re)
+                )
                   if('function' == typeof e.layers) i = e.layers;
                   else {
                     var o = e.layers;
@@ -32799,7 +36446,8 @@
                 (n.prototype.handleMoveEvent = function(t) {
                   var n = t.map.getViewport();
                   this.Hp(t.pixel, t.map)
-                    ? (n.classList.remove(this.Yp ? 'ol-grab' : 'ol-grabbing'), n.classList.add(this.Yp ? 'ol-grabbing' : 'ol-grab'))
+                    ? (n.classList.remove(this.Yp ? 'ol-grab' : 'ol-grabbing'),
+                      n.classList.add(this.Yp ? 'ol-grabbing' : 'ol-grab'))
                     : n.classList.remove('ol-grab', 'ol-grabbing');
                 }),
                 (n.prototype.Hp = function(t, n) {
@@ -32855,7 +36503,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -32929,7 +36578,8 @@
                 return { hasZ: i.hasZ, hasM: i.hasM, paths: t.getCoordinates() };
               },
               MultiPolygon: function(t, n) {
-                for(var i = eO(t), r = t.getCoordinates(!1), e = [], o = 0; o < r.length; o++) for (var s = r[o].length - 1; s >= 0; s--) e.push(r[o][s]);
+                for(var i = eO(t), r = t.getCoordinates(!1), e = [], o = 0; o < r.length; o++)
+                  for(var s = r[o].length - 1; s >= 0; s--) e.push(r[o][s]);
                 return { hasZ: i.hasZ, hasM: i.hasM, rings: e };
               }
             };
@@ -32950,7 +36600,9 @@
                     o = [],
                     s = [];
                   for(i = 0, r = t.length; i < r; ++i) {
-                    (e.length = 0), oe(e, 0, t[i], n.length), Fe(e, 0, e.length, n.length) ? o.push([t[i]]) : s.push(t[i]);
+                    (e.length = 0),
+                      oe(e, 0, t[i], n.length),
+                      Fe(e, 0, e.length, n.length) ? o.push([t[i]]) : s.push(t[i]);
                   }
                   for(; s.length; ) {
                     var u = s.shift(),
@@ -32966,7 +36618,9 @@
                   }
                   return o;
                 })(o.rings, s);
-              1 === u.length ? ((e = 'Polygon'), (t = A({}, t, (((i = {}).rings = u[0]), i)))) : ((e = 'MultiPolygon'), (t = A({}, t, (((r = {}).rings = u), r))));
+              1 === u.length
+                ? ((e = 'Polygon'), (t = A({}, t, (((i = {}).rings = u[0]), i))))
+                : ((e = 'MultiPolygon'), (t = A({}, t, (((r = {}).rings = u), r))));
             }
             return Eg((0, tO[e])(t), !1, n);
           }
@@ -33003,7 +36657,8 @@
                 (n.prototype.readFeaturesFromObject = function(t, n) {
                   var i = n || {};
                   if(t.features) {
-                    for(var r = [], e = t.features, o = 0, s = e.length; o < s; ++o) r.push(this.readFeatureFromObject(e[o], i, t.objectIdFieldName));
+                    for(var r = [], e = t.features, o = 0, s = e.length; o < s; ++o)
+                      r.push(this.readFeatureFromObject(e[o], i, t.objectIdFieldName));
                     return r;
                   }
                   return [this.readFeatureFromObject(t, i)];
@@ -33012,7 +36667,9 @@
                   return iO(t, n);
                 }),
                 (n.prototype.readProjectionFromObject = function(t) {
-                  return t.spatialReference && void 0 !== t.spatialReference.wkid ? yr('EPSG:' + t.spatialReference.wkid) : null;
+                  return t.spatialReference && void 0 !== t.spatialReference.wkid
+                    ? yr('EPSG:' + t.spatialReference.wkid)
+                    : null;
                 }),
                 (n.prototype.writeGeometryObject = function(t, n) {
                   return oO(t, this.adaptOptions(n));
@@ -33026,7 +36683,8 @@
                   if(e) {
                     i.geometry = oO(e, n);
                     var o = n && (n.dataProjection || n.featureProjection);
-                    o && (i.geometry.spatialReference = { wkid: Number(yr(o).getCode().split(':').pop()) }), delete r[t.getGeometryName()];
+                    o && (i.geometry.spatialReference = { wkid: Number(yr(o).getCode().split(':').pop()) }),
+                      delete r[t.getGeometryName()];
                   }
                   return k(r) ? (i.attributes = {}) : (i.attributes = r), i;
                 }),
@@ -33051,7 +36709,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -33096,7 +36755,8 @@
                   return [];
                 }),
                 (n.prototype.readFeaturesFromDocument = function(t, n) {
-                  for(var i = [], r = t.firstChild; r; r = r.nextSibling) r.nodeType == Node.ELEMENT_NODE && g(i, this.readFeaturesFromNode(r, n));
+                  for(var i = [], r = t.firstChild; r; r = r.nextSibling)
+                    r.nodeType == Node.ELEMENT_NODE && g(i, this.readFeaturesFromNode(r, n));
                   return i;
                 }),
                 (n.prototype.readFeaturesFromNode = function(t, n) {
@@ -33171,7 +36831,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -33241,7 +36902,10 @@
                       var g = {};
                       for(u = 0, a = m.length; u < a; ++u) {
                         (-1 === m[u].indexOf(':') ? 'p0' : m[u].split(':')[0]) === w &&
-                          (g[m[u].split(':').pop()] = 'featureMembers' == i ? Hf(this.readFeatureElement, this) : Jf(this.readFeatureElement, this));
+                          (g[m[u].split(':').pop()] =
+                            'featureMembers' == i
+                              ? Hf(this.readFeatureElement, this)
+                              : Jf(this.readFeatureElement, this));
                       }
                       y[s[w]] = g;
                     }
@@ -33251,7 +36915,11 @@
                 }),
                 (n.prototype.readGeometryOrExtent = function(t, n) {
                   var i = n[0];
-                  return (i.srsName = t.firstElementChild.getAttribute('srsName')), (i.srsDimension = t.firstElementChild.getAttribute('srsDimension')), ac(null, this.GEOMETRY_PARSERS, t, n, this);
+                  return (
+                    (i.srsName = t.firstElementChild.getAttribute('srsName')),
+                    (i.srsDimension = t.firstElementChild.getAttribute('srsDimension')),
+                    ac(null, this.GEOMETRY_PARSERS, t, n, this)
+                  );
                 }),
                 (n.prototype.readExtentElement = function(t, n) {
                   var i = n[0],
@@ -33267,7 +36935,8 @@
                   for(var r, e = {}, o = t.firstElementChild; o; o = o.nextElementSibling) {
                     var s = void 0,
                       u = o.localName;
-                    0 === o.childNodes.length || (1 === o.childNodes.length && (3 === o.firstChild.nodeType || 4 === o.firstChild.nodeType))
+                    0 === o.childNodes.length ||
+                    (1 === o.childNodes.length && (3 === o.firstChild.nodeType || 4 === o.firstChild.nodeType))
                       ? ((s = Vf(o, !1)), cO.test(s) && (s = void 0))
                       : (i && (s = 'boundedBy' === u ? this.readExtentElement(o, n) : this.readGeometryElement(o, n)),
                         s ? 'boundedBy' !== u && (r = u) : (s = this.readFeatureElementInternal(o, n, !1)));
@@ -33467,7 +37136,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -33485,8 +37155,12 @@
                 var i = this,
                   r = n || {};
                 return (
-                  ((i = t.call(this, r) || this).FEATURE_COLLECTION_PARSERS[fO].featureMember = Hf(i.readFeaturesInternal)),
-                  (i.schemaLocation = r.schemaLocation ? r.schemaLocation : 'http://www.opengis.net/gml http://schemas.opengis.net/gml/2.1.2/feature.xsd'),
+                  ((i = t.call(this, r) || this).FEATURE_COLLECTION_PARSERS[fO].featureMember = Hf(
+                    i.readFeaturesInternal
+                  )),
+                  (i.schemaLocation = r.schemaLocation
+                    ? r.schemaLocation
+                    : 'http://www.opengis.net/gml http://schemas.opengis.net/gml/2.1.2/feature.xsd'),
                   i
                 );
               }
@@ -33564,7 +37238,10 @@
                 }),
                 (n.prototype.writeCurveOrLineString = function(t, n, i) {
                   var r = i[i.length - 1].srsName;
-                  if(('LineStringSegment' !== t.nodeName && r && t.setAttribute('srsName', r), 'LineString' === t.nodeName || 'LineStringSegment' === t.nodeName)) {
+                  if(
+                    ('LineStringSegment' !== t.nodeName && r && t.setAttribute('srsName', r),
+                    'LineString' === t.nodeName || 'LineStringSegment' === t.nodeName)
+                  ) {
                     var e = this.iy(t.namespaceURI);
                     t.appendChild(e), this.ey(e, n, i);
                   } else if('Curve' === t.nodeName) {
@@ -33583,20 +37260,40 @@
                     s = r.curve;
                   o && t.setAttribute('srsName', o);
                   var u = n.getLineStrings();
-                  fc({ node: t, hasZ: e, srsName: o, curve: s }, this.LINESTRINGORCURVEMEMBER_SERIALIZERS, this.sy, u, i, void 0, this);
+                  fc(
+                    { node: t, hasZ: e, srsName: o, curve: s },
+                    this.LINESTRINGORCURVEMEMBER_SERIALIZERS,
+                    this.sy,
+                    u,
+                    i,
+                    void 0,
+                    this
+                  );
                 }),
                 (n.prototype.writeGeometryElement = function(t, n, i) {
                   var r,
                     e = i[i.length - 1],
                     o = A({}, e);
-                  (o.node = t), (r = Array.isArray(n) ? Tg(n, e) : Eg(n, !0, e)), fc(o, this.GEOMETRY_SERIALIZERS, this.ny, [r], i, void 0, this);
+                  (o.node = t),
+                    (r = Array.isArray(n) ? Tg(n, e) : Eg(n, !0, e)),
+                    fc(o, this.GEOMETRY_SERIALIZERS, this.ny, [r], i, void 0, this);
                 }),
                 (n.prototype.iy = function(t) {
                   var n = Xf(t, 'coordinates');
                   return n.setAttribute('decimal', '.'), n.setAttribute('cs', ','), n.setAttribute('ts', ' '), n;
                 }),
                 (n.prototype.ey = function(t, n, i) {
-                  for(var r = i[i.length - 1], e = r.hasZ, o = r.srsName, s = n.getCoordinates(), u = s.length, a = new Array(u), h = 0; h < u; ++h) {
+                  for(
+                    var r = i[i.length - 1],
+                      e = r.hasZ,
+                      o = r.srsName,
+                      s = n.getCoordinates(),
+                      u = s.length,
+                      a = new Array(u),
+                      h = 0;
+                    h < u;
+                    ++h
+                  ) {
                     var f = s[h];
                     a[h] = this.uy(f, o, e);
                   }
@@ -33610,7 +37307,10 @@
                   var r = i[i.length - 1],
                     e = r.hasZ,
                     o = r.srsName;
-                  if(('PolygonPatch' !== t.nodeName && o && t.setAttribute('srsName', o), 'Polygon' === t.nodeName || 'PolygonPatch' === t.nodeName)) {
+                  if(
+                    ('PolygonPatch' !== t.nodeName && o && t.setAttribute('srsName', o),
+                    'Polygon' === t.nodeName || 'PolygonPatch' === t.nodeName)
+                  ) {
                     var s = n.getLinearRings();
                     fc({ node: t, hasZ: e, srsName: o }, this.RING_SERIALIZERS, this.hy, s, i, void 0, this);
                   } else if('Surface' === t.nodeName) {
@@ -33622,7 +37322,10 @@
                   var r = n[n.length - 1],
                     e = r.node,
                     o = r.exteriorWritten;
-                  return void 0 === o && (r.exteriorWritten = !0), Xf(e.namespaceURI, void 0 !== o ? 'innerBoundaryIs' : 'outerBoundaryIs');
+                  return (
+                    void 0 === o && (r.exteriorWritten = !0),
+                    Xf(e.namespaceURI, void 0 !== o ? 'innerBoundaryIs' : 'outerBoundaryIs')
+                  );
                 }),
                 (n.prototype.ly = function(t, n, i) {
                   var r = Xf(t.namespaceURI, 'PolygonPatch');
@@ -33655,7 +37358,15 @@
                     o = r.srsName;
                   o && t.setAttribute('srsName', o);
                   var s = n.getPoints();
-                  fc({ node: t, hasZ: e, srsName: o }, this.POINTMEMBER_SERIALIZERS, rc('pointMember'), s, i, void 0, this);
+                  fc(
+                    { node: t, hasZ: e, srsName: o },
+                    this.POINTMEMBER_SERIALIZERS,
+                    rc('pointMember'),
+                    s,
+                    i,
+                    void 0,
+                    this
+                  );
                 }),
                 (n.prototype.writePointMember = function(t, n, i) {
                   var r = Xf(t.namespaceURI, 'Point');
@@ -33674,7 +37385,15 @@
                     s = r.surface;
                   o && t.setAttribute('srsName', o);
                   var u = n.getPolygons();
-                  fc({ node: t, hasZ: e, srsName: o, surface: s }, this.SURFACEORPOLYGONMEMBER_SERIALIZERS, this.sy, u, i, void 0, this);
+                  fc(
+                    { node: t, hasZ: e, srsName: o, surface: s },
+                    this.SURFACEORPOLYGONMEMBER_SERIALIZERS,
+                    this.sy,
+                    u,
+                    i,
+                    void 0,
+                    this
+                  );
                 }),
                 (n.prototype.writeSurfaceOrPolygonMember = function(t, n, i) {
                   var r = this.ny(n, i);
@@ -33769,7 +37488,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -33791,7 +37511,9 @@
                   (i.py = void 0 !== r.curve && r.curve),
                   (i.yy = void 0 === r.multiCurve || r.multiCurve),
                   (i.my = void 0 === r.multiSurface || r.multiSurface),
-                  (i.schemaLocation = r.schemaLocation ? r.schemaLocation : 'http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd'),
+                  (i.schemaLocation = r.schemaLocation
+                    ? r.schemaLocation
+                    : 'http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd'),
                   (i.hasZ = void 0 !== r.hasZ && r.hasZ),
                   i
                 );
@@ -33803,7 +37525,8 @@
                   return i ? new rg(i) : void 0;
                 }),
                 (n.prototype.readFlatCurveRing = function(t, n) {
-                  for(var i = ac([], this.MULTICURVE_PARSERS, t, n, this), r = [], e = 0, o = i.length; e < o; ++e) g(r, i[e].getFlatCoordinates());
+                  for(var i = ac([], this.MULTICURVE_PARSERS, t, n, this), r = [], e = 0, o = i.length; e < o; ++e)
+                    g(r, i[e].getFlatCoordinates());
                   return r;
                 }),
                 (n.prototype.readMultiSurface = function(t, n) {
@@ -33856,7 +37579,12 @@
                   return On(i[1][0], i[1][1], i[2][0], i[2][1]);
                 }),
                 (n.prototype.readFlatPos = function(t, n) {
-                  for(var i, r = Vf(t, !1), e = /^\s*([+\-]?\d*\.?\d+(?:[eE][+\-]?\d+)?)\s*/, o = []; (i = e.exec(r)); ) o.push(parseFloat(i[1])), (r = r.substr(i[0].length));
+                  for(
+                    var i, r = Vf(t, !1), e = /^\s*([+\-]?\d*\.?\d+(?:[eE][+\-]?\d+)?)\s*/, o = [];
+                    (i = e.exec(r));
+
+                  )
+                    o.push(parseFloat(i[1])), (r = r.substr(i[0].length));
                   if('' === r) {
                     var s = n[0].srsName,
                       u = 'enu';
@@ -33894,7 +37622,10 @@
                     ? (c = bO(t.parentNode.getAttribute('srsDimension')))
                     : o && (c = bO(o));
                   for(var l = [], v = 0, d = f.length; v < d; v += c)
-                    (u = parseFloat(f[v])), (a = parseFloat(f[v + 1])), (h = 3 === c ? parseFloat(f[v + 2]) : 0), 'en' === s.substr(0, 2) ? l.push(u, a, h) : l.push(a, u, h);
+                    (u = parseFloat(f[v])),
+                      (a = parseFloat(f[v + 1])),
+                      (h = 3 === c ? parseFloat(f[v + 2]) : 0),
+                      'en' === s.substr(0, 2) ? l.push(u, a, h) : l.push(a, u, h);
                   return l;
                 }),
                 (n.prototype.wy = function(t, n, i) {
@@ -33907,7 +37638,8 @@
                   s && (u = yr(s).getAxisOrientation());
                   var a,
                     h = n.getCoordinates();
-                  ((a = 'en' === u.substr(0, 2) ? h[0] + ' ' + h[1] : h[1] + ' ' + h[0]), e) && (a += ' ' + (h[2] || 0));
+                  ((a = 'en' === u.substr(0, 2) ? h[0] + ' ' + h[1] : h[1] + ' ' + h[0]), e) &&
+                    (a += ' ' + (h[2] || 0));
                   EO(t, a);
                 }),
                 (n.prototype.uy = function(t, n, i) {
@@ -33922,7 +37654,8 @@
                     e = r.hasZ,
                     o = e ? '3' : '2';
                   t.setAttribute('srsDimension', o);
-                  for(var s, u = r.srsName, a = n.getCoordinates(), h = a.length, f = new Array(h), c = 0; c < h; ++c) (s = a[c]), (f[c] = this.uy(s, u, e));
+                  for(var s, u = r.srsName, a = n.getCoordinates(), h = a.length, f = new Array(h), c = 0; c < h; ++c)
+                    (s = a[c]), (f[c] = this.uy(s, u, e));
                   EO(t, f.join(' '));
                 }),
                 (n.prototype.writePoint = function(t, n, i) {
@@ -33947,13 +37680,18 @@
                   var r = n[n.length - 1],
                     e = r.node,
                     o = r.exteriorWritten;
-                  return void 0 === o && (r.exteriorWritten = !0), Xf(e.namespaceURI, void 0 !== o ? 'interior' : 'exterior');
+                  return (
+                    void 0 === o && (r.exteriorWritten = !0), Xf(e.namespaceURI, void 0 !== o ? 'interior' : 'exterior')
+                  );
                 }),
                 (n.prototype.writeSurfaceOrPolygon = function(t, n, i) {
                   var r = i[i.length - 1],
                     e = r.hasZ,
                     o = r.srsName;
-                  if(('PolygonPatch' !== t.nodeName && o && t.setAttribute('srsName', o), 'Polygon' === t.nodeName || 'PolygonPatch' === t.nodeName)) {
+                  if(
+                    ('PolygonPatch' !== t.nodeName && o && t.setAttribute('srsName', o),
+                    'Polygon' === t.nodeName || 'PolygonPatch' === t.nodeName)
+                  ) {
                     var s = n.getLinearRings();
                     fc({ node: t, hasZ: e, srsName: o }, this.RING_SERIALIZERS, this.hy, s, i, void 0, this);
                   } else if('Surface' === t.nodeName) {
@@ -33963,7 +37701,10 @@
                 }),
                 (n.prototype.writeCurveOrLineString = function(t, n, i) {
                   var r = i[i.length - 1].srsName;
-                  if(('LineStringSegment' !== t.nodeName && r && t.setAttribute('srsName', r), 'LineString' === t.nodeName || 'LineStringSegment' === t.nodeName)) {
+                  if(
+                    ('LineStringSegment' !== t.nodeName && r && t.setAttribute('srsName', r),
+                    'LineString' === t.nodeName || 'LineStringSegment' === t.nodeName)
+                  ) {
                     var e = Xf(t.namespaceURI, 'posList');
                     t.appendChild(e), this.gy(e, n, i);
                   } else if('Curve' === t.nodeName) {
@@ -33978,7 +37719,15 @@
                     s = r.surface;
                   o && t.setAttribute('srsName', o);
                   var u = n.getPolygons();
-                  fc({ node: t, hasZ: e, srsName: o, surface: s }, this.SURFACEORPOLYGONMEMBER_SERIALIZERS, this.sy, u, i, void 0, this);
+                  fc(
+                    { node: t, hasZ: e, srsName: o, surface: s },
+                    this.SURFACEORPOLYGONMEMBER_SERIALIZERS,
+                    this.sy,
+                    u,
+                    i,
+                    void 0,
+                    this
+                  );
                 }),
                 (n.prototype.writeMultiPoint = function(t, n, i) {
                   var r = i[i.length - 1],
@@ -33986,7 +37735,15 @@
                     o = r.hasZ;
                   e && t.setAttribute('srsName', e);
                   var s = n.getPoints();
-                  fc({ node: t, hasZ: o, srsName: e }, this.POINTMEMBER_SERIALIZERS, rc('pointMember'), s, i, void 0, this);
+                  fc(
+                    { node: t, hasZ: o, srsName: e },
+                    this.POINTMEMBER_SERIALIZERS,
+                    rc('pointMember'),
+                    s,
+                    i,
+                    void 0,
+                    this
+                  );
                 }),
                 (n.prototype.writeMultiCurveOrLineString = function(t, n, i) {
                   var r = i[i.length - 1],
@@ -33995,7 +37752,15 @@
                     s = r.curve;
                   o && t.setAttribute('srsName', o);
                   var u = n.getLineStrings();
-                  fc({ node: t, hasZ: e, srsName: o, curve: s }, this.LINESTRINGORCURVEMEMBER_SERIALIZERS, this.sy, u, i, void 0, this);
+                  fc(
+                    { node: t, hasZ: e, srsName: o, curve: s },
+                    this.LINESTRINGORCURVEMEMBER_SERIALIZERS,
+                    this.sy,
+                    u,
+                    i,
+                    void 0,
+                    this
+                  );
                 }),
                 (n.prototype.writeRing = function(t, n, i) {
                   var r = Xf(t.namespaceURI, 'LinearRing');
@@ -34025,7 +37790,9 @@
                   var r,
                     e = i[i.length - 1],
                     o = A({}, e);
-                  (o.node = t), (r = Array.isArray(n) ? Tg(n, e) : Eg(n, !0, e)), fc(o, this.GEOMETRY_SERIALIZERS, this.ny, [r], i, void 0, this);
+                  (o.node = t),
+                    (r = Array.isArray(n) ? Tg(n, e) : Eg(n, !0, e)),
+                    fc(o, this.GEOMETRY_SERIALIZERS, this.ny, [r], i, void 0, this);
                 }),
                 (n.prototype.writeFeatureElement = function(t, n, i) {
                   var r = n.getId();
@@ -34248,7 +38015,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -34259,7 +38027,12 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                return ((i = t.call(this, r) || this).schemaLocation = r.schemaLocation ? r.schemaLocation : i.namespace + ' http://schemas.opengis.net/gml/3.2.1/gml.xsd'), i;
+                return (
+                  ((i = t.call(this, r) || this).schemaLocation = r.schemaLocation
+                    ? r.schemaLocation
+                    : i.namespace + ' http://schemas.opengis.net/gml/3.2.1/gml.xsd'),
+                  i
+                );
               }
               return FO(n, t), n;
             })(LO);
@@ -34422,7 +38195,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -34514,7 +38288,11 @@
                   var i = Xf('http://www.topografix.com/GPX/1/1', 'gpx');
                   return (
                     i.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', Bf),
-                    i.setAttributeNS(Bf, 'xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd'),
+                    i.setAttributeNS(
+                      Bf,
+                      'xsi:schemaLocation',
+                      'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd'
+                    ),
                     i.setAttribute('version', '1.1'),
                     i.setAttribute('creator', 'OpenLayers'),
                     fc({ node: i }, WO, lj, t, [n]),
@@ -34625,7 +38403,26 @@
             }),
             uj = rc('trkpt'),
             aj = sc(UO, { trkpt: nc(xj) }),
-            hj = sc(UO, ['ele', 'time', 'magvar', 'geoidheight', 'name', 'cmt', 'desc', 'src', 'link', 'sym', 'type', 'fix', 'sat', 'hdop', 'vdop', 'pdop', 'ageofdgpsdata', 'dgpsid']),
+            hj = sc(UO, [
+              'ele',
+              'time',
+              'magvar',
+              'geoidheight',
+              'name',
+              'cmt',
+              'desc',
+              'src',
+              'link',
+              'sym',
+              'type',
+              'fix',
+              'sat',
+              'hdop',
+              'vdop',
+              'pdop',
+              'ageofdgpsdata',
+              'dgpsid'
+            ]),
             fj = sc(UO, {
               ele: nc(OO),
               time: nc(SO),
@@ -34665,8 +38462,15 @@
           function dj(t, n, i) {
             var r = Tt,
               e = 2;
-            if((t.hasZ && t.hasM ? ((r = Ct), (e = 4)) : t.hasZ ? ((r = At), (e = 3)) : t.hasM && ((r = Pt), (e = 3)), 4 !== e)) {
-              for(var o = 0, s = n.length / 4; o < s; o++) (n[o * e] = n[4 * o]), (n[o * e + 1] = n[4 * o + 1]), t.hasZ && (n[o * e + 2] = n[4 * o + 2]), t.hasM && (n[o * e + 2] = n[4 * o + 3]);
+            if(
+              (t.hasZ && t.hasM ? ((r = Ct), (e = 4)) : t.hasZ ? ((r = At), (e = 3)) : t.hasM && ((r = Pt), (e = 3)),
+              4 !== e)
+            ) {
+              for(var o = 0, s = n.length / 4; o < s; o++)
+                (n[o * e] = n[4 * o]),
+                  (n[o * e + 1] = n[4 * o + 1]),
+                  t.hasZ && (n[o * e + 2] = n[4 * o + 2]),
+                  t.hasM && (n[o * e + 2] = n[4 * o + 3]);
               if(((n.length = (n.length / 4) * e), i)) for(o = 0, s = i.length; o < s; o++) i[o] = (i[o] / 4) * e;
             }
             return r;
@@ -34734,7 +38538,11 @@
             var r = i[i.length - 1],
               e = r.node.namespaceURI,
               o = r.properties;
-            switch ((t.setAttributeNS(null, 'lat', String(n[1])), t.setAttributeNS(null, 'lon', String(n[0])), r.geometryLayout)) {
+            switch (
+              (t.setAttributeNS(null, 'lat', String(n[1])),
+              t.setAttributeNS(null, 'lon', String(n[0])),
+              r.geometryLayout)
+            ) {
               case Ct:
                 0 !== n[3] && (o.time = n[3]);
               case At:
@@ -34761,7 +38569,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -34844,7 +38653,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -34896,7 +38706,10 @@
                         b < c && (b = Date.UTC(a, h, f + 1, d, p, y)), u.push(b / 1e3), (c = b);
                       }
                     } else
-                      'H' == l.charAt(0) && ((v = Fj.exec(l)) ? ((f = parseInt(v[1], 10)), (h = parseInt(v[2], 10) - 1), (a = 2e3 + parseInt(v[3], 10))) : (v = Rj.exec(l)) && (s[v[1]] = v[2].trim()));
+                      'H' == l.charAt(0) &&
+                        ((v = Fj.exec(l))
+                          ? ((f = parseInt(v[1], 10)), (h = parseInt(v[2], 10) - 1), (a = 2e3 + parseInt(v[3], 10)))
+                          : (v = Rj.exec(l)) && (s[v[1]] = v[2].trim()));
                   }
                   if(0 === u.length) return null;
                   var x = new ng(u, e == Lj ? Pt : Ct),
@@ -34923,7 +38736,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -34931,7 +38745,13 @@
               };
             })(),
             Uj = ['http://www.google.com/kml/ext/2.2'],
-            Bj = [null, 'http://earth.google.com/kml/2.0', 'http://earth.google.com/kml/2.1', 'http://earth.google.com/kml/2.2', 'http://www.opengis.net/kml/2.2'],
+            Bj = [
+              null,
+              'http://earth.google.com/kml/2.0',
+              'http://earth.google.com/kml/2.1',
+              'http://earth.google.com/kml/2.2',
+              'http://www.opengis.net/kml/2.2'
+            ],
             Xj = { fraction: ev, pixels: ov, insetPixels: ov },
             Vj = sc(
               Bj,
@@ -34987,7 +38807,10 @@
                 if(!i) return;
                 var r = n[n.length - 1],
                   e = [parseFloat(i.west), parseFloat(i.south), parseFloat(i.east), parseFloat(i.north)];
-                (r.extent = e), (r.altitudeMode = i.altitudeMode), (r.minAltitude = parseFloat(i.minAltitude)), (r.maxAltitude = parseFloat(i.maxAltitude));
+                (r.extent = e),
+                  (r.altitudeMode = i.altitudeMode),
+                  (r.minAltitude = parseFloat(i.minAltitude)),
+                  (r.maxAltitude = parseFloat(i.maxAltitude));
               },
               Lod: function(t, n) {
                 var i = ac({}, YE, t, n);
@@ -35104,7 +38927,11 @@
                               u = 'Point' === c || 'MultiPoint' === c;
                             }
                         }
-                        u && ((a = o.get('name')), (u = u && !!a) && a.search(/&[^&]+;/) > -1 && (eE || (eE = document.createElement('textarea')), (eE.innerHTML = a), (a = eE.value)));
+                        u &&
+                          ((a = o.get('name')),
+                          (u = u && !!a) &&
+                            a.search(/&[^&]+;/) > -1 &&
+                            (eE || (eE = document.createElement('textarea')), (eE.innerHTML = a), (a = eE.value)));
                         var l = i;
                         if((t ? (l = t) : n && (l = hE(n, i, r)), u)) {
                           var v = (function (t, n) {
@@ -35126,7 +38953,13 @@
                                 a.setFill(a.getFill() || iE.getFill()),
                                 a.setStroke(a.getStroke() || tE))
                               : (a = iE.clone());
-                            return a.setText(n), a.setOffsetX(i[0]), a.setOffsetY(i[1]), a.setTextAlign(r), new Sv({ image: e, text: a });
+                            return (
+                              a.setText(n),
+                              a.setOffsetX(i[0]),
+                              a.setOffsetY(i[1]),
+                              a.setTextAlign(r),
+                              new Sv({ image: e, text: a })
+                            );
                           })(l[0], a);
                           return h.length > 0
                             ? (v.setGeometry(new Dg(h)),
@@ -35217,7 +39050,8 @@
                   }
               }),
               (n.prototype.readNameFromNode = function(t) {
-                for(var n = t.firstElementChild; n; n = n.nextElementSibling) if(y(Bj, n.namespaceURI) && 'name' == n.localName) return xO(n);
+                for(var n = t.firstElementChild; n; n = n.nextElementSibling)
+                  if(y(Bj, n.namespaceURI) && 'name' == n.localName) return xO(n);
                 for(n = t.firstElementChild; n; n = n.nextElementSibling) {
                   var i = n.localName;
                   if(y(Bj, n.namespaceURI) && ('Document' == i || 'Folder' == i || 'Placemark' == i || 'kml' == i)) {
@@ -35235,7 +39069,8 @@
                 return n;
               }),
               (n.prototype.readNetworkLinksFromDocument = function(t) {
-                for(var n = [], i = t.firstChild; i; i = i.nextSibling) i.nodeType == Node.ELEMENT_NODE && g(n, this.readNetworkLinksFromNode(i));
+                for(var n = [], i = t.firstChild; i; i = i.nextSibling)
+                  i.nodeType == Node.ELEMENT_NODE && g(n, this.readNetworkLinksFromNode(i));
                 return n;
               }),
               (n.prototype.readNetworkLinksFromNode = function(t) {
@@ -35246,7 +39081,9 @@
                   }
                 for(i = t.firstElementChild; i; i = i.nextElementSibling) {
                   var e = i.localName;
-                  !y(Bj, i.namespaceURI) || ('Document' != e && 'Folder' != e && 'kml' != e) || g(n, this.readNetworkLinksFromNode(i));
+                  !y(Bj, i.namespaceURI) ||
+                    ('Document' != e && 'Folder' != e && 'kml' != e) ||
+                    g(n, this.readNetworkLinksFromNode(i));
                 }
                 return n;
               }),
@@ -35259,7 +39096,8 @@
                 return n;
               }),
               (n.prototype.readRegionFromDocument = function(t) {
-                for(var n = [], i = t.firstChild; i; i = i.nextSibling) i.nodeType == Node.ELEMENT_NODE && g(n, this.readRegionFromNode(i));
+                for(var n = [], i = t.firstChild; i; i = i.nextSibling)
+                  i.nodeType == Node.ELEMENT_NODE && g(n, this.readRegionFromNode(i));
                 return n;
               }),
               (n.prototype.readRegionFromNode = function(t) {
@@ -35270,7 +39108,9 @@
                   }
                 for(i = t.firstElementChild; i; i = i.nextElementSibling) {
                   var e = i.localName;
-                  !y(Bj, i.namespaceURI) || ('Document' != e && 'Folder' != e && 'kml' != e) || g(n, this.readRegionFromNode(i));
+                  !y(Bj, i.namespaceURI) ||
+                    ('Document' != e && 'Folder' != e && 'kml' != e) ||
+                    g(n, this.readRegionFromNode(i));
                 }
                 return n;
               }),
@@ -35280,7 +39120,11 @@
                   r = 'http://www.w3.org/2000/xmlns/';
                 i.setAttributeNS(r, 'xmlns:gx', Uj[0]),
                   i.setAttributeNS(r, 'xmlns:xsi', Bf),
-                  i.setAttributeNS(Bf, 'xsi:schemaLocation', 'http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd');
+                  i.setAttributeNS(
+                    Bf,
+                    'xsi:schemaLocation',
+                    'http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd'
+                  );
                 var e = { node: i },
                   o = {};
                 t.length > 1 ? (o.Document = t) : 1 == t.length && (o.Placemark = t[0]);
@@ -35299,14 +39143,25 @@
               i = /^\s*#?\s*([0-9A-Fa-f]{8})\s*$/.exec(n);
             if(i) {
               var r = i[1];
-              return [parseInt(r.substr(6, 2), 16), parseInt(r.substr(4, 2), 16), parseInt(r.substr(2, 2), 16), parseInt(r.substr(0, 2), 16) / 255];
+              return [
+                parseInt(r.substr(6, 2), 16),
+                parseInt(r.substr(4, 2), 16),
+                parseInt(r.substr(2, 2), 16),
+                parseInt(r.substr(0, 2), 16) / 255
+              ];
             }
           }
           function cE(t) {
             var n = Vf(t, !1),
               i = [];
             n = n.replace(/\s*,\s*/g, ',');
-            for(var r, e = /^\s*([+\-]?\d*\.?\d+(?:e[+\-]?\d+)?),([+\-]?\d*\.?\d+(?:e[+\-]?\d+)?)(?:\s+|,|$)(?:([+\-]?\d*\.?\d+(?:e[+\-]?\d+)?)(?:\s+|$))?\s*/i; (r = e.exec(n)); ) {
+            for(
+              var r,
+                e =
+                  /^\s*([+\-]?\d*\.?\d+(?:e[+\-]?\d+)?),([+\-]?\d*\.?\d+(?:e[+\-]?\d+)?)(?:\s+|,|$)(?:([+\-]?\d*\.?\d+(?:e[+\-]?\d+)?)(?:\s+|$))?\s*/i;
+              (r = e.exec(n));
+
+            ) {
               var o = parseFloat(r[1]),
                 s = parseFloat(r[2]),
                 u = r[3] ? parseFloat(r[3]) : 0;
@@ -35391,7 +39246,10 @@
               coord: function(t, n) {
                 var i = n[n.length - 1].coordinates,
                   r = Vf(t, !1),
-                  e = /^\s*([+\-]?\d+(?:\.\d*)?(?:e[+\-]?\d*)?)\s+([+\-]?\d+(?:\.\d*)?(?:e[+\-]?\d*)?)\s+([+\-]?\d+(?:\.\d*)?(?:e[+\-]?\d*)?)\s*$/i.exec(r);
+                  e =
+                    /^\s*([+\-]?\d+(?:\.\d*)?(?:e[+\-]?\d*)?)\s+([+\-]?\d+(?:\.\d*)?(?:e[+\-]?\d*)?)\s+([+\-]?\d+(?:\.\d*)?(?:e[+\-]?\d*)?)\s*$/i.exec(
+                      r
+                    );
                 if(e) {
                   var o = parseFloat(e[1]),
                     s = parseFloat(e[2]),
@@ -35404,7 +39262,8 @@
           function OE(t, n) {
             var i = ac({ coordinates: [], whens: [] }, SE, t, n);
             if(i) {
-              for(var r = [], e = i.coordinates, o = i.whens, s = 0, u = Math.min(e.length, o.length); s < u; ++s) 3 == e[s].length && r.push(e[s][0], e[s][1], e[s][2], o[s]);
+              for(var r = [], e = i.coordinates, o = i.whens, s = 0, u = Math.min(e.length, o.length); s < u; ++s)
+                3 == e[s].length && r.push(e[s][0], e[s][1], e[s][2], o[s]);
               return new ng(r, Ct);
             }
           }
@@ -35455,7 +39314,14 @@
                 (a = f.getLayout()), (h = f.getFlatCoordinates());
                 for(s = 1, u = r.length; s < u; ++s) g(h, r[s].getFlatCoordinates());
                 GE((i = new Kw(h, a)), r);
-              } else 'LineString' == o ? GE((i = new rg(r)), r) : 'Polygon' == o ? GE((i = new sg(r)), r) : 'GeometryCollection' == o ? (i = new Dg(r)) : St(!1, 37);
+              } else
+                'LineString' == o
+                  ? GE((i = new rg(r)), r)
+                  : 'Polygon' == o
+                  ? GE((i = new sg(r)), r)
+                  : 'GeometryCollection' == o
+                  ? (i = new Dg(r))
+                  : St(!1, 37);
             } else i = new Dg(r);
             return i;
           }
@@ -35510,7 +39376,11 @@
                 v
                   ? ((e = [v.x, v.y]), (o = v.xunits), (s = v.yunits), (l = v.origin))
                   : /^http:\/\/maps\.(?:google|gstatic)\.com\//.test(r) &&
-                    (/pushpin/.test(r) ? ((e = jj), (o = Ej), (s = Tj)) : /arrow-reverse/.test(r) ? ((e = [54, 42]), (o = Ej), (s = Tj)) : /paddle/.test(r) && ((e = [32, 1]), (o = Ej), (s = Tj)));
+                    (/pushpin/.test(r)
+                      ? ((e = jj), (o = Ej), (s = Tj))
+                      : /arrow-reverse/.test(r)
+                      ? ((e = [54, 42]), (o = Ej), (s = Tj))
+                      : /paddle/.test(r) && ((e = [32, 1]), (o = Ej), (s = Tj)));
                 var d,
                   p = a.x,
                   y = a.y;
@@ -35660,7 +39530,12 @@
             (i = !1), (r = !1), (e = !1);
             for(var h = 0; h < o; ++h) {
               var f = n[h];
-              (s[h] = f.get('extrude')), (u[h] = f.get('tessellate')), (a[h] = f.get('altitudeMode')), (i = i || void 0 !== s[h]), (r = r || void 0 !== u[h]), (e = e || a[h]);
+              (s[h] = f.get('extrude')),
+                (u[h] = f.get('tessellate')),
+                (a[h] = f.get('altitudeMode')),
+                (i = i || void 0 !== s[h]),
+                (r = r || void 0 !== u[h]),
+                (e = e || a[h]);
             }
             i && t.set('extrude', s), r && t.set('tessellate', u), e && t.set('altitudeMode', a);
           }
@@ -35728,7 +39603,8 @@
               var r = { node: t },
                 e = n.value;
               'object' == typeof e
-                ? (null !== e && e.displayName && fc(r, HE, ec, [e.displayName], i, ['displayName']), null !== e && e.value && fc(r, HE, ec, [e.value], i, ['value']))
+                ? (null !== e && e.displayName && fc(r, HE, ec, [e.displayName], i, ['displayName']),
+                  null !== e && e.value && fc(r, HE, ec, [e.value], i, ['value']))
                 : fc(r, HE, ec, [e], i, ['value']);
             }),
             value: nc(function (t, n) {
@@ -35760,7 +39636,10 @@
               color: nc(KE),
               heading: nc(OO),
               hotSpot: nc(function (t, n) {
-                t.setAttribute('x', String(n.x)), t.setAttribute('y', String(n.y)), t.setAttribute('xunits', n.xunits), t.setAttribute('yunits', n.yunits);
+                t.setAttribute('x', String(n.x)),
+                  t.setAttribute('y', String(n.y)),
+                  t.setAttribute('xunits', n.xunits),
+                  t.setAttribute('yunits', n.yunits);
               }),
               scale: nc(IT)
             });
@@ -35820,7 +39699,8 @@
           }
           var bT = sc(Bj, {
               ExtendedData: nc(function (t, n, i) {
-                for(var r = { node: t }, e = n.names, o = n.values, s = e.length, u = 0; u < s; u++) fc(r, HE, tT, [{ name: e[u], value: o[u] }], i);
+                for(var r = { node: t }, e = n.names, o = n.values, s = e.length, u = 0; u < s; u++)
+                  fc(r, HE, tT, [{ name: e[u], value: o[u] }], i);
               }),
               MultiGeometry: nc(mT),
               LineString: nc(jT),
@@ -35841,7 +39721,8 @@
                 }
                 if(n.polyStyles.length) {
                   var u;
-                  (u = n.polyStyles[0].getStroke()) && !e.LineStyle && (e.LineStyle = u), (e.PolyStyle = n.polyStyles[0]);
+                  (u = n.polyStyles[0].getStroke()) && !e.LineStyle && (e.LineStyle = u),
+                    (e.PolyStyle = n.polyStyles[0]);
                 }
                 var a = i[i.length - 1].node,
                   h = NT[a.namespaceURI],
@@ -35999,7 +39880,10 @@
                   (a.w = s[0]), (a.h = s[1]);
                   var h = n.getAnchor(),
                     f = n.getOrigin();
-                  if((f && u && 0 !== f[0] && f[1] !== s[1] && ((a.x = f[0]), (a.y = u[1] - (f[1] + s[1]))), h && (h[0] !== s[0] / 2 || h[1] !== s[1] / 2))) {
+                  if(
+                    (f && u && 0 !== f[0] && f[1] !== s[1] && ((a.x = f[0]), (a.y = u[1] - (f[1] + s[1]))),
+                    h && (h[0] !== s[0] / 2 || h[1] !== s[1] / 2))
+                  ) {
                     var c = { x: h[0], xunits: ov, y: s[1] - h[1], yunits: ov };
                     e.hotSpot = c;
                   }
@@ -36062,7 +39946,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36111,7 +39996,11 @@
                         g(s, r.nodes[o.ndrefs[u]]);
                       }
                       var h = void 0;
-                      Eg((h = o.ndrefs[0] == o.ndrefs[o.ndrefs.length - 1] ? new We(s, Tt, [s.length]) : new ng(s, Tt)), !1, i);
+                      Eg(
+                        (h = o.ndrefs[0] == o.ndrefs[o.ndrefs.length - 1] ? new We(s, Tt, [s.length]) : new ng(s, Tt)),
+                        !1,
+                        i
+                      );
                       var f = new Et(h);
                       void 0 !== o.id && f.setId(o.id), f.setProperties(o.tags, !0), r.features.push(f);
                     }
@@ -36141,7 +40030,8 @@
                   return null;
                 }),
                 (t.prototype.readFromDocument = function(t) {
-                  for(var n = t.firstChild; n; n = n.nextSibling) if(n.nodeType == Node.ELEMENT_NODE) return this.readFromNode(n);
+                  for(var n = t.firstChild; n; n = n.nextSibling)
+                    if(n.nodeType == Node.ELEMENT_NODE) return this.readFromNode(n);
                   return null;
                 }),
                 (t.prototype.readFromNode = function(t) {}),
@@ -36164,7 +40054,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36292,7 +40183,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36317,7 +40209,8 @@
               e = i || 1e5,
               o = new Array(n);
             for(r = 0; r < n; ++r) o[r] = 0;
-            for(var s = pA(t, e), u = 0, a = s.length; u < a; ) for (r = 0; r < n; ++r, ++u) (o[r] += s[u]), (s[u] = o[r]);
+            for(var s = pA(t, e), u = 0, a = s.length; u < a; )
+              for(r = 0; r < n; ++r, ++u) (o[r] += s[u]), (s[u] = o[r]);
             return s;
           }
           function dA(t, n) {
@@ -36361,7 +40254,12 @@
               function n(n) {
                 var i = t.call(this) || this,
                   r = n || {};
-                return (i.dataProjection = yr('EPSG:4326')), (i.zy = r.factor ? r.factor : 1e5), (i.qv = r.geometryLayout ? r.geometryLayout : Tt), i;
+                return (
+                  (i.dataProjection = yr('EPSG:4326')),
+                  (i.zy = r.factor ? r.factor : 1e5),
+                  (i.qv = r.geometryLayout ? r.geometryLayout : Tt),
+                  i
+                );
               }
               return (
                 cA(n, t),
@@ -36407,7 +40305,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36418,7 +40317,12 @@
               function n(n) {
                 var i = t.call(this) || this,
                   r = n || {};
-                return (i.iv = r.layerName), (i.Uh = r.layers ? r.layers : null), (i.dataProjection = yr(r.dataProjection ? r.dataProjection : 'EPSG:4326')), i;
+                return (
+                  (i.iv = r.layerName),
+                  (i.Uh = r.layers ? r.layers : null),
+                  (i.dataProjection = yr(r.dataProjection ? r.dataProjection : 'EPSG:4326')),
+                  i
+                );
               }
               return (
                 MA(n, t),
@@ -36440,7 +40344,9 @@
                       f = void 0;
                     for(var c in a)
                       (this.Uh && -1 == this.Uh.indexOf(c)) ||
-                        ('GeometryCollection' === a[c].type ? ((f = a[c]), u.push.apply(u, jA(f, s, e, o, h, c, n))) : ((f = a[c]), u.push(EA(f, s, e, o, h, c, n))));
+                        ('GeometryCollection' === a[c].type
+                          ? ((f = a[c]), u.push.apply(u, jA(f, s, e, o, h, c, n)))
+                          : ((f = a[c]), u.push(EA(f, s, e, o, h, c, n))));
                     return u;
                   }
                   return [];
@@ -36484,7 +40390,8 @@
             };
           function OA(t, n) {
             for(var i, r = [], e = 0, o = t.length; e < o; ++e)
-              if(((i = t[e]), e > 0 && r.pop(), i >= 0)) for(var s = 0, u = (a = n[i]).length; s < u; ++s) r.push(a[s].slice(0));
+              if(((i = t[e]), e > 0 && r.pop(), i >= 0))
+                for(var s = 0, u = (a = n[i]).length; s < u; ++s) r.push(a[s].slice(0));
               else {
                 var a;
                 for(s = (a = n[~i]).length - 1; s >= 0; --s) r.push(a[s].slice(0));
@@ -36541,7 +40448,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36568,7 +40476,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36594,7 +40503,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36604,7 +40514,8 @@
             RA = (function (t) {
               function n(n, i, r) {
                 var e = t.call(this, 'BBOX') || this;
-                if(((e.geometryName = n), (e.extent = i), 4 !== i.length)) throw new Error('Expected an extent with four values ([minX, minY, maxX, maxY])');
+                if(((e.geometryName = n), (e.extent = i), 4 !== i.length))
+                  throw new Error('Expected an extent with four values ([minX, minY, maxX, maxY])');
                 return (e.srsName = r), e;
               }
               return zA(n, t), n;
@@ -36622,7 +40533,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36649,7 +40561,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36675,7 +40588,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36702,7 +40616,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36728,7 +40643,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36755,7 +40671,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36782,7 +40699,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36809,7 +40727,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36835,7 +40754,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36861,7 +40781,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36887,7 +40808,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36913,7 +40835,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36940,7 +40863,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36950,7 +40874,14 @@
             hP = (function (t) {
               function n(n, i, r, e, o, s) {
                 var u = t.call(this, 'PropertyIsLike', n) || this;
-                return (u.pattern = i), (u.wildCard = void 0 !== r ? r : '*'), (u.singleChar = void 0 !== e ? e : '.'), (u.escapeChar = void 0 !== o ? o : '!'), (u.matchCase = s), u;
+                return (
+                  (u.pattern = i),
+                  (u.wildCard = void 0 !== r ? r : '*'),
+                  (u.singleChar = void 0 !== e ? e : '.'),
+                  (u.escapeChar = void 0 !== o ? o : '!'),
+                  (u.matchCase = s),
+                  u
+                );
               }
               return aP(n, t), n;
             })(YA),
@@ -36967,7 +40898,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -36993,7 +40925,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37019,7 +40952,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37045,7 +40979,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37072,7 +41007,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37098,7 +41034,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37124,7 +41061,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37151,7 +41089,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37184,7 +41123,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37286,7 +41226,9 @@
                       var n = $f(t);
                       return this.readTransactionResponseFromDocument(n);
                     }
-                    return Yf(t) ? this.readTransactionResponseFromDocument(t) : this.readTransactionResponseFromNode(t);
+                    return Yf(t)
+                      ? this.readTransactionResponseFromDocument(t)
+                      : this.readTransactionResponseFromNode(t);
                   }
                 }),
                 (n.prototype.readFeatureCollectionMetadata = function(t) {
@@ -37295,11 +41237,14 @@
                       var n = $f(t);
                       return this.readFeatureCollectionMetadataFromDocument(n);
                     }
-                    return Yf(t) ? this.readFeatureCollectionMetadataFromDocument(t) : this.readFeatureCollectionMetadataFromNode(t);
+                    return Yf(t)
+                      ? this.readFeatureCollectionMetadataFromDocument(t)
+                      : this.readFeatureCollectionMetadataFromNode(t);
                   }
                 }),
                 (n.prototype.readFeatureCollectionMetadataFromDocument = function(t) {
-                  for(var n = t.firstChild; n; n = n.nextSibling) if(n.nodeType == Node.ELEMENT_NODE) return this.readFeatureCollectionMetadataFromNode(n);
+                  for(var n = t.firstChild; n; n = n.nextSibling)
+                    if(n.nodeType == Node.ELEMENT_NODE) return this.readFeatureCollectionMetadataFromNode(n);
                 }),
                 (n.prototype.readFeatureCollectionMetadataFromNode = function(t) {
                   var n = {},
@@ -37307,7 +41252,8 @@
                   return (n.numberOfFeatures = i), ac(n, AP, t, [], this.Dy);
                 }),
                 (n.prototype.readTransactionResponseFromDocument = function(t) {
-                  for(var n = t.firstChild; n; n = n.nextSibling) if(n.nodeType == Node.ELEMENT_NODE) return this.readTransactionResponseFromNode(n);
+                  for(var n = t.firstChild; n; n = n.nextSibling)
+                    if(n.nodeType == Node.ELEMENT_NODE) return this.readTransactionResponseFromNode(n);
                 }),
                 (n.prototype.readTransactionResponseFromNode = function(t) {
                   return ac({}, CP, t, []);
@@ -37338,7 +41284,8 @@
                     'string' == typeof t.featureTypes[0])
                   ) {
                     var e = t.filter;
-                    t.bbox && (St(t.geometryName, 12), (e = this.combineBboxAndFilter(t.geometryName, t.bbox, t.srsName, e))),
+                    t.bbox &&
+                      (St(t.geometryName, 12), (e = this.combineBboxAndFilter(t.geometryName, t.bbox, t.srsName, e))),
                       A(r, { geometryName: t.geometryName, filter: e }),
                       wC(i, t.featureTypes, [r]);
                   } else
@@ -37379,15 +41326,26 @@
                       n
                     );
                   })(u, e, s, r);
-                  return t && UP('Insert', t, o, a), n && UP('Update', n, o, a), i && UP('Delete', i, o, a), r.nativeElements && UP('Native', r.nativeElements, o, a), u;
+                  return (
+                    t && UP('Insert', t, o, a),
+                    n && UP('Update', n, o, a),
+                    i && UP('Delete', i, o, a),
+                    r.nativeElements && UP('Native', r.nativeElements, o, a),
+                    u
+                  );
                 }),
                 (n.prototype.readProjectionFromDocument = function(t) {
-                  for(var n = t.firstChild; n; n = n.nextSibling) if(n.nodeType == Node.ELEMENT_NODE) return this.readProjectionFromNode(n);
+                  for(var n = t.firstChild; n; n = n.nextSibling)
+                    if(n.nodeType == Node.ELEMENT_NODE) return this.readProjectionFromNode(n);
                   return null;
                 }),
                 (n.prototype.readProjectionFromNode = function(t) {
                   if(t.firstElementChild && t.firstElementChild.firstElementChild)
-                    for(var n = (t = t.firstElementChild.firstElementChild).firstElementChild; n; n = n.nextElementSibling)
+                    for(
+                      var n = (t = t.firstElementChild.firstElementChild).firstElementChild;
+                      n;
+                      n = n.nextElementSibling
+                    )
                       if(0 !== n.childNodes.length && (1 !== n.childNodes.length || 3 !== n.firstChild.nodeType)) {
                         var i = [{}];
                         return this.Dy.readGeometryElement(n, i), yr(i.pop().srsName);
@@ -37428,7 +41386,12 @@
               o = r.featureNS,
               s = r.gmlVersion,
               u = Xf(o, e);
-            t.appendChild(u), 2 === s ? CO.prototype.writeFeatureElement(u, n, i) : 3 === s ? LO.prototype.writeFeatureElement(u, n, i) : DO.prototype.writeFeatureElement(u, n, i);
+            t.appendChild(u),
+              2 === s
+                ? CO.prototype.writeFeatureElement(u, n, i)
+                : 3 === s
+                ? LO.prototype.writeFeatureElement(u, n, i)
+                : DO.prototype.writeFeatureElement(u, n, i);
           }
           function $P(t, n, i) {
             var r = i[i.length - 1].version,
@@ -37471,7 +41434,14 @@
                   p && 'function' == typeof p.getSimplifiedGeometry && (y = h), l.push({ name: y, value: p });
                 }
               }
-              fc({ version: e, gmlVersion: r.gmlVersion, node: t, hasZ: r.hasZ, srsName: r.srsName }, IP, rc('Property'), l, i), $P(t, f, i);
+              fc(
+                { version: e, gmlVersion: r.gmlVersion, node: t, hasZ: r.hasZ, srsName: r.srsName },
+                IP,
+                rc('Property'),
+                l,
+                i
+              ),
+                $P(t, f, i);
             }
           }
           function QP(t, n, i) {
@@ -37493,7 +41463,9 @@
             }
           }
           function tC(t, n, i) {
-            n.vendorId && t.setAttribute('vendorId', n.vendorId), void 0 !== n.safeToIgnore && t.setAttribute('safeToIgnore', String(n.safeToIgnore)), void 0 !== n.value && EO(t, n.value);
+            n.vendorId && t.setAttribute('vendorId', n.vendorId),
+              void 0 !== n.safeToIgnore && t.setAttribute('safeToIgnore', String(n.safeToIgnore)),
+              void 0 !== n.value && EO(t, n.value);
           }
           var nC = {
             'http://www.opengis.net/wfs': { Query: nc(iC) },
@@ -37552,7 +41524,11 @@
               a = o.featureNS,
               h = o.propertyNames,
               f = o.srsName;
-            (r = u ? KP(u, n) : n), (e = '2.0.0' === s ? 'typeNames' : 'typeName'), t.setAttribute(e, r), f && t.setAttribute('srsName', f), a && t.setAttributeNS(LP, 'xmlns:' + u, a);
+            (r = u ? KP(u, n) : n),
+              (e = '2.0.0' === s ? 'typeNames' : 'typeName'),
+              t.setAttribute(e, r),
+              f && t.setAttribute('srsName', f),
+              a && t.setAttributeNS(LP, 'xmlns:' + u, a);
             var c = A({}, o);
             (c.node = t), fc(c, kP, rc('PropertyName'), h, i);
             var l = o.filter;
@@ -37584,7 +41560,9 @@
             var r = i[i.length - 1].context.version;
             oC(t, n, i);
             var e = Xf(gC(r), 'Distance');
-            EO(e, n.distance.toString()), '2.0.0' === r ? e.setAttribute('uom', n.unit) : e.setAttribute('units', n.unit), t.appendChild(e);
+            EO(e, n.distance.toString()),
+              '2.0.0' === r ? e.setAttribute('uom', n.unit) : e.setAttribute('units', n.unit),
+              t.appendChild(e);
           }
           function uC(t, n, i) {
             var r = i[i.length - 1].context.version;
@@ -37614,7 +41592,9 @@
           }
           function fC(t, n, i) {
             var r = i[i.length - 1].context.version;
-            void 0 !== n.matchCase && t.setAttribute('matchCase', n.matchCase.toString()), yC(r, t, n.propertyName), pC(r, t, '' + n.expression);
+            void 0 !== n.matchCase && t.setAttribute('matchCase', n.matchCase.toString()),
+              yC(r, t, n.propertyName),
+              pC(r, t, '' + n.expression);
           }
           function cC(t, n, i) {
             yC(i[i.length - 1].context.version, t, n.propertyName);
@@ -37675,7 +41655,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -37694,7 +41675,14 @@
             CC = 17,
             kC = (function () {
               function t(t) {
-                (this.Uy = t), (this.By = 0), (this.Xy = !1), (this.Vy = !1), (this.Wy = !1), (this.Yy = !1), (this.Zy = null), (this.$y = Tt);
+                (this.Uy = t),
+                  (this.By = 0),
+                  (this.Xy = !1),
+                  (this.Vy = !1),
+                  (this.Wy = !1),
+                  (this.Yy = !1),
+                  (this.Zy = null),
+                  (this.$y = Tt);
               }
               return (
                 (t.prototype.readUint8 = function() {
@@ -37708,7 +41696,13 @@
                 }),
                 (t.prototype.readPoint = function() {
                   var t = [];
-                  return t.push(this.readDouble()), t.push(this.readDouble()), this.Wy && t.push(this.readDouble()), this.Yy && t.push(this.readDouble()), t;
+                  return (
+                    t.push(this.readDouble()),
+                    t.push(this.readDouble()),
+                    this.Wy && t.push(this.readDouble()),
+                    this.Yy && t.push(this.readDouble()),
+                    t
+                  );
                 }),
                 (t.prototype.readLineString = function() {
                   for(var t = this.readUint32(), n = [], i = 0; i < t; i++) n.push(this.readPoint());
@@ -37814,7 +41808,12 @@
             })(),
             IC = (function () {
               function t(t) {
-                (t = t || {}), (this.$y = t.layout), (this.Vy = !1 !== t.littleEndian), (this.Ky = !1 !== t.ewkb), (this.Hy = []), (this.Jy = A({ X: 0, Y: 0, Z: 0, M: 0 }, t.nodata));
+                (t = t || {}),
+                  (this.$y = t.layout),
+                  (this.Vy = !1 !== t.littleEndian),
+                  (this.Ky = !1 !== t.ewkb),
+                  (this.Hy = []),
+                  (this.Jy = A({ X: 0, Y: 0, Z: 0, M: 0 }, t.nodata));
               }
               return (
                 (t.prototype.writeUint8 = function(t) {
@@ -37881,7 +41880,9 @@
                   void 0 === n && (n = Ct);
                   var i, r;
                   if(t instanceof Kr) return (i = t.getLayout()) === (r = n) ? i : i === Ct ? r : r === Ct ? i : Tt;
-                  if(t instanceof Dg) for(var e = t.getGeometriesArray(), o = 0; o < e.length && n !== Tt; o++) n = this.findMinimumLayout(e[o], n);
+                  if(t instanceof Dg)
+                    for(var e = t.getGeometriesArray(), o = 0; o < e.length && n !== Tt; o++)
+                      n = this.findMinimumLayout(e[o], n);
                   return n;
                 }),
                 (t.prototype.writeGeometry = function(t, n) {
@@ -37939,7 +41940,8 @@
           function NC(t) {
             return 'string' == typeof t
               ? (function (t) {
-                  for(var n = new Uint8Array(t.length / 2), i = 0; i < t.length / 2; i++) n[i] = parseInt(t.substr(2 * i, 2), 16);
+                  for(var n = new Uint8Array(t.length / 2), i = 0; i < t.length / 2; i++)
+                    n[i] = parseInt(t.substr(2 * i, 2), 16);
                   return new DataView(n.buffer);
                 })(t)
               : ArrayBuffer.isView(t)
@@ -38054,7 +42056,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -38244,7 +42247,9 @@
                   return t && this.ym(), t;
                 }),
                 (t.prototype.xm = function() {
-                  return 'Unexpected `' + this.pm.value + '` at position ' + this.pm.position + ' in `' + this.dm.wkt + '`';
+                  return (
+                    'Unexpected `' + this.pm.value + '` at position ' + this.pm.position + ' in `' + this.dm.wkt + '`'
+                  );
                 }),
                 (t.prototype.wm = function() {
                   var t = this.pm;
@@ -38306,7 +42311,15 @@
                   return r.setGeometry(i), r;
                 }),
                 (n.prototype.readFeaturesFromText = function(t, n) {
-                  for(var i = [], r = this.readGeometryFromText(t, n), e = [], o = 0, s = (i = this.Nm && 'GeometryCollection' == r.getType() ? r.getGeometriesArray() : [r]).length; o < s; ++o) {
+                  for(
+                    var i = [],
+                      r = this.readGeometryFromText(t, n),
+                      e = [],
+                      o = 0,
+                      s = (i = this.Nm && 'GeometryCollection' == r.getType() ? r.getGeometriesArray() : [r]).length;
+                    o < s;
+                    ++o
+                  ) {
                     var u = new Et();
                     u.setGeometry(i[o]), e.push(u);
                   }
@@ -38392,7 +42405,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -38490,7 +42504,12 @@
                 return [r, e, o, s];
               }),
               BoundingBox: Qf(function (t, n) {
-                var i = [wO(t.getAttribute('minx')), wO(t.getAttribute('miny')), wO(t.getAttribute('maxx')), wO(t.getAttribute('maxy'))],
+                var i = [
+                    wO(t.getAttribute('minx')),
+                    wO(t.getAttribute('miny')),
+                    wO(t.getAttribute('maxx')),
+                    wO(t.getAttribute('maxy'))
+                  ],
                   r = [wO(t.getAttribute('resx')), wO(t.getAttribute('resy'))];
                 return { crs: t.getAttribute('CRS'), extent: i, res: r };
               }),
@@ -38582,7 +42601,14 @@
                 }
               });
               return (
-                ['EX_GeographicBoundingBox', 'BoundingBox', 'Dimension', 'Attribution', 'MinScaleDenominator', 'MaxScaleDenominator'].forEach(function (t) {
+                [
+                  'EX_GeographicBoundingBox',
+                  'BoundingBox',
+                  'Dimension',
+                  'Attribution',
+                  'MinScaleDenominator',
+                  'MaxScaleDenominator'
+                ].forEach(function (t) {
                   if(!(t in r)) {
                     var n = i[t];
                     r[t] = n;
@@ -38622,7 +42648,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -38633,7 +42660,12 @@
               function n(n) {
                 var i = t.call(this) || this,
                   r = n || {};
-                return (i.Gy = 'http://mapserver.gis.umn.edu/mapserver'), (i.Dy = new CO()), (i.Uh = r.layers ? r.layers : null), i;
+                return (
+                  (i.Gy = 'http://mapserver.gis.umn.edu/mapserver'),
+                  (i.Dy = new CO()),
+                  (i.Uh = r.layers ? r.layers : null),
+                  i
+                );
               }
               return (
                 Tk(n, t),
@@ -38693,7 +42725,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -38838,7 +42871,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -38850,13 +42884,21 @@
             Hk = 'leavefullscreen';
           function Jk(t) {
             var n = t.body;
-            return !!(n.webkitRequestFullscreen || (n.msRequestFullscreen && t.msFullscreenEnabled) || (n.requestFullscreen && t.fullscreenEnabled));
+            return !!(
+              n.webkitRequestFullscreen ||
+              (n.msRequestFullscreen && t.msFullscreenEnabled) ||
+              (n.requestFullscreen && t.fullscreenEnabled)
+            );
           }
           function Qk(t) {
             return !!(t.webkitIsFullScreen || t.msFullscreenElement || t.fullscreenElement);
           }
           function tI(t) {
-            t.requestFullscreen ? t.requestFullscreen() : t.msRequestFullscreen ? t.msRequestFullscreen() : t.webkitRequestFullscreen && t.webkitRequestFullscreen();
+            t.requestFullscreen
+              ? t.requestFullscreen()
+              : t.msRequestFullscreen
+              ? t.msRequestFullscreen()
+              : t.webkitRequestFullscreen && t.webkitRequestFullscreen();
           }
           var nI = (function (t) {
               function n(n) {
@@ -38902,11 +42944,19 @@
                     if(Jk(n))
                       if(Qk(n))
                         !(function (t) {
-                          t.exitFullscreen ? t.exitFullscreen() : t.msExitFullscreen ? t.msExitFullscreen() : t.webkitExitFullscreen && t.webkitExitFullscreen();
+                          t.exitFullscreen
+                            ? t.exitFullscreen()
+                            : t.msExitFullscreen
+                            ? t.msExitFullscreen()
+                            : t.webkitExitFullscreen && t.webkitExitFullscreen();
                         })(n);
                       else {
                         var i = void 0;
-                        (i = this._v ? ('string' == typeof this._v ? n.getElementById(this._v) : this._v) : t.getTargetElement()),
+                        (i = this._v
+                          ? 'string' == typeof this._v
+                            ? n.getElementById(this._v)
+                            : this._v
+                          : t.getTargetElement()),
                           this.nf
                             ? (function (t) {
                                 t.webkitRequestFullscreen ? t.webkitRequestFullscreen() : tI(t);
@@ -38920,16 +42970,26 @@
                   if(t) {
                     var n = this.Fm;
                     (this.Fm = Qk(t.getOwnerDocument())),
-                      n !== this.Fm && (this.Zm(this.Ym, this.Fm), this.Fm ? (Eo(this.Wm, this.Vm), this.dispatchEvent(Kk)) : (Eo(this.Vm, this.Wm), this.dispatchEvent(Hk)), t.updateSize());
+                      n !== this.Fm &&
+                        (this.Zm(this.Ym, this.Fm),
+                        this.Fm
+                          ? (Eo(this.Wm, this.Vm), this.dispatchEvent(Kk))
+                          : (Eo(this.Vm, this.Wm), this.dispatchEvent(Hk)),
+                        t.updateSize());
                   }
                 }),
                 (n.prototype.Zm = function(t, n) {
                   var i, r, e, o;
-                  n ? ((i = t.classList).remove.apply(i, this.Xm), (r = t.classList).add.apply(r, this.Bm)) : ((e = t.classList).remove.apply(e, this.Bm), (o = t.classList).add.apply(o, this.Xm));
+                  n
+                    ? ((i = t.classList).remove.apply(i, this.Xm), (r = t.classList).add.apply(r, this.Bm))
+                    : ((e = t.classList).remove.apply(e, this.Bm), (o = t.classList).add.apply(o, this.Xm));
                 }),
                 (n.prototype.setMap = function(n) {
                   var i = this.getMap();
-                  i && i.removeChangeListener(bu, this.Gm), t.prototype.setMap.call(this, n), this.Dm(), n && n.addChangeListener(bu, this.Gm);
+                  i && i.removeChangeListener(bu, this.Gm),
+                    t.prototype.setMap.call(this, n),
+                    this.Dm(),
+                    n && n.addChangeListener(bu, this.Gm);
                 }),
                 (n.prototype.Dm = function() {
                   for(var t = this.Um, n = 0, i = t.length; n < i; ++n) H(t[n]);
@@ -38958,7 +43018,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -38982,7 +43043,9 @@
                 var o = !0,
                   s = '&#160;';
                 return (
-                  'undefinedHTML' in r ? (void 0 !== r.undefinedHTML && (s = r.undefinedHTML), (o = !!s)) : 'placeholder' in r && (!1 === r.placeholder ? (o = !1) : (s = String(r.placeholder))),
+                  'undefinedHTML' in r
+                    ? (void 0 !== r.undefinedHTML && (s = r.undefinedHTML), (o = !!s))
+                    : 'placeholder' in r && (!1 === r.placeholder ? (o = !1) : (s = String(r.placeholder))),
                   (i.Hm = s),
                   (i.Jm = o),
                   (i.Qm = e.innerHTML),
@@ -39012,7 +43075,9 @@
                 (n.prototype.setMap = function(n) {
                   if((t.prototype.setMap.call(this, n), n)) {
                     var i = n.getViewport();
-                    this.listenerKeys.push($(i, uu, this.handleMouseMove, this)), this.Jm && this.listenerKeys.push($(i, fu, this.handleMouseOut, this)), this.nw(null);
+                    this.listenerKeys.push($(i, uu, this.handleMouseMove, this)),
+                      this.Jm && this.listenerKeys.push($(i, fu, this.handleMouseOut, this)),
+                      this.nw(null);
                   }
                 }),
                 (n.prototype.setCoordinateFormat = function(t) {
@@ -39040,7 +43105,9 @@
                 }),
                 (n.prototype.render = function(t) {
                   var n = t.frameState;
-                  n ? this.tw != n.viewState.projection && ((this.tw = n.viewState.projection), (this.jt = null)) : (this.tw = null);
+                  n
+                    ? this.tw != n.viewState.projection && ((this.tw = n.viewState.projection), (this.jt = null))
+                    : (this.tw = null);
                 }),
                 n
               );
@@ -39058,7 +43125,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -39083,7 +43151,9 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                ((i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this).iw = i.rw.bind(i)),
+                ((i =
+                  t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) ||
+                  this).iw = i.rw.bind(i)),
                   (i.Sr = void 0 === r.collapsed || r.collapsed),
                   (i.Tr = void 0 === r.collapsible || r.collapsible),
                   i.Tr || (i.Sr = !1),
@@ -39111,8 +43181,17 @@
                     f.addLayer(t);
                   });
                 var c = document.createElement('div');
-                (c.className = 'ol-overviewmap-box'), (c.style.boxSizing = 'border-box'), (i.uw = new _h({ position: [0, 0], positioning: 'center-center', element: c })), i.sw.addOverlay(i.uw);
-                var l = e + ' ' + 'ol-unselectable ' + Ms + (i.Sr && i.Tr ? ' ol-collapsed' : '') + (i.Tr ? '' : ' ol-uncollapsible'),
+                (c.className = 'ol-overviewmap-box'),
+                  (c.style.boxSizing = 'border-box'),
+                  (i.uw = new _h({ position: [0, 0], positioning: 'center-center', element: c })),
+                  i.sw.addOverlay(i.uw);
+                var l =
+                    e +
+                    ' ' +
+                    'ol-unselectable ' +
+                    Ms +
+                    (i.Sr && i.Tr ? ' ol-collapsed' : '') +
+                    (i.Tr ? '' : ' ol-uncollapsible'),
                   v = i.element;
                 (v.className = l), v.appendChild(i.ow), v.appendChild(h);
                 var d = i,
@@ -39126,7 +43205,9 @@
                   },
                   w = function(t) {
                     var n = f.getEventCoordinateInternal(t);
-                    d.getMap().getView().setCenterInternal(n), window.removeEventListener('mousemove', m), window.removeEventListener('mouseup', w);
+                    d.getMap().getView().setCenterInternal(n),
+                      window.removeEventListener('mousemove', m),
+                      window.removeEventListener('mouseup', w);
                   };
                 return (
                   y.addEventListener('mousedown', function() {
@@ -39147,7 +43228,8 @@
                     if((t.prototype.setMap.call(this, n), n)) {
                       this.sw.setTarget(this.ow), this.listenerKeys.push($(n, l, this.hw, this));
                       var e = n.getView();
-                      e && (this.fw(e), e.isDef() && (this.sw.updateSize(), this.cw())), this.sw.isRendered() || this.lw();
+                      e && (this.fw(e), e.isDef() && (this.sw.updateSize(), this.cw())),
+                        this.sw.isRendered() || this.lw();
                     }
                   }
                 }),
@@ -39244,7 +43326,9 @@
                   t.preventDefault(), this.zr();
                 }),
                 (n.prototype.zr = function() {
-                  this.element.classList.toggle(_s), this.Sr ? Eo(this.Ar, this.Pr) : Eo(this.Pr, this.Ar), (this.Sr = !this.Sr);
+                  this.element.classList.toggle(_s),
+                    this.Sr ? Eo(this.Ar, this.Pr) : Eo(this.Pr, this.Ar),
+                    (this.Sr = !this.Sr);
                   var t = this.sw;
                   if(!this.Sr) {
                     if(t.isRendered()) return (this.ew = void 0), void t.render();
@@ -39255,7 +43339,8 @@
                   return this.Tr;
                 }),
                 (n.prototype.setCollapsible = function(t) {
-                  this.Tr !== t && ((this.Tr = t), this.element.classList.toggle('ol-uncollapsible'), !t && this.Sr && this.zr());
+                  this.Tr !== t &&
+                    ((this.Tr = t), this.element.classList.toggle('ol-uncollapsible'), !t && this.Sr && this.zr());
                 }),
                 (n.prototype.setCollapsed = function(t) {
                   this.Tr && this.Sr !== t && this.zr();
@@ -39267,7 +43352,13 @@
                   return this.su;
                 }),
                 (n.prototype.setRotateWithView = function(t) {
-                  this.su !== t && ((this.su = t), 0 !== this.getMap().getView().getRotation() && (this.su ? this.rw() : this.sw.getView().setRotation(0), (this.ew = void 0), this.dw(), this.yw()));
+                  this.su !== t &&
+                    ((this.su = t),
+                    0 !== this.getMap().getView().getRotation() &&
+                      (this.su ? this.rw() : this.sw.getView().setRotation(0),
+                      (this.ew = void 0),
+                      this.dw(),
+                      this.yw()));
                 }),
                 (n.prototype.getOverviewMap = function() {
                   return this.sw;
@@ -39291,7 +43382,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -39312,7 +43404,9 @@
                   r = n || {},
                   e = void 0 !== r.className ? r.className : r.bar ? 'ol-scale-bar' : 'ol-scale-line';
                 return (
-                  (i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this).on,
+                  (i =
+                    t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) ||
+                    this).on,
                   i.once,
                   i.un,
                   (i.ww = document.createElement('div')),
@@ -39390,7 +43484,8 @@
                     for(var c, l, v, d, p, y, m, w = 3 * Math.floor(Math.log(s * o) / Math.log(10)); ; ) {
                       v = Math.floor(w / 3);
                       var g = Math.pow(10, v);
-                      if(((c = wI[((w % 3) + 3) % 3] * g), (l = Math.round(c / o)), isNaN(l))) return (this.element.style.display = 'none'), void (this.mn = !1);
+                      if(((c = wI[((w % 3) + 3) % 3] * g), (l = Math.round(c / o)), isNaN(l)))
+                        return (this.element.style.display = 'none'), void (this.mn = !1);
                       if(void 0 !== u && l >= u) {
                         (c = d), (l = p), (v = y);
                         break;
@@ -39405,7 +43500,15 @@
                   } else this.mn && ((this.element.style.display = 'none'), (this.mn = !1));
                 }),
                 (n.prototype.createScaleBar = function(t, n, i) {
-                  for(var r = '1 : ' + Math.round(this.getScaleForResolution()).toLocaleString(), e = [], o = t / this.Ow, s = 'ol-scale-singlebar-odd', u = 0; u < this.Ow; u++)
+                  for(
+                    var r = '1 : ' + Math.round(this.getScaleForResolution()).toLocaleString(),
+                      e = [],
+                      o = t / this.Ow,
+                      s = 'ol-scale-singlebar-odd',
+                      u = 0;
+                    u < this.Ow;
+                    u++
+                  )
                     0 === u && e.push(this.createMarker('absolute', u)),
                       e.push(
                         '<div><div class="ol-scale-singlebar ' +
@@ -39419,10 +43522,21 @@
                       ),
                       u === this.Ow - 1 && e.push(this.createStepText(u + 1, t, !0, n, i)),
                       (s = 'ol-scale-singlebar-odd' === s ? 'ol-scale-singlebar-even' : 'ol-scale-singlebar-odd');
-                  return '<div style="display: flex;">' + (this.jw ? '<div class="ol-scale-text" style="width: ' + t + 'px;">' + r + '</div>' : '') + e.join('') + '</div>';
+                  return (
+                    '<div style="display: flex;">' +
+                    (this.jw ? '<div class="ol-scale-text" style="width: ' + t + 'px;">' + r + '</div>' : '') +
+                    e.join('') +
+                    '</div>'
+                  );
                 }),
                 (n.prototype.createMarker = function(t, n) {
-                  return '<div class="ol-scale-step-marker" style="position: ' + t + ';top: ' + ('absolute' === t ? 3 : -10) + 'px;"></div>';
+                  return (
+                    '<div class="ol-scale-step-marker" style="position: ' +
+                    t +
+                    ';top: ' +
+                    ('absolute' === t ? 3 : -10) +
+                    'px;"></div>'
+                  );
                 }),
                 (n.prototype.createStepText = function(t, n, i, r, e) {
                   var o = (0 === t ? 0 : Math.round((r / this.Ow) * t * 100) / 100) + (0 === t ? '' : ' ' + e);
@@ -39465,7 +43579,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -39515,12 +43630,17 @@
                     i = t.offsetHeight;
                   if(0 === n && 0 === i) return (this.Lw = !1);
                   var r = getComputedStyle(t);
-                  (n -= parseFloat(r.paddingRight) + parseFloat(r.paddingLeft)), (i -= parseFloat(r.paddingTop) + parseFloat(r.paddingBottom));
+                  (n -= parseFloat(r.paddingRight) + parseFloat(r.paddingLeft)),
+                    (i -= parseFloat(r.paddingTop) + parseFloat(r.paddingBottom));
                   var e = t.firstElementChild,
                     o = getComputedStyle(e),
                     s = e.offsetWidth + parseFloat(o.marginRight) + parseFloat(o.marginLeft),
                     u = e.offsetHeight + parseFloat(o.marginTop) + parseFloat(o.marginBottom);
-                  return (this.Nw = [s, u]), n > i ? ((this.Aw = _I), (this.Cw = n - s)) : ((this.Aw = MI), (this.Pw = i - u)), (this.Lw = !0);
+                  return (
+                    (this.Nw = [s, u]),
+                    n > i ? ((this.Aw = _I), (this.Cw = n - s)) : ((this.Aw = MI), (this.Pw = i - u)),
+                    (this.Lw = !0)
+                  );
                 }),
                 (n.prototype.Gw = function(t) {
                   var n = this.getMap().getView(),
@@ -39555,7 +43675,13 @@
                   }
                 }),
                 (n.prototype.Fw = function(t) {
-                  this.Cn && (this.getMap().getView().endInteraction(), (this.Cn = !1), (this.kw = void 0), (this.Iw = void 0), this.kn.forEach(H), (this.kn.length = 0));
+                  this.Cn &&
+                    (this.getMap().getView().endInteraction(),
+                    (this.Cn = !1),
+                    (this.kw = void 0),
+                    (this.Iw = void 0),
+                    this.kn.forEach(H),
+                    (this.kn.length = 0));
                 }),
                 (n.prototype.Bw = function(t) {
                   var n = this.Xw(t),
@@ -39593,7 +43719,8 @@
                   })(n, i);
               };
               return function(n, i) {
-                if('function' != typeof i && null !== i) throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
+                if('function' != typeof i && null !== i)
+                  throw new TypeError('Class extends value ' + String(i) + ' is not a constructor or null');
                 function r() {
                   this.constructor = n;
                 }
@@ -39604,12 +43731,16 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                (i = t.call(this, { element: document.createElement('div'), target: r.target }) || this).extent = r.extent ? r.extent : null;
+                (i = t.call(this, { element: document.createElement('div'), target: r.target }) || this).extent =
+                  r.extent ? r.extent : null;
                 var e = void 0 !== r.className ? r.className : 'ol-zoom-extent',
                   o = void 0 !== r.label ? r.label : 'E',
                   s = void 0 !== r.tipLabel ? r.tipLabel : 'Fit to extent',
                   u = document.createElement('button');
-                u.setAttribute('type', 'button'), (u.title = s), u.appendChild('string' == typeof o ? document.createTextNode(o) : o), u.addEventListener(F, i.kr.bind(i), !1);
+                u.setAttribute('type', 'button'),
+                  (u.title = s),
+                  u.appendChild('string' == typeof o ? document.createTextNode(o) : o),
+                  u.addEventListener(F, i.kr.bind(i), !1);
                 var a = e + ' ' + 'ol-unselectable ' + Ms,
                   h = i.element;
                 return (h.className = a), h.appendChild(u), i;
@@ -40181,7 +44312,9 @@
             (EI.geom.flat.simplify.radialDistance = fe),
             (EI.geom.flat.simplify.simplifyLineString = function(t, n, i, r, e, o, s) {
               var u = void 0 !== s ? s : [];
-              return o || ((i = fe(t, n, i, r, e, u, 0)), (t = u), (n = 0), (r = 2)), (u.length = ae(t, n, i, r, e, u, 0)), u;
+              return (
+                o || ((i = fe(t, n, i, r, e, u, 0)), (t = u), (n = 0), (r = 2)), (u.length = ae(t, n, i, r, e, u, 0)), u
+              );
             }),
             (EI.geom.flat.simplify.snap = ce),
             (EI.geom.flat.straightchunk = {}),
@@ -40302,7 +44435,8 @@
                   o = t.getTileRangeForExtentAndZ(Lr(n, r), e),
                   s = [],
                   u = [e, 0, 0];
-                for(u[1] = o.minX; u[1] <= o.maxX; ++u[1]) for (u[2] = o.minY; u[2] <= o.maxY; ++u[2]) s.push(Nr(t.getTileCoordExtent(u), r));
+                for(u[1] = o.minX; u[1] <= o.maxX; ++u[1])
+                  for(u[2] = o.minY; u[2] <= o.maxY; ++u[2]) s.push(Nr(t.getTileCoordExtent(u), r));
                 return s;
               };
             }),
@@ -40396,7 +44530,8 @@
                 if(!yr(o)) {
                   var s = t.defs(o),
                     u = s.units;
-                  u || 'longlat' !== s.projName || (u = Rt.DEGREES), dr(new ei({ code: o, axisOrientation: s.axis, metersPerUnit: s.to_meter, units: u }));
+                  u || 'longlat' !== s.projName || (u = Rt.DEGREES),
+                    dr(new ei({ code: o, axisOrientation: s.axis, metersPerUnit: s.to_meter, units: u }));
                 }
               }
               for(n = 0; n < e; ++n) {
@@ -40454,7 +44589,13 @@
                 r = hg(t),
                 e = t.getProperties(),
                 o = new Et();
-              return void 0 !== n && o.setGeometryName(n), o.setGeometry(r), void 0 !== i && o.setId(i), o.setProperties(e, !0), o;
+              return (
+                void 0 !== n && o.setGeometryName(n),
+                o.setGeometry(r),
+                void 0 !== i && o.setId(i),
+                o.setProperties(e, !0),
+                o
+              );
             }),
             (EI.render.Feature.toGeometry = hg),
             (EI.render.VectorContext = tf),
@@ -40511,7 +44652,11 @@
                 r = n || {},
                 e = r.pixelRatio || Xt,
                 o = r.size;
-              o && ((i.width = o[0] * e), (i.height = o[1] * e), (i.style.width = o[0] + 'px'), (i.style.height = o[1] + 'px'));
+              o &&
+                ((i.width = o[0] * e),
+                (i.height = o[1] * e),
+                (i.style.width = o[0] + 'px'),
+                (i.style.height = o[1] + 'px'));
               var s = [0, 0, i.width, i.height],
                 u = rn([1, 0, 0, 1, 0, 0], e, e);
               return new rf(t, e, s, u, 0);
@@ -40711,7 +44856,12 @@
                 O = m.TileHeight * x,
                 j = c.BoundingBox;
               j && p && (j = [j[1], j[0], j[3], j[2]]);
-              var E = [_[0] + S * w.MinTileCol, _[1] - O * (1 + w.MaxTileRow), _[0] + S * (1 + w.MaxTileCol), _[1] - O * w.MinTileRow];
+              var E = [
+                _[0] + S * w.MinTileCol,
+                _[1] - O * (1 + w.MaxTileRow),
+                _[0] + S * (1 + w.MaxTileCol),
+                _[1] - O * w.MinTileRow
+              ];
               if(void 0 !== j && !xn(j, E)) {
                 var T = i.WGS84BoundingBox,
                   A = yr('EPSG:4326').getExtent();
@@ -40808,10 +44958,13 @@
                 case 'LinearRing':
                   break;
                 case 'Polygon':
-                  for(u = n.getCoordinates(), v = Math.abs(ar(u[0], e)), h = 1, f = u.length; h < f; ++h) v -= Math.abs(ar(u[h], e));
+                  for(u = n.getCoordinates(), v = Math.abs(ar(u[0], e)), h = 1, f = u.length; h < f; ++h)
+                    v -= Math.abs(ar(u[h], e));
                   break;
                 case 'MultiPolygon':
-                  for(h = 0, f = (u = n.getCoordinates()).length; h < f; ++h) for (a = u[h], v += Math.abs(ar(a[0], e)), c = 1, l = a.length; c < l; ++c) v -= Math.abs(ar(a[c], e));
+                  for(h = 0, f = (u = n.getCoordinates()).length; h < f; ++h)
+                    for(a = u[h], v += Math.abs(ar(a[0], e)), c = 1, l = a.length; c < l; ++c)
+                      v -= Math.abs(ar(a[c], e));
                   break;
                 case 'GeometryCollection':
                   var d = n.getGeometries();
@@ -40849,7 +45002,8 @@
                   for(h = 0, f = (u = n.getCoordinates()).length; h < f; ++h) v += ur(u[h], e);
                   break;
                 case 'MultiPolygon':
-                  for(h = 0, f = (u = n.getCoordinates()).length; h < f; ++h) for (c = 0, l = (a = u[h]).length; c < l; ++c) v += ur(a[c], e);
+                  for(h = 0, f = (u = n.getCoordinates()).length; h < f; ++h)
+                    for(c = 0, l = (a = u[h]).length; c < l; ++c) v += ur(a[c], e);
                   break;
                 case 'GeometryCollection':
                   var d = n.getGeometries();
@@ -41151,7 +45305,17 @@
             },
             e = {};
           for(const t in r) r.hasOwnProperty(t) && (e[r[t]] = parseInt(t, 10));
-          const o = [e.BitsPerSample, e.ExtraSamples, e.SampleFormat, e.StripByteCounts, e.StripOffsets, e.StripRowCounts, e.TileByteCounts, e.TileOffsets, e.SubIFDs],
+          const o = [
+              e.BitsPerSample,
+              e.ExtraSamples,
+              e.SampleFormat,
+              e.StripByteCounts,
+              e.StripOffsets,
+              e.StripRowCounts,
+              e.TileByteCounts,
+              e.TileOffsets,
+              e.SubIFDs
+            ],
             s = {
               1: 'BYTE',
               2: 'ASCII',
@@ -41285,7 +45449,13 @@
                 break;
               }
             }
-          s || ((u = !0), ((s = document.createElement('script')).charset = 'utf-8'), (s.timeout = 120), r.nc && s.setAttribute('nonce', r.nc), s.setAttribute('data-webpack', 'ol:' + e), (s.src = n)),
+          s ||
+            ((u = !0),
+            ((s = document.createElement('script')).charset = 'utf-8'),
+            (s.timeout = 120),
+            r.nc && s.setAttribute('nonce', r.nc),
+            s.setAttribute('data-webpack', 'ol:' + e),
+            (s.src = n)),
             (t[n] = [i]);
           var c = function(i, r) {
               (s.onerror = s.onload = null), clearTimeout(l);
@@ -41306,7 +45476,10 @@
         }
       }),
       (r.r = function(t) {
-        'undefined' != typeof Symbol && Symbol.toStringTag && Object.defineProperty(t, Symbol.toStringTag, { value: 'Module' }), Object.defineProperty(t, '__esModule', { value: !0 });
+        'undefined' != typeof Symbol &&
+          Symbol.toStringTag &&
+          Object.defineProperty(t, Symbol.toStringTag, { value: 'Module' }),
+          Object.defineProperty(t, '__esModule', { value: !0 });
       }),
       (function () {
         var t;
@@ -41342,7 +45515,11 @@
                   if(r.o(t, n) && (0 !== (e = t[n]) && (t[n] = void 0), e)) {
                     var o = i && ('load' === i.type ? 'missing' : i.type),
                       s = i && i.target && i.target.src;
-                    (u.message = 'Loading chunk ' + n + ' failed.\n(' + o + ': ' + s + ')'), (u.name = 'ChunkLoadError'), (u.type = o), (u.request = s), e[1](u);
+                    (u.message = 'Loading chunk ' + n + ' failed.\n(' + o + ': ' + s + ')'),
+                      (u.name = 'ChunkLoadError'),
+                      (u.type = o),
+                      (u.request = s),
+                      e[1](u);
                   }
                 },
                 'chunk-' + n,

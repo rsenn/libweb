@@ -147,7 +147,15 @@ export class SwipeTracker {
       },
       toString() {
         return (
-          `SwipeEvent ${this.name.toUpperCase()}(` + (this.delta && this.delta.toString(false)) + ') ' + this.getAxis() + ' ' + this.dist + ' [' + (this.mouse && this.mouse.toSource(false)) + ']'
+          `SwipeEvent ${this.name.toUpperCase()}(` +
+          (this.delta && this.delta.toString(false)) +
+          ') ' +
+          this.getAxis() +
+          ' ' +
+          this.dist +
+          ' [' +
+          (this.mouse && this.mouse.toSource(false)) +
+          ']'
         );
       }
     };

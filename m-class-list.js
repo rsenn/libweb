@@ -74,7 +74,12 @@ function _toggle(list, element, token, force) {
 function _replace(list, element, token, newToken) {
   var i;
 
-  if(!(token = normalize(token)) || !(newToken = normalize(newToken)) || token === newToken || (i = list.indexOf(token)) === -1) {
+  if(
+    !(token = normalize(token)) ||
+    !(newToken = normalize(newToken)) ||
+    token === newToken ||
+    (i = list.indexOf(token)) === -1
+  ) {
     return;
   }
 

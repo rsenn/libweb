@@ -9,7 +9,9 @@ function shim(props, propName, componentName, location, propFullName, secret) {
     return;
   }
   let err = new Error(
-    'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types'
+    'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+      'Use PropTypes.checkPropTypes() to call them. ' +
+      'Read more at http://fb.me/use-check-prop-types'
   );
   err.name = 'Invariant Violation';
   throw err;

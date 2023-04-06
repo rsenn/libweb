@@ -32,7 +32,9 @@ function _typeof(obj) {
     };
   } else {
     _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
+      return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype
+        ? 'symbol'
+        : typeof obj;
     };
   }
   return _typeof(obj);
@@ -66,7 +68,10 @@ var ZINDEX = 9000,
   AUTOSCROLL_SPEED = [40, 200, 1000],
   AUTOSCROLL_SENSITIVITY = [100, 40, 0],
   // [/AUTO-SCROLL]
-  IS_EDGE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style && !window.navigator.msPointerEnabled,
+  IS_EDGE =
+    '-ms-scroll-limit' in document.documentElement.style &&
+    '-ms-ime-align' in document.documentElement.style &&
+    !window.navigator.msPointerEnabled,
   IS_TRIDENT = !IS_EDGE && !!document.uniqueID,
   // Future Edge might support `document.uniqueID`.
   IS_GECKO = 'MozAppearance' in document.documentElement.style,
@@ -91,7 +96,10 @@ var ZINDEX = 9000,
       return (
         obj &&
         toString.call(obj) === '[object Object]' &&
-        (!(proto = Object.getPrototypeOf(obj)) || ((constr = proto.hasOwnProperty('constructor') && proto.constructor) && typeof constr === 'function' && fnToString.call(constr) === objFnString))
+        (!(proto = Object.getPrototypeOf(obj)) ||
+          ((constr = proto.hasOwnProperty('constructor') && proto.constructor) &&
+            typeof constr === 'function' &&
+            fnToString.call(constr) === objFnString))
       );
     };
   })(),
@@ -310,18 +318,24 @@ function getScrollable(element, isWindow, dontScroll) {
         'x',
         document.documentElement.scrollWidth +
           scrollable.clientWidth + // Blink for Android bug, scroll* returns size of smaller body
-          ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(function (len, prop) {
-            return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
-          }, 0)
+          ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(
+            function(len, prop) {
+              return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
+            },
+            0
+          )
       );
       maxScrollTop = scrollXYWindow(
         element,
         'y',
         document.documentElement.scrollHeight +
           scrollable.clientHeight +
-          ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(function (len, prop) {
-            return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
-          }, 0)
+          ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(
+            function(len, prop) {
+              return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
+            },
+            0
+          )
       );
       scrollXYWindow(element, 'x', curScrollLeft);
       scrollXYWindow(element, 'y', curScrollTop);
@@ -334,18 +348,24 @@ function getScrollable(element, isWindow, dontScroll) {
         'x',
         element.scrollWidth +
           scrollable.clientWidth + // Blink for Android bug, scroll* returns size of smaller body
-          ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(function (len, prop) {
-            return len + (parseFloat(cmpStyleElement[prop]) || 0);
-          }, 0)
+          ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(
+            function(len, prop) {
+              return len + (parseFloat(cmpStyleElement[prop]) || 0);
+            },
+            0
+          )
       );
       maxScrollTop = scrollXYElement(
         element,
         'y',
         element.scrollHeight +
           scrollable.clientHeight +
-          ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(function (len, prop) {
-            return len + (parseFloat(cmpStyleElement[prop]) || 0);
-          }, 0)
+          ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(
+            function(len, prop) {
+              return len + (parseFloat(cmpStyleElement[prop]) || 0);
+            },
+            0
+          )
       );
       scrollXYElement(element, 'x', curScrollLeft);
       scrollXYElement(element, 'y', curScrollTop);
@@ -391,7 +411,8 @@ function hasChanged(a, b) {
   var typeA, keysA;
   return (
     _typeof(a) !== _typeof(b) ||
-    (typeA = isObject(a) ? 'obj' : Array.isArray(a) ? 'array' : '') !== (isObject(b) ? 'obj' : Array.isArray(b) ? 'array' : '') ||
+    (typeA = isObject(a) ? 'obj' : Array.isArray(a) ? 'array' : '') !==
+      (isObject(b) ? 'obj' : Array.isArray(b) ? 'array' : '') ||
     (typeA === 'obj'
       ? hasChanged((keysA = Object.keys(a).sort()), Object.keys(b).sort()) ||
         keysA.some(function (prop) {
@@ -588,7 +609,11 @@ function resolvePPBBox(ppBBox, baseBBox) {
     };
   return validBBox(
     Object.keys(ppBBox).reduce(function (bBox, prop) {
-      bBox[prop] = resolvePPValue(ppBBox[prop], prop === 'width' || prop === 'height' ? 0 : baseOriginXY[prop2Axis[prop]], baseSizeXY[prop2Axis[prop]]);
+      bBox[prop] = resolvePPValue(
+        ppBBox[prop],
+        prop === 'width' || prop === 'height' ? 0 : baseOriginXY[prop2Axis[prop]],
+        baseSizeXY[prop2Axis[prop]]
+      );
       return bBox;
     }, {})
   );
@@ -706,7 +731,9 @@ function moveTranslate(props, position) {
 
   if(position.left !== elementBBox.left || position.top !== elementBBox.top) {
     var offset = props.htmlOffset;
-    props.elementStyle[cssPropTransform] = 'translate('.concat(position.left + offset.left, 'px, ').concat(position.top + offset.top, 'px)');
+    props.elementStyle[cssPropTransform] = 'translate('
+      .concat(position.left + offset.left, 'px, ')
+      .concat(position.top + offset.top, 'px)');
     return true;
   }
 
@@ -872,7 +899,9 @@ function initTranslate(props) {
   }); // avoid `-0`
   // Restore position
 
-  elementStyle[cssPropTransform] = 'translate('.concat(curPosition.left + offset.left, 'px, ').concat(curPosition.top + offset.top, 'px)'); // Restore size
+  elementStyle[cssPropTransform] = 'translate('
+    .concat(curPosition.left + offset.left, 'px, ')
+    .concat(curPosition.top + offset.top, 'px)'); // Restore size
 
   ['width', 'height'].forEach(function (prop) {
     if(newBBox[prop] !== orgSize[prop]) {
@@ -897,7 +926,9 @@ function initTranslate(props) {
 
   if(fixPosition.left !== curPosition.left || fixPosition.top !== curPosition.top) {
     // It seems that it is moving.
-    elementStyle[cssPropTransform] = 'translate('.concat(fixPosition.left + offset.left, 'px, ').concat(fixPosition.top + offset.top, 'px)');
+    elementStyle[cssPropTransform] = 'translate('
+      .concat(fixPosition.left + offset.left, 'px, ')
+      .concat(fixPosition.top + offset.top, 'px)');
   }
 
   return fixPosition;
@@ -1021,7 +1052,9 @@ function initBBox(props, eventType) {
   var docBBox = getBBox(document.documentElement),
     elementBBox = (props.elementBBox = props.initElm(props)),
     // reset offset etc.
-    containmentBBox = (props.containmentBBox = props.containmentIsBBox ? resolvePPBBox(props.options.containment, docBBox) || docBBox : getBBox(props.options.containment, true));
+    containmentBBox = (props.containmentBBox = props.containmentIsBBox
+      ? resolvePPBBox(props.options.containment, docBBox) || docBBox
+      : getBBox(props.options.containment, true));
   props.minLeft = containmentBBox.left;
   props.maxLeft = containmentBBox.right - elementBBox.width;
   props.minTop = containmentBBox.top;
@@ -1165,7 +1198,9 @@ function initBBox(props, eventType) {
               gravityRangeEndProp = 'gravity'.concat(rangeAxisL, 'End');
             targetXY[specAxis] = resolvePPValue(targetXY[specAxis], baseOriginXY[specAxis], baseSizeXY[specAxis]);
             targetXY[startProp] = resolvePPValue(targetXY[startProp], baseOriginXY[rangeAxis], baseSizeXY[rangeAxis]);
-            targetXY[endProp] = resolvePPValue(targetXY[endProp], baseOriginXY[rangeAxis], baseSizeXY[rangeAxis]) - elementSizeXY[rangeAxis]; // Reduce the end of the line.
+            targetXY[endProp] =
+              resolvePPValue(targetXY[endProp], baseOriginXY[rangeAxis], baseSizeXY[rangeAxis]) -
+              elementSizeXY[rangeAxis]; // Reduce the end of the line.
 
             if(
               targetXY[startProp] > targetXY[endProp] || // Smaller than element size.
@@ -1277,7 +1312,11 @@ function initBBox(props, eventType) {
           var expanded = [
             ['x', 'y', 'xStart', 'xEnd', 'xStep', 'yStart', 'yEnd', 'yStep'].reduce(function (targetXY, prop) {
               if(parsedSnapTarget[prop]) {
-                targetXY[prop] = resolvePPValue(parsedSnapTarget[prop], prop === 'xStep' || prop === 'yStep' ? 0 : baseOriginXY[prop2Axis[prop]], baseSizeXY[prop2Axis[prop]]);
+                targetXY[prop] = resolvePPValue(
+                  parsedSnapTarget[prop],
+                  prop === 'xStep' || prop === 'yStep' ? 0 : baseOriginXY[prop2Axis[prop]],
+                  baseSizeXY[prop2Axis[prop]]
+                );
               }
 
               return targetXY;
@@ -1584,7 +1623,15 @@ function _setOptions(props, newOptions) {
 
             if(
               (corner =
-                corner === 'tl' || corner === 'lt' ? 'tl' : corner === 'tr' || corner === 'rt' ? 'tr' : corner === 'bl' || corner === 'lb' ? 'bl' : corner === 'br' || corner === 'rb' ? 'br' : null) &&
+                corner === 'tl' || corner === 'lt'
+                  ? 'tl'
+                  : corner === 'tr' || corner === 'rt'
+                  ? 'tr'
+                  : corner === 'bl' || corner === 'lb'
+                  ? 'bl'
+                  : corner === 'br' || corner === 'rb'
+                  ? 'br'
+                  : null) &&
               !added[corner]
             ) {
               corners.push(corner);
@@ -1674,7 +1721,9 @@ function _setOptions(props, newOptions) {
       snapOptions.base = SNAP_BASE;
     }
 
-    var parsedSnapTargets = (Array.isArray(newSnapOptions.targets) ? newSnapOptions.targets : [newSnapOptions.targets]).reduce(function (parsedSnapTargets, target) {
+    var parsedSnapTargets = (
+      Array.isArray(newSnapOptions.targets) ? newSnapOptions.targets : [newSnapOptions.targets]
+    ).reduce(function (parsedSnapTargets, target) {
       if(target == null) {
         return parsedSnapTargets;
       }
@@ -1862,20 +1911,24 @@ function _setOptions(props, newOptions) {
     autoScrollOptions.target = isElement(newAutoScrollOptions.target) ? newAutoScrollOptions.target : window; // speed
 
     autoScrollOptions.speed = [];
-    (Array.isArray(newAutoScrollOptions.speed) ? newAutoScrollOptions.speed : [newAutoScrollOptions.speed]).every(function (speed, i) {
-      if(i <= 2 && isFinite(speed)) {
-        autoScrollOptions.speed[i] = speed;
-        return true;
-      }
+    (Array.isArray(newAutoScrollOptions.speed) ? newAutoScrollOptions.speed : [newAutoScrollOptions.speed]).every(
+      function(speed, i) {
+        if(i <= 2 && isFinite(speed)) {
+          autoScrollOptions.speed[i] = speed;
+          return true;
+        }
 
-      return false;
-    });
+        return false;
+      }
+    );
 
     if(!autoScrollOptions.speed.length) {
       autoScrollOptions.speed = AUTOSCROLL_SPEED;
     } // sensitivity
 
-    var newSensitivity = Array.isArray(newAutoScrollOptions.sensitivity) ? newAutoScrollOptions.sensitivity : [newAutoScrollOptions.sensitivity];
+    var newSensitivity = Array.isArray(newAutoScrollOptions.sensitivity)
+      ? newAutoScrollOptions.sensitivity
+      : [newAutoScrollOptions.sensitivity];
     autoScrollOptions.sensitivity = autoScrollOptions.speed.map(function (v, i) {
       return isFinite(newSensitivity[i]) ? newSensitivity[i] : AUTOSCROLL_SENSITIVITY[i];
     }); // min*, max*
@@ -1888,7 +1941,11 @@ function _setOptions(props, newOptions) {
         autoScrollOptions[optionMin] = newAutoScrollOptions[optionMin];
       }
 
-      if(isFinite(newAutoScrollOptions[optionMax]) && newAutoScrollOptions[optionMax] >= 0 && (!autoScrollOptions[optionMin] || newAutoScrollOptions[optionMax] >= autoScrollOptions[optionMin])) {
+      if(
+        isFinite(newAutoScrollOptions[optionMax]) &&
+        newAutoScrollOptions[optionMax] >= 0 &&
+        (!autoScrollOptions[optionMin] || newAutoScrollOptions[optionMax] >= autoScrollOptions[optionMin])
+      ) {
         autoScrollOptions[optionMax] = newAutoScrollOptions[optionMax];
       }
     });
@@ -2022,7 +2079,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
       props.svgPoint = ownerSvg.createSVGPoint(); // Gecko bug, view.getScreenCTM returns CTM with root view.
 
       var svgView = element.nearestViewportElement;
-      props.svgCtmElement = !IS_GECKO ? svgView : svgView.appendChild(document.createElementNS(ownerSvg.namespaceURI, 'rect'));
+      props.svgCtmElement = !IS_GECKO
+        ? svgView
+        : svgView.appendChild(document.createElementNS(ownerSvg.namespaceURI, 'rect'));
       gpuTrigger = false;
       props.initElm = initSvg;
       props.moveElm = moveSvg;
@@ -2098,7 +2157,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
           var props = insProps[this._id];
           this.disabled = true; // To restore element and reset pointer
 
-          pointerEvent.unregStartHandler(pointerEvent.removeStartHandler(props.options.handle, props.pointerEventHandlerId));
+          pointerEvent.unregStartHandler(
+            pointerEvent.removeStartHandler(props.options.handle, props.pointerEventHandlerId)
+          );
           delete insProps[this._id];
         }
         /**
