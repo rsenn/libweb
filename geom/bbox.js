@@ -261,11 +261,15 @@ export class BBox {
   }
 
   static fromString(s) {
-    //console.log('BBox.fromString',s);
     let [x1, y1, x2, y2] = [...s.matchAll(/[-+.0-9]+/g)].map(([m]) => +m);
 
     let r = new BBox();
     return Object.assign(r, { x1, y1, x2, y2 });
+  }
+
+  static fromSVG(s) {
+    let [x, y, width, height] = [...s.matchAll(/[-+.0-9]+/g)].map(([m]) => +m);
+    return new BBox(x, y, x + width, y + height);
   }
 
   *[Symbol.iterator]() {
