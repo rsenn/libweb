@@ -1,7 +1,7 @@
 import { Point } from './point.js';
 import { Rect } from './rect.js';
 import { Line } from './line.js';
-import { className, coloring, define, defineGetter, immutableClass, inspect, inspectSymbol, isBrowser, types, isObject, roundTo, toSource } from '../misc.js';
+import { className, define, defineGetter, immutableClass, inspect, inspectSymbol, isBrowser, types, isObject, roundTo, toSource } from '../misc.js';
 
 export class PointList extends Array {
   constructor(...args) {
@@ -398,20 +398,7 @@ PointList.prototype.toMatrix = function() {
 
 PointList.prototype.toPoints = function(ctor = Array.of) {
   return ctor(...this);
-};
-/*if(!Util.isBrowser()) {
-  let c = Util.coloring();
-  let sym = Symbol.for('nodejs.util.inspect.custom');
-  PointList.prototype[sym] = function() {
-    return `${c.text('PointList', 1, 31)}${c.text('(', 1, 36)}${
-      c.text(this.getLength(), 1, 35) + c.code(1, 36)
-    }) [\n  ${this.map(({ x, y } // Util.toSource(point, {colors: true }) || point[sym]() ||
-    ) => Util.inspect({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n${c.text(']',
-      1,
-      36
-    )}`;
-  };
-}*/
+}; 
 PointList.prototype[inspectSymbol] = function(depth, options) {
   //const obj = Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   const obj = Array.from(this); //Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
