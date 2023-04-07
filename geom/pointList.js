@@ -1,7 +1,7 @@
 import { Point } from './point.js';
 import { Rect } from './rect.js';
 import { Line } from './line.js';
-import { className, define, immutableClass, inspectSymbol, types, isObject } from '../misc.js';
+import { className, define, immutableClass, inspectSymbol, types, isObject, mod } from '../misc.js';
 
 export class PointList extends Array {
   constructor(...args) {
@@ -24,7 +24,6 @@ export class PointList extends Array {
     } else if(args[0] && Point(args[0])) {
       for(let i = 0; i < args.length; i++) ret.push(Point(args[i]));
     } else if(args.length !== undefined && typeof args[0] == 'number') {
-
       while(args.length > 0) {
         let coords = args.splice(0, 2);
         ret.push(Point(coords));
@@ -41,7 +40,7 @@ export class PointList extends Array {
 PointList.prototype[Symbol.toStringTag] = 'PointList';
 
 define(PointList, {
-   get [Symbol.species]() {
+  get [Symbol.species]() {
     return PointList;
   }
 });
@@ -84,7 +83,7 @@ Object.defineProperty(PointList.prototype, 'size', {
   }
 });
 PointList.prototype.at = function(index) {
-  return this[+index];
+  return this[mod(+index, this.length)];
 };
 
 PointList.prototype.splice = function() {
@@ -104,7 +103,6 @@ PointList.prototype.removeSegment = function(index) {
   }
 };
 
-
 PointList.prototype.clone = function() {
   const ctor = this.constructor[Symbol.species];
   let points = PointList.prototype.map.call(this, p => Point.prototype.clone.call(p));
@@ -112,7 +110,7 @@ PointList.prototype.clone = function() {
 };
 
 PointList.prototype.toPolar = function(tfn) {
-  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x , y });
+  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x, y });
   return PointList.prototype.map.call(this, p => {
     const angle = Point.prototype.toAngle.call(p);
     return new Point(t(angle, Point.prototype.distance.call(p)));
@@ -131,8 +129,7 @@ PointList.prototype.toPolar = function(tfn) {
 };
 
 PointList.prototype.fromPolar = function(tfn) {
-
-  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x , y });
+  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x, y });
   return PointList.prototype.map.call(this, p => {
     let r = t(p.x, p.y);
     return new Point().fromAngle(r.x, r.y);
@@ -282,12 +279,6 @@ PointList.prototype.transform = function(m) {
   return this;
 };
 
-PointList.prototype.filter = function(pred) {
-  let ret = new PointList();
-  PointList.prototype.forEach.call(this, (p, i, l) => pred(p, i, l) && ret.push(new Point(l[i])));
-  return ret;
-};
-
 PointList.prototype.getLineIndex = function(index) {
   const len = PointList.prototype.getLength.call(this);
   return (index < 0 ? len + index : index) % len;
@@ -431,12 +422,8 @@ PointList.prototype.toPoints = function(ctor = Array.of) {
 };
 
 PointList.prototype[inspectSymbol] = function(depth, options) {
-
   const obj = Array.from(this);
-  return (
-    `\x1b[1;31m${className(this)}\x1b[0;36m` + obj.reduce((acc, { x, y }) => acc + ` ${x},${y}`, '') + `\x1b[0m`
-
-  );
+  return `\x1b[1;31m${className(this)}\x1b[0;36m` + obj.reduce((acc, { x, y }) => acc + ` ${x},${y}`, '') + `\x1b[0m`;
 };
 
 for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {
