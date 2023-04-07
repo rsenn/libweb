@@ -398,7 +398,7 @@ PointList.prototype.toMatrix = function() {
 
 PointList.prototype.toPoints = function(ctor = Array.of) {
   return ctor(...this);
-}; 
+};
 PointList.prototype[inspectSymbol] = function(depth, options) {
   //const obj = Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   const obj = Array.from(this); //Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
