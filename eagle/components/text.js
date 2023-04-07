@@ -31,7 +31,8 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
     .concat(elementTransform.invert())
     .translate(vec.x, vec.y)  
     .concat(transformation.scaling ? [transformation.find(t => t.type == 'scale')] : []);
-  console.log(`Text.render(2)`, { text, transformation, ang, transform,alignment });
+  
+  log(`Text.render(2)`, { text, transformation, ang, transform,alignment });
 
   let { scaling } = elementTransform;
   let align = Alignment(alignment,   - ang, elementTransform.scaling);

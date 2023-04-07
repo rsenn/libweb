@@ -25,8 +25,7 @@ export function Renderer(doc, factory, debug) {
   }
 
   setDebug(debug);
-  console.log('DEBUG:', DEBUG);
-  console.log('log:', log);
+ 
 
   ret.debug = log;
   return ret;

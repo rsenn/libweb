@@ -48,13 +48,17 @@ export class EagleSVGRenderer {
       if(path) {
         if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
         else if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
-        //console.log('EagleSVGRenderer.create', { path /*,ref*/ });
+
+       //console.log('EagleSVGRenderer.create', { path }, path.apply, util.getMethodNames(path, 2,0));
+
         try {
-          let e = path.apply(doc);
+          let e = [...path].reduce((acc,p) =>  acc[p], doc); // path.deref(doc);
           let parent = e.parentNode;
 
           insert(path, ret);
-        } catch(e) {}
+        } catch(error) {
+            console.log(`EagleSVGRenderer.constructor ERROR: ${error.message}\n${error.stack}`);
+        }
       }
       return ret;
     };

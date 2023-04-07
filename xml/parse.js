@@ -264,11 +264,11 @@ export let parse2 = function parse2(g) {
   return r;
 };
 
-if(Util.getPlatform() == 'quickjs') {
+/*if(Util.getPlatform() == 'quickjs') {
   import('xml.so').then(module => {
     parse = parse2 = module.read;
     if(!globalThis.xml) globalThis.xml = module;
   });
-}
+}*/
 
 export default parse2;

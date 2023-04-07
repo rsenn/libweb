@@ -69,7 +69,7 @@ export class IteratorAdapter extends Iterator {
   }
 }
 
-if(Util.getPlatform() == 'quickjs') {
+/*if(Util.getPlatform() == 'quickjs') {
   import('xml.so').then(module => {
     toXML = obj => {
       if(!Array.isArray(obj)) obj = [obj];
@@ -77,4 +77,4 @@ if(Util.getPlatform() == 'quickjs') {
     };
     if(!globalThis.xml) globalThis.xml = module;
   });
-}
+}*/
