@@ -1,5 +1,5 @@
 import { define, types, isObject } from '../misc.js';
-import { isPoint, Point } from '../geom/rect.js';
+import { isPoint, Point } from '../geom/point.js';
 import { isRect, Rect } from '../geom/rect.js';
 import { isSize, Size } from '../geom/size.js';
 
