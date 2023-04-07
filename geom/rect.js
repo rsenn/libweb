@@ -446,7 +446,7 @@ Rect.prototype.bbox = function() {
 
 Rect.prototype.transform = function(m) {
   if(isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
-  m.transform_rect(this);
+  m.transformRect(this);
   // if(round) Rect.prototype.round.call(this, 1e-13, 13);
   return this;
 };
@@ -528,13 +528,13 @@ Rect.bind = (o, p, gen) => {
   return proxy;
 };
 
-Rect.scale = curry((rect, sx, sy) => Matrix.scale(sx, sy).transform_rect(rect));
+Rect.scale = curry((rect, sx, sy) => Matrix.scale(sx, sy).transformRect(rect));
 Rect.resize = curry((rect, width, height) => {
   rect.width = width;
   rect.height = height;
   return rect;
 });
-Rect.translate = curry((rect, x, y) => Matrix.translate(f, f).transform_rect(rect));
+Rect.translate = curry((rect, x, y) => Matrix.translate(f, f).transformRect(rect));
 
 for(let f of ['scale', 'resize', 'translate']) {
   Rect.prototype[f] = function(...args) {

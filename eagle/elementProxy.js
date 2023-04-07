@@ -12,14 +12,14 @@ export class EagleElementProxy {
   getPoint(name = '') {
     const { element, matrix } = this;
     const p = new Point(+element['x' + name], +element['y' + name]);
-    matrix.transform_point(p);
+    matrix.transformPoint(p);
     return p;
   }
 
   setPoint(name = '', point) {
     const { element, invmatrix } = this;
     const p = new Point(point);
-    invmatrix.transform_point(p);
+    invmatrix.transformPoint(p);
 
     for(let coord of ['x', 'y']) element[coord + name] = p[coord];
     return p;

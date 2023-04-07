@@ -135,10 +135,6 @@ export class Transformation {
     return this.toString() != '';
   }
 
-  /* [Symbol.for('nodejs.util.inspect.custom')]() {
-      return this;
-    }*/
-
   static get rotation() {
     return Rotation;
   }
@@ -583,7 +579,7 @@ export class TransformationList extends Array {
     let trans = this.filter(t => !t.type.startsWith('translat'));
     let vec = new Point(x, y);
 
-    //trans.toMatrix().transform_point(vec);
+    //trans.toMatrix().transformPoint(vec);
 
     vec = vec.round(0.00001, 5);
     //console.log("from:", new Point(x,y), " to:", vec);

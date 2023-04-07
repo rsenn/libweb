@@ -40,8 +40,6 @@ const TList = (child, elem) => {
 };
 
 export class EagleElement extends EagleNode {
-  tagName = '';
-
   static list = [];
   static currentElement = null;
 
@@ -122,7 +120,8 @@ export class EagleElement extends EagleNode {
     Object.defineProperty(this, 'tagName', {
       get() {
         return this.raw.tagName;
-      }
+      },
+      enumerable: true
     });
     let doc = this.getDocument();
     let elem = this;
@@ -594,7 +593,7 @@ export class EagleElement extends EagleNode {
       //   console.log('symbol.getBounds():', symbol.name, b);
       let p = new Rect(b.rect).toPoints();
       let m = t.toMatrix();
-      p = new PointList([...m.transform_points(p)]);
+      p = new PointList([...m.transformPoints(p)]);
       bb.update(p);
       bb.move(x, y);
     } else if(this.tagName == 'sheet' || this.tagName == 'board') {

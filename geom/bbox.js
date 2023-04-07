@@ -1,4 +1,5 @@
 import { define, types, isObject } from '../misc.js';
+import { isPoint, Point } from '../geom/rect.js';
 import { isRect, Rect } from '../geom/rect.js';
 import { isSize, Size } from '../geom/size.js';
 
@@ -46,7 +47,7 @@ export class BBox {
       if(args.length > 0) this.updateList([...args]);
     }
 
-    define(this, 'objects', {});
+    define(this, { objects: {} });
   }
 
   getObjects() {
@@ -60,10 +61,13 @@ export class BBox {
 
   update(arg, offset = 0.0, obj = null) {
     //console.log('BBox.update', { arg, offset, obj });
+
     if(Array.isArray(arg)) return this.updateList(arg, offset);
     else if(isObject(arg)) {
       if(typeof arg.bbox == 'function') {
         arg = arg.bbox();
+      } else if(isPoint(arg)) {
+        this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
       } else if(isBBox(arg.objects)) {
         this.updateList(Object.values(arg.objects), offset);
       } else {

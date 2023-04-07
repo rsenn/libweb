@@ -135,15 +135,9 @@ export const types = {
   isArgumentsObject(v) {
     return Object.prototype.toString.call(v) == '[object Arguments]';
   },
-
-  /* isExternal(v) {
-    return isObject(v) && v instanceof External;
-  },*/
-
   isBoxedPrimitive(v) {
     return isObject(v) && [Number, String, Boolean, BigInt, Symbol].some(ctor => v instanceof ctor);
   },
-
   isGeneratorObject(v) {
     return isObject(v) && protoOf(v) == GeneratorPrototype;
   },
@@ -152,6 +146,21 @@ export const types = {
   },
   isModuleNamespaceObject(v) {
     return isObject(v) && v[Symbol.toStringTag] == 'Module';
+  },
+  isConstructor(v) {
+    return isFunction(v) && 'prototype' in v;
+  },
+  isIterable(v) {
+    return isObject(v) && isFunction(v[Symbol.iterator]);
+  },
+  isAsyncIterable(v) {
+    return isObject(v) && isFunction(v[Symbol.asyncIterator]);
+  },
+  isIterator(v) {
+    return isObject(v) && isFunction(v.next);
+  },
+  isArrayLike(v) {
+    return isObject(v) && typeof v.length == 'number' && Number.isInteger(v.length);
   }
 };
 
@@ -198,38 +207,6 @@ define(SyscallError.prototype, {
 });
 
 globalThis.SyscallError = SyscallError;
-export function extendArray(proto = Array.prototype) {
-  define(proto, {
-    get last() {
-      return this[this.length - 1];
-    },
-    at(index) {
-      const { length } = this;
-      return this[((index % length) + length) % length];
-    },
-    clear() {
-      this.splice(0, this.length);
-    },
-    findLastIndex(predicate) {
-      for(let i = this.length - 1; i >= 0; --i) {
-        const x = this[i];
-        if(predicate(x, i, this)) return i;
-      }
-      return -1;
-    },
-    findLast(predicate) {
-      let i;
-      if((i = this.findLastIndex(predicate)) == -1) return null;
-      return this[i];
-    },
-    unique() {
-      return [...new Set(this)];
-    },
-    pushUnique(...args) {
-      for(let arg of args) if(this.indexOf(arg) === -1) this.push(arg);
-    }
-  });
-}
 
 export function toString(arrayBuf, encoding = 'utf-8') {
   if(globalThis.TextDecoder) {
@@ -1557,6 +1534,25 @@ function getAnsiStyles() {
   });
 
   return styles;
+}
+
+export function stripAnsi(str) {
+  return (str + '').replace(new RegExp('\x1b[[(?);]{0,2}(;?[0-9])*.', 'g'), '');
+}
+
+export function padAnsi(str, n, s = ' ') {
+  let { length } = stripAnsi(str);
+  let pad = '';
+  for(let i = length; i < n; i++) pad += s;
+  return pad;
+}
+
+export function padStartAnsi(str, n, s = ' ') {
+  return padAnsi(str, n, s) + str;
+}
+
+export function padEndAnsi(str, n, s = ' ') {
+  return str + padAnsi(str, n, s);
 }
 
 export function randInt(...args) {

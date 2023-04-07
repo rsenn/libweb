@@ -1,7 +1,7 @@
-import { Point, isPoint } from './point.js';
+import { Point } from './point.js';
 import { Rect } from './rect.js';
-import { Line, isLine } from './line.js';
-import Util from '../util.js';
+import { Line } from './line.js';
+import { className, coloring, define, defineGetter, immutableClass, inspect, inspectSymbol, isBrowser, types, isObject, roundTo, toSource } from '../misc.js';
 
 export class PointList extends Array {
   constructor(...args) {
@@ -11,7 +11,7 @@ export class PointList extends Array {
     const base = Array;
     let ret = new.target ? this : [];
 
-    if(Array.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
+    if(Array.isArray(args[0]) || types.isIterable(args[0])) args = [...args[0]];
 
     if(typeof points === 'string') {
       const matches = [...points.matchAll(/[-.0-9,]+/g)];
@@ -39,9 +39,9 @@ export class PointList extends Array {
 }
 PointList.prototype[Symbol.toStringTag] = 'PointList';
 
-/*Util.defineGetter(PointList, Symbol.species, () => PointList);
-Util.defineGetter(PointList.prototype, Symbol.species, () => PointList);*/
-Util.define(PointList, {
+/*defineGetter(PointList, Symbol.species, () => PointList);
+defineGetter(PointList.prototype, Symbol.species, () => PointList);*/
+define(PointList, {
   /* prettier-ignore */ get [Symbol.species]() {
     return PointList;
   }
@@ -105,7 +105,7 @@ PointList.prototype.removeSegment = function(index) {
   const cmd = (i) => (i == 0 ? 'M' : 'L'[relative ? 'toLowerCase' : 'toUpperCase']());
   const len = PointList.prototype.getLength.call(this);
   for(let i = 0; i < len; i++) {
-    out += cmd(i) + Util.roundTo(point(i).x, precision) + ',' + Util.roundTo(point(i).y, precision) + ' ';
+    out += cmd(i) + roundTo(point(i).x, precision) + ',' + roundTo(point(i).y, precision) + ' ';
   }
   if(close) out += 'Z';
   return out;
@@ -263,9 +263,9 @@ PointList.prototype.translate = function(x, y) {
   return this;
 };
 PointList.prototype.transform = function(m) {
-  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
-  if(Util.isObject(m) && typeof m.transform_point == 'function') {
-    this.forEach(p => m.transform_point(p));
+  if(isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
+  if(isObject(m) && typeof m.transformPoint == 'function') {
+    this.forEach(p => m.transformPoint(p));
     return this;
   }
   for(let i = 0; i < this.length; i++) Point.prototype.transform.call(this[i], m);
@@ -412,11 +412,11 @@ PointList.prototype.toPoints = function(ctor = Array.of) {
     )}`;
   };
 }*/
-PointList.prototype[Util.inspectSymbol] = function(depth, options) {
+PointList.prototype[inspectSymbol] = function(depth, options) {
   //const obj = Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   const obj = Array.from(this); //Object.getOwnPropertyNames(this).reduce((acc,n) => ({ ...acc, [n]: this[n] }), {});
   return (
-    `\x1b[1;31m${Util.className(this)}\x1b[0;36m` + obj.reduce((acc, { x, y }) => acc + ` ${x},${y}`, '') + `\x1b[0m`
+    `\x1b[1;31m${className(this)}\x1b[0;36m` + obj.reduce((acc, { x, y }) => acc + ` ${x},${y}`, '') + `\x1b[0m`
     // inspect(Object.setPrototypeOf(obj, PointList.prototype), depth, options)
   );
 };
@@ -425,11 +425,11 @@ for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', '
   PointList[name] = points => PointList.prototype[name].call(points);
 }
 
-/*Util.define(PointList, {
+/*define(PointList, {
   get [Symbol.species]() {
     return PointList;
   }
 });*/
 
-export const ImmutablePointList = Util.immutableClass(PointList);
-//Util.defineGetter(ImmutablePointList, Symbol.species, () => ImmutablePointList);
+export const ImmutablePointList = immutableClass(PointList);
+//defineGetter(ImmutablePointList, Symbol.species, () => ImmutablePointList);

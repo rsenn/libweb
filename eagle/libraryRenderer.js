@@ -120,7 +120,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
         Rect.round(bounds, 2.54);
       }
       measure = measure.outset(1.28).round(2.54);
-      let matrix = new Matrix().affine_transform(measure.toPoints(), new Rect(bounds).toPoints());
+      let matrix = new Matrix().affineTransform(measure.toPoints(), new Rect(bounds).toPoints());
       //  console.debug("LibraryRenderer.renderItem ", {matrix});
 
       let { scaling, translation } = (transformation = transformation.concat(TransformationList.fromMatrix(matrix)));

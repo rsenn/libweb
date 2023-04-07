@@ -108,8 +108,8 @@ Circle.prototype.clone = function() {
 
 Circle.prototype.transform = function(m, round = true) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
-  Matrix.prototype.transform_point.call(m, this);
-  const [w, h] = Matrix.prototype.transform_wh.call(m, this.radius, this.radius);
+  Matrix.prototype.transformPoint.call(m, this);
+  const [w, h] = Matrix.prototype.transformWH.call(m, this.radius, this.radius);
   this.radius = Math.abs(Math.max(w, h));
   if(round) Circle.prototype.round.call(this, 1e-13, 13);
   return this;
