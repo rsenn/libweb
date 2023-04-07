@@ -3,6 +3,7 @@ import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD, useTransformation, InferRotation, ExtractRotation } from '../renderUtils.js';
 import { TransformationList, Rotation, Translation, Point } from '../../geom.js';
 import { Cross } from './cross.js';
+
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, ...props }) => {
   let transformation2 = useTransformation(props.transformation);
   let { transformation = new TransformationList() } = opts;
