@@ -1,4 +1,4 @@
-import { define, types, isObject } from '../misc.js';
+import { define, types, isObject,roundTo } from '../misc.js';
 import { isPoint, Point } from '../geom/point.js';
 import { isRect, Rect } from '../geom/rect.js';
 import { isSize, Size } from '../geom/size.js';
@@ -48,6 +48,11 @@ export class BBox {
     }
 
     define(this, { objects: {} });
+  }
+
+  clone() {
+        const { x1, y1, x2, y2 } = this;
+    return new BBox(x1,y1,x2,y2);
   }
 
   getObjects() {
@@ -202,9 +207,13 @@ export class BBox {
     return this;
   }
 
-  round(fn = arg => Math.round(arg)) {
+roundTo(...args) {
+  return this.round(n => roundTo(n,...args));
+}
+
+  round(fn = arg => roundTo(arg,1e-3)) {
     let ret = new BBox();
-    this.transform(fn, ret);
+    this.transform(fn,ret);
     return ret;
   }
 
