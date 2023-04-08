@@ -349,7 +349,8 @@ export class EagleNode {
 
     const { raw } = this;
     const { children, tagName, attributes = {} } = raw;
-    const { attributeLists } = EagleElement;
+    const { attributeLists } = this.constructor; // EagleElement;
+
     //console.log('EagleNode.inspect',  {tagName,attributes});
     const attributeList = attributeLists[tagName] || Object.keys(attributes);
     // console.log('EagleNode.inspect',  { tagName, attributeList });
