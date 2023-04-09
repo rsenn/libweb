@@ -1,4 +1,3 @@
-import { isNumeric, isObject, size } from './misc.js'
 
 export const RETURN_VALUE_PATH = 0;
 export const RETURN_PATH = 1 << 24;

@@ -1,8 +1,7 @@
-import { camelize, className, colorText, define, escapeRegex, isObject, randStr, toPlainObject } from '../misc.js';
 import inspect from 'inspect';
 import { Lexer, lexMatch } from './lexer.js';
 import { Parser, Node } from './parser.js';
-import Util from '../util.js';
+import { camelize, className, colorText, define, escapeRegex, isObject, randStr, toPlainObject } from '../misc.js';
 
 const nodeInspect = Symbol.for('nodejs.util.inspect.custom');
 

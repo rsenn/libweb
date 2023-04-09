@@ -352,7 +352,6 @@ WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMa
     '#if hasCrop',
     'uniform vec4 uCropSource;',
     '#endif',
-    '#endif',
     'void main(void) {',
     '#if hasTexture',
     '#if hasCrop',
@@ -1744,7 +1743,6 @@ export const crosskit = {
         x1 = v.r * Math.cos((angle * Math.PI) / 180);
         y1 = v.r * Math.sin((angle * Math.PI) / 180);
         cakepen.moveTo(v.x, v.y);
-        cakepen.lineTo(x1 + v.x, y1 + v.y);
         cakepen.lineTo(x1 + v.x, y1 + v.y);
       }
       cakepen.closePath();

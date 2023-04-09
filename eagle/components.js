@@ -1,4 +1,3 @@
-import { ucfirst } from '../misc.js';
 import { Component } from '../dom/preactComponent.js';
 import { polarToCartesian, describeArc, Arc } from './components/arc.js';
 import { Background } from './components/background.js';

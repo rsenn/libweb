@@ -7,7 +7,6 @@ import { text, concat } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 import { BBox } from '../geom.js';
-//import { ImmutablePath } from '../json.js';
 import { Pointer } from '../pointer.js';
 import { read as fromXML, write as toXML } from '../xml.js';
 

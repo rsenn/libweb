@@ -210,7 +210,8 @@ Size.prototype.toString = function(opts = {}) {
   const { width, height, units = { width: unit, height: unit } } = this;
   return `${left}${width}${(isObject(units) && units.width) || unit}${separator}${height}${(isObject(units) && units.height) || unit}${right}`;
 };
-Size.prototype[inspectSymbol] = function(depth, options) {
+if(Symbol.inspect)
+Size.prototype[Symbol.inspect] = function(depth, options) {
   const { width, height } = this;
   return define({ width, height }, { [Symbol.toStringTag]: 'Size' });
 };

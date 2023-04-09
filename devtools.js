@@ -1,12 +1,6 @@
-import { decamelize, defineGetterSetter, distinct, hex, map, parseURL, reduce, stylesheets, unique } from './misc.js';
-//import React from "react";
-//import ReactDOM from "react-dom";
 //prettier-ignore
 import dom, { CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, Size, SVG, Timer, Node, isElement } from './dom.js';
-//import { SvgOverlay, SvgPathTracer } from "./svg/overlay.js";
-//import { SvgPath } from "./svg/path.js";
-import Util from './util.js';
-//import { toJS } from "mobx";
+import { decamelize, defineGetterSetter, distinct, hex, map, parseURL, reduce, stylesheets, unique } from './misc.js';
 import { trkl } from './trkl.js';
 import HashList from './container/hashList.js';
 import { makeLocalStorage } from './autoStore.js';
@@ -223,7 +217,6 @@ export async function getStars() {
 
     console.log('offset:',step.offset, ' color:',color, ' element: ', e);
   });
-
 
   palette = colors(steps);
 */

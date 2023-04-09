@@ -1,9 +1,9 @@
-import { className, getGlobalObject, isConstructor, isGenerator } from '../misc.js';
+import filesystem from 'fs';
 import { Repeater } from '../repeater/repeater.js';
-import Util from '../util.js';
+import { className, isConstructor } from '../misc.js';
 
 function gotClassPrototype(name, protoFn) {
-  let ctor = Util.getGlobalObject()[name];
+  let ctor = globalThis[name];
   return Util.isConstructor(ctor) && ctor.prototype && typeof ctor.prototype[protoFn] == 'function';
 }
 
@@ -224,38 +224,7 @@ export function AsyncRead(readable) {
 }
 
 export const ReadFromIterator = null;
-/*
-  (gotClassPrototype('ReadableStream', 'read') &&
-    class ReadFromIterator extends (await import('stream')).Readable {
-      constructor(iterator, options) {
-        super(options);
-        this.iterator = Util.isGenerator(iterator) ? iterator() : iterator;
-      }
 
-      async _read() {
-        let r = await this.iterator.next();
-        const { done, value } = r;
-        if(done) {
-          this.push(null);
-          return;
-        }
-
-        console.log('value:', value);
-        this.push(value);
-      }
-    }) ||
-  function ReadFromIterator(iterator) {
-    return new ReadableStream({
-      start() {},
-      async pull(controller) {
-        let r = await iterator.next();
-
-        if(!r.done) controller.enqueue(r.value);
-      }
-    });
-  };
-
-*/
 export async function WriteToRepeater() {
   const repeater = new Repeater(async (push, stop) => {
     await push({
@@ -368,7 +337,7 @@ export class DebugTransformStream {
 
 export async function CreateWritableStream(handler, options = { decodeStrings: false }) {
   let ctor, browser, args;
-  if((ctor = Util.getGlobalObject('WritableStream'))) {
+  if((ctor = globalThis.WritableStream)) {
     browser = true;
     args = [handler, options];
   } else {
@@ -410,7 +379,7 @@ export async function CreateWritableStream(handler, options = { decodeStrings: f
 
 export async function CreateTransformStream(handler, options = { decodeStrings: false }) {
   let ctor, browser, args;
-  if((ctor = Util.getGlobalObject('TransformStream'))) {
+  if((ctor = globalThis.TransformStream)) {
     browser = true;
     args = [handler, options];
   } else {

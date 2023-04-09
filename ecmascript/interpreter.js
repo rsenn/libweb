@@ -1,9 +1,6 @@
-import { className, filterOutKeys, isNumeric, isObject } from '../misc.js';
 import { ESNode, Property, MemberExpression } from './estree.js';
-import Util from '../util.js';
-//import { inspect } from 'util';
+import { className, filterOutKeys, isNumeric, isObject } from '../misc.js';
 
-//import util from 'util';
 export class ECMAScriptValue {
   static types = {
     string: 0,

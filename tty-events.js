@@ -695,7 +695,6 @@ function* emitKeys(term) {
          *
          * We have basically two classes of ascii characters to process:
          *
-         *
          * 1. `\x1b[24;5~` should be parsed as { code: '[24~', modifier: 5 }
          *
          * This particular example is featuring Ctrl+F12 in xterm.
@@ -704,7 +703,6 @@ function* emitKeys(term) {
          *	- first part can contain one or two digits
          *
          * So the generic regexp is like /^\d\d?(;\d)?[~^$]$/
-         *
          *
          * 2. `\x1b[1;5H` should be parsed as { code: '[H', modifier: 5 }
          *

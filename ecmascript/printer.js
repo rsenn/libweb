@@ -1,10 +1,7 @@
-import { className, coloring, decodeAnsi, define, equals, escape, isObject } from '../misc.js';
 import inspect from 'inspect';
 import { ESNode, Literal, FunctionLiteral, TemplateLiteral, Property, MethodDefinition, FunctionDeclaration, ArrowFunctionExpression, Identifier, ClassDeclaration, ObjectPattern, SpreadElement, MemberExpression, Statement, ImportDeclaration, ImportSpecifier, BlockStatement, IfStatement } from './estree.js';
-import Util from '../util.js';
+import { className, coloring, decodeAnsi, define, equals, escape, isObject } from '../misc.js';
 import * as deep from '../deep.js';
-//import util from 'util';
-//import util from 'util';
 const linebreak = new RegExp('\\r?\\n', 'g');
 
 export class Printer {

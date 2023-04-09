@@ -1,4 +1,3 @@
-import { className, getGlobalObject, getMethodNames, waitFor } from '../misc.js';
 /* eslint no-bitwise: 0 */
 /* eslint no-continue: 0 */
 /*import events from 'events';
@@ -9,7 +8,7 @@ import stream from 'stream';
 import { EventEmitter } from '../eventEmitter.js';
 import { PipeToRepeater } from '../stream/utils.js';
 import transformStream from '../stream/transformStream.js';
-import Util from '../util.js';
+import { className, getMethodNames, waitFor } from '../misc.js';
 
 export const noop = () => {};
 
@@ -244,7 +243,7 @@ export const parseStringSync = (str, options) => {
   return results;
 };
 
-let TransformStream = Util.getGlobalObject().TransformStream || transformStream.TransformStream;
+let TransformStream = globalThis.TransformStream || transformStream.TransformStream;
 
 // @param {string} str The G-code text string
 // @param {options} options The options object

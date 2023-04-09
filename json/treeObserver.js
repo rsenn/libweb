@@ -1,6 +1,5 @@
-import { className, isNumeric, isObject, transformer, weakMapper } from '../misc.js';
 import ObservableMembrane from '../proxy/observableMembrane.js';
-import Util from '../util.js';
+import { className, isNumeric, isObject, transformer, weakMapper } from '../misc.js';
 import { PathMapper } from './pathMapper.js';
 import { ImmutablePath } from './path.js';
 import { ImmutableXPath } from '../xml/xpath.js';
@@ -12,11 +11,11 @@ export class TreeObserver extends ObservableMembrane {
   getType(value, path) {
     let type = null;
     path = path || this.mapper.get(value);
-    if(!Util.isObject(value)) return null;
+    if(!isObject(value)) return null;
     //else if(Array.isArray(value) || ImmutablePath.isChildren([...path][path.length - 1])) type = 'NodeList';
     else if('tagName' in value) type = 'Element';
-    else if(Util.isObject(path) && [...path].reverse()[0] == 'attributes') type = 'AttributeMap';
-    else if(Util.isObject(path) && [...path].reverse()[0] == 'children') type = 'NodeList';
+    else if(isObject(path) && [...path].reverse()[0] == 'attributes') type = 'AttributeMap';
+    else if(isObject(path) && [...path].reverse()[0] == 'children') type = 'NodeList';
     else type = /attributes/.test(path + '') ? 'AttributeMap' : 'Node';
     //console.log('getType', type);
     return type;
@@ -31,7 +30,7 @@ export class TreeObserver extends ObservableMembrane {
         let path = basePath.concat([key]);
 
         const value = target[key];
-        if(Util.isObject(value)) {
+        if(isObject(value)) {
           pathMapper.set(value, path.concat([]));
           for(let handler of this.handlers) handler('access', target, path.concat([key]), value);
         }
@@ -43,7 +42,7 @@ export class TreeObserver extends ObservableMembrane {
         const idx = ['attributes', 'tagName', 'children'].indexOf(key);
         if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path || [], true);
         let value = path.apply(obj);
-        if(Util.isObject(obj) && !Array.isArray(obj) && key != 'tagName') {
+        if(isObject(obj) && !Array.isArray(obj) && key != 'tagName') {
         }
         for(let handler of this.handlers) {
           handler('change', target, path, value);
@@ -52,14 +51,14 @@ export class TreeObserver extends ObservableMembrane {
       valueDistortion(value) {
         let { target, key, path } = this.last || {};
         let valueType = typeof value;
-        let valueClass = Util.className(value);
-        let valueKeys = Util.isObject(value) ? Object.keys(value) : [];
+        let valueClass = className(value);
+        let valueKeys = isObject(value) ? Object.keys(value) : [];
         if(key || path) {
           //console.log('valueDistortion', { key, path, valueType, valueClass, valueKeys });
-          if(!Util.isObject(target)) return value;
-          let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
+          if(!isObject(target)) return value;
+          let q = isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
           if(typeof value == 'string' && !isNaN(+value)) value = +value;
-          if(Util.isObject(value)) {
+          if(isObject(value)) {
             this.types(value, key);
           }
         }
@@ -75,12 +74,12 @@ export class TreeObserver extends ObservableMembrane {
       //path = path.concat(key ? [key] : []);
       //console.log('getPath', { key, path, target });
       let value;
-      if(path !== null && Util.isObject(target) && key) {
+      if(path !== null && isObject(target) && key) {
         let obj = target[key] ? null : pathMapper.at(path);
         value = obj ? obj[key] : target[key];
-        if(Util.isObject(value)) {
+        if(isObject(value)) {
           for(let prop in value)
-            if(Util.isObject(value[prop])) pathMapper.set(value[prop], Util.isNumeric(prop) && !ImmutablePath.isChildren(path.last) ? path.concat(['children', +prop]) : path.concat([prop]));
+            if(isObject(value[prop])) pathMapper.set(value[prop], isNumeric(prop) && !ImmutablePath.isChildren(path.last) ? path.concat(['children', +prop]) : path.concat([prop]));
         }
 
         //path = path.concat(key ? [key] : []);
@@ -95,20 +94,20 @@ export class TreeObserver extends ObservableMembrane {
     this.readOnly = !!readOnly;
   }
 
-  types = Util.weakMapper((obj, key) =>
+  types = weakMapper((obj, key) =>
     //console.log('types:', key, obj);
     this.getType(obj, key)
   );
 
   /*
-  get = Util.weakMapper((arg, p) => {
+  get = weakMapper((arg, p) => {
     let ret = this[this.readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
     if(this.root === undefined) this.root = arg;
     else if(this.mapper.root && this.mapper.root != this.root) this.root = this.mapper.root;
     return ret;
   });*/
 
-  entry = Util.weakMapper((arg, path, type) => {
+  entry = weakMapper((arg, path, type) => {
     const { readOnly } = this;
     let proxy = this[readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
     path = path || this.getPath(arg) || [];
@@ -116,7 +115,7 @@ export class TreeObserver extends ObservableMembrane {
     return { proxy, path, type };
   });
 
-  getField = field => Util.transformer(this.entry, ret => (Util.isObject(ret) && field in ret ? ret[field] : ret));
+  getField = field => transformer(this.entry, ret => (isObject(ret) && field in ret ? ret[field] : ret));
 
   proxy = this.getField('proxy');
   type = this.getField('type');

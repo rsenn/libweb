@@ -1,10 +1,8 @@
-import { base64.decode, foreach } from './misc.js';
-//import ReactDOM from "react-dom";
 import { Element, Point, Rect, Renderer, Select, SVG } from './dom.js';
 import { HSLA } from './color.js';
 
 import { axios } from './axios.js';
-import Util from './util.js';
+import { base64.decode, foreach } from './misc.js';
 import { Polygon } from './geom.js';
 import devtools, { storage, select } from './devtools.js';
 import { TouchListener } from './touchHandler.js';

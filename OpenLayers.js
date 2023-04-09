@@ -20702,7 +20702,6 @@ OpenLayers.Popup.Framed = OpenLayers.Class(OpenLayers.Popup.Anchored, {
         this.imageSrc,
         'absolute',
         null,
-        null,
         null
       );
       c.div.appendChild(c.image);

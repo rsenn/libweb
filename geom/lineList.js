@@ -1,4 +1,3 @@
-import { coloring, defineGetter, immutableClass, isBrowser, isGenerator } from '../misc.js';
 import inspect from 'inspect';
 import { Line } from './line.js';
 import { BBox } from './bbox.js';
@@ -6,12 +5,12 @@ import { PointList } from './pointList.js';
 import { Point } from './point.js';
 import { Polyline } from './polyline.js';
 import { Element, isElement } from '../dom/element.js';
-import Util from '../util.js';
+import {  defineGetter, immutableClass, types } from '../misc.js';
 
 export class LineList extends Array {
   constructor(lines) {
     super();
-    if(Array.isArray(lines) || Util.isGenerator(lines)) {
+    if(Array.isArray(lines) || types.isIterable(lines)) {
       for(let line of lines) {
         if(!(line instanceof Line)) line = Array.isArray(line) ? new Line(...line) : new Line(line);
         this.push(line);
@@ -139,7 +138,8 @@ export class LineList extends Array {
   }
 
   coincidences() {
-    let entries = [...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))];
+    //let entries = [...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))];
+    let entries = [...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]);
 
     //entries =    entries.filter(([p,indexes]) => indexes.length > 1);
 
@@ -167,21 +167,7 @@ export class LineList extends Array {
   [Symbol.toStringTag]() {
     return this.toString({ separator: '\n' });
   }
-
-  [Symbol.for('nodejs.util.inspect.custom')](n, opts = {}) {
-    let c = Util.coloring(false && opts.colors);
-    let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) => (this[0][p] ? p : a));
-    //console.log('inspectFn:', toString);
-    //   return inspect(this, { ...opts, toString });
-    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map(
-      line =>
-        line[toString].call(line, n, {
-          ...opts,
-          color: false
-        }) /*({ x1, y1,x2,y2 }) => inspect({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/
-    ).join(',\n  ')}\n${c.text(']', 1, 36)}`;
-  }
-
+ 
   isContinuous() {
     let prevLine;
     let i = 0;
@@ -263,15 +249,7 @@ LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points,
     }
   }
   return polygons.map(points => createfn(points));
-};
-/*
-if(!Util.isBrowser()) {
-  let c = Util.coloring();
-  const sym = Symbol.for('nodejs.util.inspect.custom');
-  LineList.prototype[sym] = function() {
-    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map((line) => line[sym]()  ).join(',\n  ')}\n${c.text(']', 1, 36)}`;
-  };
-}*/
+}; 
 
 Util.defineGetter(LineList, Symbol.species, function() {
   return this;

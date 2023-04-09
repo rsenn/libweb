@@ -1,3 +1,5 @@
+import { tryCatch } from '../misc.js';
+
 /**
  * Copyright (C) 2017
  * salesforce.com, inc.
@@ -7,7 +9,8 @@ const { isArray } = Array;
 const {
   getPrototypeOf,
   create: ObjectCreate,
-  /* defineProperty: ObjectDefineProperty,*/ defineProperties: ObjectDefineProperties,
+  defineProperty: ObjectDefineProperty,
+  defineProperties: ObjectDefineProperties,
   isExtensible,
   getOwnPropertyDescriptor,
   getOwnPropertyNames,
@@ -15,7 +18,7 @@ const {
   preventExtensions,
   hasOwnProperty
 } = Object;
-const ObjectDefineProperty = define;
+//const ObjectDefineProperty = define;
 
 const { push: ArrayPush, concat: ArrayConcat, map: ArrayMap } = Array.prototype;
 const OtS = {}.toString;

@@ -1,5 +1,4 @@
 import { MutablePath, ImmutablePath } from '../json/path.js';
-//import Util from '../util.js';
 import { className, define, immutableClass, isArray, isNumeric, isObject } from '../misc.js';
 
 const incr = (o, p, i = 1) => (o[p] = (o[p] || 0) + i);

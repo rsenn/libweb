@@ -1,5 +1,3 @@
-//import Util from './util.js';
-//import inspect from './inspect.js';
 
 const zip = a => a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
 const once = (fn, thisObj) => {

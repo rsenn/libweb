@@ -488,8 +488,6 @@ Object.defineProperties(accumulateDiff, {
 //hackish...
 accumulateDiff.DeepDiff = accumulateDiff;
 //...but works with:
-//import DeepDiff from 'deep-diff'
-//import { DeepDiff } from 'deep-diff'
 //const DeepDiff = require('deep-diff');
 //const { DeepDiff } = require('deep-diff');
 

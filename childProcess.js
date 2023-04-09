@@ -1,5 +1,3 @@
-import { getMethodNames, memoize } from 'misc.js'
-import PortableFileSystem from './filesystem.js';
 
 export const SIGHUP = 1;
 export const SIGINT = 2;
@@ -221,7 +219,6 @@ export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
   let fs, err;
   let a = [];
   try {
-    a = [await PortableFileSystem(), await import('std'), await import('os')];
     fs = await CreatePortableChildProcess(QuickJSChildProcess, ...a);
   } catch(error) {
     err = error;

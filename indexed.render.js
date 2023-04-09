@@ -486,8 +486,6 @@ Indexed.PCXread = function(data, readpalette) {
     pcx.palette = new Indexed.Palette(256);
     for(var i = data.length - 768, j = 0, len = data.length; i < len; ) {
       pcx.palette.data8[j++] = data[i++];
-      pcx.palette.data8[j++] = data[i++];
-      pcx.palette.data8[j++] = data[i++];
       pcx.palette.data8[j++] = 255;
     }
   }

@@ -1,5 +1,3 @@
-import { getGlobalObject } from '../misc.js';
-import Util from '../util.js';
 
 import { WritableStream } from './writableStream.js';
 
@@ -256,7 +254,7 @@ export class TransformStreamDefaultController {
 }
 
 export const TransformStream =
-  Util.getGlobalObject().TransformStream ||
+  globalThis.TransformStream ||
   class TransformStream {
     constructor(transformer = {}) {
       this._transformer = transformer;

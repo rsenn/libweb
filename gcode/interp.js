@@ -1,4 +1,3 @@
-import { isIterable, isIterator } from '../misc.js';
 'use strict';
 
 import gcodeInterp from './gcode-interp.js';

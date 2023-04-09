@@ -1,12 +1,9 @@
-import { getGlobalObject } from '../misc.js';
-import PortableFileSystem from '../filesystem.js';
+import filesystem from 'fs';
 import { EventEmitter } from '../eventEmitter.js';
-import Util from '../util.js';
 
-if(!globalThis.filesystem) PortableFileSystem(/*instance => (filesystem = instance)*/);
 
 export const WritableStream =
-  Util.getGlobalObject().WritableStream ||
+  globalThis.WritableStream ||
   class WritableStream extends EventEmitter {
     constructor(options = {}) {
       super();

@@ -1,4 +1,3 @@
-import { fnName, indent, isObject } from '../misc.js';
 import inspect from 'inspect';
 import { Util } from '../util.js';
 import { Element } from './element.js';

@@ -140,7 +140,6 @@ function Mash() {
   return mash;
 }
 
-//importState to sync generator states
 Alea.importState = function(i) {
   let random = new Alea();
   random.importState(i);

@@ -1,6 +1,5 @@
-import { getCallers, getCallerStack, getMethodNames, histogram, pad, repeat, stackFrame, unique } from './misc.js';
 import inspect from 'inspect';
-import Util from './util.js';
+import { getCallers, getCallerStack, getMethodNames, histogram, pad, repeat, stackFrame, unique } from './misc.js';
 
 function Stack() {
   let stack = Util.getCallerStack(1, 100).map(Util.stackFrame);

@@ -1,14 +1,11 @@
-import { abbreviate, className, fnName, getCallerStack, getMethodNames, isObject, once, pad, propertyLookup, tail, trim } from '../misc.js';
 import inspect from 'inspect';
-import Util from '../util.js';
+import { abbreviate, className, fnName, getCallerStack, getMethodNames, isObject, once, pad, propertyLookup, tail, trim } from '../misc.js';
 
 import { Lexer, Location, Token } from './lexer.js';
 export { Lexer, Location, Token, PathReplacer } from './lexer.js';
 
-//import { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/tests/jslexer.js'; export { Lexer, SyntaxError, Location, Token } from '../../quickjs/qjs-modules/tests/jslexer.js';
 
 import deep from '../deep.js';
-//import util from 'util';
 import { TokenList } from './token.js';
 import { Printer } from './printer.js';
 import { ESNode, Program, Expression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionArgument, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';

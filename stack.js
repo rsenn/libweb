@@ -1,4 +1,3 @@
-import { Location } from './misc.js';
 export { Location } from './misc.js';
 
 const inspectSymbol = Symbol.inspect ?? Symbol.for('quickjs.inspect.custom');

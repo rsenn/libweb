@@ -1,5 +1,4 @@
-import { base64, base64.decode, base64.encode } from './misc.js';
-import Util from './util.js';
+import filesystem from 'fs';
 
 //const { decode: decodeBase64, encode: encodeBase64 } = Util.base64;
 const [encodeBase64, decodeBase64] = [
@@ -125,7 +124,7 @@ function readFromFileMap(sm, dir, filesystem) {
     .join('/');
 
   try {
-    return filesystem.readFile(filepath, 'utf8');
+    return filesystem.readFileSync(filepath, 'utf8');
   } catch(e) {
     throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
   }

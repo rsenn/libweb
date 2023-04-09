@@ -537,9 +537,6 @@
                         var i = (7 & t) << 4;
                         if(((n.buf[n.pos++] |= i | ((t >>>= 3) ? 128 : 0)), !t)) return;
                         if(((n.buf[n.pos++] = (127 & t) | ((t >>>= 7) ? 128 : 0)), !t)) return;
-                        if(((n.buf[n.pos++] = (127 & t) | ((t >>>= 7) ? 128 : 0)), !t)) return;
-                        if(((n.buf[n.pos++] = (127 & t) | ((t >>>= 7) ? 128 : 0)), !t)) return;
-                        if(((n.buf[n.pos++] = (127 & t) | ((t >>>= 7) ? 128 : 0)), !t)) return;
                         n.buf[n.pos++] = 127 & t;
                       })(r, n);
                   })(t, this)
@@ -21390,10 +21387,7 @@
                         P,
                         null,
                         NaN,
-                        NaN,
-                        NaN,
                         1,
-                        0,
                         0,
                         this.uo,
                         this.ao,
@@ -21423,10 +21417,7 @@
                         P,
                         null,
                         NaN,
-                        NaN,
-                        NaN,
                         1,
-                        0,
                         0,
                         this.uo,
                         this.ao,

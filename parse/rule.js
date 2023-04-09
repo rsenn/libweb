@@ -1,5 +1,3 @@
-import { colorText, define } from '../misc.js';
-import Util from '../util.js';
 
 export class Rule {
   productions = [];

@@ -1,6 +1,11 @@
-import { fnName, getGlobalObject, getMethodNames, indent, isObject, toSource, typeOf } from '../misc.js';
 import inspect from 'inspect';
 import { h, options, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.mjs';
+import { forwardRef } from '../preact/forwardRef.js';
+import { Element } from './element.js';
+import { fnName, getMethodNames,  isObject,  className } from '../misc.js';
+
+export { forwardRef } from '../preact/forwardRef.js';
+
 export {
   h,
   options,
@@ -21,18 +26,8 @@ export {
   useDebugValue,
   cloneElement
 } from '../preact.mjs';
-import { forwardRef } from '../preact/forwardRef.js';
-export { forwardRef } from '../preact/forwardRef.js';
 
-//import html from '../htm.js';
-//export { default as html } from '../htm.js';
-
-/*import { Fragment } from '../preact.js';
-export { Fragment } from '../preact.js';*/
-//export const Fragment = props => ReactComponent.toChildArray(props.children);
 export const Fragment = props => props.children;
-
-import { Element } from './element.js';
 
 export const React = {
   create: h,
@@ -56,7 +51,12 @@ export const React = {
 };
 export default React;
 
-import Util from '../util.js';
+
+function indent (text, space = '  ')  {
+  text = text.trim();
+  if(!/\n/.test(text)) return text;
+  return text.replace(/(\n)/g, '\n' + space) + '\n';
+}
 
 const add = (arr, ...items) => [...ReactComponent.toChildArray(arr), ...items];
 
@@ -94,7 +94,7 @@ export class ReactComponent {
       Array: (p, v) => dest.push([p, v]),
       Map: (p, v) => dest.set(pathFn(p), v),
       Object: (p, v) => (dest[pathFn(p)] = v)
-    }[Util.typeOf(dest)];
+    }[className(dest)];
 
     flatten(obj, path);
 
@@ -222,7 +222,7 @@ export class ReactComponent {
     let p = Object.entries(props)
       .map(([name, value]) => {
         if(/-/.test(name)) name = `'${name}'`;
-        return `${nl}  ${name}: ${Util.toSource(value, { quote })}`;
+        return `${nl}  ${name}: ${this.toSource(value, { quote })}`;
       })
       .join(',');
     if(p != '') o += ` ${p}${nl}`;
@@ -269,15 +269,16 @@ export class ReactComponent {
       s += fmt == 0 ? ' />' : ` })`;
     } else {
       s += fmt < 2 ? `>` : ` }, [ `;
-      s += '\n  ' + Util.indent(this.toString(children)).trimRight() + '\n';
+      s += '\n  ' + indent(this.toString(children)).trimRight() + '\n';
       s += fmt < 2 ? `</${tagName}>` : ` ])`;
     }
     return s;
   }
 
+
   /*static async parse(jsx) {
     let ecmascript = await import('../ecmascript.js');
-    Object.assign(Util.getGlobalObject(), ecmascript);
+    Object.assign(globalThis, ecmascript);
     let parser = new ecmascript.ECMAScriptParser(jsx);
     let printer = new ecmascript.Printer();
     //console.log("parser", Util.getMethodNames(parser, 2, 1));

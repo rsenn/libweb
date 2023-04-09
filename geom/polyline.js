@@ -3,6 +3,7 @@ import { Rect } from './rect.js';
 import { Line, isLine } from './line.js';
 import { PointList } from './pointList.js';
 import { SVG } from '../dom/svg.js';
+import {  memoize } from '../misc.js';
 
 let createFactory = memoize((...args) => SVG.factory(...args));
 

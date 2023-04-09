@@ -1,5 +1,3 @@
-import { add, chunkArray, clone, define, entries, getMethods, isConstructor, isNumeric, isObject, randInt, range } from '../misc.js';
-import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
 
@@ -111,7 +109,6 @@ export class ColorMap extends Map {
       }
       return x;
     };
-
 
     function lcm_two_numbers(x, y) {
       if(typeof x !== 'number' || typeof y !== 'number') return false;

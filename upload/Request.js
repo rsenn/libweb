@@ -15,7 +15,6 @@ export const Request = ({ uid, send, file, action, headers, onProgress, onSucces
   /**
    * onLoad Request
    *
-   *
    */
 
   xhr.onload = () => {

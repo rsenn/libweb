@@ -1,5 +1,3 @@
-import { className, colorText, define, getCallerStack, isObject } from '../misc.js';
-import Util from '../util.js';
 import { Lexer } from './lexer.js';
 import { Pattern } from './pattern.js';
 

@@ -1,5 +1,3 @@
-import { define, getPlatform, isatty, once, stack, tryCatch, ttyGetWinSize } from './misc.js';
-import Util from './util.js';
 
 let savedOpts = {};
 
@@ -13,8 +11,6 @@ ConsoleOptions.merge = function(opts, ...args) {
   return new ConsoleOptions(opts).merge(...args);
 };
 
-export async function ConsoleSetup(opts = {}) {
-  opts = { ...savedOpts, ...opts };
   savedOpts = opts;
   //console.log("opts.breakLength:",opts.breakLength, Util.stack());
   let ret;
@@ -186,6 +182,4 @@ function addMissingMethods(cons) {
   return Util.define(cons, fns);
 }
 
-export const ConsoleOnce = Util.once(opts => ConsoleSetup(opts));
 
-export default ConsoleSetup;

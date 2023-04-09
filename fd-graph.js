@@ -1,7 +1,6 @@
-import { filterKeys } from './misc.js';
 import inspect from 'inspect';
 import { Point, Size, PointList, Line, BBox } from './geom.js';
-import Util from './util.js';
+import { filterKeys } from './misc.js';
 
 /* From https://github.com/ehayon/FDGraph */
 

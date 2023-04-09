@@ -1,4 +1,3 @@
-import { mod } from '../../misc.js';
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD, useTransformation, InferRotation, ExtractRotation } from '../renderUtils.js';
 import { TransformationList, Rotation, Translation, Point } from '../../geom.js';

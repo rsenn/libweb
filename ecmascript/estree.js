@@ -1,5 +1,3 @@
-import { className, coloring, define, getMembers, getPlatform, isNumeric, isObject, weakAssoc, weakMapper } from '../misc.js';
-import Util from '../util.js';
 import inspect from '../objectInspect.js';
 
 const inspectSymbol = Symbol.for(Util.getPlatform() == 'quickjs' ? 'quickjs.inspect.custom' : 'nodejs.util.inspect.custom');

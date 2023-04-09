@@ -1,4 +1,3 @@
-import { className, decodeHTMLEntities, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst } from '../misc.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
@@ -409,7 +408,6 @@ export class EagleElement extends EagleNode {
         return this.visible;
       };
       this.setVisible = value => (value === undefined ? this.handlers.visible() == 'yes' : this.handlers.visible(value ? 'yes' : 'no'));
-      this.setVisible.subscribe = f => this.handlers.visible.subscribe(value => f(value == 'yes'));
       this.setVisible.subscribe = f => this.handlers.visible.subscribe(value => f(value == 'yes'));
     }
     //    let layer  = this.tagName == 'pad' ? this.document.layers['Pads'] :  this.layer;

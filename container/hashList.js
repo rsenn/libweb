@@ -1,4 +1,3 @@
-import { distinct } from '../misc.js';
 export class HashList {
   constructor(keyfn, ctor) {
     this.keyfn = keyfn ? keyfn : item => (item.toString !== undefined ? item.toString() : String(item));

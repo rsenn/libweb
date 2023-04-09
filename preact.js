@@ -1636,7 +1636,6 @@ export default {
   Component,
   createContext,
   createElement,
-  createElement,
   createRef,
   Fragment,
   html,

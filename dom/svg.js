@@ -1,4 +1,3 @@
-import { decamelize, defineGetterSetter, isObject, memoize, padFn, shuffle } from '../misc.js';
 import { Util } from '../util.js';
 import { Element, isElement } from './element.js';
 import { Size, isSize } from '../geom/size.js';
@@ -331,7 +330,6 @@ else */ if(text) svg.innerHTML = innerHTML;
     paths = dom.Element.findAll("path", await img("action-save-new.svg"));
     lines = [...dom.SVG.lineIterator(paths[1])];
     pl = new dom.Polyline(lines);
-
 
 */
   static *lineIterator(e) {

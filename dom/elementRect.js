@@ -1,4 +1,3 @@
-import { defineGetterSetter } from '../misc.js';
 import { Util } from '../util.js';
 import { Element } from './element.js';
 import { Point } from '../geom/point.js';

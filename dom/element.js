@@ -1,4 +1,3 @@
-import { camelize, decamelize, getCallers, getGlobalObject, getMethodNames, isObject, memoize, removeEqual, shuffle, toHash, tryCatch } from '../misc.js';
 import { Util } from '../util.js';
 import { Node } from './node.js';
 import { TRBL } from '../geom/trbl.js';
@@ -247,7 +246,7 @@ export class Element extends Node {
     return s.replace(new RegExp(';*$', 'g'), '');
   }
 
-  static find(arg, parent, globalObj = Util.getGlobalObject()) {
+  static find(arg, parent, globalObj = globalThis) {
     if(typeof parent == 'string') parent = Element.find(parent);
     if(!parent && globalObj.document)
       parent =
@@ -932,7 +931,6 @@ export class Element extends Node {
     let a = [];
     const t = typeof time == 'number' ? `${time}ms` : time;
     let ctx = { e, t, from: {}, to: {}, css };
-    args.shift();
     args.shift();
 
     easing = typeof args[0] == 'function' ? 'linear' : args.shift();

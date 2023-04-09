@@ -1,7 +1,6 @@
 /* --------------------------- start of 'header' ---------------------------- */
 
 import React from './dom/preactComponent.js';
-//import { findDOMNode } from './preact/compat.js';
 import invariant from './invariant.js';
 import PropTypes from './prop-types.js';
 

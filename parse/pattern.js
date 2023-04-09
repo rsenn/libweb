@@ -1,6 +1,5 @@
-import { colorText } from '../misc.js';
 import { Lexer, lexMatch, lexIsToken } from './lexer.js';
-import Util from '../util.js';
+import { colorText } from '../misc.js';
 
 export function Pattern(patterns, shift, match) {
   let i = 0;

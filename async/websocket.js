@@ -1,4 +1,3 @@
-import { waitFor, lazyProperties } from '../misc.js';
 
 WebSocket.makeURL = WebSocketURL;
 

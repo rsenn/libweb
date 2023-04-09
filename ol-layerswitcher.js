@@ -1,6 +1,5 @@
 /*import Control from '../openlayers/src/ol/control.js';
 
-//import { unByKey } from 'ol/Observable';
 import { unByKey } from '../openlayers/src/ol/Observable.js';
 */
 import { Control, unByKey, LayerGroup } from './ol.js';

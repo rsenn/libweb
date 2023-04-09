@@ -1,6 +1,5 @@
-import { clone } from '../misc.js';
 /*jshint sub:true*/
-import Util from '../util.js';
+import { clone } from '../misc.js';
 
 export function EPSILON(token_stream, arrow) {
   return { title: 'EPSILON' };

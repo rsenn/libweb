@@ -1,5 +1,3 @@
-import { getPlatform } from './misc.js';
-import Util from './util.js';
 
 Util.getPlatform() == 'quickjs'
   ? import('inspect')

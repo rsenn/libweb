@@ -1,5 +1,3 @@
-import { abbreviate, className, exit, getCallerStack, getMethodNames, isObject, once, pad, propertyLookup, putStack, randInt, tail, trace, trim, weakMapper } from '../misc.js';
-import Util from '../util.js';
 import inspect from '../objectInspect.js';
 
 import { default as Lexer, Location, Token } from './lexer.js';
@@ -102,7 +100,6 @@ export class Parser {
         if(/^(parse)/.test(key)) {
           this[key] = Util.trace(
             ECMAScriptParser.prototype[key],
-            () => {},
             () => {},
             (what, name, arg) => {
               if(what == 'leave') {
@@ -727,7 +724,7 @@ export class ECMAScriptParser extends Parser {
     let token = this.lookahead(0);
     const is_async = token.value == 'async';
     token = this.lookahead(is_async ? 1 : 0);
-    // Util.exit(1);
+    // process.exit(1);
     return this.matchKeywords('function') || (token && token.value == 'get');
   }
 

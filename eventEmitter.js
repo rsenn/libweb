@@ -1,4 +1,3 @@
-import { getMemberNames, isFunction, isNaN, isNumber, keys } from './misc.js';
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,7 +18,7 @@ import { getMemberNames, isFunction, isNaN, isNumber, keys } from './misc.js';
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
-import Util from './util.js';
+import { getMemberNames, isFunction, isNumber, keys } from './misc.js';
 
 export function EventEmitter() {
   this.events = this.events || {};

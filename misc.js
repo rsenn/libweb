@@ -1,4 +1,3 @@
-//import Util from './util.js';
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
 
 const slice = (x, s, e) =>

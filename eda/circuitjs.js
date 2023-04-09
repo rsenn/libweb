@@ -1,4 +1,3 @@
-import { lazyProperties } from '../misc.js';
 import { Point, Line, Rect } from '../geom.js';
 
 const props = {

@@ -1,5 +1,3 @@
-import { cachedFetch, define, isObject, mapFunction, putError, toSource } from './misc.js';
-import Util from './util.js';
 
 export async function NormalizeResponse(resp) {
   resp = await resp;

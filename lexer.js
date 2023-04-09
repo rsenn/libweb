@@ -1,4 +1,3 @@
-import { Location, define, assert } from './misc.js';
 export { Location } from './misc.js';
 
 Lexer.defunct = function(chr) {

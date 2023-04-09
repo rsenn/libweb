@@ -1,4 +1,4 @@
-import { define, lazyProperty, tryCatch, unique } from '../misc.js';
+import filesystem from 'fs';
 import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';

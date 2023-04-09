@@ -1,8 +1,7 @@
-import { makeURL } from './misc.js';
 import axios from 'axios';
 //const axios = require('axios').default;
 
-import Util from './util.js';
+import { makeURL } from './misc.js';
 
 export const httpClient = (() => {
   const client = axios.create({ withCredentials: true });

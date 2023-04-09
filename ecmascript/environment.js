@@ -1,4 +1,3 @@
-import { ansi.text, className, getCallers } from '../misc.js';
 /* jshint esversion: 6 */
 /* jshint noyield: true */
 
@@ -8,9 +7,8 @@ import { ansi.text, className, getCallers } from '../misc.js';
 //-> BENCHMARKS
 
 //var parse = require('acorn').parse;
-//import util from 'util';
 import EventEmitter from '../eventEmitter.js';
-import Util from '../util.js';
+import { ansi.text, className, getCallers } from '../misc.js';
 import { ESNode, BinaryExpression, Identifier, ImportDeclaration, Literal, MemberExpression, FunctionDeclaration, ArrowFunctionExpression, SequenceExpression } from './estree.js';
 
 class NotImplemented extends Error {
@@ -260,7 +258,6 @@ export class Environment extends EventEmitter {
 //console.debug("generateBinaryExpression", {x,y})
 //console.debug("generateBinaryExpression", {u,v})
         return u+v;
-
 
          },
       *'-'() { return (yield* callExpression(a)) - (yield* callExpression(b)); },

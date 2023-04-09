@@ -1,5 +1,3 @@
-import { bufferToString, escape, getPlatform, isIterator } from '../misc.js';
-import Util from '../util.js';
 
 const WS = 0x01;
 const START = 0x02;

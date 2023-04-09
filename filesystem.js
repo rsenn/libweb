@@ -1,5 +1,4 @@
-import { className, getArgv, getMethodNames, memoize, randStr, weakAssign } from './misc.js';
-import Util from './util.js';
+import filesystem from 'fs';
 import { StringReader, ChunkReader, DebugTransformStream } from './stream/utils.js';
 
 export const SEEK_SET = 0;
@@ -879,14 +878,12 @@ export async function CreatePortableFileSystem(ctor, ...args) {
 export async function GetPortableFileSystem() {
   let fs, err;
   try {
-    fs = await CreatePortableFileSystem(QuickJSFileSystem, await import('std'), await import('os'));
   } catch(error) {
     err = error;
   }
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(NodeJSFileSystem, await import('fs'), await import('tty'), await import('process'));
   } catch(error) {
     err = error;
   }
@@ -916,7 +913,6 @@ export async function GetPortableFileSystem() {
 
 export async function PortableFileSystem(fn = fs => true) {
   return await Util.memoize(async function() {
-    const fs = await GetPortableFileSystem();
 
     Util.weakAssign(fs, FilesystemDecorator);
 
@@ -976,7 +972,7 @@ const FilesystemDecorator = {
   },
   tempnam(prefix) {
     if(!prefix)
-      prefix = Util.getArgv()[1]
+      prefix = process.argv[1]
         .replace(/.*\//g, '')
         .replace(/\.[a-z]+$/, '');
     return prefix + Util.randStr(6);
@@ -996,4 +992,3 @@ const FilesystemDecorator = {
   }
 };
 
-export default PortableFileSystem;

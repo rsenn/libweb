@@ -1,7 +1,6 @@
-import { clone } from '../misc.js';
 /*jshint sub:true*/
 
-import Util from '../util.js';
+import { clone } from '../misc.js';
 import { EPSILON, TERMINAL, iterate_over_rules } from './commons.js';
 
 /*

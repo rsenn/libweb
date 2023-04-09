@@ -1,4 +1,3 @@
-import { className, define } from '../misc.js';
 import inspect from 'inspect';
 import { Lexer, lexMatch, lexIsToken } from './lexer.js';
 

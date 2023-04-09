@@ -1,5 +1,3 @@
-import { className, findKey } from './misc.js';
-import Util from './util.js';
 import { trkl } from './trkl.js';
 
 export function Instance({ trackable = false, callback, initVal = null }) {

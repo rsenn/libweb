@@ -1,5 +1,3 @@
-//import ReactDOM from "react-dom";
-//import { SvgPath } from "./svg/path.js";
 import { Point, isPoint } from './geom/point.js';
 import { Size, isSize } from './geom/size.js';
 import { Line, isLine } from './geom/line.js';
@@ -19,7 +17,6 @@ export { HSLA, RGBA } from './color.js';
 import { Element, isElement } from './dom/element.js';
 import { CSS } from './dom/css.js';
 import { SVG } from './dom/svg.js';
-//import { ReactComponent } from './dom/reactComponent.js';
 import { Container } from './dom/container.js';
 import { Layer, Renderer } from './dom/layer.js';
 import { Select } from './dom/select.js';

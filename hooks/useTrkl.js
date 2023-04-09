@@ -1,6 +1,5 @@
-import { platform } from '../misc.js';
 import { Component, useState, useMemo, useCallback, useRef, useEffect } from '../dom/preactComponent.js';
-import Util from '../util.js';
+import { platform } from '../misc.js';
 
 export const useTrkl = fn => {
   if(!(typeof fn == 'function')) return fn;

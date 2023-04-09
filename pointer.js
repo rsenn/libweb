@@ -1,6 +1,5 @@
-import { abbreviate, className, equals, getCallers, getCallerStack, isBrowser, isNumeric, isObject } from './misc.js';
 import inspect from 'inspect';
-import Util from './util.js';
+import { abbreviate, className, equals, getCallers, getCallerStack, isBrowser, isNumeric, isObject } from './misc.js';
 import { write as toXML } from './xml.js';
 
 export function DereferenceError(object, member, pos, prev, locator) {

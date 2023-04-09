@@ -3,7 +3,6 @@ import { unique, className, isObject, range, roundTo } from '../misc.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
 import { useTrkl } from '../hooks/useTrkl.js';
-//import * as std from 'std';
 export { useTrkl } from '../hooks/useTrkl.js';
 
 const PI = Math.PI;
@@ -210,7 +209,6 @@ export const RenderArc = (x, y, radius, startAngle, endAngle) => {
  *
  *     L = R *  θ ÷  (2*PI)
  *     L ÷ C =  θ ÷  (2*PI)
- *
  *
  * Arc length s for an angle θ
  *

@@ -6,15 +6,15 @@ import { Rect } from './rect.js';
  *
  * @param {string,object,array} arg [description]
  */
-export function TRBL(arg) {
+export function TRBL(...args) {
   let ret = this instanceof TRBL ? this : {};
-  let args = [...arguments];
+  let [arg]=args;
   // console.log("TRBL",{arg})
 
-  if(typeof arg === 'object' && !Array.isArray(arg)) {
+  if(args.length==1 && typeof arg === 'object' && !Array.isArray(arg)) {
     Object.keys(arg).forEach(k => {
       const matches = /(top|right|bottom|left)/i.exec(k);
-      //console.log("TRBL.constructor",{arg,matches,k});
+      console.log("TRBL.constructor",{arg,matches,k});
       ret[matches[0].toLowerCase()] = parseInt(arg[k]);
     });
   } else if(arg) {

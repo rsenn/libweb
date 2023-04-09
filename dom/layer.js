@@ -6,7 +6,6 @@ import * as deep from '../deep.js';
 import { lazyProperties } from '../misc.js';
 import trkl from '../trkl.js';
 import { Transformation, Rotation, Translation, Scaling, TransformationList } from '../geom/transformation.js';
-//import { Element, isElement } from '../dom.js';
 import { h, forwardRef, Fragment, React, ReactComponent, Portal, toChildArray } from './preactComponent.js';
 
 const GetSet = (getFn, setFn) => value => value !== undefined ? setFn(value) : getFn();

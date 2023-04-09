@@ -24,7 +24,6 @@ let rsp = /\s/;
 
 /**
  *
- *
  * @param {any} string
  * @param {any} getOne 只返回一个节点
  * @returns
