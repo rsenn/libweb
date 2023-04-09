@@ -1,3 +1,4 @@
+import { className, getArgv, getMethodNames, memoize, randStr, weakAssign } from './misc.js';
 import Util from './util.js';
 import { StringReader, ChunkReader, DebugTransformStream } from './stream/utils.js';
 

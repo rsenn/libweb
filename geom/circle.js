@@ -1,6 +1,7 @@
+import inspect from 'inspect';
 import { Point, isPoint } from './point.js';
 import { Rect } from './rect.js';
-import Util from '../util.js';
+import { bindProperties, className, defineGetter, inspectSymbol, isObject, roundDigits, roundTo } from '../misc.js';
 
 export function Circle(x, y, radius) {
   let obj = this || null;
@@ -53,7 +54,7 @@ export function Circle(x, y, radius) {
   }
 
   if(!isCircle(obj)) {
-    //console.log('ERROR: is not a circle: ', Util.className(obj), Util.inspect(arg), Util.inspect(obj));
+    //console.log('ERROR: is not a circle: ', className(obj), inspect(arg), inspect(obj));
   }
 
   /*  if(this !== obj)*/ return obj;
@@ -107,7 +108,7 @@ Circle.prototype.clone = function() {
 };
 
 Circle.prototype.transform = function(m, round = true) {
-  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
+  if(isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transformPoint.call(m, this);
   const [w, h] = Matrix.prototype.transformWH.call(m, this.radius, this.radius);
   this.radius = Math.abs(Math.max(w, h));
@@ -120,27 +121,27 @@ Circle.prototype.toObject = function(proto = Object.prototype) {
 };
 Circle.prototype.round = function(precision = 0.001, digits, type) {
   let { x, y, radius } = this;
-  digits = digits || Util.roundDigits(precision);
+  digits = digits || roundDigits(precision);
   type = type || 'round';
-  this.x = Util.roundTo(x, precision, digits, type);
-  this.y = Util.roundTo(y, precision, digits, type);
-  this.radius = Util.roundTo(radius, precision, digits, type);
+  this.x = roundTo(x, precision, digits, type);
+  this.y = roundTo(y, precision, digits, type);
+  this.radius = roundTo(radius, precision, digits, type);
   return this;
 };
 Circle.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ' \u2300 ' } = opts;
 
   let s = Point.prototype.toString.call(this, opts);
-  let r = Util.roundTo(this.radius, precision);
+  let r = roundTo(this.radius, precision);
 
   s += separator + r + unit;
   return s;
 };
-Util.defineGetter(Point, Symbol.species, function() {
+defineGetter(Point, Symbol.species, function() {
   return this;
 });
 
-Circle.prototype[Util.inspectSymbol] = function(depth, options) {
+Circle.prototype[inspectSymbol] = function(depth, options) {
   const { x, y, radius } = this;
   return Object.setPrototypeOf({ x, y, radius }, Circle.prototype);
 };
@@ -148,5 +149,5 @@ Circle.prototype[Util.inspectSymbol] = function(depth, options) {
 Circle.bind = (o, p, gen) => {
   const [x, y, radius] = p || ['x', 'y', 'radius'];
   if(!gen) gen = k => v => v === undefined ? o[k] : (o[k] = v);
-  return Util.bindProperties(new Circle(0, 0, 0), o, { x, y, radius }, gen);
+  return bindProperties(new Circle(0, 0, 0), o, { x, y, radius }, gen);
 };

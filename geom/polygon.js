@@ -1,4 +1,4 @@
-import Util from '../util.js';
+import { range } from '../misc.js';
 import { PointList } from './pointList.js';
 import { Line } from './line.js';
 import { Point } from './point.js';

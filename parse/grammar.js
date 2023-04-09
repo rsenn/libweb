@@ -1,3 +1,5 @@
+import { camelize, className, colorText, define, escapeRegex, isObject, randStr, toPlainObject } from '../misc.js';
+import inspect from 'inspect';
 import { Lexer, lexMatch } from './lexer.js';
 import { Parser, Node } from './parser.js';
 import Util from '../util.js';
@@ -108,7 +110,7 @@ return [...n];
       return this.combinations().map(match => match.toCowbird(accu, false));
     }
     let matches = this.filter(m => m.str != 'eof()').map(rule => {
-      if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)} ${Util.inspect(rule)}`);
+      if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)} ${inspect(rule)}`);
       return rule.toCowbird(accu, false);
     });
     console.log('matches:', matches);
@@ -152,7 +154,7 @@ return [...n];
         accu.push(rule.toCowbird(accu, subname));
         return [`<${subname}>`];
       } else if(args.length == 1) {
-        if(!args[0].toCowbird) throw new Error(`toCowbird ${Util.className(args[0])} ${Util.inspect(args[0])}`);
+        if(!args[0].toCowbird) throw new Error(`toCowbird ${Util.className(args[0])} ${inspect(args[0])}`);
         ret = ret.concat(args[0].toCowbird(accu));
       }
       let op = this.op == '+' ? '\\+' : this.op;
@@ -205,7 +207,7 @@ return [...n];
     let a = [];
     for(let production of this) {
       let p = production;
-      if(!p.toCowbird) throw new Error(`toCowbird ${Util.className(p)} ${Util.inspect(p)}`);
+      if(!p.toCowbird) throw new Error(`toCowbird ${Util.className(p)} ${inspect(p)}`);
 
       let productions = /*!p.toCowbird ? p.toString() :*/ p.toCowbird(accu);
 

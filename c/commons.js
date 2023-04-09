@@ -1,3 +1,4 @@
+import { clone } from '../misc.js';
 /*jshint sub:true*/
 import Util from '../util.js';
 

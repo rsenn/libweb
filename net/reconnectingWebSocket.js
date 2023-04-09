@@ -1,4 +1,3 @@
-import Util from '../util.js';
 
 const RECONNECT_DELAY = 5000;
 const MAX_RECONNECT_ATTEMPTS = 3;
@@ -27,7 +26,7 @@ export class ReconnectingWebSocket {
     this.reconnectAttempts = 0;
 
     this.registerReconnectionListeners();
-    Util.define(this, { ctor });
+    define(this, { ctor });
   }
 
   /**

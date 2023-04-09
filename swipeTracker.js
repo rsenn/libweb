@@ -1,3 +1,4 @@
+import { bindMethods, toSource } from './misc.js';
 import { rect } from '../lib/devtools.js';
 import { Point, Rect } from '../lib/dom.js';
 import Util from '../lib/util.js';

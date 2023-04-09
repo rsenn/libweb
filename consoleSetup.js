@@ -1,3 +1,4 @@
+import { define, getPlatform, isatty, once, stack, tryCatch, ttyGetWinSize } from './misc.js';
 import Util from './util.js';
 
 let savedOpts = {};

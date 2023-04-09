@@ -1,5 +1,5 @@
 import { RGBA, ImmutableRGBA } from './rgba.js';
-import Util from '../util.js';
+import { clamp, defineGetter, immutableClass, randFloat, randInt, roundTo, tryCatch } from '../misc.js';
 
 /**
  * @brief [brief description]
@@ -84,7 +84,7 @@ HSLA.prototype.clamp = function() {
 HSLA.prototype.round = function(prec = 1 / 255, digits = 3) {
   const { h, s, l, a } = this;
   const precs = [360, 100, 100, 1];
-  let x = [h, s, l, a].map((n, i) => Util.roundTo(n, precs[i] * prec, digits));
+  let x = [h, s, l, a].map((n, i) => roundTo(n, precs[i] * prec, digits));
   if(Object.isFrozen(this)) return new HSLA(...x);
   this.h = x[0];
   this.s = x[1];
@@ -207,31 +207,31 @@ HSLA.prototype.toRGBA = function() {
 };
 
 HSLA.prototype.toString = function(prec = 1 / 255) {
-  const h = Util.roundTo(this.h, 360 * prec, 3);
-  const s = Util.roundTo(this.s, 100 * prec, 2);
-  const l = Util.roundTo(this.l, 100 * prec, 2);
-  const a = Util.roundTo(this.a, 1 * prec, 4);
+  const h = roundTo(this.h, 360 * prec, 3);
+  const s = roundTo(this.s, 100 * prec, 2);
+  const l = roundTo(this.l, 100 * prec, 2);
+  const a = roundTo(this.a, 1 * prec, 4);
 
   if(this.a == 1) return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6, ' ')})`;
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 HSLA.prototype.toSource = function(prec = 1 / 255) {
-  const h = Util.roundTo(this.h, 360 * prec, 0);
-  const s = Util.roundTo(this.s, 100 * prec, 2);
-  const l = Util.roundTo(this.l, 100 * prec, 2);
-  const a = Util.roundTo(this.a, 1 * prec, 4);
+  const h = roundTo(this.h, 360 * prec, 0);
+  const s = roundTo(this.s, 100 * prec, 2);
+  const l = roundTo(this.l, 100 * prec, 2);
+  const a = roundTo(this.a, 1 * prec, 4);
 
   return `new HSLA(${(this.a == 1 ? [h, s, l] : [h, s, l, a]).join(', ')})`;
 };
 
 HSLA.fromString = str => {
-  let c = Util.tryCatch(
+  let c = tryCatch(
     () => new RGBA(str),
     c => (c.valid() ? c : null),
     () => undefined
   );
   if(!c)
-    c = Util.tryCatch(
+    c = tryCatch(
       () => new HSLA(str),
       c => (c.valid() ? c : null),
       () => undefined
@@ -243,8 +243,8 @@ HSLA.prototype.valid = function() {
   const { h, s, l, a } = this;
   return [h, s, l, a].every(n => !isNaN(n) && typeof n == 'number');
 };
-HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Util.rng) {
-  return new HSLA(Util.randInt(...[...h, 360].slice(0, 2), rng), Util.randInt(...[...s, 100].slice(0, 2), rng), Util.randInt(...[...l, 50].slice(0, 2), rng), Util.randFloat(...a, rng));
+HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Math.random) {
+  return new HSLA(randInt(...[...h, 360].slice(0, 2), rng), randInt(...[...s, 100].slice(0, 2), rng), randInt(...[...l, 50].slice(0, 2), rng), randFloat(...a, rng));
 };
 HSLA.prototype.dump = function() {
   //console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
@@ -253,7 +253,7 @@ HSLA.prototype.dump = function() {
 HSLA.prototype.binaryValue = function() {
   const { h, s, l, a } = this;
   const byte = (() => {
-    const clamp = Util.clamp(0, 255);
+    const clamp = clamp(0, 255);
     return (val, range = 255) => clamp((val * 255) / range) % 256;
   })();
 
@@ -300,7 +300,7 @@ HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = HSLA.prototype.inspec
   const { h, s, l, a } = this;
   const haveAlpha = !isNaN(a) && a !== 1;
   let arr = haveAlpha ? [h, s, l, a] : [h, s, l];
-  let ret = arr.map((n, i) => (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2, ' ')).join(', ');
+  let ret = arr.map((n, i) => (roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2, ' ')).join(', ');
   const color = this.toRGBA().toAnsi(/*256*/ true);
   let o = '';
   let c = colors ? (str, ...a) => `\x1b[${a.join(';')}m${str}\x1b[0m` : str => str;
@@ -323,8 +323,8 @@ for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString'])
 
 export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
 
-Util.defineGetter(HSLA, Symbol.species, function() {
+defineGetter(HSLA, Symbol.species, function() {
   return this;
 });
-export const ImmutableHSLA = Util.immutableClass(HSLA);
-Util.defineGetter(ImmutableHSLA, Symbol.species, () => ImmutableHSLA);
+export const ImmutableHSLA = immutableClass(HSLA);
+defineGetter(ImmutableHSLA, Symbol.species, () => ImmutableHSLA);

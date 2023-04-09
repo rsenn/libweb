@@ -1,6 +1,5 @@
 //import ReactDOM from "react-dom";
 //import { SvgPath } from "./svg/path.js";
-import Util from './util.js';
 import { Point, isPoint } from './geom/point.js';
 import { Size, isSize } from './geom/size.js';
 import { Line, isLine } from './geom/line.js';
@@ -32,7 +31,7 @@ export function dom() {
   let ret = [];
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(
+    const keys = [...members(functions)].filter(
       key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function'
     );
     for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);

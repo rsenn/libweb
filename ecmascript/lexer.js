@@ -1,6 +1,6 @@
+import inspect from 'inspect';
 import { Token } from './token.js';
 export { Token } from './token.js';
-import Util from '../util.js';
 import path from '../path.js';
 import { Location } from '../misc.js';
 export { Location } from '../misc.js';
@@ -16,7 +16,7 @@ export function PathReplacer() {
 }
 
 export function Stack() {
-  let stack = Util.getCallers(4, 30);
+  let stack = getCallers(4, 30);
   let re,
     t = s => s;
 
@@ -56,15 +56,15 @@ export class SyntaxError extends Error {
     super(msg);
 
     this.msg = msg;
-    // this.stack = Util.stack(); //Stack().join('\n');
+    // this.stack = stack(); //Stack().join('\n');
 
     this.ctx = ctx;
     this.ast = ast;
     this.pos = pos;
-    this.stack = new Util.stack(null, 3);
+    this.stack = new stack(null, 3);
 
-    Util.removeIf(this.stack, frame => frame.functionName == 'esfactory');
-    //console.log("pos:", Util.inspect(pos, { depth: 10 }));
+    removeIf(this.stack, frame => frame.functionName == 'esfactory');
+    //console.log("pos:", inspect(pos, { depth: 10 }));
   }
 
   get loc() {
@@ -151,7 +151,7 @@ Range.prototype.toString = function() {
   return this[Symbol.toStringTag](0, { colors: false });
 };
 Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
-  return Util.inspect(this, {
+  return inspect(this, {
     ...opts,
     toString: Symbol.toStringTag
   });
@@ -230,7 +230,7 @@ export class Lexer {
   skipComment() {
     while(this.start > 0 && isWhitespace(this.source[this.start - 1])) this.start--;
 
-    //console.log('skipComment', Util.escape(this.getRange(this.start, this.pos)));
+    //console.log('skipComment', escape(this.getRange(this.start, this.pos)));
 
     const position = this.position();
     let c = this.peek();
@@ -272,7 +272,7 @@ export class Lexer {
 
     range = range
       .split('')
-      .map((char, i) => (i >= start && i < end ? Util.ansi.text(char, 0, 41, 1, 33) : char))
+      .map((char, i) => (i >= start && i < end ? ansi.text(char, 0, 41, 1, 33) : char))
       .join('');
     return range.replace(/\n/g, '\\n');
   }

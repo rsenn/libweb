@@ -1,3 +1,4 @@
+import { platform } from '../misc.js';
 import { Component, useState, useMemo, useCallback, useRef, useEffect } from '../dom/preactComponent.js';
 import Util from '../util.js';
 

@@ -1,3 +1,4 @@
+import { debug, isObject, proxyClone, uniquePred } from '../misc.js';
 export const proxyClone = obj => {
   const override = Object.create(null);
   const deleted = Object.create(null);

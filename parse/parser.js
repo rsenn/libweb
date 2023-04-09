@@ -1,4 +1,5 @@
-import Util from '../util.js';
+import { className, define } from '../misc.js';
+import inspect from 'inspect';
 import { Lexer, lexMatch, lexIsToken } from './lexer.js';
 
 const addUnique = (arr, item) => (arr && arr.indexOf(item) != -1 ? arr || [] : add(arr.item));
@@ -14,7 +15,7 @@ export class Node {
   }
 
   toString() {
-    return Util.className(this);
+    return className(this);
   }
 }
 
@@ -32,7 +33,7 @@ export class Parser {
   tokens = [];
 
   constructor(lexer) {
-    Util.define(this, { lexer });
+    define(this, { lexer });
     return this;
   }
 
@@ -72,7 +73,7 @@ export class Parser {
       parser.token = { tok, str };
       parser.tokens = add(parser.tokens, parser.token);
       if(tokIndex > parser.prevTok) console.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`, parser.token);
-      return Util.define({ ...parser.token }, { unget });
+      return define({ ...parser.token }, { unget });
     }
     return null;
   }
@@ -105,10 +106,10 @@ export class Parser {
 
     if(!r)
       throw new Error(
-        `Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.inspect(s, {
+        `Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${inspect(s, {
           multiline: false,
           colors: false
-        })})  ${Lexer.tokenName(token.tok)}, ${Util.inspect(token.str)}`
+        })})  ${Lexer.tokenName(token.tok)}, ${inspect(token.str)}`
       );
     return this.getTok();
   }

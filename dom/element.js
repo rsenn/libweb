@@ -1,3 +1,4 @@
+import { camelize, decamelize, getCallers, getGlobalObject, getMethodNames, isObject, memoize, removeEqual, shuffle, toHash, tryCatch } from '../misc.js';
 import { Util } from '../util.js';
 import { Node } from './node.js';
 import { TRBL } from '../geom/trbl.js';

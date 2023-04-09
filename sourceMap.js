@@ -1,3 +1,4 @@
+import { base64, base64.decode, base64.encode } from './misc.js';
 import Util from './util.js';
 
 //const { decode: decodeBase64, encode: encodeBase64 } = Util.base64;

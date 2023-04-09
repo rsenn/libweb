@@ -1,3 +1,5 @@
+import { fnName, getGlobalObject, getMethodNames, indent, isObject, toSource, typeOf } from '../misc.js';
+import inspect from 'inspect';
 import { h, options, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.mjs';
 export {
   h,
@@ -254,7 +256,7 @@ export class ReactComponent {
       let value = props[prop];
       if(value === false) continue;
       if(value === true) s += ` ${prop}`;
-      else s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.inspect(value)}`;
+      else s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${inspect(value)}`;
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 

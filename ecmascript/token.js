@@ -1,3 +1,4 @@
+import { abbreviate, colorText } from '../misc.js';
 import Util from '../util.js';
 
 /*

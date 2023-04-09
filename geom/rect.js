@@ -2,7 +2,7 @@ import { Point, isPoint } from './point.js';
 import { Line } from './line.js';
 import { Size } from './size.js';
 import { Align } from './align.js';
-import { bindProperties, curry, defineGetter, immutableClass, inspectSymbol, isConstructor, isObject, memoize, matchAll,roundTo } from '../misc.js';
+import { bindProperties, curry, defineGetter, immutableClass, inspectSymbol, isConstructor, isObject, memoize, matchAll, roundTo } from '../misc.js';
 
 export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};
@@ -413,9 +413,8 @@ Rect.prototype.align = function(align_to, a = 0) {
 };
 
 Rect.prototype.roundTo = function(...args) {
-  let ret=new Rect();
-  for(let prop of ['x','y','width','height'])
-    ret[prop] = roundTo(this[prop],...args);
+  let ret = new Rect();
+  for(let prop of ['x', 'y', 'width', 'height']) ret[prop] = roundTo(this[prop], ...args);
   return ret;
 };
 

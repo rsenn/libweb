@@ -2,7 +2,6 @@
  * Copyright (C) 2017
  * salesforce.com, inc.
  */
-import Util from '../util.js';
 
 const { isArray } = Array;
 const {
@@ -16,7 +15,7 @@ const {
   preventExtensions,
   hasOwnProperty
 } = Object;
-const ObjectDefineProperty = Util.define;
+const ObjectDefineProperty = define;
 
 const { push: ArrayPush, concat: ArrayConcat, map: ArrayMap } = Array.prototype;
 const OtS = {}.toString;
@@ -318,7 +317,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
   setPrototypeOf(shadowTarget, prototype) {
     if(
-      Util.tryCatch(
+      tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
@@ -401,7 +400,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     const handler = this;
     const set = function(v) {
       if(
-        Util.tryCatch(
+        tryCatch(
           () => process,
           process => process.env.NODE_ENV !== 'production'
         )
@@ -416,7 +415,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
   set(shadowTarget, key, value) {
     if(
-      Util.tryCatch(
+      tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
@@ -430,7 +429,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
   deleteProperty(shadowTarget, key) {
     if(
-      Util.tryCatch(
+      tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
@@ -444,7 +443,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
   setPrototypeOf(shadowTarget, prototype) {
     if(
-      Util.tryCatch(
+      tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
@@ -456,7 +455,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
   preventExtensions(shadowTarget) {
     if(
-      Util.tryCatch(
+      tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
@@ -470,7 +469,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
   defineProperty(shadowTarget, key, descriptor) {
     if(
-      Util.tryCatch(
+      tryCatch(
         () => process,
         process => process.env.NODE_ENV !== 'production'
       )
@@ -552,7 +551,7 @@ function getGlobal() {
 
 function init() {
   if(
-    Util.tryCatch(
+    tryCatch(
       () => process,
       process => process.env.NODE_ENV === 'production'
     )
@@ -572,7 +571,7 @@ function init() {
 }
 
 if(
-  Util.tryCatch(
+  tryCatch(
     () => process,
     process => process.env.NODE_ENV !== 'production'
   )

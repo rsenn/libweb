@@ -1,3 +1,5 @@
+import { fnName, indent, isObject } from '../misc.js';
+import inspect from 'inspect';
 import { Util } from '../util.js';
 import { Element } from './element.js';
 import React from 'react';
@@ -91,7 +93,7 @@ export class ReactComponent {
     }
     for(let prop in props) {
       let value = props[prop];
-      s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.inspect(value)}`;
+      s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${inspect(value)}`;
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 

@@ -1,4 +1,3 @@
-import Util from './util.js';
 
 /**
  * lscache library
@@ -120,7 +119,7 @@ const Implementations = {
     async response(result, clone) {
       let tmp;
 
-      if(clone && Util.isObject(result) && typeof result.clone == 'function') {
+      if(clone && isObject(result) && typeof result.clone == 'function') {
         try {
           tmp = result.clone();
           if(!tmp) tmp = Object.create(Object.getPrototypeOf(result), Object.getOwnPropertyDescriptors());
@@ -134,7 +133,7 @@ const Implementations = {
     },
 
     request(obj) {
-      if(obj instanceof Request || (Util.isObject(obj) && typeof obj.url == 'string')) obj = obj.url;
+      if(obj instanceof Request || (isObject(obj) && typeof obj.url == 'string')) obj = obj.url;
       return obj;
     },
 
@@ -148,7 +147,7 @@ const Implementations = {
       if(request.url) request = request.url;
       let response = await this.cache.match(request, opts);
       //console.info("getItem", {request,response});
-      //      if(response instanceof Response || (Util.isObject(response) && typeof response.json == 'function')) response = await response.json();
+      //      if(response instanceof Response || (isObject(response) && typeof response.json == 'function')) response = await response.json();
 
       if(response) {
         let { status, type, ok, statusText, headers } = response;
@@ -299,13 +298,13 @@ export function brcache(cache) {
     ...Implementations.browserCache /*, cache */ /*, get cacheBucket() { return obj.cacheBucket; } */
   };
 
-  if(Util.isObject(cache) && typeof cache.match == 'function') {
+  if(isObject(cache) && typeof cache.match == 'function') {
     impl.cache = cache;
   } else if(typeof cache == 'string') {
     cacheName = obj.cacheName = cache;
-    tmp = Util.tryCatch(() => window.caches);
+    tmp = tryCatch(() => window.caches);
 
-    Util.define(impl, {
+    define(impl, {
       async getCache() {
         if(tmp && typeof tmp.open == 'function') return await tmp.open(cacheName);
       },
@@ -320,14 +319,14 @@ export function brcache(cache) {
 
   //  Object.assign(brcache, brcache.prototype);
 
-  if(typeof obj.keys != 'function') Object.assign(obj, Util.getMethods(BaseCache.prototype, 1, 0));
+  if(typeof obj.keys != 'function') Object.assign(obj, getMethods(BaseCache.prototype, 1, 0));
 
   Object.assign(obj, { cacheBucket: '', warnings: false, hits: {} });
 
   return obj;
 }
 
-//Object.assign(brcache.prototype, Util.getMethods(BaseCache.prototype, 1, 0));
+//Object.assign(brcache.prototype, getMethods(BaseCache.prototype, 1, 0));
 
 export class BaseCache {
   expiryMilliseconds = 60 * 1000;
@@ -345,7 +344,7 @@ export class BaseCache {
   }
 
   incrementHits(key) {
-    let hits = Util.mapFunction(this.hits);
+    let hits = mapFunction(this.hits);
 
     return hits.update(key, (v = 0) => v + 1);
   }
@@ -456,7 +455,7 @@ export class BaseCache {
 
       // console.log('response:', response);
 
-      // if(Util.isObject(impl) && typeof impl.response == 'function') response = impl.response.call(this, response);
+      // if(isObject(impl) && typeof impl.response == 'function') response = impl.response.call(this, response);
 
       //console.log('response:', response);
       /*
@@ -602,8 +601,8 @@ export async function CachedFetch(fn, cacheObj) {
 
   if(typeof cacheObj == 'string') {
     cacheName = cacheObj;
-    tmp = await Util.tryCatch(() => window.caches.open(cacheName));
-    if(Util.isObject(tmp) && typeof tmp.match == 'function') cacheObj = tmp;
+    tmp = await tryCatch(() => window.caches.open(cacheName));
+    if(isObject(tmp) && typeof tmp.match == 'function') cacheObj = tmp;
 
     //console.log('CachedFetch', fn + '', { cacheName, cacheObj, tmp });
   }

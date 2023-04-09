@@ -1,3 +1,4 @@
+import { add, chunkArray, clone, define, entries, getMethods, isConstructor, isNumeric, isObject, randInt, range } from '../misc.js';
 import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';

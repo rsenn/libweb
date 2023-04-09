@@ -1,3 +1,5 @@
+import { abbreviate, className, equals, getCallers, getCallerStack, isBrowser, isNumeric, isObject } from './misc.js';
+import inspect from 'inspect';
 import Util from './util.js';
 import { write as toXML } from './xml.js';
 
@@ -20,7 +22,7 @@ export function DereferenceError(object, member, pos, prev, locator) {
       message:
         `Error dereferencing ${Util.className(object)} @ ${Pointer.prototype.toString.call(locator, '/', Pointer.partToString, 'children')}
 xml: ${Util.abbreviate(toXML(locator.root || object))}
-no member '${Util.inspect(member, { colors: false })}' in ${Util.inspect(prev, {
+no member '${inspect(member, { colors: false })}' in ${inspect(prev, {
           depth: 2,
           multiline: true,
           indent: '  ',
@@ -33,7 +35,7 @@ no member '${Util.inspect(member, { colors: false })}' in ${Util.inspect(prev, {
 
 DereferenceError.prototype.toString = function() {
   const { message, object, member, pos, locator, stack } = this;
-  return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, { depth: 2, colors: false })}`;
+  return `${message}\n${inspect({ object, member, pos, locator, stack }, { depth: 2, colors: false })}`;
 };
 
 export const IsChildren = a => a === Pointer.CHILDREN_GLYPH || a === Pointer.CHILDREN_STR || a === Pointer.CHILDREN_SYM;

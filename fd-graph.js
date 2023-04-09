@@ -1,3 +1,5 @@
+import { filterKeys } from './misc.js';
+import inspect from 'inspect';
 import { Point, Size, PointList, Line, BBox } from './geom.js';
 import Util from './util.js';
 
@@ -85,7 +87,7 @@ export class Graph {
   }
 
   findNode(value, key = 'label') {
-    return Util.find(this.nodes, value, key);
+    return this.nodes.find(node => node[key]===value);
   }
 
   randomize() {
@@ -370,7 +372,7 @@ export class Node extends Point {
 
     /*
     console.log(`Node(${label},${charge})`,
-      Util.inspect(this, { newline: "", indent: "", spacing: " " })
+      inspect(this, { newline: "", indent: "", spacing: " " })
     );*/
   }
 

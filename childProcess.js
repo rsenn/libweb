@@ -1,4 +1,4 @@
-import Util from './util.js';
+import { getMethodNames, memoize } from 'misc.js'
 import PortableFileSystem from './filesystem.js';
 
 export const SIGHUP = 1;
@@ -192,7 +192,7 @@ export function NodeJSChildProcess(fs, tty, child_process) {
     //  console.log('child', { command, args, opts });
     obj = child_process.spawn(command, args, opts);
 
-    //console.log('child', Util.getMethodNames(obj, 3, 0));
+    //console.log('child', getMethodNames(obj, 3, 0));
 
     // obj.stderr.on('data', data => console.log('child data', data.toString()));
 
@@ -256,7 +256,7 @@ export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
 }
 
 export async function PortableChildProcess(fn = fs => true) {
-  return await Util.memoize(async function() {
+  return await memoize(async function() {
     const fs = await GetPortableChildProcess(fn);
 
     try {

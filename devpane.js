@@ -1,3 +1,4 @@
+import { base64.decode, foreach } from './misc.js';
 //import ReactDOM from "react-dom";
 import { Element, Point, Rect, Renderer, Select, SVG } from './dom.js';
 import { HSLA } from './color.js';

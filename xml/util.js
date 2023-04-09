@@ -1,3 +1,4 @@
+import { abbreviate, define, defineGetter, filterKeys, getMembers, isObject, replaceAll, weakMapper } from '../misc.js';
 import { IteratorAdapter } from '../json/util.js';
 import Util from '../util.js';
 import deep from '../deep.js';

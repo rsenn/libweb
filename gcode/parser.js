@@ -1,3 +1,4 @@
+import { className, getGlobalObject, getMethodNames, waitFor } from '../misc.js';
 /* eslint no-bitwise: 0 */
 /* eslint no-continue: 0 */
 /*import events from 'events';

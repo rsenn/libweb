@@ -1,3 +1,4 @@
+import { getGlobalObject } from '../misc.js';
 import Util from '../util.js';
 
 import { WritableStream } from './writableStream.js';

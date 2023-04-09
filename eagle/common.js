@@ -1,11 +1,10 @@
 import { ImmutablePath } from '../json.js';
-import Util from '../util.js';
 import { className, isBrowser, isObject } from '../misc.js';
 
 const pathPadding = isBrowser() ? 0 : 40;
 export const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
-export const coloring = Util.coloring(!isBrowser());
+export const coloring = coloring(!isBrowser());
 export const concat = coloring.concat.bind(coloring);
 export const ansi = coloring.code.bind(coloring);
 export const text = coloring.text.bind(coloring);

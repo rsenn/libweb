@@ -1,3 +1,5 @@
+import { abbreviate, accAdd, accDiv, accMul, accumulate, adapter, adapter.localStorage, add, adder, addHRTime, all, allEqual, and, ansi, ansiCode, arityN, array, arrayDim, arrayFromEntries, arrExchangePos, arrRemove, arryToTree, assert, assertEqual, assignGlobal, atexit, base64, bind, bindMethods, bindMethodsTo, bindProperties, bitArrayToNumbers, bitCount, bitGroups, bitIterator, bitMask, bitNo, bitsToNames, bitsToNumbers, bitStuff, bitValue, booleanAdapter, bucketInserter, bufferToString, bytesToUTF8, cacheAdapter, cachedFetch, calcHRTime, callExitHandlers, callMain, callMain.handlers, camelize, chances, chunkArray, clamp, className, clear, clearBit, clearCookies, clone, codePointsToString, colIndexes, colorCtor, colorDump, coloring, colorText, colSplit, componentName, concat, consoleConcat, consoleConcat.prototype, consoleConcat.prototype.print.call, consoleJoin, consolePrinter, consolePrinter.prototype, consolePrinter.prototype.length, construct, constructApply, copyEntries, copyTextToClipboard, copyWhole, count, counter, curry, dateFormatter, debounce, debounceAsync, debug, decamelize, decodeAnsi, decodeEscapes, decodeHTMLEntities, decorateIterable, deepClone, deepCloneObservable, define, defineGetter, defineGetterSetter, defineGettersSetters, defineInspect, delay, deleteCookie, deriveGetSet, difference, distinct, div, draw, dump, dumpMembers, effectiveDeviceWidth, encodeCookie, encodeHTMLEntities, encodeQuery, entries, entriesToObj, entryIterator, equals, escape, escapeRegex, every, exception, exception.prototype, exception.prototype.toString.call, exit, expr, extend, extendArray, extendFunction, extendMap, factor, factorial, fifo, filter, filterKeys, filterMembers, filterOutKeys, filterOutMembers, find, findIndex, findKey, findVal, flatten, flatTree, fnName, foreach, formatAnnotatedObject, formatColumns, formatRecord, formatTime, fromEntries, fromUnixTime, functionName, generalLog, get, getArgs, getArgv, getBit, getCaller, getCallerFile, getCallerFunction, getCallerFunctionName, getCallerFunctionNames, getCallers, getCallerStack, getConstructor, getConstructorChain, getCookie, getEnv, getEnvVars, getErrorStack, getExponential, getFormFields, getFunctionArguments, getFunctionName, getGlobalObject, getHRTime, getImageAverageColor, getKeys, getMemberDescriptors, getMemberEntries, getMemberNames, getMembers, getMethodDescriptors, getMethodNames, getMethods, getNow, getNumberParts, getObjectChain, getOpt, getOrCreate, getPlatform, getPropertyDescriptors, getPrototypeChain, getSet, getStackFrame, getStackFrames, getter, getURL, getUserAgent, globalThis, greatestCommonDenominator, hasFn, hashString, hasProps, hex, histogram, hrtime, identity, if, ifElse, ifThen, ifThenElse, immutable, immutableClass, increment, incrementer, indent, indexByPath, indexedMap, indexOf, inherit, inherits, injectProps, inRange, inserter, insertSorted, inspect, inspect.defaultOpts, inspectSymbol, instanceOf, instrument, intersect, is, isArrowFunction, isAsync, isatty, isBool, isBrowser, isCloneable, isConstructor, isDate, isDebug, isEmail, isEmpty, isEmptyString, isFunction, isGenerator, isGetter, isIpAddress, isIterable, isIterator, isMap, isMobile, isNativeFunction, isNonEmpty, isNumeric, isObject, isoDate, is.off, is.on, isPortNumber, isPrimitive, isPromise, isServer, isSet, isString, isUndefined, isUnextendable, iterateMembers, jsonToObject, keyIterator, keyOf, keys, lazyProperties, lazyProperty, lcfirst, leapYear, leastCommonMultiple, levenshteinDistance, location, location.palettes, location.prototype, location.prototype.toString.call, log, log.apply, logBase, log.filters, log.getFilters, log.methodName, logOutClearStorage, log.setFilters, makeURL, map, mapAdapter, mapCombinator, mapFunction, mapFunctional, mapReducer, mapWrapper, match, matchAll, match.apply, memberNameFilter, members, memoize, memoizedProperties, merge, mergeLists, mergeObjects, methodNameFilter, minmax, mod, move, moveIf, msg, mul, multiParagraphWordWrap, next, not, numberFormatter, numberFromURL, numberParts, numbersConvert, numbersToBits, objectFrom, objectReducer, objName, once, onoff, or, pad, padFn, padTrunc, parseCookie, parseDate, parseNum, parseQuery, parseURL, parseXML, partial, partition, platform, pow, pow10, pow2, predicate, printReturnValue, propertyLookup, proxy, proxyObject, proxyTree, pushUnique, putError, putStack, quote, randFloat, randInt, randomBits, randomNumbers, randStr, range, rangeMinMax, reduce, remap, remove, removeEqual, removeIf, removeKeys, remover, repeat, repeater, replaceAll, reverse, rng, rotateLeft, rotateRight, roundDigits, roundFunction, roundTo, safeApply, safeCall, safeFunction, scriptDir, scriptName, searchObject, set, setBit, setCookies, setReadHandler, setter, shuffle, signal, size, some, sortNum, splice, splice.apply, splitAt, splitLines, stack, stackFrame, stackFrame.prototype, stackFrame.prototype.toString.call, stack.prototype, stack.prototype.toString.call, startTime, static, stdio, stripAnsi, stripHTML, stripNonPrintable, stripXML, sub, subHRTime, Subtr, sum, swap, swapArray, switch, symbols, symbols.inspect, symbols.toStringTag, symmetricDifference, tail, thenableReject, throttle, timeit, timeout, timer, timeSpan, to3wei, toArray, toBinary, toBits, toBuiltinObject, toggleBit, toHash, toMap, toPlainObject, toPlainObjectT, toSource, toString, toUnixTime, trace, traceProxy, transform, transformer, trap, trapExit, traverse, traverseTree, traverseWithPath, trim, trimRight, tryCatch, tryFunction, tryPredicate, tryPromise, ttyGetWinSize, ttySetRaw, type, typeOf, ucfirst, union, unique, uniquePred, unixTime, unwrapComponent, updater, validatePassword, values, versionCompare, waitFor, walkTree, weakAssign, weakAssoc, weakKey, weakMapper, wordWrap, wrapGenerator, wrapGeneratorMethods, xor, zip } from './misc.js';
+import inspect from 'inspect';
 // ==UserScript==
 
 // @name         util.js
@@ -479,7 +481,7 @@ Util.log = (...args) => {
     else if(Util.isObject(p) && p[Util.inspectSymbol]) p = p[Util.inspectSymbol]();
     else if(typeof p != 'string') {
       if(Util.isObject(p) && typeof p.toString == 'function' && !Util.isNativeFunction(p.toString)) p = p.toString();
-      else p = Util.inspect(p, { multiline: false });
+      else p = inspect(p, { multiline: false });
     }
 
     //  if(i > 0) a.push(',');
@@ -1037,7 +1039,7 @@ Util.extendArray = function(arr = Array.prototype) {
   );
 
   /*Util.define(arr, 'inspect', function(opts = {}) {
-    return Util.inspect(this, { depth: 100, ...opts });
+    return inspect(this, { depth: 100, ...opts });
   });*/
 };
 Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
@@ -1487,7 +1489,7 @@ Util.inspect = function(obj, opts = {}) {
       if(i > 0) print(separator, 1, 36);
       else print(padding);
       print(sep(i > 0));
-      Util.inspect(obj[i], {
+      inspect(obj[i], {
         ...opts,
         c,
         print,
@@ -1522,7 +1524,7 @@ Util.inspect = function(obj, opts = {}) {
         else if(typeof key == 'string' || (!isMap && Util.isObject(key) && typeof key.toString == 'function'))
           print(json ? `"${key.toString()}"` : isMap || /(-)/.test(key) ? `'${key}'` : key, 1, isMap ? 36 : 33);
         else
-          Util.inspect(key, {
+          inspect(key, {
             ...opts,
             c,
             print,
@@ -1536,7 +1538,7 @@ Util.inspect = function(obj, opts = {}) {
         if(typeof value == 'number') print(`${value}`, 1, 36);
         else if(typeof value == 'string' || value instanceof String) print(`${quote}${value}${quote}`, 1, 36);
         else if(typeof value == 'object')
-          Util.inspect(value, {
+          inspect(value, {
             ...opts,
             print,
             multiline: isMap && !(value instanceof Map) ? false : multiline,
@@ -3894,7 +3896,7 @@ Util.stack = function Stack(stack, offset) {
       lineNumber,
       columnNumber
     }));
-    //    console.log('Util.stack (2)', Util.inspect(stack[0]  ));
+    //    console.log('Util.stack (2)', inspect(stack[0]  ));
 
     stack = stack.map(({ methodName, functionName: func, fileName: file, columnNumber: column, lineNumber: line }) => ({
       functionName: func,
@@ -4679,7 +4681,7 @@ Util.defineInspect = (proto, ...props) => {
       const obj = this;
       return (
         c.text(Util.fnName(proto.constructor) + ' ', 1, 31) +
-        Util.inspect(
+        inspect(
           props.reduce((acc, key) => {
             acc[key] = obj[key];
             return acc;
@@ -5454,7 +5456,7 @@ Util.printReturnValue = (fn, opts = {}) => {
     print = (returnValue, fn, ...args) => {
       let stack = Util.getCallerStack();
 
-      (console.debug || console.log)('RETURN VAL:', /*Util.inspect(*/ returnValue /*, { colors: false })*/, {
+      (console.debug || console.log)('RETURN VAL:', /*inspect(*/ returnValue /*, { colors: false })*/, {
         /*fn,
          */ args /*,
         stack*/
@@ -5604,7 +5606,7 @@ Util.consolePrinter.prototype[0] = '';
 Object.assign(Util.consolePrinter.prototype, Util.consoleConcat.prototype, {
   print() {
     const a = [...this];
-    const i = a.map(i => Util.inspect(i));
+    const i = a.map(i => inspect(i));
     console.debug('a: ' + i.shift(), ...i);
 
     Util.consoleConcat.prototype.print.call(this, this.log);

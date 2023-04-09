@@ -1,3 +1,4 @@
+import { randInt } from './misc.js';
 import { Element } from '../lib/dom.js';
 import { HSLA, RGBA } from '../lib/color.js';
 

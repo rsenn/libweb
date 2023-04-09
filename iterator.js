@@ -1,3 +1,4 @@
+import { className, extend, getMethodNames, getMethods } from './misc.js';
 import Util from './util.js';
 
 export const isIterator = arg => typeof arg == 'object' && arg !== null && typeof arg.next == 'function';

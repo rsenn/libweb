@@ -1,5 +1,4 @@
 import { thenableReject } from '../thenable-reject.js';
-import Util from '../util.js';
 
 export async function* websocketData(websocket) {
   for await(const { data } of websocketEvents(websocket)) yield data;
@@ -9,7 +8,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   let done = false;
   const values = [];
   const resolvers = [];
-  const ctor = Util.tryCatch(
+  const ctor = tryCatch(
     () => window.WebSocket,
     ws => ws,
     () => websocket.constructor

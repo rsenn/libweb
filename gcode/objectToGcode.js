@@ -1,4 +1,3 @@
-import Util from '../util.js';
 
 /*
  * Parses a JSON object and returns a line of GCode
@@ -29,7 +28,7 @@ export function objectToGcode(gcodeObject, args = {}) {
   let processE = false;
   let processF = false;
 
-  Util.entries(gcodeObject.args).forEach(([key, value]) => {
+  entries(gcodeObject.args).forEach(([key, value]) => {
     if(key === 'e') {
       processE = true;
     } else if(key === 'f') {

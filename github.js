@@ -1,3 +1,4 @@
+import { decodeHTMLEntities, isNumeric, stripHTML, tryCatch, unique } from './misc.js';
 import * as deep from './deep.js';
 import { tXml } from './xml.js';
 import { NormalizeResponse, ResponseData, FetchCached, FetchURL } from './fetch.js';

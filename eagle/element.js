@@ -1,6 +1,5 @@
 import { className, decodeHTMLEntities, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst } from '../misc.js';
 import trkl from '../trkl.js';
-import Util from '../util.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleElementProxy } from './elementProxy.js';
@@ -141,7 +140,7 @@ export class EagleElement extends EagleNode {
         let prop = trkl.property(this.attrMap, key);
         let handler;
         if(['visible', 'active'].indexOf(key) != -1)
-          handler = Util.ifThenElse(
+          handler = ifThenElse(
             v => v !== undefined,
             v => prop(v === true ? 'yes' : v === false ? 'no' : v),
             () => {
@@ -152,23 +151,23 @@ export class EagleElement extends EagleNode {
             }
           );
         else if(key == 'diameter') {
-          const getDiameter = Util.ifThenElse(
+          const getDiameter = ifThenElse(
             v => isNaN(+v),
             () => 'auto',
             v => +v
           );
-          handler = Util.ifThenElse(
+          handler = ifThenElse(
             v => v !== undefined,
             v => prop(isNaN(+v) ? v : +v),
             () => getDiameter(prop())
           );
         } else
-          handler = Util.ifThenElse(
+          handler = ifThenElse(
             v => v !== undefined,
             v => prop(v + ''),
             () => {
               let v = prop();
-              if(Util.isNumeric(v) && key != 'name') v = parseFloat(v);
+              if(isNumeric(v) && key != 'name') v = parseFloat(v);
               return v;
             }
           );

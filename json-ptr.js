@@ -1,4 +1,3 @@
-import Util from './util.js';
 
 const { curry } = Util;
 

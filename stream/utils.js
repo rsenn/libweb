@@ -1,3 +1,4 @@
+import { className, getGlobalObject, isConstructor, isGenerator } from '../misc.js';
 import { Repeater } from '../repeater/repeater.js';
 import Util from '../util.js';
 

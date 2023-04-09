@@ -1,3 +1,5 @@
+import { getCallers, getCallerStack, getMethodNames, histogram, pad, repeat, stackFrame, unique } from './misc.js';
+import inspect from 'inspect';
 import Util from './util.js';
 
 function Stack() {
@@ -451,7 +453,7 @@ ${other}`;
         case 'ReturnStatement':
           return js_return_statement(node);
         default:
-          throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
+          throw new Error(`Dunno how to generate for ${inspect(node, { newline: ' ' })}`);
       }
     }
   }
@@ -782,7 +784,7 @@ ${other}`;
           ret = '';
           break;
         default:
-          //Util.inspect(node, { newline: ' ' }));
+          //inspect(node, { newline: ' ' }));
           throw { message: `Dunno how to generate for ${node.type}` };
           break;
       }

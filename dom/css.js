@@ -1,3 +1,4 @@
+import { adapter, decamelize, equals, find, isIterable, isObject, matchAll, memoize, merge, toMap, tryCatch, unique } from '../misc.js';
 import Util from '../util.js';
 import { Element } from './element.js';
 

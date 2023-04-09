@@ -1,4 +1,3 @@
-import Util from '../util.js';
 import { Point, isPoint } from './point.js';
 import { Line, isLine } from './line.js';
 

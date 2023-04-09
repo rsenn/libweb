@@ -1,3 +1,4 @@
+import { decamelize, defineGetterSetter, isObject, memoize, padFn, shuffle } from '../misc.js';
 import { Util } from '../util.js';
 import { Element, isElement } from './element.js';
 import { Size, isSize } from '../geom/size.js';

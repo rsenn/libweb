@@ -1,3 +1,4 @@
+import { isObject, tryCatch } from '../misc.js';
 /**
  * An asynchronous WebSocket client.
  * @example

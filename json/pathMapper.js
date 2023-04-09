@@ -1,5 +1,4 @@
 import { ImmutablePath } from './path.js';
-import Util from '../util.js';
 
 export class PathMapper {
   map = new WeakMap();
@@ -8,7 +7,7 @@ export class PathMapper {
 
   constructor(root, ctor = ImmutablePath) {
     if(root) this.root = root;
-    if(ctor) Util.define(this, { ctor });
+    if(ctor) define(this, { ctor });
   }
 
   set(obj, path) {
@@ -106,7 +105,7 @@ export class WrapperMapper {
   ctor = null;
 
   constructor(ctor) {
-    if(ctor) Util.define(this, { ctor });
+    if(ctor) define(this, { ctor });
   }
 
   get(obj) {}

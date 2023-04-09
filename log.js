@@ -1,4 +1,3 @@
-import Util from './util.js';
 
 /**
  * LogJS (c)2013 Brett Fattori
@@ -15,7 +14,7 @@ export var LogJS = {
 
   version: 'LogJS v1.2.2',
   get window_() {
-    return Util.tryCatch(
+    return tryCatch(
       () => global,
       g => g.window,
       () => globalThis

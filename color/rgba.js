@@ -1,5 +1,5 @@
 import { HSLA, ImmutableHSLA } from './hsla.js';
-import Util from '../util.js';
+import { clamp, className, curry, define, defineGetter, immutableClass, randInt, roundTo, tryCatch } from '../misc.js';
 
 /**
  * @brief [brief description]
@@ -76,17 +76,25 @@ RGBA.properties = ['r', 'g', 'b', 'a'];
 export const isRGBA = obj => RGBA.properties.every(prop => obj.hasOwnProperty(prop));
 
 RGBA.fromString = str => {
-  let c = Util.tryCatch(
+  if(/^rgba?\(/.test(str)) {
+    let args = [...str.matchAll(/([0-9]+(\.[0-9]*|)%?)/g)].map(([, m]) => m).map(n => (n.endsWith('%') ? Math.round((+n.slice(0, -1) * 255) / 100) : +n));
+    return new RGBA(...args);
+  }
+
+  let c = tryCatch(
     () => new HSLA(str),
     c => c.toRGBA(),
     () => undefined
   );
   if(!c)
-    c = Util.tryCatch(
+    c = tryCatch(
       () => new RGBA(str),
       c => c,
       () => undefined
     );
+
+  if(!c) {
+  }
   return c;
 };
 RGBA.order = {
@@ -209,7 +217,7 @@ RGBA.prototype.round = function() {
   return this;
 };
 RGBA.prototype.setOpacity = function(a) {
-  this.a = Util.clamp(0, 255, a * 255);
+  this.a = clamp(0, 255, a * 255);
   return this;
 };
 RGBA.normalize = function(rgba, src = 255, dst = 1.0) {
@@ -231,7 +239,7 @@ RGBA.prototype.toCSS = function(fmt = num => +num.toFixed(3)) {
 RGBA.prototype.toString = function(opts) {
   return RGBA.prototype.hex.call(this, opts);
 };
-Util.defineGetter(RGBA.prototype, Symbol.toStringTag, function() {
+defineGetter(RGBA.prototype, Symbol.toStringTag, function() {
   const { r, g, b, a } = this;
   return `[object RGBA ${r},${g},${b},${a}]`;
 });
@@ -265,7 +273,7 @@ RGBA.blend = (a, b, o = 0.5) => {
   return new RGBA(Math.round(a.r * (1 - o) + b.r * o), Math.round(a.g * (1 - o) + b.g * o), Math.round(a.b * (1 - o) + b.b * o), Math.round(a.a * (1 - o) + b.a * o));
 };
 
-RGBA.prototype.toAlpha = Util.curry(function (other) {
+RGBA.prototype.toAlpha = curry(function (other) {
   let color = RGBA.normalize(this);
   let src = new RGBA(other).normalize();
   let alpha = {};
@@ -350,7 +358,7 @@ RGBA.prototype.toHSLA = function() {
 
   //console.log("RGBA.toHSLA ", { h, s, l, a });
 
-  return new (Object.isFrozen(this) ? ImmutableHSLA : HSLA)(Math.round(h), Util.roundTo(s, 100 / 255), Util.roundTo(l, 100 / 255), Util.roundTo(a, 1 / 255));
+  return new (Object.isFrozen(this) ? ImmutableHSLA : HSLA)(Math.round(h), roundTo(s, 100 / 255), roundTo(l, 100 / 255), roundTo(a, 1 / 255));
 };
 
 RGBA.prototype.toCMYK = function() {
@@ -519,7 +527,7 @@ RGBA.fromAnsi256 = function(n) {
 };
 RGBA.nearestColor = (color, palette, distFn = (a, b) => Math.sqrt(Math.pow(a.r - b.r, 2) + Math.pow(a.g - b.g, 2) + Math.pow(a.b - b.b, 2))) => {
   if(!(color instanceof RGBA)) color = new RGBA(color);
-  //console.log("RGBA.nearestColor", color.hex(),Util.className(color),Util.className(palette));
+  //console.log("RGBA.nearestColor", color.hex(),className(color),className(palette));
   if(!color) return null;
   let dist,
     minDist = Infinity,
@@ -591,9 +599,9 @@ RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   return `\x1b[1;31mRGBA\x1b[1;36m` + `(${ret})`.padEnd(18, ' ') + ` ${color}    \x1b[0m`;
 };
 
-Util.define(RGBA, {
+define(RGBA, {
   get palette16() {
-    //const clamp = Util.clamp(0, 255);
+    //const clamp = clamp(0, 255);
     // /* prettier-ignore */ const a = [[0, 0, 0], [2, 0, 0], [0, 2, 0], [2, 2, 0], [0, 0, 2], [2, 0, 2], [0, 2, 2], [3, 3, 3], [2, 2, 2], [4, 0, 0], [0, 4, 0], [4, 4, 0], [0, 0, 4], [4, 0, 4], [0, 4, 4], [4, 4, 4] ];
     // /* prettier-ignore */ const b = [[1, 1, 1], [4, 0, 0], [2, 3, 1], [4, 3, 0], [1, 2, 3], [2, 2, 2], [1, 3, 3], [4, 4, 4], [2, 2, 2], [4, 1, 1], [3, 4, 1], [4, 4, 2], [2, 3, 4], [3, 2, 3], [1, 4, 4], [4, 4, 4] ];
     //return b.map(c => new RGBA(c.map(n => Math.round(clamp(n * 64)))));
@@ -605,7 +613,7 @@ Util.define(RGBA, {
 });
 
 RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255], rng = Math.random) {
-  return new RGBA(Util.randInt(...r, rng), Util.randInt(...g, rng), Util.randInt(...b, rng), Util.randInt(...a, rng));
+  return new RGBA(randInt(...r, rng), randInt(...g, rng), randInt(...b, rng), randInt(...a, rng));
 };
 
 for(let name of ['hex', 'toRGB', 'round', 'toHSLA', 'toCMYK', 'toLAB', 'linear', 'luminance', 'distance']) {
@@ -619,10 +627,10 @@ for(let name of ['fromLAB']) {
   };
 }*/
 
-Util.defineGetter(RGBA, Symbol.species, function() {
+defineGetter(RGBA, Symbol.species, function() {
   return this;
 });
-export const ImmutableRGBA = Util.immutableClass(RGBA);
-Util.defineGetter(ImmutableRGBA, Symbol.species, () => ImmutableRGBA);
+export const ImmutableRGBA = immutableClass(RGBA);
+defineGetter(ImmutableRGBA, Symbol.species, () => ImmutableRGBA);
 
 export default RGBA;

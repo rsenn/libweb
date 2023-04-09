@@ -1,9 +1,10 @@
+import { getGlobalObject } from '../misc.js';
 import Util from '../util.js';
 
 const map = new WeakMap();
 const wm = o => map.get(o);
 
-let globalThis = Util.getGlobalObject();
+let globalThis = getGlobalObject();
 
 //console.log('globalThis:', globalThis);
 

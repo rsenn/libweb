@@ -1,3 +1,4 @@
+import { className, isNumeric, isObject, transformer, weakMapper } from '../misc.js';
 import ObservableMembrane from '../proxy/observableMembrane.js';
 import Util from '../util.js';
 import { PathMapper } from './pathMapper.js';

@@ -1,3 +1,4 @@
+import { className, decorateIterable, define, getConstructor, isObject } from '../misc.js';
 import { EagleRef } from './ref.js';
 import { EagleElement } from './element.js';
 import Util from '../util.js';

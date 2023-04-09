@@ -1,4 +1,3 @@
-import Util from '../util.js';
 import { RGBA } from '../color.js';
 
 const FOREGROUND = Symbol.for('foreground');
@@ -18,7 +17,7 @@ export class ColoredText extends Array {
 
   constructor(...args) {
     super();
-    Util.define(this, { current: { [FOREGROUND]: null, [BACKGROUND]: null } });
+    define(this, { current: { [FOREGROUND]: null, [BACKGROUND]: null } });
 
     const { FG, BG, NC } = ColoredText;
 
@@ -26,7 +25,7 @@ export class ColoredText extends Array {
       if(arg === NC) {
         this.current[FG] = null;
         this.current[BG] = null;
-      } else if(Util.isObject(arg)) {
+      } else if(isObject(arg)) {
         if(arg[FG] !== undefined) this.current[FG] = arg[FG] || null;
         if(arg[BG] !== undefined) this.current[BG] = arg[BG] || null;
       }
@@ -47,14 +46,14 @@ export class ColoredText extends Array {
   setForeground(color) {
     if(color instanceof Array) color = new RGBA(...color);
     const last = this[this.length - 1];
-    if(Util.isObject(last)) last[FOREGROUND] = color;
+    if(isObject(last)) last[FOREGROUND] = color;
     else this.push({ [FOREGROUND]: color });
   }
 
   setBackground(color) {
     if(color instanceof Array) color = new RGBA(...color);
     const last = this[this.length - 1];
-    if(Util.isObject(last)) last[BACKGROUND] = color;
+    if(isObject(last)) last[BACKGROUND] = color;
     else this.push({ [BACKGROUND]: color });
   }
 
@@ -107,7 +106,7 @@ export class ColoredText extends Array {
   }
 
   stripColors() {
-    return this.filter(p => !Util.isObject(p) && p !== NO_COLOR);
+    return this.filter(p => !isObject(p) && p !== NO_COLOR);
   }
 
   output() {
@@ -116,7 +115,7 @@ export class ColoredText extends Array {
   }
 
   toArray() {
-    let a = Util.isBrowser() ? this.toConsole() : this.toAnsi256();
+    let a = isBrowser() ? this.toConsole() : this.toAnsi256();
 
     return a;
   }
@@ -124,9 +123,9 @@ export class ColoredText extends Array {
   toString(color = true) {
     let a = this;
 
-    if(!color || Util.isBrowser()) a = a.stripColors();
+    if(!color || isBrowser()) a = a.stripColors();
 
-    a = Util.isBrowser() ? a : a.toAnsi256();
+    a = isBrowser() ? a : a.toAnsi256();
     return a.join('');
   }
 
@@ -135,7 +134,7 @@ export class ColoredText extends Array {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return Util.isBrowser() ? this.toConsole() : this.toAnsi256();
+    return isBrowser() ? this.toConsole() : this.toAnsi256();
   }
 
   toConsole() {
@@ -149,7 +148,7 @@ export class ColoredText extends Array {
         a.push('color:none; background-color: none;');
         state[FG] = null;
         state[BG] = null;
-      } else if(Util.isObject(p)) {
+      } else if(isObject(p)) {
         const fg = p[FG];
         const bg = p[BG];
         let css = [];
@@ -221,7 +220,7 @@ export class ColoredText extends Array {
       if(p === NC) {
         state[FG] = null;
         state[BG] = null;
-      } else if(Util.isObject(p)) {
+      } else if(isObject(p)) {
         if(p[FG] !== undefined) state[FG] = p[FG];
         if(p[BG] !== undefined) state[BG] = p[BG];
       }
@@ -265,9 +264,9 @@ export class ColoredText extends Array {
       let s = '';
       if(typeof p == 'symbol' || p === NC) {
         s += `\x1b[0m`;
-      } else if(Util.isObject(p)) {
-        if(Util.isObject(p[FG]) && p[FG].toAnsi256) s += p[FG].toAnsi256(false);
-        if(Util.isObject(p[BG]) && p[BG].toAnsi256) s += p[BG].toAnsi256(true);
+      } else if(isObject(p)) {
+        if(isObject(p[FG]) && p[FG].toAnsi256) s += p[FG].toAnsi256(false);
+        if(isObject(p[BG]) && p[BG].toAnsi256) s += p[BG].toAnsi256(true);
       } else {
         s += p + '';
       }

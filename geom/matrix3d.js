@@ -1,4 +1,3 @@
-import Util from '../util.js';
 
 /**
  * A really simple and basic 4x4 matrix implementation, compatible with CSS. Transform them, and
@@ -81,5 +80,5 @@ export class Matrix3D {
   }
 }
 
-export const ImmutableMatrix3D = Util.immutableClass(Matrix3D);
-Util.defineGetter(ImmutableMatrix3D, Symbol.species, () => ImmutableMatrix3D);
+export const ImmutableMatrix3D = immutableClass(Matrix3D);
+defineGetter(ImmutableMatrix3D, Symbol.species, () => ImmutableMatrix3D);

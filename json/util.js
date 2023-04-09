@@ -1,3 +1,4 @@
+import { define, getPlatform } from '../misc.js';
 import Util from '../util.js';
 
 export let toXML = (o, ...opts) => {

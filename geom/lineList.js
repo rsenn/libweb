@@ -1,3 +1,5 @@
+import { coloring, defineGetter, immutableClass, isBrowser, isGenerator } from '../misc.js';
+import inspect from 'inspect';
 import { Line } from './line.js';
 import { BBox } from './bbox.js';
 import { PointList } from './pointList.js';
@@ -170,13 +172,13 @@ export class LineList extends Array {
     let c = Util.coloring(false && opts.colors);
     let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) => (this[0][p] ? p : a));
     //console.log('inspectFn:', toString);
-    //   return Util.inspect(this, { ...opts, toString });
+    //   return inspect(this, { ...opts, toString });
     return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map(
       line =>
         line[toString].call(line, n, {
           ...opts,
           color: false
-        }) /*({ x1, y1,x2,y2 }) => Util.inspect({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/
+        }) /*({ x1, y1,x2,y2 }) => inspect({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/
     ).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   }
 

@@ -1,3 +1,4 @@
+import { toSource } from '../misc.js';
 import Util from '../util.js';
 
 function Node(value, left = null, right = null) {

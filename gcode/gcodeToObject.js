@@ -1,4 +1,3 @@
-import Util from '../util.js';
 import { objectToGcode } from './objectToGcode.js';
 
 export class GcodeObject {
@@ -34,14 +33,14 @@ function parseCommentTag(comment) {
 
   // Don't parse the result unless you have data
   if(result && result.length >= 2 && result[1]) {
-    const metaCommand = Util.camelize(result[1].toLowerCase());
+    const metaCommand = camelize(result[1].toLowerCase());
     commentTag.command = metaCommand;
 
     if(result[2]) {
       const commentTagArgs = result[2].toLowerCase();
       if(commentTagArgs.includes(':')) {
         const commentTagKeyValue = commentTagArgs.split(':');
-        const key = Util.camelize(commentTagKeyValue[0]);
+        const key = camelize(commentTagKeyValue[0]);
 
         // Parse to number, if it's a number
         const value = Number.isNaN(Number(commentTagKeyValue[1])) ? commentTagKeyValue[1] : Number(commentTagKeyValue[1]);

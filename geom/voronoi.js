@@ -1,4 +1,3 @@
-import Util from '../util.js';
 
 /*!
 Copyright (C) 2010-2013 Raymond Hill: https://github.com/gorhill/Javascript-Voronoi
@@ -88,7 +87,7 @@ export class Voronoi {
     this.vertices = null;
     this.edges = null;
     this.cells = null;
-    Util.define(this, {
+    define(this, {
       toRecycle: null,
       beachsectionJunkyard: [],
       circleEventJunkyard: [],
@@ -260,7 +259,7 @@ export class Voronoi {
     return this.getBeachsection();
   }
 
-  getBeachsection = Util.memoize(() => function Beachsection() {});
+  getBeachsection = memoize(() => function Beachsection() {});
 
   //rhill 2011-06-02: A lot of Beachsection instanciations
   //occur during the computation of the Voronoi diagram,
@@ -614,7 +613,7 @@ export class Voronoi {
     return this.getCircleEvent();
   }
 
-  getCircleEvent = Util.memoize(
+  getCircleEvent = memoize(
     () =>
       class CircleEvent {
         constructor() {

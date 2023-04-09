@@ -1,4 +1,3 @@
-import Util from './util.js';
 
 export function tlite(getTooltipOpts) {
   document.addEventListener('mouseover', e => {
@@ -49,7 +48,7 @@ tlite.show = function(el, opts, isAuto) {
   opts = opts || {};
   let fallbackAttrib = /*opts.attrib ||*/ 'data-tlite';
 
-  let mapper = this.mapper || Util.weakMapper(createTooltip);
+  let mapper = this.mapper || weakMapper(createTooltip);
 
   this.mapper = mapper;
   //console.info('tlite.show:', el, opts, isAuto, fallbackAttrib);

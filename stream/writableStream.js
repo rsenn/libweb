@@ -1,3 +1,4 @@
+import { getGlobalObject } from '../misc.js';
 import PortableFileSystem from '../filesystem.js';
 import { EventEmitter } from '../eventEmitter.js';
 import Util from '../util.js';

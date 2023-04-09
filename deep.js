@@ -1,4 +1,4 @@
-import Util from './util.js';
+import { isNumeric, isObject, size } from './misc.js'
 
 export const RETURN_VALUE_PATH = 0;
 export const RETURN_PATH = 1 << 24;
@@ -67,8 +67,8 @@ export const equals = (a, b) => {
     }
     return true;
   } else if(isPlainObject(a)) {
-    size_a = Util.size(a);
-    if(!(isPlainObject(b) && size_a === Util.size(b))) {
+    size_a = size(a);
+    if(!(isPlainObject(b) && size_a === size(b))) {
       return false;
     }
     for(k in a) {
@@ -141,7 +141,7 @@ export const forEach = function(...args) {
 
   fn(value, path, root);
 
-  if(Util.isObject(value)) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+  if(isObject(value)) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -155,7 +155,7 @@ export const iterate = function* (...args) {
 
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)
-    if(Util.isObject(value)) {
+    if(isObject(value)) {
       for(let k in value) yield* iterate(value[k], filter, flags, path.concat([isNaN(+k) ? k : +k]), root);
     }
 };
@@ -250,7 +250,7 @@ export const unset = (object, path) => {
     if(parts.length > 1) {
       unset(object[parts.shift()], parts);
     } else {
-      if(Array.isArray(object) && Util.isNumeric(path)) object.splice(+path, 1);
+      if(Array.isArray(object) && isNumeric(path)) object.splice(+path, 1);
       else delete object[path];
     }
   }

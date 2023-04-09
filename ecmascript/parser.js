@@ -1,3 +1,5 @@
+import { abbreviate, className, fnName, getCallerStack, getMethodNames, isObject, once, pad, propertyLookup, tail, trim } from '../misc.js';
+import inspect from 'inspect';
 import Util from '../util.js';
 
 import { Lexer, Location, Token } from './lexer.js';
@@ -1864,7 +1866,7 @@ export class ECMAScriptParser extends Parser {
   }
 
   parseStatement(insideIteration, insideFunction, exported) {
-    this.log(`parseStatement()`, Util.inspect(this.token));
+    this.log(`parseStatement()`, inspect(this.token));
     //Parse Block
     let t = this.token || this.lexer.tokens[this.lexer.tokenIndex];
     let defaultExport = false;
@@ -1891,7 +1893,7 @@ export class ECMAScriptParser extends Parser {
       }
       return stmt;
     } else if(this.matchKeywords('import')) {
-      //this.log(`parseStatement()`, Util.inspect(this.token));
+      //this.log(`parseStatement()`, inspect(this.token));
       return this.parseImportDeclaration(!insideIteration && !insideFunction);
       //Parse Empty Statement
     } else if(this.matchKeywords('class')) {
@@ -2110,7 +2112,7 @@ export class ECMAScriptParser extends Parser {
     }
 
     if(this.tokens.length >= 1 && this.tokens[0].type !== Token.types.eof) {
-      throw this.error(`Didn't consume all tokens: ${Util.inspect(this.tokens[0])}`);
+      throw this.error(`Didn't consume all tokens: ${inspect(this.tokens[0])}`);
     }
 
     return new Program('module', body);

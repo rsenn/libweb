@@ -1,4 +1,3 @@
-import Util from './util.js';
 
 function LocalStore(obj) {
   Object.assign(this, obj);
@@ -10,10 +9,10 @@ LocalStore.prototype.entries = function* () {
 };
 
 LocalStore.prototype.getSetFunction = function() {
-  return Util.mapFunction(this);
+  return mapFunction(this);
 };
 LocalStore.prototype.adapter = function() {
-  return Util.mapAdapter(this.getSetFunction());
+  return mapAdapter(this.getSetFunction());
 };
 
 LocalStore.prototype.toMap = function() {
@@ -27,11 +26,11 @@ LocalStore.prototype.toJSON = function() {
 };
 
 export const makeLocalStorage = () => {
-  let w = Util.tryCatch(() => window);
+  let w = tryCatch(() => window);
 
   if(w && w.localStorage)
     return new LocalStore({
-      get: Util.tryFunction(
+      get: tryFunction(
         name => JSON.parse(w.localStorage.getItem(name)),
         v => v,
         (err, name) => (w.localStorage.removeItem(name), undefined)
@@ -93,7 +92,7 @@ export const makeDummyStorage = () => ({
 });
 
 export function getLocalStorage() {
-  let w = Util.tryCatch(() => globalThis.window);
+  let w = tryCatch(() => globalThis.window);
 
   if(getLocalStorage.store === undefined) {
     getLocalStorage.store = w && w.localStorage ? makeLocalStorage() : makeDummyStorage();

@@ -1,4 +1,3 @@
-import Util from '../util.js';
 
 /*	This work is licensed under Creative Commons GNU LGPL License.
 

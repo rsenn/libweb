@@ -1,4 +1,3 @@
-import Util from '../util.js';
 
 const lexComment = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 2);
@@ -136,7 +135,7 @@ const lexCond = cond => {
   return cond;
 };
 
-export const lexIsToken = Util.curry((id, result) => {
+export const lexIsToken = curry((id, result) => {
   let ret;
 
   if(typeof id == 'string') id = Lexer.tokens[id];
@@ -149,7 +148,7 @@ export const lexIsToken = Util.curry((id, result) => {
   return ret;
 });
 
-export const lexMatch = Util.curry((id, str, result) => {
+export const lexMatch = curry((id, str, result) => {
   let ret;
   if(typeof id == 'string') id = Lexer.tokens[id];
   if(typeof id != 'function') {
@@ -220,7 +219,7 @@ export class Lexer {
     let toString = function() {
       return Lexer.tokenName(this.tok) + ' ' + this.str;
     };
-    Util.define(obj, { toString });
+    define(obj, { toString });
     return obj;
   }
 
@@ -253,7 +252,7 @@ export class Lexer {
     let tokIndex = -1;
     let len = source.length;
 
-    Util.define(this, {
+    define(this, {
       source,
       tokIndex,
       file,
@@ -317,7 +316,7 @@ export class Lexer {
         this.tok = value;
         this.tokIndex--;
       };
-      Util.define(value, { unget });
+      define(value, { unget });
       //console.log(`token ${this.line}:`, value);
       return {
         value,

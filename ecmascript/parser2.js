@@ -1,3 +1,4 @@
+import { abbreviate, className, exit, getCallerStack, getMethodNames, isObject, once, pad, propertyLookup, putStack, randInt, tail, trace, trim, weakMapper } from '../misc.js';
 import Util from '../util.js';
 import inspect from '../objectInspect.js';
 

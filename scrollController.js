@@ -1,4 +1,3 @@
-import Util from './util.js';
 
 export class ScrollController {
   static keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
@@ -7,7 +6,7 @@ export class ScrollController {
     e = e || this.element.event;
     e.returnValue = false;
 
-    //console.log('preventDefault ', Util.className(e));
+    //console.log('preventDefault ', className(e));
     if(e.preventDefault) e.preventDefault();
   }
 
