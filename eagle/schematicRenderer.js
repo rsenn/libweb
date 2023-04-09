@@ -1,3 +1,4 @@
+import { className, isObject } from '../misc.js';
 import { Point, Rect, Line, BBox } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';

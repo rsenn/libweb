@@ -1,4 +1,4 @@
-import filesystem from 'fs';
+import { define, lazyProperty, tryCatch, unique } from '../misc.js';
 import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
@@ -63,7 +63,8 @@ export class EagleProject {
         let doc = EagleDocument.open(file, this.fs);
         this.list[index] = doc;
 
-        if(doc.libraries) this.addLibraries(doc.libraries.list.map(l => l.name));
+        //console.log('lazyOpen',console.config({customInspect:false}), [...doc.libraries.list ]);
+        if(doc.libraries) this.addLibraries([...doc.libraries.list].map(l => l.name));
 
         return doc;
       },

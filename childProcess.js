@@ -1,3 +1,4 @@
+import { memoize } from './misc.js'
 
 export const SIGHUP = 1;
 export const SIGINT = 2;

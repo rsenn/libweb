@@ -1,5 +1,5 @@
 import { ESNode, Property, MemberExpression } from './estree.js';
-import { className, filterOutKeys, isNumeric, isObject } from '../misc.js';
+import { className, filterKeys, isNumeric, isObject } from '../misc.js';
 
 export class ECMAScriptValue {
   static types = {
@@ -33,7 +33,7 @@ export class ECMAScriptValue {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let obj = Util.filterOutKeys({ ...this }, [Symbol.for('nodejs.util.inspect.custom'), 'types']);
+    let obj = filterKeys({ ...this}, k=>  [Symbol.for('nodejs.util.inspect.custom'), 'types'].indexOf(k) == -1);
     let t = Object.entries(ECMAScriptValue.types).find(([name, number], i) => number == this.type);
     if(obj.type === undefined || this.constructor.prototype !== ECMAScriptValue.prototype) delete obj.type;
     else if(t) obj.type = t[0];
@@ -87,7 +87,7 @@ class Scope {
   }
 
   static find(scope, name) {
-    if(Util.isObject(name) && name.value) name = name.value;
+    if(isObject(name) && name.value) name = name.value;
 
     do {
       if(scope.declarations.has(name)) return scope;
@@ -109,7 +109,7 @@ class Scope {
 
     return {
       depth: Scope.depth(this),
-      declarations: Object.fromEntries([...this.declarations.entries()].map(([name, value]) => [name, Util.className(value)]))
+      declarations: Object.fromEntries([...this.declarations.entries()].map(([name, value]) => [name, className(value)]))
     };
   }
 }
@@ -150,13 +150,13 @@ export class ECMAScriptInterpreter {
 
   evalNode(node) {
     let name, fn, className;
-    className = Util.className(node);
-    name = Util.isObject(node) ? className : null;
+    className = className(node);
+    name = isObject(node) ? className : null;
     fn =
       this['eval' + name] ||
       //(() => '') ||
       function(...args) {
-        args = args.map(a => Util.className(a));
+        args = args.map(a => className(a));
         if(node instanceof ESNode) {
           console.log('node:', ESNode.assoc(node).position.toString());
         }
@@ -269,7 +269,7 @@ export class ECMAScriptInterpreter {
   }
 
   evalLiteral(literal) {
-    return new ECMAScriptValue(Util.isNumeric(literal.value) ? 'number' : 'string', literal.value);
+    return new ECMAScriptValue(isNumeric(literal.value) ? 'number' : 'string', literal.value);
   }
 
   evalMemberExpression(member_expression) {

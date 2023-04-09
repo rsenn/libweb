@@ -1,3 +1,4 @@
+import { abbreviate, className, isObject } from '../misc.js';
 import { toXML } from '../json.js';
 import { text, concat } from './common.js';
 import { Pointer as ImmutablePath } from '../pointer.js';

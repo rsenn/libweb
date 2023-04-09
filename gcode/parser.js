@@ -1,10 +1,3 @@
-/* eslint no-bitwise: 0 */
-/* eslint no-continue: 0 */
-/*import events from 'events';
-import fs from 'fs';
-import timers from 'timers';
-import stream from 'stream';
-*/
 import { EventEmitter } from '../eventEmitter.js';
 import { PipeToRepeater } from '../stream/utils.js';
 import transformStream from '../stream/transformStream.js';

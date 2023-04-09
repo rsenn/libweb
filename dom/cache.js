@@ -1,8 +1,5 @@
-
 const map = new WeakMap();
 const wm = o => map.get(o);
-
-let globalThis = getGlobalObject();
 
 //console.log('globalThis:', globalThis);
 

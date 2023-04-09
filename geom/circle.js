@@ -1,4 +1,3 @@
-import inspect from 'inspect';
 import { Point, isPoint } from './point.js';
 import { Rect } from './rect.js';
 import { bindProperties, className, defineGetter, inspectSymbol, isObject, roundDigits, roundTo } from '../misc.js';

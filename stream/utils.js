@@ -1,4 +1,3 @@
-import filesystem from 'fs';
 import { Repeater } from '../repeater/repeater.js';
 import { className, isConstructor } from '../misc.js';
 

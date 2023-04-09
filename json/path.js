@@ -1,5 +1,4 @@
-import inspect from 'inspect';
-import { define,defineGetter,immutableClass } from '../misc.js';
+import { define, defineGetter, immutableClass } from '../misc.js';
 import { toXML } from './util.js';
 
 export function DereferenceError(object, member, pos, prev, locator) {
@@ -312,13 +311,12 @@ export class MutablePath extends Array {
       let stack = getCallers(1, 10);
       throw new Error(`Object ${o}` + stack.join('\n'));
     }
-    let a = this;
-
+    let a;
     // console.log("MutablePath.apply",...[...this], {o,a});
 
     //   while(a.length >= 1 && a[0] === '') a = a.slice(1);
 
-    a = a.reduce(
+    a = this.reduce(
       (a, i) => {
         if(a.o) {
           let r;

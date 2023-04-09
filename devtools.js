@@ -1,6 +1,6 @@
 //prettier-ignore
 import dom, { CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, Size, SVG, Timer, Node, isElement } from './dom.js';
-import { decamelize, defineGetterSetter, distinct, hex, map, parseURL, reduce, stylesheets, unique } from './misc.js';
+import { decamelize, defineGetterSetter, /* map, parseURL, reduce,*/  unique } from './misc.js';
 import { trkl } from './trkl.js';
 import HashList from './container/hashList.js';
 import { makeLocalStorage } from './autoStore.js';
@@ -85,7 +85,7 @@ export function stylesheets() {
 
     [...s.cssRules].map(r => r.cssText);
   });
-  console.log('Util.stylesheets() ', r);
+  console.log('devtools.stylesheets() ', r);
   return r;
 }
 
@@ -490,8 +490,8 @@ export function arrayBuffer2String(b) {
 export function ws(cmd = 'send', filename, data) {
   return new Promise((resolve, reject) => {
     let args = [...arguments];
-    let url = Util.parseURL();
-    url.location = '/ws';
+    let url = new URL(window.location);
+    url.pathname = '/ws';
     url.protocol = 'ws';
     if(typeof args[0] === 'object') {
       if(args[0].recv) {
@@ -506,7 +506,7 @@ export function ws(cmd = 'send', filename, data) {
       }
       data = args[0].data;
     }
-    let ws = new WebSocket(url.href());
+    let ws = new WebSocket(url.href);
     function decodeBase64(b) {
       return decodeURIComponent(escape(window.atob(b)));
     }
@@ -840,7 +840,7 @@ export function walk(element) {
       else if(Rect.area(rect)) global.lines[0].push(str);
     }
   });
-  let out = '\n' + Util.distinct(lines[0]).join('\n') + '\n\n' + Util.distinct(lines[1]).join('\n');
+  let out = '\n' + unique(lines[0]).join('\n') + '\n\n' + unique(lines[1]).join('\n');
 
   ws({ send: 'extract.txt', data: out });
 

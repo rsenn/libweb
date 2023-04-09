@@ -1,6 +1,5 @@
-import inspect from 'inspect';
 import { ESNode, Literal, FunctionLiteral, TemplateLiteral, Property, MethodDefinition, FunctionDeclaration, ArrowFunctionExpression, Identifier, ClassDeclaration, ObjectPattern, SpreadElement, MemberExpression, Statement, ImportDeclaration, ImportSpecifier, BlockStatement, IfStatement } from './estree.js';
-import { className, coloring, decodeAnsi, define, equals, escape, isObject } from '../misc.js';
+import { className,  define,  escape, isObject } from '../misc.js';
 import * as deep from '../deep.js';
 const linebreak = new RegExp('\\r?\\n', 'g');
 
@@ -23,7 +22,7 @@ export class Printer {
 
     let color = Util.coloring(colors);
 
-    Util.define(this, {
+    define(this, {
       color,
       colorText: Object.entries(Printer.colors).reduce(
         (acc, [key, codes]) => ({
@@ -51,13 +50,13 @@ export class Printer {
   printNode(node) {
     let name, fn, className;
     try {
-      name = (Util.isObject(node) && node instanceof ESNode && Util.className(node)) || node.type;
+      name = (isObject(node) && node instanceof ESNode && className(node)) || node.type;
 
       fn =
         this['print' + name] ||
         //(() => '') ||
         function(...args) {
-          args = args.map(a => Util.className(a));
+          args = args.map(a => className(a));
           let err = new Error(`Non-existent print${name}(${args}): ` + inspect(node));
           err.node = node;
           throw err;
@@ -75,7 +74,7 @@ export class Printer {
       const position = +assoc.position;
       if(comments && comments.length) {
         for(let comment of comments) {
-          //console.log('comment:', Util.escape(comment.value));
+          //console.log('comment:', escape(comment.value));
           ret += comment.value;
         }
       }
@@ -83,7 +82,7 @@ export class Printer {
     let code = fn.call(this, node);
     if((node instanceof Statement || node instanceof ImportDeclaration) && !(node instanceof FunctionDeclaration || node instanceof BlockStatement))
       if(!code.trimEnd().endsWith(';') && !code.trimEnd().endsWith('}')) code += this.colorCode.punctuators(code) + ';';
-    //if(ret.length) console.log('code:', Util.escape(code));
+    //if(ret.length) console.log('code:', escape(code));
     ret += code;
 
     if(ret.indexOf('\x1b[') != -1) {
@@ -94,7 +93,7 @@ export class Printer {
   }
 
   print(tree) {
-    let it = deep.iterate(tree, node => Util.isObject(node) && 'position' in node, deep.RETURN_VALUE_PATH);
+    let it = deep.iterate(tree, node => isObject(node) && 'position' in node, deep.RETURN_VALUE_PATH);
     this.nodes = [...it].map(([node, path]) => [node.position, path.join('.'), node]);
     this.adjacent = this.comments.map(({ text, pos, len }) => ({
       start: pos,
@@ -168,7 +167,7 @@ export class Printer {
 
     //console.log('printBindingProperty:', value.value, id.value);
 
-    if([property, id].every(Util.isObject) && property.value != id.value)
+    if([property, id].every(isObject) && property.value != id.value)
       output += ': ' + this.printNode(id);
     if(initializer) output += ' = ' + this.printNode(initializer);
     return output;
@@ -583,7 +582,7 @@ export class Printer {
     //console.log('printImportDeclaration', console.config({ compact: 1, depth: Infinity }), { specifiers, source });
     let output = this.colorCode.keywords() + 'import ';
 
-    const isImportSpecifier = node => Util.isObject(node) && node instanceof ImportSpecifier;
+    const isImportSpecifier = node => isObject(node) && node instanceof ImportSpecifier;
 
     let list = specifiers.reduce(
       (acc, spec, i) => [
@@ -724,7 +723,7 @@ export class Printer {
     let code;
     {
       code = this.printNode(body);
-      if(Util.className(body).startsWith('Object')) code = '(' + code + ')';
+      if(className(body).startsWith('Object')) code = '(' + code + ')';
     }
     output += code;
     return output;

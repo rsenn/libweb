@@ -1,6 +1,4 @@
-import filesystem from 'fs';
 import { EventEmitter } from '../eventEmitter.js';
-
 
 export const WritableStream =
   globalThis.WritableStream ||
@@ -21,7 +19,7 @@ export const WritableStream =
     }
 
     open(path, flags, mode) {
-      let fd = filesystem.open(path, flags, mode);
+      let fd = filesystem.openSync(path, flags, mode);
       if(fd < 0) {
         this.emit('error', fd);
         if(this.autoClose) this.close();
@@ -33,7 +31,7 @@ export const WritableStream =
 
     close() {
       if(typeof this.fd == 'number') {
-        filesystem.close(this.fd);
+        filesystem.closeSync(this.fd);
         this.fd = undefined;
       }
       this.emit('close');
@@ -63,7 +61,7 @@ export const WritableStream =
     _write(chunk, encoding, cb) {
       if(this.fd === undefined) return this.once('open', () => this._write(chunk, encoding, cb));
       //  console.log("filesystem.write(",this.fd, chunk, 0, chunk.byteLength, ")");
-      let bytesWrite = filesystem.write(this.fd, chunk, 0, chunk.byteLength);
+      let bytesWrite = filesystem.writeSync(this.fd, chunk, 0, chunk.byteLength);
       // console.log("bytesWrite:",bytesWrite);
       if(bytesWrite > 0) {
         this.length -= bytesWrite;

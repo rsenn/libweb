@@ -1,11 +1,10 @@
 import { Component, useState, useMemo, useCallback, useRef, useEffect } from '../dom/preactComponent.js';
-import { platform } from '../misc.js';
 
 export const useTrkl = fn => {
   if(!(typeof fn == 'function')) return fn;
 
   //console.debug('useTrkl fn =', fn);
-  if(Util.platform != 'browser') return fn();
+  if(!globalThis.navigator) return fn();
 
   const [value, setValue] = useState(fn());
 

@@ -8,12 +8,12 @@
 
 //var parse = require('acorn').parse;
 import EventEmitter from '../eventEmitter.js';
-import { ansi.text, className, getCallers } from '../misc.js';
+import {  className } from '../misc.js';
 import { ESNode, BinaryExpression, Identifier, ImportDeclaration, Literal, MemberExpression, FunctionDeclaration, ArrowFunctionExpression, SequenceExpression } from './estree.js';
 
 class NotImplemented extends Error {
   constructor(type, node) {
-    super(`Not implemented yet: ${type || Util.className(node)}`);
+    super(`Not implemented yet: ${type || className(node)}`);
     this.type = type;
     this.node = node;
   }
@@ -30,23 +30,18 @@ function consume(iter) {
   return [yields, retval];
 }
 function log(...args) {
-  let callers = Util.getCallers(2);
+ /* let callers = getCallers(2);
 
   if(!callers[0].functionName) callers.shift();
 
-  while(callers[0].fileName == '<anonymous>' || callers[0].methodName == '<anonymous>' || callers[0].methodName == '') callers.shift();
-
-  //console.debug('callers\n', ...callers.map((c) => c.functionName || c.methodName || c.toString()).map((n) => `  ${n}\n`));
-
-  //console.debug('callers[0]', callers[0]);
-
+  while(callers[0].fileName == '<anonymous>' || callers[0].methodName == '<anonymous>' || callers[0].methodName == '') callers.shift();*/
+ 
   let node = args[0] instanceof ESNode && args[0];
 
   let pos = node && ESNode.assoc(node).position;
   if(pos) args.unshift(pos);
 
-  //console.log(Util.ansi.text(callers[0].methodName, 1, 34), ...args);
-}
+ }
 function noop() {}
 
 function execute(func) {
@@ -154,7 +149,7 @@ export class Environment extends EventEmitter {
   }
 
   generateClosure(node) {
-    let type = node.type || Util.className(node);
+    let type = node.type || className(node);
     let closure = (
       {
         BinaryExpression: this.generateBinaryExpression,
@@ -372,7 +367,7 @@ export class Environment extends EventEmitter {
   }
 
   objKey(node) {
-    let type = node.type || Util.className(node);
+    let type = node.type || className(node);
 
     let key;
     if(type === 'Identifier') {
@@ -508,7 +503,7 @@ export class Environment extends EventEmitter {
   }
 
   generateObject(node) {
-    let type = node.type || Util.className(node);
+    let type = node.type || className(node);
 
     if(type === 'Identifier') {
       return this.getVariableStore.bind(this, node.value);
@@ -520,7 +515,7 @@ export class Environment extends EventEmitter {
   }
 
   generateName(node) {
-    let type = node.type || Util.className(node);
+    let type = node.type || className(node);
 
     if(type === 'Identifier') {
       return function() {

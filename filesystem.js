@@ -1,4 +1,3 @@
-import filesystem from 'fs';
 import { StringReader, ChunkReader, DebugTransformStream } from './stream/utils.js';
 
 export const SEEK_SET = 0;

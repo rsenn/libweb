@@ -14,11 +14,13 @@ export var LogJS = {
 
   version: 'LogJS v1.2.2',
   get window_() {
-    return tryCatch(
-      () => global,
-      g => g.window,
-      () => globalThis
-    );
+    try {
+      if(global.window)
+        return global.window;
+    }catch(e) {}
+    try {
+        return globalThis.window;
+    }catch(e) {}
   }
 };
 

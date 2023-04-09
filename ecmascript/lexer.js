@@ -1,4 +1,3 @@
-import inspect from 'inspect';
 import { Token } from './token.js';
 export { Token } from './token.js';
 import path from '../path.js';

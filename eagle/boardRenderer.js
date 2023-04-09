@@ -1,3 +1,4 @@
+import { partition } from '../misc.js';
 import { Point, Line, LineList, Rect } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';

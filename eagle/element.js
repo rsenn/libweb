@@ -1,4 +1,6 @@
+import { className, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst } from '../misc.js';
 import trkl from '../trkl.js';
+import Util from '../util.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleElementProxy } from './elementProxy.js';
@@ -13,6 +15,24 @@ import { Repeater } from '../repeater/repeater.js';
 import { EagleNodeMap } from './nodeMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
+
+const decodeHTMLEntities = s =>
+  s.replace(
+    new RegExp('&([^;]+);', 'gm'),
+    (match, entity) =>
+      ({
+        amp: '&',
+        apos: "'",
+        '#x27': "'",
+        '#x2F': '/',
+        '#39': "'",
+        '#47': '/',
+        lt: '<',
+        gt: '>',
+        nbsp: ' ',
+        quot: '"'
+      }[entity] || match)
+  );
 
 const TList = (child, elem) => {
   let transformation = elem.transformation();
@@ -139,37 +159,27 @@ export class EagleElement extends EagleNode {
         let prop = trkl.property(this.attrMap, key);
         let handler;
         if(['visible', 'active'].indexOf(key) != -1)
-          handler = ifThenElse(
-            v => v !== undefined,
-            v => prop(v === true ? 'yes' : v === false ? 'no' : v),
-            () => {
-              let v = prop();
-              if(v == 'yes') v = true;
-              else if(v == 'no') v = false;
-              return v;
-            }
-          );
+          handler = v =>
+            v !== undefined
+              ? prop(v === true ? 'yes' : v === false ? 'no' : v)
+              : (() => {
+                  let v = prop();
+                  if(v == 'yes') v = true;
+                  else if(v == 'no') v = false;
+                  return v;
+                })();
         else if(key == 'diameter') {
-          const getDiameter = ifThenElse(
-            v => isNaN(+v),
-            () => 'auto',
-            v => +v
-          );
-          handler = ifThenElse(
-            v => v !== undefined,
-            v => prop(isNaN(+v) ? v : +v),
-            () => getDiameter(prop())
-          );
+          const getDiameter = v => (isNaN(+v) ? 'auto' : +v);
+          handler = v => (v !== undefined ? prop(isNaN(+v) ? v : +v) : getDiameter(prop()));
         } else
-          handler = ifThenElse(
-            v => v !== undefined,
-            v => prop(v + ''),
-            () => {
-              let v = prop();
-              if(isNumeric(v) && key != 'name') v = parseFloat(v);
-              return v;
-            }
-          );
+          handler = v =>
+            v !== undefined
+              ? prop(v + '')
+              : (() => {
+                  let v = prop();
+                  if(isNumeric(v) && key != 'name') v = parseFloat(v);
+                  return v;
+                })();
 
         prop(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (raw.attributes[key] = '' + value) : delete raw.attributes[key]));

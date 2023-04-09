@@ -18,7 +18,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
-import { getMemberNames, isFunction, isNumber, keys } from './misc.js';
+import {  isFunction, isNumber, keys } from './misc.js';
 
 export function EventEmitter() {
   this.events = this.events || {};
@@ -108,9 +108,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
   // adding it to the listeners, first emit "newListener".
   if(this.events.newListener) this.emit('newListener', type, Util.isFunction(listener.listener) ? listener.listener : listener);
   //console.debug('this.events:', this.events);
-
-  //  if(this.events[type]) console.debug('Util.keys(this.events[type]):', Util.getMemberNames(this.events[type], Infinity, 0));
-  //console.debug('type:', type);
+ 
   if(!this.events[type])
     // Optimize the case of one listener. Don't need the extra array object.
     this.events[type] = listener;

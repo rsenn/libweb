@@ -1,6 +1,6 @@
 import { EagleRef, EagleReference } from './ref.js';
 import * as deep from '../deep.js';
-import { className, define, defineGettersSetters, fnName, getPrototypeChain, isArray, isBrowser, isObject, memoize, tryCatch, map } from '../misc.js';
+import { className, define, defineGettersSetters, functionName, getPrototypeChain, isArray, isObject, memoize, tryCatch } from '../misc.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';
@@ -72,20 +72,19 @@ export class EagleNode {
   scope(t = (o, p, v) => [v.tagName, v]) {
     const { owner, path, document } = this;
     let chain = Object.fromEntries(
-      map(
-        walkPath(path, (p, i, abort, ignore) => {
+      [
+        ...walkPath(path, (p, i, abort, ignore) => {
           let value = p.deref(owner.raw, true);
 
           if(i == 0) ignore();
           if(!value || !value.attributes || !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)) ignore();
 
           return p.up(2);
-        }),
-        path => {
-          let v = path.deref(owner.raw, true);
-          return t(owner, path, v);
-        }
-      )
+        })
+      ].map(path => {
+        let v = path.deref(owner.raw, true);
+        return t(owner, path, v);
+      })
     );
 
     return chain;
@@ -151,7 +150,7 @@ export class EagleNode {
 
   get childConstructor() {
     let protos = getPrototypeChain(this);
-    if(fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
+    if(functionName(protos[0].constructor) == 'EagleDocument') protos.shift();
     let ctor = protos[0].constructor;
     //console.log('childConstructor:', this, ctor);
     return ctor;
@@ -327,7 +326,7 @@ export class EagleNode {
   }
 
   get lastChild() {
-    const ref = this.ref.down('children', -1);
+    const ref = this.ref.down('children', this.children.length - 1);
     return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
@@ -348,11 +347,11 @@ export class EagleNode {
 
     const { raw } = this;
     const { children, tagName, attributes = {} } = raw;
-    const { attributeLists } = this.constructor; // EagleElement;
+    const { attributeLists = EagleElement.attributeLists } = this.constructor;
 
-    //console.log('EagleNode.inspect',  {tagName,attributes});
     const attributeList = attributeLists[tagName] || Object.keys(attributes);
-    // console.log('EagleNode.inspect',  { tagName, attributeList });
+    //console.log('EagleNode.inspect',  { tagName, attributeList });
+
     const getAttr = name => {
       for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];
     };
@@ -380,10 +379,10 @@ export class EagleNode {
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
     if(numChildren > 0) {
       if(depth < 1) {
-        ret += ('\n' + xml.write(children, options.depth - depth)).replace(/\n/g, '\n  ');
+        ret += ('\n' + toXML(children, options.depth - depth)).replace(/\n/g, '\n  ');
         ret += '\n';
       } else {
-        ret += concat(ret, `{...${numChildren} children...}`);
+        ret = concat(ret, `{...${numChildren} children...}`);
       }
       ret += `</${tag}>`;
     }
@@ -395,11 +394,13 @@ export class EagleNode {
   }
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
+    console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
     /* if(!(xpath instanceof ImmutableXPath)) */ xpath = new ImmutableXPath(xpath);
-    // console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
+    console.log('EagleNode.lookup', { xpath });
+    let value = xpath.deref(this.raw, true);
+    console.log('EagleNode.lookup()', { value });
 
     let path = new Pointer([...xpath.toPointer(this.raw)]); //[...xpath]);
-    let value = xpath.deref(this.raw, true);
     let ret = t(this, path, value);
     return ret;
   }

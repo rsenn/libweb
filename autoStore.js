@@ -1,3 +1,4 @@
+import { tryFunction, tryCatch, mapAdapter, mapFunction } from './misc.js';
 
 function LocalStore(obj) {
   Object.assign(this, obj);
@@ -26,7 +27,19 @@ LocalStore.prototype.toJSON = function() {
 };
 
 export const makeLocalStorage = () => {
-  let w = tryCatch(() => window);
+  let w;
+
+  try {
+    w = globalThis.window;
+  } catch(e) {}
+  if(!w)
+    try {
+      w = global.window;
+    } catch(e) {}
+  if(!w)
+    try {
+      w = navigator.window;
+    } catch(e) {}
 
   if(w && w.localStorage)
     return new LocalStore({
@@ -58,7 +71,7 @@ export const logStoreAdapter = store => ({
   get(name) {
     return this.store.get(name);
   },
-  set(name, data) {
+  set(nam1e, data) {
     return this.store && this.store.set ? this.store.set(name, data) : null;
   },
   remove(name) {

@@ -502,6 +502,22 @@ export function gettersetter(target, ...args) {
   return fn;
 }
 
+export function hasFn(target) {
+  if(isObject(target)) return isFunction(target.has) ? key => target.has(key) : key => key in target;
+}
+
+export function remover(target) {
+  if(isObject(target)) return isFunction(target.delete) ? key => target.delete(key) : key => delete target[key];
+}
+
+export function getOrCreate(target, create = () => ({}), set) {
+  const get = getter(target),
+    has = hasFn(target);
+  set ??= setter(target);
+  let value;
+  return key => (value = has.call(target, key) ? get.call(target, key) : ((value = create(key, target)), set.call(target, key, value), value));
+}
+
 export function hasGetSet(obj) {
   return isObject(obj) && ['get', 'set'].every(m => typeof obj[m] == 'function');
 }
@@ -743,12 +759,16 @@ export function filter(seq, pred, thisArg) {
     let re = pred;
     pred = (el, i) => re.test(el);
   }
-  let r = [],
-    i = 0;
-  for(let el of seq) {
-    if(pred.call(thisArg, el, i++, seq)) r.push(el);
+  if(types.isIterable(seq)) {
+    let r = [],
+      i = 0;
+    for(let el of seq) if(pred.call(thisArg, el, i++, seq)) r.push(el);
+    return r;
+  } else if(isObject(seq)) {
+    let r = {};
+    for(let key in seq) if(pred.call(thisArg, seq[key], key, seq)) r[key] = seq[key];
+    return r;
   }
-  return r;
 }
 
 export function filterKeys(r, needles, keep = true) {
@@ -1565,9 +1585,9 @@ export function randFloat(min, max, rng = Math.random) {
   return rng() * (max - min) + min;
 }
 
-export function randStr(n, set = '_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', rng = Math.random) {
+export function randStr(n, set, rng = Math.random) {
   let o = '';
-
+  set ??= '_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   while(--n >= 0) o += set[Math.round(rng() * (set.length - 1))];
   return o;
 }
@@ -1688,6 +1708,14 @@ export function getOpt(options = {}, args) {
     result['@'] = [...(result['@'] ?? []), arg];
   }
   return result;
+}
+
+export function isoDate(d) {
+  if(typeof d == 'number') d = new Date(d);
+  const tz = d.getTimezoneOffset();
+  const ms = d.valueOf() - tz * 60 * 1000;
+  d = new Date(ms);
+  return d.toISOString().replace(/T.*/, '');
 }
 
 export function toUnixTime(dateObj, utc = false) {
@@ -1851,6 +1879,19 @@ export function pushUnique(arr, ...args) {
     if(arr.indexOf(arg) == -1) arr.push(arg);
     else reject.push(arg);
   return reject;
+}
+
+export function inserter(dest, next = (k, v) => {}) {
+  const insert = isFunction(dest.set) && dest.set.length >= 2 ? (k, v) => dest.set(k, v) : Array.isArray(dest) ? (k, v) => dest.push([k, v]) : (k, v) => (dest[k] = v);
+  let fn;
+  fn = function(key, value) {
+    insert(key, value);
+    next(key, value);
+    return fn;
+  };
+  fn.dest = dest;
+  fn.insert = insert;
+  return fn;
 }
 
 export function intersect(a, b) {

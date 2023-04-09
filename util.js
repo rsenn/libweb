@@ -1,4 +1,3 @@
-import filesystem from 'fs';
 // ==UserScript==
 
 // @name         util.js

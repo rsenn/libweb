@@ -1,19 +1,17 @@
-import inspect from 'inspect';
-import { abbreviate, className, equals, getCallers, getCallerStack, isBrowser, isNumeric, isObject } from './misc.js';
+import { abbreviate, className,   isNumeric, isObject } from './misc.js';
 import { write as toXML } from './xml.js';
 
 export function DereferenceError(object, member, pos, prev, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
-  let stack = Util.getCallerStack()
+  let stack = new Error().stack; /*Util.getCallerStack()
     .filter(frame => null !== frame.fileName)
     .map(frame => {
       let method = frame.methodName;
       if(method) method = (frame.typeName || Util.className(frame.thisObj)) + '.' + method;
       else method = frame.getFunctionName();
-
       return ('' + frame.getFileName()).replace(new RegExp('.*plot-cv/'), '') + ':' + frame.getLineNumber() + ':' + frame.getColumnNumber() + ' ' + method;
-    });
-  //console.log('member:', member);
+    });*/
+
   return Object.assign(
     error,
     { object, member, pos, locator },
@@ -177,7 +175,7 @@ export class Pointer extends Array {
 
   toString(sep = ' ', partToStr = Pointer.partToString, childrenStr = Pointer.CHILDREN_GLYPH + CHILDREN_SPACE) {
     // console.log("Pointer.toString",{sep,partToStr, childrenStr});
-    const color = true || Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+    const color = globalThis.navigator ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
     //   if(this[0] == 'children') sep = ' ';
     while(a.length > 0 && a[0] === '') a.shift();
@@ -323,7 +321,7 @@ export class Pointer extends Array {
     for(let i = 0; i < other.length; i++) {
       if(typeof this[i] != 'object') {
         if(this[i] != other[i]) return false;
-        else if(!Util.equals(this[i], other[i])) return false;
+      //  else if(!Util.equals(this[i], other[i])) return false;
       }
     }
     return true;

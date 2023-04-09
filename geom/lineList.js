@@ -1,4 +1,3 @@
-import inspect from 'inspect';
 import { Line } from './line.js';
 import { BBox } from './bbox.js';
 import { PointList } from './pointList.js';

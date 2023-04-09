@@ -1,8 +1,7 @@
-import inspect from 'inspect';
 import { h, options, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.mjs';
 import { forwardRef } from '../preact/forwardRef.js';
 import { Element } from './element.js';
-import { fnName, getMethodNames,  isObject,  className } from '../misc.js';
+import { functionName, getMethodNames,  isObject,  className } from '../misc.js';
 
 export { forwardRef } from '../preact/forwardRef.js';
 
@@ -258,7 +257,7 @@ export class ReactComponent {
       if(value === true) s += ` ${prop}`;
       else s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${inspect(value)}`;
     }
-    if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
+    if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : functionName(tagName);
 
     //console.log('tagName:', tagName);
 
