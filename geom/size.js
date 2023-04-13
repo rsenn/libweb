@@ -1,24 +1,23 @@
 import { isObject, inspectSymbol, define, defineGetter, keys, getMethodNames, matchAll, bindProperties, immutableClass, roundTo } from '../misc.js';
 import { isPoint } from './point.js';
 
-export function Size(arg) {
-  let obj = this instanceof Size ? this : {};
-  let args = [...arguments];
+export function Size(...args) {
+let obj = this instanceof Size ? this : {};
   if(args.length == 1 && isObject(args[0]) && args[0].length !== undefined) {
     args = args[0];
     arg = args[0];
   }
   if(typeof arg == 'object') {
     if(arg.width !== undefined || arg.height !== undefined) {
-      arg = args.shift();
+      arg = args[0];
       obj.width = arg.width;
       obj.height = arg.height;
     } else if(arg.x2 !== undefined && arg.y2 !== undefined) {
-      arg = args.shift();
+      arg = args[0];
       obj.width = arg.x2 - arg.x;
       obj.height = arg.y2 - arg.y;
     } else if(arg.bottom !== undefined && arg.right !== undefined) {
-      arg = args.shift();
+      arg = args[0];
       obj.width = arg.right - arg.left;
       obj.height = arg.bottom - arg.top;
     }
@@ -28,16 +27,17 @@ export function Size(arg) {
       arg = args[0];
     }
     if(args && args.length >= 2) {
-      let w = args.shift();
-      let h = args.shift();
+     
+      let [w,h]= args;
+console.log('Size.constructor',{w,h});
       if(typeof w == 'object' && 'baseVal' in w) w = w.baseVal.value;
       if(typeof h == 'object' && 'baseVal' in h) h = h.baseVal.value;
-      obj.width = typeof w == 'number' ? w : parseFloat(w.replace(/[^-.0-9]*$/, ''));
-      obj.height = typeof h == 'number' ? h : parseFloat(h.replace(/[^-.0-9]*$/, ''));
+      obj.width = typeof w == 'string' ? parseFloat(w.replace(/[^-.0-9]*$/, '')) : Number(w);
+      obj.height = typeof h == 'string' ? parseFloat(h.replace(/[^-.0-9]*$/, '')) : Number(h);
       Object.defineProperty(obj, 'units', {
         value: {
-          width: typeof w == 'number' ? 'px' : w.replace(obj.width.toString(), ''),
-          height: typeof h == 'number' ? 'px' : h.replace(obj.height.toString(), '')
+          width: typeof w == 'string' ? w.replace(obj.width.toString(), '') : 'px' ,
+          height: typeof h == 'string' ?  h.replace(obj.height.toString(), '') : 'px'
         },
         enumerable: false,
         configurable: true,
@@ -45,6 +45,8 @@ export function Size(arg) {
       });
     }
   }
+console.log('Size.constructor', {args, obj, units:obj.units});
+  if(isNaN(obj.width) ||isNaN(obj.height)) throw new Error(`NaN`);
   if(isNaN(obj.width)) obj.width = undefined;
   if(isNaN(obj.height)) obj.height = undefined;
   if(!(obj instanceof Size)) return obj;
