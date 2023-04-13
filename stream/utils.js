@@ -3,11 +3,11 @@ import { className, isConstructor } from '../misc.js';
 
 function gotClassPrototype(name, protoFn) {
   let ctor = globalThis[name];
-  return Util.isConstructor(ctor) && ctor.prototype && typeof ctor.prototype[protoFn] == 'function';
+  return isConstructor(ctor) && ctor.prototype && typeof ctor.prototype[protoFn] == 'function';
 }
 
 export function isStream(obj) {
-  if(/Stream$/.test(Util.className(obj))) return true;
+  if(/Stream$/.test(className(obj))) return true;
 
   if(typeof obj.pipe == 'function' && typeof obj.cork == 'function') return true;
   if(typeof obj.getReader == 'function' || typeof obj.getWriter == 'function') return true;
@@ -173,7 +173,7 @@ export function WritableRepeater(writable) {
 }
 
 export async function WriteIterator(iterator, writable) {
-  if(Util.isGenerator(iterator)) iterator = iterator();
+  if(isGenerator(iterator)) iterator = iterator();
 
   for await(let write of await WritableRepeater(writable)) {
     let data = await iterator.next();
@@ -315,7 +315,7 @@ export class DebugTransformStream {
     let handler = {
       callback,
       transform(chunk, controller) {
-        this.callback(Util.className(this) + '.transform', chunk);
+        this.callback(className(this) + '.transform', chunk);
         if(chunk != '') {
           controller.enqueue(chunk);
         }
@@ -324,7 +324,7 @@ export class DebugTransformStream {
       flush(controller) {
         if(typeof controller.flush == 'function') controller.flush();
         if(typeof controller.close == 'function') controller.close();
-        this.callback(Util.className(this) + '.end');
+        this.callback(className(this) + '.end');
       }
     };
 
@@ -486,7 +486,7 @@ export async function LineBufferStream(options = {}) {
       },
       transform(chunk, controller) {
         let i, j;
-        // console.log('chunk:', typeof chunk, Util.className(chunk), chunk.length);
+        // console.log('chunk:', typeof chunk, className(chunk), chunk.length);
         for(i = 0; i < chunk.length; i = j) {
           j = chunk.indexOf('\n', i) + 1;
           this.queue(j ? chunk.slice(i, j) : chunk.slice(i));
