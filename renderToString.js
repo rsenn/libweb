@@ -1,4 +1,6 @@
-import { options, Fragment, createElement } from './preact.js';
+import { forwardRef, h as createElement, h, Fragment, React, default as preactComponent, ReactComponent, Portal, toChildArray, isComponent } from './dom/preactComponent.js';
+
+import { options } from './preact.js';
 
 let IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 let encodeEntities = function(s) {

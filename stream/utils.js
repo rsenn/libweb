@@ -1,5 +1,5 @@
 import { Repeater } from '../repeater/repeater.js';
-import { className, isConstructor } from '../misc.js';
+import { className, isConstructor,types} from '../misc.js';
 
 function gotClassPrototype(name, protoFn) {
   let ctor = globalThis[name];
@@ -173,11 +173,7 @@ export function WritableRepeater(writable) {
 }
 
 export async function WriteIterator(iterator, writable) {
-<<<<<<< HEAD
   if(types.isGeneratorFunction(iterator)) iterator = iterator();
-=======
-  if(isGenerator(iterator)) iterator = iterator();
->>>>>>> 3bff3e8fe346d1edd1510e14a0fd86ed03820ddf
 
   for await(let write of await WritableRepeater(writable)) {
     let data = await iterator.next();

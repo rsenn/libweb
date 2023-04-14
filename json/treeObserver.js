@@ -1,5 +1,5 @@
 import ObservableMembrane from '../proxy/observableMembrane.js';
-import { className, isNumeric, isObject,  weakMapper } from '../misc.js';
+import { className, isNumeric, isObject, weakMapper } from '../misc.js';
 import { PathMapper } from './pathMapper.js';
 import { ImmutablePath } from './path.js';
 import { ImmutableXPath } from '../xml/xpath.js';
@@ -116,18 +116,18 @@ export class TreeObserver extends ObservableMembrane {
   });
 
   getField = field => {
-let ret;
-if((ret=this.entry(field)) && isObject(ret) && field in ret) 
-  return ret[field];
-return ret;
-};
+    let ret = this.entry(field);
+    console.log('getField', { field, ret });
+    if(ret && isObject(ret) && field in ret) return ret[field];
+    return ret;
+  };
 
   proxy = this.getField('proxy');
   type = this.getField('type');
   path = this.getField('path');
 
   getPath(node) {
-    return this.mapper.get(node) || this.mapper.get(this.unwrap(node));
+    if(this.mapper) return this.mapper.get(node) || this.mapper.get(this.unwrap(node));
   }
 
   getXPath(node) {
