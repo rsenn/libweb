@@ -25,7 +25,7 @@ export async function* streamify(event, element, cond = last => true) {
   } while(cond(last));
 }
 
- // Only pass along event if some time has passed since the last one
+// Only pass along event if some time has passed since the last one
 export async function* throttle(stream, delay) {
   let lastTime;
   let thisTime;
@@ -52,7 +52,7 @@ export async function* distinct(stream, extract = identity) {
   }
 }
 
- // Invoke a callback every time an event arrives
+// Invoke a callback every time an event arrives
 export async function subscribe(stream, callback) {
   for await(let event of stream) callback(event);
 } // run();
