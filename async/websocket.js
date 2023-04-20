@@ -1,4 +1,3 @@
-
 WebSocket.makeURL = WebSocketURL;
 
 // Generate a Promise that listens only once for an event

@@ -241,7 +241,7 @@ interface RepeaterRecord<T, TReturn, TNext> {
   onnext: (value?: PromiseLike<TNext> | TNext) => unknown;
 
   // A callback set to the resolve function of the stop promise.
-  onstop: () => unknown;
+  onstop: (() => unknown) | any;
 }
 
 /** A helper function used to mimic the behavior of async generators where the final iteration is consumed. */
@@ -663,7 +663,7 @@ function race<T>(
               } else if (i === j) {
                 // This iterator has won, advance i and resolve the promise.
                 i++;
-                advance(iteration);
+                advance(iteration as IteratorYieldResult<unknown>);
               }
             },
             (err) => stop(err),

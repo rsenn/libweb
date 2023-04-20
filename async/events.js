@@ -1,12 +1,9 @@
 // Generate a Promise that listens only once for an event
+
 export function once(emitter, ...events) {
-  return waitOne(emitter, events); /*new Promise(resolve => {
-    events.forEach(type => emitter.addEventListener(type, handler, { passive: true }));
-    function handler(event) {
-      events.forEach(type => emitter.removeEventListener(type, handler, { passive: true }));
-      resolve(event);
-    }
-  });*/
+  if(events.length == 1 && Array.isArray(events[0])) events = events[0];
+  return waitOne(emitter, events); /*new Promise(resolve => { events.forEach(type => emitter.addEventListener(type, handler, { passive: true })); function handler(event) { events.forEach(type =>
+emitter.removeEventListener(type, handler, { passive: true })); resolve(event); } });*/
 }
 
 export function waitOne(emitter, events, options = { passive: true }) {
@@ -28,7 +25,7 @@ export async function* streamify(event, element, cond = last => true) {
   } while(cond(last));
 }
 
-// Only pass along event if some time has passed since the last one
+ // Only pass along event if some time has passed since the last one
 export async function* throttle(stream, delay) {
   let lastTime;
   let thisTime;
@@ -41,9 +38,8 @@ export async function* throttle(stream, delay) {
   }
 }
 
-let identity = e => e;
+let identity = e => e; // Only pass along events that differ from the last one
 
-// Only pass along events that differ from the last one
 export async function* distinct(stream, extract = identity) {
   let previous;
   let current;
@@ -56,9 +52,7 @@ export async function* distinct(stream, extract = identity) {
   }
 }
 
-// Invoke a callback every time an event arrives
+ // Invoke a callback every time an event arrives
 export async function subscribe(stream, callback) {
   for await(let event of stream) callback(event);
-}
-
-// run();
+} // run();

@@ -407,10 +407,42 @@ export function memoize(fn) {
   };
 }
 
+export function chain(first, ...fns) {
+  return fns.reduce(
+    (acc, fn) =>
+      function(...args) {
+        return fn.call(this, acc.call(this, ...args), args);
+      },
+    first
+  );
+}
+
+export function chainRight(first, ...fns) {
+  return fns.reduce(
+    (acc, fn) =>
+      function(...args) {
+        return acc.call(this, fn.call(this, ...args), args);
+      },
+    first
+  );
+}
+
+export function chainArray(tmp, ...fns) {
+  for(let fn of fns) {
+    let prev = tmp;
+    tmp = function(...args) {
+      return fn.call(this, ...prev.call(this, ...args));
+    };
+  }
+  return tmp;
+}
+
 export function getset(target, ...args) {
   let ret = [];
-  if(isFunction(target)) {
-    ret = [target, typeof args[0] == 'function' ? args[0] : target];
+  if(Array.isArray(target)) {
+    ret = target.slice(0, 2);
+  } else if(isFunction(target)) {
+    ret = [target, isFunction(args[0]) ? args[0] : target];
   } else if(hasGetSet(target)) {
     if(target.get === target.set) {
       const GetSet = (...args) => target.set(...args);
@@ -419,6 +451,19 @@ export function getset(target, ...args) {
       ret = [key => target.get(key), (key, value) => target.set(key, value)];
       //console.log('getset', ret[1] + '', target.get === target.set);
     }
+  } else if(Array.isArray(target)) {
+    ret = [
+      key => target.find(([k, v]) => key === k),
+      (key, value) => {
+        let i = target.findIndex(([k, v]) => k === key);
+        if(i != -1) {
+          if(value !== undefined) target[i][1] = value;
+          else delete target[i];
+        } else {
+          target.push([key, value]);
+        }
+      }
+    ];
   } else if(isObject(target)) {
     ret = [key => target[key], (key, value) => (target[key] = value)];
   } else {
@@ -428,8 +473,32 @@ export function getset(target, ...args) {
     let [get, set] = ret;
     ret = [() => get(...args), value => set(...args, value)];
   }
-  return ret;
+  return Object.setPrototypeOf(ret, getset.prototype);
 }
+
+Object.setPrototypeOf(
+  define(getset.prototype, {
+    bind(...args) {
+      return Object.setPrototypeOf(
+        this.map(fn => fn.bind(null, ...args)),
+        getset.prototype
+      );
+    },
+    transform(read, write) {
+      const [get, set] = this;
+      return Object.setPrototypeOf([key => read(get(key)), (key, value) => set(key, write(value))], getset.prototype);
+    },
+    function(...args) {
+      const [get, set] = this;
+      return args.length <= 1 ? get(...args) : set(...args);
+    },
+    get object() {
+      const [get, set] = this;
+      return { get, set };
+    }
+  }),
+  Array.prototype
+);
 
 export function modifier(...args) {
   let gs = gettersetter(...args);
@@ -440,9 +509,12 @@ export function modifier(...args) {
 }
 
 export function getter(target, ...args) {
-  if(isObject(target) && isFunction(target.get)) return () => target.get(...args);
   let ret;
-  if(isFunction(target)) {
+  if(Array.isArray(target)) {
+    ret = target[0];
+  } else if(isObject(target) && isFunction(target.get)) {
+    return () => target.get(...args);
+  } else if(isFunction(target)) {
     ret = target;
   } else if(hasGetSet(target)) {
     ret = key => target.get(key);
@@ -459,9 +531,12 @@ export function getter(target, ...args) {
 }
 
 export function setter(target, ...args) {
-  if(isObject(target) && isFunction(target.set)) return value => target.set(...args, value);
   let ret;
-  if(isFunction(target)) {
+  if(Array.isArray(target)) {
+    ret = target[1];
+  } else if(isObject(target) && isFunction(target.set)) {
+    return value => target.set(...args, value);
+  } else if(isFunction(target)) {
     ret = target;
   } else if(hasGetSet(target)) {
     ret = (key, value) => target.set(key, value);
@@ -479,8 +554,13 @@ export function setter(target, ...args) {
 
 export function gettersetter(target, ...args) {
   let fn;
-  if(isObject(target) && isFunction(target.receiver)) return (...args2) => target.receiver(...args, ...args2);
-  if(isFunction(target)) {
+
+  if(Array.isArray(target)) {
+    let [get, set] = target;
+    fn = (...args) => (args.length < 2 ? get(...args) : set(...args));
+  } else if(isObject(target) && isFunction(target.receiver)) {
+    return (...args2) => target.receiver(...args, ...args2);
+  } else if(isFunction(target)) {
     if(isFunction(args[0]) && args[0] !== target) {
       let setter = args.shift();
       fn = (...args) => (args.length == 0 ? target() : setter(...args));
@@ -1033,20 +1113,25 @@ export function histogram(arr, out = new Map()) {
   return out;
 }
 
-export function propertyLookupHandlers(handler = key => null) {
+export function propertyLookupHandlers(getter = key => null, setter) {
   let handlers = {
     get(target, key, receiver) {
-      return handler(key);
+      return getter(key);
     }
   };
-  let tmp = handler();
+  let tmp = getter();
+
+  if(setter)
+    handlers.set = function(target, key, value) {
+      setter(key, value);
+    };
 
   if(!isString(tmp))
     try {
       let a = Array.isArray(tmp) ? tmp : [...tmp];
       if(a)
         handlers.ownKeys = function(target) {
-          return handler();
+          return getter();
         };
     } catch(e) {}
 
@@ -1054,20 +1139,9 @@ export function propertyLookupHandlers(handler = key => null) {
 }
 
 export function propertyLookup(...args) {
-  let [obj = {}, handler = key => null] = args.length == 1 ? [{}, ...args] : args;
+  let [obj = {}, getter, setter] = isFunction(args[0]) ? [{}, ...args] : args;
 
-  return new Proxy(
-    obj,
-    propertyLookupHandlers(function (...args) {
-      if(args.length >= 1 && args[0] !== undefined) {
-        let [key] = args;
-        if(key in obj) return obj[key];
-
-        return handler(key);
-      }
-      return handler();
-    })
-  );
+  return new Proxy(obj, propertyLookupHandlers(getter, setter));
 }
 
 export function abbreviate(str, max = 40, suffix = '...') {
@@ -1737,7 +1811,7 @@ export function fromUnixTime(epoch, utc = false) {
 }
 
 export function range(...args) {
-  let [start, end, step = 1] = args;
+  let [start, end, step = 1] = args.length == 1 ? [0, args[0] - 1] : args;
   let ret;
   start /= step;
   end /= step;
@@ -2178,8 +2252,12 @@ export function isBool(value) {
   return typeof value == 'boolean';
 }
 
+export function isJSFunction(fn) {
+  return isFunction(fn) && !isNative(fn);
+}
+
 export function isCFunction(fn) {
-  return false;
+  return isFunction(fn) && isNative(fn);
 }
 
 export function isConstructor(fn) {
