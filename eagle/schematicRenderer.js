@@ -1,7 +1,14 @@
+import { className, isObject } from '../misc.js';
 import { Point, Rect, Line, BBox } from '../geom.js';
-
+import { TransformationList } from '../geom/transformation.js';
+import { RGBA } from '../color/rgba.js';
+import { HSLA } from '../color/hsla.js';
+import { Palette } from './common.js';
+import { MakeRotation, LayerAttributes, MakeCoordTransformer, useTransformation, useTransform } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
+import { Sheet } from './components/sheet.js';
+import { h, ReactComponent } from '../dom/preactComponent.js';
 
 export class SchematicRenderer extends EagleSVGRenderer {
   static pinSizes = {

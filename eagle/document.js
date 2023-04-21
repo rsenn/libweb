@@ -67,7 +67,7 @@ export class EagleDocument extends EagleNode {
 
   static open(filename, readFn = fn => std.loadFile(fn)) {
     let xml = readFn(filename);
-
+console.log('EagleDocument.open',{filename,xml});
     return new EagleDocument(xml, null, filename);
   }
 
