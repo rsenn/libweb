@@ -67,7 +67,7 @@ export class EagleDocument extends EagleNode {
 
   static open(filename, readFn = fn => std.loadFile(fn)) {
     let xml = readFn(filename);
-console.log('EagleDocument.open',{filename,xml});
+    console.log('EagleDocument.open', { filename, xml });
     return new EagleDocument(xml, null, filename);
   }
 
@@ -283,12 +283,12 @@ console.log('EagleDocument.open',{filename,xml});
     const { sheet = 0 } = options;
     let ret;
     let plain = (this.type == 'sch' ? this.sheets[sheet] : this).get('plain');
-    
-console.log('plain',plain);
+
+    console.log('plain', plain);
 
     for(let layer of ['Dimension', 'Measures']) {
       let layerId = this.layers[layer].number;
-      
+
       ret = [...plain.children].filter(e => e.attributes.layer == layerId);
 
       if(ret.length >= 1) break;
