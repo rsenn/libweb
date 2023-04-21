@@ -6,7 +6,6 @@ export { SchematicRenderer } from './schematicRenderer.js';
 export { LibraryRenderer } from './libraryRenderer.js';
 export { BoardRenderer } from './boardRenderer.js';
 
-
 export function Renderer(doc, factory, debug) {
   let ret;
   switch (doc.type) {
@@ -25,7 +24,6 @@ export function Renderer(doc, factory, debug) {
   }
 
   setDebug(debug);
- 
 
   ret.debug = log;
   return ret;

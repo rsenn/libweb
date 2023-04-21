@@ -1,22 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export default {
   Align,
   AlignToString,
@@ -70,8 +51,6 @@ export default {
   simplifyDouglasPeucker,
   simplify
 };
-
-
 
 export { Align, Anchor } from './geom/align.js';
 export { isBBox, BBox } from './geom/bbox.js';

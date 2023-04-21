@@ -1,14 +1,7 @@
-
 import { Point, Rect, Line, BBox } from '../geom.js';
-
-
-
-
 
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
-
-
 
 export class SchematicRenderer extends EagleSVGRenderer {
   static pinSizes = {

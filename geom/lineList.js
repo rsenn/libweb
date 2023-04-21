@@ -4,7 +4,7 @@ import { PointList } from './pointList.js';
 import { Point } from './point.js';
 import { Polyline } from './polyline.js';
 import { Element, isElement } from '../dom/element.js';
-import {  defineGetter, immutableClass, types } from '../misc.js';
+import { defineGetter, immutableClass, types } from '../misc.js';
 
 export class LineList extends Array {
   constructor(lines) {
@@ -166,7 +166,7 @@ export class LineList extends Array {
   [Symbol.toStringTag]() {
     return this.toString({ separator: '\n' });
   }
- 
+
   isContinuous() {
     let prevLine;
     let i = 0;
@@ -248,7 +248,7 @@ LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points,
     }
   }
   return polygons.map(points => createfn(points));
-}; 
+};
 
 Util.defineGetter(LineList, Symbol.species, function() {
   return this;
