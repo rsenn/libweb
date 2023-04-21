@@ -65,10 +65,8 @@ export class EagleDocument extends EagleNode {
     return EagleElement;
   }
 
-  static open(filename, fs) {
-    fs = fs || this.fs || globalThis.fs;
-
-    let xml = fs.readFileSync(filename, 'utf-8');
+  static open(filename, readFn = fn => std.loadFile(fn)) {
+    let xml = readFn(filename);
 
     return new EagleDocument(xml, null, filename);
   }

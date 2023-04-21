@@ -83,14 +83,16 @@ export class EagleNodeMap {
   }
 
   [inspectSymbol]() {
-    //    console.log("this.entries", this.entries);
-    return text(className(this), 0) + ` {\n  ` + [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + v[inspectSymbol](), '') + `\n}`;
+    return (
+      text(className(this), 0) + ` {\n  ` + [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + (v[inspectSymbol] ?? v.inspect).call(v), '') + `\n}`
+    );
   }
 
   static create(list, key = 'name', filter) {
     const Ctor = EagleNodeMap;
     //console.log('EagleNodeMap.create', { list, key });
     const instance = new Ctor(list, key, filter);
+
     return new Proxy(instance, {
       get(target, prop, receiver) {
         let index;

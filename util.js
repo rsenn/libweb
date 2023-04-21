@@ -4841,7 +4841,8 @@ Util.merge = function(...args) {
   return ret;
 };
 
-Util.transformer = (a, ...l) => (l || []).reduce(
+Util.transformer = (a, ...l) =>
+  (l || []).reduce(
     (c, f) =>
       function(...v) {
         return f.call(this, c.call(this, ...v), ...v);
@@ -5965,7 +5966,6 @@ Util.lazyProperty(
       console.log('STACK:', Util.getCallerStack());
 
       performanceNow = async function(clock = CLOCK_MONOTONIC_RAW) {
-         
         if(!gettime) {
           const { dlsym, RTLD_DEFAULT, define, call } = await import('ffi.so');
           const clock_gettime = dlsym(RTLD_DEFAULT, 'clock_gettime');

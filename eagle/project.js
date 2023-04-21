@@ -60,7 +60,7 @@ export class EagleProject {
       this.documents,
       path.basename(file),
       () => {
-        let doc = EagleDocument.open(file, this.fs);
+        let doc = EagleDocument.open(file);
         this.list[index] = doc;
 
         //console.log('lazyOpen',console.config({customInspect:false}), [...doc.libraries.list ]);
