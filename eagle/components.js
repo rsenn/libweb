@@ -28,6 +28,7 @@ import { Text } from './components/text.js';
 import { Via } from './components/via.js';
 import { Wire } from './components/wire.js';
 import { WirePath } from './components/wirePath.js';
+import { ucfirst } from '../misc.js';
 
 export const PrimitiveComponents = {
   Wire,

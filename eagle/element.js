@@ -426,6 +426,7 @@ export class EagleElement extends EagleNode {
         let layer = this.layer || this.document.layers[ucfirst(this.tagName) + 's'];
         layer.elements.add(this);
         let color = layer.color;
+
         if(['pad', 'via'].indexOf(this.tagName) != -1) color = EagleElement.makeTransparent(color);
 
         return color;

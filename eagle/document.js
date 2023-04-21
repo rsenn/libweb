@@ -282,10 +282,15 @@ export class EagleDocument extends EagleNode {
   getMeasures(options = {}) {
     const { sheet = 0 } = options;
     let ret;
-    let plain = this.type == 'sch' ? this.sheets[sheet].plain : this.plain;
+    let plain = (this.type == 'sch' ? this.sheets[sheet] : this).get('plain');
+    
+console.log('plain',plain);
+
     for(let layer of ['Dimension', 'Measures']) {
       let layerId = this.layers[layer].number;
-      ret = plain.filter(e => e.attributes.layer == layerId);
+      
+      ret = [...plain.children].filter(e => e.attributes.layer == layerId);
+
       if(ret.length >= 1) break;
     }
 

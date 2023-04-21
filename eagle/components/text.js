@@ -2,6 +2,7 @@ import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD, useTransformation, InferRotation, ExtractRotation } from '../renderUtils.js';
 import { TransformationList, Rotation, Translation, Point } from '../../geom.js';
 import { Cross } from './cross.js';
+import { mod } from '../../misc.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, ...props }) => {
   let transformation2 = useTransformation(props.transformation);
@@ -24,17 +25,17 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
   let realAngle = mod(totalAngle - parentAngle, 360);
   let diffAngle = mod(-rotationAngle + realAngle, 360);
   let ang = -(transformation?.rotation?.angle ?? 0);
-   let parentMatrix = elementTransform.toMatrix();
+  let parentMatrix = elementTransform.toMatrix();
   let vec = new Point(x, y).transform(parentMatrix.invert());
   let transform = new TransformationList()
     .concat(elementTransform.invert())
-    .translate(vec.x, vec.y)  
+    .translate(vec.x, vec.y)
     .concat(transformation.scaling ? [transformation.find(t => t.type == 'scale')] : []);
-  
-  log(`Text.render(2)`, { text, transformation, ang, transform,alignment });
+
+  log(`Text.render(2)`, { text, transformation, ang, transform, alignment });
 
   let { scaling } = elementTransform;
-  let align = Alignment(alignment,   - ang, elementTransform.scaling);
+  let align = Alignment(alignment, -ang, elementTransform.scaling);
   log(`Text.render(3)`, { align, elementTransform });
   log(`Text.render`, { alignment, align, scaling, elementTransform });
   align = align.round();

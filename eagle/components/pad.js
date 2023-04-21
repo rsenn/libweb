@@ -4,6 +4,7 @@ import { TransformationList, Point } from '../../geom.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
 import { useValue } from '../../repeater/react-hooks.js';
+import { roundTo } from '../../misc.js';
 
 export const Pad = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
@@ -72,10 +73,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );
-    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [
-      h('path', { ...pathProps, ...visibleProps }),
-      textElem
-    ]);
+    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
   }
   return h('path', {
     ...baseProps,

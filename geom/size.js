@@ -2,7 +2,7 @@ import { isObject, inspectSymbol, define, defineGetter, keys, getMethodNames, ma
 import { isPoint } from './point.js';
 
 export function Size(...args) {
-let obj = this instanceof Size ? this : {};
+  let obj = this instanceof Size ? this : {};
   if(args.length == 1 && isObject(args[0]) && args[0].length !== undefined) {
     args = args[0];
     arg = args[0];
@@ -27,17 +27,15 @@ let obj = this instanceof Size ? this : {};
       arg = args[0];
     }
     if(args && args.length >= 2) {
-     
-      let [w,h]= args;
-console.log('Size.constructor',{w,h});
+      let [w, h] = args;
       if(typeof w == 'object' && 'baseVal' in w) w = w.baseVal.value;
       if(typeof h == 'object' && 'baseVal' in h) h = h.baseVal.value;
       obj.width = typeof w == 'string' ? parseFloat(w.replace(/[^-.0-9]*$/, '')) : Number(w);
       obj.height = typeof h == 'string' ? parseFloat(h.replace(/[^-.0-9]*$/, '')) : Number(h);
       Object.defineProperty(obj, 'units', {
         value: {
-          width: typeof w == 'string' ? w.replace(obj.width.toString(), '') : 'px' ,
-          height: typeof h == 'string' ?  h.replace(obj.height.toString(), '') : 'px'
+          width: typeof w == 'string' ? w.replace(obj.width.toString(), '') : 'px',
+          height: typeof h == 'string' ? h.replace(obj.height.toString(), '') : 'px'
         },
         enumerable: false,
         configurable: true,
@@ -45,8 +43,8 @@ console.log('Size.constructor',{w,h});
       });
     }
   }
-console.log('Size.constructor', {args, obj, units:obj.units});
-  if(isNaN(obj.width) ||isNaN(obj.height)) throw new Error(`NaN`);
+  console.log('Size.constructor', { args, obj, units: obj.units });
+  if(isNaN(obj.width) || isNaN(obj.height)) throw new Error(`NaN`);
   if(isNaN(obj.width)) obj.width = undefined;
   if(isNaN(obj.height)) obj.height = undefined;
   if(!(obj instanceof Size)) return obj;
@@ -213,10 +211,10 @@ Size.prototype.toString = function(opts = {}) {
   return `${left}${width}${(isObject(units) && units.width) || unit}${separator}${height}${(isObject(units) && units.height) || unit}${right}`;
 };
 if(Symbol.inspect)
-Size.prototype[Symbol.inspect] = function(depth, options) {
-  const { width, height } = this;
-  return define({ width, height }, { [Symbol.toStringTag]: 'Size' });
-};
+  Size.prototype[Symbol.inspect] = function(depth, options) {
+    const { width, height } = this;
+    return define({ width, height }, { [Symbol.toStringTag]: 'Size' });
+  };
 /*Size.prototype[Symbol.iterator] = function() {
     let [width,height]= this;
     return [width,height][Symbol.iterator]();

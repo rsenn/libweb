@@ -394,11 +394,11 @@ export class EagleNode {
   }
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
-    console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
-    /* if(!(xpath instanceof ImmutableXPath)) */ xpath = new ImmutableXPath(xpath);
-    console.log('EagleNode.lookup', { xpath });
+    //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
+    xpath = new ImmutableXPath(xpath);
+    //console.log('EagleNode.lookup', { xpath });
     let value = xpath.deref(this.raw, true);
-    console.log('EagleNode.lookup()', { value });
+    //console.log('EagleNode.lookup()', { value });
 
     let path = new Pointer([...xpath.toPointer(this.raw)]); //[...xpath]);
     let ret = t(this, path, value);

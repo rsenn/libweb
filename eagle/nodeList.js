@@ -4,13 +4,11 @@ import { className, define,  isObject, inspectSymbol } from '../misc.js';
 import { text } from './common.js';
 
 export class EagleNodeList {
+  
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
-    //console.log('EagleNodeList.constructor', { owner: owner.raw, ref, pred });
     if(isObject(owner) && !('raw' in owner)) throw new Error('raw owner');
     if(isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
     let raw = ref.dereference();
-    //     console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
-    //console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     let species = Object.getPrototypeOf(owner).constructor;
     define(this, { ref, owner, raw, getOrCreate });
     this.pred = typeof pred == 'function' ? pred : () => true;

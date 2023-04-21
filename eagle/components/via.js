@@ -1,6 +1,7 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, Alignment, AlignmentAttrs, ElementToClass, RenderShape, useTrkl, log, VERTICAL, HORIZONTAL } from '../renderUtils.js';
 import { TransformationList } from '../../geom.js';
+import { roundTo } from '../../misc.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
 export const Via = ({ data, opts = {}, ...props }) => {
@@ -66,10 +67,7 @@ export const Via = ({ data, opts = {}, ...props }) => {
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );
-    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [
-      h('path', { ...pathProps, ...visibleProps }),
-      textElem
-    ]);
+    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
   }
   return h('path', {
     ...baseProps,
