@@ -1138,6 +1138,7 @@ export function propertyLookupHandlers(getter = key => null, setter) {
   if(setter)
     handlers.set = function(target, key, value) {
       setter(key, value);
+      return true;
     };
 
   if(!isString(tmp))
