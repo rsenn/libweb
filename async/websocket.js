@@ -76,19 +76,20 @@ export class ReconnectingWebSocket {
   close = null;
   error = null;
 
-  constructor(url = '/ws', protocols = []) {
+  constructor(url = '/ws', protocols = [], handlers = {}) {
     this.url = WebSocketURL(url) + '';
     this.protocols = protocols;
 
-    this.connect();
+    this.connect(handlers);
   }
 
-  async connect() {
+  async connect(handlers = {}) {
     this.ws = CreateWebSocket(this.url, this.protocols);
 
     let ev = await oncePromise(this.ws, ['open', 'error']);
 
     if(ev.type == 'open') {
+      if(handlers.onOpen) handlers.onOpen(ev);
       /*  lazyProperties(this, {
         writable: () =>
           new WritableStream({

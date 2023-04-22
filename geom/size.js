@@ -43,7 +43,7 @@ export function Size(...args) {
       });
     }
   }
-  console.log('Size.constructor', { args, obj, units: obj.units });
+  //console.log('Size.constructor', { args, obj, units: obj.units });
   if(isNaN(obj.width) || isNaN(obj.height)) throw new Error(`NaN`);
   if(isNaN(obj.width)) obj.width = undefined;
   if(isNaN(obj.height)) obj.height = undefined;

@@ -6,7 +6,7 @@ export function once(emitter, ...events) {
 emitter.removeEventListener(type, handler, { passive: true })); resolve(event); } });*/
 }
 
-export function waitOne(emitter, events, options = { passive: true }) {
+export function waitOne(emitter, events, options = { passive: true, capture: false }) {
   return new Promise(resolve => {
     events.forEach(type => emitter.addEventListener(type, handler, options));
     function handler(event) {
@@ -17,12 +17,9 @@ export function waitOne(emitter, events, options = { passive: true }) {
 }
 
 // Turn any event emitter into a stream
-export async function* streamify(event, element, cond = last => true) {
+export async function* streamify(event, element, options = { passive: true, capture: false }) {
   let events = Array.isArray(event) ? event : [event];
-  let last;
-  do {
-    yield (last = await waitOne(element, events, { passive: false }));
-  } while(cond(last));
+  for(;;) yield await waitOne(element, events, options);
 }
 
 // Only pass along event if some time has passed since the last one
