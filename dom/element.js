@@ -1,4 +1,4 @@
-import { Util } from '../util.js';
+import { camelize, decamelize, getMethodNames, memoize, keys, tryCatch } from '../misc.js';
 import { Node } from './node.js';
 import { TRBL } from '../geom/trbl.js';
 import { Point } from '../geom/point.js';
@@ -33,7 +33,7 @@ export class Element extends Node {
 
   static wrap(e) {
     let names;
-    if(!names) names = Util.getMethodNames(Element, 1, 0);
+    if(!names) names = getMethodNames(Element, 1, 0);
     if(typeof e == 'string') e = Element.find(e);
     let props = names.reduce((acc, name) => {
       if(typeof acc[name] != 'function') {
@@ -213,7 +213,7 @@ export class Element extends Node {
     if(!no_children) {
       l = [...this.childIterator(elem, false)];
       if(predicate) l = l.filter(predicate);
-      l = l.reduce((l, c) => (Util.isObject(c) && c.nodeType == 1 ? l.push(Element.toObject(c, opts)) : (c.textContent + '').trim() != '' ? l.push(c.textContent) : undefined, l), []);
+      l = l.reduce((l, c) => (typeof c == 'object' && c != null && c.nodeType == 1 ? l.push(Element.toObject(c, opts)) : (c.textContent + '').trim() != '' ? l.push(c.textContent) : undefined, l), []);
     }
 
     let attributes = (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI ? { ns: elem.namespaceURI } : {};
@@ -248,13 +248,7 @@ export class Element extends Node {
 
   static find(arg, parent, globalObj = globalThis) {
     if(typeof parent == 'string') parent = Element.find(parent);
-    if(!parent && globalObj.document)
-      parent =
-        globalObj.document ||
-        Util.tryCatch(
-          () => document,
-          d => d
-        );
+    if(!parent && globalObj.document) parent = globalObj.document ?? globalObj.window.document;
 
     if(typeof arg != 'string') throw new Error(arg + '');
 
@@ -280,7 +274,7 @@ export class Element extends Node {
     //console.log('Element.attr', { elem, attrs_or_name });
     if(!Array.isArray(attrs_or_name) && typeof attrs_or_name === 'object' && elem) {
       for(let key in attrs_or_name) {
-        const name = Util.decamelize(key, '-');
+        const name = decamelize(key, '-');
         const value = attrs_or_name[key];
         /*        console.log('attr(', elem, ', ', { name, key, value, }, ')')
          */ if(key.startsWith('on') && !/svg/.test(elem.namespaceURI)) elem[key] = value;
@@ -294,14 +288,14 @@ export class Element extends Node {
       return elem;
     } else if(typeof attrs_or_name === 'string') {
       attrs_or_name = [attrs_or_name];
-    } else if(Util.isObject(elem) && 'getAttributeNames' in elem) {
+    } else if(typeof elem == 'object' && elem != null && 'getAttributeNames' in elem) {
       attrs_or_name = elem.getAttributeNames();
     } else {
       attrs_or_name = [];
-      if(Util.isObject(elem) && Array.isArray(elem.attributes)) for(let i = 0; i < elem.attributes.length; i++) attrs_or_name.push(elem.attributes[i].name);
+      if(typeof elem == 'object' && elem != null && Array.isArray(elem.attributes)) for(let i = 0; i < elem.attributes.length; i++) attrs_or_name.push(elem.attributes[i].name);
     }
     let ret = attrs_or_name.reduce((acc, name) => {
-      const key = /*Util.camelize*/ name;
+      const key = /*camelize*/ name;
       const value = elem && elem.getAttribute ? elem.getAttribute(name) : elem[key];
       acc[key] = /^-?[0-9]*\.[0-9]\+$/.test(value) ? parseFloat(value) : value;
       return acc;
@@ -395,7 +389,6 @@ export class Element extends Node {
     const prect = Element.rect(pelement, { round: false });
     //Rect.align(rect, prect, anchor);
 
-    /* const stack = Util.getCallers(3, 4);*/
     const ptrbl = Rect.toTRBL(prect);
     const trbl = Rect.toTRBL(rect);
     //console.log("Element.setRect ", { trbl, ptrbl });
@@ -584,9 +577,9 @@ export class Element extends Node {
     if(typeof element == 'string') element = Element.find(element);
 
     const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
-    const getCSS = prefix == '' ? () => ({}) : Util.memoize(() => Element.getCSS(element));
+    const getCSS = prefix == '' ? () => ({}) : memoize(() => Element.getCSS(element));
 
-    let entries = names.map(prop => [Util.decamelize(prop).split('-'), element.style.getPropertyValue(prop) || getCSS()[prop]]);
+    let entries = names.map(prop => [decamelize(prop).split('-'), element.style.getPropertyValue(prop) || getCSS()[prop]]);
     //console.log('getTRBL', { names, entries });
     entries = entries.map(([prop, value]) => [prop[1] || prop[0], typeof value == 'string' ? +value.replace(/px$/, '') : value]);
 
@@ -611,7 +604,7 @@ export class Element extends Node {
 
     for(let key in prop) {
       let value = prop[key];
-      const propName = Util.decamelize(key);
+      const propName = decamelize(key);
       if(typeof value == 'function') {
         if('subscribe' in value) {
           value.subscribe = newval => element.style.setProperty(propName, newval);
@@ -621,10 +614,10 @@ export class Element extends Node {
       if(element.style) {
         if(value !== undefined) {
           if(element.style.setProperty) element.style.setProperty(propName, value);
-          else element.style[Util.camelize(propName)] = value;
+          else element.style[camelize(propName)] = value;
         } else {
           if(element.style.removeProperty) element.style.removeProperty(propName);
-          else delete element.style[Util.camelize(propName)];
+          else delete element.style[camelize(propName)];
         }
       }
     }
@@ -638,18 +631,18 @@ export class Element extends Node {
     const d = document !== undefined ? document : global.document;
     // console.log('Element.getCSS ', { element,property });
 
-    let parent = Util.isObject(element) ? element.parentElement || element.parentNode : null;
+    let parent = typeof element == 'object' && element != null ? element.parentElement || element.parentNode : null;
 
     let style;
 
-    let estyle = Util.tryCatch(() => (Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)));
+    let estyle = tryCatch(() => (typeof w == 'object' && w != null && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)));
     if(property == undefined) {
-      let pstyle = Util.tryCatch(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}));
+      let pstyle = tryCatch(() => (parent && parent.tagName ? (w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}));
 
       if(!estyle || !pstyle) return null;
       //let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
 
-      style = Util.removeEqual(estyle, pstyle);
+      style = keys(estyle).reduce((acc, k) => (estyle[k] == pstyle[k] ? acc : ((acc[k] = estyle[k]), acc)), {});
     } else {
       style = estyle;
     }
@@ -659,7 +652,7 @@ export class Element extends Node {
     //console.log("style: ", style);
     // console.log("style: ", style);
     //console.log("Element.getCSS ", style);
-    if(typeof property == 'string') property = Util.camelize(property);
+    if(typeof property == 'string') property = camelize(property);
 
     let ret = {};
     if(receiver == null) {
@@ -669,7 +662,7 @@ export class Element extends Node {
             Object.defineProperty(result, 'cssText', {
               get() {
                 return Object.entries(this)
-                  .map(([k, v]) => `${Util.decamelize(k, '-')}: ${v};\n`)
+                  .map(([k, v]) => `${decamelize(k, '-')}: ${v};\n`)
                   .join('');
               },
               enumerable: false
@@ -690,7 +683,7 @@ export class Element extends Node {
     } else {
       for(let i = 0; i < keys.length; i++) {
         const stylesheet = keys[i];
-        const key = Util.camelize(stylesheet);
+        const key = camelize(stylesheet);
         const val = style[stylesheet] || style[key];
         if(val && val.length > 0 && val != 'none') ret[key] = val;
       }
@@ -920,11 +913,6 @@ export class Element extends Node {
     });
   }
 
-  /*
-      e=Util.shuffle(Element.findAll('rect'))[0]; r=Element.rect(e); a=rect(r, new dom.HSLA(200,100,50,0.5));
-      t=Element.transition(a, { transform: 'translate(100px,100px) scale(2,2) rotate(45deg)' }, 10000, ctx => console.log("run",ctx)); t.then(done => console.log({done}))
-
-*/
   static transition(element, css, time, easing = 'linear', callback = null) {
     let args = [...arguments];
     const e = typeof element === 'string' ? Element.find(args.shift()) : args.shift();
@@ -937,7 +925,7 @@ export class Element extends Node {
     callback = args.shift();
 
     for(let prop in css) {
-      const name = Util.decamelize(prop);
+      const name = decamelize(prop);
       a.push(`${name} ${t} ${easing}`);
       ctx.from[prop] = e.style.getProperty ? e.style.getProperty(name) : e.style[prop];
       ctx.to[name] = css[prop];
@@ -1053,5 +1041,5 @@ export class Element extends Node {
 }
 
 export function isElement(e) {
-  return Util.isObject(e) && e.tagName !== undefined;
+  return typeof e == 'object' && e != null && e.tagName !== undefined;
 }

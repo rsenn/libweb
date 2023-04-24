@@ -70,130 +70,108 @@ const computedSetter = (proxy, compute) =>
   };
 
 export const ElementXYProps = element => {
-  Util.defineGetterSetter(
-    element,
-    'x',
-    function() {
+  Object.defineProperty(element, 'x', {
+    get() {
       return Element.getRect(this).x;
     },
-    function(val) {
+    set(val) {
       this.style.left = `${val}px`;
     }
-  );
-  Util.defineGetterSetter(
-    element,
-    'y',
-    function() {
+  });
+  Object.defineProperty(element, 'y', {
+    get() {
       return Element.getRect(this).y;
     },
-    function(val) {
+    set(val) {
       this.style.top = `${val}px`;
     }
-  );
+  });
 };
 
 export const ElementWHProps = element => {
-  Util.defineGetterSetter(
-    element,
-    'w',
-    function() {
+  Object.defineProperty(element, 'w', {
+    get() {
       return Element.getRect(this).width;
     },
-    function(val) {
+    set(val) {
       this.style.width = `${val}px`;
     }
-  );
-  Util.defineGetterSetter(
-    element,
-    'h',
-    function() {
+  });
+  Object.defineProperty(element, 'h', {
+    get() {
       return Element.getRect(this).height;
     },
-    function(val) {
+    set(val) {
       this.style.height = `${val}px`;
     }
-  );
+  });
 };
 
 export const ElementPosProps = (element, proxy) => {
   proxy = proxy || new ElementRectProxy(element);
   ElementXYProps(element, proxy);
-  Util.defineGetterSetter(
-    element,
-    'x1',
-    () => proxy.getPos().x,
-    value =>
+  Object.defineProperty(element, 'x1', {
+    get: () => proxy.getPos().x,
+    set: value =>
       proxy.setRect(rect => {
         let extend = rect.x - value;
         rect.width += extend;
         return rect;
       })
-  );
-  Util.defineGetterSetter(
-    element,
-    'x2',
-    () => proxy.getRect(rect => rect.x + rect.width),
-    value =>
+  });
+  Object.defineProperty(element, 'x2', {
+    get: () => proxy.getRect(rect => rect.x + rect.width),
+    set: value =>
       proxy.setRect(rect => {
         let extend = value - (rect.x + rect.w);
         rect.width += extend;
         return rect;
       })
-  );
+  });
 
-  Util.defineGetterSetter(
-    element,
-    'y1',
-    () => proxy.getPos().y,
-    value =>
+  Object.defineProperty(element, 'y1', {
+    get: () => proxy.getPos().y,
+    set: value =>
       proxy.setRect(rect => {
         let y = rect.y - value;
         rect.height += y;
         return rect;
       })
-  );
-  Util.defineGetterSetter(
-    element,
-    'y2',
-    () => proxy.getRect(rect => rect.y + rect.height),
-    value =>
+  });
+  Object.defineProperty(element, 'y2', {
+    get: () => proxy.getRect(rect => rect.y + rect.height),
+    set: value =>
       proxy.setRect(rect => {
         let y = value - (rect.y + rect.height);
         rect.height += y;
         return rect;
       })
-  );
+  });
 };
 
 export const ElementSizeProps = (element, proxy) => {
   proxy = proxy || new ElementRectProxy(element);
-  Util.defineGetterSetter(
-    element,
-    'w',
-    () => proxy.getRect().width,
-    width => proxy.setSize({ width })
-  );
-  Util.defineGetterSetter(
-    element,
-    'width',
-    () => proxy.getRect().width,
-    width => proxy.setSize({ width })
-  );
-  Util.defineGetterSetter(
-    element,
-    'h',
-    () => proxy.getRect().height,
-    height => proxy.setSize({ height })
-  );
-  Util.defineGetterSetter(
-    element,
-    'height',
-    () => proxy.getRect().height,
-    height => proxy.setSize({ height })
-  );
+  Object.defineProperty(element, 'w', {
+    get: () => proxy.getRect().width,
+    set: width => proxy.setSize({ width })
+  });
+  Object.defineProperty(element, 'width', {
+    get: () => proxy.getRect().width,
+    set: width => proxy.setSize({ width })
+  });
+  Object.defineProperty(element, 'h', {
+    get: () => proxy.getRect().height,
+    set: height => proxy.setSize({ height })
+  });
+  Object.defineProperty(element, 'height', {
+    get: () => proxy.getRect().height,
+    set: height => proxy.setSize({ height })
+  });
 };
 
 export const ElementRectProps = (element, proxy) => {
-  /*Util.defineGetterSetter(element, 'w', () => proxy.getRect().width, propSetter('width', proxy)); Util.defineGetterSetter(element, 'width', () => proxy.getRect().width, propSetter('width', proxy));
-    Util.defineGetterSetter(element, 'h', () => proxy.getRect().height, propSetter('height', proxy)); Util.defineGetterSetter(element, 'height', () => proxy.getRect().height, propSetter('height', proxy) });*/
+  /*Object.defineProperty(element, 'w', { get: () => proxy.getRect().width, set: propSetter('width', proxy) });
+  Object.defineProperty(element, 'width', { get: () => proxy.getRect().width, set: propSetter('width', proxy) });
+  Object.defineProperty(element, 'h', { get: () => proxy.getRect().height, set: propSetter('height', proxy) });
+  Object.defineProperty(element, 'height', { get: () => proxy.getRect().height, set: propSetter('height', proxy) });*/
 };

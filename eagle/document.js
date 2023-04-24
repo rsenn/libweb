@@ -119,8 +119,10 @@ export class EagleDocument extends EagleNode {
 
     if(this.type == 'sch') {
       let schematic = this.lookup('/eagle/drawing/schematic');
+      let libraries = schematic.get('libraries');
+      console.log('libraries', { libraries });
 
-      let { parts, sheets, libraries } = schematic;
+      let { parts, sheets } = schematic;
       lazyProperties(this, {
         sheets: () => EagleNodeList.create(sheets, sheets.path.concat(['children'])),
         parts: () => EagleNodeMap.create(parts.children, 'name'), // EagleNodeList.create(parts, parts.path.concat(['children'])),
@@ -129,7 +131,11 @@ export class EagleDocument extends EagleNode {
     }
     if(this.type == 'brd') {
       let board = this.get('board') ?? this.lookup('/eagle/drawing/board');
-      let { elements, plain, signals, libraries } = board;
+      let { elements, plain, signals } = board;
+
+      let libraries = board.lookup('/libraries');
+
+      console.log('libraries', { libraries });
 
       lazyProperties(this, {
         signals: () => EagleNodeMap.create(signals.children, 'name'),
@@ -139,11 +145,13 @@ export class EagleDocument extends EagleNode {
       });
     }
 
-    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
+    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
 
-    let drawing = this.get('drawing');
+    let drawing = this.lookup('/eagle/drawing');
+    console.log('drawing', drawing.raw);
 
-    let { layers } = drawing;
+    let layers = /*drawing.get('layers') /*?? */ this.lookup('/eagle/drawing/layers');
+    console.log('layers', layers);
 
     lazyProperties(this, {
       drawing: () => drawing,
@@ -248,7 +256,10 @@ export class EagleDocument extends EagleNode {
 
   lookup(xpath) {
     let doc = this;
-    return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
+    return super.lookup(xpath, (o, p, v) => {
+      console.log('EagleDocument.lookup', console.config({ depth: 4 }), { o, p, v });
+      return EagleElement.get(o, p, v);
+    });
   }
 
   getBounds(sheetNo = 0) {
@@ -369,3 +380,5 @@ export class EagleDocument extends EagleNode {
     return this.getMainElement();
   }
 }
+
+define(EagleDocument.prototype, { [Symbol.toStringTag]: 'EagleDocument' });

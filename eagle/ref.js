@@ -3,20 +3,33 @@ import { toXML } from '../json.js';
 import { text, concat } from './common.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { ImmutableXPath } from '../xml/xpath.js';
+import inspect from '../objectInspect.js';
 
 export const ChildrenSym = Symbol('⊳');
 
 export class EagleReference {
   constructor(root, path, check = true) {
-    if(path instanceof ImmutableXPath) path = [...path.toPointer(root)];
+    if(path instanceof ImmutableXPath) {
+      path = path.toPointer(root);
+      console.log('new EagleReference', { path });
+    }
 
-    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+    try {
+      if(!path.deref) path = new ImmutablePath([...path]);
+    } catch(e) {}
+
+    console.log('new EagleReference', { path, root });
+
     this.path = path;
     this.root = root;
+
     //console.log('EagleReference', { root: abbreviate(toXML(root), 10), path });
+
     if(check && !this.dereference(true)) {
-      //console.log('dereference:', { path, root: abbreviate(toXML(root), 10) });
-      throw new Error(this.root.tagName + ' ' + this.path);
+      let pathStr = inspect([...this.path]);
+      console.log('dereference:', { path, pathStr });
+
+      throw new Error(this.root.tagName + ' ' + pathStr);
     }
   }
 
@@ -37,6 +50,9 @@ export class EagleReference {
   dereference(noThrow) {
     const { path, root } = this;
     let r;
+
+    if(path.length === 0) return root;
+
     try {
       r = (isObject(root) && 'owner' in root && path.deref(root.owner, true)) || path.deref(root);
     } catch(err) {
@@ -47,14 +63,14 @@ export class EagleReference {
   }
 
   replace(value) {
-    const obj = this.path.up().apply(this.root);
+    const obj = this.path.slice(0, -1).apply(this.root);
     return (obj[this.path.last] = value);
   }
 
   entry() {
     if(this.path.size > 0) {
-      let key = this.path.last;
-      let obj = this.path.up().apply(this.root);
+      let key = this.path[this.path.length - 1];
+      let obj = this.path.slice(0, -1).apply(this.root);
       return [obj[key], key, obj];
     }
     return [this.root];
@@ -83,14 +99,14 @@ export class EagleReference {
     return new EagleReference(this.root, this.path.concat(args), false);
   }
   up(n = 1) {
-    return new EagleReference(this.root, this.path.up(n), false);
+    return new EagleReference(this.root, this.path.slice(0, -n), false);
   }
-  left(n) {
+  /*left(n) {
     return new EagleReference(this.root, this.path.left(n), false);
   }
   right(n) {
     return new EagleReference(this.root, this.path.right(n), false);
-  }
+  }*/
 
   shift(n = 1) {
     let root = this.root;
@@ -112,9 +128,10 @@ export class EagleReference {
 
 export const EagleRef = function EagleRef(root, path) {
   if(isObject(root) && isObject(root.root)) root = root.root;
-  //console.log('EagleRef', { root, path });
   let obj = new EagleReference(root, path);
-  return Object.freeze(obj);
+  obj = Object.freeze(obj);
+  console.log('EagleRef', console.config({ depth: 2 }), { root: obj.root, path: obj.path });
+  return obj;
 };
 
 Object.assign(EagleReference.prototype, { deref: EagleReference.prototype.dereference });

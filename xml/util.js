@@ -4,7 +4,7 @@ import deep from '../deep.js';
 import Util from '../util.js';
 
 const Object2Array = (xmlObj, flat) => {
-  let entries = [...deep.flatten(xmlObj, new Map()).entries()].map(([k, v]) => [Util.replaceAll({ attributes: 1, tagName: 0, children: 2 }, k), v]);
+  let entries = [...deep.flatten(xmlObj, new Map()).entries()].map(([k, v]) => [{ attributes: 1, tagName: 0, children: 2 }[k], v]);
 
   if(!flat) entries = entries.reduce((acc, [k, v]) => (/*console.log('deep.set(', acc, k, abbreviate(v, 10), ')'), */ deep.set(acc, k, v), acc), []);
   return entries;

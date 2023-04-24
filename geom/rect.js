@@ -2,7 +2,7 @@ import { Point, isPoint } from './point.js';
 import { Line } from './line.js';
 import { Size } from './size.js';
 import { Align } from './align.js';
-import { bindProperties, curry, defineGetter, immutableClass, inspectSymbol, isConstructor, isObject, memoize, matchAll, roundTo, weakAssign } from '../misc.js';
+import { bindProperties, curry, defineGetter, immutableClass, inspectSymbol, isConstructor, isObject, memoize, matchAll, roundTo, weakDefine } from '../misc.js';
 
 export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};
@@ -546,7 +546,7 @@ for(let f of ['scale', 'resize', 'translate']) {
   };
 }
 
-weakAssign(Rect.prototype, Size.prototype, Point.prototype);
+weakDefine(Rect.prototype, Size.prototype, Point.prototype);
 
 
 export const isRect = (rect, testFn = (prop, name, obj) => name in obj) => isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));

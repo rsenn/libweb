@@ -21,15 +21,8 @@ export class WebSocketClient {
   receiveCallbacksQueue = [];
   closeEvent = null;*/
 
-  constructor(ctor) {
+  constructor(ctor = globalThis.WebSocket) {
     this.reset();
-
-    if(!ctor)
-      ctor = Util.tryCatch(
-        () => Util.isObject(window),
-        () => window.WebSocket,
-        null
-      );
 
     Object.defineProperties(
       this,

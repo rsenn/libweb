@@ -1,30 +1,23 @@
-import { abbreviate, className,   isNumeric, isObject } from './misc.js';
-import { write as toXML } from './xml.js';
+import { define, abbreviate, className, isObject } from './misc.js';
+import inspect from './objectInspect.js';
 
 export function DereferenceError(object, member, pos, prev, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
-  let stack = new Error().stack; /*Util.getCallerStack()
-    .filter(frame => null !== frame.fileName)
-    .map(frame => {
-      let method = frame.methodName;
-      if(method) method = (frame.typeName || Util.className(frame.thisObj)) + '.' + method;
-      else method = frame.getFunctionName();
-      return ('' + frame.getFileName()).replace(new RegExp('.*plot-cv/'), '') + ':' + frame.getLineNumber() + ':' + frame.getColumnNumber() + ' ' + method;
-    });*/
+  let stack = new Error().stack;
 
   return Object.assign(
     error,
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${Util.className(object)} @ ${Pointer.prototype.toString.call(locator, '/', Pointer.partToString, 'children')}
-xml: ${Util.abbreviate(toXML(locator.root || object))}
+        `Error dereferencing ${className(object)} @ ${Pointer.prototype.toString.call(locator, '/', Pointer.partToString, 'children')}
+xml: ${abbreviate(inspect(locator.root || object))}
 no member '${inspect(member, { colors: false })}' in ${inspect(prev, {
           depth: 2,
           multiline: true,
-          indent: '  ',
+          indent: 2,
           colors: false
-        })} \n` + stack.join('\n'),
+        })} \n` + stack,
       stack
     }
   );
@@ -41,17 +34,18 @@ const CHILDREN_SPACE = '';
 
 export class Pointer extends Array {
   constructor(arr) {
-    const n = arr?.length | 0;
-    super(n);
+    const { length } = arr;
+    super(length);
 
-    for(let i = 0; i < n; i++) this[i] = arr[i];
+    for(let i = 0; i < length; i++) this[i] = arr[i];
+
+    //define(this, {length});
   }
 
   deref(obj, noThrow) {
     let o = obj;
     if(o === undefined && !noThrow) {
-      let stack = Util.getCallers(1, 10);
-      throw new Error(`Object ${o}` + stack.join('\n'));
+      throw new Error(`Object ${o}`);
     }
     let a = this;
     a = a.reduce(
@@ -93,7 +87,7 @@ export class Pointer extends Array {
     let part = a.shift();
     if(typeof part == 'function' && part.object !== undefined) part = part.object;
 
-    if(Util.isObject(part)) {
+    if(isObject(part)) {
       let { tagName, ...partObj } = part;
       let keys = Object.keys(partObj);
       if(keys.length == 0) part = tagName;
@@ -108,7 +102,7 @@ export class Pointer extends Array {
           s += c('', 1, 34);
           break;
         } else {
-          if(Util.isNumeric(part)) part = +part;
+          if(!isNaN(+part)) part = +part;
           else s += `${part}`;
           break;
         }
@@ -130,11 +124,11 @@ export class Pointer extends Array {
   toSource(opts = {}) {
     const { sep = ',', filterChildren = false } = opts;
     let r = this.toArray();
-    if(filterChildren) r = r.filter(item => !Pointer.isChildren(item));
+    if(filterChildren) r = r.filter(item => !IsChildren(item));
     return `[${r.map(p => (typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p)).join(sep)}]`;
   }
   toCode(name) {
-    return this.reduce((acc, part) => acc + (Util.isNumeric(part) ? `[${part}]` : `.${part}`), name || '');
+    return this.reduce((acc, part) => acc + (!isNaN(part) ? `[${part}]` : `.${part}`), name || '');
   }
   toReduce(name = '') {
     return this.toSource() + `.reduce((a,p)=>a[p],${name})`;
@@ -288,8 +282,9 @@ export class Pointer extends Array {
   }
 
   at(i) {
-    const part = this[i];
-    return Pointer.isChildren(part) ? 'children' : part;
+    const { length } = this;
+    const part = this[((i % length) + length) % length];
+    return IsChildren(part) ? 'children' : part;
   }
 
   offset(predicate = (p, i) => p === '' || p === '/') {
@@ -321,7 +316,6 @@ export class Pointer extends Array {
     for(let i = 0; i < other.length; i++) {
       if(typeof this[i] != 'object') {
         if(this[i] != other[i]) return false;
-      //  else if(!Util.equals(this[i], other[i])) return false;
       }
     }
     return true;
@@ -374,5 +368,7 @@ export class Pointer extends Array {
     return Array.prototype[Symbol.iterator].call(this);
   }
 }
+
+define(Pointer, { isChildren: IsChildren });
 
 export default Pointer;

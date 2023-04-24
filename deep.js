@@ -1,4 +1,3 @@
-
 export const RETURN_VALUE_PATH = 0;
 export const RETURN_PATH = 1 << 24;
 export const RETURN_VALUE = 2 << 24;
@@ -140,7 +139,7 @@ export const forEach = function(...args) {
 
   fn(value, path, root);
 
-  if(isObject(value)) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+  if(typeof value == 'object' && value != null) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -154,7 +153,7 @@ export const iterate = function* (...args) {
 
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)
-    if(isObject(value)) {
+    if(typeof value == 'object' && value != null) {
       for(let k in value) yield* iterate(value[k], filter, flags, path.concat([isNaN(+k) ? k : +k]), root);
     }
 };

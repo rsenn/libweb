@@ -39,7 +39,7 @@ export class EagleSVGRenderer {
     );
     const insertCtoP = inserter(this.component2path);
     const insert = inserter(this.path2component, (k, v) => insertCtoP(v, k));
-    this.mirrorY = new TransformationList().scale(1, -1);
+          this.mirrorY = new TransformationList().scale(1, -1);
     this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
       // console.log('EagleSVGRenderer.create',{factory});

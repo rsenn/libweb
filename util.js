@@ -3550,7 +3550,7 @@ Util.getPropertyDescriptors = function(obj) {
 
 Util.getConstructorChain = (ctor, fn = (c, p) => c) => Util.getPrototypeChain(ctor, (p, o) => fn(o, p));
 
-Util.weakAssign = function(...args) {
+Util.weakDefine = function(...args) {
   let obj = args.shift();
   args.forEach(other => {
     for(let key in other) {
@@ -4801,7 +4801,7 @@ Util.assertEqual = function assertEqual(val1, val2, message) {
   if(val1 != val2) throw new AssertionFailed(message || `${val1} != ${val2}`);
 };
 
-Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
+Util.assignGlobal = () => Util.weakDefine(Util.getGlobalObject(), Util);
 
 Util.weakMapper = function(createFn, map = new WeakMap(), hitFn) {
   let self = function(obj, ...args) {
@@ -5703,13 +5703,6 @@ Util.ttyGetWinSize = (fd = 1) => {
   const stream = process[['stdin', 'stdout', 'stderr'][fd] || 'stdout'];
   return new Promise(stream.cols ? (resolve, reject) => resolve([stream.cols, stream.rows]) : (resolve, reject) => resolve(stream?.getWindowSize?.()));
 };
-Util.ttySetRaw = globalThis.os
-  ? os.ttySetRaw
-  : (fd = 0, mode = true) => {
-      let ret;
-      const stream = typeof fd == 'number' ? process[['stdin', 'stdout', 'stderr'][fd] || 'stdin'] : fd;
-      return stream?.setRawMode?.(mode);
-    };
 Util.stdio = (fd, mode = true) => {
   if(Util.getPlatform() == 'quickjs') return std[['in', 'out', 'err'][fd]];
 

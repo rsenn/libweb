@@ -1,6 +1,6 @@
 import { Token } from './token.js';
 export { Token } from './token.js';
-import path from '../path.js';
+import * as path from '../path.js';
 import { Location } from '../misc.js';
 export { Location } from '../misc.js';
 

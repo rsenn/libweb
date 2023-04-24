@@ -8,14 +8,14 @@ function map(mapper) {
 }
 function filter(predicate) {
   return transform(async (data, controller) => {
-    if (await predicate(data)) {
+    if(await predicate(data)) {
       controller.enqueue(data);
     }
   });
 }
 function take(count) {
   return transform(async (data, controller) => {
-    if (count > 0) {
+    if(count > 0) {
       controller.enqueue(data);
       count--;
     }
@@ -23,7 +23,7 @@ function take(count) {
 }
 function drop(count) {
   return transform(async (data, controller) => {
-    if (count > 0) {
+    if(count > 0) {
       count--;
       return;
     }
@@ -32,10 +32,9 @@ function drop(count) {
 }
 function concat(...streams) {
   const { readable, writable } = new TransformStream();
-  streams.reduce(
-    (prev, stream) => prev.then(() => stream.pipeTo(writable, { preventClose: true })),
-    Promise.resolve()
-  ).then(() => writable.close());
+  streams
+    .reduce((prev, stream) => prev.then(() => stream.pipeTo(writable, { preventClose: true })), Promise.resolve())
+    .then(() => writable.close());
   return readable;
 }
 function zipWith(stream) {
@@ -45,10 +44,9 @@ function zipWith(stream) {
       reader.releaseLock();
     },
     transform: async (data, controller) => {
-      if (await reader.closed)
-        return;
+      if(await reader.closed) return;
       const value = await reader.read();
-      if (value.done) {
+      if(value.done) {
         return;
       }
       controller.enqueue([data, value.value]);
@@ -62,12 +60,9 @@ function zip(stream1, stream2) {
     const reader2 = stream2.getReader();
     const writer = writable.getWriter();
     try {
-      for (; ; ) {
-        const [item1, item2] = await Promise.all([
-          reader1.read(),
-          reader2.read()
-        ]);
-        if (item1.done || item2.done) {
+      for(;;) {
+        const [item1, item2] = await Promise.all([reader1.read(), reader2.read()]);
+        if(item1.done || item2.done) {
           break;
         }
         writer.write([item1.value, item2.value]);
@@ -92,9 +87,9 @@ function iota(n = Infinity) {
   let index = 0;
   return new ReadableStream({
     pull(controller) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         setTimeout(() => {
-          if (index < n) {
+          if(index < n) {
             controller.enqueue(index++);
           } else {
             controller.close();
@@ -109,7 +104,7 @@ function debounce(ms) {
   let timer;
   return new TransformStream({
     transform(data, controller) {
-      if (!timer) {
+      if(!timer) {
         controller.enqueue(data);
       }
       clearTimeout(timer);
@@ -118,7 +113,7 @@ function debounce(ms) {
       }, ms);
     },
     flush() {
-      if (timer) {
+      if(timer) {
         clearTimeout(timer);
         timer = void 0;
       }
@@ -129,7 +124,7 @@ function throttle(ms) {
   let timer;
   return new TransformStream({
     transform(data, controller) {
-      if (!timer) {
+      if(!timer) {
         controller.enqueue(data);
         timer = setTimeout(() => {
           timer = void 0;
@@ -137,25 +132,12 @@ function throttle(ms) {
       }
     },
     flush() {
-      if (timer) {
+      if(timer) {
         clearTimeout(timer);
         timer = void 0;
       }
     }
   });
 }
-export {
-  concat,
-  debounce,
-  drop,
-  enumerate,
-  filter,
-  iota,
-  map,
-  take,
-  throttle,
-  transform,
-  zip,
-  zipWith
-};
+export { concat, debounce, drop, enumerate, filter, iota, map, take, throttle, transform, zip, zipWith };
 //# sourceMappingURL=stream.js.map

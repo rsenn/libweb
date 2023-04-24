@@ -913,7 +913,7 @@ export async function GetPortableFileSystem() {
 export async function PortableFileSystem(fn = fs => true) {
   return await Util.memoize(async function() {
 
-    Util.weakAssign(fs, FilesystemDecorator);
+    Util.weakDefine(fs, FilesystemDecorator);
 
     try {
       return (globalThis.filesystem = fs);

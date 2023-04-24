@@ -177,7 +177,7 @@ export class EagleNode {
             //   console.warn('path not found', path + '');
             continue;
           }
-          path = this.ref.path.down(...path);
+          path = this.ref.path.concat([path]);
           lists[key] = () => listCtor(owner, path);
           maps[key] =
             ['sheets', 'connects', 'plain'].indexOf(key) != -1
@@ -330,28 +330,18 @@ export class EagleNode {
     return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
-  [Symbol.toStringTag]() {
-    return this.constructor.name; //EagleNode.inspect(this);
-  }
-
   toString() {
     return toXML(this.raw);
     //    return tXml.toString([this.raw]);
   }
 
-  inspect(depth, options) {
+  /* inspect(depth, options) {
     let attrs = [''];
     if(depth > 100) throw new Error(`EagleNode.inspect()`);
-
-    //console.log('EagleNode.inspect', depth, this.tagName);
-
     const { raw } = this;
     const { children, tagName, attributes = {} } = raw;
     const { attributeLists = EagleElement.attributeLists } = this.constructor;
-
     const attributeList = attributeLists[tagName] || Object.keys(attributes);
-    //console.log('EagleNode.inspect',  { tagName, attributeList });
-
     const getAttr = name => {
       for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];
     };
@@ -365,7 +355,9 @@ export class EagleNode {
               ' ',
               text(attr, 1, 33),
               text(':', 1, 36),
-              /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(attr)
+              /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(
+                attr
+              )
                 ? text(getAttr(attr), 1, 36)
                 : text("'" + getAttr(attr) + "'", 1, 32)
             ),
@@ -386,21 +378,24 @@ export class EagleNode {
       }
       ret += `</${tag}>`;
     }
-    return (ret = concat(text(this.constructor.name + ' ', 0), ret));
+    const name = this[Symbol.toStringTag];
+    console.log('EagleNode.inspect', { concat, text, name });
+    return (ret = concat(text(name + ' ', 0), ret));
   }
-
   [Symbol.for('nodejs.util.inspect.custom')](depth, options) {
     return this.inspect(depth, options);
-  }
+  }*/
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
     //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');
-    xpath = new ImmutableXPath(xpath);
-    //console.log('EagleNode.lookup', { xpath });
-    let value = xpath.deref(this.raw, true);
-    //console.log('EagleNode.lookup()', { value });
+    if(typeof xpath == 'string') xpath = new ImmutableXPath(xpath);
 
-    let path = new Pointer([...xpath.toPointer(this.raw)]); //[...xpath]);
+    let path = xpath.toPointer(this.raw);
+
+    let value = xpath.deref(this.raw, true);
+    //let value = path.deref(this.raw, true);
+    // console.log('EagleNode.lookup',console.config({depth: 4 }), { xpath, path, value });
+
     let ret = t(this, path, value);
     return ret;
   }
@@ -448,7 +443,11 @@ export class EagleNode {
     return tryCatch(
       () => ImmutableXPath.from(this.path, this.document),
       xpath => xpath,
-      () => Object.setPrototypeOf([...this.path], ImmutableXPath.prototype)
+      tryCatch(
+        () => ImmutableXPath.from(this.path, this.document.raw),
+        xpath => xpath,
+        () => Object.setPrototypeOf([...this.path], ImmutableXPath.prototype)
+      )
     );
   }
 
@@ -505,6 +504,7 @@ export class EagleNode {
 }
 
 define(EagleNode.prototype, {
+  [Symbol.toStringTag]: 'EagleNode',
   getRaw: memoize(function () {
     const { owner, ref, document } = this;
     let r = ref.path.deref(owner.raw, true);

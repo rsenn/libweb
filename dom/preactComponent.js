@@ -1,7 +1,7 @@
 import { h, options, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.mjs';
 import { forwardRef } from '../preact/forwardRef.js';
 import { Element } from './element.js';
-import { functionName, getMethodNames,  isObject,  className } from '../misc.js';
+import { functionName, getMethodNames, isObject, className } from '../misc.js';
 
 export { forwardRef } from '../preact/forwardRef.js';
 
@@ -50,8 +50,7 @@ export const React = {
 };
 export default React;
 
-
-function indent (text, space = '  ')  {
+function indent(text, space = '  ') {
   text = text.trim();
   if(!/\n/.test(text)) return text;
   return text.replace(/(\n)/g, '\n' + space) + '\n';
@@ -100,7 +99,10 @@ export class ReactComponent {
     function flatten(obj, path) {
       insert(path, obj);
       if(obj.props) {
-        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [child, [...path, 'props', 'children', i++]]);
+        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [
+          child,
+          [...path, 'props', 'children', i++]
+        ]);
         children.forEach(args => flatten(...args));
       }
     }
@@ -109,7 +111,11 @@ export class ReactComponent {
   }
 
   static isComponent(obj) {
-    return Util.isObject(obj) && ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined);
+    return (
+      typeof obj == 'object' &&
+      obj != null &&
+      ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined)
+    );
   }
 
   static factory(render_to, root) {
@@ -179,7 +185,7 @@ export class ReactComponent {
       let { children, key, innerHTML, ...props } = arg.props || {};
 
       let obj = { tagName, ...props };
-      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
+      if(typeof arg.props == 'object' && arg.props != null && 'key' in arg.props && key !== undefined) obj.key = key;
 
       if(!children) children = arg.children;
 
@@ -227,7 +233,11 @@ export class ReactComponent {
     if(p != '') o += ` ${p}${nl}`;
     o += `}`;
     let s = ReactComponent.toSource;
-    let c = Array.isArray(children) ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]` : children ? '  ' + s(children, opts, depth + 1) : '';
+    let c = Array.isArray(children)
+      ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]`
+      : children
+      ? '  ' + s(children, opts, depth + 1)
+      : '';
     if(c != '') o += `,${nl}${c}`;
     o += (c != '' ? nl : '') + ')';
     return o;
@@ -236,7 +246,7 @@ export class ReactComponent {
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
     let s = '';
-    if(Util.isObject(obj) && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
+    if(typeof obj == 'object' && obj != null && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
     if(Array.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
@@ -255,7 +265,13 @@ export class ReactComponent {
       let value = props[prop];
       if(value === false) continue;
       if(value === true) s += ` ${prop}`;
-      else s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${inspect(value)}`;
+      else
+        s +=
+          fmt == 0
+            ? ` ${prop}="${value + ''}"`
+            : fmt == 1
+            ? ` ${prop}={${inspect(value)}}`
+            : (s == '' ? '' : `, `) + ` ${prop}: ${inspect(value)}`;
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : functionName(tagName);
 
@@ -273,17 +289,6 @@ export class ReactComponent {
     }
     return s;
   }
-
-
-  /*static async parse(jsx) {
-    let ecmascript = await import('../ecmascript.js');
-    Object.assign(globalThis, ecmascript);
-    let parser = new ecmascript.ECMAScriptParser(jsx);
-    let printer = new ecmascript.Printer();
-    //console.log("parser", Util.getMethodNames(parser, 2, 1));
-    let ast = parser.parseJSX();
-    return printer.printNode(ast instanceof Array ? ast[0] : ast);
-  }*/
 }
 
 /** Redirect rendering of descendants into the given CSS selector.
@@ -329,7 +334,11 @@ export class Portal extends Component {
       this.into = this.findNode(this.props.into);
     }
 
-    this.remote = render((h(PortalProxy, { context: this.context }), (show && this.props.children) || null), this.into, this.remote);
+    this.remote = render(
+      (h(PortalProxy, { context: this.context }), (show && this.props.children) || null),
+      this.into,
+      this.remote
+    );
   }
 
   render() {

@@ -139,7 +139,7 @@ export let parse = function parse(s) {
 export let parse2 = function parse2(g) {
   let s = g;
   if(!g[Symbol.iterator]) g = new Uint8Array(g);
-  if(!Util.isIterator(g)) g = g[Symbol.iterator]();
+  if(!(typeof g == 'object' && 'next' in g)) g = g[Symbol.iterator]();
 
   let r = [];
   let st = [r];
@@ -173,7 +173,7 @@ export let parse2 = function parse2(g) {
     return !done;
   };
   const is = (ch, cl) => m[ch] & cl;
-  const str = typeof s == 'string' ? s => s : Util.bufferToString;
+  const str = s=>s+''; 
   const skip = pred => {
     data = [];
     while(!done) {

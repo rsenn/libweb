@@ -817,7 +817,7 @@ export function properties(obj, options = { enumerable: true }) {
   return Object.defineProperties({}, desc);
 }
 
-export function weakAssign(obj, ...args) {
+export function weakDefine(obj, ...args) {
   let desc = {};
   for(let other of args) {
     let otherDesc = Object.getOwnPropertyDescriptors(other);
@@ -1263,7 +1263,7 @@ export function mapFunction(map) {
   if(map instanceof Map || (isObject(map) && isFunction(map.get) && isFunction(map.set))) {
     fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
     fn.get = key => map.get(key);
-  } else if(map instanceof Cache || (isObject(map) && isFunction(map.match) && isFunction(map.put))) {
+  } else if(isObject(map) && isFunction(map.match) && isFunction(map.put)) {
     fn.set = (key, value) => (map.put(key, value), (k, v) => fn(k, v));
     fn.get = key => map.match(key);
   } else if(isObject(map) && isFunction(map.getItem) && isFunction(map.setItem)) {

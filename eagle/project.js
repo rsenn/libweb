@@ -3,7 +3,7 @@ import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { dump } from './common.js';
-import path from '../path.js';
+import * as path from '../path.js';
 import * as fs from '../filesystem.js';
 
 export class EagleProject {

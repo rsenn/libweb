@@ -220,7 +220,7 @@ if(Symbol.inspect)
     return [width,height][Symbol.iterator]();
   }*/
 Size.fromString = str => {
-  const matches = [...Util.matchAll(/[-.\d]+/g, str)];
+  const matches = [...str.matchAll(/[-.\d]+/g)];
   return new Size(...matches.map(m => +m[0]));
 };
 Size.prototype.toObject = function() {

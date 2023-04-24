@@ -64,16 +64,6 @@ export class Iterator {
 export class IteratorAdapter extends Iterator {
   constructor(gen) {
     super();
-    if(gen) Util.define(this, { gen });
+    this.gen = gen;
   }
 }
-
-/*if(Util.getPlatform() == 'quickjs') {
-  import('xml.so').then(module => {
-    toXML = obj => {
-      if(!Array.isArray(obj)) obj = [obj];
-      return module.write(obj);
-    };
-    if(!globalThis.xml) globalThis.xml = module;
-  });
-}*/

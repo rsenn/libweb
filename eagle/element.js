@@ -1,4 +1,4 @@
-import { className, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst } from '../misc.js';
+import { className, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst, properties } from '../misc.js';
 import trkl from '../trkl.js';
 import Util from '../util.js';
 import { EagleNode } from './node.js';
@@ -9,10 +9,11 @@ import { RGBA } from '../color.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';
-import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, isLine, Rect, TransformationList, Transformation, PointList, Translation, Polygon, MakePolygon } from '../geom.js';
 import { Repeater } from '../repeater/repeater.js';
 import { EagleNodeMap } from './nodeMap.js';
+
+const lazyProperty = (obj, name, getter) => define(obj, properties({ [name]: getter }));
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
@@ -64,7 +65,7 @@ export class EagleElement extends EagleNode {
   static makeTransparent = new RGBA(255, 255, 255).toAlpha();
 
   static get(owner, ref, raw) {
-    //console.log('EagleElement.get', {owner: owner.raw,ref,raw});
+    console.log('EagleElement.get', console.config({ depth: 2 }), { owner, ref, raw });
     if(ref.length === 0 || raw === undefined) {
       let root = 'root' in ref ? ref.root : null;
       let path = 'path' in ref ? ref.path : ref;
@@ -72,33 +73,41 @@ export class EagleElement extends EagleNode {
       //if(owner instanceof EagleDocument && root == null && path.length === 0) throw new Error('EagleElement.get');
     }
     let root = ref.root || owner.raw ? owner.raw : owner;
-    let doc = owner.document;
+    let doc = owner.document || owner;
     const { pathMapper, raw2element } = doc;
     let insert = inserter(pathMapper);
     //console.log('EagleElement.get(1)', {root,ref});
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
     //console.log('EagleElement.get(2)', {root,ref});
     //
-    if(isObject(ref) && Array.isArray(ref) && !(ref instanceof EagleReference)) {
-      //console.log('EagleElement.get(2)', {root,ref});
-
+    if(isObject(ref) && /*Array.isArray(ref) &&*/ !(ref instanceof EagleReference)) {
       try {
-        ref = new EagleReference(owner, ref);
+        ref = new EagleReference(owner.raw, ref);
       } catch(e) {
         try {
-          ref = new EagleReference(owner.raw, ref);
+          ref = new EagleReference(owner, ref);
         } catch(e) {
           ref = new EagleReference(root, ref);
         }
       }
     }
     if(!isObject(ref) || !('dereference' in ref) || !(ref instanceof EagleReference)) {
-      ref = new EagleReference(root, ref);
+      ref = new EagleReference(root, ref.path || ref);
     }
-    if(!raw && isObject(ref.path)) raw = ref.path.deref(root, true);
+
+    try {
+      if(!raw && isObject(ref.path)) raw = ref.path.deref(root, true);
+    } catch(e) {}
     if(!raw) raw = ref.dereference();
-    //console.log('EagleElement.get(2)', {root,ref,raw});
+    console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
     let inst = doc.raw2element(raw, owner, ref);
+    console.log('EagleElement.get(3)', console.config({ depth: 2 }), { inst, doc });
+
+    inst.ref = ref;
+
+    /*if(!ref.path.equals(inst.ref.path))
+throw new Error(`path ${ref.path} != ${inst.ref.path}`);*/
+
     insert(inst, ref.path);
     EagleElement.currentElement = inst;
     return inst;
@@ -115,7 +124,6 @@ export class EagleElement extends EagleNode {
   }
 
   constructor(owner, ref, raw) {
-    //console.log('EagleElement.constructor', {owner: owner.raw,ref,raw});
     if(className(owner) == 'Object') {
       throw new Error(`${inspect(owner, 0)} ${inspect(ref, 1)}`);
     }
@@ -125,6 +133,7 @@ export class EagleElement extends EagleNode {
     EagleElement.list.push(this);
     define(this, { handlers: {} });
     let path = this.ref.path;
+    //console.log('new EagleElement', console.config({ depth:1, compact: 2 }),  {owner,ref,raw, path});
     if(owner === null) throw new Error('owner == null');
     if(raw === undefined || (raw.tagName === undefined && raw.attributes === undefined && raw.children === undefined)) {
       try {
@@ -145,14 +154,19 @@ export class EagleElement extends EagleNode {
     let elem = this;
     const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
     if(tagName == 'contactref') {
-      lazyProperty(this, 'element', () => {
-        const { element, pad } = attributes;
-        return doc.elements[element];
-      });
-      lazyProperty(this, 'pad', () => {
-        const { element, pad } = attributes;
-        return doc.elements[element].pads[pad];
-      });
+      define(
+        this,
+        properties({
+          element: () => {
+            const { element, pad } = attributes;
+            return doc.elements[element];
+          },
+          pad: () => {
+            const { element, pad } = attributes;
+            return doc.elements[element].pads[pad];
+          }
+        })
+      );
     } else {
       const names = this.names();
       for(let key of attributeList) {
@@ -306,8 +320,8 @@ export class EagleElement extends EagleNode {
     }
     let childList = null;
 
-    if(tagName == 'element') lazyProperty(this, 'children', () => EagleNodeList.create(this.package, this.package.path.down('children'), null));
-    else if('children' in raw) lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
+    if(tagName == 'element') lazyProperty(this, 'children', () => EagleNodeList.create(this.package, this.package.path.concat(['children']), null));
+    else if('children' in raw) lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
 
     if(tagName == 'drawing' || tagName == 'schematic' || tagName == 'board') {
       for(let child of raw.children) lazyProperty(this, child.tagName, () => this.get(e => e.tagName == child.tagName));
@@ -529,6 +543,8 @@ export class EagleElement extends EagleNode {
     xpath = new ImmutableXPath([...xpath]);*/
     //console.log('EagleElement.lookup(', xpath, create, ')');
     let r = super.lookup(xpath, (o, p, v) => {
+      console.log('EagleElement.lookup', console.config({ depth: 4 }), { o, p, v });
+
       if(create && !v) {
         const { tagName } = p.last;
         o.raw.children.push({
@@ -537,7 +553,7 @@ export class EagleElement extends EagleNode {
           children: []
         });
       }
-      if(!v) v = p.apply(o.raw, true);
+      if(!v) v = p.deref(o.raw || o, true);
       return EagleElement.get(o, p, v);
     });
     //console.log('EagleElement.lookup = ', r);
