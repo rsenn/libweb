@@ -648,7 +648,7 @@ export class Element extends Node {
     }
 
     if(!style) return null;
-    let keys = Object.keys(style).filter(k => !/^__/.test(k));
+    let props = Object.keys(style).filter(k => !/^__/.test(k));
     //console.log("style: ", style);
     // console.log("style: ", style);
     //console.log("Element.getCSS ", style);
@@ -681,8 +681,8 @@ export class Element extends Node {
               return ret;
             }, {});
     } else {
-      for(let i = 0; i < keys.length; i++) {
-        const stylesheet = keys[i];
+      for(let i = 0; i < props.length; i++) {
+        const stylesheet = props[i];
         const key = camelize(stylesheet);
         const val = style[stylesheet] || style[key];
         if(val && val.length > 0 && val != 'none') ret[key] = val;
