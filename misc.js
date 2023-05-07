@@ -1127,17 +1127,20 @@ export function histogram(arr, out = new Map()) {
   return out;
 }
 
-export function propertyLookupHandlers(getter = key => null, setter) {
+export function propertyLookupHandlers(getter = key => null, setter, thisObj) {
   let handlers = {
     get(target, key, receiver) {
-      return getter(key);
+      return getter.call(thisObj ?? target, key);
     }
   };
-  let tmp = getter();
+  let tmp;
+  try {
+    tmp = getter();
+  } catch(e) {}
 
   if(setter)
     handlers.set = function(target, key, value) {
-      setter(key, value);
+      setter.call(thisObj ?? target, key, value);
       return true;
     };
 
@@ -1146,7 +1149,7 @@ export function propertyLookupHandlers(getter = key => null, setter) {
       let a = Array.isArray(tmp) ? tmp : [...tmp];
       if(a)
         handlers.ownKeys = function(target) {
-          return getter();
+          return getter.call(thisObj ?? target);
         };
     } catch(e) {}
 
@@ -1712,22 +1715,23 @@ export function roundTo(value, prec, digits, type = 'round') {
 
 export function lazyProperty(obj, name, getter, opts = {}) {
   return Object.defineProperty(obj, name, {
-    get: types.isAsyncFunction(getter)
-      ? async function() {
-          return replaceProperty(await getter.call(this ?? obj, name));
-        }
-      : function() {
-          const value = getter.call(this ?? obj, name);
-          if(types.isPromise(value)) {
-            value.then(v => {
-              replaceProperty(v);
-              console.log(`util.lazyProperty resolved `, obj[name]);
-              return v;
-            });
-            return value;
+    get:
+      opts.async || types.isAsyncFunction(getter)
+        ? async function() {
+            return replaceProperty(Promise.resolve(await getter.call(obj, name)));
           }
-          return replaceProperty(value);
-        },
+        : function() {
+            const value = getter.call(this ?? obj, name);
+            if(opts.async)
+              if(types.isPromise(value)) {
+                value.then(v => {
+                  replaceProperty(v);
+                  return v;
+                });
+                return value;
+              }
+            return replaceProperty(value);
+          },
     configurable: true,
     ...opts
   });
@@ -1740,7 +1744,7 @@ export function lazyProperty(obj, name, getter, opts = {}) {
 }
 
 export function lazyProperties(obj, gettersObj, opts = {}) {
-  opts = { enumerable: false, ...opts };
+  opts = { enumerable: false, configurable: true, ...opts };
   for(let prop of Object.getOwnPropertyNames(gettersObj)) lazyProperty(obj, prop, gettersObj[prop], opts);
   return obj;
 }
