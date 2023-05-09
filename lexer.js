@@ -6,7 +6,7 @@ Lexer.defunct = function(chr) {
   console.log('defunct', { loc, state });
   console.log('this.input.length', this.input.length);
   console.log('this.input', this.input.slice(0, 100));
-  console.log('this.loc.file', makeURL({ location: '/' + this.loc.file }));
+  console.log('this.loc.file', this.loc.file);
 
   let line = [this.index - (loc.column - 1)];
 

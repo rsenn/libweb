@@ -11,7 +11,7 @@ export function* concat(...streams) {
   }
 }
 
-export function consume(iterator, fn = a => console.log(`consume =`, a)) {
+export function consume(iterator, fn = a => console.log(`consume =`, a), ...args) {
   let ret;
   while((ret = iterator.next(...args))) {
     const { done, value } = ret;

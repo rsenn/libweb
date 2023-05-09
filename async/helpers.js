@@ -32,11 +32,13 @@ export const accumulate = async function(stream, accu) {
 };
 
 // Add an async iterator to all WebSockets
-WebSocket.prototype[Symbol.asyncIterator] = async function* () {
-  while(this.readyState !== 3) {
-    yield (await oncePromise(this, 'message')).data;
-  }
-};
+try {
+  WebSocket.prototype[Symbol.asyncIterator] = async function* () {
+    while(this.readyState !== 3) {
+      yield (await oncePromise(this, 'message')).data;
+    }
+  };
+} catch(e) {}
 
 // Generate a Promise that listens only once for an event
 export const oncePromise = (emitter, event) => {
