@@ -1,11 +1,12 @@
 import inspect from './objectInspect.js';
-import * as util from './misc.js';
-import * as path from './path.js';
+import {extendArray,glob} from './misc.js';
+import {absolute,relative} from './path.js';
+import {readFileSync} from './filesystem.js';
 
 export class CompileCommand extends Array {
   constructor(a, workDir = '.') {
     super();
-    this.workDir = path.absolute(typeof workDir == 'string' ? workDir : '.');
+    this.workDir = absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
     if(Array.isArray(a)) {
       this.splice(0, this.length);
@@ -114,7 +115,7 @@ export class CompileCommand extends Array {
     }
     if(program) r.program = program;
     if(output) r.output = output;
-    if(includes && includes.length) r.includes = includes /*.map(inc => path.relative(inc, this.workDir))*/;
+    if(includes && includes.length) r.includes = includes /*.map(inc => relative(inc, this.workDir))*/;
     if(defines && defines.length) r.defines = defines;
     if(flags && flags.length) r.flags = flags;
     if(args && args.length) r.args = args;
@@ -201,7 +202,18 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   } else if(i === 0) return 'program';
 }
 
-util.extendArray(CompileCommand.prototype);
+extendArray(CompileCommand.prototype);
+
+define(CompileCommand, { 
+
+fromFile(file) {
+  return new CompileCommand(readFileSync(file, 'utf-8'));
+},
+fromString(file) {
+})
+export function 
+
+[...a.matchAll(/"([^"]|\\")*"|'([^']|\\')'|([^\s]+)/g)].map(([m]) => /^('.*'|".*")$/.test(m) ? m.slice(1,-1) : m); //
 
 export function NinjaRule(command) {
   /* if(!new.target) return new NinjaRule(command);*/

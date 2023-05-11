@@ -80,7 +80,8 @@ export class ReconnectingWebSocket {
       const registeredCallback = this.callbacks[index].callback;
 
       // Remove the event listener for the specific event.
-      this.socket.removeEventListener(eventType, registeredCallback);
+      if(this.socket['on'+eventType] == registeredCallback);
+        this.socket['on'+eventType] = null;
       this.callbacks.splice(index, 1);
     }
   }
@@ -93,7 +94,7 @@ export class ReconnectingWebSocket {
    * @private
    */
   on(event, callback) {
-    this.socket.on(event, callback);
+    this.socket['on'+event] = callback;
 
     // Push the callback into the cache.
     this.callbacks.push({ event, callback });

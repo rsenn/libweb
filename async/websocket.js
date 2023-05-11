@@ -4,19 +4,29 @@ WebSocket.makeURL = WebSocketURL;
 const oncePromise = (emitter, events) => {
   if(!Array.isArray(events)) events = [events];
 
-  return new Promise(resolve => {
-    const handler = e => {
-      for(let name of events) emitter.removeEventListener(name, handler);
-      resolve(e);
-    };
-    for(let name of events) emitter.addEventListener(name, handler);
-  });
+  return new Promise(
+    /*'addEventListener' in emitter ||*/ false
+      ? resolve => {
+          const handler = e => {
+            for(let name of events) emitter.removeEventListener(name, handler);
+            resolve(e);
+          };
+          for(let name of events) emitter.addEventListener(name, handler);
+        }
+      : resolve => {
+          const handler = e => {
+            for(let name of events) emitter['on' + name] = 0;
+            resolve(e);
+          };
+          for(let name of events) emitter['on' + name] = handler;
+        }
+  );
 };
 
 export class WebSocketError extends Error {
   constructor(message, ws) {
     super(message);
-    this.ws = ws;
+    this.socket = ws;
   }
 }
 
@@ -52,6 +62,7 @@ export function WebSocketURL(arg = '/', query = {}) {
 }
 
 export function CreateWebSocket(path = '/', protocols = []) {
+  console.log('CreateWebSocket',{path,protocols});
   let ws = new WebSocket(path instanceof URL ? path : WebSocketURL(path), protocols);
   ws[Symbol.asyncIterator] = WebSocketIterator;
   return ws;
@@ -84,18 +95,18 @@ export class ReconnectingWebSocket {
   }
 
   async connect(handlers = {}) {
-    this.ws = CreateWebSocket(this.url, this.protocols);
+    this.socket = CreateWebSocket(this.url, this.protocols);
 
-    let ev = await oncePromise(this.ws, ['open', 'error']);
+    let ev = await oncePromise(this.socket, ['open', 'error']);
 
     if(ev.type == 'open') {
       if(handlers.onOpen) handlers.onOpen(ev);
       /*  lazyProperties(this, {
         writable: () =>
           new WritableStream({
-            write: chunk => this.ws.send(chunk),
-            close: () => this.ws.close(),
-            abort: err => this.ws.close(err)
+            write: chunk => this.socket.send(chunk),
+            close: () => this.socket.close(),
+            abort: err => this.socket.close(err)
           }),
         readable: () =>
           new ReadableStream({
@@ -110,9 +121,9 @@ export class ReconnectingWebSocket {
 
   get writable() {
     return new WritableStream({
-      write: chunk => this.ws.send(chunk),
-      close: () => this.ws.close(),
-      abort: err => this.ws.close(err)
+      write: chunk => this.socket.send(chunk),
+      close: () => this.socket.close(),
+      abort: err => this.socket.close(err)
     });
   }
 
@@ -127,7 +138,7 @@ export class ReconnectingWebSocket {
   async *[Symbol.asyncIterator]() {
     let ev;
 
-    while((ev = await oncePromise(this.ws, ['message', 'close', 'error']))) {
+    while((ev = await oncePromise(this.socket, ['message', 'close', 'error']))) {
       if(ev.type == 'message') {
         yield ev.data;
         continue;
@@ -146,7 +157,7 @@ export class ReconnectingWebSocket {
       next: async () => {
         let msg = await this.message;
         console.log('msg',msg);
-        this.message = oncePromise(this.ws, 'message');
+        this.message = oncePromise(this.socket, 'message');
         return { value: msg.data, done: false };
       }
     };*/
