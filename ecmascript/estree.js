@@ -382,6 +382,7 @@ export class BlockStatement extends Statement {
     this.body = body;
   }
 }
+
 export class FunctionBody extends BlockStatement {
   constructor(body) {
     super(body);
@@ -642,6 +643,7 @@ export class Property extends ESNode {
     if(computed) this.computed = computed;
   }
 }
+
 /*export class MemberVariable extends ESNode {
   static STATIC = 4;
 

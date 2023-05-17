@@ -105,4 +105,5 @@ export class SpatialHash2D {
     return x0 < x1 + w1 && x1 < x0 + w0 && y0 < y1 + h1 && y1 < y0 + h0;
   }
 }
+
 export default SpatialHash2D;

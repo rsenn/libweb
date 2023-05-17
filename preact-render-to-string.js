@@ -33,6 +33,7 @@ function encodeEntities(s) {
 
   return out;
 }
+
 var indent = function indent(s, _char) {
   return String(s).replace(/(\n+)/g, '$1' + (_char || '\t'));
 };
@@ -64,6 +65,7 @@ function styleObjToCss(s) {
 
   return str || undefined;
 }
+
 /**
  * Copy all properties from `props` onto `obj`.
  * @param {object} obj Object onto which properties should be copied.
@@ -79,6 +81,7 @@ function assign(obj, props) {
 
   return obj;
 }
+
 /**
  * Get flattened children from the children prop
  * @param {Array} accumulator
@@ -139,6 +142,7 @@ function renderToString(vnode, context, opts) {
   if(options.__c) options.__c(vnode, EMPTY_ARR);
   return res;
 }
+
 /** The default export is an alias of `render()`. */
 
 function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {

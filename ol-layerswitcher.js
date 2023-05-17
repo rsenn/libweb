@@ -585,6 +585,7 @@ export default class LayerSwitcher extends Control {
     return ['none', 'children', 'group'].indexOf(groupSelectStyle) >= 0 ? groupSelectStyle : 'children';
   }
 }
+
 // Expose LayerSwitcher as ol.control.LayerSwitcher if using a full build of
 // OpenLayers
 if(window['ol'] && window['ol']['control']) {

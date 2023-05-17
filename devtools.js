@@ -1072,6 +1072,7 @@ export function storage(name) {
 
   return self;
 }
+
 //prettier-ignore
 export function assign_to(obj) {
   //prettier-ignore

@@ -18,6 +18,7 @@ class NotImplemented extends Error {
     this.node = node;
   }
 }
+
 function consume(iter) {
   let yields = [];
   let retval;
@@ -29,6 +30,7 @@ function consume(iter) {
   } while(!it.done);
   return [yields, retval];
 }
+
 function log(...args) {
  /* let callers = getCallers(2);
 

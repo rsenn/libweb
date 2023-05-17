@@ -281,6 +281,7 @@ function printDiff(a, topType) {
   recurs(a, topType === 'object');
   log(topType === 'object' ? '}' : ']');
 }
+
 */
 /**************************************************************************
  * MAIN PROGRAM                                                           *

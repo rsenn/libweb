@@ -2250,6 +2250,7 @@ function instrumentateParser() {
       }, {})
   );
 }
+
 const timeout = ms =>
   new Promise((resolve, reject) => {
     setTimeout(() => resolve(), ms);

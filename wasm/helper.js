@@ -3,6 +3,7 @@ if(!global.GLOBAL) {
   require('uupaa.useragent.js/lib/WebModule.js');
   global.GLOBAL = global;
 }
+
 UserAgent = require('uupaa.useragent.js/lib/UserAgent');
 
 export default class WasmHelper {

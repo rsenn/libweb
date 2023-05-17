@@ -179,6 +179,7 @@ function generateTokenizer(tokenDef) {
   });
   return stream;
 }
+
 `);
   return output;
 }

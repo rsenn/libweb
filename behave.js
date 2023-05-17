@@ -611,10 +611,12 @@ if(typeof ender === "undefined") {
   this.Behave = Behave;
   this.BehaveHooks = BehaveHooks;
 }
+
 if(typeof define === "function" && define.amd) {
   define("behave", [], function() {
     return Behave;
   });
 }
+
 */
 export default Behave;

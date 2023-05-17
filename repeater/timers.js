@@ -17,6 +17,7 @@ class TimeoutError extends Error {
     }
   }
 }
+
 class Timer {
   constructor(wait) {
     this.wait = wait;
@@ -47,6 +48,7 @@ class Timer {
     this.reject(new TimeoutError('Timer.clear called before stop'));
   }
 }
+
 function delay(wait) {
   return new Repeater(async (push, stop) => {
     const timers = new Set();
@@ -72,6 +74,7 @@ function delay(wait) {
     }
   });
 }
+
 function timeout(wait) {
   return new Repeater(async (push, stop) => {
     let timer;
@@ -95,6 +98,7 @@ function timeout(wait) {
     }
   });
 }
+
 function interval(wait, buffer = new SlidingBuffer(1)) {
   return new Repeater(async (push, stop) => {
     push(Date.now());

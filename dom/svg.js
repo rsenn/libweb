@@ -526,4 +526,5 @@ else */ if(text) svg.innerHTML = innerHTML;
     }
   }
 }
+
 SVG.ns = 'http://www.w3.org/2000/svg';

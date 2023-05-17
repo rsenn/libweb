@@ -36,6 +36,7 @@ try {
 } catch(ignored) {
   Lexer.engineHasStickySupport = false;
 }
+
 try {
   Lexer.engineHasUnicodeSupport = typeof /(?:)/.unicode == 'boolean';
 } catch(ignored) {

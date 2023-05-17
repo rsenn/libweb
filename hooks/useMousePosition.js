@@ -14,4 +14,5 @@ export function useMousePosition() {
   );
   return [x, y, bind];
 }
+
 export default useMousePosition;

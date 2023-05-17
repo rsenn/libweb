@@ -102,6 +102,7 @@ class XMLObject {
     return { tagName, attributes, children };
   }
 }
+
 //prettier-ignore
 //Object.assign(XMLObject.prototype, filterKeys(getMembers(Array.prototype), k => typeof k == 'symbol' || ['slice', 'splice', 'toLocaleString', 'toString', 'back', 'front'].indexOf(k) != -1) );
 Object.setPrototypeOf(XMLObject.prototype,Array.prototype);

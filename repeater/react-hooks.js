@@ -170,6 +170,7 @@ function createPrimedRepeater(buffer) {
   repeater.next();
   return [repeater, push, stop];
 }
+
 function useRepeater(buffer) {
   let _a = __read(
       useState(() => createPrimedRepeater(buffer)),
@@ -178,6 +179,7 @@ function useRepeater(buffer) {
     tuple = _a[0];
   return tuple;
 }
+
 function useAsyncIter(callback, deps) {
   if(deps === void 0) {
     deps = [];
@@ -205,6 +207,7 @@ function useAsyncIter(callback, deps) {
   );
   return iter;
 }
+
 function useResult(callback, deps) {
   let _this = this;
   let iter = useAsyncIter(callback, deps);
@@ -255,6 +258,7 @@ function useResult(callback, deps) {
   }, [iter]);
   return result;
 }
+
 function useValue(callback, deps) {
   let result = useResult(callback, deps);
   return result && result.value;

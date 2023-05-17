@@ -37,6 +37,7 @@ function DiffEdit(path, origin, value) {
     enumerable: true
   });
 }
+
 inherits(DiffEdit, Diff);
 
 function DiffNew(path, value) {
@@ -46,6 +47,7 @@ function DiffNew(path, value) {
     enumerable: true
   });
 }
+
 inherits(DiffNew, Diff);
 
 function DiffDeleted(path, value) {
@@ -55,6 +57,7 @@ function DiffDeleted(path, value) {
     enumerable: true
   });
 }
+
 inherits(DiffDeleted, Diff);
 
 function DiffArray(path, index, item) {
@@ -68,6 +71,7 @@ function DiffArray(path, index, item) {
     enumerable: true
   });
 }
+
 inherits(DiffArray, Diff);
 
 function arrayRemove(arr, from, to) {

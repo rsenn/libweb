@@ -1,11 +1,13 @@
 function transform(transform2) {
   return new TransformStream({ transform: transform2 });
 }
+
 function map(mapper) {
   return transform(async (data, controller) => {
     controller.enqueue(await mapper(data));
   });
 }
+
 function filter(predicate) {
   return transform(async (data, controller) => {
     if(await predicate(data)) {
@@ -13,6 +15,7 @@ function filter(predicate) {
     }
   });
 }
+
 function take(count) {
   return transform(async (data, controller) => {
     if(count > 0) {
@@ -21,6 +24,7 @@ function take(count) {
     }
   });
 }
+
 function drop(count) {
   return transform(async (data, controller) => {
     if(count > 0) {
@@ -30,6 +34,7 @@ function drop(count) {
     controller.enqueue(data);
   });
 }
+
 function concat(...streams) {
   const { readable, writable } = new TransformStream();
   streams
@@ -37,6 +42,7 @@ function concat(...streams) {
     .then(() => writable.close());
   return readable;
 }
+
 function zipWith(stream) {
   const reader = stream.getReader();
   return new TransformStream({
@@ -53,6 +59,7 @@ function zipWith(stream) {
     }
   });
 }
+
 function zip(stream1, stream2) {
   const { readable, writable } = new TransformStream();
   (async function() {
@@ -75,6 +82,7 @@ function zip(stream1, stream2) {
   })();
   return readable;
 }
+
 function enumerate() {
   let index = 0;
   return new TransformStream({
@@ -83,6 +91,7 @@ function enumerate() {
     }
   });
 }
+
 function iota(n = Infinity) {
   let index = 0;
   return new ReadableStream({
@@ -100,6 +109,7 @@ function iota(n = Infinity) {
     }
   });
 }
+
 function debounce(ms) {
   let timer;
   return new TransformStream({
@@ -120,6 +130,7 @@ function debounce(ms) {
     }
   });
 }
+
 function throttle(ms) {
   let timer;
   return new TransformStream({
@@ -139,5 +150,6 @@ function throttle(ms) {
     }
   });
 }
+
 export { concat, debounce, drop, enumerate, filter, iota, map, take, throttle, transform, zip, zipWith };
 //# sourceMappingURL=stream.js.map

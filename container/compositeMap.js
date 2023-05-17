@@ -308,6 +308,7 @@ function copyMap(map) {
   });
   return newMap;
 }
+
 function copyMaps(map, keyLength, level) {
   if(level >= keyLength - 1) {
     return copyMap(map);
@@ -318,6 +319,7 @@ function copyMaps(map, keyLength, level) {
   });
   return mapCopy;
 }
+
 function recurseForEach(callbackfn, lastKeyPart, map, keyPart, keyPos) {
   if(keyPos === lastKeyPart) {
     map.forEach((value, key) => {
@@ -332,6 +334,7 @@ function recurseForEach(callbackfn, lastKeyPart, map, keyPart, keyPos) {
     });
   }
 }
+
 function recurseForEachValue(callbackfn, lastKeyPart, map, keyPos) {
   if(keyPos === lastKeyPart) {
     map.forEach(value => {
@@ -343,6 +346,7 @@ function recurseForEachValue(callbackfn, lastKeyPart, map, keyPos) {
     });
   }
 }
+
 function getRecursiveEntries(lastKeyPos, map, level) {
   const entries = [];
   if(level >= lastKeyPos) {
@@ -356,6 +360,7 @@ function getRecursiveEntries(lastKeyPos, map, level) {
   });
   return entries;
 }
+
 function recursiveEntriesToRecursiveMap(lastKeyPos, entries, level) {
   const map = new Map();
   if(level >= lastKeyPos) {

@@ -338,6 +338,7 @@ for(let name of [
 ]) {
   Point[name] = (point, ...args) => Point.prototype[name].call(Point(point), ...args);
 }
+
 Point.interpolate = (p1, p2, a) => {
   a = clamp(0, 1, a);
   return new Point(p1.x * (1.0 - a) + p2.x * a, p1.y * (1.0 - a) + p2.y * a);

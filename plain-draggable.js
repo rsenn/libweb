@@ -262,6 +262,7 @@ function scrollXYElement(element, xy, value) {
 
   return element[prop];
 }
+
 /**
  * @typedef {Object} Scrollable
  * @property {number} clientWidth - width of scrollable area.
@@ -405,6 +406,7 @@ function hasChanged(a, b) {
       : a !== b)
   );
 }
+
 /**
  * @param {Element} element - A target element.
  * @returns {boolean} `true` if connected element.
@@ -418,6 +420,7 @@ function isElement(element) {
     !(element.compareDocumentPosition(document) & Node.DOCUMENT_POSITION_DISCONNECTED)
   );
 }
+
 /**
  * An object that simulates `DOMRect` to indicate a bounding-box.
  * @typedef {Object} BBox
@@ -473,6 +476,7 @@ function validBBox(bBox) {
 
   return bBox;
 }
+
 /**
  * A value that is Pixels or Ratio
  * @typedef {{value: number, isRatio: boolean}} PPValue
@@ -508,6 +512,7 @@ function ppValue2OptionValue(ppValue) {
 function resolvePPValue(ppValue, baseOrigin, baseSize) {
   return typeof ppValue === 'number' ? ppValue : baseOrigin + ppValue.value * (ppValue.isRatio ? baseSize : 1);
 }
+
 /**
  * An object that simulates BBox but properties are PPValue.
  * @typedef {Object} PPBBox
@@ -593,6 +598,7 @@ function resolvePPBBox(ppBBox, baseBBox) {
     }, {})
   );
 }
+
 /**
  * @param {Element} element - A target element.
  * @param {?boolean} getPaddingBox - Get padding-box instead of border-box as bounding-box.
@@ -624,6 +630,7 @@ function getBBox(element, getPaddingBox) {
 
   return validBBox(bBox);
 }
+
 /**
  * Optimize an element for animation.
  * @param {Element} element - A target element.
@@ -816,6 +823,7 @@ function move(props, position, cbCheck) {
 
   return moved;
 }
+
 /**
  * Initialize HTMLElement for `translate`, and get `offset` that is used by `moveTranslate`.
  * @param {props} props - `props` of instance.
@@ -1409,6 +1417,7 @@ function initBBox(props, eventType) {
 
   props.autoScroll = autoScroll.x || autoScroll.y ? autoScroll : null; // [/AUTO-SCROLL]
 }
+
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
@@ -1448,6 +1457,7 @@ function dragEnd(props) {
     });
   }
 }
+
 /**
  * @param {props} props - `props` of instance.
  * @param {{clientX, clientY}} pointerXY - This might be MouseEvent, Touch of TouchEvent or Object.
@@ -1490,6 +1500,7 @@ function dragStart(props, pointerXY) {
   pointerOffset.top = props.elementBBox.top - (pointerXY.clientY + window.pageYOffset);
   return true;
 }
+
 /**
  * @param {props} props - `props` of instance.
  * @param {Object} newOptions - New options.
@@ -2563,6 +2574,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
   pointerEvent.addEndHandler(document, endHandler);
   pointerEvent.addCancelHandler(document, endHandler);
 }
+
 {
   function initDoc() {
     cssPropTransitionProperty = CSSPrefix.getName('transitionProperty');
@@ -2632,6 +2644,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
     );
   }
 }
+
 /* [SNAP/]
 PlainDraggable.limit = true;
 [SNAP/] */

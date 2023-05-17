@@ -49,6 +49,7 @@ export class ECMAScriptObject extends ECMAScriptValue {
     if(proto !== undefined) this.proto = proto;
   }
 }
+
 export class ECMAScriptFunction extends ECMAScriptValue {
   constructor(params, body, flags) {
     super(ECMAScriptValue.types.function);
@@ -425,4 +426,5 @@ export class ECMAScriptInterpreter {
   //evalWhileStatement(while_statement) {}
   //evalYieldStatement(yield_statement) {}
 }
+
 export default ECMAScriptInterpreter;

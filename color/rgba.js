@@ -252,6 +252,7 @@ RGBA.prototype[Symbol.toPrimitive] = function(hint) {
 function toHex(n) {
   return '0x' + ('00' + (+n).toString(16)).slice(-2);
 }
+
 RGBA.prototype.toSource = function(sep = ',') {
   let a = this.a;
   if(a === undefined) return 'new RGBA(' + this.r + sep + this.g + sep + this.b + ')';
@@ -619,6 +620,7 @@ RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255],
 for(let name of ['hex', 'toRGB', 'round', 'toHSLA', 'toCMYK', 'toLAB', 'linear', 'luminance', 'distance']) {
   RGBA[name] = (...args) => RGBA.prototype[name].call(...args);
 }
+
 /*
 for(let name of ['fromLAB']) {
   RGBA[name] = arg => {

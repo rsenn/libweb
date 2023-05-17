@@ -112,6 +112,7 @@ if(Rect.prototype.isSquare === undefined) {
     return Math.abs(this.width - this.height) < 1;
   };
 }
+
 Rect.prototype.constructor = Rect;
 Rect.prototype.getArea = function() {
   return this.width * this.height;

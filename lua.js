@@ -230,6 +230,7 @@ const ipairs =(table) => {
       return [undefined, undefined];
   };
 }
+
 const pairs =(table) => {
   let i = 0;
   const keys = Object.keys(table).filter((key) => {
@@ -245,6 +246,7 @@ const pairs =(table) => {
       return [undefined, undefined];
   };
 }
+
 `;
     }
 
@@ -267,6 +269,7 @@ const pairs =(table) => {
 ${js(body)}
 
 }
+
 `;
     }
 
@@ -365,6 +368,7 @@ for(;;) {
   if(${js(node.cond)})
      break;
 }
+
             `;
     }
 
@@ -401,6 +405,7 @@ for(;;) {
 if(${js(node.cond)}) {
     ${js(node.body)}
 }
+
 ${elseif}
 ${other}`;
     }

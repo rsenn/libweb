@@ -75,6 +75,7 @@ function calculateAllKinematics(movement, delta, delta_t) {
     direction: calculateDirection(delta, len)
   };
 }
+
 function getIntentionalDisplacement(movement, threshold) {
   let abs = Math.abs(movement);
   return abs >= threshold ? Math.sign(movement) * threshold : false;
@@ -238,6 +239,7 @@ function matchKeysFromObject(obj, matchingObject) {
   });
   return o;
 }
+
 function valueFn(v) {
   return typeof v === 'function' ? v() : v;
 }
@@ -344,6 +346,7 @@ function supportsGestureEvents() {
     return false;
   }
 }
+
 let addListeners = /*#__PURE__*/ setListeners(true);
 let removeListeners = /*#__PURE__*/ setListeners(false);
 /**
@@ -442,6 +445,7 @@ function getPointerEventValues(event) {
     values: [clientX, clientY]
   };
 }
+
 let WEBKIT_DISTANCE_SCALE_FACTOR = 260;
 
 /**

@@ -14,6 +14,7 @@ function shim(props, propName, componentName, location, propFullName, secret) {
   err.name = 'Invariant Violation';
   throw err;
 }
+
 shim.isRequired = shim;
 function getShim() {
   return shim;

@@ -325,6 +325,7 @@ function Path(a) {
 function isPath(arg) {
   return typeof arg == 'string' || (typeof arg == 'object' && arg != null && typeof arg.length == 'number');
 }
+
 Object.defineProperty(Array, Symbol.hasInstance, {
   value(instance) {
     return typeof instance == 'object' && instance != null && (instance.constructor === Array || instance.constructor === Path);

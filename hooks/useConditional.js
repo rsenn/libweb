@@ -3,4 +3,5 @@ export function useConditional(cond, hook, onFalse) {
 
   return cond === true ? hook : onFalse();
 }
+
 export default useConditional;

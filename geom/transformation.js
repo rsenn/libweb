@@ -283,6 +283,7 @@ export class Translation extends Transformation {
     return new Translation(this.x + other.x, this.y + other.y);
   }
 }
+
 Object.defineProperty(Translation.prototype, Symbol.toStringTag, { value: 'Translation', enumerable: false });
 
 export const ImmutableTranslation = immutableClass(Translation);
@@ -346,6 +347,7 @@ export class Scaling extends Transformation {
     return new Scaling(this.x * other.x, this.y * other.y);
   }
 }
+
 Object.defineProperty(Scaling.prototype, Symbol.toStringTag, { value: 'Scaling', enumerable: false });
 
 export const ImmutableScaling = immutableClass(Scaling);
@@ -387,6 +389,7 @@ export class MatrixTransformation extends Transformation {
     return new MatrixTransformation(this.matrix.multiply(other.matrix));
   }
 }
+
 Object.defineProperty(MatrixTransformation.prototype, Symbol.toStringTag, {
   value: 'MatrixTransformation',
   enumerable: false
@@ -768,6 +771,7 @@ export class TransformationList extends Array {
     }
   }
 }
+
 Object.defineProperty(TransformationList.prototype, Symbol.toStringTag, {
   value: 'TransformationList',
   enumerable: false

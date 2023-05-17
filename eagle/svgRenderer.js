@@ -406,5 +406,6 @@ export class EagleSVGRenderer {
     return svgElem;
   }
 }
+
 EagleSVGRenderer.horizontalAlignment = ['start', 'middle', 'end'];
 EagleSVGRenderer.verticalAlignment = ['hanging', 'mathematical', 'baseline'];

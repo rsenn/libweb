@@ -19,6 +19,7 @@ function RelationManager(instance, subjectSpec, spec) {
     }
   }
 }
+
 RelationManager.prototype = [];
 RelationManager.prototype.constructor = RelationManager;
 if(!RelationManager.prototype.includes) {
@@ -26,6 +27,7 @@ if(!RelationManager.prototype.includes) {
     return this.indexOf(subject) >= 0;
   };
 }
+
 RelationManager.prototype.add = function(subject, recursing) {
   let instance = this.instance,
     subjectSpec = this.subjectSpec,
@@ -117,6 +119,7 @@ function Relation() {
     this.instances.push(this);
   }
 }
+
 function addRelations(instance, specs) {
   function enhance(instance, subjectSpec, spec) {
     //does class checking and sets reflecting relation for cardinality=1, used as second part of if ... else below
@@ -168,6 +171,7 @@ function addRelations(instance, specs) {
     });
   }
 }
+
 function defineRelation(scope, name, sname, head, specs) {
   let cons = new Function('return function ' + name + '(' + head + ') { return Relation.apply(this,arguments); }')();
   cons.prototype = Object.create(Relation.prototype);
@@ -191,6 +195,7 @@ function defineRelation(scope, name, sname, head, specs) {
   }
   return cons;
 }
+
 Relation.define = function(scope) {
   let specs = [].slice.call(arguments, 1),
     subjectSpec = specs[0],

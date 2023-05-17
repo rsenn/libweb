@@ -11,4 +11,5 @@ export function useFocus() {
   );
   return [isFocused, bind];
 }
+
 export default useFocus;

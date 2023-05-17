@@ -11,4 +11,5 @@ export function useActive() {
   );
   return [isActive, bind];
 }
+
 export default useActive;

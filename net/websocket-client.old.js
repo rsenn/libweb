@@ -160,6 +160,7 @@ export class WebSocketClient {
     while(this.readyState !== 3) yield (await oncePromise(this.socket, 'message')).data;
   }
 }
+
 //Generate a Promise that listens only once for an event
 function oncePromise(emitter, event) {
   return new Promise(resolve => {

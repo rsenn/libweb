@@ -628,6 +628,7 @@ export class MutablePath extends Array {
     return Array.prototype[Symbol.iterator].call(this);
   }
 }
+
 //define(MutablePath.prototype,specialFields', []);
 
 define(MutablePath.prototype, { deref: MutablePath.prototype.apply });

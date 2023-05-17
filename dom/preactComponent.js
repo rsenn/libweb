@@ -356,5 +356,6 @@ class PortalProxy extends Component {
     return (children && children[0]) || null;
   }
 }
+
 export const toChildArray = ReactComponent.toChildArray;
 export const isComponent = ReactComponent.isComponent;

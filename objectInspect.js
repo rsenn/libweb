@@ -565,6 +565,7 @@ function isGetter(obj, propName) {
   }
   return false;
 }
+
 function stripAnsi(str) {
   return (str + '').replace(new RegExp('\x1b[[(?);]{0,2}(;?[0-9])*.', 'g'), '');
 }

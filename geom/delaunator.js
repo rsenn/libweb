@@ -484,6 +484,7 @@ function swap(arr, i, j) {
 function defaultGetX(p) {
   return p[0];
 }
+
 function defaultGetY(p) {
   return p[1];
 }

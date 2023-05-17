@@ -42,6 +42,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 export function matrix(params, mats) {
   return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
+
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
@@ -116,6 +117,7 @@ export function lab2ciede([L1, a1, b1], [L2, a2, b2]) {
   const term4 = Rt * term2 * term3;
   return sqrt(term1 * term1 + term2 * term2 + term3 * term3 + term4);
 }
+
 const kl = 1;
 const kc = 1;
 const kh = 1;

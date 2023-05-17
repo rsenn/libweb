@@ -4,6 +4,7 @@ import useDebouncedCallback from './useDebouncedCallback.js';
 function valueEquality(left, right) {
   return left === right;
 }
+
 export function useDebounce(value, delay, options) {
   var eq = options && options.equalityFn ? options.equalityFn : valueEquality;
   var _a = useState(value),
@@ -32,4 +33,5 @@ export function useDebounce(value, delay, options) {
   );
   return [state, cancel, callPending];
 }
+
 export default useDebounce;

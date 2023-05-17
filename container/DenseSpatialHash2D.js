@@ -163,4 +163,5 @@ export class DenseSpatialHash2D {
     return false;
   }
 }
+
 export default DenseSpatialHash2D;

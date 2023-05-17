@@ -50,6 +50,7 @@ try {
 } catch(error) {
   /* ignore */
 }
+
 /**
  * addEventListener with specific option.
  * @param {Element} target - An event-target element.
@@ -64,6 +65,7 @@ function addEventListenerWithOptions(target, type, listener, options) {
   // `options` (i.e. options other than the `passive` also are not supported).
   target.addEventListener(type, listener, passiveSupported ? options : options.capture);
 }
+
 /**
  * Get Touch instance in list.
  * @param {Touch[]} touches - An Array or TouchList instance.
@@ -82,6 +84,7 @@ function getTouchById(touches, id) {
 
   return null;
 }
+
 /**
  * @param {Object} xy - Something that might have clientX and clientY.
  * @returns {boolean} - `true` if it has valid clientX and clientY.

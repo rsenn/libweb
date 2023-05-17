@@ -1354,6 +1354,7 @@ export class Diagram {
     this.site = site;
   }
 }
+
 //---------------------------------------------------------------------------
 export class RBTree {
   constructor() {
@@ -1777,6 +1778,7 @@ export class Edge {
     this.va = this.vb = null;
   }
 }
+
 export class Halfedge {
   constructor(edge, lSite, rSite) {
     this.site = lSite;

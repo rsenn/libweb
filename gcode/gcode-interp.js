@@ -71,6 +71,7 @@ function G00(prevState, nextState, command, args, i) {
 
   G0.call(this, prevState, nextState, command, args, i);
 }
+
 function G04(prevState, nextState, command, args) {
   console.info('Pause / Dwell for Precise CNC Timing', { command, args });
 }
@@ -91,6 +92,7 @@ function G90_1(prevState, nextState, command, args) {
 
   if(prevState.arc !== command) nextState.arc = command;
 }
+
 function G91_1(prevState, nextState, command, args) {
   console.info('Arc IJK incremental  mode');
 
@@ -113,10 +115,12 @@ function noop(prevState, nextState, command, args) {
 function M0(prevState, nextState, command, args) {
   if(prevState.program !== command) nextState.program = command;
 }
+
 function M3(prevState, nextState, command, args, i) {
   if(prevState.spindle !== command) nextState.spindle = command;
   console.log(`#${this.i}: cmd:`, command, ' args:', args, ' prevState.spindle:', prevState.spindle, ' nextState.spindle:', nextState.spindle);
 }
+
 function M9(prevState, nextState, command, args) {
   if(prevState.coolant !== command) nextState.coolant = command;
 }
@@ -132,6 +136,7 @@ function M6(prevState, nextState, command, args) {
 function T0(prevState, nextState, command, args) {
   if(prevState.tool !== command) nextState.tool = command;
 }
+
 export default {
   G00,
   G0,

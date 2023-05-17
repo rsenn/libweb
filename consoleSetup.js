@@ -4,6 +4,7 @@ let savedOpts = {};
 export function ConsoleOptions(obj = {}) {
   Object.assign(this, obj);
 }
+
 ConsoleOptions.prototype.merge = function(...args) {
   return Object.assign(this, ...args);
 };

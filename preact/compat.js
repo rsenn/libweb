@@ -564,6 +564,7 @@ function Component(props, context, opts) {
     newComponentHook.call(this, props, context);
   }
 }
+
 extend((Component.prototype = new PreactComponent()), {
   constructor: Component,
 
@@ -590,6 +591,7 @@ extend((Component.prototype = new PreactComponent()), {
 function PureComponent(props, context) {
   Component.call(this, props, context);
 }
+
 F.prototype = Component.prototype;
 PureComponent.prototype = new F();
 PureComponent.prototype.isPureReactComponent = true;

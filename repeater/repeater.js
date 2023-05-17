@@ -16,6 +16,7 @@ export class RepeaterOverflowError extends Error {
     }
   }
 }
+
 /** A buffer which allows you to push a set amount of values to the repeater without pushes waiting or throwing errors. */
 export class FixedBuffer {
   // capacity
@@ -49,6 +50,7 @@ export class FixedBuffer {
     return this._q.shift();
   }
 }
+
 // TODO: Use a circular buffer here.
 /** Sliding buffers allow you to push a set amount of values to the repeater without pushes waiting or throwing errors. If the number of values exceeds the capacity set in the constructor, the buffer will discard the earliest values added. */
 export class SlidingBuffer {
@@ -82,6 +84,7 @@ export class SlidingBuffer {
     return this._q.shift();
   }
 }
+
 /** Dropping buffers allow you to push a set amount of values to the repeater without the push function waiting or throwing errors. If the number of values exceeds the capacity set in the constructor, the buffer will discard the latest values added. */
 export class DroppingBuffer {
   // capacity
@@ -113,12 +116,14 @@ export class DroppingBuffer {
     return this._q.shift();
   }
 }
+
 /** Makes sure promise-likes don’t cause unhandled rejections. */
 function swallow(value) {
   if(value != null && typeof value.then === 'function') {
     value.then(NOOP, NOOP);
   }
 }
+
 /*** REPEATER STATES ***/
 /** The following is an enumeration of all possible repeater states. These states are ordered, and a repeater may only advance to higher states. */
 /** The initial state of the repeater. */
@@ -150,6 +155,7 @@ function consumeExecution(r) {
   );
   return r.pending === undefined ? execution : r.pending.then(() => execution);
 }
+
 /** A helper function for building iterations from values. Promises are unwrapped, so that iterations never have their value property set to a promise. */
 function createIteration(r, value) {
   const done = r.state >= Done;
@@ -163,6 +169,7 @@ function createIteration(r, value) {
     return { value, done };
   });
 }
+
 /**
  * This function is bound and passed to the executor as the stop argument.
  *
@@ -186,6 +193,7 @@ function stop(r, err) {
     }
   }
 }
+
 /**
  * The difference between stopping a repeater vs finishing a repeater is that stopping a repeater allows next to continue to drain values from the push queue and buffer, while finishing a repeater will clear all pending values and end iteration immediately. Once, a repeater is finished, all iterations will have the done property set to true.
  *
@@ -207,6 +215,7 @@ function finish(r) {
   r.pushes = [];
   r.nexts = [];
 }
+
 /**
  * Called when a promise passed to push rejects, or when a push call is unhandled.
  *
@@ -221,6 +230,7 @@ function reject(r) {
   }
   r.state = Rejected;
 }
+
 /** This function is bound and passed to the executor as the push argument. */
 function push(r, value) {
   swallow(value);
@@ -279,6 +289,7 @@ function push(r, value) {
     });
   return next;
 }
+
 /**
  * Creates the stop callable promise which is passed to the executor
  */
@@ -290,6 +301,7 @@ function createStop(r) {
   stop1.finally = stopP.finally.bind(stopP);
   return stop1;
 }
+
 /**
  * Calls the executor passed into the constructor. This function is called the first time the next method is called on the repeater.
  *
@@ -306,6 +318,7 @@ function execute(r) {
   // TODO: We should consider stopping all repeaters when the executor settles.
   r.execution.catch(() => stop(r));
 }
+
 const records = new WeakMap();
 // NOTE: While repeaters implement and are assignable to the AsyncGenerator interface, and you can use the types interchangeably, we don’t use typescript’s implements syntax here because this would make supporting earlier versions of typescript trickier. This is because TypeScript version 3.6 changed the iterator types by adding the TReturn and TNext type parameters.
 class Repeater {
@@ -389,6 +402,7 @@ class Repeater {
   static zip = zip;
   static latest = latest;
 }
+
 export { Repeater };
 /*** COMBINATOR FUNCTIONS ***/
 // TODO: move these combinators to their own file.
@@ -414,6 +428,7 @@ function getIterators(values, options) {
   }
   return iters;
 }
+
 // NOTE: whenever you see any variables called `advance` or `advances`, know that it is a hack to get around the fact that `Promise.race` leaks memory. These variables are intended to be set to the resolve function of a promise which is constructed and awaited as an alternative to Promise.race. For more information, see this comment in the Node.js issue tracker: https://github.com/nodejs/node/issues/17469#issuecomment-685216777.
 function race(contenders) {
   const iters = getIterators(contenders, { returnValues: true });
@@ -463,6 +478,7 @@ function race(contenders) {
     }
   });
 }
+
 function merge(contenders) {
   const iters = getIterators(contenders, { yieldValues: true });
   return new Repeater(async (push, stop) => {
@@ -510,6 +526,7 @@ function merge(contenders) {
     }
   });
 }
+
 function zip(contenders) {
   const iters = getIterators(contenders, { returnValues: true });
   return new Repeater(async (push, stop) => {
@@ -545,6 +562,7 @@ function zip(contenders) {
     }
   });
 }
+
 function latest(contenders) {
   const iters = getIterators(contenders, {
     yieldValues: true,

@@ -112,6 +112,7 @@ export function json2xml(json, tab) {
   //If tab given, do pretty print, otherwise remove white space
   return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t/g, '');
 }
+
 export const json2xmlTranslator = json2xml_translator();
 
 export default json2xml;

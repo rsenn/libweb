@@ -10,6 +10,7 @@ export function ElementRectProxy(element) {
     if(element.style.position == '') element.style.position = 'relative';
   }
 }
+
 ElementRectProxy.prototype = {
   element: null,
   getPos(fn = rect => rect) {

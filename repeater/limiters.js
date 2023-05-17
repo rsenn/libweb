@@ -47,6 +47,7 @@ function semaphore(limit) {
     }
   });
 }
+
 function throttler(wait, options = {}) {
   const { limit = 1, cooldown = false } = options;
   if(limit < 1) {

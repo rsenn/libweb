@@ -48,6 +48,7 @@ export function Error(msg) {
   this.msg = msg;
   this.stack = Stack();
 }
+
 */
 export class SyntaxError extends Error {
   constructor(...args) {

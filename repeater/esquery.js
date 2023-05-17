@@ -3999,6 +3999,7 @@ function _objectEntries(obj) {
 
   return entries;
 }
+
 /**
  * @typedef {"LEFT_SIDE"|"RIGHT_SIDE"} Side
  */
@@ -4042,6 +4043,7 @@ function getPath(obj, key) {
 
   return obj;
 }
+
 /**
  * Determine whether `node` can be reached by following `path`,
  * starting at `ancestor`.
@@ -4075,6 +4077,7 @@ function inPath(node, ancestor, path) {
     return inPath(node, field, remainingPath);
   }
 }
+
 /**
  * Given a `node` and its ancestors, determine if `node` is matched
  * by `selector`.
@@ -4301,6 +4304,7 @@ function matches(node, selector, ancestry) {
 
   throw new Error('Unknown selector type: '.concat(selector.type));
 }
+
 /**
  * Determines if the given node has a sibling that matches the
  * given selector.
@@ -4352,6 +4356,7 @@ function sibling(node, selector, ancestry, side) {
 
   return false;
 }
+
 /**
  * Determines if the given node has an adjacent sibling that matches
  * the given selector.
@@ -4394,6 +4399,7 @@ function adjacent(node, selector, ancestry, side) {
 
   return false;
 }
+
 /**
  * @callback IndexFunction
  * @param {Integer} len Containing list's length
@@ -4433,6 +4439,7 @@ function nthChild(node, ancestry, idxFn) {
 
   return false;
 }
+
 /**
  * For each selector node marked as a subject, find the portion of the
  * selector that the subject must match.
@@ -4462,6 +4469,7 @@ function subjects(selector, ancestor) {
 
   return results;
 }
+
 /**
  * @callback TraverseVisitor
  * @param {?external:AST} node
@@ -4517,6 +4525,7 @@ function traverse(ast, selector, visitor) {
     fallback: 'iteration'
   });
 }
+
 /**
  * From a JS AST and a selector AST, collect all JS AST nodes that
  * match the selector.
@@ -4532,6 +4541,7 @@ function match(ast, selector) {
   });
   return results;
 }
+
 /**
  * Parse a selector string and return its AST.
  * @param {string} selector
@@ -4541,6 +4551,7 @@ function match(ast, selector) {
 function parse(selector) {
   return parser.parse(selector);
 }
+
 /**
  * Query the code AST using the selector string.
  * @param {external:AST} ast

@@ -38,6 +38,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
     return fallbackhue;
   }
 }
+
 /**
  * @private
  * @func hue2rgb
@@ -59,6 +60,7 @@ export function hue2rgb(t1, t2, hue) {
 
   return rgb;
 }
+
 /**
  * @private
  * @func luminance2contrast
@@ -80,6 +82,7 @@ export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
 
   return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
 }
+
 /* RGB tooling
 /* ========================================================================== */
 
@@ -92,6 +95,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
   const whiteness = min(rgbR, rgbG, rgbB);
   return whiteness;
 }
+
 /* Math matrix
 /* ========================================================================== */
 
@@ -104,6 +108,7 @@ export function matrix(params, mats) {
     )
   );
 }
+
 /* Precision
 /* ========================================================================== */
 
@@ -173,6 +178,7 @@ export function rgb2hsl(rgbR, rgbG, rgbB, fallbackhue) {
 
   return [hslH, hslS, hslL];
 }
+
 /**
  * @func hsl2rgb
  * @desc Return an RGB color from an HSL color
@@ -226,6 +232,7 @@ export function rgb2hwb(rgbR, rgbG, rgbB, fallbackhue) {
   const hwbB = 100 - hwbV;
   return [hwbH, hwbW, hwbB];
 }
+
 /**
  * @func hwb2rgb
  * @desc Return an RGB color from an HWB color
@@ -271,6 +278,7 @@ export function rgb2hsv(rgbR, rgbG, rgbB, fallbackhue) {
 
   return [hsvH, hsvS, hsvV];
 }
+
 /**
  * @func hsv2rgb
  * @desc Return an RGB color from an HSV color
@@ -326,6 +334,7 @@ export function rgb2xyz(rgbR, rgbG, rgbB) {
   );
   return [xyzX, xyzY, xyzZ];
 }
+
 /**
  * @func xyz2rgb
  * @desc Return an XYZ color from an RGB color
@@ -374,6 +383,7 @@ export function hsl2hsv(hslH, hslS, hslL) {
   const hsvV = hslL + hsv1;
   return [hslH, hsvS, hsvV];
 }
+
 /**
  * @func hsv2hsl
  * @desc Return an HSL color from an HSV color
@@ -412,6 +422,7 @@ export function hwb2hsv(hwbH, hwbW, hwbB) {
   const [hsvH, hsvS, hsvV] = [hwbH, hwbB === 100 ? 0 : 100 - (hwbW / (100 - hwbB)) * 100, 100 - hwbB];
   return [hsvH, hsvS, hsvV];
 }
+
 /**
  * @func hsv2hwb
  * @desc Return an HWB color from an HSV color
@@ -473,6 +484,7 @@ export function lab2xyz(labL, labA, labB) {
 
   return [xyzX, xyzY, xyzZ];
 }
+
 /**
  * @func xyz2lab
  * @desc Return an LAB color from a XYZ color
@@ -531,6 +543,7 @@ export function lab2lch(labL, labA, labB) {
   // convert to hue, in degrees
   return [labL, lchC, lchH];
 }
+
 /**
  * @func lch2lab
  * @desc Return a LAB color from an LCH color
@@ -560,6 +573,7 @@ function rgb2contrast(rgb1, rgb2) {
   const luminance2 = rgb2luminance(...rgb2);
   return luminance2contrast(luminance1, luminance2);
 }
+
 /**
  * @private
  * @func rgb2luminance
@@ -576,6 +590,7 @@ function rgb2contrast(rgb1, rgb2) {
 export function rgb2luminance(rgbR, rgbG, rgbB) {
   return (adjustChannel(rgbR) * coefficientR + adjustChannel(rgbG) * coefficientG + adjustChannel(rgbB) * coefficientB) / precision;
 }
+
 // low-gamma adjust coefficients
 const adjustChannel = x => (x <= 3.928 ? x / lowc : adjustGamma(x));
 const adjustGamma = x => pow((x + 5.5) / 105.5, 2.4);
@@ -615,6 +630,7 @@ export function hex2rgb(hex) {
 
   return undefined;
 }
+
 /**
  * @func rgb2hex
  * @desc Return a HEX color from an RGB color
@@ -854,6 +870,7 @@ function lab2ciede([L1, a1, b1], [L2, a2, b2]) {
   const term4 = Rt * term2 * term3;
   return sqrt(term1 * term1 + term2 * term2 + term3 * term3 + term4);
 }
+
 // weight factors
 const kl = 1;
 const kc = 1;
@@ -882,6 +899,7 @@ function rgb2lab(rgbR, rgbG, rgbB) {
   const [labL, labA, labB] = xyz2lab(xyzX, xyzY, xyzZ);
   return [labL, labA, labB];
 }
+
 /**
  * @func lab2rgb
  * @desc Return an RGB color from a CIE LAB color
@@ -898,6 +916,7 @@ function lab2rgb(labL, labA, labB) {
   const [rgbR, rgbG, rgbB] = xyz2rgb(xyzX, xyzY, xyzZ);
   return [rgbR, rgbG, rgbB];
 }
+
 /* Convert between RGB and LCH
 /* ========================================================================== */
 
@@ -918,6 +937,7 @@ function rgb2lch(rgbR, rgbG, rgbB) {
   const [lchL, lchC, lchH] = lab2lch(labL, labA, labB);
   return [lchL, lchC, lchH];
 }
+
 /**
  * @func lch2rgb
  * @desc Return an RGB color from a CIE LCH color
@@ -935,6 +955,7 @@ function lch2rgb(lchL, lchC, lchH) {
   const [rgbR, rgbG, rgbB] = xyz2rgb(xyzX, xyzY, xyzZ);
   return [rgbR, rgbG, rgbB];
 }
+
 /* Convert between HSL and HWB
 /* ========================================================================== */
 
@@ -954,6 +975,7 @@ function hwb2hsl(hwbH, hwbW, hwbB) {
   const [hslH, hslS, hslL] = hsv2hsl(hsvH, hsvS, hsvV);
   return [hslH, hslS, hslL];
 }
+
 /**
  * @func hsl2hwb
  * @desc Return an HWB color from an HSL color
@@ -970,6 +992,7 @@ function hsl2hwb(hslH, hslS, hslL) {
   const [, hwbW, hwbB] = hsv2hwb(hslH, hsvS, hsvV);
   return [hslH, hwbW, hwbB];
 }
+
 /* Convert between HSL and Lab
 /* ========================================================================== */
 
@@ -990,6 +1013,7 @@ function hsl2lab(hslH, hslS, hslL) {
   const [labL, labA, labB] = xyz2lab(xyzX, xyzY, xyzZ);
   return [labL, labA, labB];
 }
+
 /**
  * @func lab2hsl
  * @desc Return a HSL color from a CIE LAB color
@@ -1008,6 +1032,7 @@ function lab2hsl(labL, labA, labB, fallbackhue) {
   const [hslH, hslS, hslL] = rgb2hsl(rgbR, rgbG, rgbB, fallbackhue);
   return [hslH, hslS, hslL];
 }
+
 /* Convert between HSL and LCH
 /* ========================================================================== */
 
@@ -1029,6 +1054,7 @@ function hsl2lch(hslH, hslS, hslL) {
   const [lchL, lchC, lchH] = lab2lch(labL, labA, labB);
   return [lchL, lchC, lchH];
 }
+
 /**
  * @func lch2hsl
  * @desc Return an HSL from a CIE LCH color
@@ -1047,6 +1073,7 @@ function lch2hsl(lchL, lchC, lchH, fallbackhue) {
   const [hslH, hslS, hslL] = rgb2hsl(rgbR, rgbG, rgbB, fallbackhue);
   return [hslH, hslS, hslL];
 }
+
 /* Convert between HSL and XYZ
 /* ========================================================================== */
 
@@ -1066,6 +1093,7 @@ function hsl2xyz(hslH, hslS, hslL) {
   const [xyzX, xyzY, xyzZ] = rgb2xyz(rgbR, rgbG, rgbB);
   return [xyzX, xyzY, xyzZ];
 }
+
 /**
  * @func xyz2hsl
  * @desc Return an HSL color from an XYZ color
@@ -1082,6 +1110,7 @@ function xyz2hsl(xyzX, xyzY, xyzZ, fallbackhue) {
   const [hslH, hslS, hslL] = rgb2hsl(rgbR, rgbG, rgbB, fallbackhue);
   return [hslH, hslS, hslL];
 }
+
 /* Convert between HWB and Lab
 /* ========================================================================== */
 
@@ -1102,6 +1131,7 @@ function hwb2lab(hwbH, hwbW, hwbB) {
   const [labL, labA, labB] = xyz2lab(xyzX, xyzY, xyzZ);
   return [labL, labA, labB];
 }
+
 /**
  * @func lab2hwb
  * @desc Return an HWB color from a CIE LAB color
@@ -1119,6 +1149,7 @@ function lab2hwb(labL, labA, labB, fallbackhue) {
   const [hwbH, hwbW, hwbB] = rgb2hwb(rgbR, rgbG, rgbB, fallbackhue);
   return [hwbH, hwbW, hwbB];
 }
+
 /* Convert between HWB and LCH
 /* ========================================================================== */
 
@@ -1140,6 +1171,7 @@ function hwb2lch(hwbH, hwbW, hwbB) {
   const [lchL, lchC, lchH] = lab2lch(labL, labA, labB);
   return [lchL, lchC, lchH];
 }
+
 /**
  * @func lch2hwb
  * @desc Return an HWB color from a CIE LCH color
@@ -1158,6 +1190,7 @@ function lch2hwb(lchL, lchC, lchH, fallbackhue) {
   const [hwbH, hwbW, hwbB] = rgb2hwb(rgbR, rgbG, rgbB, fallbackhue);
   return [hwbH, hwbW, hwbB];
 }
+
 /* Convert between HWB and XYZ
 /* ========================================================================== */
 
@@ -1177,6 +1210,7 @@ function hwb2xyz(hwbH, hwbW, hwbB) {
   const [xyzX, xyzY, xyzZ] = rgb2xyz(rgbR, rgbG, rgbB);
   return [xyzX, xyzY, xyzZ];
 }
+
 /**
  * @func xyz2hwb
  * @desc Return an HWB color from an XYZ color
@@ -1193,6 +1227,7 @@ function xyz2hwb(xyzX, xyzY, xyzZ, fallbackhue) {
   const [hwbH, hwbW, hwbB] = rgb2hwb(rgbR, rgbG, rgbB, fallbackhue);
   return [hwbH, hwbW, hwbB];
 }
+
 /* Convert between HSV and Lab
 /* ========================================================================== */
 
@@ -1213,6 +1248,7 @@ function hsv2lab(hsvH, hsvS, hsvV) {
   const [labL, labA, labB] = xyz2lab(xyzX, xyzY, xyzZ);
   return [labL, labA, labB];
 }
+
 /**
  * @func lab2hsv
  * @desc Return an HSV color from a CIE LAB color
@@ -1230,6 +1266,7 @@ function lab2hsv(labL, labA, labB, fallbackhue) {
   const [hsvH, hsvS, hsvV] = rgb2hsv(rgbR, rgbG, rgbB, fallbackhue);
   return [hsvH, hsvS, hsvV];
 }
+
 /* Convert between HSV and LCH
 /* ========================================================================== */
 
@@ -1251,6 +1288,7 @@ function hsv2lch(hsvH, hsvS, hsvV) {
   const [lchL, lchC, lchH] = lab2lch(labL, labA, labB);
   return [lchL, lchC, lchH];
 }
+
 /**
  * @func lch2hsv
  * @desc Return an HSV color from a CIE LCH color
@@ -1269,6 +1307,7 @@ function lch2hsv(lchL, lchC, lchH, fallbackhue) {
   const [hsvH, hsvS, hsvV] = rgb2hsv(rgbR, rgbG, rgbB, fallbackhue);
   return [hsvH, hsvS, hsvV];
 }
+
 /* Convert between HSV and XYZ
 /* ========================================================================== */
 
@@ -1288,6 +1327,7 @@ function hsv2xyz(hsvH, hsvS, hsvV) {
   const [xyzX, xyzY, xyzZ] = rgb2xyz(rgbR, rgbG, rgbB);
   return [xyzX, xyzY, xyzZ];
 }
+
 /**
  * @func xyz2hsv
  * @desc Return an XYZ color from an HSV color
@@ -1304,6 +1344,7 @@ function xyz2hsv(xyzX, xyzY, xyzZ, fallbackhue) {
   const [hsvH, hsvS, hsvV] = rgb2hsv(rgbR, rgbG, rgbB, fallbackhue);
   return [hsvH, hsvS, hsvV];
 }
+
 /* Convert between XYZ and LCH
 /* ========================================================================== */
 
@@ -1323,6 +1364,7 @@ function xyz2lch(xyzX, xyzY, xyzZ) {
   const [lchL, lchC, lchH] = lab2lch(labL, labA, labB);
   return [lchL, lchC, lchH];
 }
+
 /**
  * @func lch2xyz
  * @desc Return an XYZ color from a CIE LCH color
@@ -1339,6 +1381,7 @@ function lch2xyz(lchL, lchC, lchH) {
   const [xyzX, xyzY, xyzZ] = lab2xyz(labL, labA, labB);
   return [xyzX, xyzY, xyzZ];
 }
+
 /* Hex input conversions
 /* ========================================================================== */
 
@@ -1354,6 +1397,7 @@ function lch2xyz(lchL, lchC, lchH) {
 function hex2hsl(hex) {
   return rgb2hsl(...hex2rgb(hex));
 }
+
 /**
  * @func hex2hsv
  * @desc Return an HSL color from a Hex color
@@ -1366,6 +1410,7 @@ function hex2hsl(hex) {
 function hex2hsv(hex) {
   return rgb2hsv(...hex2rgb(hex));
 }
+
 /**
  * @func hex2hwb
  * @desc Return an HWB color from a Hex color
@@ -1378,6 +1423,7 @@ function hex2hsv(hex) {
 function hex2hwb(hex) {
   return rgb2hwb(...hex2rgb(hex));
 }
+
 /**
  * @func hex2lab
  * @desc Return a CIE LAB color from a Hex color
@@ -1390,6 +1436,7 @@ function hex2hwb(hex) {
 function hex2lab(hex) {
   return rgb2lab(...hex2rgb(hex));
 }
+
 /**
  * @func hex2lch
  * @desc Return a CIE LCH color from a Hex color
@@ -1402,6 +1449,7 @@ function hex2lab(hex) {
 function hex2lch(hex) {
   return rgb2lch(...hex2rgb(hex));
 }
+
 /**
  * @func hex2xyz
  * @desc Return an XYZ color from a Hex color
@@ -1414,6 +1462,7 @@ function hex2lch(hex) {
 function hex2xyz(hex) {
   return rgb2xyz(...hex2rgb(hex));
 }
+
 /* Hex output conversions
 /* ========================================================================== */
 
@@ -1431,6 +1480,7 @@ function hex2xyz(hex) {
 function hsl2hex(hslH, hslS, hslL) {
   return rgb2hex(...hsl2rgb(hslH, hslS, hslL));
 }
+
 /**
  * @func hsv2hex
  * @desc Return a Hex color from an HSV color
@@ -1445,6 +1495,7 @@ function hsl2hex(hslH, hslS, hslL) {
 function hsv2hex(hsvH, hsvS, hsvV) {
   return rgb2hex(...hsl2rgb(hsvH, hsvS, hsvV));
 }
+
 /**
  * @func hwb2hex
  * @desc Return a Hex color from an HWB color
@@ -1459,6 +1510,7 @@ function hsv2hex(hsvH, hsvS, hsvV) {
 function hwb2hex(hwbH, hwbW, hwbB) {
   return rgb2hex(...hwb2rgb(hwbH, hwbW, hwbB));
 }
+
 /**
  * @func lch2hex
  * @desc Return a Hex color from a CIE LAB color
@@ -1473,6 +1525,7 @@ function hwb2hex(hwbH, hwbW, hwbB) {
 function lab2hex(labL, labA, labB) {
   return rgb2hex(...lab2rgb(labL, labA, labB));
 }
+
 /**
  * @func lch2hex
  * @desc Return a Hex color from a CIE LCH color
@@ -1487,6 +1540,7 @@ function lab2hex(labL, labA, labB) {
 function lch2hex(lchL, lchC, lchH) {
   return rgb2hex(...lch2rgb(lchL, lchC, lchH));
 }
+
 /**
  * @func xyz2hex
  * @desc Return a Hex color from an XYZ color
@@ -1501,6 +1555,7 @@ function lch2hex(lchL, lchC, lchH) {
 function xyz2hex(xyzX, xyzY, xyzZ) {
   return rgb2hex(...xyz2rgb(xyzX, xyzY, xyzZ));
 }
+
 /* CIEDE conversions
 /* ========================================================================== */
 
@@ -1517,6 +1572,7 @@ function xyz2hex(xyzX, xyzY, xyzZ) {
 function hex2ciede(hex1, hex2) {
   return lab2ciede(hex2lab(hex1), hex2lab(hex2));
 }
+
 /**
  * @func hsl2ciede
  * @desc Return the CIEDE2000 difference between 2 HSL colors
@@ -1530,6 +1586,7 @@ function hex2ciede(hex1, hex2) {
 function hsl2ciede(hsl1, hsl2) {
   return lab2ciede(hsl2lab(...hsl1), hsl2lab(...hsl2));
 }
+
 /**
  * @func hsv2ciede
  * @desc Return the CIEDE2000 difference between 2 HSV colors
@@ -1543,6 +1600,7 @@ function hsl2ciede(hsl1, hsl2) {
 function hsv2ciede(hsv1, hsv2) {
   return lab2ciede(hsv2lab(...hsv1), hsv2lab(...hsv2));
 }
+
 /**
  * @func hwb2ciede
  * @desc Return the CIEDE2000 difference between 2 HWB colors
@@ -1556,6 +1614,7 @@ function hsv2ciede(hsv1, hsv2) {
 function hwb2ciede(hwb1, hwb2) {
   return lab2ciede(hwb2lab(...hwb1), hwb2lab(...hwb2));
 }
+
 /**
  * @func keyword2ciede
  * @desc Return the CIEDE2000 difference between 2 keyword colors
@@ -1569,6 +1628,7 @@ function hwb2ciede(hwb1, hwb2) {
 function keyword2ciede(keyword1, keyword2) {
   return lab2ciede(keyword2lab(keyword1), keyword2lab(keyword2));
 }
+
 /**
  * @func lch2ciede
  * @desc Return the CIEDE2000 difference between 2 LCH colors
@@ -1582,6 +1642,7 @@ function keyword2ciede(keyword1, keyword2) {
 function lch2ciede(lch1, lch2) {
   return lab2ciede(lch2lab(...lch1), lch2lab(...lch2));
 }
+
 /**
  * @func rgb2ciede
  * @desc Return the CIEDE2000 difference between 2 RGB colors
@@ -1595,6 +1656,7 @@ function lch2ciede(lch1, lch2) {
 function rgb2ciede(rgb1, rgb2) {
   return lab2ciede(rgb2lab(...rgb1), rgb2lab(...rgb2));
 }
+
 /**
  * @func xyz2ciede
  * @desc Return the CIEDE2000 difference between 2 XYZ colors
@@ -1608,6 +1670,7 @@ function rgb2ciede(rgb1, rgb2) {
 function xyz2ciede(xyz1, xyz2) {
   return lab2ciede(xyz2lab(...xyz1), xyz2lab(...xyz2));
 }
+
 /* Contrast conversions
 /* ========================================================================== */
 
@@ -1624,6 +1687,7 @@ function xyz2ciede(xyz1, xyz2) {
 function hex2contrast(hex1, hex2) {
   return rgb2contrast(hex2rgb(hex1), hex2rgb(hex2));
 }
+
 /**
  * @func hsl2contrast
  * @desc Return the contrast ratio of 2 HSL colors
@@ -1637,6 +1701,7 @@ function hex2contrast(hex1, hex2) {
 function hsl2contrast(hsl1, hsl2) {
   return rgb2contrast(hsl2rgb(...hsl1), hsl2rgb(...hsl2));
 }
+
 /**
  * @func hsv2contrast
  * @desc Return the contrast ratio of 2 HSV colors
@@ -1650,6 +1715,7 @@ function hsl2contrast(hsl1, hsl2) {
 function hsv2contrast(hsv1, hsv2) {
   return rgb2contrast(hsv2rgb(...hsv1), hsv2rgb(...hsv2));
 }
+
 /**
  * @func hwb2contrast
  * @desc Return the contrast ratio of 2 HWB colors
@@ -1663,6 +1729,7 @@ function hsv2contrast(hsv1, hsv2) {
 function hwb2contrast(hwb1, hwb2) {
   return rgb2contrast(hwb2rgb(...hwb1), hwb2rgb(...hwb2));
 }
+
 /**
  * @func keyword2contrast
  * @desc Return the contrast ratio of 2 keyword colors
@@ -1676,6 +1743,7 @@ function hwb2contrast(hwb1, hwb2) {
 function keyword2contrast(keyword1, keyword2) {
   return rgb2contrast(keyword2rgb(keyword1), keyword2rgb(keyword2));
 }
+
 /**
  * @func lab2contrast
  * @desc Return the contrast ratio of 2 LAB colors
@@ -1689,6 +1757,7 @@ function keyword2contrast(keyword1, keyword2) {
 function lab2contrast(lab1, lab2) {
   return rgb2contrast(lab2rgb(...lab1), lab2rgb(...lab2));
 }
+
 /**
  * @func lch2contrast
  * @desc Return the contrast ratio of 2 LCH colors
@@ -1702,6 +1771,7 @@ function lab2contrast(lab1, lab2) {
 function lch2contrast(lch1, lch2) {
   return rgb2contrast(lch2rgb(...lch1), lch2rgb(...lch2));
 }
+
 /**
  * @func xyz2contrast
  * @desc Return the contrast ratio of 2 XYZ colors
@@ -1715,6 +1785,7 @@ function lch2contrast(lch1, lch2) {
 function xyz2contrast(xyz1, xyz2) {
   return rgb2contrast(xyz2rgb(...xyz1), xyz2rgb(...xyz2));
 }
+
 /* Keyword Conversions
 /* ========================================================================== */
 
@@ -1730,6 +1801,7 @@ function xyz2contrast(xyz1, xyz2) {
 function keyword2hex(keyword) {
   return rgb2hex(...keyword2rgb(keyword));
 }
+
 /**
  * @func keyword2hsl
  * @desc Return an HSL color from a keyword color
@@ -1742,6 +1814,7 @@ function keyword2hex(keyword) {
 function keyword2hsl(keyword) {
   return rgb2hsl(...keyword2rgb(keyword));
 }
+
 /**
  * @func keyword2hsv
  * @desc Return an HSV color from a keyword color
@@ -1754,6 +1827,7 @@ function keyword2hsl(keyword) {
 function keyword2hsv(keyword) {
   return rgb2hsv(...keyword2rgb(keyword));
 }
+
 /**
  * @func keyword2hwb
  * @desc Return an HWB color from a keyword color
@@ -1766,6 +1840,7 @@ function keyword2hsv(keyword) {
 function keyword2hwb(keyword) {
   return rgb2hwb(...keyword2rgb(keyword));
 }
+
 /**
  * @func keyword2lab
  * @desc Return a CIE LAB color from a keyword color
@@ -1778,6 +1853,7 @@ function keyword2hwb(keyword) {
 function keyword2lab(keyword) {
   return rgb2lab(...keyword2rgb(keyword));
 }
+
 /**
  * @func keyword2lch
  * @desc Return a CIE LCH color from a keyword color
@@ -1790,6 +1866,7 @@ function keyword2lab(keyword) {
 function keyword2lch(keyword) {
   return rgb2lch(...keyword2rgb(keyword));
 }
+
 /**
  * @func keyword2lch
  * @desc Return an XYZ color from a keyword color
@@ -1802,6 +1879,7 @@ function keyword2lch(keyword) {
 function keyword2xyz(keyword) {
   return rgb2xyz(...keyword2rgb(keyword));
 }
+
 /* All Conversions
 /* ========================================================================== */
 

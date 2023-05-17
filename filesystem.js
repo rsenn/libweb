@@ -844,12 +844,14 @@ function Encoding2Bytes(encoding) {
       return 4;
   }
 }
+
 function ArrayBufferToString(buf, bytes = 1) {
   if(typeof bytes == 'string') bytes = Encoding2Bytes(bytes);
   let ctor = CharWidth[bytes];
   //  console.log('ArrayBufferToString', { buf, bytes, ctor });
   return String.fromCharCode(...new ctor(buf));
 }
+
 function ArrayBufferSize(buf) {
   return buf.byteLength;
 }
@@ -860,12 +862,14 @@ function StringToArrayBuffer(str, bytes = 1) {
   for(let i = 0, strLen = str.length; i < strLen; i++) view[i] = str.codePointAt(i);
   return buf;
 }
+
 function CopyToArrayBuffer(str, buf, offset, bytes = 1) {
   // console.log("CopyToArrayBuffer",{str,buf,bytes});
   const view = new CharWidth[bytes](buf);
   for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++) view[i + offset] = str.codePointAt(i);
   return buf;
 }
+
 function CreateArrayBuffer(bytes) {
   return new ArrayBuffer(bytes);
 }

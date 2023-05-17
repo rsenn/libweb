@@ -177,6 +177,7 @@ export class WebSocketClient {
     }
   }
 }
+
 //Generate a Promise that listens only once for an event
 function oncePromise(emitter, event) {
   return new Promise(resolve => {

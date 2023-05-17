@@ -73,6 +73,7 @@ export function forEach(iterator, fn = n => {}) {
     fn(value, i++, iterator);
   }
 }
+
 export function* from(iterator, transform = (e, i) => e) {
   let ret;
 

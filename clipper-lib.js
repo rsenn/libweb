@@ -4100,6 +4100,7 @@ ClipperLib.ClipperOffset.prototype.OffsetPoint = function(j, k, jointype) {
 			console.log(this.m_sinA);
       return k;
 }
+
 */
   /*
 	 if(Math.abs(this.m_sinA * this.m_delta) < 1.0)

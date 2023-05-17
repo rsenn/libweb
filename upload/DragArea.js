@@ -19,6 +19,7 @@ function _extends() {
     };
   return _extends.apply(this, arguments);
 }
+
 const DragItem = SortableElement(({ children }) => h('div', null, children));
 const SortableList = SortableContainer(({ children }) => children);
 

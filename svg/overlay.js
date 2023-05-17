@@ -87,6 +87,7 @@ export function SvgPathTracer(path) {
     );
     SVG.create('defs', {}, svg);
 }
+
      SVG.create("rect", {
           x: 100,
           y: 100,

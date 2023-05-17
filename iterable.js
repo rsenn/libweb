@@ -32,6 +32,7 @@ export function forEach(iterable, fn = n => {}) {
   let i = 0;
   for(let n of iterable) fn(n, i++, iterable);
 }
+
 export function* from(iterable, transform = (e, i) => e) {
   for(let n of iterable) yield transform(n);
 }

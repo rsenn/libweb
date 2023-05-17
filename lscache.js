@@ -276,6 +276,7 @@ function warn(message, err) {
 function calculateMaxDate(expiryMilliseconds) {
   return Math.floor(8.64e15 / expiryMilliseconds);
 }
+
 export function lscache(cache) {
   const obj = new.target ? this : lscache;
 

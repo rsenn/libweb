@@ -83,6 +83,7 @@ class MouseEvent {
     Object.assign(this, opts);
   }
 }
+
 /**
  * The x coordinate of where the mouse event happened (1 = leftmost column).
  *
@@ -343,6 +344,7 @@ class Terminal extends EventEmitter {
     this.output.write('\x1b[?1004l');
   }
 }
+
 /**
  * Event fired when a key (or key combinaion) is pressed.
  *
@@ -1100,6 +1102,7 @@ function* emitKeys(term) {
     ch = yield;
   }
 }
+
 /**************************************************\
 |  End of modified code from the node repository.  |
 |                                                  |
