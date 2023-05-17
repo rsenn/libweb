@@ -1,7 +1,13 @@
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
 
 const slice = (x, s, e) =>
-  typeof x == 'object' ? (isArrayBuffer(x) ? dupArrayBuffer(x, s, e) : Array.isArray(x) ? Array.prototype.slice.call(x, s, e) : x.slice(s, e)) : String.prototype.slice.call(x, s, e);
+  typeof x == 'object'
+    ? isArrayBuffer(x)
+      ? dupArrayBuffer(x, s, e)
+      : Array.isArray(x)
+      ? Array.prototype.slice.call(x, s, e)
+      : x.slice(s, e)
+    : String.prototype.slice.call(x, s, e);
 const stringify = v => `${v}`;
 const protoOf = Object.getPrototypeOf;
 const formatNumber = n => (n === -0 ? '-0' : `${n}`);
@@ -346,9 +352,18 @@ export function btoa(bin) {
     asc = '';
   const pad = bin.length % 3;
   for(let i = 0; i < bin.length; i += 0) {
-    if((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255) throw new TypeError('invalid character found');
+    if(
+      (c0 = bin.charCodeAt(i++)) > 255 ||
+      (c1 = bin.charCodeAt(i++)) > 255 ||
+      (c2 = bin.charCodeAt(i++)) > 255
+    )
+      throw new TypeError('invalid character found');
     u32 = (c0 << 16) | (c1 << 8) | c2;
-    asc += b64chs[(u32 >> 18) & 63] + b64chs[(u32 >> 12) & 63] + b64chs[(u32 >> 6) & 63] + b64chs[u32 & 63];
+    asc +=
+      b64chs[(u32 >> 18) & 63] +
+      b64chs[(u32 >> 12) & 63] +
+      b64chs[(u32 >> 6) & 63] +
+      b64chs[u32 & 63];
   }
   return pad ? asc.slice(0, pad - 3) + '==='.substring(pad) : asc;
 }
@@ -362,9 +377,17 @@ export function atob(asc) {
     r1,
     r2;
   for(let i = 0; i < asc.length; i += 0) {
-    u24 = (b64tab[asc.charAt(i++)] << 18) | (b64tab[asc.charAt(i++)] << 12) | ((r1 = b64tab[asc.charAt(i++)]) << 6) | (r2 = b64tab[asc.charAt(i++)]);
+    u24 =
+      (b64tab[asc.charAt(i++)] << 18) |
+      (b64tab[asc.charAt(i++)] << 12) |
+      ((r1 = b64tab[asc.charAt(i++)]) << 6) |
+      (r2 = b64tab[asc.charAt(i++)]);
     bin +=
-      r1 === 64 ? String.fromCharCode((u24 >> 16) & 255) : r2 === 64 ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255) : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
+      r1 === 64
+        ? String.fromCharCode((u24 >> 16) & 255)
+        : r2 === 64
+        ? String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255)
+        : String.fromCharCode((u24 >> 16) & 255, (u24 >> 8) & 255, u24 & 255);
   }
   return bin;
 }
@@ -373,9 +396,24 @@ export function assert(actual, expected, message) {
 
   if(actual === expected) return;
 
-  if(actual !== null && expected !== null && typeof actual == 'object' && typeof expected == 'object' && actual.toString() === expected.toString()) return;
+  if(
+    actual !== null &&
+    expected !== null &&
+    typeof actual == 'object' &&
+    typeof expected == 'object' &&
+    actual.toString() === expected.toString()
+  )
+    return;
 
-  throw Error('assertion failed: got |' + actual + '|' + ', expected |' + expected + '|' + (message ? ' (' + message + ')' : ''));
+  throw Error(
+    'assertion failed: got |' +
+      actual +
+      '|' +
+      ', expected |' +
+      expected +
+      '|' +
+      (message ? ' (' + message + ')' : '')
+  );
 }
 
 export function escape(str, chars = []) {
@@ -486,7 +524,10 @@ Object.setPrototypeOf(
     },
     transform(read, write) {
       const [get, set] = this;
-      return Object.setPrototypeOf([key => read(get(key)), (key, value) => set(key, write(value))], getset.prototype);
+      return Object.setPrototypeOf(
+        [key => read(get(key)), (key, value) => set(key, write(value))],
+        getset.prototype
+      );
     },
     function(...args) {
       const [get, set] = this;
@@ -583,11 +624,13 @@ export function gettersetter(target, ...args) {
 }
 
 export function hasFn(target) {
-  if(isObject(target)) return isFunction(target.has) ? key => target.has(key) : key => key in target;
+  if(isObject(target))
+    return isFunction(target.has) ? key => target.has(key) : key => key in target;
 }
 
 export function remover(target) {
-  if(isObject(target)) return isFunction(target.delete) ? key => target.delete(key) : key => delete target[key];
+  if(isObject(target))
+    return isFunction(target.delete) ? key => target.delete(key) : key => delete target[key];
 }
 
 export function getOrCreate(target, create = () => ({}), set) {
@@ -595,7 +638,10 @@ export function getOrCreate(target, create = () => ({}), set) {
     has = hasFn(target);
   set ??= setter(target);
   let value;
-  return key => (value = has.call(target, key) ? get.call(target, key) : ((value = create(key, target)), set.call(target, key, value), value));
+  return key =>
+    (value = has.call(target, key)
+      ? get.call(target, key)
+      : ((value = create(key, target)), set.call(target, key, value), value));
 }
 
 export function hasGetSet(obj) {
@@ -705,7 +751,8 @@ export function defineGetterSetter(obj, key, g, s, enumerable = false) {
 }
 
 export function defineGettersSetters(obj, gettersSetters) {
-  for(let name in gettersSetters) defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
+  for(let name in gettersSetters)
+    defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
   return obj;
 }
 
@@ -821,7 +868,9 @@ export function weakDefine(obj, ...args) {
   let desc = {};
   for(let other of args) {
     let otherDesc = Object.getOwnPropertyDescriptors(other);
-    for(let key in otherDesc) if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined) desc[key] = otherDesc[key];
+    for(let key in otherDesc)
+      if(!(key in obj) && desc[key] === undefined && otherDesc[key] !== undefined)
+        desc[key] = otherDesc[key];
   }
   return Object.defineProperties(obj, desc);
 }
@@ -883,7 +932,10 @@ export function filterKeys(r, needles, keep = true) {
 
 export const curry = (f, arr = [], length = f.length) =>
   function(...args) {
-    return (a => (a.length === length ? f.call(this, ...a) : curry(f.bind(this), a)))([...arr, ...args]);
+    return (a => (a.length === length ? f.call(this, ...a) : curry(f.bind(this), a)))([
+      ...arr,
+      ...args
+    ]);
   };
 
 export const clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
@@ -909,7 +961,8 @@ export function* split(buf, ...points) {
 
 export const matchAll = curry(function* (re, str) {
   let match;
-  re = re instanceof RegExp ? re : new RegExp(Array.isArray(re) ? '(' + re.join('|') + ')' : re, 'g');
+  re =
+    re instanceof RegExp ? re : new RegExp(Array.isArray(re) ? '(' + re.join('|') + ')' : re, 'g');
   do {
     if((match = re.exec(str))) yield match;
   } while(match != null);
@@ -917,14 +970,18 @@ export const matchAll = curry(function* (re, str) {
 
 export function bindProperties(obj, target, props, gen) {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
-  const [propMap, propNames] = Array.isArray(props) ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props] : [props, Object.keys(props)];
+  const [propMap, propNames] = Array.isArray(props)
+    ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props]
+    : [props, Object.keys(props)];
   gen ??= p => v => v === undefined ? target[propMap[p]] : (target[propMap[p]] = v);
   const propGetSet = propNames
     .map(k => [k, propMap[k]])
     .reduce(
       (a, [k, v]) => ({
         ...a,
-        [k]: isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k]))
+        [k]: isFunction(v)
+          ? (...args) => v.call(target, k, ...args)
+          : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k]))
       }),
       {}
     );
@@ -984,7 +1041,12 @@ export function immutableClass(orig, ...proto) {
 // time a given function
 export function instrument(
   fn,
-  log = (duration, name, args, ret) => console.log(`function '${name}'` + (ret !== undefined ? ` {= ${escape(ret + '').substring(0, 100) + '...'}}` : '') + ` timing: ${duration.toFixed(3)}ms`),
+  log = (duration, name, args, ret) =>
+    console.log(
+      `function '${name}'` +
+        (ret !== undefined ? ` {= ${escape(ret + '').substring(0, 100) + '...'}}` : '') +
+        ` timing: ${duration.toFixed(3)}ms`
+    ),
   logInterval = 0 //1000
 ) {
   // const { now, hrtime, functionName } = Util;
@@ -1419,7 +1481,12 @@ export function wrapGeneratorMethods(obj) {
   return obj;
 }
 
-export const unique = (arr, cmp) => arr.filter(typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i : (el, i, arr) => arr.indexOf(el) == i);
+export const unique = (arr, cmp) =>
+  arr.filter(
+    typeof cmp == 'function'
+      ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i
+      : (el, i, arr) => arr.indexOf(el) == i
+  );
 
 export const getFunctionArguments = fn =>
   (fn + '')
@@ -1716,7 +1783,12 @@ export function lazyProperty(obj, name, getter, opts = {}) {
   assert(Object.getOwnPropertyDescriptor(obj, name)?.configurable !== false);
 
   let value,
-    replaceProperty = newValue => (delete obj[name], Object.defineProperty(obj, name, { newValue, writable: false, configurable: false, ...opts }), (replaceProperty = undefined), newValue);
+    replaceProperty = newValue => (
+      delete obj[name],
+      Object.defineProperty(obj, name, { newValue, writable: false, configurable: false, ...opts }),
+      (replaceProperty = undefined),
+      newValue
+    );
 
   Object.defineProperty(obj, name, {
     get:
@@ -1737,7 +1809,8 @@ export function lazyProperty(obj, name, getter, opts = {}) {
 
 export function lazyProperties(obj, gettersObj, opts = {}) {
   opts = { enumerable: false, ...opts };
-  for(let prop of Object.getOwnPropertyNames(gettersObj)) lazyProperty(obj, prop, gettersObj[prop], opts);
+  for(let prop of Object.getOwnPropertyNames(gettersObj))
+    lazyProperty(obj, prop, gettersObj[prop], opts);
   return obj;
 }
 
@@ -1757,7 +1830,11 @@ export function getOpt(options = {}, args) {
   let result = {};
   let positional = (result['@'] = []);
   if(!(options instanceof Array)) options = Object.entries(options);
-  const findOpt = arg => options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
+  const findOpt = arg =>
+    options.find(
+      ([optname, option]) =>
+        (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname
+    );
   let [, params] = options.find(opt => opt[0] == '@') || [];
   if(typeof params == 'string') params = params.split(',');
   args = args.reduce((acc, arg) => {
@@ -1827,7 +1904,14 @@ export function showHelp(opts, exitCode = 0) {
 
   let s = entries.reduce(
     (acc, [name, [hasArg, fn, shortOpt]]) =>
-      acc + (`    ${(shortOpt ? '-' + shortOpt + ',' : '').padStart(4, ' ')} --${name.padEnd(maxlen, ' ')} ` + (hasArg ? (typeof hasArg == 'boolean' ? 'ARG' : hasArg) : '')).padEnd(40, ' ') + '\n',
+      acc +
+      (
+        `    ${(shortOpt ? '-' + shortOpt + ',' : '').padStart(4, ' ')} --${name.padEnd(
+          maxlen,
+          ' '
+        )} ` + (hasArg ? (typeof hasArg == 'boolean' ? 'ARG' : hasArg) : '')
+      ).padEnd(40, ' ') +
+      '\n',
     `Usage: ${basename(scriptArgs[0])} [OPTIONS] <FILES...>\n\n`
   );
 
@@ -1931,7 +2015,8 @@ export function decamelize(str, delim = '-') {
 export function shorten(str, max = 40, suffix = '...') {
   max = +max;
   if(isNaN(max)) max = Infinity;
-  if(Array.isArray(str)) return Array.prototype.slice.call(str, 0, Math.min(str.length, max)).concat([suffix]);
+  if(Array.isArray(str))
+    return Array.prototype.slice.call(str, 0, Math.min(str.length, max)).concat([suffix]);
   if(typeof str != 'string' || !Number.isFinite(max) || max < 0) return str;
   str = '' + str;
 
@@ -1987,7 +2072,8 @@ export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
     },
     reduce(callback, accu, thisArg) {
       const { length } = this;
-      for(let i = 0; i < length; i++) accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
+      for(let i = 0; i < length; i++)
+        accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
       return accu;
     }
   });
@@ -2006,7 +2092,12 @@ export function pushUnique(arr, ...args) {
 }
 
 export function inserter(dest, next = (k, v) => {}) {
-  const insert = isFunction(dest.set) && dest.set.length >= 2 ? (k, v) => dest.set(k, v) : Array.isArray(dest) ? (k, v) => dest.push([k, v]) : (k, v) => (dest[k] = v);
+  const insert =
+    isFunction(dest.set) && dest.set.length >= 2
+      ? (k, v) => dest.set(k, v)
+      : Array.isArray(dest)
+      ? (k, v) => dest.push([k, v])
+      : (k, v) => (dest[k] = v);
   let fn;
   fn = function(key, value) {
     insert(key, value);
@@ -2035,7 +2126,8 @@ export function difference(a, b, includes) {
   if(!Array.isArray(a)) a = [...a];
   if(!Array.isArray(b)) b = [...b];
 
-  if(typeof includes != 'function') return [a.filter(x => !b.includes(x)), b.filter(x => !a.includes(x))];
+  if(typeof includes != 'function')
+    return [a.filter(x => !b.includes(x)), b.filter(x => !a.includes(x))];
 
   return [a.filter(x => !includes(b, x)), b.filter(x => !includes(a, x))];
 }
@@ -2121,7 +2213,8 @@ function formatWithOptionsInternal(o, v) {
               const y = v[++a];
               if(typeof y === 'number') t = formatNumber(y);
               else if(typeof y === 'bigint') t = `${y}n`;
-              else if(typeof y !== 'object' || y === null || !hasBuiltIn(y, 'toString')) t = String(y);
+              else if(typeof y !== 'object' || y === null || !hasBuiltIn(y, 'toString'))
+                t = String(y);
               else t = inspect(y, { ...o, compact: 3, colors: false, depth: 0 });
               break;
             case 106: // %j
@@ -2170,7 +2263,8 @@ function formatWithOptionsInternal(o, v) {
           }
           if(p !== i - 1) s += slice(x, p, i - 1);
           let pad = parseInt(f);
-          if(Math.abs(pad) > 0) t = t['pad' + (pad < 0 ? 'End' : 'Start')](Math.abs(pad), /^-?0/.test(f) ? '0' : ' ');
+          if(Math.abs(pad) > 0)
+            t = t['pad' + (pad < 0 ? 'End' : 'Start')](Math.abs(pad), /^-?0/.test(f) ? '0' : ' ');
           s += t;
           p = i + 1;
         } else if(c === 37) {
@@ -2212,7 +2306,8 @@ export function className(obj) {
   return null;
 }
 
-export const isArrowFunction = fn => (isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+export const isArrowFunction = fn =>
+  (isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
 export function predicate(fn_or_regex, pred) {
   let fn = fn_or_regex;
@@ -2401,7 +2496,13 @@ export function randf() {
 export function srand(seed) {}
 
 export function toArrayBuffer(value) {
-  if(typeof value == 'object' && value !== null && 'buffer' in value && isArrayBuffer(value.buffer)) return value.buffer;
+  if(
+    typeof value == 'object' &&
+    value !== null &&
+    'buffer' in value &&
+    isArrayBuffer(value.buffer)
+  )
+    return value.buffer;
 
   if(typeof value == 'string') {
     const encoder = new TextEncoder();
