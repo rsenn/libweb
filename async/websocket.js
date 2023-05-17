@@ -1,3 +1,5 @@
+import { waitFor } from '../misc.js';
+
 WebSocket.makeURL = WebSocketURL;
 
 // Generate a Promise that listens only once for an event
@@ -62,7 +64,7 @@ export function WebSocketURL(arg = '/', query = {}) {
 }
 
 export function CreateWebSocket(path = '/', protocols = []) {
-  console.log('CreateWebSocket',{path,protocols});
+  console.log('CreateWebSocket', { path, protocols });
   let ws = new WebSocket(path instanceof URL ? path : WebSocketURL(path), protocols);
   ws[Symbol.asyncIterator] = WebSocketIterator;
   return ws;

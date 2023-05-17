@@ -27,7 +27,7 @@ export function Util(g) {
   return Util;
 }
 
-Util.toString = undefined;
+//Util.toString = undefined;
 //export const Util = {};
 
 const lineSplit = new RegExp('\\n', 'g');

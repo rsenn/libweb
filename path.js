@@ -164,6 +164,12 @@ export function normalize(path) {
   return path;
 }
 
+export function absolute(path) {
+  if(isAbsolute(path)) return path;
+
+  return join(process.cwd(), path);
+}
+
 export function isAbsolute(path) {
   assertPath(path);
   return path.length > 0 && path.charCodeAt(0) === 47 /*/*/;

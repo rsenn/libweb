@@ -1,4 +1,3 @@
-
 const RECONNECT_DELAY = 5000;
 const MAX_RECONNECT_ATTEMPTS = 3;
 
@@ -80,8 +79,8 @@ export class ReconnectingWebSocket {
       const registeredCallback = this.callbacks[index].callback;
 
       // Remove the event listener for the specific event.
-      if(this.socket['on'+eventType] == registeredCallback);
-        this.socket['on'+eventType] = null;
+      if(this.socket['on' + eventType] == registeredCallback);
+      this.socket['on' + eventType] = null;
       this.callbacks.splice(index, 1);
     }
   }
@@ -94,7 +93,7 @@ export class ReconnectingWebSocket {
    * @private
    */
   on(event, callback) {
-    this.socket['on'+event] = callback;
+    this.socket['on' + event] = callback;
 
     // Push the callback into the cache.
     this.callbacks.push({ event, callback });

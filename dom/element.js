@@ -966,6 +966,7 @@ export class Element extends Node {
   }
 
   static toString(e, opts = {}) {
+    if(e===undefined) return Object.prototype.toString.call(this);
     const { indent = '  ', newline = '', depth = 0 } = opts;
 
     let o = e.__proto__ === Object.prototype ? e : Element.toObject(e);

@@ -1,37 +1,89 @@
 import inspect from './objectInspect.js';
-import {extendArray,glob} from './misc.js';
-import {absolute,relative} from './path.js';
-import {readFileSync} from './filesystem.js';
+import { define, glob, types } from './misc.js';
+import { absolute, relative } from './path.js';
+import { readFileSync } from './filesystem.js';
 
-export class CompileCommand extends Array {
+export class Command extends Array {
   constructor(a, workDir = '.') {
     super();
     this.workDir = absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
-    if(Array.isArray(a)) {
-      this.splice(0, this.length);
-      for(let item of a) this.pushUnique(item);
+
+    //this.splice(0, this.length);
+    for(let i = 0; i < a.length; i++) this[i] = a[i];
+  }
+
+  /* prettier-ignore */ get program() { return this[0]; }
+  /* prettier-ignore */ set program(arg) { this[0] = arg; }
+
+  typeFlags(type) {
+    return [...this].filter(ArgumentIs(type));
+  }
+
+  /* prettier-ignore */ get warnFlags() { return this.typeFlags('warning'); }
+  /* prettier-ignore */ get debugFlags() { return this.typeFlags('debug'); }
+  /* prettier-ignore */ get optFlags() { return this.typeFlags(/^opt/); }
+  /* prettier-ignore */ get depFlags() { return this.typeFlags(/^dep/); }
+  /* prettier-ignore */ get modeFlag() { return [...this].find(ArgumentIs('mode')); }
+
+  /* prettier-ignore */ isCompile() { return this.modeFlag == '-S'; }
+  /* prettier-ignore */ isPreprocess() { return this.modeFlag == '-E'; }
+  /* prettier-ignore */ isAssemble() { return this.modeFlag == '-S'; }
+  /* prettier-ignore */ isLink() { return !this.modeFlag; }
+
+  toString(delim) {
+    return this.join(delim ? delim : ' ');
+  }
+
+  toArray() {
+    return Array.from(this);
+  }
+
+  remove(...args) {
+    let r = [];
+    for(let a of args) {
+      let i;
+      while((i = this.indexOf(a)) != -1) {
+        let a = this.splice(i, 1);
+        r = r.concat(a);
+      }
     }
+    return r;
+  }
+
+  [Symbol.inspect](depth, options = {}) {
+    return '\x1b[1;31m' + this[Symbol.toStringTag] + '\x1b[0m ' + inspect([...this], options);
+  }
+}
+
+define(Command.prototype, { argumentType: ArgumentType, [Symbol.toStringTag]: 'Command' /*, [Symbol.species]: Command*/ });
+
+define(Command, {
+  fromFile(file, workDir = '.') {
+    return this.fromString(readFileSync(file, 'utf-8'), workDir);
+  },
+  fromString(str, workDir = '.') {
+    const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
+    return new this(args, workDir);
+  }
+});
+
+//extendArray(Command.prototype);
+
+export class CompileCommand extends Command {
+  constructor(a, workDir = '.') {
+    super(a, workDir);
   }
 
   static argumentType = ArgumentType;
 
-  static [Symbol.species] = Array;
-
-  /* prettier-ignore */ get program() { return this.toObject().program; }
-  /* prettier-ignore */ set program(arg) { this[0] = arg; }
-  /* prettier-ignore */ get output() { return this.toObject().output; }
-  set output(arg) {
-    let i = this.findIndex(a => /^-o($|)/.test(a));
-    if(this[i] == '-o') i++;
-    this[i] = arg;
-  }
   /* prettier-ignore */ get includes() { return  this.toObject().includes; }
   /* prettier-ignore */ get defines() { return this.toObject().defines; }
   /* prettier-ignore */ get cflags() { let { flags, includes, defines } = this.toObject(); return (includes ?? []) .map(inc => '-I' + inc) .concat((defines ?? []).map(def => '-D' + def)) .concat(flags); }
   /* prettier-ignore */ get flags() {return this.toObject().flags; }
   /* prettier-ignore */ get args() { return this.toObject().args; }
   /* prettier-ignore */ get sources() { return (this.toObject().args ?? []).filter(arg => arg != this.output); }
+
   set sources(arg) {
     let { sources } = this;
     let idx = this.indexOf(sources[0]);
@@ -49,43 +101,6 @@ export class CompileCommand extends Array {
   }
   set source(arg) {
     this.sources = [arg];
-  }
-
-  typeFlags(type) {
-    const { flags } = this;
-    let p = typeof type == 'string' ? f => ArgumentType(f) == type : f => type.test(ArgumentType(f));
-    return flags.filter(p);
-  }
-
-  /* prettier-ignore */ get warnFlags() { return this.typeFlags('warning'); }
-  /* prettier-ignore */ get debugFlags() { return this.typeFlags('debug'); }
-  /* prettier-ignore */ get optFlags() { return this.typeFlags(/^opt/); }
-  /* prettier-ignore */ get depFlags() { return this.typeFlags(/^dep/); }
-  /* prettier-ignore */ get modeFlags() { return this.typeFlags('mode'); }
-
-  /* prettier-ignore */ isCompile() { const { type } = this; return type == 'compile'; }
-  /* prettier-ignore */ isPreprocess() { const { type } = this; return type == 'preprocess'; }
-  /* prettier-ignore */ isAssemble() { const { type } = this; return type == 'assemble'; }
-  /* prettier-ignore */ isLink() { const { type } = this; return type == 'link'; }
-
-  get type() {
-    const { modeFlags } = this;
-    const last = modeFlags[modeFlags.length - 1];
-
-    switch (last[1]) {
-      case 'c':
-        return 'compile';
-      case 'E':
-        return 'preproc';
-      case 'S':
-        return 'assemble';
-      default:
-        return 'link';
-    }
-  }
-
-  toString(delim) {
-    return this.join(delim ? delim : ' ');
   }
 
   toObject() {
@@ -121,32 +136,21 @@ export class CompileCommand extends Array {
     if(args && args.length) r.args = args;
     return r;
   }
+}
 
-  toArray() {
-    return Array.from(this);
+define(CompileCommand.prototype, { [Symbol.toStringTag]: 'CompileCommand', [Symbol.species]: CompileCommand });
+
+export class LinkCommand extends Command {
+  constructor(a, workDir = '.') {
+    super(a, workDir);
   }
 
-  remove(...args) {
-    let r = [];
-    for(let a of args) {
-      let i;
-      while((i = this.indexOf(a)) != -1) {
-        let a = this.splice(i, 1);
-        r = r.concat(a);
-      }
-    }
-    return r;
-  }
-
-  [Symbol.inspect /*?? Symbol.for('nodejs.util.inspect.custom')*/]() {
-    return inspect(this.toObject(), {
-      colors: true,
-      compact: false,
-      maxStringLength: Infinity,
-      maxArrayLength: Infinity
-    });
+  get objects() {
+    return [...this].filter(ArgumentIs(undefined)).filer(arg => arg != this.output);
   }
 }
+
+define(LinkCommand.prototype, { [Symbol.toStringTag]: 'LinkCommand', [Symbol.species]: LinkCommand });
 
 export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   if(arg[0] == '-') {
@@ -202,18 +206,53 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   } else if(i === 0) return 'program';
 }
 
-extendArray(CompileCommand.prototype);
+export function ArgumentIs(str_or_regex) {
+  return types.isRegExp(str_or_regex) ? f => str_or_regex.test(ArgumentType(f)) : f => ArgumentType(f) == str_or_regex;
+}
 
-define(CompileCommand, { 
+export function CommandType(command) {
+  const mode = command.find(ArgumentIs('mode'));
+  switch (mode) {
+    case '-c':
+      return 'compile';
+    case '-E':
+      return 'preproc';
+    case '-S':
+      return 'assemble';
+    default:
+      return 'link';
+  }
+}
 
-fromFile(file) {
-  return new CompileCommand(readFileSync(file, 'utf-8'));
-},
-fromString(file) {
-})
-export function 
+export function CommandOutput(command, ...args) {
+  const i = command.findIndex(ArgumentIs('output'));
+  const j = command[cmdIndex] == '-o' ? 1 : 0;
 
-[...a.matchAll(/"([^"]|\\")*"|'([^']|\\')'|([^\s]+)/g)].map(([m]) => /^('.*'|".*")$/.test(m) ? m.slice(1,-1) : m); //
+  if(args.length > 0) command[i + j] = (j ? '' : '-o') + args[0];
+
+  return command[i + j]?.slice(0, j ? 0 : 2);
+}
+
+export function MakeCommand(array_or_string) {
+  if(typeof array_or_string == 'string') array_or_string = [...array_or_string.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
+
+  return new ({ link: LinkCommand }[CommandType(array_or_string)] ?? CompileCommand)(array_or_string);
+}
+
+for(let subclass of [CompileCommand, LinkCommand])
+  define(subclass.prototype, {
+    get output() {
+      let i = this.findIndex(a => /^-o($|)/.test(a));
+      if(this[i] == '-o') return this[++i];
+      return this[i].slice(2);
+    },
+
+    set output(arg) {
+      let i = this.findIndex(a => /^-o($|)/.test(a));
+      if(this[i] == '-o') this[++i] = arg;
+      else this[i] = '-o' + arg;
+    }
+  });
 
 export function NinjaRule(command) {
   /* if(!new.target) return new NinjaRule(command);*/
