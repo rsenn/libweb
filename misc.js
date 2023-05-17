@@ -1716,12 +1716,7 @@ export function lazyProperty(obj, name, getter, opts = {}) {
   assert(Object.getOwnPropertyDescriptor(obj, name)?.configurable !== false);
 
   let value,
-    replaceProperty = newValue => (
-      delete obj[name],
-      Object.defineProperty(obj, name, { newValue, writable: false, configurable: false, ...opts }),
-      (replaceProperty = undefined),
-      newValue
-    );
+    replaceProperty = newValue => (delete obj[name], Object.defineProperty(obj, name, { newValue, writable: false, configurable: false, ...opts }), (replaceProperty = undefined), newValue);
 
   Object.defineProperty(obj, name, {
     get:
@@ -1746,6 +1741,17 @@ export function lazyProperties(obj, gettersObj, opts = {}) {
   return obj;
 }
 
+export function decorate(decorators, obj, ...args) {
+  if(!Array.isArray(decorators)) decorators = [decorators];
+  for(let decorator of decorators)
+    for(let prop of keys(obj))
+      if(typeof obj[prop] == 'function') {
+        let newfn = decorator(obj[prop], obj, prop, ...args);
+        if(obj[prop] !== newfn) obj[prop] = newfn;
+      }
+  return obj;
+}
+
 export function getOpt(options = {}, args) {
   let short, long;
   let result = {};
@@ -1754,9 +1760,22 @@ export function getOpt(options = {}, args) {
   const findOpt = arg => options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
   let [, params] = options.find(opt => opt[0] == '@') || [];
   if(typeof params == 'string') params = params.split(',');
+  args = args.reduce((acc, arg) => {
+    if(/^-[^-]/.test(arg)) {
+      let opt = findOpt(arg[1]);
+      if(!opt || !opt[1][0]) {
+        for(let ch of arg.slice(1)) acc.push('-' + ch);
+        return acc;
+      }
+    }
+    acc.push(arg);
+    return acc;
+  }, []);
+  //console.log('getOpt', { args });
   for(let i = 0; i < args.length; i++) {
     const arg = args[i];
     let opt;
+
     if(arg[0] == '-') {
       let name, value, start, end;
       if(arg[1] == '-') long = true;
@@ -1768,14 +1787,16 @@ export function getOpt(options = {}, args) {
       if((opt = findOpt(name))) {
         const [has_arg, handler] = opt[1];
         if(has_arg) {
+          //console.log('getOpt', { name, value, arg, end });
           if(arg.length > end) value = arg.substring(end + (arg[end] == '='));
           else value = args[++i];
         } else {
           value = true;
         }
-        try {
-          value = handler(value, result[opt[0]], options, result);
-        } catch(e) {}
+        if(isFunction(handler))
+          try {
+            value = handler(value, result[opt[0]], options, result);
+          } catch(e) {}
         result[opt[0]] = value;
         continue;
       }
@@ -1785,7 +1806,7 @@ export function getOpt(options = {}, args) {
       if((opt = findOpt(param))) {
         const [, [, handler]] = opt;
         let value = arg;
-        if(typeof handler == 'function') {
+        if(isFunction(handler)) {
           try {
             value = handler(value, result[opt[0]], options, result);
           } catch(e) {}
@@ -1800,6 +1821,19 @@ export function getOpt(options = {}, args) {
   return result;
 }
 
+export function showHelp(opts, exitCode = 0) {
+  let entries = Array.isArray(opts) ? opts : Object.entries(opts);
+  let maxlen = entries.reduce((acc, [name]) => (acc > name.length ? acc : name.length), 0);
+
+  let s = entries.reduce(
+    (acc, [name, [hasArg, fn, shortOpt]]) =>
+      acc + (`    ${(shortOpt ? '-' + shortOpt + ',' : '').padStart(4, ' ')} --${name.padEnd(maxlen, ' ')} ` + (hasArg ? (typeof hasArg == 'boolean' ? 'ARG' : hasArg) : '')).padEnd(40, ' ') + '\n',
+    `Usage: ${basename(scriptArgs[0])} [OPTIONS] <FILES...>\n\n`
+  );
+
+  process.stdout.write(s + '\n');
+  process.exit(exitCode);
+}
 export function isoDate(d) {
   if(typeof d == 'number') d = new Date(d);
   const tz = d.getTimezoneOffset();
