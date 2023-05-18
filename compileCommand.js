@@ -1,6 +1,6 @@
 import inspect from './objectInspect.js';
 import { define, glob, types } from './misc.js';
-import { absolute, relative } from './path.js';
+import { absolute, relative, join, isRelative, isAbsolute, collapse } from './path.js';
 import { readFileSync } from './filesystem.js';
 
 export class Command extends Array {
@@ -16,14 +16,20 @@ export class Command extends Array {
   /* prettier-ignore */ get program() { return this[0]; }
   /* prettier-ignore */ set program(arg) { this[0] = arg; }
 
-  typeFlags(type) {
-    return [...this].filter(ArgumentIs(type));
+  absolutePath(path) {
+    if(isRelative(path)) path = join(this.workDir, path);
+    return collapse(path);
   }
 
-  /* prettier-ignore */ get warnFlags() { return this.typeFlags('warning'); }
-  /* prettier-ignore */ get debugFlags() { return this.typeFlags('debug'); }
-  /* prettier-ignore */ get optFlags() { return this.typeFlags(/^opt/); }
-  /* prettier-ignore */ get depFlags() { return this.typeFlags(/^dep/); }
+  argumentsOfType(type) {
+    const pred = ArgumentIs(type);
+    return [...this].filter((arg, i) => i > 0 && pred(arg, i));
+  }
+
+  /* prettier-ignore */ get warnFlags() { return this.argumentsOfType('warning'); }
+  /* prettier-ignore */ get debugFlags() { return this.argumentsOfType('debug'); }
+  /* prettier-ignore */ get optFlags() { return this.argumentsOfType(/^opt/); }
+  /* prettier-ignore */ get depFlags() { return this.argumentsOfType(/^dep/); }
   /* prettier-ignore */ get modeFlag() { return [...this].find(ArgumentIs('mode')); }
 
   /* prettier-ignore */ isCompile() { return this.modeFlag == '-S'; }
@@ -51,19 +57,65 @@ export class Command extends Array {
     return r;
   }
 
+  get dependencies() {
+    const { sources = [], objects = [] } = this;
+    let ret = new Set();
+    for(let file of sources.concat(objects)) {
+      let tmp = this.absolutePath(file);
+      /*if(tmp != file)*/ ret.add(tmp);
+      file = tmp;
+    }
+    return [...ret];
+  }
+
+  get outputFile() {
+    return this.absolutePath(this.output);
+  }
+
+  absolute() {
+    let pred = ArgumentIs(undefined);
+    return new this.constructor(
+      [...this].map((arg, i) => (i > 0 && pred(arg, i) ? this.absolutePath(arg) : arg))
+    );
+  }
+
+  relative(to) {
+    let pred = ArgumentIs(undefined);
+    to ??= this.workDir;
+    return new this.constructor(
+      [...this].map((arg, i) =>
+        i > 0 && pred(arg, i) && isAbsolute(arg) ? relative(to, arg) : arg
+      )
+    );
+  }
+
   [Symbol.inspect](depth, options = {}) {
     return '\x1b[1;31m' + this[Symbol.toStringTag] + '\x1b[0m ' + inspect([...this], options);
   }
 }
 
-define(Command.prototype, { argumentType: ArgumentType, [Symbol.toStringTag]: 'Command' /*, [Symbol.species]: Command*/ });
+define(Command.prototype, {
+  argumentType: ArgumentType,
+  toJSON() {
+    const { workDir, source, output } = this;
+    return {
+      directory: workDir,
+      command: [...this].join(' '),
+      file: source,
+      output
+    };
+  },
+  [Symbol.toStringTag]: 'Command' /*, [Symbol.species]: Command*/
+});
 
 define(Command, {
   fromFile(file, workDir = '.') {
     return this.fromString(readFileSync(file, 'utf-8'), workDir);
   },
   fromString(str, workDir = '.') {
-    const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
+    const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) =>
+      /^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m
+    );
     return new this(args, workDir);
   }
 });
@@ -77,7 +129,7 @@ export class CompileCommand extends Command {
 
   static argumentType = ArgumentType;
 
-  /* prettier-ignore */ get includes() { return  this.toObject().includes; }
+  /* prettier-ignore */ get includePaths() { return  this.toObject().includes; }
   /* prettier-ignore */ get defines() { return this.toObject().defines; }
   /* prettier-ignore */ get cflags() { let { flags, includes, defines } = this.toObject(); return (includes ?? []) .map(inc => '-I' + inc) .concat((defines ?? []).map(def => '-D' + def)) .concat(flags); }
   /* prettier-ignore */ get flags() {return this.toObject().flags; }
@@ -130,7 +182,8 @@ export class CompileCommand extends Command {
     }
     if(program) r.program = program;
     if(output) r.output = output;
-    if(includes && includes.length) r.includes = includes /*.map(inc => relative(inc, this.workDir))*/;
+    if(includes && includes.length)
+      r.includes = includes /*.map(inc => relative(inc, this.workDir))*/;
     if(defines && defines.length) r.defines = defines;
     if(flags && flags.length) r.flags = flags;
     if(args && args.length) r.args = args;
@@ -138,19 +191,51 @@ export class CompileCommand extends Command {
   }
 }
 
-define(CompileCommand.prototype, { [Symbol.toStringTag]: 'CompileCommand', [Symbol.species]: CompileCommand });
+define(CompileCommand.prototype, {
+  type: 'compile',
+  [Symbol.toStringTag]: 'CompileCommand',
+  [Symbol.species]: CompileCommand,
+  get output() {
+    let output,
+      i = this.findIndex(a => /^-o($|)/.test(a));
+
+    output = this[i] == '-o' ? this[++i] : this[i].slice(2);
+    return /*this.absolutePath*/ output;
+  },
+
+  set output(arg) {
+    let i = this.findIndex(a => /^-o($|)/.test(a));
+    if(this[i] == '-o') this[++i] = arg;
+    else this[i] = '-o' + arg;
+  }
+});
 
 export class LinkCommand extends Command {
   constructor(a, workDir = '.') {
     super(a, workDir);
   }
 
+  /* prettier-ignore */ get libraries() { return  this.argumentsOfType('library'); }
+  /* prettier-ignore */ get libpaths() { return  this.argumentsOfType('libpath'); }
+  /* prettier-ignore */ get linkflags() { return  this.argumentsOfType('linker'); }
+
+  /* prettier-ignore */ get args() { const pred=ArgumentIs(undefined); return this.filter((arg,i) => i > 0 && pred(arg));  }
+
   get objects() {
-    return [...this].filter(ArgumentIs(undefined)).filer(arg => arg != this.output);
+    let objs = [...this]
+      .filter((arg, i) => i > 0 && !(i == 1 && /^[a-z]+$/.test(arg)))
+      .filter(ArgumentIs(undefined));
+
+    return objs /*.map(obj => this.absolutePath(obj))*/
+      .filter(arg => arg != this.output);
   }
 }
 
-define(LinkCommand.prototype, { [Symbol.toStringTag]: 'LinkCommand', [Symbol.species]: LinkCommand });
+define(LinkCommand.prototype, {
+  type: 'link',
+  [Symbol.toStringTag]: 'LinkCommand',
+  [Symbol.species]: LinkCommand
+});
 
 export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   if(arg[0] == '-') {
@@ -185,7 +270,8 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
         return 'debug';
       case 'w':
       case 'W':
-        if(/^-W[apl],/.test(arg)) return { a: 'assembler', p: 'preprocessor', l: 'linker' }[arg[2]];
+        if(/^-W[apl],/.test(arg))
+          return { a: 'assembler', p: 'preprocessor', l: 'linker' }[arg[2]];
         return 'warning';
       case 'm':
         return 'machine';
@@ -206,8 +292,12 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   } else if(i === 0) return 'program';
 }
 
-export function ArgumentIs(str_or_regex) {
-  return types.isRegExp(str_or_regex) ? f => str_or_regex.test(ArgumentType(f)) : f => ArgumentType(f) == str_or_regex;
+export function ArgumentIs(strOrRegex) {
+  return types.isRegExp(strOrRegex)
+    ? f => strOrRegex.test(ArgumentType(f))
+    : typeof strOrRegex == 'function'
+    ? f => strOrRegex(ArgumentType(f))
+    : f => ArgumentType(f) == strOrRegex;
 }
 
 export function CommandType(command) {
@@ -233,26 +323,40 @@ export function CommandOutput(command, ...args) {
   return command[i + j]?.slice(0, j ? 0 : 2);
 }
 
-export function MakeCommand(array_or_string) {
-  if(typeof array_or_string == 'string') array_or_string = [...array_or_string.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
-
-  return new ({ link: LinkCommand }[CommandType(array_or_string)] ?? CompileCommand)(array_or_string);
+export function MakeCommands(text, workDir = '.') {
+  return text.split(/\n/g).map(line => MakeCommand(line, workDir));
 }
 
-for(let subclass of [CompileCommand, LinkCommand])
-  define(subclass.prototype, {
-    get output() {
-      let i = this.findIndex(a => /^-o($|)/.test(a));
-      if(this[i] == '-o') return this[++i];
-      return this[i].slice(2);
-    },
+export function MakeCommand(arrayOrString, workDir = '.') {
+  if(typeof arrayOrString == 'string')
+    arrayOrString = [...arrayOrString.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) =>
+      /^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m
+    );
 
-    set output(arg) {
-      let i = this.findIndex(a => /^-o($|)/.test(a));
-      if(this[i] == '-o') this[++i] = arg;
-      else this[i] = '-o' + arg;
-    }
-  });
+  return new ({ link: LinkCommand }[CommandType(arrayOrString)] ?? CompileCommand)(
+    arrayOrString,
+    workDir
+  );
+}
+
+define(LinkCommand.prototype, {
+  get output() {
+    let i = this.findIndex(a => /^-o($|)/.test(a));
+    let output =
+      this[i] == '-o'
+        ? this[++i]
+        : i != -1
+        ? this[i].slice(2)
+        : this.find((a, i) => i > 0 && /\./.test(a));
+    return /*this.absolutePath*/ output;
+  },
+
+  set output(arg) {
+    let i = this.findIndex(a => /^-o($|)/.test(a));
+    if(this[i] == '-o') this[++i] = arg;
+    else this[i] = '-o' + arg;
+  }
+});
 
 export function NinjaRule(command) {
   /* if(!new.target) return new NinjaRule(command);*/
