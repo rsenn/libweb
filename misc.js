@@ -672,16 +672,27 @@ export function waitFor(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function define(obj, ...args) {
-  for(let props of args) {
-    let desc = Object.getOwnPropertyDescriptors(props);
-    for(let prop in desc) {
-      const { value } = desc[prop];
-      desc[prop].enumerable = false;
-      if(typeof value == 'function') desc[prop].writable = false;
-    }
-    Object.defineProperties(obj, desc);
+export function extend(dst, src, options = { enumerable: false }) {
+  const desc = {};
+  if(typeof options != 'function') {
+    let tmp = options;
+    options = (desc, prop) => Object.assign(desc, tmp);
   }
+  for(let prop of Object.getOwnPropertySymbols(src).concat(Object.getOwnPropertyNames(src))) {
+    if(prop == '__proto__') {
+      Object.setPrototypeOf(obj, props[prop]);
+      continue;
+    }
+    let desc = Object.getOwnPropertyDescriptor(src, prop);
+    options(desc, prop);
+    Object.defineProperty(dst, prop, desc);
+  }
+  return dst;
+}
+
+export function define(obj, ...args) {
+  for(let props of args) obj = extend(obj, props, desc => (delete desc.configurable, delete desc.enumerable));
+
   return obj;
 }
 
