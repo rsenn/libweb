@@ -1,11 +1,12 @@
 import inspect from './objectInspect.js';
-import { define, glob, types } from './misc.js';
-import { absolute, relative, join, isRelative, isAbsolute, collapse } from './path.js';
-import { readFileSync } from './filesystem.js';
+import { assert, define, types } from './misc.js';
+import { spawn } from 'child_process';
+import { absolute, relative, join, isAbsolute, normalize } from './path.js';
 
 export class Command extends Array {
   constructor(a, workDir = '.') {
     super();
+    console.log('workDir', workDir);
     this.workDir = absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
 
@@ -17,8 +18,8 @@ export class Command extends Array {
   /* prettier-ignore */ set program(arg) { this[0] = arg; }
 
   absolutePath(path) {
-    if(isRelative(path)) path = join(this.workDir, path);
-    return collapse(path);
+    if(!isAbsolute(path)) path = join(this.workDir, path);
+    return normalize(path);
   }
 
   argumentsOfType(type) {
@@ -92,6 +93,11 @@ export class Command extends Array {
   [Symbol.inspect](depth, options = {}) {
     return '\x1b[1;31m' + this[Symbol.toStringTag] + '\x1b[0m ' + inspect([...this], options);
   }
+
+  run() {
+    const [program, ...args] = this;
+    return spawn(program, args, { cwd: this.workDir, stdio: ['ignore', 'inherit', 'inherit'] });
+  }
 }
 
 define(Command.prototype, {
@@ -109,9 +115,6 @@ define(Command.prototype, {
 });
 
 define(Command, {
-  fromFile(file, workDir = '.') {
-    return this.fromString(readFileSync(file, 'utf-8'), workDir);
-  },
   fromString(str, workDir = '.') {
     const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) =>
       /^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m
@@ -229,9 +232,14 @@ export class LinkCommand extends Command {
     return objs /*.map(obj => this.absolutePath(obj))*/
       .filter(arg => arg != this.output);
   }
+
+  get flags() {
+    return [...this].filter(ArgumentIs(t => ['program', 'output', undefined].indexOf(t) == -1));
+  }
 }
 
 define(LinkCommand.prototype, {
+  __proto__: Command.prototype,
   type: 'link',
   [Symbol.toStringTag]: 'LinkCommand',
   [Symbol.species]: LinkCommand
@@ -292,12 +300,12 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   } else if(i === 0) return 'program';
 }
 
-export function ArgumentIs(strOrRegex) {
-  return types.isRegExp(strOrRegex)
-    ? f => strOrRegex.test(ArgumentType(f))
-    : typeof strOrRegex == 'function'
-    ? f => strOrRegex(ArgumentType(f))
-    : f => ArgumentType(f) == strOrRegex;
+export function ArgumentIs(pred) {
+  return types.isRegExp(pred)
+    ? arg => pred.test(ArgumentType(arg))
+    : typeof pred == 'function'
+    ? arg => pred(ArgumentType(arg))
+    : arg => ArgumentType(arg) == pred;
 }
 
 export function CommandType(command) {
@@ -324,6 +332,8 @@ export function CommandOutput(command, ...args) {
 }
 
 export function MakeCommands(text, workDir = '.') {
+  console.log('text', text);
+  assert(typeof text, 'string');
   return text.split(/\n/g).map(line => MakeCommand(line, workDir));
 }
 

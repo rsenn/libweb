@@ -2533,6 +2533,10 @@ export function toArrayBuffer(value) {
   return value;
 }
 
+export function error() {
+  return { errno: 0 };
+}
+
 Location.prototype.clone = function(freeze = false, withFilename = true) {
   const { line, column, pos, file } = this;
 
