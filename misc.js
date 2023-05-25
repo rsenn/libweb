@@ -1,4 +1,5 @@
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
+//import { basename } from  'path';
 
 const slice = (x, s, e) =>
   typeof x == 'object'
@@ -1927,7 +1928,7 @@ export function showHelp(opts, exitCode = 0) {
         )} ` + (hasArg ? (typeof hasArg == 'boolean' ? 'ARG' : hasArg) : '')
       ).padEnd(40, ' ') +
       '\n',
-    `Usage: ${basename(scriptArgs[0])} [OPTIONS] <FILES...>\n\n`
+    'Usage: ' + scriptArgs[0].replace(/.*[\x5c\x2f]/g, '') + ' [OPTIONS] <FILES...>\n\n'
   );
 
   process.stdout.write(s + '\n');
