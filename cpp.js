@@ -1093,7 +1093,7 @@ export function cpp_js(settings) {
                 process: 1,
                 require: 1,
                 module: 1,
-                __filename: 1,
+                __scriptArgs[0]: 1,
                 __dirname: 1
               }
             ];
