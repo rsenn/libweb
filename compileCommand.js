@@ -6,7 +6,6 @@ import { absolute, relative, join, isAbsolute, normalize } from './path.js';
 export class Command extends Array {
   constructor(a, workDir = '.') {
     super();
-    console.log('workDir', workDir);
     this.workDir = absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
 
