@@ -1,7 +1,7 @@
-import inspect from './objectInspect.js';
-import { assert, define, types } from './misc.js';
+import inspect from 'inspect';
+import { assert, define, types } from 'util';
 import { spawn } from 'child_process';
-import { absolute, relative, join, isAbsolute, normalize } from './path.js';
+import { absolute, relative, join, isAbsolute, normalize } from 'path';
 
 export class Command extends Array {
   constructor(a, workDir = '.') {
@@ -150,7 +150,7 @@ export class CompileCommand extends Command {
 
   get source() {
     let { sources } = this;
-    if(sources.length > 1) throw new Error(`CompileCommand has more than 1 source`);
+    if(sources.length > 1) throw new Error(`CompileCommand has more than 1 source: ${sources}`);
     return sources[0];
   }
   set source(arg) {
