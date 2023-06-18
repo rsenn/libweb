@@ -11,14 +11,14 @@ export class EagleReference {
   constructor(root, path, check = true) {
     if(path instanceof ImmutableXPath) {
       path = path.toPointer(root);
-      console.log('new EagleReference', { path });
+      //console.log('new EagleReference', { path });
     }
 
     try {
       if(!path.deref) path = new ImmutablePath([...path]);
     } catch(e) {}
 
-    console.log('new EagleReference', { path, root });
+    //console.log('new EagleReference', { path, root });
 
     this.path = path;
     this.root = root;
@@ -27,7 +27,7 @@ export class EagleReference {
 
     if(check && !this.dereference(true)) {
       let pathStr = inspect([...this.path]);
-      console.log('dereference:', { path, pathStr });
+      //console.log('dereference:', { path, pathStr });
 
       throw new Error(this.root.tagName + ' ' + pathStr);
     }
@@ -130,7 +130,7 @@ export const EagleRef = function EagleRef(root, path) {
   if(isObject(root) && isObject(root.root)) root = root.root;
   let obj = new EagleReference(root, path);
   obj = Object.freeze(obj);
-  console.log('EagleRef', console.config({ depth: 2 }), { root: obj.root, path: obj.path });
+  //console.log('EagleRef', console.config({ depth: 2 }), { root: obj.root, path: obj.path });
   return obj;
 };
 

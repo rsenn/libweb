@@ -67,7 +67,7 @@ export class EagleDocument extends EagleNode {
 
   static open(filename, readFn = fn => std.loadFile(fn)) {
     let xml = readFn(filename);
-    console.log('EagleDocument.open', { filename, xml });
+    //console.log('EagleDocument.open', { filename, xml });
     return new EagleDocument(xml, null, filename);
   }
 
@@ -120,7 +120,7 @@ export class EagleDocument extends EagleNode {
     if(this.type == 'sch') {
       let schematic = this.lookup('/eagle/drawing/schematic');
       let libraries = schematic.get('libraries');
-      console.log('libraries', { libraries });
+      //console.log('libraries', { libraries });
 
       let { parts, sheets } = schematic;
       lazyProperties(this, {
@@ -135,7 +135,7 @@ export class EagleDocument extends EagleNode {
 
       let libraries = board.lookup('/libraries');
 
-      console.log('libraries', { libraries });
+      //console.log('libraries', { libraries });
 
       lazyProperties(this, {
         signals: () => EagleNodeMap.create(signals.children, 'name'),
@@ -148,10 +148,10 @@ export class EagleDocument extends EagleNode {
     lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
 
     let drawing = this.lookup('/eagle/drawing');
-    console.log('drawing', drawing.raw);
+    //console.log('drawing', drawing.raw);
 
     let layers = /*drawing.get('layers') /*?? */ this.lookup('/eagle/drawing/layers');
-    console.log('layers', layers);
+    //console.log('layers', layers);
 
     lazyProperties(this, {
       drawing: () => drawing,
@@ -228,7 +228,7 @@ export class EagleDocument extends EagleNode {
     fs = fs || this.fs || globalThis.fs;
     fs.writeFileSync(file+'.json', JSON.stringify(this.raw,null,2), true);
 
-    console.log('Saving', file, 'data: ',abbreviate(data));
+    //console.log('Saving', file, 'data: ',abbreviate(data));
     let ret = fs.writeFileSync(file, data, overwrite);
   //  console.log('ret',ret);
 
@@ -257,7 +257,7 @@ export class EagleDocument extends EagleNode {
   lookup(xpath) {
     let doc = this;
     return super.lookup(xpath, (o, p, v) => {
-      console.log('EagleDocument.lookup', console.config({ depth: 4 }), { o, p, v });
+      //console.log('EagleDocument.lookup', console.config({ depth: 4 }), { o, p, v });
       return EagleElement.get(o, p, v);
     });
   }
@@ -295,7 +295,7 @@ export class EagleDocument extends EagleNode {
     let ret;
     let plain = (this.type == 'sch' ? this.sheets[sheet] : this).get('plain');
 
-    console.log('plain', plain);
+    //console.log('plain', plain);
 
     for(let layer of ['Dimension', 'Measures']) {
       let layerId = this.layers[layer].number;

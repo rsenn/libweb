@@ -65,7 +65,7 @@ export class EagleElement extends EagleNode {
   static makeTransparent = new RGBA(255, 255, 255).toAlpha();
 
   static get(owner, ref, raw) {
-    console.log('EagleElement.get', console.config({ depth: 2 }), { owner, ref, raw });
+    //console.log('EagleElement.get', console.config({ depth: 2 }), { owner, ref, raw });
     if(ref.length === 0 || raw === undefined) {
       let root = 'root' in ref ? ref.root : null;
       let path = 'path' in ref ? ref.path : ref;
@@ -99,9 +99,9 @@ export class EagleElement extends EagleNode {
       if(!raw && isObject(ref.path)) raw = ref.path.deref(root, true);
     } catch(e) {}
     if(!raw) raw = ref.dereference();
-    console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
+    //console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
     let inst = doc.raw2element(raw, owner, ref);
-    console.log('EagleElement.get(3)', console.config({ depth: 2 }), { inst, doc });
+    //console.log('EagleElement.get(3)', console.config({ depth: 2 }), { inst, doc });
 
     inst.ref = ref;
 
@@ -543,7 +543,7 @@ throw new Error(`path ${ref.path} != ${inst.ref.path}`);*/
     xpath = new ImmutableXPath([...xpath]);*/
     //console.log('EagleElement.lookup(', xpath, create, ')');
     let r = super.lookup(xpath, (o, p, v) => {
-      console.log('EagleElement.lookup', console.config({ depth: 4 }), { o, p, v });
+      //console.log('EagleElement.lookup', console.config({ depth: 4 }), { o, p, v });
 
       if(create && !v) {
         const { tagName } = p.last;
@@ -580,7 +580,7 @@ throw new Error(`path ${ref.path} != ${inst.ref.path}`);*/
       const measures = [...this.plain].filter(e => e.layer.name == 'Measures');
       if(measures.length >= 4) {
         bb.update(measures);
-        console.log('bb', bb);
+        //console.log('bb', bb);
         return bb;
       }
     }

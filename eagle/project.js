@@ -63,8 +63,8 @@ export class EagleProject {
         let doc = EagleDocument.open(file);
         this.list[index] = doc;
 
-        //console.log('lazyOpen',console.config({customInspect:false}), [...doc.libraries.list ]);
-        if(doc.libraries) this.addLibraries([...doc.libraries.list].map(l => l.name));
+       console.log('doc.libraries',console.config({customInspect:false}), doc.libraries);
+          if(doc.libraries) this.addLibraries([...doc.libraries.list].map(l => l.name));
 
         return doc;
       },
