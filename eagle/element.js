@@ -65,7 +65,7 @@ export class EagleElement extends EagleNode {
   static makeTransparent = new RGBA(255, 255, 255).toAlpha();
 
   static get(owner, ref, raw) {
-      if(ref.length === 0 || raw === undefined) {
+    if(ref.length === 0 || raw === undefined) {
       let root = 'root' in ref ? ref.root : null;
       let path = 'path' in ref ? ref.path : ref;
       globalThis.tmp = { owner, root, path, raw, ref };
@@ -100,12 +100,11 @@ export class EagleElement extends EagleNode {
       if(!raw && isObject(ref.path)) raw = ref.path.deref(root, true);
     } catch(e) {}
 
-     //console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
+    //console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
     let inst = doc.raw2element(raw, owner, ref);
     //console.log('EagleElement.get(3)', console.config({ depth: 2 }), { inst, doc });
 
     inst.ref = ref;
- 
 
     insert(inst, ref.path);
     EagleElement.currentElement = inst;
@@ -237,9 +236,8 @@ export class EagleElement extends EagleNode {
               const libName = elem.attributes.library;
               const pkgName = elem.handlers.package();
               const library = this.document.getLibrary(libName);
-              // console.log(this.tagName, { libName, pkgName, library, key });
 
-              console.log(this.tagName, { library, pkgName });
+              //console.log(this.tagName, { libName, pkgName, library, key });
 
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
