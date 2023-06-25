@@ -1339,7 +1339,10 @@ function invokeOrReturn(arg, f) {
  * concatenanted htm/src/integrations/preact/standalone.mjs
  */
 
-const html = h.bind(h);
+import htm from './preact/htm.js';
+
+const html = htm.bind(createElement);
+
 export {
   createElement as h,
   options,

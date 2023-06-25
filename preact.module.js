@@ -1814,8 +1814,6 @@ function invokeOrReturn(arg, f) {
 
 /* -------- end of '/home/roman/Projects/plot-cv/htm/src/index.mjs' --------- */
 
-htm.bind(createElement);
-
 const MODE_SLASH = 0;
 const MODE_TEXT = 1;
 const MODE_WHITESPACE = 2;
@@ -2024,6 +2022,7 @@ const html = htm$1.bind(createElement);
 
 export {
   Component,
+  Fragment,
   createContext,
   createRef,
   createElement as h,
@@ -2041,7 +2040,7 @@ export {
   useRef,
   useState
 };
- 
+
 /**
  * Clones the given VNode, optionally adding attributes/props and replacing its children.
  * @param {import('./internal').VNode} vnode The virtual DOM element to clone
@@ -2057,31 +2056,44 @@ export function cloneElement(vnode, props, children) {
 
   let defaultProps;
 
-  if (vnode.type && vnode.type.defaultProps) {
+  if(vnode.type && vnode.type.defaultProps) {
     defaultProps = vnode.type.defaultProps;
   }
 
-  for (i in props) {
-    if (i == 'key') key = props[i];
-    else if (i == 'ref') ref = props[i];
-    else if (props[i] === undefined && defaultProps !== undefined) {
+  for(i in props) {
+    if(i == 'key') key = props[i];
+    else if(i == 'ref') ref = props[i];
+    else if(props[i] === undefined && defaultProps !== undefined) {
       normalizedProps[i] = defaultProps[i];
     } else {
       normalizedProps[i] = props[i];
     }
   }
 
-  if (arguments.length > 2) {
-    normalizedProps.children =
-      arguments.length > 3 ? slice.call(arguments, 2) : children;
+  if(arguments.length > 2) {
+    normalizedProps.children = arguments.length > 3 ? slice.call(arguments, 2) : children;
   }
 
-  return createVNode(
-    vnode.type,
-    normalizedProps,
-    key || vnode.key,
-    ref || vnode.ref,
-    null
-  );
+  return createVNode(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
 }
 
+/**
+ * Flatten and loop through the children of a virtual node
+ * @param {import('../index').ComponentChildren} children The unflattened
+ * children of a virtual node
+ * @returns {import('../internal').VNode[]}
+ */
+export function toChildArray(children, out) {
+  out = out || [];
+  if(children == null || typeof children == 'boolean') {
+  } else if(isArray(children)) {
+    children.some(child => {
+      toChildArray(child, out);
+    });
+  } else {
+    out.push(children);
+  }
+  return out;
+}
+
+export { forwardRef } from './preact/forwardRef.js';
