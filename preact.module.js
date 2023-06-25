@@ -10,16 +10,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/* ---- start of '/home/roman/Projects/plot-cv/preact/src/constants.js' ----- */
-
 const EMPTY_OBJ = {};
 const EMPTY_ARR = [];
 const IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
-
-/* ----- end of '/home/roman/Projects/plot-cv/preact/src/constants.js' ------ */
-
-/* ------- start of '/home/roman/Projects/plot-cv/preact/src/util.js' ------- */
 
 const isArray = Array.isArray;
 
@@ -33,7 +26,6 @@ const isArray = Array.isArray;
 function assign(obj, props) {
   // @ts-ignore We change the type of `obj` to be `O & P`
   for(let i in props) obj[i] = props[i];
-  return /** @type {O & P} */ obj;
 }
 
 /**
@@ -48,10 +40,6 @@ function removeNode(node) {
 }
 const slice = EMPTY_ARR.slice;
 
-/* -------- end of '/home/roman/Projects/plot-cv/preact/src/util.js' -------- */
-
-/* - start of '/home/roman/Projects/plot-cv/preact/src/diff/catch-error.js' - */
-
 /**
  * Find the closest error boundary to a thrown error and call it
  * @param {object} error The thrown value
@@ -62,7 +50,6 @@ const slice = EMPTY_ARR.slice;
  * @param {import('../internal').ErrorInfo} [errorInfo]
  */
 function _catchError(error, vnode, oldVNode, errorInfo) {
-  /** @type {import('../internal').Component} */
   let component, ctor, handled;
   for(; (vnode = vnode._parent); ) {
     if((component = vnode._component) && !component._processingException) {
@@ -89,10 +76,6 @@ function _catchError(error, vnode, oldVNode, errorInfo) {
   throw error;
 }
 
-/* -- end of '/home/roman/Projects/plot-cv/preact/src/diff/catch-error.js' -- */
-
-/* ----- start of '/home/roman/Projects/plot-cv/preact/src/options.js' ------ */
-
 /**
  * The `option` object can potentially contain callback functions
  * that are called during various stages of our renderer. This is the
@@ -105,10 +88,6 @@ function _catchError(error, vnode, oldVNode, errorInfo) {
 export const options = {
   _catchError
 };
-
-/* ------ end of '/home/roman/Projects/plot-cv/preact/src/options.js' ------- */
-
-/* -- start of '/home/roman/Projects/plot-cv/preact/src/create-element.js' -- */
 
 let vnodeId = 0;
 
@@ -193,10 +172,6 @@ function createRef() {
 function Fragment(props) {
   return props.children;
 }
-
-/* --- end of '/home/roman/Projects/plot-cv/preact/src/create-element.js' --- */
-
-/* ---- start of '/home/roman/Projects/plot-cv/preact/src/component.js' ----- */
 
 /**
  * Base Component class. Provides `setState()` and `forceUpdate()`, which
@@ -406,10 +381,6 @@ function process() {
   process._rerenderCount = 0;
 }
 process._rerenderCount = 0;
-
-/* ----- end of '/home/roman/Projects/plot-cv/preact/src/component.js' ------ */
-
-/* -- start of '/home/roman/Projects/plot-cv/preact/src/diff/children.js' --- */
 
 /**
  * Diff the children of a virtual node
@@ -661,10 +632,6 @@ function findMatchingIndex(childVNode, oldChildren, skewedIndex, remainingOldChi
   return -1;
 }
 
-/* --- end of '/home/roman/Projects/plot-cv/preact/src/diff/children.js' ---- */
-
-/* ---- start of '/home/roman/Projects/plot-cv/preact/src/diff/props.js' ---- */
-
 /**
  * Diff the old and new properties of a VNode and apply changes to the DOM node
  * @param {import('../internal').PreactElement} dom The DOM node to apply
@@ -804,10 +771,6 @@ function eventProxy(e) {
 function eventProxyCapture(e) {
   return this._listeners[e.type + true](options.event ? options.event(e) : e);
 }
-
-/* ----- end of '/home/roman/Projects/plot-cv/preact/src/diff/props.js' ----- */
-
-/* ---- start of '/home/roman/Projects/plot-cv/preact/src/diff/index.js' ---- */
 
 /**
  * Diff two virtual nodes and apply proper changes to the DOM
@@ -1236,10 +1199,6 @@ function doRender(props, state, context) {
   return this.constructor(props, context);
 }
 
-/* ----- end of '/home/roman/Projects/plot-cv/preact/src/diff/index.js' ----- */
-
-/* ------ start of '/home/roman/Projects/plot-cv/preact/src/render.js' ------ */
-
 /**
  * Render a Preact virtual node into a DOM element
  * @param {import('./internal').ComponentChild} vnode The virtual node to render
@@ -1284,27 +1243,20 @@ function render(vnode, parentDom, replaceNode) {
   commitRoot(commitQueue, vnode);
 }
 
-/* --- end of '/home/roman/Projects/plot-cv/preact/src/clone-element.js' ---- */
-
-/* -- start of '/home/roman/Projects/plot-cv/preact/src/create-context.js' -- */
-
 let i = 0;
 function createContext(defaultValue, contextId) {
   contextId = '__cC' + i++;
   const context = {
     _id: contextId,
     _defaultValue: defaultValue,
-    /** @type {import('./internal').FunctionComponent} */
     Consumer(props, contextValue) {
       // return props.children(
       // 	context[contextId] ? context[contextId].props.value : defaultValue
       // );
       return props.children(contextValue);
     },
-    /** @type {import('./internal').FunctionComponent} */
     Provider(props) {
       if(!this.getChildContext) {
-        /** @type {import('./internal').Component[]} */
         let subs = [];
         let ctx = {};
         ctx[contextId] = this;
@@ -1353,23 +1305,14 @@ function createContext(defaultValue, contextId) {
   return (context.Provider._contextRef = context.Consumer.contextType = context);
 }
 
-/* --- end of '/home/roman/Projects/plot-cv/preact/src/create-context.js' --- */
-
-/* --- start of '/home/roman/Projects/plot-cv/preact/hooks/src/index.js' ---- */
-
-/** @type {number} */
 let currentIndex;
 
-/** @type {import('./internal').Component} */
 let currentComponent;
 
-/** @type {import('./internal').Component} */
 let previousComponent;
 
-/** @type {number} */
 let currentHook = 0;
 
-/** @type {Array<import('./internal').Component>} */
 let afterPaintEffects = [];
 let EMPTY = [];
 let oldBeforeDiff = options._diff;
@@ -1504,7 +1447,6 @@ function useState(initialState) {
  * @returns {[ any, (state: any) => void ]}
  */
 function useReducer(reducer, initialState, init) {
-  /** @type {import('./internal').ReducerHookState} */
   const hookState = getHookState(currentIndex++, 2);
   hookState._reducer = reducer;
   if(!hookState._component) {
@@ -1586,7 +1528,6 @@ function useReducer(reducer, initialState, init) {
  * @param {any[]} args
  */
 function useEffect(callback, args) {
-  /** @type {import('./internal').EffectHookState} */
   const state = getHookState(currentIndex++, 3);
   if(!options._skipEffects && argsChanged(state._args, args)) {
     state._value = callback;
@@ -1600,7 +1541,6 @@ function useEffect(callback, args) {
  * @param {any[]} args
  */
 function useLayoutEffect(callback, args) {
-  /** @type {import('./internal').EffectHookState} */
   const state = getHookState(currentIndex++, 4);
   if(!options._skipEffects && argsChanged(state._args, args)) {
     state._value = callback;
@@ -1644,7 +1584,6 @@ function useImperativeHandle(ref, createHandle, args) {
  * @param {any[]} args
  */
 function useMemo(factory, args) {
-  /** @type {import('./internal').MemoHookState} */
   const state = getHookState(currentIndex++, 7);
   if(argsChanged(state._args, args)) {
     state._pendingValue = factory();
@@ -1672,7 +1611,6 @@ function useContext(context) {
   // We could skip this call here, but than we'd not call
   // `options._hook`. We need to do that in order to make
   // the devtools aware of this hook.
-  /** @type {import('./internal').ContextHookState} */
   const state = getHookState(currentIndex++, 9);
   // The devtools needs access to the context object to
   // be able to pull of the default value when no provider
@@ -1701,7 +1639,6 @@ function useDebugValue(value, formatter) {
  * @param {(error: any, errorInfo: import('preact').ErrorInfo) => void} cb
  */
 function useErrorBoundary(cb) {
-  /** @type {import('./internal').ErrorBoundaryHookState} */
   const state = getHookState(currentIndex++, 10);
   const errState = useState();
   state._value = cb;
@@ -1811,8 +1748,6 @@ function argsChanged(oldArgs, newArgs) {
 function invokeOrReturn(arg, f) {
   return typeof f == 'function' ? f(arg) : f;
 }
-
-/* -------- end of '/home/roman/Projects/plot-cv/htm/src/index.mjs' --------- */
 
 const MODE_SLASH = 0;
 const MODE_TEXT = 1;
