@@ -130,7 +130,8 @@ export class EagleNode {
   }
 
   cacheFields() {
-    switch (this.tagName) {
+    const { tagName } = this;
+    switch (tagName) {
       case 'schematic':
         return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets'] /*, ['modules']*/];
       case 'board':
@@ -159,6 +160,7 @@ export class EagleNode {
   initCache(ctor = this.childConstructor, listCtor = (o, p, v) => v) {
     let fields = this.cacheFields();
     let node = this;
+
     if(fields && fields.length) {
       define(this, { cache: {}, lists: {} });
       let lazy = {};
@@ -170,15 +172,17 @@ export class EagleNode {
       for(let xpath of fields) {
         try {
           let key = xpath[xpath.length - 1];
-          // console.log('xpath', xpath);
           let path = new Pointer([...new ImmutableXPath(xpath).toPointer(raw)].concat(['children']));
           lazy[key] = () => this.lookup(xpath, true);
           if(!path.deref(raw, true)) {
             //   console.warn('path not found', path + '');
             continue;
           }
-          path = this.ref.path.concat([path]);
-          lists[key] = () => listCtor(owner, path);
+
+          // path = this.ref.path.concat(path);
+
+          lists[key] = () => listCtor(owner, this.ref.down(...path));
+
           maps[key] =
             ['sheets', 'connects', 'plain'].indexOf(key) != -1
               ? lists[key]
@@ -335,7 +339,7 @@ export class EagleNode {
     //    return tXml.toString([this.raw]);
   }
 
-  /* inspect(depth, options) {
+  inspect(depth, options) {
     let attrs = [''];
     if(depth > 100) throw new Error(`EagleNode.inspect()`);
     const { raw } = this;
@@ -355,9 +359,7 @@ export class EagleNode {
               ' ',
               text(attr, 1, 33),
               text(':', 1, 36),
-              /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(
-                attr
-              )
+              /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(attr)
                 ? text(getAttr(attr), 1, 36)
                 : text("'" + getAttr(attr) + "'", 1, 32)
             ),
@@ -379,12 +381,13 @@ export class EagleNode {
       ret += `</${tag}>`;
     }
     const name = this[Symbol.toStringTag];
-    console.log('EagleNode.inspect', { concat, text, name });
+    //console.log('EagleNode.inspect', { concat, text, name });
     return (ret = concat(text(name + ' ', 0), ret));
   }
+
   [Symbol.for('nodejs.util.inspect.custom')](depth, options) {
     return this.inspect(depth, options);
-  }*/
+  }
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
     //console.log('EagleNode.lookup(', xpath, ',', t + '', ')');

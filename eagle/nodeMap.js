@@ -82,11 +82,11 @@ export class EagleNodeMap {
     return Object.fromEntries(this.entries(key));
   }
 
-  [inspectSymbol]() {
+/*  [Symbol.inspect]() {
     return (
       text(className(this), 0) + ` {\n  ` + [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + (v[inspectSymbol] ?? v.inspect).call(v), '') + `\n}`
     );
-  }
+  }*/
 
   static create(list, key = 'name', filter) {
     const Ctor = EagleNodeMap;

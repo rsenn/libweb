@@ -1,4 +1,4 @@
-import { define, lazyProperty, tryCatch, unique } from '../misc.js';
+import { define,weakDefine,properties, lazyProperty, tryCatch, unique } from '../misc.js';
 import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
@@ -56,20 +56,17 @@ export class EagleProject {
   lazyOpen(file) {
     let index = this.filenames.length;
     this.filenames.push(file);
-    lazyProperty(
-      this.documents,
-      path.basename(file),
-      () => {
+    weakDefine(
+      this.documents, 
+      properties({  [  path.basename(file)]: () => {
         let doc = EagleDocument.open(file);
         this.list[index] = doc;
 
-        console.log('doc.libraries', console.config({ customInspect: false }), doc.libraries);
-        if(doc.libraries) this.addLibraries([...doc.libraries.list].map(l => l.name));
+         if(doc.libraries) this.addLibraries([...doc.libraries.list].map(l => l.name));
 
         return doc;
-      },
-      { enumerable: true, configurable: true }
-    );
+      }
+    }, { memoize: true, configurable: true }));
   }
 
   close(file) {

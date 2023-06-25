@@ -1,6 +1,6 @@
 import parseXML from '../xml/parse.js';
 import tXml from '../tXml.js';
-import { define, abbreviate, mapAdapter, mapFunction, memoize, weakMapper } from '../misc.js';
+import { define, properties, abbreviate, mapAdapter, mapFunction, memoize, weakMapper } from '../misc.js';
 import * as deep from '../deep.js';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
@@ -118,16 +118,23 @@ export class EagleDocument extends EagleNode {
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 
     if(this.type == 'sch') {
-      let schematic = this.lookup('/eagle/drawing/schematic');
-      let libraries = schematic.get('libraries');
-      //console.log('libraries', { libraries });
+      //   let schematic = this.lookup('/eagle/drawing/schematic');
 
-      let { parts, sheets } = schematic;
-      lazyProperties(this, {
-        sheets: () => EagleNodeList.create(sheets, sheets.path.concat(['children'])),
-        parts: () => EagleNodeMap.create(parts.children, 'name'), // EagleNodeList.create(parts, parts.path.concat(['children'])),
-        libraries: () => EagleNodeMap.create(libraries.children, 'name')
-      });
+      let sheets = this.lookup('/eagle/drawing/schematic/sheets');
+      let parts = this.lookup('/eagle/drawing/schematic/parts');
+      let libraries = this.lookup('eagle/drawing/schematic/libraries');
+
+      define(
+        this,
+        properties(
+          {
+            sheets: () => EagleNodeList.create(sheets, sheets.path.concat(['children'])),
+            parts: () => EagleNodeMap.create(parts.children, 'name'), // EagleNodeList.create(parts, parts.path.concat(['children'])),
+            libraries: () => EagleNodeMap.create(libraries.children, 'name')
+          },
+          { memoize: true }
+        )
+      );
     }
     if(this.type == 'brd') {
       let board = this.get('board') ?? this.lookup('/eagle/drawing/board');
@@ -361,7 +368,7 @@ export class EagleDocument extends EagleNode {
   }
 
   getLibrary(name) {
-    return this.get(e => e.tagName == 'library' && e.attributes.name == name);
+    return this.libraries[name];
   }
 
   getMainElement = memoize(function () {

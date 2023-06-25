@@ -97,6 +97,10 @@ export const MakeRotation = (rot, f = 1) => {
 
 export const ExtractRotation = transformation => {
   let [sc] = transformation;
+
+  if(sc === undefined)
+    return new TransformationList();
+  
   let t = transformation.slice(sc.type == 'scale' && sc.x == 1 && sc.y == -1 ? 1 : 0).filter(t => t.type != 'translate');
 
   let angle = t.rotation ? t.rotation.angle : 0;

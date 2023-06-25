@@ -1,10 +1,9 @@
 import { EagleRef } from './ref.js';
 import { EagleElement } from './element.js';
-import { className, define,  isObject, inspectSymbol } from '../misc.js';
+import { className, define, isObject, inspectSymbol } from '../misc.js';
 import { text } from './common.js';
 
 export class EagleNodeList {
-  
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
     if(isObject(owner) && !('raw' in owner)) throw new Error('raw owner');
     if(isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);

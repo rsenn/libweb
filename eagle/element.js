@@ -65,8 +65,7 @@ export class EagleElement extends EagleNode {
   static makeTransparent = new RGBA(255, 255, 255).toAlpha();
 
   static get(owner, ref, raw) {
-    //console.log('EagleElement.get', console.config({ depth: 2 }), { owner, ref, raw });
-    if(ref.length === 0 || raw === undefined) {
+      if(ref.length === 0 || raw === undefined) {
       let root = 'root' in ref ? ref.root : null;
       let path = 'path' in ref ? ref.path : ref;
       globalThis.tmp = { owner, root, path, raw, ref };
@@ -80,6 +79,7 @@ export class EagleElement extends EagleNode {
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
     //console.log('EagleElement.get(2)', {root,ref});
     //
+
     if(isObject(ref) && /*Array.isArray(ref) &&*/ !(ref instanceof EagleReference)) {
       try {
         ref = new EagleReference(owner.raw, ref);
@@ -95,18 +95,17 @@ export class EagleElement extends EagleNode {
       ref = new EagleReference(root, ref.path || ref);
     }
 
+    if(!raw) raw = ref.dereference();
     try {
       if(!raw && isObject(ref.path)) raw = ref.path.deref(root, true);
     } catch(e) {}
-    if(!raw) raw = ref.dereference();
-    //console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
+
+     //console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
     let inst = doc.raw2element(raw, owner, ref);
     //console.log('EagleElement.get(3)', console.config({ depth: 2 }), { inst, doc });
 
     inst.ref = ref;
-
-    /*if(!ref.path.equals(inst.ref.path))
-throw new Error(`path ${ref.path} != ${inst.ref.path}`);*/
+ 
 
     insert(inst, ref.path);
     EagleElement.currentElement = inst;
@@ -133,7 +132,9 @@ throw new Error(`path ${ref.path} != ${inst.ref.path}`);*/
     EagleElement.list.push(this);
     define(this, { handlers: {} });
     let path = this.ref.path;
+
     //console.log('new EagleElement', console.config({ depth:1, compact: 2 }),  {owner,ref,raw, path});
+
     if(owner === null) throw new Error('owner == null');
     if(raw === undefined || (raw.tagName === undefined && raw.attributes === undefined && raw.children === undefined)) {
       try {
@@ -150,6 +151,7 @@ throw new Error(`path ${ref.path} != ${inst.ref.path}`);*/
       },
       enumerable: true
     });
+
     let doc = this.getDocument();
     let elem = this;
     const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
@@ -236,6 +238,8 @@ throw new Error(`path ${ref.path} != ${inst.ref.path}`);*/
               const pkgName = elem.handlers.package();
               const library = this.document.getLibrary(libName);
               // console.log(this.tagName, { libName, pkgName, library, key });
+
+              console.log(this.tagName, { library, pkgName });
 
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
