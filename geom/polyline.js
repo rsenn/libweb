@@ -3,9 +3,7 @@ import { Rect } from './rect.js';
 import { Line, isLine } from './line.js';
 import { PointList } from './pointList.js';
 import { SVG } from '../dom/svg.js';
-import {  memoize } from '../misc.js';
-
-let createFactory = memoize((...args) => SVG.factory(...args));
+import { memoize } from '../misc.js';
 
 export class Polyline extends PointList {
   constructor(lines = []) {
@@ -46,9 +44,6 @@ export class Polyline extends PointList {
   }
 
   toSVG(factory, attrs = { stroke: '#000', fill: 'none' }, parent = null, prec) {
-    if(!factory) factory = createFactory(document.body);
-    console.log('Polyline.toSVG', factory);
-
     return factory(this.closed ? 'polygon' : 'polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent, prec);
   }
 

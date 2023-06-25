@@ -1,7 +1,6 @@
 import { EagleElement } from './element.js';
 import { define, inserter, isObject, mapWrapper } from '../misc.js';
-import { Size } from '../dom.js';
-import { Point, Rect, BBox, TransformationList } from '../geom.js';
+import { Point, Size, Rect, BBox, TransformationList } from '../geom.js';
 import { MakeRotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
 import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
 import trkl from '../trkl.js';
@@ -39,7 +38,7 @@ export class EagleSVGRenderer {
     );
     const insertCtoP = inserter(this.component2path);
     const insert = inserter(this.path2component, (k, v) => insertCtoP(v, k));
-          this.mirrorY = new TransformationList().scale(1, -1);
+    this.mirrorY = new TransformationList().scale(1, -1);
     this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
       // console.log('EagleSVGRenderer.create',{factory});
@@ -49,15 +48,15 @@ export class EagleSVGRenderer {
         if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
         else if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
 
-       //console.log('EagleSVGRenderer.create', { path }, path.apply, util.getMethodNames(path, 2,0));
+        //console.log('EagleSVGRenderer.create', { path }, path.apply, util.getMethodNames(path, 2,0));
 
         try {
-          let e = [...path].reduce((acc,p) =>  acc[p], doc); // path.deref(doc);
+          let e = [...path].reduce((acc, p) => acc[p], doc); // path.deref(doc);
           let parent = e.parentNode;
 
           insert(path, ret);
         } catch(error) {
-            console.log(`EagleSVGRenderer.constructor ERROR: ${error.message}\n${error.stack}`);
+          console.log(`EagleSVGRenderer.constructor ERROR: ${error.message}\n${error.stack}`);
         }
       }
       return ret;

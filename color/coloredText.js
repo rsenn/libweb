@@ -1,4 +1,4 @@
-import { RGBA } from '../color.js';
+import { RGBA } from '../color/rgba.js';
 
 const FOREGROUND = Symbol.for('foreground');
 const BACKGROUND = Symbol.for('background');

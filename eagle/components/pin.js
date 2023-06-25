@@ -1,7 +1,7 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, ElementToClass, log, PinSizes, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, MakeRotation, RAD2DEG } from '../renderUtils.js';
 import { TransformationList, Rotation, Translation, Point, Line } from '../../geom.js';
-import { RGBA } from '../../color.js';
+import { RGBA } from '../../color/rgba.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
 

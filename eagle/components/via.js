@@ -1,6 +1,6 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, Alignment, AlignmentAttrs, ElementToClass, RenderShape, useTrkl, log, VERTICAL, HORIZONTAL } from '../renderUtils.js';
-import { TransformationList } from '../../geom.js';
+import { TransformationList } from '../../geom/transformation.js';
 import { roundTo } from '../../misc.js';
 import { useValue } from '../../repeater/react-hooks.js';
 

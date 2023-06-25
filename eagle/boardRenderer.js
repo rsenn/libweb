@@ -3,7 +3,7 @@ import { Point, Line, LineList, Rect } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { Cross, Arc, Origin, WirePath, Element, ElementToComponent } from './components.js';
-import { RGBA } from '../color.js';
+import { RGBA } from '../color/rgba.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';

@@ -83,7 +83,6 @@ export function Rect(arg) {
   if(!(this instanceof Rect) || new.target === undefined) return obj;
 }
 
-
 Rect.fromString = str => {
   const matches = [...matchAll(/[-.\d]+/g, str)];
   return new Rect(...matches.map(m => +m[0]));
@@ -336,7 +335,6 @@ Rect.prototype.toCSS = function() {
 
 Rect.prototype.toSVG = function(factory, attrs = { stroke: '#000', fill: 'none' }, parent = null, prec) {
   const { x, y, width, height } = this;
-  if(!factory) factory = SVG.factory(document.body);
 
   console.log('Rect.toSVG', factory);
 
@@ -548,7 +546,6 @@ for(let f of ['scale', 'resize', 'translate']) {
 }
 
 weakDefine(Rect.prototype, Size.prototype, Point.prototype);
-
 
 export const isRect = (rect, testFn = (prop, name, obj) => name in obj) => isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
 

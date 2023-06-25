@@ -9,7 +9,7 @@ import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
 import { LinesToPath } from './renderUtils.js';
 import { isBBox, BBox, Rect, Point, PointList, Line } from '../geom.js';
-import { RGBA } from '../color.js';
+import { RGBA } from '../color/rgba.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { PathMapper } from '../json/pathMapper.js';

@@ -1,7 +1,7 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { TransformationList } from '../../geom.js';
+import { TransformationList } from '../../geom/transformation.js';
 
 export const SMD = ({ data, opts = {}, ...props }) => {
   log('SMD.render ', { data, opts });

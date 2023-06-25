@@ -4,7 +4,7 @@ import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleElementProxy } from './elementProxy.js';
 import { EagleReference } from './ref.js';
-import { RGBA } from '../color.js';
+import { RGBA } from '../color/rgba.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';

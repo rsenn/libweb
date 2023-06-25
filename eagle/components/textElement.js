@@ -4,7 +4,7 @@ import { MakeCoordTransformer, useTrkl, ElementToClass, log, Alignment } from '.
 import { Text } from './text.js';
 import { toXML } from '../../json.js';
 import { classNames } from '../../classNames.js';
-import { TransformationList } from '../../geom.js';
+import { TransformationList } from '../../geom/transformation.js';
 
 export const TextElement = ({ data, opts = {}, transform = new TransformationList(), ...props }) => {
   data = data || props.item;
