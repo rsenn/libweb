@@ -344,7 +344,7 @@ export class EagleNode {
     if(depth > 100) throw new Error(`EagleNode.inspect()`);
     const { raw } = this;
     const { children, tagName, attributes = {} } = raw;
-    const { attributeLists = EagleElement.attributeLists } = this.constructor;
+    const { attributeLists = {} } = this.constructor;
     const attributeList = attributeLists[tagName] || Object.keys(attributes);
     const getAttr = name => {
       for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];

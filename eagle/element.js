@@ -1,6 +1,5 @@
 import { className, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst, properties } from '../misc.js';
 import trkl from '../trkl.js';
-import Util from '../util.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleElementProxy } from './elementProxy.js';

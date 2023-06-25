@@ -20,7 +20,7 @@ export const Polygon = ({ data, opts = {}, ...props }) => {
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
   const { width, layer } = polygon;
-  const points = new PointList(polygon.children.map(v => new Point(coordFn(v))));
+  const points = new PointList([...polygon.children].map(v => new Point(coordFn(v))));
   const color = polygon.getColor();
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
