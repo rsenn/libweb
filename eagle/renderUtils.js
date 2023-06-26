@@ -1,6 +1,6 @@
 import { Point, Line, TransformationList, ImmutableTransformationList, LineList } from '../geom.js';
 import { unique, className, isObject, range, roundTo } from '../misc.js';
-import { Component, useEffect, useState } from '../dom/preactComponent.js';
+import { Component, useEffect, useState } from '../preact.mjs';
 import { classNames } from '../classNames.js';
 import { useTrkl } from '../hooks/useTrkl.js';
 export { useTrkl } from '../hooks/useTrkl.js';

@@ -1,4 +1,4 @@
-import { Component, useState, useMemo } from '../dom/preactComponent.js';
+import { Component, useState, useMemo } from '../preact.module.js';
 
 export function useHover() {
   const [isHovered, setHovered] = useState(false);

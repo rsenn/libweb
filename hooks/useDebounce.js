@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from '../dom/preactComponent.js';
+import { useCallback, useEffect, useRef, useState } from '../preact.module.js';
 import useDebouncedCallback from './useDebouncedCallback.js';
 
 function valueEquality(left, right) {

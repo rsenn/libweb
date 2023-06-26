@@ -1,7 +1,7 @@
 /* --------------------------- start of 'header' ---------------------------- */
 
 import PropTypes from '../prop-types.js';
-import { render as preactRender, cloneElement as preactCloneElement, createRef, h, Component as PreactComponent, options, createContext } from '../dom/preactComponent.js';
+import { render as preactRender, cloneElement as preactCloneElement, createRef, h, Component as PreactComponent, options, createContext } from '../preact.module.js';
 
 /* ---------------------------- end of 'header' ----------------------------- */
 // ==UserScript==

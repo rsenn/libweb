@@ -1,5 +1,5 @@
 import { log } from '../renderUtils.js';
-import { h, Component, Fragment } from '../../dom/preactComponent.js';
+import { h, Component, Fragment } from '../../preact.mjs';
 import { ElementToComponent } from '../components.js';
 import { Via } from './via.js';
 import { Wire } from './wire.js';

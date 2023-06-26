@@ -1,4 +1,4 @@
-import { useState, useEffect } from '../dom/preactComponent.js';
+import { useState, useEffect } from '../preact.mjs';
 import { Repeater } from './repeater.js';
 
 /*! *****************************************************************************

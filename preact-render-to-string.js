@@ -1,4 +1,4 @@
-import { options, h as createElement, Fragment } from './dom/preactComponent.js';
+import { options, h as createElement, Fragment } from './preact.mjs';
 
 // DOM properties that should NOT have "px" added when numeric
 var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;

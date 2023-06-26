@@ -1,4 +1,4 @@
-import { Component, useCallback, useLayoutEffect, useMemo, useState } from '../dom/preactComponent.js';
+import { Component, useCallback, useLayoutEffect, useMemo, useState } from '../preact.module.js';
 import { Event } from '../dom/event.js';
 
 function getDimensionObject(element) {

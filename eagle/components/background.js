@@ -1,4 +1,4 @@
-import { h, Component } from '../../dom/preactComponent.js';
+import { h, Component } from '../../preact.mjs';
 import { useTrkl, log } from '../renderUtils.js';
 
 export const Background = ({ rect, attrs, ...props }) => {

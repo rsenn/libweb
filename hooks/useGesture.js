@@ -1,4 +1,4 @@
-import { React } from '../dom/preactComponent.js';
+import { React } from '../preact.module.js';
 
 // vector add
 function addV(v1, v2) {

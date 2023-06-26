@@ -1,5 +1,5 @@
 import { log, useTransform } from '../renderUtils.js';
-import { h, Component, Fragment } from '../../dom/preactComponent.js';
+import { h, Component, Fragment } from '../../preact.mjs';
 import { ElementToComponent } from '../components.js';
 
 export const SchematicSymbol = ({ data, component = Fragment, id, class: className, ...props }) => {

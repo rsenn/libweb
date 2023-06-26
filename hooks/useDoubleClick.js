@@ -1,4 +1,4 @@
-import { Component, useState, useMemo, useCallback, useRef } from '../dom/preactComponent.js';
+import { Component, useState, useMemo, useCallback, useRef } from '../preact.module.js';
 /**
  * @param {clickEvent} doubleClick
  * @param {clickEvent} [click]

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from '../dom/preactComponent.js';
+import { useCallback, useMemo } from '../preact.module.js';
 import { useAsyncIterator } from './useAsyncIterator.js';
 
 export function useAsyncGenerator(fn, deps) {

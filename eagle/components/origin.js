@@ -1,4 +1,4 @@
-import { h, Component } from '../../dom/preactComponent.js';
+import { h, Component } from '../../preact.mjs';
 import { useTrkl, useAttributes, log } from '../renderUtils.js';
 import { Cross } from './cross.js';
 

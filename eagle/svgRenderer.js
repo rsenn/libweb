@@ -4,7 +4,7 @@ import { Point, Size, Rect, BBox, TransformationList } from '../geom.js';
 import { MakeRotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
 import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
 import trkl from '../trkl.js';
-import { h, Component } from '../dom/preactComponent.js';
+import { h, Component } from '../preact.mjs';
 import { ColorMap } from '../draw/colorMap.js';
 import { SVG } from './components/svg.js';
 import { ImmutableXPath } from '../xml/xpath.js';
@@ -39,7 +39,7 @@ export class EagleSVGRenderer {
     const insertCtoP = inserter(this.component2path);
     const insert = inserter(this.path2component, (k, v) => insertCtoP(v, k));
     this.mirrorY = new TransformationList().scale(1, -1);
-    this.append = factory;
+    //this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
       // console.log('EagleSVGRenderer.create',{factory});
       let ret = factory(tag, attrs, children, parent, element);

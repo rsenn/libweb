@@ -8,7 +8,7 @@ import { MakeRotation, LayerAttributes, MakeCoordTransformer, useTransformation,
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
 import { Sheet } from './components/sheet.js';
-import { h, ReactComponent } from '../dom/preactComponent.js';
+import { h } from '../preact.mjs';
 
 export class SchematicRenderer extends EagleSVGRenderer {
   static pinSizes = {

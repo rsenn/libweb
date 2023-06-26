@@ -1,4 +1,4 @@
-import { useMemo } from '../dom/preactComponent.js';
+import { useMemo } from '../preact.module.js';
 
 import { useIterator } from './useIterator.js';
 

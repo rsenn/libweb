@@ -1,4 +1,4 @@
-import { h, Component } from '../../dom/preactComponent.js';
+import { h, Component } from '../../preact.mjs';
 import { TransformationList } from '../../geom/transformation.js';
 import { Package } from './package.js';
 import { MakeRotation, log } from '../renderUtils.js';

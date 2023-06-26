@@ -1,4 +1,4 @@
-import { h, Fragment, Component } from '../../dom/preactComponent.js';
+import { h, Fragment, Component } from '../../preact.mjs';
 import { MakeCoordTransformer, AlignmentAttrs, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { TransformationList, Point } from '../../geom.js';
 import { Palette } from '../common.js';

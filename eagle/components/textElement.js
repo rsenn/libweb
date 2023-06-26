@@ -1,4 +1,4 @@
-import { h, Component } from '../../dom/preactComponent.js';
+import { h, Component } from '../../preact.mjs';
 import { isObject, roundTo, tryCatch } from '../../misc.js';
 import { MakeCoordTransformer, useTrkl, ElementToClass, log, Alignment } from '../renderUtils.js';
 import { Text } from './text.js';

@@ -9,7 +9,7 @@ import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPat
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Repeater } from '../repeater/repeater.js';
 import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName, RenderShape } from './renderUtils.js';
-import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
+import { h, Component, Fragment, useEffect } from '../preact.mjs';
 import { classNames } from '../classNames.js';
 import { digit2color, GetFactor, GetColorBands, ValueToNumber, NumberToValue, GetExponent, GetMantissa } from '../eda/colorCoding.js';
 import { EagleNodeMap } from './nodeMap.js';

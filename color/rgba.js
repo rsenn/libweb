@@ -1,4 +1,4 @@
-import { HSLA, ImmutableHSLA } from './hsla.js';
+//import { HSLA, ImmutableHSLA } from './hsla.js';
 import { clamp, className, curry, define, defineGetter, immutableClass, randInt, roundTo, tryCatch } from '../misc.js';
 
 /**
@@ -359,7 +359,7 @@ RGBA.prototype.toHSLA = function() {
 
   //console.log("RGBA.toHSLA ", { h, s, l, a });
 
-  return new (Object.isFrozen(this) ? ImmutableHSLA : HSLA)(Math.round(h), roundTo(s, 100 / 255), roundTo(l, 100 / 255), roundTo(a, 1 / 255));
+  return { h: Math.round(h), s: roundTo(s, 100 / 255), l: roundTo(l, 100 / 255), a: roundTo(a, 1 / 255) };
 };
 
 RGBA.prototype.toCMYK = function() {
@@ -584,7 +584,7 @@ RGBA.prototype[Symbol.iterator] = function* () {
   yield* [r, g, b, a][Symbol.iterator]();
 };
 
-RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
+RGBA.prototype[Symbol.for('quickjs.inspect.custom')] = function() {
   const { r, g, b, a } = this;
   let arr = a !== undefined && a != 255 ? [r, g, b, a] : [r, g, b];
   let ret = arr

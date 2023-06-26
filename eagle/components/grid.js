@@ -1,4 +1,4 @@
-import { h, Component, useRef } from '../../dom/preactComponent.js';
+import { h, Component, useRef } from '../../preact.mjs';
 import { TransformationList } from '../../geom/transformation.js';
 import { useAttributes, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';

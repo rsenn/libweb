@@ -1,4 +1,4 @@
-import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
+import { h, Component, Fragment, useEffect } from '../preact.mjs';
 
 export const FixedMedium = ({ id = 'Fixed-Medium', family = 'Fixed' }) =>
   h(

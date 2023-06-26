@@ -1,4 +1,4 @@
-import { Component } from '../dom/preactComponent.js';
+import { Component } from '../preact.mjs';
 import { polarToCartesian, describeArc, Arc } from './components/arc.js';
 import { Background } from './components/background.js';
 import { Board } from './components/board.js';
