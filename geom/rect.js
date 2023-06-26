@@ -16,21 +16,38 @@ export function Rect(arg) {
     if(typeof obj[field] != 'number') obj[field] = 0;
   });
 
-  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  if(
+    arg &&
+    arg.x1 !== undefined &&
+    arg.y1 !== undefined &&
+    arg.x2 !== undefined &&
+    arg.y2 !== undefined
+  ) {
     const { x1, y1, x2, y2 } = arg;
     obj.x = x1;
     obj.y = y1;
     obj.width = x2 - x1;
     obj.height = y2 - y1;
     ret = 1;
-  } else if(arg && arg.x !== undefined && arg.y !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  } else if(
+    arg &&
+    arg.x !== undefined &&
+    arg.y !== undefined &&
+    arg.x2 !== undefined &&
+    arg.y2 !== undefined
+  ) {
     const { x, y, x2, y2 } = arg;
     obj.x = x;
     obj.y = y;
     obj.width = x2 - x;
     obj.height = y2 - y;
     ret = 1;
-  } else if(isPoint(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
+  } else if(
+    isPoint(arg) &&
+    arg.y !== undefined &&
+    arg.width !== undefined &&
+    arg.height !== undefined
+  ) {
     obj.x = parseFloat(arg.x);
     obj.y = parseFloat(arg.y);
     obj.width = parseFloat(arg.width);
@@ -186,7 +203,14 @@ const getSize = memoize(rect =>
   })
 );
 
-const getPoint = memoize(rect => bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => v !== undefined ? (rect[k] = v) : rect[k]));
+const getPoint = memoize(rect =>
+  bindProperties(
+    new Point(0, 0),
+    rect,
+    ['x', 'y'],
+    k => v => v !== undefined ? (rect[k] = v) : rect[k]
+  )
+);
 
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
@@ -277,7 +301,8 @@ Rect.prototype.prod = function(...args) {
   return r;
 };
 Rect.prototype.outset = function(...a) {
-  let [top, right, bottom, left] = a.length >= 4 ? a : a.length >= 2 ? [a[0], a[1], a[0], a[1]] : [a[0], a[0], a[0], a[0]];
+  let [top, right, bottom, left] =
+    a.length >= 4 ? a : a.length >= 2 ? [a[0], a[1], a[0], a[1]] : [a[0], a[0], a[0], a[0]];
   this.x -= left;
   this.y -= top;
   this.width += left + right;
@@ -285,7 +310,8 @@ Rect.prototype.outset = function(...a) {
   return this;
 };
 Rect.prototype.inset = function(...a) {
-  let [top, right, bottom, left] = a.length >= 4 ? a : a.length >= 2 ? [a[0], a[1], a[0], a[1]] : [a[0], a[0], a[0], a[0]];
+  let [top, right, bottom, left] =
+    a.length >= 4 ? a : a.length >= 2 ? [a[0], a[1], a[0], a[1]] : [a[0], a[0], a[0], a[0]];
   if(left + right < this.width && top + bottom < this.height) {
     this.x += left;
     this.y += top;
@@ -333,12 +359,14 @@ Rect.prototype.toCSS = function() {
   };
 };
 
-Rect.prototype.toSVG = function(factory, attrs = { stroke: '#000', fill: 'none' }, parent = null, prec) {
+Rect.prototype.toSVG = function(
+  factory = (tagName, attributes, children) => ({ tagName, attributes, children }),
+  attrs = { stroke: '#000', fill: 'none' },
+  parent = null,
+  prec
+) {
   const { x, y, width, height } = this;
-
-  console.log('Rect.toSVG', factory);
-
-  return factory('rect', { ...attrs, x, y, width, height }, parent, prec);
+  return factory('rect', { ...attrs, x, y, width, height }, [], prec);
 };
 
 Rect.prototype.toTRBL = function() {
@@ -362,10 +390,20 @@ Rect.prototype.toPoints = function(...args) {
     : points => Array.from(points);
   let num = typeof args[0] == 'number' ? args.shift() : 4;
   const { x, y, width, height } = this;
-  let a = num == 2 ? [new Point(x, y), new Point(x + width, y + height)] : [new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)];
+  let a =
+    num == 2
+      ? [new Point(x, y), new Point(x + width, y + height)]
+      : [
+          new Point(x, y),
+          new Point(x + width, y),
+          new Point(x + width, y + height),
+          new Point(x, y + height)
+        ];
   return ctor(a);
 };
-Rect.prototype.toLines = function(ctor = lines => Array.from(lines, points => new Line(...points))) {
+Rect.prototype.toLines = function(
+  ctor = lines => Array.from(lines, points => new Line(...points))
+) {
   let [a, b, c, d] = Rect.prototype.toPoints.call(this);
   return ctor([
     [a, b],
@@ -382,24 +420,24 @@ Rect.prototype.align = function(align_to, a = 0) {
 
   switch (Align.horizontal(a)) {
     case Align.LEFT:
-      this.x = align_to.x;
+      this.x = align_to.x ?? 0;
       break;
     case Align.RIGHT:
-      this.x = align_to.x + xdiff;
+      this.x = (align_to.x ?? 0) + xdiff;
       break;
     default:
-      this.x = align_to.x + xdiff / 2;
+      this.x = (align_to.x ?? 0) + xdiff / 2;
       break;
   }
   switch (Align.vertical(a)) {
     case Align.TOP:
-      this.y = align_to.y;
+      this.y = align_to.y ?? 0;
       break;
     case Align.BOTTOM:
-      this.y = align_to.y + ydiff;
+      this.y = (align_to.y ?? 0) + ydiff;
       break;
     default:
-      this.y = align_to.y + ydiff / 2;
+      this.y = (align_to.y ?? 0) + ydiff / 2;
       break;
   }
 
@@ -461,7 +499,8 @@ Rect.prototype[inspectSymbol] = function(depth, options) {
   const { x, y, width, height } = this;
   return { x, y, width, height, [Symbol.toStringTag]: 'Rect' };
 };
-Rect.isBBox = rect => !(rect instanceof Rect) && ['x1', 'x2', 'y1', 'y2'].every(prop => prop in rect);
+Rect.isBBox = rect =>
+  !(rect instanceof Rect) && ['x1', 'x2', 'y1', 'y2'].every(prop => prop in rect);
 Rect.assign = (to, rect) => Object.assign(to, new Rect(rect).toObject(Rect.isBBox(to)));
 Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
@@ -475,7 +514,11 @@ Rect.bind = rect => {
   let obj = new Rect();
 };
 
-Rect.inside = (rect, point) => point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+Rect.inside = (rect, point) =>
+  point.x >= rect.x &&
+  point.x <= rect.x + rect.width &&
+  point.y >= rect.y &&
+  point.y <= rect.y + rect.height;
 Rect.from = function(obj) {
   //const { x1,y1,x2,y2 } = obj;
   const fn = (v1, v2) => [Math.min(v1, v2), Math.max(v1, v2)];
@@ -547,7 +590,8 @@ for(let f of ['scale', 'resize', 'translate']) {
 
 weakDefine(Rect.prototype, Size.prototype, Point.prototype);
 
-export const isRect = (rect, testFn = (prop, name, obj) => name in obj) => isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
+export const isRect = (rect, testFn = (prop, name, obj) => name in obj) =>
+  isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
 
 defineGetter(Rect, Symbol.species, function() {
   return this;
