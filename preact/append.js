@@ -4,7 +4,7 @@ import { isComponent } from './is-component.js';
 const add = (arr, ...items) => [...toChildArray(arr), ...items];
 
 export function append(...args) {
-   let tag, elem, parent, attr;
+  let tag, elem, parent, attr;
   if(args.length == 2 && isComponent(args[0])) {
     [elem, parent] = args;
   } else {
@@ -17,8 +17,8 @@ export function append(...args) {
     elem = h(tag, props, children);
   }
   if(parent) {
-     const { props } = parent;
+    const { props } = parent;
     props.children = add(props.children, elem);
   }
-   return elem;
+  return elem;
 }
