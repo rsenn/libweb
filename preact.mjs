@@ -1122,7 +1122,7 @@ export {
 export function toChildArray(children, out) {
   out = out || [];
   if(children == null || typeof children == 'boolean') {
-  } else if(isArray(children)) {
+  } else if(Array.isArray(children)) {
     children.some(child => {
       toChildArray(child, out);
     });

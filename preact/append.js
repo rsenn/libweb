@@ -1,4 +1,7 @@
+import { h, toChildArray } from '../preact.mjs';
 import { isComponent } from './is-component.js';
+
+const add = (arr, ...items) => [...toChildArray(arr), ...items];
 
 export function append(...args) {
    let tag, elem, parent, attr;
