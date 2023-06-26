@@ -916,7 +916,6 @@ export async function GetPortableFileSystem() {
 
 export async function PortableFileSystem(fn = fs => true) {
   return await Util.memoize(async function() {
-
     Util.weakDefine(fs, FilesystemDecorator);
 
     try {
@@ -974,10 +973,7 @@ const FilesystemDecorator = {
     return filesystem.bufferToString(data);
   },
   tempnam(prefix) {
-    if(!prefix)
-      prefix = process.argv[1]
-        .replace(/.*\//g, '')
-        .replace(/\.[a-z]+$/, '');
+    if(!prefix) prefix = process.argv[1].replace(/.*\//g, '').replace(/\.[a-z]+$/, '');
     return prefix + Util.randStr(6);
   },
   mkdtemp(prefix) {
@@ -994,4 +990,3 @@ const FilesystemDecorator = {
     return -1;
   }
 };
-

@@ -1,5 +1,5 @@
 import { Repeater } from '../repeater/repeater.js';
-import { className, isConstructor,types} from '../misc.js';
+import { className, isConstructor, types } from '../misc.js';
 
 function gotClassPrototype(name, protoFn) {
   let ctor = globalThis[name];

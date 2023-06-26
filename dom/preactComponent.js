@@ -99,10 +99,7 @@ export class ReactComponent {
     function flatten(obj, path) {
       insert(path, obj);
       if(obj.props) {
-        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [
-          child,
-          [...path, 'props', 'children', i++]
-        ]);
+        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [child, [...path, 'props', 'children', i++]]);
         children.forEach(args => flatten(...args));
       }
     }
@@ -111,11 +108,7 @@ export class ReactComponent {
   }
 
   static isComponent(obj) {
-    return (
-      typeof obj == 'object' &&
-      obj != null &&
-      ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined)
-    );
+    return typeof obj == 'object' && obj != null && ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined);
   }
 
   static factory(render_to, root) {
@@ -233,11 +226,7 @@ export class ReactComponent {
     if(p != '') o += ` ${p}${nl}`;
     o += `}`;
     let s = ReactComponent.toSource;
-    let c = Array.isArray(children)
-      ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]`
-      : children
-      ? '  ' + s(children, opts, depth + 1)
-      : '';
+    let c = Array.isArray(children) ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]` : children ? '  ' + s(children, opts, depth + 1) : '';
     if(c != '') o += `,${nl}${c}`;
     o += (c != '' ? nl : '') + ')';
     return o;
@@ -265,13 +254,7 @@ export class ReactComponent {
       let value = props[prop];
       if(value === false) continue;
       if(value === true) s += ` ${prop}`;
-      else
-        s +=
-          fmt == 0
-            ? ` ${prop}="${value + ''}"`
-            : fmt == 1
-            ? ` ${prop}={${inspect(value)}}`
-            : (s == '' ? '' : `, `) + ` ${prop}: ${inspect(value)}`;
+      else s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${inspect(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${inspect(value)}`;
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : functionName(tagName);
 
@@ -334,11 +317,7 @@ export class Portal extends Component {
       this.into = this.findNode(this.props.into);
     }
 
-    this.remote = render(
-      (h(PortalProxy, { context: this.context }), (show && this.props.children) || null),
-      this.into,
-      this.remote
-    );
+    this.remote = render((h(PortalProxy, { context: this.context }), (show && this.props.children) || null), this.into, this.remote);
   }
 
   render() {
