@@ -667,21 +667,21 @@ n = {
   (o = f),
   (r = 0);
 
-var t$1,
-  u$1,
+var currentIndex,
+  currentComponent,
   r$1,
-  o$1 = 0,
-  i$1 = [],
-  c$1 = n.__r,
-  f$1 = n.diffed,
-  e$1 = n.__c,
-  a$1 = n.unmount;
+  currentHook = 0,
+  afterPaintEffects = [],
+  oldBeforeRender = n.__r,
+  oldAfterDiff = n.diffed,
+  oldCommit = n.__c,
+  oldBeforeUnmount = n.unmount;
 
-function v$1(t, r) {
-  n.__h && n.__h(u$1, t, o$1 || r), (o$1 = 0);
+function getHookState(t, r) {
+  n.__h && n.__h(currentComponent, t, currentHook || r), (currentHook = 0);
   var i =
-    u$1.__H ||
-    (u$1.__H = {
+    currentComponent.__H ||
+    (currentComponent.__H = {
       __: [],
       __h: []
     });
@@ -689,39 +689,39 @@ function v$1(t, r) {
 }
 
 function useState(n$$1) {
-  return (o$1 = 1), useReducer(k$1, n$$1);
+  return (currentHook = 1), useReducer(invokeOrReturn, n$$1);
 }
 
 function useReducer(n$$1, r, o) {
-  var i = v$1(t$1++, 2);
+  var i = getHookState(currentIndex++, 2);
   return (
     (i.t = n$$1),
     i.__c ||
       ((i.__ = [
-        o ? o(r) : k$1(void 0, r),
+        o ? o(r) : invokeOrReturn(void 0, r),
         function(n$$1) {
           var t = i.t(i.__[0], n$$1);
           i.__[0] !== t && ((i.__ = [t, i.__[1]]), i.__c.setState({}));
         }
       ]),
-      (i.__c = u$1)),
+      (i.__c = currentComponent)),
     i.__
   );
 }
 
 function useEffect(r, o) {
-  var i = v$1(t$1++, 3);
-  !n.__s && j$1(i.__H, o) && ((i.__ = r), (i.__H = o), u$1.__H.__h.push(i));
+  var i = getHookState(currentIndex++, 3);
+  !n.__s && argsChanged(i.__H, o) && ((i.__ = r), (i.__H = o), currentComponent.__H.__h.push(i));
 }
 
 function useLayoutEffect(r, o) {
-  var i = v$1(t$1++, 4);
-  !n.__s && j$1(i.__H, o) && ((i.__ = r), (i.__H = o), u$1.__h.push(i));
+  var i = getHookState(currentIndex++, 4);
+  !n.__s && argsChanged(i.__H, o) && ((i.__ = r), (i.__H = o), currentComponent.__h.push(i));
 }
 
 function useRef(n$$1) {
   return (
-    (o$1 = 5),
+    (currentHook = 5),
     useMemo(function () {
       return {
         current: n$$1
@@ -731,8 +731,8 @@ function useRef(n$$1) {
 }
 
 function useImperativeHandle(n$$1, t, u) {
-  (o$1 = 6),
-    l$1(
+  (currentHook = 6),
+    useLayoutEffect(
       function() {
         'function' == typeof n$$1 ? n$$1(t()) : n$$1 && (n$$1.current = t());
         console.log('Ruler ref:', n$$1);
@@ -742,13 +742,13 @@ function useImperativeHandle(n$$1, t, u) {
 }
 
 function useMemo(n$$1, u) {
-  var r = v$1(t$1++, 7);
-  return j$1(r.__H, u) && ((r.__ = n$$1()), (r.__H = u), (r.__h = n$$1)), r.__;
+  var r = getHookState(currentIndex++, 7);
+  return argsChanged(r.__H, u) && ((r.__ = n$$1()), (r.__H = u), (r.__h = n$$1)), r.__;
 }
 
 function useCallback(n$$1, t) {
   return (
-    (o$1 = 8),
+    (currentHook = 8),
     useMemo(function () {
       return n$$1;
     }, t)
@@ -756,59 +756,59 @@ function useCallback(n$$1, t) {
 }
 
 function useContext(n$$1) {
-  var r = u$1.context[n$$1.__c],
-    o = v$1(t$1++, 9);
-  return (o.__c = n$$1), r ? (null == o.__ && ((o.__ = !0), r.sub(u$1)), r.props.value) : n$$1.__;
+  var r = currentComponent.context[n$$1.__c],
+    o = getHookState(currentIndex++, 9);
+  return (o.__c = n$$1), r ? (null == o.__ && ((o.__ = !0), r.sub(currentComponent)), r.props.value) : n$$1.__;
 }
 
 function useDebugValue(t, u) {
   n.useDebugValue && n.useDebugValue(u ? u(t) : t);
 }
 
-function q$1() {
-  i$1.forEach(function (t) {
+function flushAfterPaintEffects() {
+  afterPaintEffects.forEach(function (t) {
     if(t.__P) {
       try {
-        t.__H.__h.forEach(b$1), t.__H.__h.forEach(g$1), (t.__H.__h = []);
+        t.__H.__h.forEach(invokeCleanup), t.__H.__h.forEach(invokeEffect), (t.__H.__h = []);
       } catch(u) {
         (t.__H.__h = []), n.__e(u, t.__v);
       }
     }
   }),
-    (i$1 = []);
+    (afterPaintEffects = []);
 }
 
 (n.__r = function(n$$1) {
-  c$1 && c$1(n$$1), (t$1 = 0);
-  var r = (u$1 = n$$1.__c).__H;
-  r && (r.__h.forEach(b$1), r.__h.forEach(g$1), (r.__h = []));
+  oldBeforeRender && oldBeforeRender(n$$1), (currentIndex = 0);
+  var r = (currentComponent = n$$1.__c).__H;
+  r && (r.__h.forEach(invokeCleanup), r.__h.forEach(invokeEffect), (r.__h = []));
 }),
   (n.diffed = function(t) {
-    f$1 && f$1(t);
+    oldAfterDiff && oldAfterDiff(t);
     var u = t.__c;
     u &&
       u.__H &&
       u.__H.__h.length &&
-      ((1 !== i$1.push(u) && r$1 === n.requestAnimationFrame) ||
+      ((1 !== afterPaintEffects.push(u) && r$1 === n.requestAnimationFrame) ||
         (
           (r$1 = n.requestAnimationFrame) ||
           function(n$$1) {
             var t,
               u = function() {
-                clearTimeout(r), x$1 && cancelAnimationFrame(t), setTimeout(n$$1);
+                clearTimeout(r), HAS_RAF && cancelAnimationFrame(t), setTimeout(n$$1);
               },
               r = setTimeout(u, 100);
 
-            x$1 && (t = requestAnimationFrame(u));
+            HAS_RAF && (t = requestAnimationFrame(u));
           }
-        )(q$1));
+        )(flushAfterPaintEffects));
   }),
   (n.__c = function(t, u) {
     u.some(function (t) {
       try {
-        t.__h.forEach(b$1),
+        t.__h.forEach(invokeCleanup),
           (t.__h = t.__h.filter(function (n$$1) {
-            return !n$$1.__ || g$1(n$$1);
+            return !n$$1.__ || invokeEffect(n$$1);
           }));
       } catch(r) {
         u.some(function (n$$1) {
@@ -818,30 +818,30 @@ function q$1() {
           n.__e(r, t.__v);
       }
     }),
-      e$1 && e$1(t, u);
+      oldCommit && oldCommit(t, u);
   }),
   (n.unmount = function(t) {
-    a$1 && a$1(t);
+    oldBeforeUnmount && oldBeforeUnmount(t);
     var u = t.__c;
     if(u && u.__H) {
       try {
-        u.__H.__.forEach(b$1);
+        u.__H.__.forEach(invokeCleanup);
       } catch(t) {
         n.__e(t, u.__v);
       }
     }
   });
-var x$1 = 'function' == typeof requestAnimationFrame;
+var HAS_RAF = 'function' == typeof requestAnimationFrame;
 
-function b$1(n$$1) {
+function invokeCleanup(n$$1) {
   'function' == typeof n$$1.__c && n$$1.__c();
 }
 
-function g$1(n$$1) {
+function invokeEffect(n$$1) {
   n$$1.__c = n$$1.__();
 }
 
-function j$1(n$$1, t) {
+function argsChanged(n$$1, t) {
   return (
     !n$$1 ||
     n$$1.length !== t.length ||
@@ -851,7 +851,7 @@ function j$1(n$$1, t) {
   );
 }
 
-function k$1(n$$1, t) {
+function invokeOrReturn(n$$1, t) {
   return 'function' == typeof t ? t(n$$1) : t;
 }
 
