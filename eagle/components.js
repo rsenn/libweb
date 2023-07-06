@@ -30,6 +30,8 @@ import { Wire } from './components/wire.js';
 import { WirePath } from './components/wirePath.js';
 import { ucfirst } from '../misc.js';
 
+console.log('SchematicSymbol', SchematicSymbol);
+
 export const PrimitiveComponents = {
   Wire,
   Rectangle,

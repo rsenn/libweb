@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from '../preact.module.js';
+import { useCallback, useEffect, useRef } from '../preact.mjs';
 
 import * as _ from './utils.js';
 

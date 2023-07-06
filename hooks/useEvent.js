@@ -1,4 +1,4 @@
-import { Component, useEffect } from '../preact.module.js';
+import { Component, useEffect } from '../preact.mjs';
 import { Event } from '../dom/event.js';
 
 export function EventTracker(names, handler) {

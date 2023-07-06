@@ -1,6 +1,6 @@
 'use strict';
 
-import { useEffect, useRef } from '../preact.module.js';
+import { useEffect, useRef } from '../preact.mjs';
 
 export const useGenerator = (generator, deps = []) => {
   const generatorRef = useRef(generator);

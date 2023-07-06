@@ -1,74 +1,44 @@
-/**
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const EMPTY_OBJ = {};
-const EMPTY_ARR = [];
-const IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
+var EMPTY_OBJ = {};
+var EMPTY_ARR = [];
+var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
 
-const isArray = Array.isArray;
-
-/**
- * Assign properties from `props` to `obj`
- * @template O, P The obj and props types
- * @param {O} obj The object to copy properties to
- * @param {P} props The object to copy properties from
- * @returns {O & P}
- */
 function assign(obj, props) {
   // @ts-ignore We change the type of `obj` to be `O & P`
-  for(let i in props) obj[i] = props[i];
+  for (var i in props) {
+    obj[i] = props[i];
+  }
+  return (/** @type {O & P} */obj
+  );
 }
 
-/**
- * Remove a child node from its parent if attached. This is a workaround for
- * IE11 which doesn't support `Element.prototype.remove()`. Using this function
- * is smaller than including a dedicated polyfill.
- * @param {Node} node The node to remove
- */
 function removeNode(node) {
-  let parentNode = node.parentNode;
-  if(parentNode) parentNode.removeChild(node);
+  var parentNode = node.parentNode;
+  if (parentNode) {
+    parentNode.removeChild(node);
+  }
 }
-const slice = EMPTY_ARR.slice;
+var slice = EMPTY_ARR.slice;
 
-/**
- * Find the closest error boundary to a thrown error and call it
- * @param {object} error The thrown value
- * @param {import('../internal').VNode} vnode The vnode that threw
- * the error that was caught (except for unmounting when this parameter
- * is the highest parent that was being unmounted)
- * @param {import('../internal').VNode} [oldVNode]
- * @param {import('../internal').ErrorInfo} [errorInfo]
- */
-function _catchError(error, vnode, oldVNode, errorInfo) {
-  let component, ctor, handled;
-  for(; (vnode = vnode._parent); ) {
-    if((component = vnode._component) && !component._processingException) {
+function _catchError(error, vnode) {
+  var component, ctor, handled;
+  for (; vnode = vnode.__;) {
+    if ((component = vnode.__c) && !component.__) {
       try {
         ctor = component.constructor;
-        if(ctor && ctor.getDerivedStateFromError != null) {
+        if (ctor && ctor.getDerivedStateFromError != null) {
           component.setState(ctor.getDerivedStateFromError(error));
-          handled = component._dirty;
+          handled = component.__d;
         }
-        if(component.componentDidCatch != null) {
-          component.componentDidCatch(error, errorInfo || {});
-          handled = component._dirty;
+        if (component.componentDidCatch != null) {
+          component.componentDidCatch(error);
+          handled = component.__d;
         }
 
         // This is an error boundary. Mark it as having bailed out, and whether it was mid-hydration.
-        if(handled) {
-          return (component._pendingError = component);
+        if (handled) {
+          return component.__E = component;
         }
-      } catch(e) {
+      } catch (e) {
         error = e;
       }
     }
@@ -76,48 +46,34 @@ function _catchError(error, vnode, oldVNode, errorInfo) {
   throw error;
 }
 
-/**
- * The `option` object can potentially contain callback functions
- * that are called during various stages of our renderer. This is the
- * foundation on which all our addons like `preact/debug`, `preact/compat`,
- * and `preact/hooks` are based on. See the `Options` type in `internal.d.ts`
- * for a full list of available option hooks (most editors/IDEs allow you to
- * ctrl+click or cmd+click on mac the type definition below).
- * @type {import('./internal').Options}
- */
-export const options = {
-  _catchError
+var options = {
+  __e: _catchError
 };
+var vnodeId = 0;
 
-let vnodeId = 0;
-
-/**
- * Create an virtual node (used for JSX)
- * @param {import('./internal').VNode["type"]} type The node name or Component
- * constructor for this virtual node
- * @param {object | null | undefined} [props] The properties of the virtual node
- * @param {Array<import('.').ComponentChildren>} [children] The children of the virtual node
- * @returns {import('./internal').VNode}
- */
 function createElement(type, props, children) {
-  let normalizedProps = {},
+  var normalizedProps = {},
     key,
     ref,
     i;
-  for(i in props) {
-    if(i == 'key') key = props[i];
-    else if(i == 'ref') ref = props[i];
-    else normalizedProps[i] = props[i];
+  for (i in props) {
+    if (i == 'key') {
+      key = props[i];
+    } else if (i == 'ref') {
+      ref = props[i];
+    } else {
+      normalizedProps[i] = props[i];
+    }
   }
-  if(arguments.length > 2) {
+  if (arguments.length > 2) {
     normalizedProps.children = arguments.length > 3 ? slice.call(arguments, 2) : children;
   }
 
   // If a Component VNode, check for and apply defaultProps
   // Note: type may be undefined in development, must never error here.
-  if(typeof type == 'function' && type.defaultProps != null) {
-    for(i in type.defaultProps) {
-      if(normalizedProps[i] === undefined) {
+  if (typeof type == 'function' && type.defaultProps != null) {
+    for (i in type.defaultProps) {
+      if (normalizedProps[i] === undefined) {
         normalizedProps[i] = type.defaultProps[i];
       }
     }
@@ -125,43 +81,33 @@ function createElement(type, props, children) {
   return createVNode(type, normalizedProps, key, ref, null);
 }
 
-/**
- * Create a VNode (used internally by Preact)
- * @param {import('./internal').VNode["type"]} type The node name or Component
- * Constructor for this virtual node
- * @param {object | string | number | null} props The properties of this virtual node.
- * If this virtual node represents a text node, this is the text of the node (string or number).
- * @param {string | number | null} key The key for this virtual node, used when
- * diffing it against its children
- * @param {import('./internal').VNode["ref"]} ref The ref property that will
- * receive a reference to its created child
- * @returns {import('./internal').VNode}
- */
 function createVNode(type, props, key, ref, original) {
   // V8 seems to be better at detecting type shapes if the object is allocated from the same call site
   // Do not inline into createElement and coerceToVNode!
-  const vnode = {
-    type,
-    props,
-    key,
-    ref,
-    _children: null,
-    _parent: null,
-    _depth: 0,
-    _dom: null,
+  var vnode = {
+    type: type,
+    props: props,
+    key: key,
+    ref: ref,
+    __k: null,
+    __: null,
+    __b: 0,
+    __e: null,
     // _nextDom must be initialized to undefined b/c it will eventually
     // be set to dom.nextSibling which can return `null` and it is important
     // to be able to distinguish between an uninitialized _nextDom and
     // a _nextDom that has been set to `null`
-    _nextDom: undefined,
-    _component: null,
-    _hydrating: null,
+    __d: undefined,
+    __c: null,
+    __h: null,
     constructor: undefined,
-    _original: original == null ? ++vnodeId : original
+    __v: original == null ? ++vnodeId : original
   };
 
   // Only invoke the vnode hook if this was *not* a direct copy:
-  if(original == null && options.vnode != null) options.vnode(vnode);
+  if (original == null && options.vnode != null) {
+    options.vnode(vnode);
+  }
   return vnode;
 }
 function createRef() {
@@ -173,100 +119,72 @@ function Fragment(props) {
   return props.children;
 }
 
-/**
- * Base Component class. Provides `setState()` and `forceUpdate()`, which
- * trigger rendering
- * @param {object} props The initial component props
- * @param {object} context The initial context from parent components'
- * getChildContext
- */
+var isValidElement = function isValidElement(vnode) {
+  return vnode != null && vnode.constructor === undefined;
+};
+
 function Component(props, context) {
   this.props = props;
   this.context = context;
 }
 
-/**
- * Update component state and schedule a re-render.
- * @this {import('./internal').Component}
- * @param {object | ((s: object, p: object) => object)} update A hash of state
- * properties to update with new values or a function that given the current
- * state and props returns a new partial state
- * @param {() => void} [callback] A function to be called once component state is
- * updated
- */
-Component.prototype.setState = function(update, callback) {
+Component.prototype.setState = function (update, callback) {
   // only clone state when copying to nextState the first time.
-  let s;
-  if(this._nextState != null && this._nextState !== this.state) {
-    s = this._nextState;
+  var s;
+  if (this.__s != null && this.__s !== this.state) {
+    s = this.__s;
   } else {
-    s = this._nextState = assign({}, this.state);
+    s = this.__s = assign({}, this.state);
   }
-  if(typeof update == 'function') {
+  if (typeof update == 'function') {
     // Some libraries like `immer` mark the current state as readonly,
     // preventing us from mutating it, so we need to clone it. See #2716
     update = update(assign({}, s), this.props);
   }
-  if(update) {
+  if (update) {
     assign(s, update);
   }
 
   // Skip update if updater function returned null
-  if(update == null) return;
-  if(this._vnode) {
-    if(callback) {
-      this._stateCallbacks.push(callback);
+  if (update == null) {
+    return;
+  }
+  if (this.__v) {
+    if (callback) {
+      this.__h.push(callback);
     }
     enqueueRender(this);
   }
 };
 
-/**
- * Immediately perform a synchronous re-render of the component
- * @this {import('./internal').Component}
- * @param {() => void} [callback] A function to be called after component is
- * re-rendered
- */
-Component.prototype.forceUpdate = function(callback) {
-  if(this._vnode) {
+Component.prototype.forceUpdate = function (callback) {
+  if (this.__v) {
     // Set render mode so that we can differentiate where the render request
     // is coming from. We need this because forceUpdate should never call
     // shouldComponentUpdate
-    this._force = true;
-    if(callback) this._renderCallbacks.push(callback);
+    this.__e = true;
+    if (callback) {
+      this.__h.push(callback);
+    }
     enqueueRender(this);
   }
 };
 
-/**
- * Accepts `props` and `state`, and returns a new Virtual DOM tree to build.
- * Virtual DOM is generally constructed via [JSX](http://jasonformat.com/wtf-is-jsx).
- * @param {object} props Props (eg: JSX attributes) received from parent
- * element/component
- * @param {object} state The component's current state
- * @param {object} context Context object, as returned by the nearest
- * ancestor's `getChildContext()`
- * @returns {import('./index').ComponentChildren | void}
- */
 Component.prototype.render = Fragment;
 
-/**
- * @param {import('./internal').VNode} vnode
- * @param {number | null} [childIndex]
- */
 function getDomSibling(vnode, childIndex) {
-  if(childIndex == null) {
+  if (childIndex == null) {
     // Use childIndex==null as a signal to resume the search from the vnode's sibling
-    return vnode._parent ? getDomSibling(vnode._parent, vnode._parent._children.indexOf(vnode) + 1) : null;
+    return vnode.__ ? getDomSibling(vnode.__, vnode.__.__k.indexOf(vnode) + 1) : null;
   }
-  let sibling;
-  for(; childIndex < vnode._children.length; childIndex++) {
-    sibling = vnode._children[childIndex];
-    if(sibling != null && sibling._dom != null) {
+  var sibling;
+  for (; childIndex < vnode.__k.length; childIndex++) {
+    sibling = vnode.__k[childIndex];
+    if (sibling != null && sibling.__e != null) {
       // Since updateParentDomPointers keeps _dom pointer correct,
       // we can rely on _dom to tell us if this subtree contains a
       // rendered DOM node, and what the first rendered DOM node is
-      return sibling._dom;
+      return sibling.__e;
     }
   }
 
@@ -278,46 +196,29 @@ function getDomSibling(vnode, childIndex) {
   return typeof vnode.type == 'function' ? getDomSibling(vnode) : null;
 }
 
-/**
- * Trigger in-place re-rendering of a component.
- * @param {import('./internal').Component} component The component to rerender
- */
 function renderComponent(component) {
-  let vnode = component._vnode,
-    oldDom = vnode._dom,
-    parentDom = component._parentDom;
-  if(parentDom) {
-    let commitQueue = [];
-    const oldVNode = assign({}, vnode);
-    oldVNode._original = vnode._original + 1;
-    diff(
-      parentDom,
-      vnode,
-      oldVNode,
-      component._globalContext,
-      parentDom.ownerSVGElement !== undefined,
-      vnode._hydrating != null ? [oldDom] : null,
-      commitQueue,
-      oldDom == null ? getDomSibling(vnode) : oldDom,
-      vnode._hydrating
-    );
+  var vnode = component.__v,
+    oldDom = vnode.__e,
+    parentDom = component.__P;
+  if (parentDom) {
+    var commitQueue = [];
+    var oldVNode = assign({}, vnode);
+    oldVNode.__v = vnode.__v + 1;
+    diff(parentDom, vnode, oldVNode, component.__n, parentDom.ownerSVGElement !== undefined, vnode.__h != null ? [oldDom] : null, commitQueue, oldDom == null ? getDomSibling(vnode) : oldDom, vnode.__h);
     commitRoot(commitQueue, vnode);
-    if(vnode._dom != oldDom) {
+    if (vnode.__e != oldDom) {
       updateParentDomPointers(vnode);
     }
   }
 }
 
-/**
- * @param {import('./internal').VNode} vnode
- */
 function updateParentDomPointers(vnode) {
-  if((vnode = vnode._parent) != null && vnode._component != null) {
-    vnode._dom = vnode._component.base = null;
-    for(let i = 0; i < vnode._children.length; i++) {
-      let child = vnode._children[i];
-      if(child != null && child._dom != null) {
-        vnode._dom = vnode._component.base = child._dom;
+  if ((vnode = vnode.__) != null && vnode.__c != null) {
+    vnode.__e = vnode.__c.base = null;
+    for (var i = 0; i < vnode.__k.length; i++) {
+      var child = vnode.__k[i];
+      if (child != null && child.__e != null) {
+        vnode.__e = vnode.__c.base = child.__e;
         break;
       }
     }
@@ -325,213 +226,122 @@ function updateParentDomPointers(vnode) {
   }
 }
 
-/**
- * The render queue
- * @type {Array<import('./internal').Component>}
- */
-let rerenderQueue = [];
+var rerenderQueue = [];
+var defer = typeof Promise == 'function' ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout;
+var prevDebounce;
 
-/*
- * The value of `Component.debounce` must asynchronously invoke the passed in callback. It is
- * important that contributors to Preact can consistently reason about what calls to `setState`, etc.
- * do, and when their effects will be applied. See the links below for some further reading on designing
- * asynchronous APIs.
- * * [Designing APIs for Asynchrony](https://blog.izs.me/2013/08/designing-apis-for-asynchrony)
- * * [Callbacks synchronous and asynchronous](https://blog.ometer.com/2011/07/24/callbacks-synchronous-and-asynchronous/)
- */
-
-let prevDebounce;
-const defer = typeof Promise == 'function' ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout;
-
-/**
- * Enqueue a rerender of a component
- * @param {import('./internal').Component} c The component to rerender
- */
 function enqueueRender(c) {
-  if((!c._dirty && (c._dirty = true) && rerenderQueue.push(c) && !process._rerenderCount++) || prevDebounce !== options.debounceRendering) {
+  if (!c.__d && (c.__d = true) && rerenderQueue.push(c) && !process.__r++ || prevDebounce !== options.debounceRendering) {
     prevDebounce = options.debounceRendering;
     (prevDebounce || defer)(process);
   }
 }
 
-/**
- * @param {import('./internal').Component} a
- * @param {import('./internal').Component} b
- */
-const depthSort = (a, b) => a._vnode._depth - b._vnode._depth;
-
-/** Flush the render queue by rerendering all queued components */
 function process() {
-  let c;
-  rerenderQueue.sort(depthSort);
-  // Don't update `renderCount` yet. Keep its value non-zero to prevent unnecessary
-  // process() calls from getting scheduled while `queue` is still being consumed.
-  while((c = rerenderQueue.shift())) {
-    if(c._dirty) {
-      let renderQueueLength = rerenderQueue.length;
-      renderComponent(c);
-      if(rerenderQueue.length > renderQueueLength) {
-        // When i.e. rerendering a provider additional new items can be injected, we want to
-        // keep the order from top to bottom with those new items so we can handle them in a
-        // single pass
-        rerenderQueue.sort(depthSort);
+  var queue;
+  while (process.__r = rerenderQueue.length) {
+    queue = rerenderQueue.sort(function (a, b) {
+      return a.__v.__b - b.__v.__b;
+    });
+    rerenderQueue = [];
+    // Don't update `renderCount` yet. Keep its value non-zero to prevent unnecessary
+    // process() calls from getting scheduled while `queue` is still being consumed.
+    queue.some(function (c) {
+      if (c.__d) {
+        renderComponent(c);
       }
-    }
+    });
   }
-  process._rerenderCount = 0;
 }
-process._rerenderCount = 0;
+process.__r = 0;
 
-/**
- * Diff the children of a virtual node
- * @param {import('../internal').PreactElement} parentDom The DOM element whose
- * children are being diffed
- * @param {import('../internal').ComponentChildren[]} renderResult
- * @param {import('../internal').VNode} newParentVNode The new virtual
- * node whose children should be diff'ed against oldParentVNode
- * @param {import('../internal').VNode} oldParentVNode The old virtual
- * node whose children should be diff'ed against newParentVNode
- * @param {object} globalContext The current context object - modified by getChildContext
- * @param {boolean} isSvg Whether or not this DOM node is an SVG node
- * @param {Array<import('../internal').PreactElement>} excessDomChildren
- * @param {Array<import('../internal').Component>} commitQueue List of components
- * which have callbacks to invoke in commitRoot
- * @param {import('../internal').PreactElement} oldDom The current attached DOM
- * element any new dom elements should be placed around. Likely `null` on first
- * render (except when hydrating). Can be a sibling DOM element when diffing
- * Fragments that have siblings. In most cases, it starts out as `oldChildren[0]._dom`.
- * @param {boolean} isHydrating Whether or not we are in hydration
- */
 function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating) {
-  let i,
-    j,
-    oldVNode,
-    childVNode,
-    newDom,
-    firstChildDom,
-    refs,
-    skew = 0;
+  var i, j, oldVNode, childVNode, newDom, firstChildDom, refs;
 
   // This is a compression of oldParentVNode!=null && oldParentVNode != EMPTY_OBJ && oldParentVNode._children || EMPTY_ARR
   // as EMPTY_OBJ._children should be `undefined`.
-  let oldChildren = (oldParentVNode && oldParentVNode._children) || EMPTY_ARR;
-  let oldChildrenLength = oldChildren.length,
-    remainingOldChildren = oldChildrenLength,
-    newChildrenLength = renderResult.length;
-  newParentVNode._children = [];
-  for(i = 0; i < newChildrenLength; i++) {
+  var oldChildren = oldParentVNode && oldParentVNode.__k || EMPTY_ARR;
+  var oldChildrenLength = oldChildren.length;
+  newParentVNode.__k = [];
+  for (i = 0; i < renderResult.length; i++) {
     childVNode = renderResult[i];
-    if(childVNode == null || typeof childVNode == 'boolean' || typeof childVNode == 'function') {
-      childVNode = newParentVNode._children[i] = null;
+    if (childVNode == null || typeof childVNode == 'boolean') {
+      childVNode = newParentVNode.__k[i] = null;
     }
     // If this newVNode is being reused (e.g. <div>{reuse}{reuse}</div>) in the same diff,
     // or we are rendering a component (e.g. setState) copy the oldVNodes so it can have
     // it's own DOM & etc. pointers
-    else if(
-      typeof childVNode == 'string' ||
-      typeof childVNode == 'number' ||
-      // eslint-disable-next-line valid-typeof
-      typeof childVNode == 'bigint'
-    ) {
-      childVNode = newParentVNode._children[i] = createVNode(null, childVNode, null, null, childVNode);
-    } else if(isArray(childVNode)) {
-      childVNode = newParentVNode._children[i] = createVNode(
-        Fragment,
-        {
-          children: childVNode
-        },
-        null,
-        null,
-        null
-      );
-    } else if(childVNode._depth > 0) {
+    else if (typeof childVNode == 'string' || typeof childVNode == 'number' ||
+    // eslint-disable-next-line valid-typeof
+    typeof childVNode == 'bigint') {
+      childVNode = newParentVNode.__k[i] = createVNode(null, childVNode, null, null, childVNode);
+    } else if (Array.isArray(childVNode)) {
+      childVNode = newParentVNode.__k[i] = createVNode(Fragment, {
+        children: childVNode
+      }, null, null, null);
+    } else if (childVNode.__b > 0) {
       // VNode is already in use, clone it. This can happen in the following
       // scenario:
       //   const reuse = <div />
       //   <div>{reuse}<span />{reuse}</div>
-      childVNode = newParentVNode._children[i] = createVNode(childVNode.type, childVNode.props, childVNode.key, childVNode.ref ? childVNode.ref : null, childVNode._original);
+      childVNode = newParentVNode.__k[i] = createVNode(childVNode.type, childVNode.props, childVNode.key, null, childVNode.__v);
     } else {
-      childVNode = newParentVNode._children[i] = childVNode;
+      childVNode = newParentVNode.__k[i] = childVNode;
     }
 
     // Terser removes the `continue` here and wraps the loop body
     // in a `if (childVNode) { ... } condition
-    if(childVNode == null) {
+    if (childVNode == null) {
       continue;
     }
-    childVNode._parent = newParentVNode;
-    childVNode._depth = newParentVNode._depth + 1;
-    let skewedIndex = i + skew;
-    const matchingIndex = findMatchingIndex(childVNode, oldChildren, skewedIndex, remainingOldChildren);
-    if(matchingIndex === -1) {
-      oldVNode = EMPTY_OBJ;
+    childVNode.__ = newParentVNode;
+    childVNode.__b = newParentVNode.__b + 1;
+
+    // Check if we find a corresponding element in oldChildren.
+    // If found, delete the array item by setting to `undefined`.
+    // We use `undefined`, as `null` is reserved for empty placeholders
+    // (holes).
+    oldVNode = oldChildren[i];
+    if (oldVNode === null || oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type) {
+      oldChildren[i] = undefined;
     } else {
-      oldVNode = oldChildren[matchingIndex] || EMPTY_OBJ;
-      oldChildren[matchingIndex] = undefined;
-      remainingOldChildren--;
+      // Either oldVNode === undefined or oldChildrenLength > 0,
+      // so after this loop oldVNode == null or oldVNode is a valid value.
+      for (j = 0; j < oldChildrenLength; j++) {
+        oldVNode = oldChildren[j];
+        // If childVNode is unkeyed, we only match similarly unkeyed nodes, otherwise we match by key.
+        // We always match by type (in either case).
+        if (oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type) {
+          oldChildren[j] = undefined;
+          break;
+        }
+        oldVNode = null;
+      }
     }
+    oldVNode = oldVNode || EMPTY_OBJ;
 
     // Morph the old element into the new one, but don't append it to the dom yet
     diff(parentDom, childVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
-    newDom = childVNode._dom;
-    if((j = childVNode.ref) && oldVNode.ref != j) {
-      if(!refs) refs = [];
-      if(oldVNode.ref) refs.push(oldVNode.ref, null, childVNode);
-      refs.push(j, childVNode._component || newDom, childVNode);
+    newDom = childVNode.__e;
+    if ((j = childVNode.ref) && oldVNode.ref != j) {
+      if (!refs) {
+        refs = [];
+      }
+      if (oldVNode.ref) {
+        refs.push(oldVNode.ref, null, childVNode);
+      }
+      refs.push(j, childVNode.__c || newDom, childVNode);
     }
-    if(newDom != null) {
-      if(firstChildDom == null) {
+    if (newDom != null) {
+      if (firstChildDom == null) {
         firstChildDom = newDom;
       }
-      let isMounting = oldVNode === EMPTY_OBJ || oldVNode._original === null;
-      let hasMatchingIndex = !isMounting && matchingIndex === skewedIndex;
-      if(isMounting) {
-        if(matchingIndex == -1) {
-          skew--;
-        }
-      } else if(matchingIndex !== skewedIndex) {
-        if(matchingIndex === skewedIndex + 1) {
-          skew++;
-          hasMatchingIndex = true;
-        } else if(matchingIndex > skewedIndex) {
-          if(remainingOldChildren > newChildrenLength - skewedIndex) {
-            skew += matchingIndex - skewedIndex;
-            hasMatchingIndex = true;
-          } else {
-            // ### Change from keyed: I think this was missing from the algo...
-            skew--;
-          }
-        } else if(matchingIndex < skewedIndex) {
-          if(matchingIndex == skewedIndex - 1) {
-            skew = matchingIndex - skewedIndex;
-          } else {
-            skew = 0;
-          }
-        } else {
-          skew = 0;
-        }
-      }
-      skewedIndex = i + skew;
-      hasMatchingIndex = hasMatchingIndex || (matchingIndex == i && !isMounting);
-      if(typeof childVNode.type == 'function' && (matchingIndex !== skewedIndex || oldVNode._children === childVNode._children)) {
-        oldDom = reorderChildren(childVNode, oldDom, parentDom);
-      } else if(typeof childVNode.type != 'function' && !hasMatchingIndex) {
-        oldDom = placeChild(parentDom, newDom, oldDom);
-      } else if(childVNode._nextDom !== undefined) {
-        // Only Fragments or components that return Fragment like VNodes will
-        // have a non-undefined _nextDom. Continue the diff from the sibling
-        // of last DOM child of this child VNode
-        oldDom = childVNode._nextDom;
-
-        // Eagerly cleanup _nextDom. We don't need to persist the value because
-        // it is only used by `diffChildren` to determine where to resume the diff after
-        // diffing Components and Fragments. Once we store it the nextDOM local var, we
-        // can clean up the property
-        childVNode._nextDom = undefined;
+      if (typeof childVNode.type == 'function' && childVNode.__k === oldVNode.__k) {
+        childVNode.__d = oldDom = reorderChildren(childVNode, oldDom, parentDom);
       } else {
-        oldDom = newDom.nextSibling;
+        oldDom = placeChild(parentDom, childVNode, oldVNode, oldChildren, newDom, oldDom);
       }
-      if(typeof newParentVNode.type == 'function') {
+      if (typeof newParentVNode.type == 'function') {
         // Because the newParentVNode is Fragment-like, we need to set it's
         // _nextDom property to the nextSibling of its last child DOM node.
         //
@@ -539,97 +349,113 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
         // is a Fragment-like, then oldDom has already been set to that child's _nextDom.
         // If the last child is a DOM VNode, then oldDom will be set to that DOM
         // node's nextSibling.
-        newParentVNode._nextDom = oldDom;
+        newParentVNode.__d = oldDom;
       }
+    } else if (oldDom && oldVNode.__e == oldDom && oldDom.parentNode != parentDom) {
+      // The above condition is to handle null placeholders. See test in placeholder.test.js:
+      // `efficiently replace null placeholders in parent rerenders`
+      oldDom = getDomSibling(oldVNode);
     }
   }
-  newParentVNode._dom = firstChildDom;
+  newParentVNode.__e = firstChildDom;
 
   // Remove remaining oldChildren if there are any.
-  for(i = oldChildrenLength; i--; ) {
-    if(oldChildren[i] != null) {
-      if(typeof newParentVNode.type == 'function' && oldChildren[i]._dom != null && oldChildren[i]._dom == newParentVNode._nextDom) {
+  for (i = oldChildrenLength; i--;) {
+    if (oldChildren[i] != null) {
+      if (typeof newParentVNode.type == 'function' && oldChildren[i].__e != null && oldChildren[i].__e == newParentVNode.__d) {
         // If the newParentVNode.__nextDom points to a dom node that is about to
         // be unmounted, then get the next sibling of that vnode and set
         // _nextDom to it
-
-        newParentVNode._nextDom = oldChildren[i]._dom.nextSibling;
+        newParentVNode.__d = getDomSibling(oldParentVNode, i + 1);
       }
       unmount(oldChildren[i], oldChildren[i]);
     }
   }
 
   // Set refs only after unmount
-  if(refs) {
-    for(i = 0; i < refs.length; i++) {
+  if (refs) {
+    for (i = 0; i < refs.length; i++) {
       applyRef(refs[i], refs[++i], refs[++i]);
     }
   }
 }
 function reorderChildren(childVNode, oldDom, parentDom) {
   // Note: VNodes in nested suspended trees may be missing _children.
-  let c = childVNode._children;
-  let tmp = 0;
-  for(; c && tmp < c.length; tmp++) {
-    let vnode = c[tmp];
-    if(vnode) {
+  var c = childVNode.__k;
+  var tmp = 0;
+  for (; c && tmp < c.length; tmp++) {
+    var vnode = c[tmp];
+    if (vnode) {
       // We typically enter this code path on sCU bailout, where we copy
       // oldVNode._children to newVNode._children. If that is the case, we need
       // to update the old children's _parent pointer to point to the newVNode
       // (childVNode here).
-      vnode._parent = childVNode;
-      if(typeof vnode.type == 'function') {
+      vnode.__ = childVNode;
+      if (typeof vnode.type == 'function') {
         oldDom = reorderChildren(vnode, oldDom, parentDom);
       } else {
-        oldDom = placeChild(parentDom, vnode._dom, oldDom);
+        oldDom = placeChild(parentDom, vnode, vnode, c, vnode.__e, oldDom);
       }
     }
   }
   return oldDom;
 }
-function placeChild(parentDom, newDom, oldDom) {
-  if(oldDom == null || oldDom.parentNode !== parentDom) {
-    parentDom.insertBefore(newDom, null);
-  } else if(newDom != oldDom || newDom.parentNode == null) {
-    parentDom.insertBefore(newDom, oldDom);
-  }
-  return newDom.nextSibling;
-}
 
 /**
- * @param {import('../internal').VNode | string} childVNode
- * @param {import('../internal').VNode[]} oldChildren
- * @param {number} skewedIndex
- * @param {number} remainingOldChildren
- * @returns {number}
+ * Flatten and loop through the children of a virtual node
+ * @param {import('../index').ComponentChildren} children The unflattened
+ * children of a virtual node
+ * @returns {import('../internal').VNode[]}
  */
-function findMatchingIndex(childVNode, oldChildren, skewedIndex, remainingOldChildren) {
-  const key = childVNode.key;
-  const type = childVNode.type;
-  let x = skewedIndex - 1;
-  let y = skewedIndex + 1;
-  let oldVNode = oldChildren[skewedIndex];
-  if(oldVNode === null || (oldVNode && key == oldVNode.key && type === oldVNode.type)) {
-    return skewedIndex;
-  } else if(remainingOldChildren > (oldVNode != null ? 1 : 0)) {
-    while(x >= 0 || y < oldChildren.length) {
-      if(x >= 0) {
-        oldVNode = oldChildren[x];
-        if(oldVNode && key == oldVNode.key && type === oldVNode.type) {
-          return x;
+function toChildArray(children, out) {
+  out = out || [];
+  if (children == null || typeof children == 'boolean') ;else if (Array.isArray(children)) {
+    children.some(function (child) {
+      toChildArray(child, out);
+    });
+  } else {
+    out.push(children);
+  }
+  return out;
+}
+function placeChild(parentDom, childVNode, oldVNode, oldChildren, newDom, oldDom) {
+  var nextDom;
+  if (childVNode.__d !== undefined) {
+    // Only Fragments or components that return Fragment like VNodes will
+    // have a non-undefined _nextDom. Continue the diff from the sibling
+    // of last DOM child of this child VNode
+    nextDom = childVNode.__d;
+
+    // Eagerly cleanup _nextDom. We don't need to persist the value because
+    // it is only used by `diffChildren` to determine where to resume the diff after
+    // diffing Components and Fragments. Once we store it the nextDOM local var, we
+    // can clean up the property
+    childVNode.__d = undefined;
+  } else if (oldVNode == null || newDom != oldDom || newDom.parentNode == null) {
+    outer: if (oldDom == null || oldDom.parentNode !== parentDom) {
+      parentDom.appendChild(newDom);
+      nextDom = null;
+    } else {
+      // `j<oldChildrenLength; j+=2` is an alternative to `j++<oldChildrenLength/2`
+      for (var sibDom = oldDom, j = 0; (sibDom = sibDom.nextSibling) && j < oldChildren.length; j += 2) {
+        if (sibDom == newDom) {
+          break outer;
         }
-        x--;
       }
-      if(y < oldChildren.length) {
-        oldVNode = oldChildren[y];
-        if(oldVNode && key == oldVNode.key && type === oldVNode.type) {
-          return y;
-        }
-        y++;
-      }
+      parentDom.insertBefore(newDom, oldDom);
+      nextDom = oldDom;
     }
   }
-  return -1;
+
+  // If we have pre-calculated the nextDOM node, use it. Else calculate it now
+  // Strictly check for `undefined` here cuz `null` is a valid value of `nextDom`.
+  // See more detail in create-element.js:createVNode
+  if (nextDom !== undefined) {
+    oldDom = nextDom;
+  } else {
+    oldDom = newDom.nextSibling;
+  }
+  return oldDom;
 }
 
 /**
@@ -642,24 +468,24 @@ function findMatchingIndex(childVNode, oldChildren, skewedIndex, remainingOldChi
  * @param {boolean} hydrate Whether or not we are in hydration mode
  */
 function diffProps(dom, newProps, oldProps, isSvg, hydrate) {
-  let i;
-  for(i in oldProps) {
-    if(i !== 'children' && i !== 'key' && !(i in newProps)) {
+  var i;
+  for (i in oldProps) {
+    if (i !== 'children' && i !== 'key' && !(i in newProps)) {
       setProperty(dom, i, null, oldProps[i], isSvg);
     }
   }
-  for(i in newProps) {
-    if((!hydrate || typeof newProps[i] == 'function') && i !== 'children' && i !== 'key' && i !== 'value' && i !== 'checked' && oldProps[i] !== newProps[i]) {
+  for (i in newProps) {
+    if ((!hydrate || typeof newProps[i] == 'function') && i !== 'children' && i !== 'key' && i !== 'value' && i !== 'checked' && oldProps[i] !== newProps[i]) {
       setProperty(dom, i, newProps[i], oldProps[i], isSvg);
     }
   }
 }
 function setStyle(style, key, value) {
-  if(key[0] === '-') {
-    style.setProperty(key, value == null ? '' : value);
-  } else if(value == null) {
+  if (key[0] === '-') {
+    style.setProperty(key, value);
+  } else if (value == null) {
     style[key] = '';
-  } else if(typeof value != 'number' || IS_NON_DIMENSIONAL.test(key)) {
+  } else if (typeof value != 'number' || IS_NON_DIMENSIONAL.test(key)) {
     style[key] = value;
   } else {
     style[key] = value + 'px';
@@ -675,24 +501,24 @@ function setStyle(style, key, value) {
  * @param {boolean} isSvg Whether or not this DOM node is an SVG node or not
  */
 function setProperty(dom, name, value, oldValue, isSvg) {
-  let useCapture;
-  o: if(name === 'style') {
-    if(typeof value == 'string') {
+  var useCapture;
+  o: if (name === 'style') {
+    if (typeof value == 'string') {
       dom.style.cssText = value;
     } else {
-      if(typeof oldValue == 'string') {
+      if (typeof oldValue == 'string') {
         dom.style.cssText = oldValue = '';
       }
-      if(oldValue) {
-        for(name in oldValue) {
-          if(!(value && name in value)) {
+      if (oldValue) {
+        for (name in oldValue) {
+          if (!(value && name in value)) {
             setStyle(dom.style, name, '');
           }
         }
       }
-      if(value) {
-        for(name in value) {
-          if(!oldValue || value[name] !== oldValue[name]) {
+      if (value) {
+        for (name in value) {
+          if (!oldValue || value[name] !== oldValue[name]) {
             setStyle(dom.style, name, value[name]);
           }
         }
@@ -700,59 +526,53 @@ function setProperty(dom, name, value, oldValue, isSvg) {
     }
   }
   // Benchmark for comparison: https://esbench.com/bench/574c954bdb965b9a00965ac6
-  else if(name[0] === 'o' && name[1] === 'n') {
+  else if (name[0] === 'o' && name[1] === 'n') {
     useCapture = name !== (name = name.replace(/Capture$/, ''));
 
     // Infer correct casing for DOM built-in events:
-    if(name.toLowerCase() in dom) name = name.toLowerCase().slice(2);
-    else name = name.slice(2);
-    if(!dom._listeners) dom._listeners = {};
+    if (name.toLowerCase() in dom) {
+      name = name.toLowerCase().slice(2);
+    } else {
+      name = name.slice(2);
+    }
+    if (!dom._listeners) {
+      dom._listeners = {};
+    }
     dom._listeners[name + useCapture] = value;
-    if(value) {
-      if(!oldValue) {
-        const handler = useCapture ? eventProxyCapture : eventProxy;
+    if (value) {
+      if (!oldValue) {
+        var handler = useCapture ? eventProxyCapture : eventProxy;
         dom.addEventListener(name, handler, useCapture);
       }
     } else {
-      const handler = useCapture ? eventProxyCapture : eventProxy;
-      dom.removeEventListener(name, handler, useCapture);
+      var _handler = useCapture ? eventProxyCapture : eventProxy;
+      dom.removeEventListener(name, _handler, useCapture);
     }
-  } else if(name !== 'dangerouslySetInnerHTML') {
-    if(isSvg) {
+  } else if (name !== 'dangerouslySetInnerHTML') {
+    if (isSvg) {
       // Normalize incorrect prop usage for SVG:
       // - xlink:href / xlinkHref --> href (xlink:href was removed from SVG and isn't needed)
       // - className --> class
-      name = name.replace(/xlink(H|:h)/, 'h').replace(/sName$/, 's');
-    } else if(
-      name !== 'width' &&
-      name !== 'height' &&
-      name !== 'href' &&
-      name !== 'list' &&
-      name !== 'form' &&
-      // Default value in browsers is `-1` and an empty string is
-      // cast to `0` instead
-      name !== 'tabIndex' &&
-      name !== 'download' &&
-      name !== 'rowSpan' &&
-      name !== 'colSpan' &&
-      name in dom
-    ) {
+      name = name.replace(/xlink[H:h]/, 'h').replace(/sName$/, 's');
+    } else if (name !== 'href' && name !== 'list' && name !== 'form' &&
+    // Default value in browsers is `-1` and an empty string is
+    // cast to `0` instead
+    name !== 'tabIndex' && name !== 'download' && name in dom) {
       try {
         dom[name] = value == null ? '' : value;
         // labelled break is 1b smaller here than a return statement (sorry)
         break o;
-      } catch(e) {}
+      } catch (e) {}
     }
 
-    // aria- and data- attributes have no boolean representation.
-    // A `false` value is different from the attribute not being
-    // present, so we can't remove it. For non-boolean aria
-    // attributes we could treat false as a removal, but the
-    // amount of exceptions would cost too many bytes. On top of
-    // that other frameworks generally stringify `false`.
+    // ARIA-attributes have a different notion of boolean values.
+    // The value `false` is different from the attribute not
+    // existing on the DOM, so we can't remove it. For non-boolean
+    // ARIA-attributes we could treat false as a removal, but the
+    // amount of exceptions would cost us too many bytes. On top of
+    // that other VDOM frameworks also always stringify `false`.
 
-    if(typeof value === 'function');
-    else if(value != null && (value !== false || name[4] === '-')) {
+    if (typeof value === 'function') ;else if (value != null && (value !== false || name[0] === 'a' && name[1] === 'r')) {
       dom.setAttribute(name, value);
     } else {
       dom.removeAttribute(name);
@@ -766,10 +586,10 @@ function setProperty(dom, name, value, oldValue, isSvg) {
  * @private
  */
 function eventProxy(e) {
-  return this._listeners[e.type + false](options.event ? options.event(e) : e);
+  this._listeners[e.type + false](options.event ? options.event(e) : e);
 }
 function eventProxyCapture(e) {
-  return this._listeners[e.type + true](options.event ? options.event(e) : e);
+  this._listeners[e.type + true](options.event ? options.event(e) : e);
 }
 
 /**
@@ -789,184 +609,173 @@ function eventProxyCapture(e) {
  * @param {boolean} [isHydrating] Whether or not we are in hydration
  */
 function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating) {
-  let tmp,
+  var tmp,
     newType = newVNode.type;
 
   // When passing through createElement it assigns the object
   // constructor as undefined. This to prevent JSON-injection.
-  if(newVNode.constructor !== undefined) return null;
+  if (newVNode.constructor !== undefined) {
+    return null;
+  }
 
   // If the previous diff bailed out, resume creating/hydrating.
-  if(oldVNode._hydrating != null) {
-    isHydrating = oldVNode._hydrating;
-    oldDom = newVNode._dom = oldVNode._dom;
+  if (oldVNode.__h != null) {
+    isHydrating = oldVNode.__h;
+    oldDom = newVNode.__e = oldVNode.__e;
     // if we resume, we want the tree to be "unlocked"
-    newVNode._hydrating = null;
+    newVNode.__h = null;
     excessDomChildren = [oldDom];
   }
-  if((tmp = options._diff)) tmp(newVNode);
+  if (tmp = options.__b) {
+    tmp(newVNode);
+  }
   try {
-    outer: if(typeof newType == 'function') {
-      let c, isNew, oldProps, oldState, snapshot, clearProcessingException;
-      let newProps = newVNode.props;
+    outer: if (typeof newType == 'function') {
+      var c, isNew, oldProps, oldState, snapshot, clearProcessingException;
+      var newProps = newVNode.props;
 
       // Necessary for createContext api. Setting this property will pass
       // the context value as `this.context` just for this component.
       tmp = newType.contextType;
-      let provider = tmp && globalContext[tmp._id];
-      let componentContext = tmp ? (provider ? provider.props.value : tmp._defaultValue) : globalContext;
+      var provider = tmp && globalContext[tmp.__c];
+      var componentContext = tmp ? provider ? provider.props.value : tmp.__ : globalContext;
 
       // Get component and set it to `c`
-      if(oldVNode._component) {
-        c = newVNode._component = oldVNode._component;
-        clearProcessingException = c._processingException = c._pendingError;
+      if (oldVNode.__c) {
+        c = newVNode.__c = oldVNode.__c;
+        clearProcessingException = c.__ = c.__E;
       } else {
         // Instantiate the new component
-        if('prototype' in newType && newType.prototype.render) {
+        if ('prototype' in newType && newType.prototype.render) {
           // @ts-ignore The check above verifies that newType is suppose to be constructed
-          newVNode._component = c = new newType(newProps, componentContext); // eslint-disable-line new-cap
+          newVNode.__c = c = new newType(newProps, componentContext); // eslint-disable-line new-cap
         } else {
           // @ts-ignore Trust me, Component implements the interface we want
-          newVNode._component = c = new Component(newProps, componentContext);
+          newVNode.__c = c = new Component(newProps, componentContext);
           c.constructor = newType;
           c.render = doRender;
         }
-        if(provider) provider.sub(c);
+        if (provider) {
+          provider.sub(c);
+        }
         c.props = newProps;
-        if(!c.state) c.state = {};
+        if (!c.state) {
+          c.state = {};
+        }
         c.context = componentContext;
-        c._globalContext = globalContext;
-        isNew = c._dirty = true;
-        c._renderCallbacks = [];
-        c._stateCallbacks = [];
+        c.__n = globalContext;
+        isNew = c.__d = true;
+        c.__h = [];
       }
 
       // Invoke getDerivedStateFromProps
-      if(c._nextState == null) {
-        c._nextState = c.state;
+      if (c.__s == null) {
+        c.__s = c.state;
       }
-      if(newType.getDerivedStateFromProps != null) {
-        if(c._nextState == c.state) {
-          c._nextState = assign({}, c._nextState);
+      if (newType.getDerivedStateFromProps != null) {
+        if (c.__s == c.state) {
+          c.__s = assign({}, c.__s);
         }
-        assign(c._nextState, newType.getDerivedStateFromProps(newProps, c._nextState));
+        assign(c.__s, newType.getDerivedStateFromProps(newProps, c.__s));
       }
       oldProps = c.props;
       oldState = c.state;
-      c._vnode = newVNode;
 
       // Invoke pre-render lifecycle methods
-      if(isNew) {
-        if(newType.getDerivedStateFromProps == null && c.componentWillMount != null) {
+      if (isNew) {
+        if (newType.getDerivedStateFromProps == null && c.componentWillMount != null) {
           c.componentWillMount();
         }
-        if(c.componentDidMount != null) {
-          c._renderCallbacks.push(c.componentDidMount);
+        if (c.componentDidMount != null) {
+          c.__h.push(c.componentDidMount);
         }
       } else {
-        if(newType.getDerivedStateFromProps == null && newProps !== oldProps && c.componentWillReceiveProps != null) {
+        if (newType.getDerivedStateFromProps == null && newProps !== oldProps && c.componentWillReceiveProps != null) {
           c.componentWillReceiveProps(newProps, componentContext);
         }
-        if(!c._force && ((c.shouldComponentUpdate != null && c.shouldComponentUpdate(newProps, c._nextState, componentContext) === false) || newVNode._original === oldVNode._original)) {
+        if (!c.__e && c.shouldComponentUpdate != null && c.shouldComponentUpdate(newProps, c.__s, componentContext) === false || newVNode.__v === oldVNode.__v) {
+          c.props = newProps;
+          c.state = c.__s;
           // More info about this here: https://gist.github.com/JoviDeCroock/bec5f2ce93544d2e6070ef8e0036e4e8
-          if(newVNode._original !== oldVNode._original) {
-            // When we are dealing with a bail because of sCU we have to update
-            // the props, state and dirty-state.
-            // when we are dealing with strict-equality we don't as the child could still
-            // be dirtied see #3883
-            c.props = newProps;
-            c.state = c._nextState;
-            c._dirty = false;
+          if (newVNode.__v !== oldVNode.__v) {
+            c.__d = false;
           }
-          newVNode._dom = oldVNode._dom;
-          newVNode._children = oldVNode._children;
-          newVNode._children.forEach(vnode => {
-            if(vnode) vnode._parent = newVNode;
+          c.__v = newVNode;
+          newVNode.__e = oldVNode.__e;
+          newVNode.__k = oldVNode.__k;
+          newVNode.__k.forEach(function (vnode) {
+            if (vnode) {
+              vnode.__ = newVNode;
+            }
           });
-          for(let i = 0; i < c._stateCallbacks.length; i++) {
-            c._renderCallbacks.push(c._stateCallbacks[i]);
-          }
-          c._stateCallbacks = [];
-          if(c._renderCallbacks.length) {
+          if (c.__h.length) {
             commitQueue.push(c);
           }
           break outer;
         }
-        if(c.componentWillUpdate != null) {
-          c.componentWillUpdate(newProps, c._nextState, componentContext);
+        if (c.componentWillUpdate != null) {
+          c.componentWillUpdate(newProps, c.__s, componentContext);
         }
-        if(c.componentDidUpdate != null) {
-          c._renderCallbacks.push(() => {
+        if (c.componentDidUpdate != null) {
+          c.__h.push(function () {
             c.componentDidUpdate(oldProps, oldState, snapshot);
           });
         }
       }
       c.context = componentContext;
       c.props = newProps;
-      c._parentDom = parentDom;
-      c._force = false;
-      let renderHook = options._render,
-        count = 0;
-      if('prototype' in newType && newType.prototype.render) {
-        c.state = c._nextState;
-        c._dirty = false;
-        if(renderHook) renderHook(newVNode);
-        tmp = c.render(c.props, c.state, c.context);
-        for(let i = 0; i < c._stateCallbacks.length; i++) {
-          c._renderCallbacks.push(c._stateCallbacks[i]);
-        }
-        c._stateCallbacks = [];
-      } else {
-        do {
-          c._dirty = false;
-          if(renderHook) renderHook(newVNode);
-          tmp = c.render(c.props, c.state, c.context);
-
-          // Handle setState called in render, see #2553
-          c.state = c._nextState;
-        } while(c._dirty && ++count < 25);
+      c.state = c.__s;
+      if (tmp = options.__r) {
+        tmp(newVNode);
       }
+      c.__d = false;
+      c.__v = newVNode;
+      c.__P = parentDom;
+      tmp = c.render(c.props, c.state, c.context);
 
       // Handle setState called in render, see #2553
-      c.state = c._nextState;
-      if(c.getChildContext != null) {
+      c.state = c.__s;
+      if (c.getChildContext != null) {
         globalContext = assign(assign({}, globalContext), c.getChildContext());
       }
-      if(!isNew && c.getSnapshotBeforeUpdate != null) {
+      if (!isNew && c.getSnapshotBeforeUpdate != null) {
         snapshot = c.getSnapshotBeforeUpdate(oldProps, oldState);
       }
-      let isTopLevelFragment = tmp != null && tmp.type === Fragment && tmp.key == null;
-      let renderResult = isTopLevelFragment ? tmp.props.children : tmp;
-      diffChildren(parentDom, isArray(renderResult) ? renderResult : [renderResult], newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
-      c.base = newVNode._dom;
+      var isTopLevelFragment = tmp != null && tmp.type === Fragment && tmp.key == null;
+      var renderResult = isTopLevelFragment ? tmp.props.children : tmp;
+      diffChildren(parentDom, Array.isArray(renderResult) ? renderResult : [renderResult], newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
+      c.base = newVNode.__e;
 
       // We successfully rendered this VNode, unset any stored hydration/bailout state:
-      newVNode._hydrating = null;
-      if(c._renderCallbacks.length) {
+      newVNode.__h = null;
+      if (c.__h.length) {
         commitQueue.push(c);
       }
-      if(clearProcessingException) {
-        c._pendingError = c._processingException = null;
+      if (clearProcessingException) {
+        c.__E = c.__ = null;
       }
-    } else if(excessDomChildren == null && newVNode._original === oldVNode._original) {
-      newVNode._children = oldVNode._children;
-      newVNode._dom = oldVNode._dom;
+      c.__e = false;
+    } else if (excessDomChildren == null && newVNode.__v === oldVNode.__v) {
+      newVNode.__k = oldVNode.__k;
+      newVNode.__e = oldVNode.__e;
     } else {
-      newVNode._dom = diffElementNodes(oldVNode._dom, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, isHydrating);
+      newVNode.__e = diffElementNodes(oldVNode.__e, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, isHydrating);
     }
-    if((tmp = options.diffed)) tmp(newVNode);
-  } catch(e) {
-    newVNode._original = null;
+    if (tmp = options.diffed) {
+      tmp(newVNode);
+    }
+  } catch (e) {
+    newVNode.__v = null;
     // if hydrating or creating initial tree, bailout preserves DOM:
-    if(isHydrating || excessDomChildren != null) {
-      newVNode._dom = oldDom;
-      newVNode._hydrating = !!isHydrating;
+    if (isHydrating || excessDomChildren != null) {
+      newVNode.__e = oldDom;
+      newVNode.__h = !!isHydrating;
       excessDomChildren[excessDomChildren.indexOf(oldDom)] = null;
       // ^ could possibly be simplified to:
       // excessDomChildren.length = 0;
     }
 
-    options._catchError(e, newVNode, oldVNode);
+    options.__e(e, newVNode, oldVNode);
   }
 }
 
@@ -976,18 +785,20 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
  * @param {import('../internal').VNode} root
  */
 function commitRoot(commitQueue, root) {
-  if(options._commit) options._commit(root, commitQueue);
-  commitQueue.some(c => {
+  if (options.__c) {
+    options.__c(root, commitQueue);
+  }
+  commitQueue.some(function (c) {
     try {
       // @ts-ignore Reuse the commitQueue variable here so the type changes
-      commitQueue = c._renderCallbacks;
-      c._renderCallbacks = [];
-      commitQueue.some(cb => {
+      commitQueue = c.__h;
+      c.__h = [];
+      commitQueue.some(function (cb) {
         // @ts-ignore See above ts-ignore on commitQueue
         cb.call(c);
       });
-    } catch(e) {
-      options._catchError(e, c._vnode);
+    } catch (e) {
+      options.__e(e, c.__v);
     }
   });
 }
@@ -1007,44 +818,42 @@ function commitRoot(commitQueue, root) {
  * @returns {import('../internal').PreactElement}
  */
 function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, isHydrating) {
-  let oldProps = oldVNode.props;
-  let newProps = newVNode.props;
-  let nodeType = newVNode.type;
-  let i = 0;
+  var oldProps = oldVNode.props;
+  var newProps = newVNode.props;
+  var nodeType = newVNode.type;
+  var i = 0;
 
   // Tracks entering and exiting SVG namespace when descending through the tree.
-  if(nodeType === 'svg') isSvg = true;
-  if(excessDomChildren != null) {
-    for(; i < excessDomChildren.length; i++) {
-      const child = excessDomChildren[i];
+  if (nodeType === 'svg') {
+    isSvg = true;
+  }
+  if (excessDomChildren != null) {
+    for (; i < excessDomChildren.length; i++) {
+      var child = excessDomChildren[i];
 
       // if newVNode matches an element in excessDomChildren or the `dom`
       // argument matches an element in excessDomChildren, remove it from
       // excessDomChildren so it isn't later removed in diffChildren
-      if(child && 'setAttribute' in child === !!nodeType && (nodeType ? child.localName === nodeType : child.nodeType === 3)) {
+      if (child && 'setAttribute' in child === !!nodeType && (nodeType ? child.localName === nodeType : child.nodeType === 3)) {
         dom = child;
         excessDomChildren[i] = null;
         break;
       }
     }
   }
-  if(dom == null) {
-    if(nodeType === null) {
+  if (dom == null) {
+    if (nodeType === null) {
       // @ts-ignore createTextNode returns Text, we expect PreactElement
       return document.createTextNode(newProps);
     }
-    if(isSvg) {
-      dom = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        // @ts-ignore We know `newVNode.type` is a string
-        nodeType
-      );
+    if (isSvg) {
+      dom = document.createElementNS('http://www.w3.org/2000/svg',
+      // @ts-ignore We know `newVNode.type` is a string
+      nodeType);
     } else {
       dom = document.createElement(
-        // @ts-ignore We know `newVNode.type` is a string
-        nodeType,
-        newProps.is && newProps
-      );
+      // @ts-ignore We know `newVNode.type` is a string
+      nodeType, newProps.is && newProps);
     }
 
     // we created a new parent, so none of the previously attached children can be reused:
@@ -1052,83 +861,66 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
     // we are creating a new node, so we can assume this is a new subtree (in case we are hydrating), this deopts the hydrate
     isHydrating = false;
   }
-  if(nodeType === null) {
+  if (nodeType === null) {
     // During hydration, we still have to split merged text from SSR'd HTML.
-    if(oldProps !== newProps && (!isHydrating || dom.data !== newProps)) {
+    if (oldProps !== newProps && (!isHydrating || dom.data !== newProps)) {
       dom.data = newProps;
     }
   } else {
     // If excessDomChildren was not null, repopulate it with the current element's children:
     excessDomChildren = excessDomChildren && slice.call(dom.childNodes);
     oldProps = oldVNode.props || EMPTY_OBJ;
-    let oldHtml = oldProps.dangerouslySetInnerHTML;
-    let newHtml = newProps.dangerouslySetInnerHTML;
+    var oldHtml = oldProps.dangerouslySetInnerHTML;
+    var newHtml = newProps.dangerouslySetInnerHTML;
 
     // During hydration, props are not diffed at all (including dangerouslySetInnerHTML)
     // @TODO we should warn in debug mode when props don't match here.
-    if(!isHydrating) {
+    if (!isHydrating) {
       // But, if we are in a situation where we are using existing DOM (e.g. replaceNode)
       // we should read the existing DOM attributes to diff them
-      if(excessDomChildren != null) {
+      if (excessDomChildren != null) {
         oldProps = {};
-        for(i = 0; i < dom.attributes.length; i++) {
+        for (i = 0; i < dom.attributes.length; i++) {
           oldProps[dom.attributes[i].name] = dom.attributes[i].value;
         }
       }
-      if(newHtml || oldHtml) {
+      if (newHtml || oldHtml) {
         // Avoid re-applying the same '__html' if it did not changed between re-render
-        if(!newHtml || ((!oldHtml || newHtml.__html != oldHtml.__html) && newHtml.__html !== dom.innerHTML)) {
-          dom.innerHTML = (newHtml && newHtml.__html) || '';
+        if (!newHtml || (!oldHtml || newHtml.__html != oldHtml.__html) && newHtml.__html !== dom.innerHTML) {
+          dom.innerHTML = newHtml && newHtml.__html || '';
         }
       }
     }
     diffProps(dom, newProps, oldProps, isSvg, isHydrating);
 
     // If the new vnode didn't have dangerouslySetInnerHTML, diff its children
-    if(newHtml) {
-      newVNode._children = [];
+    if (newHtml) {
+      newVNode.__k = [];
     } else {
       i = newVNode.props.children;
-      diffChildren(
-        dom,
-        isArray(i) ? i : [i],
-        newVNode,
-        oldVNode,
-        globalContext,
-        isSvg && nodeType !== 'foreignObject',
-        excessDomChildren,
-        commitQueue,
-        excessDomChildren ? excessDomChildren[0] : oldVNode._children && getDomSibling(oldVNode, 0),
-        isHydrating
-      );
+      diffChildren(dom, Array.isArray(i) ? i : [i], newVNode, oldVNode, globalContext, isSvg && nodeType !== 'foreignObject', excessDomChildren, commitQueue, excessDomChildren ? excessDomChildren[0] : oldVNode.__k && getDomSibling(oldVNode, 0), isHydrating);
 
       // Remove children that are not part of any vnode.
-      if(excessDomChildren != null) {
-        for(i = excessDomChildren.length; i--; ) {
-          if(excessDomChildren[i] != null) removeNode(excessDomChildren[i]);
+      if (excessDomChildren != null) {
+        for (i = excessDomChildren.length; i--;) {
+          if (excessDomChildren[i] != null) {
+            removeNode(excessDomChildren[i]);
+          }
         }
       }
     }
 
     // (as above, don't diff props during hydration)
-    if(!isHydrating) {
-      if(
-        'value' in newProps &&
-        (i = newProps.value) !== undefined &&
-        // #2756 For the <progress>-element the initial value is 0,
-        // despite the attribute not being present. When the attribute
-        // is missing the progress bar is treated as indeterminate.
-        // To fix that we'll always update it when it is 0 for progress elements
-        (i !== dom.value ||
-          (nodeType === 'progress' && !i) ||
-          // This is only for IE 11 to fix <select> value not being updated.
-          // To avoid a stale select value we need to set the option.value
-          // again, which triggers IE11 to re-evaluate the select value
-          (nodeType === 'option' && i !== oldProps.value))
-      ) {
+    if (!isHydrating) {
+      if ('value' in newProps && (i = newProps.value) !== undefined && (
+      // #2756 For the <progress>-element the initial value is 0,
+      // despite the attribute not being present. When the attribute
+      // is missing the progress bar is treated as indeterminate.
+      // To fix that we'll always update it when it is 0 for progress elements
+      i !== oldProps.value || i !== dom.value || nodeType === 'progress' && !i)) {
         setProperty(dom, 'value', i, oldProps.value, false);
       }
-      if('checked' in newProps && (i = newProps.checked) !== undefined && i !== dom.checked) {
+      if ('checked' in newProps && (i = newProps.checked) !== undefined && i !== dom.checked) {
         setProperty(dom, 'checked', i, oldProps.checked, false);
       }
     }
@@ -1144,10 +936,13 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
  */
 function applyRef(ref, value, vnode) {
   try {
-    if(typeof ref == 'function') ref(value);
-    else ref.current = value;
-  } catch(e) {
-    options._catchError(e, vnode);
+    if (typeof ref == 'function') {
+      ref(value);
+    } else {
+      ref.current = value;
+    }
+  } catch (e) {
+    options.__e(e, vnode);
   }
 }
 
@@ -1160,38 +955,39 @@ function applyRef(ref, value, vnode) {
  * current element is already detached from the DOM.
  */
 function unmount(vnode, parentVNode, skipRemove) {
-  let r;
-  if(options.unmount) options.unmount(vnode);
-  if((r = vnode.ref)) {
-    if(!r.current || r.current === vnode._dom) {
+  var r;
+  if (options.unmount) {
+    options.unmount(vnode);
+  }
+  if (r = vnode.ref) {
+    if (!r.current || r.current === vnode.__e) {
       applyRef(r, null, parentVNode);
     }
   }
-  if((r = vnode._component) != null) {
-    if(r.componentWillUnmount) {
+  if ((r = vnode.__c) != null) {
+    if (r.componentWillUnmount) {
       try {
         r.componentWillUnmount();
-      } catch(e) {
-        options._catchError(e, parentVNode);
+      } catch (e) {
+        options.__e(e, parentVNode);
       }
     }
-    r.base = r._parentDom = null;
-    vnode._component = undefined;
+    r.base = r.__P = null;
   }
-  if((r = vnode._children)) {
-    for(let i = 0; i < r.length; i++) {
-      if(r[i]) {
-        unmount(r[i], parentVNode, skipRemove || typeof vnode.type !== 'function');
+  if (r = vnode.__k) {
+    for (var i = 0; i < r.length; i++) {
+      if (r[i]) {
+        unmount(r[i], parentVNode, typeof vnode.type != 'function');
       }
     }
   }
-  if(!skipRemove && vnode._dom != null) {
-    removeNode(vnode._dom);
+  if (!skipRemove && vnode.__e != null) {
+    removeNode(vnode.__e);
   }
 
   // Must be set to `undefined` to properly clean up `_nextDom`
   // for which `null` is a valid value. See comment in `create-element.js`
-  vnode._parent = vnode._dom = vnode._nextDom = undefined;
+  vnode.__e = vnode.__d = undefined;
 }
 
 /** The `.render()` method for a PFC backing instance. */
@@ -1208,61 +1004,92 @@ function doRender(props, state, context) {
  * existing DOM tree rooted at `replaceNode`
  */
 function render(vnode, parentDom, replaceNode) {
-  if(options._root) options._root(vnode, parentDom);
+  if (options.__) {
+    options.__(vnode, parentDom);
+  }
 
   // We abuse the `replaceNode` parameter in `hydrate()` to signal if we are in
   // hydration mode or not by passing the `hydrate` function instead of a DOM
   // element..
-  let isHydrating = typeof replaceNode === 'function';
+  var isHydrating = typeof replaceNode === 'function';
 
   // To be able to support calling `render()` multiple times on the same
   // DOM node, we need to obtain a reference to the previous tree. We do
   // this by assigning a new `_children` property to DOM nodes which points
   // to the last rendered tree. By default this property is not present, which
   // means that we are mounting a new tree for the first time.
-  let oldVNode = isHydrating ? null : (replaceNode && replaceNode._children) || parentDom._children;
-  vnode = ((!isHydrating && replaceNode) || parentDom)._children = createElement(Fragment, null, [vnode]);
+  var oldVNode = isHydrating ? null : replaceNode && replaceNode.__k || parentDom.__k;
+  vnode = (!isHydrating && replaceNode || parentDom).__k = createElement(Fragment, null, [vnode]);
 
   // List of effects that need to be called after diffing.
-  let commitQueue = [];
-  diff(
-    parentDom,
-    // Determine the new vnode tree and store it on the DOM element on
-    // our custom `_children` property.
-    vnode,
-    oldVNode || EMPTY_OBJ,
-    EMPTY_OBJ,
-    parentDom.ownerSVGElement !== undefined,
-    !isHydrating && replaceNode ? [replaceNode] : oldVNode ? null : parentDom.firstChild ? slice.call(parentDom.childNodes) : null,
-    commitQueue,
-    !isHydrating && replaceNode ? replaceNode : oldVNode ? oldVNode._dom : parentDom.firstChild,
-    isHydrating
-  );
+  var commitQueue = [];
+  diff(parentDom,
+  // Determine the new vnode tree and store it on the DOM element on
+  // our custom `_children` property.
+  vnode, oldVNode || EMPTY_OBJ, EMPTY_OBJ, parentDom.ownerSVGElement !== undefined, !isHydrating && replaceNode ? [replaceNode] : oldVNode ? null : parentDom.firstChild ? slice.call(parentDom.childNodes) : null, commitQueue, !isHydrating && replaceNode ? replaceNode : oldVNode ? oldVNode.__e : parentDom.firstChild, isHydrating);
 
   // Flush all queued effects
   commitRoot(commitQueue, vnode);
 }
 
-let i = 0;
+/**
+ * Update an existing DOM element with data from a Preact virtual node
+ * @param {import('./internal').ComponentChild} vnode The virtual node to render
+ * @param {import('./internal').PreactElement} parentDom The DOM element to
+ * update
+ */
+function hydrate(vnode, parentDom) {
+  render(vnode, parentDom, hydrate);
+}
+
+/**
+ * Clones the given VNode, optionally adding attributes/props and replacing its children.
+ * @param {import('./internal').VNode} vnode The virtual DOM element to clone
+ * @param {object} props Attributes/props to add when cloning
+ * @param {Array<import('./internal').ComponentChildren>} rest Any additional arguments will be used as replacement children.
+ * @returns {import('./internal').VNode}
+ */
+function cloneElement(vnode, props, children) {
+  var normalizedProps = assign({}, vnode.props),
+    key,
+    ref,
+    i;
+  for (i in props) {
+    if (i == 'key') {
+      key = props[i];
+    } else if (i == 'ref') {
+      ref = props[i];
+    } else {
+      normalizedProps[i] = props[i];
+    }
+  }
+  if (arguments.length > 2) {
+    normalizedProps.children = arguments.length > 3 ? slice.call(arguments, 2) : children;
+  }
+  return createVNode(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
+}
+var i = 0;
 function createContext(defaultValue, contextId) {
   contextId = '__cC' + i++;
-  const context = {
-    _id: contextId,
-    _defaultValue: defaultValue,
-    Consumer(props, contextValue) {
+  var context = {
+    __c: contextId,
+    __: defaultValue,
+    /** @type {import('./internal').FunctionComponent} */Consumer: function Consumer(props, contextValue) {
       // return props.children(
       // 	context[contextId] ? context[contextId].props.value : defaultValue
       // );
       return props.children(contextValue);
     },
-    Provider(props) {
-      if(!this.getChildContext) {
-        let subs = [];
-        let ctx = {};
+    /** @type {import('./internal').FunctionComponent} */Provider: function Provider(props) {
+      if (!this.getChildContext) {
+        var subs = [];
+        var ctx = {};
         ctx[contextId] = this;
-        this.getChildContext = () => ctx;
-        this.shouldComponentUpdate = function(_props) {
-          if(this.props.value !== _props.value) {
+        this.getChildContext = function () {
+          return ctx;
+        };
+        this.shouldComponentUpdate = function (_props) {
+          if (this.props.value !== _props.value) {
             // I think the forced value propagation here was only needed when `options.debounceRendering` was being bypassed:
             // https://github.com/preactjs/preact/commit/4d339fb803bea09e9f198abf38ca1bf8ea4b7771#diff-54682ce380935a717e41b8bfc54737f6R358
             // In those cases though, even with the value corrected, we're double-rendering all nodes.
@@ -1277,18 +1104,17 @@ function createContext(defaultValue, contextId) {
             // 	c.context[contextId] = _props.value;
             // 	enqueueRender(c);
             // });
-            subs.some(c => {
-              c._force = true;
-              enqueueRender(c);
-            });
+            subs.some(enqueueRender);
           }
         };
-        this.sub = c => {
+        this.sub = function (c) {
           subs.push(c);
-          let old = c.componentWillUnmount;
-          c.componentWillUnmount = () => {
+          var old = c.componentWillUnmount;
+          c.componentWillUnmount = function () {
             subs.splice(subs.indexOf(c), 1);
-            if(old) old.call(c);
+            if (old) {
+              old.call(c);
+            }
           };
         };
       }
@@ -1302,102 +1128,88 @@ function createContext(defaultValue, contextId) {
   // of on the component itself. See:
   // https://reactjs.org/docs/context.html#contextdisplayname
 
-  return (context.Provider._contextRef = context.Consumer.contextType = context);
+  return context.Provider.__ = context.Consumer.contextType = context;
 }
 
-let currentIndex;
+/** @type {number} */
+var currentIndex;
 
-let currentComponent;
+/** @type {import('./internal').Component} */
+var currentComponent;
 
-let previousComponent;
+/** @type {number} */
+var currentHook = 0;
 
-let currentHook = 0;
-
-let afterPaintEffects = [];
-let EMPTY = [];
-let oldBeforeDiff = options._diff;
-let oldBeforeRender = options._render;
-let oldAfterDiff = options.diffed;
-let oldCommit = options._commit;
-let oldBeforeUnmount = options.unmount;
-const RAF_TIMEOUT = 100;
-let prevRaf;
-options._diff = vnode => {
+/** @type {Array<import('./internal').Component>} */
+var afterPaintEffects = [];
+var oldBeforeDiff = options.__b;
+var oldBeforeRender = options.__r;
+var oldAfterDiff = options.diffed;
+var oldCommit = options.__c;
+var oldBeforeUnmount = options.unmount;
+var RAF_TIMEOUT = 100;
+var prevRaf;
+options.__b = function (vnode) {
   currentComponent = null;
-  if(oldBeforeDiff) oldBeforeDiff(vnode);
+  if (oldBeforeDiff) {
+    oldBeforeDiff(vnode);
+  }
 };
-options._render = vnode => {
-  if(oldBeforeRender) oldBeforeRender(vnode);
-  currentComponent = vnode._component;
+options.__r = function (vnode) {
+  if (oldBeforeRender) {
+    oldBeforeRender(vnode);
+  }
+  currentComponent = vnode.__c;
   currentIndex = 0;
-  const hooks = currentComponent.__hooks;
-  if(hooks) {
-    if(previousComponent === currentComponent) {
-      hooks._pendingEffects = [];
-      currentComponent._renderCallbacks = [];
-      hooks._list.forEach(hookItem => {
-        if(hookItem._nextValue) {
-          hookItem._value = hookItem._nextValue;
-        }
-        hookItem._pendingValue = EMPTY;
-        hookItem._nextValue = hookItem._pendingArgs = undefined;
-      });
-    } else {
-      hooks._pendingEffects.forEach(invokeCleanup);
-      hooks._pendingEffects.forEach(invokeEffect);
-      hooks._pendingEffects = [];
-      currentIndex = 0;
-    }
+  var hooks = currentComponent.__H;
+  if (hooks) {
+    hooks.__h.forEach(invokeCleanup);
+    hooks.__h.forEach(invokeEffect);
+    hooks.__h = [];
   }
-  previousComponent = currentComponent;
 };
-options.diffed = vnode => {
-  if(oldAfterDiff) oldAfterDiff(vnode);
-  const c = vnode._component;
-  if(c && c.__hooks) {
-    if(c.__hooks._pendingEffects.length) afterPaint(afterPaintEffects.push(c));
-    c.__hooks._list.forEach(hookItem => {
-      if(hookItem._pendingArgs) {
-        hookItem._args = hookItem._pendingArgs;
-      }
-      if(hookItem._pendingValue !== EMPTY) {
-        hookItem._value = hookItem._pendingValue;
-      }
-      hookItem._pendingArgs = undefined;
-      hookItem._pendingValue = EMPTY;
-    });
+options.diffed = function (vnode) {
+  if (oldAfterDiff) {
+    oldAfterDiff(vnode);
   }
-  previousComponent = currentComponent = null;
+  var c = vnode.__c;
+  if (c && c.__H && c.__H.__h.length) {
+    afterPaint(afterPaintEffects.push(c));
+  }
+  currentComponent = null;
 };
-options._commit = (vnode, commitQueue) => {
-  commitQueue.some(component => {
+options.__c = function (vnode, commitQueue) {
+  commitQueue.some(function (component) {
     try {
-      component._renderCallbacks.forEach(invokeCleanup);
-      component._renderCallbacks = component._renderCallbacks.filter(cb => (cb._value ? invokeEffect(cb) : true));
-    } catch(e) {
-      commitQueue.some(c => {
-        if(c._renderCallbacks) c._renderCallbacks = [];
+      component.__h.forEach(invokeCleanup);
+      component.__h = component.__h.filter(function (cb) {
+        return cb.__ ? invokeEffect(cb) : true;
+      });
+    } catch (e) {
+      commitQueue.some(function (c) {
+        if (c.__h) {
+          c.__h = [];
+        }
       });
       commitQueue = [];
-      options._catchError(e, component._vnode);
+      options.__e(e, component.__v);
     }
   });
-  if(oldCommit) oldCommit(vnode, commitQueue);
+  if (oldCommit) {
+    oldCommit(vnode, commitQueue);
+  }
 };
-options.unmount = vnode => {
-  if(oldBeforeUnmount) oldBeforeUnmount(vnode);
-  const c = vnode._component;
-  if(c && c.__hooks) {
-    let hasErrored;
-    c.__hooks._list.forEach(s => {
-      try {
-        invokeCleanup(s);
-      } catch(e) {
-        hasErrored = e;
-      }
-    });
-    c.__hooks = undefined;
-    if(hasErrored) options._catchError(hasErrored, c._vnode);
+options.unmount = function (vnode) {
+  if (oldBeforeUnmount) {
+    oldBeforeUnmount(vnode);
+  }
+  var c = vnode.__c;
+  if (c && c.__H) {
+    try {
+      c.__H.__.forEach(invokeCleanup);
+    } catch (e) {
+      options.__e(e, c.__v);
+    }
   }
 };
 
@@ -1408,8 +1220,8 @@ options.unmount = vnode => {
  * @returns {any}
  */
 function getHookState(index, type) {
-  if(options._hook) {
-    options._hook(currentComponent, index, currentHook || type);
+  if (options.__h) {
+    options.__h(currentComponent, index, currentHook || type);
   }
   currentHook = 0;
 
@@ -1418,18 +1230,14 @@ function getHookState(index, type) {
   // * https://github.com/michael-klein/funcy.js/blob/650beaa58c43c33a74820a3c98b3c7079cf2e333/src/renderer.mjs
   // Other implementations to look at:
   // * https://codesandbox.io/s/mnox05qp8
-  const hooks =
-    currentComponent.__hooks ||
-    (currentComponent.__hooks = {
-      _list: [],
-      _pendingEffects: []
-    });
-  if(index >= hooks._list.length) {
-    hooks._list.push({
-      _pendingValue: EMPTY
-    });
+  var hooks = currentComponent.__H || (currentComponent.__H = {
+    __: [],
+    __h: []
+  });
+  if (index >= hooks.__.length) {
+    hooks.__.push({});
   }
-  return hooks._list[index];
+  return hooks.__[index];
 }
 
 /**
@@ -1447,80 +1255,20 @@ function useState(initialState) {
  * @returns {[ any, (state: any) => void ]}
  */
 function useReducer(reducer, initialState, init) {
-  const hookState = getHookState(currentIndex++, 2);
+  /** @type {import('./internal').ReducerHookState} */
+  var hookState = getHookState(currentIndex++, 2);
   hookState._reducer = reducer;
-  if(!hookState._component) {
-    hookState._value = [
-      !init ? invokeOrReturn(undefined, initialState) : init(initialState),
-      action => {
-        const currentValue = hookState._nextValue ? hookState._nextValue[0] : hookState._value[0];
-        const nextValue = hookState._reducer(currentValue, action);
-        if(currentValue !== nextValue) {
-          hookState._nextValue = [nextValue, hookState._value[1]];
-          hookState._component.setState({});
-        }
+  if (!hookState.__c) {
+    hookState.__ = [!init ? invokeOrReturn(undefined, initialState) : init(initialState), function (action) {
+      var nextValue = hookState._reducer(hookState.__[0], action);
+      if (hookState.__[0] !== nextValue) {
+        hookState.__ = [nextValue, hookState.__[1]];
+        hookState.__c.setState({});
       }
-    ];
-    hookState._component = currentComponent;
-    if(!currentComponent._hasScuFromHooks) {
-      currentComponent._hasScuFromHooks = true;
-      let prevScu = currentComponent.shouldComponentUpdate;
-      const prevCWU = currentComponent.componentWillUpdate;
-
-      // If we're dealing with a forced update `shouldComponentUpdate` will
-      // not be called. But we use that to update the hook values, so we
-      // need to call it.
-      currentComponent.componentWillUpdate = function(p, s, c) {
-        if(this._force) {
-          let tmp = prevScu;
-          // Clear to avoid other sCU hooks from being called
-          prevScu = undefined;
-          updateHookState(p, s, c);
-          prevScu = tmp;
-        }
-        if(prevCWU) prevCWU.call(this, p, s, c);
-      };
-
-      // This SCU has the purpose of bailing out after repeated updates
-      // to stateful hooks.
-      // we store the next value in _nextValue[0] and keep doing that for all
-      // state setters, if we have next states and
-      // all next states within a component end up being equal to their original state
-      // we are safe to bail out for this specific component.
-      /**
-       *
-       * @type {import('./internal').Component["shouldComponentUpdate"]}
-       */
-      // @ts-ignore - We don't use TS to downtranspile
-      // eslint-disable-next-line no-inner-declarations
-      function updateHookState(p, s, c) {
-        if(!hookState._component.__hooks) return true;
-        const stateHooks = hookState._component.__hooks._list.filter(x => x._component);
-        const allHooksEmpty = stateHooks.every(x => !x._nextValue);
-        // When we have no updated hooks in the component we invoke the previous SCU or
-        // traverse the VDOM tree further.
-        if(allHooksEmpty) {
-          return prevScu ? prevScu.call(this, p, s, c) : true;
-        }
-
-        // We check whether we have components with a nextValue set that
-        // have values that aren't equal to one another this pushes
-        // us to update further down the tree
-        let shouldUpdate = false;
-        stateHooks.forEach(hookItem => {
-          if(hookItem._nextValue) {
-            const currentValue = hookItem._value[0];
-            hookItem._value = hookItem._nextValue;
-            hookItem._nextValue = undefined;
-            if(currentValue !== hookItem._value[0]) shouldUpdate = true;
-          }
-        });
-        return shouldUpdate || hookState._component.props !== p ? (prevScu ? prevScu.call(this, p, s, c) : true) : false;
-      }
-      currentComponent.shouldComponentUpdate = updateHookState;
-    }
+    }];
+    hookState.__c = currentComponent;
   }
-  return hookState._nextValue || hookState._value;
+  return hookState.__;
 }
 
 /**
@@ -1528,11 +1276,12 @@ function useReducer(reducer, initialState, init) {
  * @param {any[]} args
  */
 function useEffect(callback, args) {
-  const state = getHookState(currentIndex++, 3);
-  if(!options._skipEffects && argsChanged(state._args, args)) {
-    state._value = callback;
-    state._pendingArgs = args;
-    currentComponent.__hooks._pendingEffects.push(state);
+  /** @type {import('./internal').EffectHookState} */
+  var state = getHookState(currentIndex++, 3);
+  if (!options.__s && argsChanged(state.__H, args)) {
+    state.__ = callback;
+    state.__H = args;
+    currentComponent.__H.__h.push(state);
   }
 }
 
@@ -1541,21 +1290,21 @@ function useEffect(callback, args) {
  * @param {any[]} args
  */
 function useLayoutEffect(callback, args) {
-  const state = getHookState(currentIndex++, 4);
-  if(!options._skipEffects && argsChanged(state._args, args)) {
-    state._value = callback;
-    state._pendingArgs = args;
-    currentComponent._renderCallbacks.push(state);
+  /** @type {import('./internal').EffectHookState} */
+  var state = getHookState(currentIndex++, 4);
+  if (!options.__s && argsChanged(state.__H, args)) {
+    state.__ = callback;
+    state.__H = args;
+    currentComponent.__h.push(state);
   }
 }
 function useRef(initialValue) {
   currentHook = 5;
-  return useMemo(
-    () => ({
+  return useMemo(function () {
+    return {
       current: initialValue
-    }),
-    []
-  );
+    };
+  }, []);
 }
 
 /**
@@ -1565,18 +1314,13 @@ function useRef(initialValue) {
  */
 function useImperativeHandle(ref, createHandle, args) {
   currentHook = 6;
-  useLayoutEffect(
-    () => {
-      if(typeof ref == 'function') {
-        ref(createHandle());
-        return () => ref(null);
-      } else if(ref) {
-        ref.current = createHandle();
-        return () => (ref.current = null);
-      }
-    },
-    args == null ? args : args.concat(ref)
-  );
+  useLayoutEffect(function () {
+    if (typeof ref == 'function') {
+      ref(createHandle());
+    } else if (ref) {
+      ref.current = createHandle();
+    }
+  }, args == null ? args : args.concat(ref));
 }
 
 /**
@@ -1584,14 +1328,14 @@ function useImperativeHandle(ref, createHandle, args) {
  * @param {any[]} args
  */
 function useMemo(factory, args) {
-  const state = getHookState(currentIndex++, 7);
-  if(argsChanged(state._args, args)) {
-    state._pendingValue = factory();
-    state._pendingArgs = args;
-    state._factory = factory;
-    return state._pendingValue;
+  /** @type {import('./internal').MemoHookState} */
+  var state = getHookState(currentIndex++, 7);
+  if (argsChanged(state.__H, args)) {
+    state.__ = factory();
+    state.__H = args;
+    state.__h = factory;
   }
-  return state._value;
+  return state.__;
 }
 
 /**
@@ -1600,26 +1344,31 @@ function useMemo(factory, args) {
  */
 function useCallback(callback, args) {
   currentHook = 8;
-  return useMemo(() => callback, args);
+  return useMemo(function () {
+    return callback;
+  }, args);
 }
 
 /**
  * @param {import('./internal').PreactContext} context
  */
 function useContext(context) {
-  const provider = currentComponent.context[context._id];
+  var provider = currentComponent.context[context.__c];
   // We could skip this call here, but than we'd not call
   // `options._hook`. We need to do that in order to make
   // the devtools aware of this hook.
-  const state = getHookState(currentIndex++, 9);
+  /** @type {import('./internal').ContextHookState} */
+  var state = getHookState(currentIndex++, 9);
   // The devtools needs access to the context object to
   // be able to pull of the default value when no provider
   // is present in the tree.
-  state._context = context;
-  if(!provider) return context._defaultValue;
+  state.c = context;
+  if (!provider) {
+    return context.__;
+  }
   // This is probably not safe to convert to "!"
-  if(state._value == null) {
-    state._value = true;
+  if (state.__ == null) {
+    state.__ = true;
     provider.sub(currentComponent);
   }
   return provider.props.value;
@@ -1630,49 +1379,51 @@ function useContext(context) {
  * @type {<T>(value: T, cb?: (value: T) => string | number) => void}
  */
 function useDebugValue(value, formatter) {
-  if(options.useDebugValue) {
+  if (options.useDebugValue) {
     options.useDebugValue(formatter ? formatter(value) : value);
   }
 }
 
 /**
- * @param {(error: any, errorInfo: import('preact').ErrorInfo) => void} cb
+ * @param {(error: any) => void} cb
  */
 function useErrorBoundary(cb) {
-  const state = getHookState(currentIndex++, 10);
-  const errState = useState();
-  state._value = cb;
-  if(!currentComponent.componentDidCatch) {
-    currentComponent.componentDidCatch = (err, errorInfo) => {
-      if(state._value) state._value(err, errorInfo);
+  /** @type {import('./internal').ErrorBoundaryHookState} */
+  var state = getHookState(currentIndex++, 10);
+  var errState = useState();
+  state.__ = cb;
+  if (!currentComponent.componentDidCatch) {
+    currentComponent.componentDidCatch = function (err) {
+      if (state.__) {
+        state.__(err);
+      }
       errState[1](err);
     };
   }
-  return [
-    errState[0],
-    () => {
-      errState[1](undefined);
-    }
-  ];
+  return [errState[0], function () {
+    errState[1](undefined);
+  }];
 }
+
 /**
  * After paint effects consumer.
  */
 function flushAfterPaintEffects() {
-  let component;
-  while((component = afterPaintEffects.shift())) {
-    if(!component._parentDom || !component.__hooks) continue;
-    try {
-      component.__hooks._pendingEffects.forEach(invokeCleanup);
-      component.__hooks._pendingEffects.forEach(invokeEffect);
-      component.__hooks._pendingEffects = [];
-    } catch(e) {
-      component.__hooks._pendingEffects = [];
-      options._catchError(e, component._vnode);
+  afterPaintEffects.forEach(function (component) {
+    if (component.__P) {
+      try {
+        component.__H.__h.forEach(invokeCleanup);
+        component.__H.__h.forEach(invokeEffect);
+        component.__H.__h = [];
+      } catch (e) {
+        component.__H.__h = [];
+        options.__e(e, component.__v);
+      }
     }
-  }
+  });
+  afterPaintEffects = [];
 }
-let HAS_RAF = typeof requestAnimationFrame == 'function';
+var HAS_RAF = typeof requestAnimationFrame == 'function';
 
 /**
  * Schedule a callback to be invoked after the browser has a chance to paint a new frame.
@@ -1685,14 +1436,16 @@ let HAS_RAF = typeof requestAnimationFrame == 'function';
  * @param {() => void} callback
  */
 function afterNextFrame(callback) {
-  const done = () => {
+  var done = function done() {
     clearTimeout(timeout);
-    if(HAS_RAF) cancelAnimationFrame(raf);
+    if (HAS_RAF) {
+      cancelAnimationFrame(raf);
+    }
     setTimeout(callback);
   };
-  const timeout = setTimeout(done, RAF_TIMEOUT);
-  let raf;
-  if(HAS_RAF) {
+  var timeout = setTimeout(done, RAF_TIMEOUT);
+  var raf;
+  if (HAS_RAF) {
     raf = requestAnimationFrame(done);
   }
 }
@@ -1705,7 +1458,7 @@ function afterNextFrame(callback) {
  * @param {number} newQueueLength
  */
 function afterPaint(newQueueLength) {
-  if(newQueueLength === 1 || prevRaf !== options.requestAnimationFrame) {
+  if (newQueueLength === 1 || prevRaf !== options.requestAnimationFrame) {
     prevRaf = options.requestAnimationFrame;
     (prevRaf || afterNextFrame)(flushAfterPaintEffects);
   }
@@ -1717,11 +1470,9 @@ function afterPaint(newQueueLength) {
 function invokeCleanup(hook) {
   // A hook cleanup can introduce a call to render which creates a new root, this will call options.vnode
   // and move the currentComponent away.
-  const comp = currentComponent;
-  let cleanup = hook._cleanup;
-  if(typeof cleanup == 'function') {
-    hook._cleanup = undefined;
-    cleanup();
+  var comp = currentComponent;
+  if (typeof hook.__c == 'function') {
+    hook.__c();
   }
   currentComponent = comp;
 }
@@ -1733,8 +1484,8 @@ function invokeCleanup(hook) {
 function invokeEffect(hook) {
   // A hook call can introduce a call to render which creates a new root, this will call options.vnode
   // and move the currentComponent away.
-  const comp = currentComponent;
-  hook._cleanup = hook._value();
+  var comp = currentComponent;
+  hook.__c = hook.__();
   currentComponent = comp;
 }
 
@@ -1743,10 +1494,52 @@ function invokeEffect(hook) {
  * @param {any[]} newArgs
  */
 function argsChanged(oldArgs, newArgs) {
-  return !oldArgs || oldArgs.length !== newArgs.length || newArgs.some((arg, index) => arg !== oldArgs[index]);
+  return !oldArgs || oldArgs.length !== newArgs.length || newArgs.some(function (arg, index) {
+    return arg !== oldArgs[index];
+  });
 }
 function invokeOrReturn(arg, f) {
   return typeof f == 'function' ? f(arg) : f;
+}
+
+let oldDiffHook = options._diff;
+options._diff = vnode => {
+  if (vnode.type && vnode.type._forwarded && vnode.ref) {
+    vnode.props.ref = vnode.ref;
+    vnode.ref = null;
+  }
+  if (oldDiffHook) oldDiffHook(vnode);
+};
+const REACT_FORWARD_SYMBOL = typeof Symbol != 'undefined' && Symbol.for && Symbol.for('react.forward_ref') || 0xf47;
+
+/**
+ * Pass ref down to a child. This is mainly used in libraries with HOCs that
+ * wrap components. Using `forwardRef` there is an easy way to get a reference
+ * of the wrapped component instead of one of the wrapper itself.
+ * @param {import('./index').ForwardFn} fn
+ * @returns {import('./internal').FunctionComponent}
+ */
+function forwardRef(fn) {
+  // We always have ref in props.ref, except for
+  // mobx-react. It will call this function directly
+  // and always pass ref as the second argument.
+  function Forwarded(props, ref) {
+    let clone = assign({}, props);
+    delete clone.ref;
+    ref = props.ref || ref;
+    return fn(clone, !ref || typeof ref === 'object' && !('current' in ref) ? null : ref);
+  }
+
+  // mobx-react checks for this being present
+  Forwarded.$$typeof = REACT_FORWARD_SYMBOL;
+  // mobx-react heavily relies on implementation details.
+  // It expects an object here with a `render` property,
+  // and prototype.render will fail. Without this
+  // mobx-react throws.
+  Forwarded.render = Forwarded;
+  Forwarded.prototype.isReactComponent = Forwarded._forwarded = true;
+  Forwarded.displayName = 'ForwardRef(' + (fn.displayName || fn.name) + ')';
+  return Forwarded;
 }
 
 const MODE_SLASH = 0;
@@ -1770,26 +1563,26 @@ const evaluate = (h, built, fields, args) => {
   // that space to track whether the current element is "dynamic"
   // (i.e. it or any of its descendants depend on dynamic values).
   built[0] = 0;
-  for(let i = 1; i < built.length; i++) {
+  for (let i = 1; i < built.length; i++) {
     const type = built[i++];
 
     // Set `built[0]`'s appropriate bits if this element depends on a dynamic value.
-    const value = built[i] ? ((built[0] |= type ? 1 : 2), fields[built[i++]]) : built[++i];
-    if(type === TAG_SET) {
+    const value = built[i] ? (built[0] |= type ? 1 : 2, fields[built[i++]]) : built[++i];
+    if (type === TAG_SET) {
       args[0] = value;
-    } else if(type === PROPS_ASSIGN) {
+    } else if (type === PROPS_ASSIGN) {
       args[1] = Object.assign(args[1] || {}, value);
-    } else if(type === PROP_SET) {
+    } else if (type === PROP_SET) {
       (args[1] = args[1] || {})[built[++i]] = value;
-    } else if(type === PROP_APPEND) {
+    } else if (type === PROP_APPEND) {
       args[1][built[++i]] += value + '';
-    } else if(type) {
+    } else if (type) {
       // type === CHILD_RECURSE
       // Set the operation list (including the staticness bits) as
       // `this` for the `h` call.
       tmp = h.apply(value, evaluate(h, value, fields, ['', null]));
       args.push(tmp);
-      if(value[0]) {
+      if (value[0]) {
         // Set the 2nd lowest bit it the child element is dynamic.
         built[0] |= 2;
       } else {
@@ -1808,37 +1601,37 @@ const evaluate = (h, built, fields, args) => {
   }
   return args;
 };
-const build = function(statics) {
+const build = function (statics) {
   let mode = MODE_TEXT;
   let buffer = '';
   let quote = '';
   let current = [0];
   let char, propName;
   const commit = field => {
-    if(mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
+    if (mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
       {
         current.push(CHILD_APPEND, field, buffer);
       }
-    } else if(mode === MODE_TAGNAME && (field || buffer)) {
+    } else if (mode === MODE_TAGNAME && (field || buffer)) {
       {
         current.push(TAG_SET, field, buffer);
       }
       mode = MODE_WHITESPACE;
-    } else if(mode === MODE_WHITESPACE && buffer === '...' && field) {
+    } else if (mode === MODE_WHITESPACE && buffer === '...' && field) {
       {
         current.push(PROPS_ASSIGN, field, 0);
       }
-    } else if(mode === MODE_WHITESPACE && buffer && !field) {
+    } else if (mode === MODE_WHITESPACE && buffer && !field) {
       {
         current.push(PROP_SET, 0, true, buffer);
       }
-    } else if(mode >= MODE_PROP_SET) {
+    } else if (mode >= MODE_PROP_SET) {
       {
-        if(buffer || (!field && mode === MODE_PROP_SET)) {
+        if (buffer || !field && mode === MODE_PROP_SET) {
           current.push(mode, 0, buffer, propName);
           mode = MODE_PROP_APPEND;
         }
-        if(field) {
+        if (field) {
           current.push(mode, field, 0, propName);
           mode = MODE_PROP_APPEND;
         }
@@ -1846,17 +1639,17 @@ const build = function(statics) {
     }
     buffer = '';
   };
-  for(let i = 0; i < statics.length; i++) {
-    if(i) {
-      if(mode === MODE_TEXT) {
+  for (let i = 0; i < statics.length; i++) {
+    if (i) {
+      if (mode === MODE_TEXT) {
         commit();
       }
       commit(i);
     }
-    for(let j = 0; j < statics[i].length; j++) {
+    for (let j = 0; j < statics[i].length; j++) {
       char = statics[i][j];
-      if(mode === MODE_TEXT) {
-        if(char === '<') {
+      if (mode === MODE_TEXT) {
+        if (char === '<') {
           // commit buffer
           commit();
           {
@@ -1866,33 +1659,32 @@ const build = function(statics) {
         } else {
           buffer += char;
         }
-      } else if(mode === MODE_COMMENT) {
+      } else if (mode === MODE_COMMENT) {
         // Ignore everything until the last three characters are '-', '-' and '>'
-        if(buffer === '--' && char === '>') {
+        if (buffer === '--' && char === '>') {
           mode = MODE_TEXT;
           buffer = '';
         } else {
           buffer = char + buffer[0];
         }
-      } else if(quote) {
-        if(char === quote) {
+      } else if (quote) {
+        if (char === quote) {
           quote = '';
         } else {
           buffer += char;
         }
-      } else if(char === '"' || char === "'") {
+      } else if (char === '"' || char === "'") {
         quote = char;
-      } else if(char === '>') {
+      } else if (char === '>') {
         commit();
         mode = MODE_TEXT;
-      } else if(!mode);
-      else if(char === '=') {
+      } else if (!mode) ; else if (char === '=') {
         mode = MODE_PROP_SET;
         propName = buffer;
         buffer = '';
-      } else if(char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
+      } else if (char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
         commit();
-        if(mode === MODE_TAGNAME) {
+        if (mode === MODE_TAGNAME) {
           current = current[0];
         }
         mode = current;
@@ -1900,14 +1692,14 @@ const build = function(statics) {
           (current = current[0]).push(CHILD_RECURSE, 0, mode);
         }
         mode = MODE_SLASH;
-      } else if(char === ' ' || char === '\t' || char === '\n' || char === '\r') {
+      } else if (char === ' ' || char === '\t' || char === '\n' || char === '\r') {
         // <a disabled>
         commit();
         mode = MODE_WHITESPACE;
       } else {
         buffer += char;
       }
-      if(mode === MODE_TAGNAME && buffer === '!--') {
+      if (mode === MODE_TAGNAME && buffer === '!--') {
         mode = MODE_COMMENT;
         current = current[0];
       }
@@ -1917,118 +1709,18 @@ const build = function(statics) {
   return current;
 };
 
-/**
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 const CACHES = new Map();
-const regular = function(statics) {
+const regular = function (statics) {
   let tmp = CACHES.get(this);
-  if(!tmp) {
+  if (!tmp) {
     tmp = new Map();
     CACHES.set(this, tmp);
   }
-  tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp), arguments, []);
+  tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, tmp = build(statics)), tmp), arguments, []);
   return tmp.length > 1 ? tmp : tmp[0];
 };
-var htm$1 = regular;
+var htm = regular;
 
-/**
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const html = htm$1.bind(createElement);
+const html = htm.bind(createElement);
 
-export {
-  Component,
-  Fragment,
-  createContext,
-  createRef,
-  createElement as h,
-  html,
-  render,
-  useCallback,
-  useContext,
-  useDebugValue,
-  useEffect,
-  useErrorBoundary,
-  useImperativeHandle,
-  useLayoutEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState
-};
-
-/**
- * Clones the given VNode, optionally adding attributes/props and replacing its children.
- * @param {import('./internal').VNode} vnode The virtual DOM element to clone
- * @param {object} props Attributes/props to add when cloning
- * @param {Array<import('./internal').ComponentChildren>} rest Any additional arguments will be used as replacement children.
- * @returns {import('./internal').VNode}
- */
-export function cloneElement(vnode, props, children) {
-  let normalizedProps = assign({}, vnode.props),
-    key,
-    ref,
-    i;
-
-  let defaultProps;
-
-  if(vnode.type && vnode.type.defaultProps) {
-    defaultProps = vnode.type.defaultProps;
-  }
-
-  for(i in props) {
-    if(i == 'key') key = props[i];
-    else if(i == 'ref') ref = props[i];
-    else if(props[i] === undefined && defaultProps !== undefined) {
-      normalizedProps[i] = defaultProps[i];
-    } else {
-      normalizedProps[i] = props[i];
-    }
-  }
-
-  if(arguments.length > 2) {
-    normalizedProps.children = arguments.length > 3 ? slice.call(arguments, 2) : children;
-  }
-
-  return createVNode(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
-}
-
-/**
- * Flatten and loop through the children of a virtual node
- * @param {import('../index').ComponentChildren} children The unflattened
- * children of a virtual node
- * @returns {import('../internal').VNode[]}
- */
-export function toChildArray(children, out) {
-  out = out || [];
-  if(children == null || typeof children == 'boolean') {
-  } else if(isArray(children)) {
-    children.some(child => {
-      toChildArray(child, out);
-    });
-  } else {
-    out.push(children);
-  }
-  return out;
-}
-
-export { forwardRef } from './preact/forwardRef.js';
+export { Component, Fragment, cloneElement, createContext, createElement, createRef, forwardRef, createElement as h, html, hydrate, isValidElement, options, render, toChildArray, useCallback, useContext, useDebugValue, useEffect, useErrorBoundary, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState };

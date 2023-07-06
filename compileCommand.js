@@ -370,5 +370,3 @@ define(LinkCommand.prototype, {
 export function NinjaRule(command) {
   /* if(!new.target) return new NinjaRule(command);*/
 }
-
-export default CompileCommand;

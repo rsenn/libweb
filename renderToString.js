@@ -1,4 +1,4 @@
-import { forwardRef, h as createElement, h, Fragment, options, toChildArray } from './preact.module.js';
+import { forwardRef, h as createElement, h, Fragment, options, toChildArray } from './preact.mjs';
 
 let IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 let encodeEntities = function(s) {

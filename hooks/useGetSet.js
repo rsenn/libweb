@@ -1,4 +1,4 @@
-import { useCallback, useRef } from '../preact.module.js';
+import { useCallback, useRef } from '../preact.mjs';
 
 export const useGetSet = initialValue => {
   const ref = useRef(initialValue);

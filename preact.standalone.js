@@ -1345,12 +1345,14 @@ const html = htm.bind(createElement);
 
 export {
   createElement as h,
-  options,
   html,
   render,
   Component,
+  Fragment,
   createElement,
   createContext,
+  createRef,
+  cloneElement,
   useState,
   useReducer,
   useEffect,
@@ -1360,5 +1362,6 @@ export {
   useMemo,
   useCallback,
   useContext,
-  useDebugValue
+  useDebugValue,
+  toChildArray,
 };

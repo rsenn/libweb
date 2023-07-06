@@ -1,4 +1,4 @@
-import { Component, useEffect, useRef } from '../preact.module.js';
+import { Component, useEffect, useRef } from '../preact.mjs';
 
 const defaultEvents = ['mousedown', 'touchstart'];
 

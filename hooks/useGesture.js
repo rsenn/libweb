@@ -1,4 +1,4 @@
-import { React } from '../preact.module.js';
+import { useMemo, useEffect, useState } from '../preact.mjs';
 
 // vector add
 function addV(v1, v2) {
@@ -636,7 +636,7 @@ let Controller = function Controller() {
 
 export function useRecognizers(handlers, classes, config, nativeHandlers) {
   // The gesture controller keeping track of all gesture states
-  var controller = React.useMemo(() => {
+  var controller = useMemo(() => {
     let current = new Controller();
 
     /**
@@ -678,7 +678,7 @@ export function useRecognizers(handlers, classes, config, nativeHandlers) {
 
   controller.nativeRefs = nativeHandlers; // Run controller clean functions on unmount.
 
-  React.useEffect(() => controller.current.clean, []);
+  useEffect(() => controller.current.clean, []);
   return controller.bind;
 }
 
@@ -2406,7 +2406,7 @@ export function useGesture(handlers, config) {
    * If handlers contains {onDragStart, onDrag, onDragEnd, onMoveStart, onMove}
    * actions will include 'onDrag' and 'onMove.
    */
-  let _React$useState = React.useState(() => new Set(Object.keys(handlers).map(k => k.replace(/End|Start/, '')))),
+  let _React$useState = useState(() => new Set(Object.keys(handlers).map(k => k.replace(/End|Start/, '')))),
     actions = _React$useState[0];
 
   /**

@@ -68,7 +68,7 @@ function p(n) {
   return n.children;
 }
 
-function d(n, l) {
+function Component(n, l) {
   (this.props = n), (this.context = l);
 }
 
@@ -348,7 +348,7 @@ function $(l, u, i, t, o, r, f, e, c) {
           ? (k = (h = u.__c = i.__c).__ = h.__E)
           : ('prototype' in P && P.prototype.render
               ? (u.__c = h = new P(g, x))
-              : ((u.__c = h = new d(g, x)), (h.constructor = P), (h.render = M)),
+              : ((u.__c = h = new Component(g, x)), (h.constructor = P), (h.render = M)),
             b && b.sub(h),
             (h.props = g),
             h.state || (h.state = {}),
@@ -541,7 +541,7 @@ function M(n, l, u) {
   return this.constructor(n, u);
 }
 
-function O(l, u, i) {
+function render(l, u, i) {
   var t, r, c;
   n.__ && n.__(l, u),
     (r = (t = i === o) ? null : (i && i.__k) || u.__k),
@@ -593,7 +593,7 @@ export function cloneElement(vnode, props, children) {
   return v(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
 }
 
-function B(n, l) {
+function createContext(n, l) {
   var u = {
     __c: (l = '__cC' + r++),
     __: n,
@@ -650,17 +650,17 @@ n = {
   }
 };
 
-(d.prototype.setState = function(n, l) {
+(Component.prototype.setState = function(n, l) {
   var u;
   (u = null != this.__s && this.__s !== this.state ? this.__s : (this.__s = s({}, this.state))),
     'function' == typeof n && (n = n(s({}, u), this.props)),
     n && s(u, n),
     null != n && this.__v && (l && this.__h.push(l), k(this));
 }),
-  (d.prototype.forceUpdate = function(n) {
+  (Component.prototype.forceUpdate = function(n) {
     this.__v && ((this.__e = !0), n && this.__h.push(n), k(this));
   }),
-  (d.prototype.render = p),
+  (Component.prototype.render = p),
   (u = []),
   (i = 'function' == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout),
   (g.__r = 0),
@@ -688,11 +688,11 @@ function v$1(t, r) {
   return t >= i.__.length && i.__.push({}), i.__[t];
 }
 
-function m$1(n$$1) {
-  return (o$1 = 1), p$1(k$1, n$$1);
+function useState(n$$1) {
+  return (o$1 = 1), useReducer(k$1, n$$1);
 }
 
-function p$1(n$$1, r, o) {
+function useReducer(n$$1, r, o) {
   var i = v$1(t$1++, 2);
   return (
     (i.t = n$$1),
@@ -709,20 +709,20 @@ function p$1(n$$1, r, o) {
   );
 }
 
-function y$1(r, o) {
+function useEffect(r, o) {
   var i = v$1(t$1++, 3);
   !n.__s && j$1(i.__H, o) && ((i.__ = r), (i.__H = o), u$1.__H.__h.push(i));
 }
 
-function l$1(r, o) {
+function useLayoutEffect(r, o) {
   var i = v$1(t$1++, 4);
   !n.__s && j$1(i.__H, o) && ((i.__ = r), (i.__H = o), u$1.__h.push(i));
 }
 
-function h$1(n$$1) {
+function useRef(n$$1) {
   return (
     (o$1 = 5),
-    _$1(function () {
+    useMemo(function () {
       return {
         current: n$$1
       };
@@ -730,7 +730,7 @@ function h$1(n$$1) {
   );
 }
 
-function s$1(n$$1, t, u) {
+function useImperativeHandle(n$$1, t, u) {
   (o$1 = 6),
     l$1(
       function() {
@@ -741,27 +741,27 @@ function s$1(n$$1, t, u) {
     );
 }
 
-function _$1(n$$1, u) {
+function useMemo(n$$1, u) {
   var r = v$1(t$1++, 7);
   return j$1(r.__H, u) && ((r.__ = n$$1()), (r.__H = u), (r.__h = n$$1)), r.__;
 }
 
-function A$1(n$$1, t) {
+function useCallback(n$$1, t) {
   return (
     (o$1 = 8),
-    _$1(function () {
+    useMemo(function () {
       return n$$1;
     }, t)
   );
 }
 
-function F(n$$1) {
+function useContext(n$$1) {
   var r = u$1.context[n$$1.__c],
     o = v$1(t$1++, 9);
   return (o.__c = n$$1), r ? (null == o.__ && ((o.__ = !0), r.sub(u$1)), r.props.value) : n$$1.__;
 }
 
-function T$1(t, u) {
+function useDebugValue(t, u) {
   n.useDebugValue && n.useDebugValue(u ? u(t) : t);
 }
 
@@ -1096,20 +1096,20 @@ export function createRef() {
 export {
   h,
   html,
-  O as render,
+  render,
   n as options,
-  d as Component,
-  B as createContext,
-  m$1 as useState,
-  p$1 as useReducer,
-  y$1 as useEffect,
-  l$1 as useLayoutEffect,
-  h$1 as useRef,
-  s$1 as useImperativeHandle,
-  _$1 as useMemo,
-  A$1 as useCallback,
-  F as useContext,
-  T$1 as useDebugValue
+  Component,
+  createContext,
+  useState,
+  useReducer,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useImperativeHandle,
+  useMemo,
+  useCallback,
+  useContext,
+  useDebugValue
 };
 
 

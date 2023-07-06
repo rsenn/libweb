@@ -1,3 +1,6 @@
+import { tryCatch } from '../misc.js';
+import Emitter from '../../quickjs/qjs-modules/lib/events.js';
+
 export function EventIterator(events, target = tryCatch(() => window)) {
   let emitter = new Emitter(target);
   if(typeof events == 'string') events = EventIterator[events + 'Events'] || events.split(/,/g);

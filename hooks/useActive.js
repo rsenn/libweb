@@ -1,4 +1,4 @@
-import { Component, useState, useMemo } from '../preact.module.js';
+import { Component, useState, useMemo } from '../preact.mjs';
 
 export function useActive() {
   const [isActive, setActive] = useState(false);
