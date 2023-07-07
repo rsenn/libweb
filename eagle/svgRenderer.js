@@ -46,9 +46,9 @@ export class EagleSVGRenderer {
       let path = attrs['data-path'];
 
       if(path) {
+        console.log('EagleSVGRenderer.create', path);
         if(typeof path == 'string') path = new ImmutablePath(path.split(/\s+/g).map(p => (isNaN(+p) ? p : +p)));
 
-        this.debug('EagleSVGRenderer.create', { path });
         //  if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
 
         try {
