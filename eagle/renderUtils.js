@@ -23,7 +23,7 @@ export let log = DEBUG ? (typeof console.debug == 'function' ? console.debug : c
 
 export const setDebug = state => {
   DEBUG = state;
-  log = state ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
+  return log = state ? (console.log) : (() => {});
 };
 
 export const PinSizes = {

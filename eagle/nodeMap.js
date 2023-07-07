@@ -96,7 +96,7 @@ export class EagleNodeMap {
       get(target, prop, receiver) {
         let index;
         if(typeof prop != 'symbol') {
-          let item = instance.get(prop) || instance.list.item(prop);
+          let item = instance.get(prop, key) || instance.list.item(prop);
           if(item) return item;
         }
         if(typeof prop == 'string') {

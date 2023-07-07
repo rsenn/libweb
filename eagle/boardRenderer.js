@@ -25,12 +25,11 @@ export class BoardRenderer extends EagleSVGRenderer {
     let board = obj.tagName == 'board' ? obj : doc.lookup('eagle/drawing/board');
 
     this.elements = elements;
-    this.signals = EagleNodeMap.create(obj.drawing.board.signals.children, 'name');
+    this.signals = signals;
 
     //this.plain = board.plain; //get('plain', (v, l) => EagleElement.get(board, l));
     //this.layers = Object.getOwnPropertyNames(doc.layers).map(n => [n, doc.layers[n]]);
-    this.layers = EagleNodeMap.create(obj.drawing.layers.children, 'name');
-
+    this.layers = layers;
     this.board = board;
 
     this.setPalette(BoardRenderer.palette);
@@ -134,6 +133,9 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.debug(`BoardRenderer.renderCollection(1)`, { coll, transformation, name });
 
+
+this.debug('BoardRenderer.renderCollection',  coll[0].tagName);
+
     let coordFn = i => i;
     let { class: addClass, ...addProps } = props;
     let other = [],
@@ -195,7 +197,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           );
           if(flat) cmds = cmds.flat();
 
-          this.debug('BoardRenderer.renderCollection', console.config({ compact: false }), cmds);
+          this.debug('BoardRenderer.renderCollection',   cmds);
 
           this.create(
             WirePath,
@@ -347,7 +349,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       this.renderElement(element, elementsGroup);
     }
 
-    let plain = [...doc.get('plain').children];
+    let plain = [...doc.plain];
 
     this.renderCollection(plain, plainGroup);
 

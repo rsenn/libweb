@@ -1,4 +1,4 @@
-import { className, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst, properties } from '../misc.js';
+import { lazyProperties, className, define, getOrCreate, inserter, isNumeric, isObject, roundTo, tryFunction, ucfirst, properties } from '../misc.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
@@ -324,7 +324,7 @@ export class EagleElement extends EagleNode {
     if(tagName == 'element') lazyProperty(this, 'children', () => EagleNodeList.create(this.package, this.package.path.concat(['children']), null));
     else if('children' in raw) lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
 
-    if(tagName == 'drawing' || tagName == 'schematic' || tagName == 'board') {
+    if(tagName == 'drawing' /*|| tagName == 'schematic' || tagName == 'board'*/) {
       for(let child of raw.children) lazyProperty(this, child.tagName, () => this.get(e => e.tagName == child.tagName));
     }
 
@@ -363,6 +363,28 @@ export class EagleElement extends EagleNode {
     if(['attribute', 'element', 'instance', 'label', 'moduleinst', 'pad', 'pin', 'probe', 'rectangle', 'smd', 'text'].indexOf(tagName) != -1) {
     }
     //console.log('EagleElement.initCache', this);
+
+    if(this.tagName == 'board') {
+      lazyProperties(this, {
+        signals: () => EagleNodeMap.create(this.lookup('signals').children, 'name'),
+        plain: () => {
+          const plain = this.lookup('plain');
+          return EagleNodeList.create(plain, plain.ref.down('children'));
+        },
+        elements: () => EagleNodeMap.create(this.lookup('elements').children, 'name'),
+        libraries: () => EagleNodeMap.create(this.lookup('libraries').children, 'name')
+      });
+    }
+    if(this.tagName == 'schematic') {
+      lazyProperties(this, {
+        sheets: () => {
+          const sheets = this.lookup('sheets');
+          return EagleNodeList.create(sheets, sheets.ref.down('children'));
+        } ,
+        parts: () => EagleNodeMap.create(this.lookup('parts').children, 'name'),
+        libraries: () => EagleNodeMap.create(this.lookup('libraries').children, 'name')
+      });
+    }
 
     this.initCache(EagleElement, EagleNodeList.create);
 
@@ -623,14 +645,7 @@ export class EagleElement extends EagleNode {
       p = new PointList([...m.transformPoints(p)]);
       bb.update(p);
       bb.move(x, y);
-    } else if(this.tagName == 'board') {
-      lazyProperties(this, {
-        signals: () => EagleNodeMap.create(this.lookup('signals').children, 'name'),
-        plain: () => EagleNodeList.create(this.lookup('plain'), ['children']),
-        elements: () => EagleNodeMap.create(this.lookup('elements').children, 'name'),
-        libraries: () => EagleNodeMap.create(this.lookup('libraries').children, 'name')
-      });
-    } else if(this.tagName == 'sheet') {
+    } else if(this.tagName == 'sheet' || this.tagName == 'board') {
       const plain = this.find('plain');
 
       let list = [...(plain?.children ?? [])].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');

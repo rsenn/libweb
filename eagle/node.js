@@ -120,7 +120,8 @@ export class EagleNode {
       case 'schematic':
         return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets']];
       case 'board':
-        return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
+        return [['classes']];
+      //return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
       case 'module':
         return [['ports'], ['variantdefs'], ['parts'], ['sheets']];
       case 'sheet':

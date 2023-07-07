@@ -37,7 +37,7 @@ export class EagleDocument extends EagleNode {
   file = null;
   type = null;
 
-  /* prettier-ignore */ get typeName() {
+  get typeName() {
     return {
       brd: 'board',
       sch: 'schematic',
@@ -93,8 +93,7 @@ export class EagleDocument extends EagleNode {
       mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
     ];
 
-    // prettier-ignore
-    this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
+     this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
 
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
 
@@ -103,24 +102,26 @@ export class EagleDocument extends EagleNode {
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
 
-    //console.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
-    this.type = type;
+     this.type = type;
     if(project) this.owner = project;
     if(fs) define(this, { fs });
     define(this, { xml });
     const orig = xml[0];
     define(this, { orig });
     define(this, { palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b)) });
-
-    //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
-    // this.initCache(EagleElement, EagleNodeList.create);
-
+ 
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 
     if(this.type == 'sch') {
-      //   let schematic = this.lookup('eagle/drawing/schematic');
+    const schematic = this.lookup('eagle/drawing/schematic');
 
-      let sheets = this.lookup('eagle/drawing/schematic/sheets');
+      lazyProperties(this, {
+        sheets: () => schematic.sheets,
+        parts: () => schematic.parts,
+        libraries: () => schematic.libraries
+      });
+
+/*      let sheets = this.lookup('eagle/drawing/schematic/sheets');
       let parts = this.lookup('eagle/drawing/schematic/parts');
       let libraries = this.lookup('eagle/drawing/schematic/libraries');
 
@@ -134,16 +135,17 @@ export class EagleDocument extends EagleNode {
           },
           { memoize: true }
         )
-      );
+      );*/
     }
+
     if(this.type == 'brd') {
-      const board = /*this.get('board') ??*/ this.lookup('eagle/drawing/board');
- 
+      const board =  this.lookup('eagle/drawing/board');
+
       lazyProperties(this, {
-        signals: () => EagleNodeMap.create(board.lookup('signals').children, 'name'),
-        plain: () => EagleNodeList.create(board.lookup('plain'), ['children']),
-        elements: () => EagleNodeMap.create(board.lookup('elements').children, 'name'),
-        libraries: () => EagleNodeMap.create(board.lookup('libraries').children, 'name')
+        signals: () => board.signals,
+        plain: () => board.plain,
+        elements: () => board.elements,
+        libraries: () => board.libraries
       });
     }
 
@@ -157,29 +159,29 @@ export class EagleDocument extends EagleNode {
 
     lazyProperties(this, {
       drawing: () => drawing,
-      layers: () => EagleNodeMap.create(layers.children, 'name')
+      layers: () => EagleNodeMap.create(layers.children, ['name','number'])
     });
   }
 
-  /* prettier-ignore */ get raw() {
+  get raw() {
     if(Array.isArray(this.xml))
     return this.xml[0];
   //console.log('EagleDocument.get raw', { 'this': this.orig,xml: this.xml });
   return this.xml;
 
   }
-  /* prettier-ignore */ get filename() {
+  get filename() {
     return this.file && this.file.replace(/.*\//g, '');
   }
-  /* prettier-ignore */ get dirname() {
+  get dirname() {
     return this.file && (/\//.test(this.file) ? this.file.replace(/\/[^\/]*\/?$/g, '') : '.');
   }
 
-  /* prettier-ignore */ get basename() {
+  get basename() {
     return this.file && this.filename.replace(/\.[a-z][a-z][a-z]$/i, '');
   }
 
-  /* prettier-ignore */ get changes() {
+  get changes() {
     return deepDiff(this.orig, this.raw);
   }
 
@@ -220,8 +222,7 @@ export class EagleDocument extends EagleNode {
     return super.cacheFields();
   }
 
-  /* prettier-ignore */
-  saveTo(file, overwrite = false, fs) {
+    saveTo(file, overwrite = false, fs) {
     const data = this.toXML('  ');
 
     if(!file)
@@ -267,18 +268,17 @@ export class EagleDocument extends EagleNode {
   getBounds(sheetNo = 0) {
     let bb = new BBox();
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
-    if(this.type == 'sch') {
+    
+    if(this.type == 'sch') 
       return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
-    }
 
-    if(this.elements) {
-      console.log('this.elements', this.elements);
+    if(this.elements) 
       for(let element of this.elements.list) {
-        console.log('element', element);
         let bbrect = element.getBounds();
         bb.update(bbrect);
       }
-    }
+    
+
     if(this.signals) {
       bb.update(
         [...this.signals.list]
@@ -291,36 +291,35 @@ export class EagleDocument extends EagleNode {
     /*if(this.plain) {
       bb.update(this.plain.map(child => child.getBounds()));
     }*/
-    console.log('bb', bb);
     return bb;
   }
 
   getMeasures(options = {}) {
     const { sheet = 0 } = options;
     let ret;
-    let plain = (this.type == 'sch' ? this.sheets[sheet] : this).get('plain');
+    let plain = (this.type == 'sch' ? this.sheets[sheet] : this).plain;
 
     //console.log('plain', plain);
 
     for(let layer of ['Dimension', 'Measures']) {
       let layerId = this.layers[layer].number;
 
-      ret = [...plain.children].filter(e => e.attributes.layer == layerId);
+      ret = [...plain].filter(e => e.attributes.layer == layerId);
 
       if(ret.length >= 1) break;
     }
+    console.log('EagleDocument.getMeasures', ret);
 
     if(options.bbox) if (ret) ret = BBox.from(ret);
-   //console.log('EagleDocument.getMeasures', ret);
 
     return ret;
   }
 
-  /* prettier-ignore */ get measures() {
+  get measures() {
     return this.getMeasures({ points: true, bbox: true });
   }
 
-  /* prettier-ignore */ get dimensions() {
+  get dimensions() {
     let size = new Rect(this.measures).size;
     size.units.width = size.units.height = 'mm';
     return size;
