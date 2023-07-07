@@ -1,4 +1,4 @@
-import {  define, isObject, mapFunction } from './misc.js'
+import { define, isObject, mapFunction } from './misc.js';
 //import Util from './util.js';
 
 export async function NormalizeResponse(resp) {
@@ -15,7 +15,6 @@ export async function NormalizeResponse(resp) {
       if(disp && type) resp.type = type;
       if(resp.file) if (!/tmp\//.test(resp.file)) resp.file = 'tmp/' + resp.file;
     } else {
-      console.info('resp:', resp);
       resp = { ...resp, error: resp.statusText };
     }
     if(cached) resp.cached = true;
@@ -36,23 +35,9 @@ export async function ResponseData(resp) {
   if(resp.data) return resp.data;
 }
 
-export const FetchCached = (url,options) => {
-console.log('FetchCached',{url,options});
-return fetch(url,options);
-}; /*Util.cachedFetch({
-  debug: true,
-  print({ cached, ok, status, redirected, statusText, type, url }, fn, ...args) {
-    console.debug(`FetchCached(${args.map((a, i) => (typeof a == 'string' ? '"' + a + '"' : i == 1 ? Util.toSource({ ...this.opts, ...a }, { colors: false, multiline: false }) : a)).join(', ')}) =`, {
-      cached,
-      ok,
-      status,
-      redirected,
-      statusText,
-      type,
-      url
-    });
-  }
-});*/
+export const FetchCached = (url, options) => {
+  return fetch(url, options);
+};
 
 export async function FetchURL(url, allOpts = {}) {
   let { nocache = false, ...opts } = allOpts;
@@ -71,7 +56,7 @@ export async function FetchURL(url, allOpts = {}) {
   try {
     if(!ret) ret = result = await fetch(url, opts);
   } catch(error) {
-    console.log('FetchURL ERROR:',error.message+'\n'+error.stack);
+    console.log('FetchURL ERROR:', error.message + '\n' + error.stack);
     throw error;
   }
   return ret;
