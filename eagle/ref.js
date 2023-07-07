@@ -1,7 +1,7 @@
 import { abbreviate, className, isObject } from '../misc.js';
 import { toXML } from '../json.js';
 import { text, concat } from './common.js';
-import { Pointer as ImmutablePath } from '../pointer.js';
+import { Pointer  } from '../pointer.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 import inspect from '../objectInspect.js';
 
@@ -13,11 +13,12 @@ export class EagleReference {
       path = path.toPointer(root);
       //console.log('new EagleReference', { path });
     }
-
+  
     try {
-      if(!path.deref) path = new ImmutablePath([...path]);
+      if(!path.deref) path = new Pointer([...path]);
     } catch(e) {}
-
+//path = new Pointer(path);
+  
     //console.log('new EagleReference', { path, root });
 
     this.path = path;
@@ -38,7 +39,7 @@ export class EagleReference {
   }
 
   getPath(root) {
-    let path = new ImmutablePath();
+    let path = new Pointer();
     let ref = this;
     do {
       path = ref.path.concat(path);

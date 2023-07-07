@@ -73,10 +73,11 @@ export class EagleDocument extends EagleNode {
 
   constructor(xmlStr, project, filename, type, fs) {
     const xml = fromXML(xmlStr); //parseXML(xmlStr);
-    // console.log('EagleDocument.constructor', { xml });
+    
 
     let xmlObj = deep.clone(xml[0]);
-    super(project, EagleRef(xmlObj, []), xmlObj);
+    //console.log('EagleDocument.constructor',console.config({compact: 0,depth:4}),  { xmlObj });
+   super(project, EagleRef(xmlObj, []), xmlObj);
 
     define(this, {
       pathMapper: new PathMapper(xmlObj, ImmutablePath),
