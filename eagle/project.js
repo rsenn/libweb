@@ -41,7 +41,7 @@ export class EagleProject {
     if(file) {
       if(Array.isArray(file)) file.forEach(loadFile);
       else loadFile(file);
-      if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
+      //if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
     }
   }
 
