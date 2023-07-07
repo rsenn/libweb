@@ -138,14 +138,7 @@ export class EagleDocument extends EagleNode {
     }
     if(this.type == 'brd') {
       const board = /*this.get('board') ??*/ this.lookup('eagle/drawing/board');
-
-      /*define(this, properties({
-  signals: () => board.signals,
-  plain: () => board.plain,
-  elements: () => board.elements,
-  libraries: () => board.libraries
-}));*/
-
+ 
       lazyProperties(this, {
         signals: () => EagleNodeMap.create(board.lookup('signals').children, 'name'),
         plain: () => EagleNodeList.create(board.lookup('plain'), ['children']),
@@ -318,7 +311,7 @@ export class EagleDocument extends EagleNode {
     }
 
     if(options.bbox) if (ret) ret = BBox.from(ret);
-    console.log('EagleDocument.getMeasures', ret);
+   //console.log('EagleDocument.getMeasures', ret);
 
     return ret;
   }

@@ -28,7 +28,7 @@ export const SchematicSymbol = ({ data, component = Fragment, id, class: classNa
 
   //children.map(data => log('data:', data.tagName));
 
-  console.log(`SchematicSymbol(${data.name}).render`, children /*.map(ch=>[ch, ElementToComponent(ch)])*/);
+  //console.log(`SchematicSymbol(${data.name}).render`, children /*.map(ch=>[ch, ElementToComponent(ch)])*/);
 
   return h(component, { id, class: className }, [
     ...children.filter(({ tagName }) => tagName != 'text').map(data => h(ElementToComponent(data), { data, ...props })),

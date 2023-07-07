@@ -30,16 +30,18 @@ export class EagleSVGRenderer {
      if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     this.doc = doc;
     let renderer = this;
+   
     this.path2component = mapWrapper(
       new Map(),
       path => (isObject(path) && path.path !== undefined ? path.path : path) + '',
       key => new ImmutablePath(key)
     );
+   
     const insertCtoP = inserter(this.component2path);
     const insert = inserter(this.path2component, (k, v) => insertCtoP(v, k));
+    
     this.mirrorY = new TransformationList().scale(1, -1);
-    //this.append = factory;
-    this.create = function(tag, attrs, children, parent, element) {
+     this.create = function(tag, attrs, children, parent, element) {
        let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
 
@@ -58,6 +60,7 @@ export class EagleSVGRenderer {
           console.log(`EagleSVGRenderer.constructor ERROR: ${error.message}\n${error.stack}`);
         }
       }
+      
       return ret;
     };
 
