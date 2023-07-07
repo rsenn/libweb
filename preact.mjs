@@ -8,7 +8,7 @@ var n,
   e = [],
   c = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
 
-function s(n, l) {
+function assign(n, l) {
   for(var u in l) {
     n[u] = l[u];
   }
@@ -16,12 +16,12 @@ function s(n, l) {
   return n;
 }
 
-function a(n) {
+function removeNode(n) {
   var l = n.parentNode;
   l && l.removeChild(n);
 }
 
-function h(n, l, u) {
+function createElement(n, l, u) {
   var i,
     t,
     o,
@@ -42,10 +42,10 @@ function h(n, l, u) {
       void 0 === f[o] && (f[o] = n.defaultProps[o]);
     }
   }
-  return v(n, f, i, t, null);
+  return createVNode(n, f, i, t, null);
 }
 
-function v(l, u, i, t, o) {
+function createVNode(l, u, i, t, o) {
   var r = {
     type: l,
     props: u,
@@ -64,17 +64,17 @@ function v(l, u, i, t, o) {
   return null == o && (r.__v = r), null != n.vnode && n.vnode(r), r;
 }
 
-function p(n) {
-  return n.children;
+function Fragment(props) {
+  return props.children;
 }
 
 function Component(n, l) {
   (this.props = n), (this.context = l);
 }
 
-function _(n, l) {
+function getDomSibling(n, l) {
   if(null == l) {
-    return n.__ ? _(n.__, n.__.__k.indexOf(n) + 1) : null;
+    return n.__ ? getDomSibling(n.__, n.__.__k.indexOf(n) + 1) : null;
   }
 
   for(var u; l < n.__k.length; l++) {
@@ -83,10 +83,10 @@ function _(n, l) {
     }
   }
 
-  return 'function' == typeof n.type ? _(n) : null;
+  return 'function' == typeof n.type ? getDomSibling(n) : null;
 }
 
-function w(n) {
+function updateParentDomPointers(n) {
   var l, u;
 
   if(null != (n = n.__) && null != n.__c) {
@@ -97,17 +97,16 @@ function w(n) {
       }
     }
 
-    return w(n);
+    return updateParentDomPointers(n);
   }
 }
 
-function k(l) {
-  ((!l.__d && (l.__d = !0) && u.push(l) && !g.__r++) || t !== n.debounceRendering) &&
-    ((t = n.debounceRendering) || i)(g);
+function enqueueRender(l) {
+  ((!l.__d && (l.__d = !0) && u.push(l) && !process.__r++) || t !== n.debounceRendering) && ((t = n.debounceRendering) || i)(process);
 }
 
-function g() {
-  for(var n; (g.__r = u.length); ) {
+function process() {
+  for(var n; (process.__r = u.length); ) {
     (n = u.sort(function (n, l) {
       return n.__v.__b - l.__v.__b;
     })),
@@ -118,25 +117,15 @@ function g() {
           ((r = (o = (l = n).__v).__e),
           (f = l.__P) &&
             ((u = []),
-            ((i = s({}, o)).__v = i),
-            (t = $(
-              f,
-              o,
-              i,
-              l.__n,
-              void 0 !== f.ownerSVGElement,
-              null != o.__h ? [r] : null,
-              u,
-              null == r ? _(o) : r,
-              o.__h
-            )),
-            j(u, o),
-            t != r && w(o)));
+            ((i = assign({}, o)).__v = i),
+            (t = diff(f, o, i, l.__n, void 0 !== f.ownerSVGElement, null != o.__h ? [r] : null, u, null == r ? getDomSibling(o) : r, o.__h)),
+            commitRoot(u, o),
+            t != r && updateParentDomPointers(o)));
       });
   }
 }
 
-function m(n, l, u, i, t, o, r, c, s, h) {
+function diffChildren(n, l, u, i, t, o, r, c, s, h) {
   var y,
     d,
     w,
@@ -147,17 +136,17 @@ function m(n, l, u, i, t, o, r, c, s, h) {
     A = (i && i.__k) || e,
     P = A.length;
 
-  for(s == f && (s = null != r ? r[0] : P ? _(i, 0) : null), u.__k = [], y = 0; y < l.length; y++) {
+  for(s == f && (s = null != r ? r[0] : P ? getDomSibling(i, 0) : null), u.__k = [], y = 0; y < l.length; y++) {
     if(
       null !=
       (k = u.__k[y] =
         null == (k = l[y]) || 'boolean' == typeof k
           ? null
           : 'string' == typeof k || 'number' == typeof k
-          ? v(null, k, null, null, k)
+          ? createVNode(null, k, null, null, k)
           : Array.isArray(k)
-          ? v(
-              p,
+          ? createVNode(
+              Fragment,
               {
                 children: k
               },
@@ -166,7 +155,7 @@ function m(n, l, u, i, t, o, r, c, s, h) {
               null
             )
           : null != k.__e || null != k.__c
-          ? v(k.type, k.props, k.key, null, k.__v)
+          ? createVNode(k.type, k.props, k.key, null, k.__v)
           : k)
     ) {
       if(((k.__ = u), (k.__b = u.__b + 1), null === (w = A[y]) || (w && k.key == w.key && k.type === w.type))) {
@@ -181,34 +170,32 @@ function m(n, l, u, i, t, o, r, c, s, h) {
           w = null;
         }
       }
-      (g = $(n, k, (w = w || f), t, o, r, c, s, h)),
+      (g = diff(n, k, (w = w || f), t, o, r, c, s, h)),
         (d = k.ref) && w.ref != d && (b || (b = []), w.ref && b.push(w.ref, null, k), b.push(d, k.__c || g, k)),
         null != g
-          ? (null == m && (m = g),
-            (s = x(n, k, w, A, r, g, s)),
-            h || 'option' != u.type ? 'function' == typeof u.type && (u.__d = s) : (n.value = ''))
-          : s && w.__e == s && s.parentNode != n && (s = _(w));
+          ? (null == m && (m = g), (s = placeChild(n, k, w, A, r, g, s)), h || 'option' != u.type ? 'function' == typeof u.type && (u.__d = s) : (n.value = ''))
+          : s && w.__e == s && s.parentNode != n && (s = getDomSibling(w));
     }
   }
 
   if(((u.__e = m), null != r && 'function' != typeof u.type)) {
     for(y = r.length; y--; ) {
-      null != r[y] && a(r[y]);
+      null != r[y] && removeNode(r[y]);
     }
   }
 
   for(y = P; y--; ) {
-    null != A[y] && L(A[y], A[y]);
+    null != A[y] && unmount(A[y], A[y]);
   }
 
   if(b) {
     for(y = 0; y < b.length; y++) {
-      I(b[y], b[++y], b[++y]);
+      applyRef(b[y], b[++y], b[++y]);
     }
   }
 }
 
-function x(n, l, u, i, t, o, r) {
+function placeChild(n, l, u, i, t, o, r) {
   var f, e, c;
   if(void 0 !== l.__d) {
     (f = l.__d), (l.__d = void 0);
@@ -228,29 +215,23 @@ function x(n, l, u, i, t, o, r) {
   return void 0 !== f ? f : o.nextSibling;
 }
 
-function A(n, l, u, i, t) {
+function diffProps(n, l, u, i, t) {
   var o;
 
   for(o in u) {
-    'children' === o || 'key' === o || o in l || C(n, o, null, u[o], i);
+    'children' === o || 'key' === o || o in l || setProperty(n, o, null, u[o], i);
   }
 
   for(o in l) {
-    (t && 'function' != typeof l[o]) ||
-      'children' === o ||
-      'key' === o ||
-      'value' === o ||
-      'checked' === o ||
-      u[o] === l[o] ||
-      C(n, o, l[o], u[o], i);
+    (t && 'function' != typeof l[o]) || 'children' === o || 'key' === o || 'value' === o || 'checked' === o || u[o] === l[o] || setProperty(n, o, l[o], u[o], i);
   }
 }
 
-function P(n, l, u) {
+function setStyle(n, l, u) {
   '-' === l[0] ? n.setProperty(l, u) : (n[l] = null == u ? '' : 'number' != typeof u || c.test(l) ? u : u + 'px');
 }
 
-function C(n, l, u, i, t) {
+function setProperty(n, l, u, i, t) {
   var o, r, f;
   if((t && 'className' == l && (l = 'class'), 'style' === l)) {
     if('string' == typeof u) {
@@ -258,12 +239,12 @@ function C(n, l, u, i, t) {
     } else {
       if(('string' == typeof i && (n.style.cssText = i = ''), i)) {
         for(l in i) {
-          (u && l in u) || P(n.style, l, '');
+          (u && l in u) || setStyle(n.style, l, '');
         }
       }
       if(u) {
         for(l in u) {
-          (i && u[l] === i[l]) || P(n.style, l, u[l]);
+          (i && u[l] === i[l]) || setStyle(n.style, l, u[l]);
         }
       }
     }
@@ -274,17 +255,9 @@ function C(n, l, u, i, t) {
         (l = l.slice(2)),
         n.l || (n.l = {}),
         (n.l[l + o] = u),
-        (f = o ? N : z),
+        (f = o ? eventProxyCapture : eventProxy),
         u ? i || n.addEventListener(l, f, o) : n.removeEventListener(l, f, o))
-      : 'list' !== l &&
-        'tagName' !== l &&
-        'form' !== l &&
-        'type' !== l &&
-        'size' !== l &&
-        'download' !== l &&
-        'href' !== l &&
-        !t &&
-        l in n
+      : 'list' !== l && 'tagName' !== l && 'form' !== l && 'type' !== l && 'size' !== l && 'download' !== l && 'href' !== l && !t && l in n
       ? (n[l] = null == u ? '' : u)
       : 'function' != typeof u &&
         'dangerouslySetInnerHTML' !== l &&
@@ -298,28 +271,25 @@ function C(n, l, u, i, t) {
   }
 }
 
-function z(l) {
+function eventProxy(l) {
   this.l[l.type + !1](n.event ? n.event(l) : l);
 }
 
-function N(l) {
+function eventProxyCapture(l) {
   this.l[l.type + !0](n.event ? n.event(l) : l);
 }
 
-function T(n, l, u) {
+function reorderChildren(n, l, u) {
   var i, t;
 
   for(i = 0; i < n.__k.length; i++) {
     (t = n.__k[i]) &&
       ((t.__ = n),
-      t.__e &&
-        ('function' == typeof t.type && t.__k.length > 1 && T(t, l, u),
-        (l = x(u, t, t, n.__k, null, t.__e, l)),
-        'function' == typeof n.type && (n.__d = l)));
+      t.__e && ('function' == typeof t.type && t.__k.length > 1 && reorderChildren(t, l, u), (l = placeChild(u, t, t, n.__k, null, t.__e, l)), 'function' == typeof n.type && (n.__d = l)));
   }
 }
 
-function $(l, u, i, t, o, r, f, e, c) {
+function diff(l, u, i, t, o, r, f, e, c) {
   var a,
     h,
     v,
@@ -346,9 +316,7 @@ function $(l, u, i, t, o, r, f, e, c) {
         (x = a ? (b ? b.props.value : a.__) : t),
         i.__c
           ? (k = (h = u.__c = i.__c).__ = h.__E)
-          : ('prototype' in P && P.prototype.render
-              ? (u.__c = h = new P(g, x))
-              : ((u.__c = h = new Component(g, x)), (h.constructor = P), (h.render = M)),
+          : ('prototype' in P && P.prototype.render ? (u.__c = h = new P(g, x)) : ((u.__c = h = new Component(g, x)), (h.constructor = P), (h.render = doRender)),
             b && b.sub(h),
             (h.props = g),
             h.state || (h.state = {}),
@@ -357,30 +325,18 @@ function $(l, u, i, t, o, r, f, e, c) {
             (v = h.__d = !0),
             (h.__h = [])),
         null == h.__s && (h.__s = h.state),
-        null != P.getDerivedStateFromProps &&
-          (h.__s == h.state && (h.__s = s({}, h.__s)), s(h.__s, P.getDerivedStateFromProps(g, h.__s))),
+        null != P.getDerivedStateFromProps && (h.__s == h.state && (h.__s = assign({}, h.__s)), assign(h.__s, P.getDerivedStateFromProps(g, h.__s))),
         (y = h.props),
         (_ = h.state),
         v)
       ) {
-        null == P.getDerivedStateFromProps && null != h.componentWillMount && h.componentWillMount(),
-          null != h.componentDidMount && h.__h.push(h.componentDidMount);
+        null == P.getDerivedStateFromProps && null != h.componentWillMount && h.componentWillMount(), null != h.componentDidMount && h.__h.push(h.componentDidMount);
       } else {
         if(
-          (null == P.getDerivedStateFromProps &&
-            g !== y &&
-            null != h.componentWillReceiveProps &&
-            h.componentWillReceiveProps(g, x),
+          (null == P.getDerivedStateFromProps && g !== y && null != h.componentWillReceiveProps && h.componentWillReceiveProps(g, x),
           (!h.__e && null != h.shouldComponentUpdate && !1 === h.shouldComponentUpdate(g, h.__s, x)) || u.__v === i.__v)
         ) {
-          (h.props = g),
-            (h.state = h.__s),
-            u.__v !== i.__v && (h.__d = !1),
-            (h.__v = u),
-            (u.__e = i.__e),
-            (u.__k = i.__k),
-            h.__h.length && f.push(h),
-            T(u, e, l);
+          (h.props = g), (h.state = h.__s), u.__v !== i.__v && (h.__d = !1), (h.__v = u), (u.__e = i.__e), (u.__k = i.__k), h.__h.length && f.push(h), reorderChildren(u, e, l);
           break n;
         }
 
@@ -399,17 +355,17 @@ function $(l, u, i, t, o, r, f, e, c) {
         (h.__P = l),
         (a = h.render(h.props, h.state, h.context)),
         (h.state = h.__s),
-        null != h.getChildContext && (t = s(s({}, t), h.getChildContext())),
+        null != h.getChildContext && (t = assign(assign({}, t), h.getChildContext())),
         v || null == h.getSnapshotBeforeUpdate || (w = h.getSnapshotBeforeUpdate(y, _)),
-        (A = null != a && a.type == p && null == a.key ? a.props.children : a),
-        m(l, Array.isArray(A) ? A : [A], u, i, t, o, r, f, e, c),
+        (A = null != a && a.type == Fragment && null == a.key ? a.props.children : a),
+        diffChildren(l, Array.isArray(A) ? A : [A], u, i, t, o, r, f, e, c),
         (h.base = u.__e),
         (u.__h = null),
         h.__h.length && f.push(h),
         k && (h.__E = h.__ = null),
         (h.__e = !1);
     } else {
-      null == r && u.__v === i.__v ? ((u.__k = i.__k), (u.__e = i.__e)) : (u.__e = H(i.__e, u, i, t, o, r, f, c));
+      null == r && u.__v === i.__v ? ((u.__k = i.__k), (u.__e = i.__e)) : (u.__e = diffElementNodes(i.__e, u, i, t, o, r, f, c));
     }
 
     (a = n.diffed) && a(u);
@@ -420,7 +376,7 @@ function $(l, u, i, t, o, r, f, e, c) {
   return u.__e;
 }
 
-function j(l, u) {
+function commitRoot(l, u) {
   n.__c && n.__c(u, l),
     l.some(function (u) {
       try {
@@ -435,7 +391,7 @@ function j(l, u) {
     });
 }
 
-function H(n, l, u, i, t, o, r, c) {
+function diffElementNodes(n, l, u, i, t, o, r, c) {
   var s,
     a,
     h,
@@ -471,37 +427,25 @@ function H(n, l, u, i, t, o, r, c) {
   if(null === l.type) {
     p === d || (c && n.data === d) || (n.data = d);
   } else {
-    if(
-      (null != o && (o = e.slice.call(n.childNodes)),
-      (h = (p = u.props || f).dangerouslySetInnerHTML),
-      (v = d.dangerouslySetInnerHTML),
-      !c)
-    ) {
+    if((null != o && (o = e.slice.call(n.childNodes)), (h = (p = u.props || f).dangerouslySetInnerHTML), (v = d.dangerouslySetInnerHTML), !c)) {
       if(null != o) {
         for(p = {}, y = 0; y < n.attributes.length; y++) {
           p[n.attributes[y].name] = n.attributes[y].value;
         }
       }
-      (v || h) &&
-        ((v && ((h && v.__html == h.__html) || v.__html === n.innerHTML)) || (n.innerHTML = (v && v.__html) || ''));
+      (v || h) && ((v && ((h && v.__html == h.__html) || v.__html === n.innerHTML)) || (n.innerHTML = (v && v.__html) || ''));
     }
 
-    A(n, d, p, t, c),
-      v
-        ? (l.__k = [])
-        : ((s = l.props.children),
-          m(n, Array.isArray(s) ? s : [s], l, u, i, 'foreignObject' !== l.type && t, o, r, f, c)),
+    diffProps(n, d, p, t, c),
+      v ? (l.__k = []) : ((s = l.props.children), diffChildren(n, Array.isArray(s) ? s : [s], l, u, i, 'foreignObject' !== l.type && t, o, r, f, c)),
       c ||
-        ('value' in d &&
-          void 0 !== (s = d.value) &&
-          (s !== n.value || ('progress' === l.type && !s)) &&
-          C(n, 'value', s, p.value, !1),
-        'checked' in d && void 0 !== (s = d.checked) && s !== n.checked && C(n, 'checked', s, p.checked, !1));
+        ('value' in d && void 0 !== (s = d.value) && (s !== n.value || ('progress' === l.type && !s)) && setProperty(n, 'value', s, p.value, !1),
+        'checked' in d && void 0 !== (s = d.checked) && s !== n.checked && setProperty(n, 'checked', s, p.checked, !1));
   }
   return n;
 }
 
-function I(l, u, i) {
+function applyRef(l, u, i) {
   try {
     'function' == typeof l ? l(u) : (l.current = u);
   } catch(l) {
@@ -509,12 +453,12 @@ function I(l, u, i) {
   }
 }
 
-function L(l, u, i) {
+function unmount(l, u, i) {
   var t, o, r;
 
   if(
     (n.unmount && n.unmount(l),
-    (t = l.ref) && ((t.current && t.current !== l.__e) || I(t, null, u)),
+    (t = l.ref) && ((t.current && t.current !== l.__e) || applyRef(t, null, u)),
     i || 'function' == typeof l.type || (i = null != (o = l.__e)),
     (l.__e = l.__d = void 0),
     null != (t = l.__c))
@@ -531,13 +475,13 @@ function L(l, u, i) {
 
   if((t = l.__k)) {
     for(r = 0; r < t.length; r++) {
-      t[r] && L(t[r], u, i);
+      t[r] && unmount(t[r], u, i);
     }
   }
-  null != o && a(o);
+  null != o && removeNode(o);
 }
 
-function M(n, l, u) {
+function doRender(n, l, u) {
   return this.constructor(n, u);
 }
 
@@ -545,25 +489,15 @@ function render(l, u, i) {
   var t, r, c;
   n.__ && n.__(l, u),
     (r = (t = i === o) ? null : (i && i.__k) || u.__k),
-    (l = h(p, null, [l])),
+    (l = createElement(Fragment, null, [l])),
     (c = []),
-    $(
-      u,
-      ((t ? u : i || u).__k = l),
-      r || f,
-      f,
-      void 0 !== u.ownerSVGElement,
-      i && !t ? [i] : r ? null : u.childNodes.length ? e.slice.call(u.childNodes) : null,
-      c,
-      i || f,
-      t
-    ),
-    j(c, l);
+    diff(u, ((t ? u : i || u).__k = l), r || f, f, void 0 !== u.ownerSVGElement, i && !t ? [i] : r ? null : u.childNodes.length ? e.slice.call(u.childNodes) : null, c, i || f, t),
+    commitRoot(c, l);
 }
 
 export function cloneElement(vnode, props, children) {
   var arguments$1 = arguments;
-  var normalizedProps = s({}, vnode.props),
+  var normalizedProps = assign({}, vnode.props),
     key,
     ref,
     i;
@@ -590,7 +524,7 @@ export function cloneElement(vnode, props, children) {
     normalizedProps.children = children;
   }
 
-  return v(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
+  return createVNode(vnode.type, normalizedProps, key || vnode.key, ref || vnode.ref, null);
 }
 
 function createContext(n, l) {
@@ -609,7 +543,7 @@ function createContext(n, l) {
             return i;
           }),
           (this.shouldComponentUpdate = function(n) {
-            this.props.value !== n.value && u.some(k);
+            this.props.value !== n.value && u.some(enqueueRender);
           }),
           (this.sub = function(n) {
             u.push(n);
@@ -632,9 +566,7 @@ n = {
       if((u = l.__c) && !u.__) {
         try {
           if(
-            ((i = u.constructor) &&
-              null != i.getDerivedStateFromError &&
-              (u.setState(i.getDerivedStateFromError(n)), (t = u.__d)),
+            ((i = u.constructor) && null != i.getDerivedStateFromError && (u.setState(i.getDerivedStateFromError(n)), (t = u.__d)),
             null != u.componentDidCatch && (u.componentDidCatch(n), (t = u.__d)),
             t)
           ) {
@@ -652,18 +584,18 @@ n = {
 
 (Component.prototype.setState = function(n, l) {
   var u;
-  (u = null != this.__s && this.__s !== this.state ? this.__s : (this.__s = s({}, this.state))),
-    'function' == typeof n && (n = n(s({}, u), this.props)),
-    n && s(u, n),
-    null != n && this.__v && (l && this.__h.push(l), k(this));
+  (u = null != this.__s && this.__s !== this.state ? this.__s : (this.__s = assign({}, this.state))),
+    'function' == typeof n && (n = n(assign({}, u), this.props)),
+    n && assign(u, n),
+    null != n && this.__v && (l && this.__h.push(l), enqueueRender(this));
 }),
   (Component.prototype.forceUpdate = function(n) {
-    this.__v && ((this.__e = !0), n && this.__h.push(n), k(this));
+    this.__v && ((this.__e = !0), n && this.__h.push(n), enqueueRender(this));
   }),
-  (Component.prototype.render = p),
+  (Component.prototype.render = Fragment),
   (u = []),
   (i = 'function' == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout),
-  (g.__r = 0),
+  (process.__r = 0),
   (o = f),
   (r = 0);
 
@@ -869,17 +801,14 @@ var CHILD_RECURSE = 2;
 var TAG_SET = 3;
 var PROPS_ASSIGN = 4;
 var PROP_SET = MODE_PROP_SET;
-var PROP_APPEND = MODE_PROP_APPEND; // Turn a result of a build(...) call into a tree that is more
+var PROP_APPEND = MODE_PROP_APPEND;
 var evaluate = function(h, built, fields, args) {
-  var tmp; // `build()` used the first element of the operation list as
-  // temporary workspace. Now that `build()` is done we can use
-  // that space to track whether the current element is "dynamic"
-  // (i.e. it or any of its descendants depend on dynamic values).
+  var tmp;
 
   built[0] = 0;
 
   for(var i = 1; i < built.length; i++) {
-    var type = built[i++]; // Set `built[0]`'s appropriate bits if this element depends on a dynamic value.
+    var type = built[i++];
 
     var value = built[i] ? ((built[0] |= type ? 1 : 2), fields[built[i++]]) : built[++i];
 
@@ -892,26 +821,16 @@ var evaluate = function(h, built, fields, args) {
     } else if(type === PROP_APPEND) {
       args[1][built[++i]] += value + '';
     } else if(type) {
-      // type === CHILD_RECURSE
-      // Set the operation list (including the staticness bits) as
-      // `this` for the `h` call.
       tmp = h.apply(value, evaluate(h, value, fields, ['', null]));
       args.push(tmp);
 
       if(value[0]) {
-        // Set the 2nd lowest bit it the child element is dynamic.
         built[0] |= 2;
       } else {
-        // Rewrite the operation list in-place if the child element is static.
-        // The currently evaluated piece `CHILD_RECURSE, 0, [...]` becomes
-        // `CHILD_APPEND, 0, tmp`.
-        // Essentially the operation list gets optimized for potential future
-        // re-evaluations.
         built[i - 2] = CHILD_APPEND;
         built[i] = tmp;
       }
     } else {
-      // type === CHILD_APPEND
       args.push(value);
     }
   }
@@ -975,19 +894,15 @@ var build = function(statics) {
 
       if(mode === MODE_TEXT) {
         if(char === '<') {
-          // commit buffer
           commit();
-
           {
             current = [current];
           }
-
           mode = MODE_TAGNAME;
         } else {
           buffer += char;
         }
       } else if(mode === MODE_COMMENT) {
-        // Ignore everything until the last three characters are '-', '-' and '>'
         if(buffer === '--' && char === '>') {
           mode = MODE_TEXT;
           buffer = '';
@@ -1025,7 +940,6 @@ var build = function(statics) {
 
         mode = MODE_SLASH;
       } else if(char === ' ' || char === '\t' || char === '\n' || char === '\r') {
-        // <a disabled>
         commit();
         mode = MODE_WHITESPACE;
       } else {
@@ -1044,18 +958,6 @@ var build = function(statics) {
   return current;
 };
 
-/**
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 var CACHES = new Map();
 
 var regular = function(statics) {
@@ -1071,34 +973,20 @@ var regular = function(statics) {
 };
 
 var htm = MINI ? build : regular;
-
-/**
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-var html = htm.bind(h);
-
-export const Fragment = props => props.children;
+var html = htm.bind(createElement);
 
 export function createRef() {
   return { current: null };
 }
 
-
 export {
-  h,
+  createElement,
+  createElement as h,
   html,
   render,
   n as options,
   Component,
+  Fragment,
   createContext,
   useState,
   useReducer,
@@ -1112,13 +1000,6 @@ export {
   useDebugValue
 };
 
-
-/**
- * Flatten and loop through the children of a virtual node
- * @param {import('../index').ComponentChildren} children The unflattened
- * children of a virtual node
- * @returns {import('../internal').VNode[]}
- */
 export function toChildArray(children, out) {
   out = out || [];
   if(children == null || typeof children == 'boolean') {

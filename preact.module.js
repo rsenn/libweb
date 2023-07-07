@@ -898,11 +898,8 @@ function createContext(defaultValue, contextId) {
 }
 
 var currentIndex;
-
 var currentComponent;
-
 var currentHook = 0;
-
 var afterPaintEffects = [];
 var oldBeforeDiff = options.__b;
 var oldBeforeRender = options.__r;
@@ -911,12 +908,14 @@ var oldCommit = options.__c;
 var oldBeforeUnmount = options.unmount;
 var RAF_TIMEOUT = 100;
 var prevRaf;
+
 options.__b = function(vnode) {
   currentComponent = null;
   if(oldBeforeDiff) {
     oldBeforeDiff(vnode);
   }
 };
+
 options.__r = function(vnode) {
   if(oldBeforeRender) {
     oldBeforeRender(vnode);
