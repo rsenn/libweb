@@ -22,7 +22,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     const { layers, elements, signals, sheets } = obj;
     const doc = obj.document;
 
-    let board = obj.tagName == 'board' ? obj : doc.mainElement;
+    let board = obj.tagName == 'board' ? obj : doc.lookup('eagle/drawing/board');
 
     this.elements = elements;
     this.signals = EagleNodeMap.create(obj.drawing.board.signals.children, 'name');

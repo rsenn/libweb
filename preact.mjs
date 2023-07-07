@@ -486,7 +486,16 @@ function unmount(l, u, i) {
 }
 
 function doRender(props, l, u) {
-  return this.constructor(props, u);
+  globalThis.doRenderObj = this;
+  let ctor = this.constructor;
+
+  try {
+    return this.constructor(props, u);
+  } catch(error) {
+    const obj = this;
+    console.log('doRender', { error: error.message, ctor: ctor + '' });
+    throw error;
+  }
 }
 
 function render(l, u, i) {

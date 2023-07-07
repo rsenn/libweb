@@ -118,10 +118,10 @@ export class EagleDocument extends EagleNode {
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 
     if(this.type == 'sch') {
-      //   let schematic = this.lookup('/eagle/drawing/schematic');
+      //   let schematic = this.lookup('eagle/drawing/schematic');
 
-      let sheets = this.lookup('/eagle/drawing/schematic/sheets');
-      let parts = this.lookup('/eagle/drawing/schematic/parts');
+      let sheets = this.lookup('eagle/drawing/schematic/sheets');
+      let parts = this.lookup('eagle/drawing/schematic/parts');
       let libraries = this.lookup('eagle/drawing/schematic/libraries');
 
       define(
@@ -137,27 +137,29 @@ export class EagleDocument extends EagleNode {
       );
     }
     if(this.type == 'brd') {
-      let board = this.get('board') ?? this.lookup('/eagle/drawing/board');
-      let { elements, plain, signals } = board;
+      const board = /*this.get('board') ??*/ this.lookup('eagle/drawing/board');
 
-      let libraries = board.lookup('/libraries');
-
-      //console.log('libraries', { libraries });
+      /*define(this, properties({
+  signals: () => board.signals,
+  plain: () => board.plain,
+  elements: () => board.elements,
+  libraries: () => board.libraries
+}));*/
 
       lazyProperties(this, {
-        signals: () => EagleNodeMap.create(signals.children, 'name'),
-        plain: () => EagleNodeList.create(plain, plain.path.concat(['children'])),
-        elements: () => EagleNodeMap.create(elements.children, 'name'),
-        libraries: () => EagleNodeMap.create(libraries.children, 'name')
+        signals: () => EagleNodeMap.create(board.lookup('signals').children, 'name'),
+        plain: () => EagleNodeList.create(board.lookup('plain'), ['children']),
+        elements: () => EagleNodeMap.create(board.lookup('elements').children, 'name'),
+        libraries: () => EagleNodeMap.create(board.lookup('libraries').children, 'name')
       });
     }
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
 
-    let drawing = this.lookup('/eagle/drawing');
+    let drawing = this.lookup('eagle/drawing');
     //console.log('drawing', drawing.raw);
 
-    let layers = /*drawing.get('layers') /*?? */ this.lookup('/eagle/drawing/layers');
+    let layers = /*drawing.get('layers') /*?? */ this.lookup('eagle/drawing/layers');
     //console.log('layers', layers);
 
     lazyProperties(this, {
@@ -277,7 +279,9 @@ export class EagleDocument extends EagleNode {
     }
 
     if(this.elements) {
+      console.log('this.elements', this.elements);
       for(let element of this.elements.list) {
+        console.log('element', element);
         let bbrect = element.getBounds();
         bb.update(bbrect);
       }
@@ -294,6 +298,7 @@ export class EagleDocument extends EagleNode {
     /*if(this.plain) {
       bb.update(this.plain.map(child => child.getBounds()));
     }*/
+    console.log('bb', bb);
     return bb;
   }
 
@@ -313,6 +318,7 @@ export class EagleDocument extends EagleNode {
     }
 
     if(options.bbox) if (ret) ret = BBox.from(ret);
+    console.log('EagleDocument.getMeasures', ret);
 
     return ret;
   }
@@ -341,7 +347,7 @@ export class EagleDocument extends EagleNode {
   }
 
   getLayer(id) {
-    let layers = this.lookup('/eagle/drawing/layers');
+    let layers = this.lookup('eagle/drawing/layers');
     let i = 0;
 
     for(let layer of layers.raw.children) {
@@ -371,8 +377,7 @@ export class EagleDocument extends EagleNode {
     return this.libraries[name];
   }
 
-  getMainElement = memoize(function () {
-    //console.log('this:', this);
+  /*getMainElement = memoize(function () {
     switch (this.type) {
       case 'brd':
         return this.lookup('eagle/drawing/board');
@@ -383,9 +388,9 @@ export class EagleDocument extends EagleNode {
     }
   });
 
-  /* prettier-ignore */ get mainElement() {
+  get mainElement() {
     return this.getMainElement();
-  }
+  }*/
 }
 
 define(EagleDocument.prototype, { [Symbol.toStringTag]: 'EagleDocument' });

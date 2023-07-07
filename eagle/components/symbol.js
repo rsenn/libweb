@@ -1,12 +1,12 @@
 import { h, Component, Fragment } from '../../preact.mjs';
 import { log, useTransform } from '../renderUtils.js';
 
-import { Pin } from './pin.js'
-import { Text } from './text.js'
-import { Wire } from './wire.js'
-import { Rectangle } from './rectangle.js'
-import { Circle } from './circle.js'
-import { Polygon } from './polygon.js'
+import { Pin } from './pin.js';
+import { Text } from './text.js';
+import { Wire } from './wire.js';
+import { Rectangle } from './rectangle.js';
+import { Circle } from './circle.js';
+import { Polygon } from './polygon.js';
 
 const childElements = {
   pin: Pin,

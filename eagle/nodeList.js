@@ -89,18 +89,12 @@ export class EagleNodeList {
     return s;
   }
 
-  [inspectSymbol]() {
-    let { raw, ref } = this;
-    return (
-      text(className(this), 0) +
-      ` [ ` +
-      `...${this.length} items...` +
-      //[...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
-      ` ]`
-    );
+  [Symbol.inspect]() {
+    return text(className(this), 1, 31) + ` [ ...${this.length} items... ]`;
   }
 
   static create(owner, ref, pred, getOrCreate) {
+    //console.log('EagleNodeList.create', { owner, ref });
     let instance = new EagleNodeList(owner, ref, pred, getOrCreate);
     return new Proxy(instance, {
       set(target, prop, value) {

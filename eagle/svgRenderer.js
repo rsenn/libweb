@@ -27,8 +27,7 @@ export class EagleSVGRenderer {
   component2path = new WeakMap();
 
   constructor(doc, factory) {
-    //console.log('EagleSVGRenderer.constructor',{factory});
-    if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
+     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     this.doc = doc;
     let renderer = this;
     this.path2component = mapWrapper(
@@ -41,14 +40,14 @@ export class EagleSVGRenderer {
     this.mirrorY = new TransformationList().scale(1, -1);
     //this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
-      // console.log('EagleSVGRenderer.create',{factory});
-      let ret = factory(tag, attrs, children, parent, element);
+       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
+
       if(path) {
         if(typeof path == 'string' && /children\[/.test(path)) path = new ImmutablePath(path);
         else if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
 
-        //console.log('EagleSVGRenderer.create', { path }, path.apply, util.getMethodNames(path, 2,0));
+         //console.log('EagleSVGRenderer.constructor', { path });
 
         try {
           let e = [...path].reduce((acc, p) => acc[p], doc); // path.deref(doc);
@@ -337,9 +336,14 @@ export class EagleSVGRenderer {
     //console.log('EagleSVGRenderer.render', { obj, props, children });
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', { doc });
+
     let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList() } = props;
 
-    if(!bounds || bounds.size.area() == 0) bounds = obj.getBounds({ bbox: true });
+    console.log('obj', obj);
+    console.log('bounds', bounds);
+    if(!bounds || (bounds.size && bounds.size.area() == 0)) {
+      bounds = obj.getBounds({ bbox: true });
+    }
 
     let rect = new Rect(bounds.rect);
     //    let { rect = new Rect(bounds.rect) } = props;
@@ -363,7 +367,7 @@ export class EagleSVGRenderer {
 
     this.debug('EagleSVGRenderer.render', { transform, index });
 
-    let gridElement = doc.lookup('/eagle/drawing/grid');
+    let gridElement = doc.lookup('eagle/drawing/grid');
     let attrs = {
       bg: trkl({ color: '#ffffff', visible: true }),
       grid: trkl({

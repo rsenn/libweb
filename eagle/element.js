@@ -540,12 +540,10 @@ export class EagleElement extends EagleNode {
   }
 
   lookup(xpath, create) {
-    /* if(!(xpath instanceof ImmutableXPath))
-    xpath = new ImmutableXPath([...xpath]);*/
-    //console.log('EagleElement.lookup(', xpath, create, ')');
-    let r = super.lookup(xpath, (o, p, v) => {
-      //console.log('EagleElement.lookup', console.config({ depth: 4 }), { o, p, v });
+    /*if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath); */
+    //console.log('EagleElement.lookup', { xpath, create });
 
+    let r = super.lookup(xpath, (o, p, v) => {
       if(create && !v) {
         const { tagName } = p.last;
         o.raw.children.push({
@@ -555,7 +553,11 @@ export class EagleElement extends EagleNode {
         });
       }
       if(!v) v = p.deref(o.raw || o, true);
-      return EagleElement.get(o, p, v);
+      const owner = this.document;
+      const ref = this.ref.down(...p);
+      const value = v;
+      //console.log('EagleElement.lookup', console.config({ compact: 1 }),  {owner,ref,value});
+      return EagleElement.get(owner, ref, value);
     });
     //console.log('EagleElement.lookup = ', r);
     return r;
@@ -621,7 +623,14 @@ export class EagleElement extends EagleNode {
       p = new PointList([...m.transformPoints(p)]);
       bb.update(p);
       bb.move(x, y);
-    } else if(this.tagName == 'sheet' || this.tagName == 'board') {
+    } else if(this.tagName == 'board') {
+      lazyProperties(this, {
+        signals: () => EagleNodeMap.create(this.lookup('signals').children, 'name'),
+        plain: () => EagleNodeList.create(this.lookup('plain'), ['children']),
+        elements: () => EagleNodeMap.create(this.lookup('elements').children, 'name'),
+        libraries: () => EagleNodeMap.create(this.lookup('libraries').children, 'name')
+      });
+    } else if(this.tagName == 'sheet') {
       const plain = this.find('plain');
 
       let list = [...(plain?.children ?? [])].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');

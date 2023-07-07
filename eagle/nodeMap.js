@@ -10,7 +10,6 @@ export class EagleNodeMap {
   #keys = null;
 
   constructor(list, key) {
-    //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
 
     define(this, { list });
@@ -28,7 +27,6 @@ export class EagleNodeMap {
 
   get(name, keys = this.#keys) {
     const { owner, ref, raw } = this.list || {};
-    //console.log('EagleNodeMap.get', { name, key }, { owner, ref });
     const fn = EagleNodeMap.makePredicate(name, keys);
     const idx = raw.findIndex(fn);
 
@@ -45,7 +43,6 @@ export class EagleNodeMap {
     const idx = list.findIndex(fn);
 
     if('raw' in value) value = value.raw;
-    console.log('write map property:', idx, value);
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
@@ -78,19 +75,21 @@ export class EagleNodeMap {
   toMap(key = this.#keys[0]) {
     return new Map(this.entries(key));
   }
+
   toObject(key = this.#keys[0]) {
     return Object.fromEntries(this.entries(key));
   }
 
-/*  [Symbol.inspect]() {
+  [Symbol.inspect]() {
     return (
-      text(className(this), 0) + ` {\n  ` + [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + (v[inspectSymbol] ?? v.inspect).call(v), '') + `\n}`
+      text(className(this), 1, 31) +
+      text(`[${this.list.length}]`, 1, 36) +
+      ` {\n  ${[...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + (v[inspectSymbol] ?? v.inspect).call(v), '')}\n}`
     );
-  }*/
+  }
 
   static create(list, key = 'name', filter) {
     const Ctor = EagleNodeMap;
-    //console.log('EagleNodeMap.create', { list, key });
     const instance = new Ctor(list, key, filter);
 
     return new Proxy(instance, {
