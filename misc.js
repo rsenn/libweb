@@ -696,6 +696,7 @@ export function define(obj, ...args) {
 
     for(let prop in desc)
       try {
+        delete obj[prop];
         Object.defineProperty(obj, prop, desc[prop]);
       } catch(e) {}
   }

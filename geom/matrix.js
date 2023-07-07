@@ -517,36 +517,37 @@ define(Matrix.prototype, {
     const ax = Math.tan(deg ? DEG2RAD * x : x);
     const ay = Math.tan(deg ? DEG2RAD * y : y);
     return Matrix.prototype.init.call(this, 1, ay, ax, 1, 0, 0);
-  },
-
-  *[Symbol.iterator]() {
-    for(let i = 0; i < 27; i++) {
-      if(this[i] === undefined) break;
-      yield this[i];
-    }
-  },
-  [inspectSymbol]() {
-    let columns = Matrix.prototype.columns.call(this);
-    let numRows = Math.max(...columns.map(col => col.length));
-    let numCols = columns.length;
-    columns = columns.map(column => column.map(n => (typeof n == 'number' ? roundTo(n, 1e-12, 12) : undefined)));
-    let pad = columns.map(column => Math.max(...column.map(n => (n + '').length)));
-    let s = '│ ';
-    for(let row = 0; row < numRows; row++) {
-      if(row > 0) s += ` │\n│ `;
-      for(let col = 0; col < numCols; col++) {
-        if(col > 0) s += ', ';
-        s += (columns[col][row] + '').padStart(pad[col]);
-      }
-    }
-    s += ' │';
-    let l = s.indexOf('\n');
-    s = '\u250c' + ' '.repeat(l - 2) + '\u2510\n' + s;
-    s = s + '\n\u2514' + ' '.repeat(l - 2) + '\u2518\n';
-
-    return '\n' + s;
   }
 });
+
+Matrix.prototype[Symbol.iterator] = function* () {
+  for(let i = 0; i < 27; i++) {
+    if(this[i] === undefined) break;
+    yield this[i];
+  }
+};
+
+Matrix.prototype[inspectSymbol] = function() {
+  let columns = Matrix.prototype.columns.call(this);
+  let numRows = Math.max(...columns.map(col => col.length));
+  let numCols = columns.length;
+  columns = columns.map(column => column.map(n => (typeof n == 'number' ? roundTo(n, 1e-12, 12) : undefined)));
+  let pad = columns.map(column => Math.max(...column.map(n => (n + '').length)));
+  let s = '│ ';
+  for(let row = 0; row < numRows; row++) {
+    if(row > 0) s += ` │\n│ `;
+    for(let col = 0; col < numCols; col++) {
+      if(col > 0) s += ', ';
+      s += (columns[col][row] + '').padStart(pad[col]);
+    }
+  }
+  s += ' │';
+  let l = s.indexOf('\n');
+  s = '\u250c' + ' '.repeat(l - 2) + '\u2510\n' + s;
+  s = s + '\n\u2514' + ' '.repeat(l - 2) + '\u2518\n';
+
+  return '\n' + s;
+};
 
 const MatrixProps = (obj = {}) =>
   Object.entries(keyIndexes).reduce(
