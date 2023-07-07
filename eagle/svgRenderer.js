@@ -43,12 +43,12 @@ export class EagleSVGRenderer {
     this.mirrorY = new TransformationList().scale(1, -1);
     this.create = function(tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
-      let path = attrs['data-path'];
+      let pathStr = attrs['data-path'];
 
-      if(path) {
-        console.log('EagleSVGRenderer.create', path);
-        if(typeof path == 'string') path = new ImmutablePath(path.split(/\s+/g).map(p => (isNaN(+p) ? p : +p)));
-
+      if(pathStr) {
+  
+const path = new ImmutablePath([...pathStr.matchAll(/[^\[\]\s.]+/g)].map(m => m[0]).map(n => isNaN(+n) ? n : +n));
+ 
         //  if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
 
         try {
