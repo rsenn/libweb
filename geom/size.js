@@ -2,11 +2,12 @@ import { isObject, inspectSymbol, define, defineGetter, keys, getMethodNames, ma
 import { isPoint } from './point.js';
 
 export function Size(...args) {
-  let obj = this instanceof Size ? this : {};
-  if(args.length == 1 && isObject(args[0]) && args[0].length !== undefined) {
+  let arg,obj = this instanceof Size ? this : {};
+  if(args.length == 1 && isObject(args[0]) && args[0].length !== undefined) 
     args = args[0];
-    arg = args[0];
-  }
+  
+  arg = args[0];
+
   if(typeof arg == 'object') {
     if(arg.width !== undefined || arg.height !== undefined) {
       arg = args[0];

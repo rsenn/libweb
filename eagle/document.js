@@ -298,7 +298,7 @@ export class EagleDocument extends EagleNode {
     for(let layer of ['Dimension', 'Measures']) {
       let layerId = this.layers[layer].number;
 
-      ret = [...plain].filter(e => e.attributes.layer == layerId);
+      ret = [...plain].filter(e => e.attributes.layer == layerId && e.tagName == 'wire');
 
       if(ret.length >= 1) break;
     }

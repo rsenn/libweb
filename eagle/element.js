@@ -667,21 +667,19 @@ export class EagleElement extends EagleNode {
     } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
       for(let child of this.children) bb.update(child.getBounds(e => true, opts));
     } else if(this.geometry && this.geometry.toPoints /*['wire', 'pad'].indexOf(this.tagName) != -1*/) {
-      let geom = this.geometry;
-      bb.updateList(geom.toPoints());
+      let geom = this.geometry.toPoints();
+      return new BBox().updateList(geom);
     } else if(this.geometry && this.geometry.bbox /*['wire', 'pad'].indexOf(this.tagName) != -1*/) {
-      let geom = this.geometry;
-      bb.update(geom.bbox());
+      let geom = this.geometry.bbox();
+      return new BBox().update(geom);
     } else if(this.tagName == 'circle') {
-      let circle = this.geometry;
+      let circle = this.geometry.bbox(this.width);
 
-      bb.update(circle.bbox(this.width));
+      bb.update(circle);
     } else if(['description'].indexOf(this.tagName) != -1) {
     } else {
-      /*    if(['wire','text','rectangle'].indexOf(this.tagName) == -1)
-      throw new Error(`No getBounds() for '${this.tagName}'`);*/
-      bb.update(super.getBounds(pred));
-      //console.log("bb", this, bb);
+      let tmp = super.getBounds(pred);
+      bb.update(tmp);
 
       if(['x1', 'y1', 'x2', 'y2'].some(n => bb[n] === undefined)) throw new Error(`No getBounds() for '${this.tagName}': ${bb}`);
     }

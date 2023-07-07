@@ -7,10 +7,7 @@ import { useValue } from '../../repeater/react-hooks.js';
 export const Instance = ({ data, opts = {}, ...props }) => {
   // log('Instance.render', { data,opts });
   let [transformation, transform, accumulate] = useTransform(opts);
-
-  // log('Instance.render', { transformation, transform, accumulate });
-  //let { transformation = new TransformationList() } = opts;
-  //log('Instance.render', { transformation, data });
+ 
 
   let instance = /*useValue(async function* () {}) || */ data;
 
