@@ -38,10 +38,9 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
   }
   let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;
-  // if(data.path !== undefined)
-  // attrs['data-path'] = data.path.toString(' ');
   if(rot !== undefined) attrs['data-rot'] = rot;
   if(layer !== undefined) attrs['data-layer'] = `${layer.number} ${layer.name}`;
+
   attrs['data-alignment'] = [...Alignment(align)].join('|');
 
   return h(Text, {

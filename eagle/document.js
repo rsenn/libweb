@@ -93,7 +93,7 @@ export class EagleDocument extends EagleNode {
       mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
     ];
 
-     this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
+    this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
 
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
 
@@ -102,18 +102,18 @@ export class EagleDocument extends EagleNode {
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
 
-     this.type = type;
+    this.type = type;
     if(project) this.owner = project;
     if(fs) define(this, { fs });
     define(this, { xml });
     const orig = xml[0];
     define(this, { orig });
     define(this, { palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b)) });
- 
+
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 
     if(this.type == 'sch') {
-    const schematic = this.lookup('eagle/drawing/schematic');
+      const schematic = this.lookup('eagle/drawing/schematic');
 
       lazyProperties(this, {
         sheets: () => schematic.sheets,
@@ -121,7 +121,7 @@ export class EagleDocument extends EagleNode {
         libraries: () => schematic.libraries
       });
 
-/*      let sheets = this.lookup('eagle/drawing/schematic/sheets');
+      /*      let sheets = this.lookup('eagle/drawing/schematic/sheets');
       let parts = this.lookup('eagle/drawing/schematic/parts');
       let libraries = this.lookup('eagle/drawing/schematic/libraries');
 
@@ -139,7 +139,7 @@ export class EagleDocument extends EagleNode {
     }
 
     if(this.type == 'brd') {
-      const board =  this.lookup('eagle/drawing/board');
+      const board = this.lookup('eagle/drawing/board');
 
       lazyProperties(this, {
         signals: () => board.signals,
@@ -159,16 +159,14 @@ export class EagleDocument extends EagleNode {
 
     lazyProperties(this, {
       drawing: () => drawing,
-      layers: () => EagleNodeMap.create(layers.children, ['name','number'])
+      layers: () => EagleNodeMap.create(layers.children, ['name', 'number'])
     });
   }
 
   get raw() {
-    if(Array.isArray(this.xml))
-    return this.xml[0];
-  //console.log('EagleDocument.get raw', { 'this': this.orig,xml: this.xml });
-  return this.xml;
-
+    if(Array.isArray(this.xml)) return this.xml[0];
+    //console.log('EagleDocument.get raw', { 'this': this.orig,xml: this.xml });
+    return this.xml;
   }
   get filename() {
     return this.file && this.file.replace(/.*\//g, '');
@@ -222,21 +220,19 @@ export class EagleDocument extends EagleNode {
     return super.cacheFields();
   }
 
-    saveTo(file, overwrite = false, fs) {
+  saveTo(file, overwrite = false, fs) {
     const data = this.toXML('  ');
 
-    if(!file)
-      file = this.file;
+    if(!file) file = this.file;
 
     fs = fs || this.fs || globalThis.fs;
-    fs.writeFileSync(file+'.json', JSON.stringify(this.raw,null,2), true);
+    fs.writeFileSync(file + '.json', JSON.stringify(this.raw, null, 2), true);
 
     //console.log('Saving', file, 'data: ',abbreviate(data));
     let ret = fs.writeFileSync(file, data, overwrite);
-  //  console.log('ret',ret);
+    //  console.log('ret',ret);
 
-    if(ret < 0)
-      throw new Error(`Writing file '${file}' failed: ${fs.errstr}`);
+    if(ret < 0) throw new Error(`Writing file '${file}' failed: ${fs.errstr}`);
     return ret;
   }
 
@@ -268,16 +264,14 @@ export class EagleDocument extends EagleNode {
   getBounds(sheetNo = 0) {
     let bb = new BBox();
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
-    
-    if(this.type == 'sch') 
-      return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
 
-    if(this.elements) 
+    if(this.type == 'sch') return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
+
+    if(this.elements)
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
         bb.update(bbrect);
       }
-    
 
     if(this.signals) {
       bb.update(
@@ -308,7 +302,6 @@ export class EagleDocument extends EagleNode {
 
       if(ret.length >= 1) break;
     }
-    console.log('EagleDocument.getMeasures', ret);
 
     if(options.bbox) if (ret) ret = BBox.from(ret);
 

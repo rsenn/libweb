@@ -380,7 +380,7 @@ export class EagleElement extends EagleNode {
         sheets: () => {
           const sheets = this.lookup('sheets');
           return EagleNodeList.create(sheets, sheets.ref.down('children'));
-        } ,
+        },
         parts: () => EagleNodeMap.create(this.lookup('parts').children, 'name'),
         libraries: () => EagleNodeMap.create(this.lookup('libraries').children, 'name')
       });

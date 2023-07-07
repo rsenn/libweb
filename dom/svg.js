@@ -57,7 +57,6 @@ else */ if(text) svg.innerHTML = innerHTML;
     };
 
     const { width, height } = size || {};
-    console.log('factory', { delegate, parent, size, args });
 
     if(typeof parent == 'function') {
       const getRoot = memoize(() => Function.prototype.call.call(parent, delegate, delegate));

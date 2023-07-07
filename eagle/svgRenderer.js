@@ -46,12 +46,10 @@ export class EagleSVGRenderer {
       let path = attrs['data-path'];
 
       if(path) {
-   if(typeof path == 'string' ) path = new ImmutablePath(path.split(/\s+/g).map(p => isNaN(+p) ? p : +p));
+        if(typeof path == 'string') path = new ImmutablePath(path.split(/\s+/g).map(p => (isNaN(+p) ? p : +p)));
 
-
-           this.debug('EagleSVGRenderer.create', { path  });
+        this.debug('EagleSVGRenderer.create', { path });
         //  if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
-
 
         try {
           let e = [...path].reduce((acc, p) => acc[p], doc); // path.deref(doc);
@@ -338,24 +336,19 @@ export class EagleSVGRenderer {
   }
 
   render(obj, props = {}, children = []) {
-    //console.log('EagleSVGRenderer.render', { obj, props, children });
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', { doc });
 
     let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList() } = props;
 
-    console.log('obj', obj);
-    console.log('bounds', bounds);
     if(!bounds || (bounds.size && bounds.size.area() == 0)) {
       bounds = obj.getBounds({ bbox: true });
     }
 
     let rect = new Rect(bounds.rect);
-    //    let { rect = new Rect(bounds.rect) } = props;
 
-    //let { bounds = doc.measures || doc.getBounds() } = props;
     rect.round(1.27);
-    //rect.outset(1.27);
+
     rect.round(2.54);
     let viewBox = rect;
     let { index } = props;
@@ -364,12 +357,8 @@ export class EagleSVGRenderer {
     this.bounds = bounds;
 
     const { width, height } = (this.size = rect.size.toCSS('mm'));
-    this.debug('EagleSVGRenderer.render', {
-      bounds,
-      width,
-      height
-    });
 
+    this.debug('EagleSVGRenderer.render', { bounds, width, height });
     this.debug('EagleSVGRenderer.render', { transform, index });
 
     let gridElement = doc.lookup('eagle/drawing/grid');

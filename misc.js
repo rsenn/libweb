@@ -691,7 +691,15 @@ export function extend(dst, src, options = { enumerable: false }) {
 }
 
 export function define(obj, ...args) {
-  for(let props of args) obj = extend(obj, props, desc => (delete desc.configurable, delete desc.enumerable));
+  for(let props of args) {
+    const desc = Object.getOwnPropertyDescriptors(props);
+
+    for(let prop in desc)
+      try {
+        Object.defineProperty(obj, prop, desc[prop]);
+      } catch(e) {}
+  }
+  // obj = extend(obj, props, desc => (delete desc.configurable, delete desc.enumerable));
 
   return obj;
 }
@@ -979,14 +987,16 @@ export function immutableClass(orig, ...proto) {
   for(let p of initialProto) p(orig);
   let ctor;
   let imm = base => {
-    let cls;
-    cls = class extends base {
-      constructor(...args) {
-        super(...args);
-        if(new.target === cls) return Object.freeze(this);
+    let obj;
+    obj = {
+      [imName]: class extends base {
+        constructor(...args) {
+          super(...args);
+          if(new.target === obj[imName]) return Object.freeze(this);
+        }
       }
     };
-    return cls;
+    return obj[imName];
   };
   ctor = imm(orig);
   let species = ctor;

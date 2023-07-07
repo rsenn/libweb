@@ -20,7 +20,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   const func = data.function;
 
   let [rotation] = MakeRotation(rot);
-  console.log(`Pin.render(${name})`, { rotation });
+  log(`Pin.render(${name})`, { rotation });
   let angle = rotation ? Math.round(rotation.angle) : 0;
 
   //  const angle = +(rot || '0').replace(/R/, '');
@@ -46,7 +46,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         'stroke-width': 0.3
       })
     );
-    console.log('Pin.render(2)', { pp });
+    log('Pin.render(2)', { pp });
   }
 
   if(l.getLength()) {
@@ -58,12 +58,12 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         'stroke-width': 0.15
       })
     );
-    console.log('Pin.render(3)', { l });
+    log('Pin.render(3)', { l });
   }
   if(name != '' && visible != 'off') {
     const align = Alignment(angle >= 180 ? 'center-right' : 'center-left', 0);
     //  const rotation=MakeRotation(rot);
-    console.log(`Pin.render(${name})`, { align, angle, rotation });
+    log(`Pin.render(${name})`, { align, angle, rotation });
     /* children.push(
       h(Text, {
         class: ElementToClass(data),
@@ -132,7 +132,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
       })
     );*/
 
-    console.log('Pin.render(5)', { name, tp, transformation, rot });
+    log('Pin.render(5)', { name, tp, transformation, rot });
   }
 
   return h('g', { 'data-type': 'pin', 'data-name': name }, children);

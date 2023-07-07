@@ -514,7 +514,7 @@ export class Element extends Node {
 
   static resizeRelative(element, to, f = 1, callback) {
     let e = typeof element == 'string' ? Element.find(element) : element;
-    let origin = new Size(to || Element.rect(e));
+    let origin = new Size(to || Element.rect(e).size);
     // console.log('resizeRelative', { e, to, origin, f });
     function resize(width, height, rel = true) {
       let size = new Size(width, height);
@@ -966,7 +966,7 @@ export class Element extends Node {
   }
 
   static toString(e, opts = {}) {
-    if(e===undefined) return Object.prototype.toString.call(this);
+    if(e === undefined) return Object.prototype.toString.call(this);
     const { indent = '  ', newline = '', depth = 0 } = opts;
 
     let o = e.__proto__ === Object.prototype ? e : Element.toObject(e);

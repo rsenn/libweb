@@ -539,7 +539,13 @@ export class TransformationList extends Array {
   }
 
   concat(...args) {
-    return this.baseCall(Array.prototype.concat)(...args);
+    let t = new TransformationList();
+    t.push(...this);
+    for(let arg of args) {
+      if(Symbol.iterator in arg) t.push(...arg);
+      else t.push(arg);
+    }
+    return t;
   }
 
   filter(pred) {

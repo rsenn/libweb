@@ -19,11 +19,11 @@ export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
 export let DEBUG = false;
 
-export let log = DEBUG ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
+export let log = DEBUG ? console.log : () => {};
 
 export const setDebug = state => {
   DEBUG = state;
-  return log = state ? (console.log) : (() => {});
+  return (log = state ? console.log : () => {});
 };
 
 export const PinSizes = {
@@ -131,6 +131,7 @@ export const EagleAlignments = {
 };
 
 export const Alignment = (align, rot = 0, scaling = null, def = 'bottom-left') => {
+  align ??= 'center';
   let [y, x] = (typeof align == 'string' ? EagleAlignments[align] : [...align]) || EagleAlignments[def];
   let ret = new Point(x, y);
   if(scaling) {

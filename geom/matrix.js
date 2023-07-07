@@ -165,7 +165,11 @@ define(Matrix.prototype, {
   },
   round(prec = 1e-12, digits = 12) {
     let m = new Matrix();
-    m.init(...[...this].slice(0, 9).map(n => roundTo(n, prec, digits)));
+    m.init(
+      ...this.toArray()
+        .slice(0, 9)
+        .map(n => roundTo(n, prec, digits))
+    );
     return m;
   },
   roundSelf(prec = 1e-12, digits = 12) {

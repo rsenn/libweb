@@ -9,6 +9,7 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
   let { transformation = new TransformationList() } = opts;
   log(`Text.render(1)`, { text, transformation, alignment });
   let elementTransform = ExtractRotation(transformation);
+
   let parentAngle = Math.round(elementTransform.angle * RAD2DEG);
   log(`Text.render`, {
     text,
@@ -35,7 +36,9 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
   log(`Text.render(2)`, { text, transformation, ang, transform, alignment });
 
   let { scaling } = elementTransform;
+
   let align = Alignment(alignment, -ang, elementTransform.scaling);
+
   log(`Text.render(3)`, { align, elementTransform });
   log(`Text.render`, { alignment, align, scaling, elementTransform });
   align = align.round();

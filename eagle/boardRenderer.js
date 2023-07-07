@@ -67,7 +67,6 @@ export class BoardRenderer extends EagleSVGRenderer {
         const transform = `translate(${x},${y})`;
         const layer = this.layers.Pads;
 
-        //  console.log('item:', item);
         const padColor = item.getColor() || this.palette[2];
 
         let data = RenderShape(shape, ro, ri);
@@ -118,7 +117,6 @@ export class BoardRenderer extends EagleSVGRenderer {
         break;
       }
       default: {
-        //       console.log('boardRenderer other renderItem', { item, parent, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) });
         super.renderItem(item, parent, { ...opts, color });
         return;
         break;
@@ -133,8 +131,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.debug(`BoardRenderer.renderCollection(1)`, { coll, transformation, name });
 
-
-this.debug('BoardRenderer.renderCollection',  coll[0].tagName);
+    this.debug('BoardRenderer.renderCollection', coll[0].tagName);
 
     let coordFn = i => i;
     let { class: addClass, ...addProps } = props;
@@ -159,8 +156,7 @@ this.debug('BoardRenderer.renderCollection',  coll[0].tagName);
       }
       if(predicate(item)) other.push(item);
     }
-    //console.log('BoardRenderer.renderCollection', wireObj);
-    //
+
     let [pads, nonPads] = partition(other.filter(predicate), item => item.tagName == 'pad');
 
     for(let item of pads) this.renderItem(item, parent, { ...opts });
@@ -197,7 +193,7 @@ this.debug('BoardRenderer.renderCollection',  coll[0].tagName);
           );
           if(flat) cmds = cmds.flat();
 
-          this.debug('BoardRenderer.renderCollection',   cmds);
+          this.debug('BoardRenderer.renderCollection', cmds);
 
           this.create(
             WirePath,

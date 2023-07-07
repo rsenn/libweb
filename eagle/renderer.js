@@ -24,7 +24,6 @@ export function Renderer(doc, factory, debug) {
       throw new Error('No such document type: ' + doc.type);
   }
 
- 
   ret.debug = setDebug(debug);
 
   return ret;
