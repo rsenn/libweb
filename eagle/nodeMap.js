@@ -1,8 +1,7 @@
-import { EagleElement } from './element.js';
-import { text, concat } from './common.js';
-import { Pointer } from '../pointer.js';
-import { Pointer as ImmutablePath } from '../pointer.js';
-import { define, className, inspectSymbol } from '../misc.js';
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { inspectSymbol } from '../misc.js';
+import { text } from './common.js';
 
 const toArray = arg => (Array.isArray(arg) ? arg : [arg]);
 

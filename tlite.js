@@ -1,4 +1,4 @@
-import { weakMapper} from './misc.js';
+import { weakMapper } from './misc.js';
 
 export function tlite(getTooltipOpts) {
   document.addEventListener('mouseover', e => {

@@ -28,6 +28,7 @@ export const defaultProps = {
   onClick: func,
   onConfirmDelete: () => true
 };
+
 export const propTypes = {
   action: PropTypes.string,
   className: PropTypes.string,

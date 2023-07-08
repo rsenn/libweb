@@ -1,4 +1,5 @@
-import { Repeater, RepeaterBuffer } from '@repeaterjs/repeater';
+import { Repeater } from '@repeaterjs/repeater';
+import { RepeaterBuffer } from '@repeaterjs/repeater';
 
 export interface PubSub<T> {
   publish(topic: string, value: T): Promise<unknown> | unknown;

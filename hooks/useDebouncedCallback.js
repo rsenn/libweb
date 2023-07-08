@@ -1,4 +1,6 @@
-import { useRef, useCallback, useEffect } from '../preact.mjs';
+import { useCallback } from '../preact.mjs';
+import { useEffect } from '../preact.mjs';
+import { useRef } from '../preact.mjs';
 
 export function useDebouncedCallback(callback, delay, options) {
   if(options === void 0) {

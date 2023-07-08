@@ -1,5 +1,5 @@
-import { ImmutablePath } from './path.js';
 import { define } from '../misc.js';
+import { ImmutablePath } from './path.js';
 
 export class PathMapper {
   map = new WeakMap();

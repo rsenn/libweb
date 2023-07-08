@@ -1,6 +1,6 @@
-import { Element } from './element.js';
 import { Point } from '../geom/point.js';
 import { Size } from '../geom/size.js';
+import { Element } from './element.js';
 
 export function ElementRectProxy(element) {
   this.element = element;
@@ -53,6 +53,7 @@ ElementRectProxy.prototype = {
 */
   }
 };
+
 const propSetter = (prop, proxy) => value => {
   //proxy.changeRect(rect => { rect[prop] = value; return rect; })
   let r = proxy.getRect();

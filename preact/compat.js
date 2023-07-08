@@ -1,8 +1,10 @@
-/* --------------------------- start of 'header' ---------------------------- */
-
+import { cloneElement as preactCloneElement } from '../preact.mjs';
+import { Component as PreactComponent } from '../preact.mjs';
+import { h } from '../preact.mjs';
+import { options } from '../preact.mjs';
+import { render as preactRender } from '../preact.mjs';
 import PropTypes from '../prop-types.js';
-import { render as preactRender, cloneElement as preactCloneElement, createRef, h, Component as PreactComponent, options, createContext } from '../preact.mjs';
-
+/* --------------------------- start of 'header' ---------------------------- */
 /* ---------------------------- end of 'header' ----------------------------- */
 // ==UserScript==
 // @name         lib/preact/compat.js

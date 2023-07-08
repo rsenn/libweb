@@ -1,7 +1,7 @@
-import inspect from 'inspect';
+import React from 'react';
 import { Util } from '../util.js';
 import { Element } from './element.js';
-import React from 'react';
+import inspect from 'inspect';
 
 export class ReactComponent {
   static create(...args) {

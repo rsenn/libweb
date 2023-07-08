@@ -1,8 +1,19 @@
-import { h, Fragment, Component } from '../../preact.mjs';
-import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD, useTransformation, InferRotation, ExtractRotation } from '../renderUtils.js';
-import { TransformationList, Rotation, Translation, Point } from '../../geom.js';
-import { Cross } from './cross.js';
+import { Point } from '../../geom.js';
+import { Rotation } from '../../geom.js';
+import { TransformationList } from '../../geom.js';
+import { Translation } from '../../geom.js';
 import { mod } from '../../misc.js';
+import { Fragment } from '../../preact.mjs';
+import { h } from '../../preact.mjs';
+import { Alignment } from '../renderUtils.js';
+import { AlignmentAttrs } from '../renderUtils.js';
+import { ExtractRotation } from '../renderUtils.js';
+import { HORIZONTAL } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { MakeRotation } from '../renderUtils.js';
+import { RAD2DEG } from '../renderUtils.js';
+import { useTransformation } from '../renderUtils.js';
+import { VERTICAL } from '../renderUtils.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, ...props }) => {
   let transformation2 = useTransformation(props.transformation);

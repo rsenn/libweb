@@ -1,6 +1,6 @@
-import { EagleRef } from './ref.js';
+import { Matrix } from '../geom.js';
+import { Point } from '../geom.js';
 import { EagleElement } from './element.js';
-import { Matrix, Point } from '../geom.js';
 
 export class EagleElementProxy {
   constructor(element, matrix) {

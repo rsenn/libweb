@@ -1,5 +1,4 @@
 import TinyDatePicker from './tiny-date-picker.js';
-
 /**
  * @file A generic set of mutation-free date functions.
  */
@@ -1333,4 +1332,5 @@ function inRange(dt, start, end) {
 }
 
 export { TinyDatePicker, DateRangePicker };
+
 export default DateRangePicker;

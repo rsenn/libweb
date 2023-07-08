@@ -1,4 +1,4 @@
-import React from '../../dom/preactComponent.js';
+
 export default () => {
   return h(
     'svg',

@@ -1,3 +1,14 @@
+import EventEmitter from '../eventEmitter.js';
+import { className } from '../misc.js';
+import { ArrowFunctionExpression } from './estree.js';
+import { BinaryExpression } from './estree.js';
+import { ESNode } from './estree.js';
+import { FunctionDeclaration } from './estree.js';
+import { Identifier } from './estree.js';
+import { ImportDeclaration } from './estree.js';
+import { Literal } from './estree.js';
+import { MemberExpression } from './estree.js';
+import { SequenceExpression } from './estree.js';
 /* jshint esversion: 6 */
 /* jshint noyield: true */
 
@@ -7,10 +18,6 @@
 //-> BENCHMARKS
 
 //var parse = require('acorn').parse;
-import EventEmitter from '../eventEmitter.js';
-import {  className } from '../misc.js';
-import { ESNode, BinaryExpression, Identifier, ImportDeclaration, Literal, MemberExpression, FunctionDeclaration, ArrowFunctionExpression, SequenceExpression } from './estree.js';
-
 class NotImplemented extends Error {
   constructor(type, node) {
     super(`Not implemented yet: ${type || className(node)}`);

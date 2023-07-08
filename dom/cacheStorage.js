@@ -1,6 +1,8 @@
+import { Cache } from './cache.js';
+
 const sep = '/';
 //const fs = require('fs-extra')
-import { Cache } from './cache.js';
+
 //const tmpDir = require('os').tmpdir() + sep + 'fetch-cache' + sep
 const strToBase64 = str => new Buffer(str).toString('base64');
 const base64ToStr = hex => new Buffer(hex, 'base64').toString();

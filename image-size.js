@@ -1,6 +1,9 @@
-import { PngReadHeader, isPng, PngSize } from './png.js';
-import { isJpeg, jpegProps } from './jpeg.js';
 import * as path from 'path';
+import { isJpeg } from './jpeg.js';
+import { jpegProps } from './jpeg.js';
+import { isPng } from './png.js';
+import { PngReadHeader } from './png.js';
+import { PngSize } from './png.js';
 
 export function ImageSize(filename) {
   let ext = path.extname(filename).toLowerCase();

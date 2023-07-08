@@ -1,11 +1,11 @@
 import { tryCatch } from '../misc.js';
-
 /**
  * Copyright (C) 2017
  * salesforce.com, inc.
  */
 
 const { isArray } = Array;
+
 const {
   getPrototypeOf,
   create: ObjectCreate,

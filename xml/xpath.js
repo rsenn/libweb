@@ -1,5 +1,11 @@
-import { className, define, immutableClass, isArray, isNumeric, isObject } from '../misc.js';
-import { Pointer as MutablePath, Pointer as ImmutablePath } from '../pointer.js';
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { isArray } from '../misc.js';
+import { isNumeric } from '../misc.js';
+import { isObject } from '../misc.js';
+import { Pointer as ImmutablePath } from '../pointer.js';
+import { Pointer as MutablePath } from '../pointer.js';
 
 const incr = (o, p, i = 1) => (o[p] = (o[p] || 0) + i);
 const isSpecialAttr = attr => ['children', 'attributes'].indexOf(attr) != -1;

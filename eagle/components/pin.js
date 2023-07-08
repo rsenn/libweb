@@ -1,8 +1,20 @@
-import { h, Fragment, Component } from '../../preact.mjs';
-import { MakeCoordTransformer, ElementToClass, log, PinSizes, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, MakeRotation, RAD2DEG } from '../renderUtils.js';
-import { TransformationList, Rotation, Translation, Point, Line } from '../../geom.js';
 import { RGBA } from '../../color/rgba.js';
+import { Line } from '../../geom.js';
+import { Point } from '../../geom.js';
+import { Rotation } from '../../geom.js';
+import { TransformationList } from '../../geom.js';
+import { Fragment } from '../../preact.mjs';
+import { h } from '../../preact.mjs';
 import { Palette } from '../common.js';
+import { Alignment } from '../renderUtils.js';
+import { AlignmentAttrs } from '../renderUtils.js';
+import { ElementToClass } from '../renderUtils.js';
+import { HORIZONTAL } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { MakeCoordTransformer } from '../renderUtils.js';
+import { MakeRotation } from '../renderUtils.js';
+import { PinSizes } from '../renderUtils.js';
+import { VERTICAL } from '../renderUtils.js';
 import { Text } from './text.js';
 
 export const Pin = ({ data, opts = {}, ...props }) => {

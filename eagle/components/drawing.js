@@ -1,12 +1,13 @@
+import { TransformationList } from '../../geom.js';
+import { useTrkl } from '../../hooks/useTrkl.js';
+import { h } from '../../preact.mjs';
+import { toChildArray } from '../../preact.mjs';
 import { log } from '../renderUtils.js';
-import { h, Component, toChildArray, useState } from '../../preact.mjs';
-import { Rect, TransformationList } from '../../geom.js';
-import { Grid, Pattern } from './grid.js';
-import { SVG } from './svg.js';
 import { Background } from './background.js';
 import { Board } from './board.js';
-import { useValue } from '../../repeater/react-hooks.js';
-import { useTrkl } from '../../hooks/useTrkl.js';
+import { Grid } from './grid.js';
+import { Pattern } from './grid.js';
+import { SVG } from './svg.js';
 
 export const Drawing = ({
   data,

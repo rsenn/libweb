@@ -1,7 +1,13 @@
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { inspectSymbol } from '../misc.js';
+import { isObject } from '../misc.js';
+import { mod } from '../misc.js';
+import { types } from '../misc.js';
+import { Line } from './line.js';
 import { Point } from './point.js';
 import { Rect } from './rect.js';
-import { Line } from './line.js';
-import { className, define, immutableClass, inspectSymbol, types, isObject, mod } from '../misc.js';
 
 export class PointList extends Array {
   constructor(...args) {

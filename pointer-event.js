@@ -1,3 +1,4 @@
+import AnimEvent from './anim-event.js';
 /* ================================================
         DON'T MANUALLY EDIT THIS FILE
 ================================================ */
@@ -31,7 +32,7 @@ function _createClass(Constructor, protoProps, staticProps) {
  * Copyright (c) 2022 anseki
  * Licensed under the MIT license.
  */
-import AnimEvent from './anim-event.js';
+
 var MOUSE_EMU_INTERVAL = 400; // Avoid mouse events emulation
 // Support options for addEventListener
 

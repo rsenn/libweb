@@ -1,6 +1,4 @@
-
 import { WritableStream } from './writableStream.js';
-
 // Quick and dirty polyfill for TransformStream.
 // Based on the reference implementation:
 // https://github.com/whatwg/streams/blob/master/reference-implementation/lib/transform-stream.js

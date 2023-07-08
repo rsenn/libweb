@@ -1,5 +1,5 @@
-import { Point } from './point.js';
 import { Line } from './line.js';
+import { Point } from './point.js';
 
 export class Intersection {
   constructor(line1, line2, intersectionPoint) {

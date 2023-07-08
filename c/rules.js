@@ -1,8 +1,8 @@
-/*jshint sub:true*/
-
 import { clone } from '../misc.js';
-import { EPSILON, TERMINAL, iterate_over_rules } from './commons.js';
-
+import { EPSILON } from './commons.js';
+import { iterate_over_rules } from './commons.js';
+import { TERMINAL } from './commons.js';
+/*jshint sub:true*/
 /*
  * abstract_declarator -> pointer direct_abstract_declarator
  *                      | direct_abstract_declarator
@@ -2058,6 +2058,7 @@ var external_declaration_2 = function(token_stream, arrow, node) {
     node['children'].push(child_1);
   }
 };
+
 export function external_declaration(token_stream, arrow) {
   var new_node = {};
   var new_arrow = Util.clone(arrow);

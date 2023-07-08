@@ -1,5 +1,11 @@
-import { curry, define, defineGetter, getMethods, immutableClass, isObject, roundTo, inspectSymbol } from '../misc.js';
-
+import { curry } from '../misc.js';
+import { define } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { getMethods } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { inspectSymbol } from '../misc.js';
+import { isObject } from '../misc.js';
+import { roundTo } from '../misc.js';
 function matrixMultiply(a, b) {
   var result = [];
   for(let i = 0; i < a.length; i++) {

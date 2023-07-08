@@ -1,10 +1,15 @@
-import { h, Component } from '../../preact.mjs';
-import { isObject, roundTo, tryCatch } from '../../misc.js';
-import { MakeCoordTransformer, useTrkl, ElementToClass, log, Alignment } from '../renderUtils.js';
-import { Text } from './text.js';
-import { toXML } from '../../json.js';
-import { classNames } from '../../classNames.js';
 import { TransformationList } from '../../geom/transformation.js';
+import { toXML } from '../../json.js';
+import { isObject } from '../../misc.js';
+import { roundTo } from '../../misc.js';
+import { tryCatch } from '../../misc.js';
+import { h } from '../../preact.mjs';
+import { Alignment } from '../renderUtils.js';
+import { ElementToClass } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { MakeCoordTransformer } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
+import { Text } from './text.js';
 
 export const TextElement = ({ data, opts = {}, transform = new TransformationList(), ...props }) => {
   data = data || props.item;

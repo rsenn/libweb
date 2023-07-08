@@ -1,6 +1,5 @@
 import { options } from '../preact.mjs';
 import { assign } from './util.js';
-
 let oldDiffHook = options._diff;
 options._diff = vnode => {
   if(vnode.type && vnode.type._forwarded && vnode.ref) {

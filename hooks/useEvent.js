@@ -1,5 +1,5 @@
-import { Component, useEffect } from '../preact.mjs';
 import { Event } from '../dom/event.js';
+import { useEffect } from '../preact.mjs';
 
 export function EventTracker(names, handler) {
   let element = trkl(null);

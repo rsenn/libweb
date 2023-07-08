@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-
+import { Component } from 'react';
 class BundleLoader extends Component {
   constructor(props) {
     super(props);

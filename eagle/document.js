@@ -1,23 +1,28 @@
-import parseXML from '../xml/parse.js';
-import tXml from '../tXml.js';
-import { define, properties, abbreviate, mapAdapter, mapFunction, memoize, weakMapper } from '../misc.js';
-import * as deep from '../deep.js';
-import deepDiff from '../deep-diff.js';
-import { EagleRef } from './ref.js';
-import { ImmutablePath } from '../json.js';
-import { EagleNode } from './node.js';
-import { EagleElement } from './element.js';
-import { LinesToPath } from './renderUtils.js';
-import { isBBox, BBox, Rect, Point, PointList, Line } from '../geom.js';
 import { RGBA } from '../color/rgba.js';
+import deepDiff from '../deep-diff.js';
+import * as deep from '../deep.js';
+import { BBox } from '../geom.js';
+import { Rect } from '../geom.js';
+import { ImmutablePath } from '../json.js';
+import { PathMapper } from '../json/pathMapper.js';
+import { abbreviate } from '../misc.js';
+import { define } from '../misc.js';
+import { lazyProperties } from '../misc.js';
+import { lazyProperty } from '../misc.js';
+import { mapAdapter } from '../misc.js';
+import { mapFunction } from '../misc.js';
+import { memoize } from '../misc.js';
+import { properties } from '../misc.js';
+import { weakMapper } from '../misc.js';
+import { read as fromXML } from '../xml.js';
+import { write as toXML } from '../xml.js';
+import parseXML from '../xml/parse.js';
+import { Palette } from './common.js';
+import { EagleElement } from './element.js';
+import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleNodeMap } from './nodeMap.js';
-import { PathMapper } from '../json/pathMapper.js';
-import { Palette } from './common.js';
-import { read as fromXML, write as toXML } from '../xml.js';
-import { ImmutableXPath } from '../xml/xpath.js';
-import { lazyProperty, lazyProperties } from '../misc.js';
-
+import { EagleRef } from './ref.js';
 function GetProxy(fn = (prop, target) => null, handlers = {}) {
   return new Proxy(
     {},

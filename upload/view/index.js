@@ -1,9 +1,7 @@
-import React from '../../dom/preactComponent.js';
 import classNames from '../../classNames.js';
-import List from './List.js';
-import Card from './Card.js';
 import DragArea from '../DragArea.js';
-
+import Card from './Card.js';
+import List from './List.js';
 function _extends() {
   _extends =
     Object.assign ||
@@ -74,5 +72,6 @@ export const View = ({ type, sorting }, images) => {
         )
       );
 };
+
 export default View;
 export { List, Card };

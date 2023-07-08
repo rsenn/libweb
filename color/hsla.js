@@ -1,6 +1,12 @@
-import { RGBA, ImmutableRGBA } from './rgba.js';
-import { clamp, defineGetter, immutableClass, randFloat, randInt, roundTo, tryCatch } from '../misc.js';
-
+import { clamp } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { randFloat } from '../misc.js';
+import { randInt } from '../misc.js';
+import { roundTo } from '../misc.js';
+import { tryCatch } from '../misc.js';
+import { ImmutableRGBA } from './rgba.js';
+import { RGBA } from './rgba.js';
 /**
  * @brief [brief description]
  * @param h  hue value 0-360
@@ -326,5 +332,6 @@ export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(pr
 defineGetter(HSLA, Symbol.species, function() {
   return this;
 });
+
 export const ImmutableHSLA = immutableClass(HSLA);
 defineGetter(ImmutableHSLA, Symbol.species, () => ImmutableHSLA);

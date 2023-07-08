@@ -1,15 +1,18 @@
-import { Element, Point, Rect, Renderer, Select, SVG } from './dom.js';
-import { HSLA } from './color.js';
-
 import { axios } from './axios.js';
-import { base64.decode, foreach } from './misc.js';
+import { HSLA } from './color.js';
+import { select } from './devtools.js';
+import { storage } from './devtools.js';
+import { Element } from './dom.js';
+import { Point } from './dom.js';
+import { Rect } from './dom.js';
+import { Renderer } from './dom.js';
+import { Select } from './dom.js';
+import { SVG } from './dom.js';
 import { Polygon } from './geom.js';
-import devtools, { storage, select } from './devtools.js';
-import { TouchListener } from './touchHandler.js';
 import { lazyInitializer } from './lazyInitializer.js';
-
 import SvgPath from './svg/path.js';
-
+import { TouchListener } from './touchHandler.js';
+import { base64.decode, foreach } from './misc.js';
 if(globalThis.window) {
   window.addEventListener('load', () => {
     console.log('New cookie: ', document.cookie);

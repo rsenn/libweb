@@ -1,10 +1,9 @@
+import { HSLA } from '../../color/hsla.js';
+import { TransformationList } from '../../geom/transformation.js';
+import { h } from '../../preact.mjs';
 import { log } from '../renderUtils.js';
-import { h, Component, Fragment } from '../../preact.mjs';
-import { ElementToComponent } from '../components.js';
 import { Element } from './element.js';
 import { Signals } from './signals.js';
-import { TransformationList } from '../../geom/transformation.js';
-import { HSLA } from '../../color/hsla.js';
 
 export const Board = ({ data, ...props }) => {
   log('Board.render', { data });

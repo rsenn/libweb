@@ -1,13 +1,19 @@
-import { Util } from '../util.js';
-import { Element, isElement } from './element.js';
-import { Size, isSize } from '../geom/size.js';
+import { RGBA } from '../color/rgba.js';
+import { Line } from '../geom/line.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
-import { Line } from '../geom/line.js';
-import { parseSVG, makeAbsolute } from '../svg/path-parser.js';
+import { isSize } from '../geom/size.js';
+import { Size } from '../geom/size.js';
+import { decamelize } from '../misc.js';
+import { defineGetterSetter } from '../misc.js';
+import { isObject } from '../misc.js';
+import { memoize } from '../misc.js';
+import { padAnsi } from '../misc.js';
+import { makeAbsolute } from '../svg/path-parser.js';
+import { parseSVG } from '../svg/path-parser.js';
 import SvgPath from '../svg/path.js';
-import { RGBA } from '../color/rgba.js';
-import { padAnsi, decamelize, defineGetterSetter, isObject, memoize } from '../misc.js';
+import { Element } from './element.js';
+import { isElement } from './element.js';
 
 export class SVG extends Element {
   static create(name, { outerHTML, innerHTML, text, ...attr }, parent) {

@@ -1,6 +1,8 @@
-import { log } from '../renderUtils.js';
-import { h, Component, Fragment } from '../../preact.mjs';
+import { Component } from '../../preact.mjs';
+import { Fragment } from '../../preact.mjs';
+import { h } from '../../preact.mjs';
 import { ElementToComponent } from '../components.js';
+import { log } from '../renderUtils.js';
 
 export const Package = ({ data, component = Fragment, id, class: className, ...props }) => {
   const { name } = data;

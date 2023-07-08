@@ -1,6 +1,8 @@
-import { Component, useCallback, useLayoutEffect, useMemo, useState } from '../preact.mjs';
 import { Event } from '../dom/event.js';
-
+import { useCallback } from '../preact.mjs';
+import { useLayoutEffect } from '../preact.mjs';
+import { useMemo } from '../preact.mjs';
+import { useState } from '../preact.mjs';
 function getDimensionObject(element) {
   if(typeof element == 'object' && element != null && element.base) element = element.base;
   //  console.log('getDimensionObject', element);

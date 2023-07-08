@@ -1,7 +1,6 @@
-import { log } from '../renderUtils.js';
-import { h, Component, Fragment } from '../../preact.mjs';
-import { ElementToComponent } from '../components.js';
 import { classNames } from '../../classNames.js';
+import { h } from '../../preact.mjs';
+import { log } from '../renderUtils.js';
 
 export const Frame = ({ class: className, title, children, ...props }) => {
   log(`Frame.render`, title, children);

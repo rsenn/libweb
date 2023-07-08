@@ -1,5 +1,4 @@
-import * as glMatrix from "./common.js";
-
+import * as glMatrix from './common.js';
 /**
  * 2x3 Matrix
  * @module mat2d

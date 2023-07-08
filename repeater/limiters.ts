@@ -1,4 +1,5 @@
-import { Repeater, FixedBuffer } from '@repeaterjs/repeater';
+import { FixedBuffer } from '@repeaterjs/repeater';
+import { Repeater } from '@repeaterjs/repeater';
 import { delay } from '@repeaterjs/timers';
 
 export interface Token {

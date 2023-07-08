@@ -1,5 +1,7 @@
-import { forwardRef, h as createElement, h, Fragment, options, toChildArray } from './preact.mjs';
-
+import { Fragment } from './preact.mjs';
+import { h } from './preact.mjs';
+import { h as createElement } from './preact.mjs';
+import { options } from './preact.mjs';
 let IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 let encodeEntities = function(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -298,5 +300,6 @@ function getFallbackComponentName(component) {
 renderToString.shallowRender = shallowRender;
 
 export default renderToString;
+
 export { renderToString as render, renderToString as renderToStaticMarkup, renderToString, shallowRender };
 //# sourceMappingURL=index.module.js.map

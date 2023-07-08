@@ -1,5 +1,4 @@
 import WasmHelper from './helper.js';
-
 /**
  * @example
  * const loader = new WasmLoader();

@@ -1,5 +1,4 @@
 import { Repeater } from './repeater.js';
-
 class InMemoryPubSub {
   constructor() {
     this.publishers = {};

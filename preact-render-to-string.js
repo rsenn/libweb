@@ -1,5 +1,6 @@
-import { options, h as createElement, Fragment } from './preact.mjs';
-
+import { Fragment } from './preact.mjs';
+import { h as createElement } from './preact.mjs';
+import { options } from './preact.mjs';
 // DOM properties that should NOT have "px" added when numeric
 var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 function encodeEntities(s) {
@@ -430,4 +431,5 @@ function getFallbackComponentName(component) {
 renderToString.shallowRender = shallowRender;
 
 export default renderToString;
+
 export { renderToString as render, renderToString as renderToStaticMarkup, renderToString, shallowRender };

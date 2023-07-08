@@ -1,9 +1,12 @@
-import { abbreviate, className, isObject } from '../misc.js';
 import { toXML } from '../json.js';
-import { text, concat } from './common.js';
-import { Pointer  } from '../pointer.js';
-import { ImmutableXPath } from '../xml/xpath.js';
+import { abbreviate } from '../misc.js';
+import { className } from '../misc.js';
+import { isObject } from '../misc.js';
 import inspect from '../objectInspect.js';
+import { Pointer } from '../pointer.js';
+import { ImmutableXPath } from '../xml/xpath.js';
+import { concat } from './common.js';
+import { text } from './common.js';
 
 export const ChildrenSym = Symbol('⊳');
 

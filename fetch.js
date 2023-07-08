@@ -1,4 +1,6 @@
-import { define, isObject, mapFunction } from './misc.js';
+import { define } from './misc.js';
+import { isObject } from './misc.js';
+import { mapFunction } from './misc.js';
 //import Util from './util.js';
 
 export async function NormalizeResponse(resp) {

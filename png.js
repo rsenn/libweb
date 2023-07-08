@@ -1,4 +1,3 @@
-import filesystem from 'fs';
 import * as fs from './filesystem.js';
 
 export function PngReadHeader(filename) {

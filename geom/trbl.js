@@ -1,6 +1,6 @@
-import { defineGetter, immutableClass } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { immutableClass } from '../misc.js';
 import { Rect } from './rect.js';
-
 /**
  * Type for TopRightBottomLeft (paddings and margins)
  *
@@ -132,5 +132,6 @@ export function isTRBL(obj) {
 defineGetter(TRBL, Symbol.species, function() {
   return this;
 });
+
 export const ImmutableTRBL = immutableClass(TRBL);
 defineGetter(ImmutableTRBL, Symbol.species, () => ImmutableTRBL);

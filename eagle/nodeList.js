@@ -1,7 +1,9 @@
-import { EagleRef } from './ref.js';
-import { EagleElement } from './element.js';
-import { className, define, isObject, inspectSymbol } from '../misc.js';
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { isObject } from '../misc.js';
 import { text } from './common.js';
+import { EagleElement } from './element.js';
+import { EagleRef } from './ref.js';
 
 export class EagleNodeList {
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {

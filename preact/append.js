@@ -1,4 +1,5 @@
-import { h, toChildArray } from '../preact.mjs';
+import { h } from '../preact.mjs';
+import { toChildArray } from '../preact.mjs';
 import { isComponent } from './is-component.js';
 
 const add = (arr, ...items) => [...toChildArray(arr), ...items];

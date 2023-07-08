@@ -1,4 +1,4 @@
-import { h, Component, Fragment, useEffect } from '../preact.mjs';
+import { h } from '../preact.mjs';
 
 export const MiscFixedSC613 = props =>
   h(

@@ -1,6 +1,5 @@
 import { Util } from '../util.js';
 import { RGBA } from './rgba.js';
-
 /**
  * @brief [brief description]
  * @param h  hue value 0-360

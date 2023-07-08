@@ -1,12 +1,12 @@
-import { Element, isElement } from './element.js';
 import { Rect } from '../geom/rect.js';
-import { RGBA, HSLA } from '../color.js';
-import { Pointer } from '../pointer.js';
-import * as deep from '../deep.js';
+import { Transformation } from '../geom/transformation.js';
+import { TransformationList } from '../geom/transformation.js';
 import { lazyProperties } from '../misc.js';
 import trkl from '../trkl.js';
-import { Transformation, Rotation, Translation, Scaling, TransformationList } from '../geom/transformation.js';
-import { h, forwardRef, Fragment, React, ReactComponent, Portal, toChildArray } from './preactComponent.js';
+import { Element } from './element.js';
+import { isElement } from './element.js';
+import { h } from './preactComponent.js';
+import { React } from './preactComponent.js';
 
 const GetSet = (getFn, setFn) => value => value !== undefined ? setFn(value) : getFn();
 const PropSetterGetter = (obj, property) =>

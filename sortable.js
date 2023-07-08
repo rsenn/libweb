@@ -1,9 +1,7 @@
-/* --------------------------- start of 'header' ---------------------------- */
-
 import React from './dom/preactComponent.js';
 import invariant from './invariant.js';
 import PropTypes from './prop-types.js';
-
+/* --------------------------- start of 'header' ---------------------------- */
 function findDOMNode(component) {
   return (component && (component.base || (component.nodeType === 1 && component))) || null;
 }

@@ -1,8 +1,11 @@
+import { className } from '../misc.js';
+import { isNumeric } from '../misc.js';
+import { isObject } from '../misc.js';
+import { weakMapper } from '../misc.js';
 import ObservableMembrane from '../proxy/observableMembrane.js';
-import { className, isNumeric, isObject, weakMapper } from '../misc.js';
-import { PathMapper } from './pathMapper.js';
-import { ImmutablePath } from './path.js';
 import { ImmutableXPath } from '../xml/xpath.js';
+import { ImmutablePath } from './path.js';
+import { PathMapper } from './pathMapper.js';
 
 export class TreeObserver extends ObservableMembrane {
   static readOnly = false;

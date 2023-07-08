@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef } from '../preact.mjs';
-
-import * as _ from './utils.js';
-
-import useGetSet from './useGetSet.js';
+import { useCallback } from '../preact.mjs';
+import { useEffect } from '../preact.mjs';
+import { useRef } from '../preact.mjs';
 import useForceUpdate from './useForceUpdate.js';
+import useGetSet from './useGetSet.js';
+import * as _ from './utils.js';
 
 export const usePanZoom = ({
   enablePan = true,

@@ -1,14 +1,20 @@
+import { ucfirst } from '../misc.js';
 import { Component } from '../preact.mjs';
-import { polarToCartesian, describeArc, Arc } from './components/arc.js';
+import { Arc } from './components/arc.js';
+import { describeArc } from './components/arc.js';
+import { polarToCartesian } from './components/arc.js';
 import { Background } from './components/background.js';
 import { Board } from './components/board.js';
-import { PinSizes, Circle } from './components/circle.js';
+import { Circle } from './components/circle.js';
+import { PinSizes } from './components/circle.js';
 import { Cross } from './components/cross.js';
 import { Dimension } from './components/dimension.js';
 import { Drawing } from './components/drawing.js';
 import { Element } from './components/element.js';
 import { Frame } from './components/frame.js';
-import { useGrid, Pattern, Grid } from './components/grid.js';
+import { Grid } from './components/grid.js';
+import { Pattern } from './components/grid.js';
+import { useGrid } from './components/grid.js';
 import { Hole } from './components/hole.js';
 import { Instance } from './components/instance.js';
 import { Origin } from './components/origin.js';
@@ -23,13 +29,11 @@ import { Signals } from './components/signals.js';
 import { SMD } from './components/smd.js';
 import { SVG } from './components/svg.js';
 import { SchematicSymbol } from './components/symbol.js';
-import { TextElement } from './components/textElement.js';
 import { Text } from './components/text.js';
+import { TextElement } from './components/textElement.js';
 import { Via } from './components/via.js';
 import { Wire } from './components/wire.js';
 import { WirePath } from './components/wirePath.js';
-import { ucfirst } from '../misc.js';
-
 //console.log('SchematicSymbol', SchematicSymbol);
 
 export const PrimitiveComponents = {
@@ -74,6 +78,7 @@ export const ElementNameToComponent = name => {
 };
 
 export const ElementToComponent = element => ElementNameToComponent(element.tagName);
+
 export const RenderElement = element => ElementToComponent(element);
 
 export { polarToCartesian, describeArc, Arc } from './components/arc.js';

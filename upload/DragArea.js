@@ -1,8 +1,7 @@
-import React from '../dom/preactComponent.js';
-import { Manager, SortableHandle, SortableContainer, SortableElement } from '../sortable.js';
+import { SortableContainer } from '../sortable.js';
+import { SortableElement } from '../sortable.js';
 import Context from './Context.js';
 import { arrayMove } from './Utils.js';
-
 function _extends() {
   _extends =
     Object.assign ||
@@ -21,6 +20,7 @@ function _extends() {
 }
 
 const DragItem = SortableElement(({ children }) => h('div', null, children));
+
 const SortableList = SortableContainer(({ children }) => children);
 
 export const DragArea = props => {

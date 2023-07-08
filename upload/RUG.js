@@ -1,10 +1,13 @@
 import React from '../dom/preactComponent.js';
-import { defaultProps, propTypes } from './PropTypes.js';
-import Handle from './Handle.js';
 import Context from './Context.js';
+import Handle from './Handle.js';
+import { defaultProps } from './PropTypes.js';
+import { propTypes } from './PropTypes.js';
 import Request from './Request.js';
+import { bytesToSize } from './Utils.js';
+import { getImageDimensions } from './Utils.js';
+import { isAccepted } from './Utils.js';
 import View from './view/index.js';
-import { bytesToSize, isAccepted, getImageDimensions } from './Utils.js';
 
 export class RUG extends React.Component {
   constructor({ initialState, ssrSupport }) {

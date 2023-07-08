@@ -1,5 +1,6 @@
-import { ArrayWriter, readStream, LineReader } from '../stream/utils.js';
-
+import { ArrayWriter } from '../stream/utils.js';
+import { LineReader } from '../stream/utils.js';
+import { readStream } from '../stream/utils.js';
 // function to determine filetype from a chunk
 function determine(chunk, start, LIMIT) {
   let limit = Math.min(LIMIT - start, chunk.length);

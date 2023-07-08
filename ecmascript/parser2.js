@@ -1,13 +1,90 @@
-import inspect from '../objectInspect.js';
-
-import { default as Lexer, Location, Token } from './lexer.js';
-
+import { escape, abbreviate, className, getMethodNames, isObject, once, pad, propertyLookup, randInt, trim, weakMapper } from '../misc.js';
 import * as deep from '../deep.js';
-import { Stack, StackFrame } from '../stack.js';
-import { TokenList } from './token.js';
+import inspect from '../objectInspect.js';
+import { Stack } from '../stack.js';
+import { AnonymousDefaultExportedClassDeclaration } from './estree.js';
+import { AnonymousDefaultExportedFunctionDeclaration } from './estree.js';
+import { ArrayExpression } from './estree.js';
+import { ArrayPattern } from './estree.js';
+import { ArrowFunctionExpression } from './estree.js';
+import { AssignmentExpression } from './estree.js';
+import { AssignmentPattern } from './estree.js';
+import { AssignmentProperty } from './estree.js';
+import { AwaitExpression } from './estree.js';
+import { BinaryExpression } from './estree.js';
+import { BlockStatement } from './estree.js';
+import { BreakStatement } from './estree.js';
+import { CallExpression } from './estree.js';
+import { CatchClause } from './estree.js';
+import { ChainExpression } from './estree.js';
+import { ClassBody } from './estree.js';
+import { ClassDeclaration } from './estree.js';
+import { ConditionalExpression } from './estree.js';
+import { ContinueStatement } from './estree.js';
+import { Declaration } from './estree.js';
+import { DoWhileStatement } from './estree.js';
+import { EmptyStatement } from './estree.js';
+import { ESNode } from './estree.js';
+import { ExportAllDeclaration } from './estree.js';
+import { ExportDefaultDeclaration } from './estree.js';
+import { ExportNamedDeclaration } from './estree.js';
+import { ExportSpecifier } from './estree.js';
+import { Expression } from './estree.js';
+import { ExpressionStatement } from './estree.js';
+import { Factory } from './estree.js';
+import { ForInStatement } from './estree.js';
+import { ForOfStatement } from './estree.js';
+import { ForStatement } from './estree.js';
+import { FunctionBody } from './estree.js';
+import { FunctionDeclaration } from './estree.js';
+import { FunctionLiteral } from './estree.js';
+import { Identifier } from './estree.js';
+import { IfStatement } from './estree.js';
+import { ImportDeclaration } from './estree.js';
+import { ImportDefaultSpecifier } from './estree.js';
+import { ImportNamespaceSpecifier } from './estree.js';
+import { ImportSpecifier } from './estree.js';
+import { JSXLiteral } from './estree.js';
+import { LabeledStatement } from './estree.js';
+import { Literal } from './estree.js';
+import { LogicalExpression } from './estree.js';
+import { MemberExpression } from './estree.js';
+import { MetaProperty } from './estree.js';
+import { MethodDefinition } from './estree.js';
+import { NewExpression } from './estree.js';
+import { ObjectExpression } from './estree.js';
+import { ObjectPattern } from './estree.js';
+import { Pattern } from './estree.js';
+import { Program } from './estree.js';
+import { Property } from './estree.js';
+import { RegExpLiteral } from './estree.js';
+import { RestElement } from './estree.js';
+import { ReturnStatement } from './estree.js';
+import { SequenceExpression } from './estree.js';
+import { SpreadElement } from './estree.js';
+import { Statement } from './estree.js';
+import { StatementList } from './estree.js';
+import { Super } from './estree.js';
+import { SwitchCase } from './estree.js';
+import { SwitchStatement } from './estree.js';
+import { TemplateElement } from './estree.js';
+import { TemplateLiteral } from './estree.js';
+import { ThisExpression } from './estree.js';
+import { ThrowStatement } from './estree.js';
+import { TryStatement } from './estree.js';
+import { UnaryExpression } from './estree.js';
+import { UpdateExpression } from './estree.js';
+import { VariableDeclaration } from './estree.js';
+import { VariableDeclarator } from './estree.js';
+import { WhileStatement } from './estree.js';
+import { WithStatement } from './estree.js';
+import { YieldExpression } from './estree.js';
+import { default as Lexer } from './lexer.js';
+import { Location } from './lexer.js';
+import { Token } from './lexer.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, Expression, ChainExpression, FunctionLiteral, RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportAllDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
-import MultiMap from '../container/multiMap.js';
+import { TokenList } from './token.js';
+
 const symbols = {
   enter: '⬊',
   leave: '⬁'
@@ -63,7 +140,7 @@ export class Parser {
     this.factory = new Factory();
     let classes = this.factory.classes;
     let parser = this;
-    this.estree = Util.propertyLookup(
+    this.estree = propertyLookup(
       classes,
       key =>
         function(...args) {
@@ -96,9 +173,10 @@ export class Parser {
       let prevStack;
       this.locStack = [];
       let { locStack, lexer, token } = this;
-      for(let key of Util.getMethodNames(this, 3, 0)) {
+
+      for(let key of getMethodNames(this, 3, 0)) {
         if(/^(parse)/.test(key)) {
-          this[key] = Util.trace(
+          this[key] = trace(
             ECMAScriptParser.prototype[key],
             () => {},
             (what, name, arg) => {
@@ -112,7 +190,7 @@ export class Parser {
                 locStack.push([name, this.lexer.loc]);
                 let { loc } = this.lexer;
                 if(loc.line == 38 && loc.column == 25) {
-                  let st = Util.getCallerStack(0).filter(fr => /^(match|parse|expect)/.test(fr));
+                  let st = getCallerStack(0).filter(fr => /^(match|parse|expect)/.test(fr));
                   if(!prevStack || prevStack.length != st.length || (prevStack[0] + '').replace(/:.*/g, '') != (st[0] + '').replace(/:.*/g, '')) {
                     prevStack = st;
                   }
@@ -184,7 +262,7 @@ export class Parser {
     const { methodName } = stackEntry;
     const range = [stackEntry.start, stackEntry.end];
 
-    if(!this.assoc) this.assoc = Util.weakMapper(() => ({}), new WeakMap());
+    if(!this.assoc) this.assoc = weakMapper(() => ({}), new WeakMap());
 
     let obj = this.assoc(node /*, {}*/);
 
@@ -207,7 +285,7 @@ export class Parser {
     }
     let tokens = /*new TokenList*/ [...this.processed, ...this.tokens].slice(...range);
     if(!tokens || tokens.length == 0 || tokens[0] === undefined) return;
-    let last = Util.tail(tokens);
+    let last = tokens[tokens.length - 1];
     let positions = [tokens[0].offset, last.end];
     let comments = [];
     //let assoc = ESNode.assoc(node, { range: positions, tokenRange: range, tokens, comments });
@@ -260,7 +338,7 @@ export class Parser {
       tokens.push({ token, path });
     }
     tokens.sort((a, b) => a.token[1] - b.token[1]);
-    let range = [tokens[0], Util.tail(tokens)].map(range => range.token[1]);
+    let range = [tokens[0], tokens[tokens.length - 1]].map(range => range.token[1]);
     return [...this.processed, ...this.tokens].slice(...range);
   }
 
@@ -346,7 +424,7 @@ export class Parser {
           });
         }
       } else {
-        //Util.putStack();
+        //putStack();
         token = { type: 'eof', value: null, id: -1 };
       }
       break;
@@ -393,7 +471,7 @@ export class Parser {
         .replace(linebreak, '\\n')
         .substring(0, 6);
     }
-    if(token) return `"${buf}"${Util.pad(buf, 6)} ${pos}${Util.pad(pos, 10)}`;
+    if(token) return `"${buf}"${pad(buf, 6)} ${pos}${pad(pos, 10)}`;
     return '';
   }
 
@@ -401,13 +479,13 @@ export class Parser {
     return;
     const width = 72;
     let args = [...arguments].map(a => (typeof a === 'string' ? `"${a}"` : toStr(a)).replace(new RegExp('[\n\r\t ]+', 'g'), ''));
-    let name = Util.abbreviate(Util.trim(args.join(''), '\'"'), width);
-    let stack = Util.getCallerStack().map(st => st.getFunctionName());
+    let name = abbreviate(trim(args.join(''), '\'"'), width);
+    let stack = getCallerStack().map(st => st.getFunctionName());
 
     /*this.stack.map((name, i) => `${i}:${name}`).join(", ");*/
 
     const posstr = this.prefix + String(this.pos);
-    console.log.apply(console, [posstr + Util.pad(posstr, this.prefix.length + 8), name + Util.pad(name, width), this.printtoks()]);
+    console.log.apply(console, [posstr + pad(posstr, this.prefix.length + 8), name + pad(name, width), this.printtoks()]);
   }
 
   position(tok = null) {
@@ -423,7 +501,7 @@ export class Parser {
     let node = new ctor(...args);
     /*let { processedIndex = 0 } = this;
     console.log('node:',
-      Util.className(node).padEnd(30),
+      className(node).padEnd(30),
       'processed:',
       this.processed.slice(processedIndex).map(tok => tok.lexeme)
     );
@@ -589,7 +667,7 @@ export class ECMAScriptParser extends Parser {
       expressions = [],
       quasis = [];
     let loc = (this.tokens[0] || this.lexer).loc;
-    let seed = Util.randInt(0, 0xffffffff);
+    let seed = randInt(0, 0xffffffff);
     this.templateLevel = this.templateLevel || 0;
     this.templateLevel++;
     while(!done) {
@@ -2359,7 +2437,7 @@ export class ECMAScriptParser extends Parser {
     return this.addNode(Program, 'module', body);
   }
 
-  static instrumentate = Util.once(instrumentateParser);
+  static instrumentate = once(instrumentateParser);
 }
 
 let depth = 0;
@@ -2369,7 +2447,7 @@ let diff = [];
 let fns = [];
 //var stack = [{methodName: 'parse', tokens:[]}];
 
-const methodNames = [...Util.getMethodNames(ECMAScriptParser.prototype)];
+const methodNames = [...getMethodNames(ECMAScriptParser.prototype)];
 let methods = {};
 let frameMap = new WeakMap();
 let stackMap = new WeakMap();
@@ -2380,9 +2458,9 @@ const quoteArray = arr => (arr.length < 5 ? `[${arr.join(', ')}]` : `[${arr.leng
 
 const quoteList = (l, delim = ' ') => '' + l.map(t => id(typeof t == 'string' ? `'${t}'` : '' + t)).join(delim) + '';
 const quoteToks = l => quoteList(l.map(t => t.value));
-const quoteObj = i => (i instanceof Array ? quoteArg(i) : Util.className(i) == 'Object' ? Object.keys(i) : typeof i == 'object' ? Util.className(i) : `'${i}'`);
+const quoteObj = i => (i instanceof Array ? quoteArg(i) : className(i) == 'Object' ? Object.keys(i) : typeof i == 'object' ? className(i) : `'${i}'`);
 
-const quoteArg = a => a.map(i => (Util.isObject(i) && i.value !== undefined ? i.value : quoteObj(i)));
+const quoteArg = a => a.map(i => (isObject(i) && i.value !== undefined ? i.value : quoteObj(i)));
 const quoteStr = s => s.replace(linebreak, '\\n');
 
 Parser.prototype.trace = function() {
@@ -2457,7 +2535,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
         if('ast' in obj) obj = { ...obj, ast: Object2Str(obj.ast) };
         if('object' in obj) obj = { ...obj, object: Object2Str(obj.object) };
 
-        let s = typeof obj == 'object' ? Util.className(obj) : obj;
+        let s = typeof obj == 'object' ? className(obj) : obj;
         if(s == 'Object' || !(obj instanceof ESNode)) s = inspect(obj, options);
 
         if(obj instanceof Literal) s += ` ${obj.value}`;
@@ -2472,7 +2550,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
         let lexed = parser.processed.slice(parser.consumed ?? 0);
         parser.numToks = parser.tokenIndex - parser.tokens.length;
 
-        if(lexed.length) annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`);
+        if(lexed.length) annotate.push(`lexed[${lexed.map(t => abbreviate(quoteStr(t.value), 40)).join(', ')}]`);
 
         annotate.push(`returned: ${objectStr}`);
       }
@@ -2492,7 +2570,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 };
 
 function instrumentateParser() {
-  let instrumentatedProto = Util.getMethodNames(new ECMAScriptParser(), 2)
+  let instrumentatedProto = getMethodNames(new ECMAScriptParser(), 2)
     .filter(name => /^(expect|parse)/.test(name))
     .reduce((acc, methodName) => {
       let fn = ECMAScriptParser.prototype[methodName];
@@ -2516,5 +2594,24 @@ Parser.parse = function parse(sourceText, prefix) {
 //console.log("methods:", methodNames);
 //console.log("fn:" + ECMAScriptParser.prototype.parseProgram);
 //ECMAScriptParser.instrumentate();
+
+function trace(fn, enter, leave, both = () => {}) {
+  enter = enter || ((name, args) => console.log(`function '${name}' (${args.map(arg => inspect(arg)).join(', ')}`));
+
+  leave = leave || ((name, ret) => console.log(`function '${name}'` + (ret !== undefined ? ` {= ${abbreviate(escape(ret + ''))}}` : '')));
+
+  let orig = fn;
+
+  return function(...args) {
+    let ret;
+    both('enter', fn.name, args);
+    enter(fn.name, args);
+
+    ret = orig.call(this, ...args);
+    both('leave', fn.name, ret);
+    leave(fn.name, ret);
+    return ret;
+  };
+}
 
 export default Parser;

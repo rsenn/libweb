@@ -1,5 +1,5 @@
-import { MIDIEvent, MIDIMetaEvent } from './MIDIEvent.js';
-
+import { MIDIEvent } from './MIDIEvent.js';
+import { MIDIMetaEvent } from './MIDIEvent.js';
 var MTrk = 0x4d54726b;
 var trackEnd = 0x00ff2f00;
 

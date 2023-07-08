@@ -1,8 +1,19 @@
-import { Point, isPoint } from './point.js';
-import { Line } from './line.js';
-import { Size } from './size.js';
+import { bindProperties } from '../misc.js';
+import { curry } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { inspectSymbol } from '../misc.js';
+import { isConstructor } from '../misc.js';
+import { isObject } from '../misc.js';
+import { matchAll } from '../misc.js';
+import { memoize } from '../misc.js';
+import { roundTo } from '../misc.js';
+import { weakDefine } from '../misc.js';
 import { Align } from './align.js';
-import { bindProperties, curry, defineGetter, immutableClass, inspectSymbol, isConstructor, isObject, memoize, matchAll, roundTo, weakDefine } from '../misc.js';
+import { Line } from './line.js';
+import { isPoint } from './point.js';
+import { Point } from './point.js';
+import { Size } from './size.js';
 
 export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};

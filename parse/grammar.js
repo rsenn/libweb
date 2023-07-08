@@ -1,7 +1,16 @@
+import { camelize } from '../misc.js';
+import { className } from '../misc.js';
+import { colorText } from '../misc.js';
+import { define } from '../misc.js';
+import { escapeRegex } from '../misc.js';
+import { isObject } from '../misc.js';
+import { randStr } from '../misc.js';
+import { toPlainObject } from '../misc.js';
+import { Lexer } from './lexer.js';
+import { lexMatch } from './lexer.js';
+import { Node } from './parser.js';
+import { Parser } from './parser.js';
 import inspect from 'inspect';
-import { Lexer, lexMatch } from './lexer.js';
-import { Parser, Node } from './parser.js';
-import { camelize, className, colorText, define, escapeRegex, isObject, randStr, toPlainObject } from '../misc.js';
 
 const nodeInspect = Symbol.for('nodejs.util.inspect.custom');
 

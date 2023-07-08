@@ -1,5 +1,6 @@
 import { Lexer } from './lexer.js';
 import { Location } from './misc.js';
+
 export { Location } from './misc.js';
 
 export const JSDefines = {

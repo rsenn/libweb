@@ -1,7 +1,13 @@
-import inspect from 'inspect';
-import { assert, define, types } from 'util';
 import { spawn } from 'child_process';
-import { absolute, relative, join, isAbsolute, normalize } from 'path';
+import { absolute } from 'path';
+import { isAbsolute } from 'path';
+import { join } from 'path';
+import { normalize } from 'path';
+import { relative } from 'path';
+import { assert } from 'util';
+import { define } from 'util';
+import { types } from 'util';
+import inspect from 'inspect';
 
 export class Command extends Array {
   constructor(a, workDir = '.') {

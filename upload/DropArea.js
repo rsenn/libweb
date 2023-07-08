@@ -1,8 +1,7 @@
 import React from '../dom/preactComponent.js';
-import Context from './Context.js';
 import PropTypes from '../prop-types.js';
+import Context from './Context.js';
 import { getEventFiles } from './Utils.js';
-
 function _extends() {
   _extends =
     Object.assign ||
@@ -106,4 +105,5 @@ DropArea.propTypes = {
   onDragEnter: PropTypes.func,
   onDragLeave: PropTypes.func
 };
+
 export default props => h(Context.Consumer, null, values => h(DropArea, _extends({}, props, values)));

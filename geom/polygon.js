@@ -1,7 +1,7 @@
 import { range } from '../misc.js';
-import { PointList } from './pointList.js';
 import { Line } from './line.js';
 import { Point } from './point.js';
+import { PointList } from './pointList.js';
 
 export class Polygon extends PointList {
   constructor(...args) {

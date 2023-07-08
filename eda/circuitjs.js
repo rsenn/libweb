@@ -1,4 +1,6 @@
-import { Point, Line, Rect } from '../geom.js';
+import { Line } from '../geom.js';
+import { Point } from '../geom.js';
+import { Rect } from '../geom.js';
 
 const props = {
   x1: 1,
@@ -8,6 +10,7 @@ const props = {
 };
 
 export const DOTS = 1;
+
 export const SMALL_GRID = 2;
 export const VOLTS = 4;
 export const POWER = 8;

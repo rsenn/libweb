@@ -1,10 +1,10 @@
-import { Line } from './line.js';
+import { defineGetter } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { types } from '../misc.js';
 import { BBox } from './bbox.js';
-import { PointList } from './pointList.js';
+import { Line } from './line.js';
 import { Point } from './point.js';
-import { Polyline } from './polyline.js';
-import { Element, isElement } from '../dom/element.js';
-import { defineGetter, immutableClass, types } from '../misc.js';
+import { PointList } from './pointList.js';
 
 export class LineList extends Array {
   constructor(lines) {
@@ -137,7 +137,7 @@ export class LineList extends Array {
   }
 
   coincidences() {
-    //let entries = [...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))];
+    //let entries = [...accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))];
     let entries = [...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]);
 
     //entries =    entries.filter(([p,indexes]) => indexes.length > 1);
@@ -250,9 +250,9 @@ LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points,
   return polygons.map(points => createfn(points));
 };
 
-Util.defineGetter(LineList, Symbol.species, function() {
+defineGetter(LineList, Symbol.species, function() {
   return this;
 });
 
-export const ImmutableLineList = Util.immutableClass(LineList);
-Util.defineGetter(ImmutableLineList, Symbol.species, () => ImmutableLineList);
+export const ImmutableLineList = immutableClass(LineList);
+defineGetter(ImmutableLineList, Symbol.species, () => ImmutableLineList);

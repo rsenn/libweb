@@ -1,9 +1,8 @@
+import { Control } from './ol.js';
+import { LayerGroup } from './ol.js';
+import { unByKey } from './ol.js';
 /*import Control from '../openlayers/src/ol/control.js';
-
-import { unByKey } from '../openlayers/src/ol/Observable.js';
 */
-import { Control, unByKey, LayerGroup } from './ol.js';
-
 /**
  * @protected
  */

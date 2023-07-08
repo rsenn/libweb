@@ -1,10 +1,27 @@
-//prettier-ignore
-import dom, { CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, Size, SVG, Timer, Node, isElement } from './dom.js';
-import { decamelize, defineGetterSetter, /* map, parseURL, reduce,*/  unique } from './misc.js';
-import { trkl } from './trkl.js';
-import HashList from './container/hashList.js';
 import { makeLocalStorage } from './autoStore.js';
+import HashList from './container/hashList.js';
+import { CSS } from './dom.js';
+import { CSSTransformSetters } from './dom.js';
+import { Element } from './dom.js';
+import { ElementRectProxy } from './dom.js';
+import { ElementSizeProps } from './dom.js';
+import { ElementTransformation } from './dom.js';
+import { ElementXYProps } from './dom.js';
+import { isElement } from './dom.js';
+import { Line } from './dom.js';
+import { Matrix } from './dom.js';
+import { Node } from './dom.js';
+import { Point } from './dom.js';
+import { PointList } from './dom.js';
+import { Rect } from './dom.js';
+import { Size } from './dom.js';
+import { SVG } from './dom.js';
+import { Timer } from './dom.js';
+import dom from './dom.js';
+import { trkl } from './trkl.js';
+//prettier-ignore
 
+import { decamelize, defineGetterSetter, /* map, parseURL, reduce,*/  unique } from './misc.js';
 //var root = globalThis.window ? window : global;
 
 const env = 'development';
@@ -1106,7 +1123,6 @@ export const devtools = {
   stylesheets,
   //toJS,
   trackElements,
-  Util,
   walk,
   trkl,
   ws,

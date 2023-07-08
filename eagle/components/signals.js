@@ -1,6 +1,7 @@
-import { log } from '../renderUtils.js';
-import { h, Component, Fragment } from '../../preact.mjs';
+import { Component } from '../../preact.mjs';
+import { h } from '../../preact.mjs';
 import { ElementToComponent } from '../components.js';
+import { log } from '../renderUtils.js';
 
 export const Signals = ({ data, transform, opts = {}, ...props }) => {
   log('Signals.render', { data });

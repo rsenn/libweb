@@ -1,9 +1,8 @@
-import { h, Component } from '../../preact.mjs';
-import { TransformationList } from '../../geom/transformation.js';
-import { SchematicSymbol } from './symbol.js';
-import { Instance } from './instance.js';
-import { MakeRotation, log, useTransform } from '../renderUtils.js';
+import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
+import { log } from '../renderUtils.js';
+import { useTransform } from '../renderUtils.js';
+import { Instance } from './instance.js';
 
 export const Sheet = ({ data, opts = {}, ...props }) => {
   let [transformation, transform, accumulate] = useTransform(opts);

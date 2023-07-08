@@ -1,5 +1,6 @@
-import { useTrkl, log } from '../renderUtils.js';
-import { h, Component } from '../../preact.mjs';
+import { h } from '../../preact.mjs';
+import { log } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, data, ...props }) => {
   if(data)

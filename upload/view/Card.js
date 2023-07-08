@@ -1,6 +1,5 @@
 import React from '../../dom/preactComponent.js';
 import RefreshIcon from './RefreshIcon.js';
-
 function _extends() {
   _extends =
     Object.assign ||

@@ -1,7 +1,8 @@
-import { Token } from './token.js';
-export { Token } from './token.js';
-import * as path from '../path.js';
 import { Location } from '../misc.js';
+import * as path from '../path.js';
+import { Token } from './token.js';
+
+export { Token } from './token.js';
 export { Location } from '../misc.js';
 
 export function PathReplacer() {
@@ -90,6 +91,7 @@ const distTo = (s, pos, inc, fn) => {
   for(i = pos; !fn(s[i], i); i += inc) {}
   return i - pos;
 };
+
 const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
   //let { line = 1, column = 1 }  = lc;
   let start = Math.min(p1, p2),

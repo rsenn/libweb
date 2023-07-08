@@ -1,6 +1,6 @@
 import inspect from '../objectInspect.js';
+import { inspectSymbol, className, define, isNumeric, isObject, weakAssoc, weakMapper } from '../misc.js';
 
-const inspectSymbol = Symbol.for(Util.getPlatform() == 'quickjs' ? 'quickjs.inspect.custom' : 'nodejs.util.inspect.custom');
 const linebreak = /\r?\n/g;
 
 export class ESNode {
@@ -9,7 +9,7 @@ export class ESNode {
   static lastNode = null;
 
   constructor(type = 'Node') {
-    //Util.define(this, { type });
+    //define(this, { type });
     this.type = type;
 
     ESNode.lastNode = this;
@@ -20,20 +20,20 @@ export class ESNode {
   }*/
 
   [inspectSymbol](depth, opts = {}) {
-    const color = Util.coloring(opts.colors);
-    const { type, ...props } = Util.getMembers(this);
+    const color = { text: arg => arg };
+    const { type, ...props } = this;
 
     //  console.log(`ESNode `, text+'');
     return Object.getOwnPropertyNames(this).reduce((acc, name) => ({ ...acc, [name]: this[name] }), {});
 
-    return (type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) + ' ' + inspect(props, { ...opts, customInspect: false });
+    return (type ? color.text(type, 1, 31) : color.text(className(this), 1, 35)) + ' ' + inspect(props, { ...opts, customInspect: false });
   }
 
   /* toJSON() {
-    let members = Util.getMembers();
+    let members = getMembers();
     for(let prop in members) {
       let value = members[prop];
-      if(Util.isObject(value) && value instanceof ESNode)
+      if(isObject(value) && value instanceof ESNode)
         members[prop] = value.toJSON();
     }
     return members;
@@ -45,7 +45,8 @@ Object.defineProperty(ESNode.prototype, 'position', {
   enumerable: false,
   writable: true
 });
-ESNode.assoc = Util.weakMapper(() => ({}), (ESNode.assocMap = new Map())); // Util.weakAssoc();
+
+ESNode.assoc = weakMapper(() => ({}), (ESNode.assocMap = new Map())); // weakAssoc();
 
 export class Program extends ESNode {
   constructor(sourceType, body = []) {
@@ -160,7 +161,7 @@ export class Identifier extends Pattern {
 
   [inspectSymbol](n, opts = {}) {
     const { colors } = opts;
-    let c = Util.coloring(colors);
+    let c = { text: arg => arg };
     return c.text(`Identifier `, 1, 31) + c.text(this.name, 1, 33);
   }
 }
@@ -178,13 +179,13 @@ export class Literal extends Expression {
   }
 
   static string(node) {
-    return Util.isObject(node) && typeof node.value == 'string' ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n') : undefined;
+    return isObject(node) && typeof node.value == 'string' ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n') : undefined;
   }
 
   /*[inspectSymbol](n, opts = {}) {
     const { type, value } = this;
-    let c = Util.coloring(opts.colors);
-    let q = !Util.isNumeric(value) && !value.startsWith('/') ? "'" : '';
+    let c = coloring(opts.colors);
+    let q = !isNumeric(value) && !value.startsWith('/') ? "'" : '';
     return (c.text(type, 1, 31) +
       ' ' +
       c.text(q + value + q, 1, value.startsWith('/') ? 35 : 36)
@@ -783,7 +784,7 @@ ESNode.prototype.toString = function() {
         value = `[\n  ${this[field].filter(child => child !== undefined).map((child) => child.toString().replace(linebreak, '\n  ')).join(',\n  ')}\n]`;
         value = value.replace(linebreak, '\n  ');
       } else if(typeof value === 'object' && !(value instanceof Array)) {
-        value = Util.className(value);
+        value = className(value);
       }
       if(s.length) s += ',\n  ';
       s += `${field} = ${value}`;

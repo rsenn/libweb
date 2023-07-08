@@ -1,9 +1,9 @@
-import { Point, isPoint } from './point.js';
-import { Rect } from './rect.js';
-import { Line, isLine } from './line.js';
-import { PointList } from './pointList.js';
 import { SVG } from '../dom/svg.js';
-import { memoize } from '../misc.js';
+import { isLine } from './line.js';
+import { Line } from './line.js';
+import { isPoint } from './point.js';
+import { Point } from './point.js';
+import { PointList } from './pointList.js';
 
 export class Polyline extends PointList {
   constructor(lines = []) {

@@ -1,7 +1,9 @@
 import { EventEmitter } from '../eventEmitter.js';
-import { PipeToRepeater } from '../stream/utils.js';
+import { className } from '../misc.js';
+import { getMethodNames } from '../misc.js';
+import { waitFor } from '../misc.js';
 import transformStream from '../stream/transformStream.js';
-import { className, getMethodNames, waitFor } from '../misc.js';
+import { PipeToRepeater } from '../stream/utils.js';
 
 export const noop = () => {};
 

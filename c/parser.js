@@ -1,8 +1,8 @@
+import * as rules from './rules.js';
 /* jshint sub:true */
 
 export { default as lexer } from '../../tokenize.js';
 
-import * as rules from './rules.js';
 export { default as rules } from './rules.js';
 
 export function parse(token_stream) {

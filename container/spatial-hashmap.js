@@ -1,5 +1,4 @@
 import { HashMap } from './hashmap.js';
-
 /**
  * HashMap
  *

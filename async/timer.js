@@ -1,5 +1,4 @@
 import { map } from './helpers.js';
-
 //Create a Promise that resolves after ms time
 let timer = function(ms) {
   return new Promise(resolve => {

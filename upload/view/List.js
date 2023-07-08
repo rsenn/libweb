@@ -1,3 +1,6 @@
+import React from '../../dom/preactComponent.js';
+import RefreshIcon from './RefreshIcon.js';
+import UploadIcon from './UploadIcon.js';
 function _extends() {
   _extends =
     Object.assign ||
@@ -14,11 +17,6 @@ function _extends() {
     };
   return _extends.apply(this, arguments);
 }
-
-import React from '../../dom/preactComponent.js';
-import RefreshIcon from './RefreshIcon.js';
-import UploadIcon from './UploadIcon.js';
-
 export class List extends React.Component {
   constructor() {
     super();

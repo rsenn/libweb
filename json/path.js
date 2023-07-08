@@ -1,4 +1,7 @@
-import { define, defineGetter, immutableClass,className } from '../misc.js';
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { immutableClass } from '../misc.js';
 import { toXML } from './util.js';
 
 export function DereferenceError(object, member, pos, prev, locator) {

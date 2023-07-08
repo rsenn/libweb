@@ -1,6 +1,6 @@
 import filesystem from 'fs';
-
 //const { decode: decodeBase64, encode: encodeBase64 } = Util.base64;
+
 const [encodeBase64, decodeBase64] = [
   s => {
     console.log(`encode('${s}')`);

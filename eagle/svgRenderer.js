@@ -1,14 +1,23 @@
-import { EagleElement } from './element.js';
-import { define, inserter, isObject, mapWrapper } from '../misc.js';
-import { Point, Size, Rect, BBox, TransformationList } from '../geom.js';
-import { MakeRotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
-import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
-import trkl from '../trkl.js';
-import { h, Component } from '../preact.mjs';
-import { ColorMap } from '../draw/colorMap.js';
-import { SVG } from './components/svg.js';
-import { ImmutableXPath } from '../xml/xpath.js';
+import { Point } from '../geom.js';
+import { Rect } from '../geom.js';
+import { TransformationList } from '../geom.js';
+import { define } from '../misc.js';
+import { inserter } from '../misc.js';
+import { isObject } from '../misc.js';
+import { mapWrapper } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
+import { Component } from '../preact.mjs';
+import { h } from '../preact.mjs';
+import trkl from '../trkl.js';
+import { ImmutableXPath } from '../xml/xpath.js';
+import { Drawing } from './components.js';
+import { ElementToComponent } from './components.js';
+import { SVG } from './components/svg.js';
+import { EagleElement } from './element.js';
+import { HORIZONTAL } from './renderUtils.js';
+import { HORIZONTAL_VERTICAL } from './renderUtils.js';
+import { LayerAttributes } from './renderUtils.js';
+import { VERTICAL } from './renderUtils.js';
 
 const transformXPath = p => p.replace(/➟/g, 'children').replace(/ /g, '.').split(/\./g);
 

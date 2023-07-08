@@ -1,12 +1,12 @@
-import { SchematicRenderer } from './schematicRenderer.js';
 import { BoardRenderer } from './boardRenderer.js';
 import { LibraryRenderer } from './libraryRenderer.js';
+import { setDebug } from './renderUtils.js';
+import { SchematicRenderer } from './schematicRenderer.js';
+
 export { EagleSVGRenderer } from './svgRenderer.js';
 export { SchematicRenderer } from './schematicRenderer.js';
 export { LibraryRenderer } from './libraryRenderer.js';
 export { BoardRenderer } from './boardRenderer.js';
-import { DEBUG, setDebug, log } from './renderUtils.js';
-
 export function Renderer(doc, factory, debug) {
   let ret;
   switch (doc.type) {

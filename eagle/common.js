@@ -1,5 +1,6 @@
 import { ImmutablePath } from '../json.js';
-import { className, isObject, inspectSymbol } from '../misc.js';
+import { className } from '../misc.js';
+import { isObject } from '../misc.js';
 
 const isBrowser = () => !!globalThis.navigator;
 
@@ -16,6 +17,7 @@ export const coloring = isBrowser()
     };
 
 export const concat = coloring.concat.bind(coloring);
+
 export const text = coloring.text.bind(coloring);
 
 export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));

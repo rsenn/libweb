@@ -1,7 +1,8 @@
+import { EventEmitter } from './lib/eventEmitter.js';
 /**
  * @module tty-events
  */
-import { EventEmitter } from './lib/eventEmitter.js';
+
 /*
 const EventEmitter = require('events'),
   { StringDecoder } = require('string_decoder');*/

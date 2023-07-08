@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from '../preact.mjs';
+import { useCallback } from '../preact.mjs';
+import { useEffect } from '../preact.mjs';
+import { useRef } from '../preact.mjs';
+import { useState } from '../preact.mjs';
 import useDebouncedCallback from './useDebouncedCallback.js';
-
 function valueEquality(left, right) {
   return left === right;
 }

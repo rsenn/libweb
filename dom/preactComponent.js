@@ -1,7 +1,23 @@
-import { h, options, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.mjs';
+import { className } from '../misc.js';
+import { functionName } from '../misc.js';
+import { Component } from '../preact.mjs';
+import { createContext } from '../preact.mjs';
+import { h } from '../preact.mjs';
+import { html } from '../preact.mjs';
+import { options } from '../preact.mjs';
+import { render } from '../preact.mjs';
+import { useCallback } from '../preact.mjs';
+import { useContext } from '../preact.mjs';
+import { useDebugValue } from '../preact.mjs';
+import { useEffect } from '../preact.mjs';
+import { useImperativeHandle } from '../preact.mjs';
+import { useLayoutEffect } from '../preact.mjs';
+import { useMemo } from '../preact.mjs';
+import { useReducer } from '../preact.mjs';
+import { useRef } from '../preact.mjs';
+import { useState } from '../preact.mjs';
 import { forwardRef } from '../preact/forwardRef.js';
 import { Element } from './element.js';
-import { functionName, getMethodNames, isObject, className } from '../misc.js';
 
 export { forwardRef } from '../preact/forwardRef.js';
 

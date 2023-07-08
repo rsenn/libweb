@@ -1,8 +1,9 @@
-import { h, Component } from '../../preact.mjs';
-import { TransformationList } from '../../geom/transformation.js';
-import { SchematicSymbol } from './symbol.js';
-import { MakeRotation, log, useTransform } from '../renderUtils.js';
+import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
+import { log } from '../renderUtils.js';
+import { MakeRotation } from '../renderUtils.js';
+import { useTransform } from '../renderUtils.js';
+import { SchematicSymbol } from './symbol.js';
 
 export const Instance = ({ data, opts = {}, ...props }) => {
   // log('Instance.render', { data,opts });

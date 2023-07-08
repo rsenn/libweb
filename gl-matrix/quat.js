@@ -1,8 +1,7 @@
-import * as glMatrix from "./common.js";
-import * as mat3 from "./mat3.js";
-import * as vec3 from "./vec3.js";
-import * as vec4 from "./vec4.js";
-
+import * as glMatrix from './common.js';
+import * as mat3 from './mat3.js';
+import * as vec3 from './vec3.js';
+import * as vec4 from './vec4.js';
 /**
  * Quaternion in the format XYZW
  * @module quat

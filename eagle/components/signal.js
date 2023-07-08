@@ -1,9 +1,7 @@
+import { h } from '../../preact.mjs';
 import { log } from '../renderUtils.js';
-import { h, Component, Fragment } from '../../preact.mjs';
-import { ElementToComponent } from '../components.js';
 import { Via } from './via.js';
 import { Wire } from './wire.js';
-import { WirePath } from './wirePath.js';
 
 export const Signal = ({ data, color, ...props }) => {
   log('Signal.render', { data });

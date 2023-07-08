@@ -1,3 +1,4 @@
+import htm from './preact/htm.js';
 /*
  * concatenanted preact/dist/preact.module.js
  */
@@ -55,6 +56,7 @@ function _catchError(error, vnode) {
 }
 
 var options = { __e: _catchError, __v: 0 };
+
 export { options };
 
 function createElement(type, props, children) {
@@ -1338,9 +1340,6 @@ function invokeOrReturn(arg, f) {
 /*
  * concatenanted htm/src/integrations/preact/standalone.mjs
  */
-
-import htm from './preact/htm.js';
-
 const html = htm.bind(createElement);
 
 export {

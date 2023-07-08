@@ -1,6 +1,6 @@
 import ClipperLib from './clipper-lib.js';
-
 let errorCallback;
+
 export const setErrorCallback = callback => {
   errorCallback = callback;
 };
@@ -9,6 +9,7 @@ ClipperLib.Error = message => {
 };
 
 const CLIPPER = new ClipperLib.Clipper();
+
 const CLIPPER_OFFSET = new ClipperLib.ClipperOffset();
 
 export default class Shape {

@@ -1,3 +1,7 @@
+import AnimEvent from './anim-event.js';
+import CSSPrefix from './cssprefix.js';
+import mClassList from './m-class-list.js';
+import PointerEvent from './pointer-event.js';
 /* ================================================
         DON'T MANUALLY EDIT THIS FILE
 ================================================ */
@@ -45,10 +49,6 @@ function _typeof(obj) {
  * Copyright (c) 2021 anseki
  * Licensed under the MIT license.
  */
-import PointerEvent from './pointer-event.js';
-import CSSPrefix from './cssprefix.js';
-import AnimEvent from './anim-event.js';
-import mClassList from './m-class-list.js';
 mClassList.ignoreNative = true;
 
 var ZINDEX = 9000,

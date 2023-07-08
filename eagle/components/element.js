@@ -1,9 +1,10 @@
-import { h, Component } from '../../preact.mjs';
+import { ValueToNumber } from '../../eda/colorCoding.js';
 import { TransformationList } from '../../geom/transformation.js';
-import { Package } from './package.js';
-import { MakeRotation, log } from '../renderUtils.js';
+import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
-import { digit2color, GetFactor, GetColorBands, ValueToNumber, NumberToValue, GetExponent, GetMantissa } from '../../eda/colorCoding.js';
+import { log } from '../renderUtils.js';
+import { MakeRotation } from '../renderUtils.js';
+import { Package } from './package.js';
 
 export const Element = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;

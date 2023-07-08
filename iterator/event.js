@@ -1,5 +1,5 @@
-import { tryCatch } from '../misc.js';
 import Emitter from '../../quickjs/qjs-modules/lib/events.js';
+import { tryCatch } from '../misc.js';
 
 export function EventIterator(events, target = tryCatch(() => window)) {
   let emitter = new Emitter(target);

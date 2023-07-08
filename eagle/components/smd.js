@@ -1,7 +1,10 @@
-import { h, Component } from '../../preact.mjs';
-import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { TransformationList } from '../../geom/transformation.js';
+import { h } from '../../preact.mjs';
+import { useValue } from '../../repeater/react-hooks.js';
+import { ElementToClass } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { MakeCoordTransformer } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const SMD = ({ data, opts = {}, ...props }) => {
   log('SMD.render ', { data, opts });

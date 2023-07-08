@@ -847,6 +847,41 @@ export function weakDefine(obj, ...args) {
   return Object.defineProperties(obj, desc);
 }
 
+export function merge(...args) {
+  let ret;
+  let isMap = args[0] instanceof Map;
+  let t = isMap ? a => new Map(Object.entries(a)) : a => a;
+
+  if(isMap) {
+    /*  if(!args.every(arg => Util.isObject(arg) && arg instanceof Map))
+    args =args.map(arg => new Map(Util.entries(arg)));
+*/
+    ret = new Map();
+
+    for(let arg of args) for (let [key, value] of entries(arg)) ret.set(key, value);
+  } else {
+    ret = args.reduce((acc, arg) => ({ ...acc, ...arg }), {});
+  }
+
+  return ret;
+}
+
+export function weakAssoc(fn = (value, ...args) => Object.assign(value, ...args)) {
+  let mapper = tryCatch(
+    () => new WeakMap(),
+    map => weakMapper((obj, ...args) => merge(...args), map),
+    () =>
+      (obj, ...args) =>
+        define(obj, ...args)
+  );
+  let self = (obj, ...args) => {
+    let value = mapper(obj, ...args);
+    return fn(value, ...args);
+  };
+  self.mapper = mapper;
+
+  return self;
+}
 export function getPrototypeChain(obj, limit = -1, start = 0) {
   let i = -1,
     ret = [];
@@ -1185,6 +1220,18 @@ export function propertyLookup(...args) {
   return new Proxy(obj, propertyLookupHandlers(getter, setter));
 }
 
+export function padFn(len, char = ' ', fn = (str, pad) => pad) {
+  return (s, n = len) => {
+    let m = Util.stripAnsi(s).length;
+    s = s ? s.toString() : '' + s;
+    return fn(s, m < n ? char.repeat(n - m) : '');
+  };
+}
+
+export function pad(s, n, char = ' ') {
+  return padFn(n, char)(s);
+}
+
 export function abbreviate(str, max = 40, suffix = '...') {
   max = +max;
   if(isNaN(max)) max = Infinity;
@@ -1197,6 +1244,12 @@ export function abbreviate(str, max = 40, suffix = '...') {
     return str.substring(0, max - suffix.length) + suffix;
   }
   return str;
+}
+
+export function trim(str, charset) {
+  const r1 = new RegExp('^[' + charset + ']*');
+  const r2 = new RegExp('[' + charset + ']*$');
+  return str.replace(r1, '').replace(r2, '');
 }
 
 export function tryFunction(fn, resolve = a => a, reject = () => null) {
@@ -2023,6 +2076,15 @@ export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
 export function mod(a, b) {
   return typeof b == 'number' ? ((a % b) + b) % b : n => ((n % a) + a) % a;
 }
+
+export const add = curry((a, b) => a + b);
+export const sub = curry((a, b) => a - b);
+export const mul = curry((a, b) => a * b);
+export const div = curry((a, b) => a / b);
+export const xor = curry((a, b) => a ^ b);
+export const or = curry((a, b) => a | b);
+export const and = curry((a, b) => a & b);
+export const pow = curry((a, b) => Math.pow(a, b));
 
 export function pushUnique(arr, ...args) {
   let reject = [];

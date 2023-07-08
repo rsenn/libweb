@@ -1,14 +1,15 @@
-import { Point, Line, TransformationList, ImmutableTransformationList, LineList } from '../geom.js';
-import { unique, className, isObject, range, roundTo } from '../misc.js';
-import { Component, useEffect, useState } from '../preact.mjs';
 import { classNames } from '../classNames.js';
+import { ImmutableTransformationList, TransformationList } from '../geom/transformation.js';
+import { Line } from '../geom/line.js';
+import { Point } from '../geom/point.js';
 import { useTrkl } from '../hooks/useTrkl.js';
+import { className, isObject, range, roundTo, unique, mod, mul } from '../misc.js';
+import { Component } from '../preact.mjs';
 export { useTrkl } from '../hooks/useTrkl.js';
 
 const PI = Math.PI;
 export const RAD2DEG = 180 / Math.PI;
 export const DEG2RAD = Math.PI / 180;
-const { mod, mul } = Util;
 
 const rad2deg = mul(RAD2DEG);
 const deg2rad = mul(DEG2RAD);
