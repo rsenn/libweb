@@ -123,15 +123,15 @@ export class BoardRenderer extends EagleSVGRenderer {
       }
     }
 
-    this.debug('BoardRenderer.renderItem', { name, value, item });
+    //this.debug('BoardRenderer.renderItem', { name, value, item });
   }
 
   renderCollection(coll, parent, opts = {}) {
     const { predicate = i => i.tagName != 'description', transformation, pos, rot, name, layer, props = {}, flat } = opts;
 
-    this.debug(`BoardRenderer.renderCollection(1)`, { coll, transformation, name });
+    //this.debug(`BoardRenderer.renderCollection(1)`, { coll, transformation, name });
 
-    this.debug('BoardRenderer.renderCollection', coll[0].tagName);
+    //this.debug('BoardRenderer.renderCollection', coll[0].tagName);
 
     let coordFn = i => i;
     let { class: addClass, ...addProps } = props;
@@ -334,11 +334,13 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.debug(`BoardRenderer.render`, { bounds, rect, transform });
 
     //this.renderLayers(parent);
-    let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
-    let signalsElement = doc.get('signals');
-    let signalsGroup = this.create(ElementToComponent(signalsElement), { data: signalsElement, transform }, parent);
+    const plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
+    const signalsElement = doc.lookup('eagle/drawing/board/signals');
 
-    let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
+    const signalsComponent = ElementToComponent(signalsElement);
+    const signalsGroup = this.create(signalsComponent, { data: signalsElement, transform }, parent);
+
+    const elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
 
     for(let element of this.elements.list) {
       //this.create(Element, element,  elementsGroup);

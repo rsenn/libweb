@@ -5,9 +5,7 @@ import { ElementToComponent } from '../components.js';
 export const Signals = ({ data, transform, opts = {}, ...props }) => {
   log('Signals.render', { data });
 
-  const getByLayer = layerNo => [
-    ...data.getAll(e => (typeof layerNo == 'number' ? e.attributes.layer == layerNo : e.tagName == 'via'))
-  ];
+  const getByLayer = layerNo => [...data.getAll(e => (typeof layerNo == 'number' ? e.attributes.layer == layerNo + '' /*||  e.layer.number == layerNo*/ : e.tagName == 'via'))];
 
   let layers = [16, 1, null];
   let colors = layers.map(layerNo => data.document.getLayer(layerNo)?.color);
@@ -25,8 +23,10 @@ export const Signals = ({ data, transform, opts = {}, ...props }) => {
       'stroke-linejoin': 'miter', // 'round', 'miter', 'bevel'
       'font-family': 'Fixed'
     },
+
     layers.reduce((acc, layerNo, i) => {
       let items = getByLayer(layerNo);
+      log('Signals.render', { layerNo, items });
 
       for(let item of items) {
         let comp = ElementToComponent(item);
