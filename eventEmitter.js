@@ -1,5 +1,3 @@
-import { isFunction } from './misc.js';
-import { isNumber } from './misc.js';
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20,6 +18,9 @@ import { isNumber } from './misc.js';
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+import { isFunction, isNumber } from './misc.js';
+
 export function EventEmitter() {
   this.events = this.events || {};
   this.maxListeners = this.maxListeners || undefined;
@@ -38,7 +39,7 @@ EventEmitter.defaultMaxListeners = 10;
 // Obviously not all Emitters should be limited to 10. This function allows
 // that to be increased. Set to zero for unlimited.
 EventEmitter.prototype.setMaxListeners = function(n) {
-  if(!Util.isNumber(n) || n < 0 || Util.isNaN(n)) throw TypeError('n must be a positive number');
+  if(!isNumber(n) || n < 0 || isNaN(n)) throw TypeError('n must be a positive number');
   this.maxListeners = n;
   return this;
 };
@@ -70,7 +71,7 @@ EventEmitter.prototype.emit = function(...argList) {
 
   if(isUndefined(handler)) return false;
 
-  if(Util.isFunction(handler)) {
+  if(isFunction(handler)) {
     switch (argList.length) {
       // fast cases
       case 1:
@@ -100,15 +101,15 @@ EventEmitter.prototype.emit = function(...argList) {
 EventEmitter.prototype.addListener = function(type, listener) {
   let m;
 
-  if(!Util.isFunction(listener)) throw TypeError('listener must be a function');
+  if(!isFunction(listener)) throw TypeError('listener must be a function');
 
   if(!this.events) this.events = {};
 
   // To avoid recursion in the case that type === "newListener"! Before
   // adding it to the listeners, first emit "newListener".
-  if(this.events.newListener) this.emit('newListener', type, Util.isFunction(listener.listener) ? listener.listener : listener);
+  if(this.events.newListener) this.emit('newListener', type, isFunction(listener.listener) ? listener.listener : listener);
   //console.debug('this.events:', this.events);
- 
+
   if(!this.events[type])
     // Optimize the case of one listener. Don't need the extra array object.
     this.events[type] = listener;
@@ -143,7 +144,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
 EventEmitter.prototype.on = EventEmitter.prototype.addListener;
 
 EventEmitter.prototype.once = function(type, listener) {
-  if(!Util.isFunction(listener)) throw TypeError('listener must be a function');
+  if(!isFunction(listener)) throw TypeError('listener must be a function');
 
   let fired = false;
 
@@ -166,7 +167,7 @@ EventEmitter.prototype.once = function(type, listener) {
 EventEmitter.prototype.removeListener = function(type, listener) {
   let list, position, length, i;
 
-  if(!Util.isFunction(listener)) throw TypeError('listener must be a function');
+  if(!isFunction(listener)) throw TypeError('listener must be a function');
 
   if(!this.events || !this.events[type]) return this;
 
@@ -174,7 +175,7 @@ EventEmitter.prototype.removeListener = function(type, listener) {
   length = list.length;
   position = -1;
 
-  if(list === listener || (Util.isFunction(list.listener) && list.listener === listener)) {
+  if(list === listener || (isFunction(list.listener) && list.listener === listener)) {
     delete this.events[type];
     if(this.events.removeListener) this.emit('removeListener', type, listener);
   } else if(isObject(list)) {
@@ -225,7 +226,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
 
   listeners = this.events[type];
 
-  if(Util.isFunction(listeners)) {
+  if(isFunction(listeners)) {
     this.removeListener(type, listeners);
   } else if(listeners) {
     // LIFO order
@@ -239,7 +240,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
 EventEmitter.prototype.listeners = function(type) {
   let ret;
   if(!this.events || !this.events[type]) ret = [];
-  else if(Util.isFunction(this.events[type])) ret = [this.events[type]];
+  else if(isFunction(this.events[type])) ret = [this.events[type]];
   else ret = this.events[type].slice();
   return ret;
 };
@@ -248,7 +249,7 @@ EventEmitter.prototype.listenerCount = function(type) {
   if(this.events) {
     let evlistener = this.events[type];
 
-    if(Util.isFunction(evlistener)) return 1;
+    if(isFunction(evlistener)) return 1;
     else if(evlistener) return evlistener.length;
   }
   return 0;

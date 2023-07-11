@@ -1,13 +1,10 @@
 import * as fs from '../filesystem.js';
-import { define } from '../misc.js';
-import { properties } from '../misc.js';
-import { tryCatch } from '../misc.js';
-import { unique } from '../misc.js';
-import { weakDefine } from '../misc.js';
+import { define, properties, tryCatch, unique, weakDefine } from '../misc.js';
 import * as path from '../path.js';
 import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
+import process from '../process.js';
 
 export class EagleProject {
   constructor(file, fs) {
@@ -134,6 +131,8 @@ export class EagleProject {
       try {
         envVar = process.env['PATH'];
       } catch(e) {}
+      envVar??='';
+      
     let searchPath = envVar.split(/:/g);
     let bin;
     for(let dir of searchPath) {
