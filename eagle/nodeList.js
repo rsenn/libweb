@@ -1,6 +1,4 @@
-import { className } from '../misc.js';
-import { define } from '../misc.js';
-import { isObject } from '../misc.js';
+import { className, define, isObject } from '../misc.js';
 import { text } from './common.js';
 import { EagleElement } from './element.js';
 import { EagleRef } from './ref.js';

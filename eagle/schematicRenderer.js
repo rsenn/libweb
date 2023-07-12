@@ -1,16 +1,11 @@
 import { RGBA } from '../color/rgba.js';
-import { BBox } from '../geom.js';
-import { Line } from '../geom.js';
-import { Point } from '../geom.js';
-import { Rect } from '../geom.js';
+import { BBox, Line, Point, Rect } from '../geom.js';
 import { className } from '../misc.js';
 import { h } from '../preact.mjs';
 import { Palette } from './common.js';
 import { Instance } from './components/instance.js';
 import { Sheet } from './components/sheet.js';
-import { LayerAttributes } from './renderUtils.js';
-import { MakeCoordTransformer } from './renderUtils.js';
-import { useTransform } from './renderUtils.js';
+import { LayerAttributes, MakeCoordTransformer, useTransform } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 
 export class SchematicRenderer extends EagleSVGRenderer {

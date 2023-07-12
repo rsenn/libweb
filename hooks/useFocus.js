@@ -1,5 +1,4 @@
-import { useMemo } from '../preact.mjs';
-import { useState } from '../preact.mjs';
+import { useMemo, useState } from '../preact.mjs';
 
 export function useFocus() {
   const [isFocused, setFocused] = useState(false);

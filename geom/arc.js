@@ -1,5 +1,4 @@
-import { isPoint } from './point.js';
-import { Point } from './point.js';
+import { isPoint, Point } from './point.js';
 
 export class Arc {
   constructor() {}

@@ -1,6 +1,4 @@
-import { useEffect } from '../preact.mjs';
-import { useMemo } from '../preact.mjs';
-import { useState } from '../preact.mjs';
+import { useEffect, useMemo, useState } from '../preact.mjs';
 // vector add
 function addV(v1, v2) {
   return v1.map((v, i) => v + v2[i]);

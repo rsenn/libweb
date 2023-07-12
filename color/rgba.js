@@ -1,13 +1,5 @@
-import { clamp } from '../misc.js';
-import { className } from '../misc.js';
-import { curry } from '../misc.js';
-import { define } from '../misc.js';
-import { defineGetter } from '../misc.js';
-import { immutableClass } from '../misc.js';
-import { randInt } from '../misc.js';
-import { roundTo } from '../misc.js';
-import { tryCatch } from '../misc.js';
-//import { HSLA, ImmutableHSLA } from './hsla.js';
+import { clamp, className, curry, define, defineGetter, immutableClass, randInt, roundTo, tryCatch } from '../misc.js';
+
 /**
  * @brief [brief description]
  * @param r  red value 0-255

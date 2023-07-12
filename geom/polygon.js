@@ -96,7 +96,7 @@ Polygon.toPath = (polygon, relative = true) => {
 Polygon.fromLine = (arg, offset, steps = 3) => {
   let line = new Line(arg);
   const PI2 = Math.PI * 0.5;
-  const step = Util.range(0, steps - 1).map(i => (i * Math.PI) / (steps - 1));
+  const step = range(0, steps - 1).map(i => (i * Math.PI) / (steps - 1));
   const a = line.angle();
   let vl = new PointList();
   //console.log('step:', step);
@@ -129,7 +129,7 @@ export function MakePolygon(n = 8, r = 1.27, start = 0) {
   const $2pi = Math.PI * 2;
   const step = $2pi / n;
   return new Polygon(
-    Util.range(0, n - 1)
+    range(0, n - 1)
       .map(i => ($2pi * i) / n)
       .map(a => Point.fromAngle(a + step * start, r))
   );

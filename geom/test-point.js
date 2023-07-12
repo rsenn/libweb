@@ -1,5 +1,4 @@
-import { isPoint } from '../geom/point.js';
-import { Point } from '../geom/point.js';
+import { isPoint, Point } from '../geom/point.js';
 import wru from '../wru.js';
 wru.test([
   {

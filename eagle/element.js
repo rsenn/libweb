@@ -1,26 +1,6 @@
 import { RGBA } from '../color/rgba.js';
-import { BBox } from '../geom.js';
-import { Circle } from '../geom.js';
-import { isLine } from '../geom.js';
-import { Line } from '../geom.js';
-import { MakePolygon } from '../geom.js';
-import { Point } from '../geom.js';
-import { PointList } from '../geom.js';
-import { Polygon } from '../geom.js';
-import { Rect } from '../geom.js';
-import { Transformation } from '../geom.js';
-import { TransformationList } from '../geom.js';
-import { className } from '../misc.js';
-import { define } from '../misc.js';
-import { getOrCreate } from '../misc.js';
-import { inserter } from '../misc.js';
-import { isNumeric } from '../misc.js';
-import { isObject } from '../misc.js';
-import { lazyProperties } from '../misc.js';
-import { properties } from '../misc.js';
-import { roundTo } from '../misc.js';
-import { tryFunction } from '../misc.js';
-import { ucfirst } from '../misc.js';
+import { BBox, Circle, isLine, Line, MakePolygon, Point, PointList, Polygon, Rect, Transformation, TransformationList } from '../geom.js';
+import { className, define, getOrCreate, inserter, isNumeric, isObject, lazyProperties, properties, roundTo, tryFunction, ucfirst } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { Repeater } from '../repeater/repeater.js';
 import trkl from '../trkl.js';
@@ -29,8 +9,7 @@ import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { EagleReference } from './ref.js';
-import { MakeRotation } from './renderUtils.js';
-import { PinSizes } from './renderUtils.js';
+import { MakeRotation, PinSizes } from './renderUtils.js';
 
 const lazyProperty = (obj, name, getter) => define(obj, properties({ [name]: getter }));
 

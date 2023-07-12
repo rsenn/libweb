@@ -1,8 +1,5 @@
-import { Component } from '../../preact.mjs';
-import { Fragment } from '../../preact.mjs';
-import { h } from '../../preact.mjs';
-import { log } from '../renderUtils.js';
-import { useTransform } from '../renderUtils.js';
+import { Component, Fragment, h } from '../../preact.mjs';
+import { log, useTransform } from '../renderUtils.js';
 import { Circle } from './circle.js';
 import { Pin } from './pin.js';
 import { Polygon } from './polygon.js';

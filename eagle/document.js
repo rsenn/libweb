@@ -1,21 +1,11 @@
 import { RGBA } from '../color/rgba.js';
 import deepDiff from '../deep-diff.js';
 import * as deep from '../deep.js';
-import { BBox } from '../geom.js';
-import { Rect } from '../geom.js';
+import { BBox, Rect } from '../geom.js';
 import { ImmutablePath } from '../json.js';
 import { PathMapper } from '../json/pathMapper.js';
-import { abbreviate } from '../misc.js';
-import { define } from '../misc.js';
-import { lazyProperties } from '../misc.js';
-import { lazyProperty } from '../misc.js';
-import { mapAdapter } from '../misc.js';
-import { mapFunction } from '../misc.js';
-import { memoize } from '../misc.js';
-import { properties } from '../misc.js';
-import { weakMapper } from '../misc.js';
-import { read as fromXML } from '../xml.js';
-import { write as toXML } from '../xml.js';
+import { abbreviate, define, lazyProperties, lazyProperty, mapAdapter, mapFunction, memoize, properties, weakMapper } from '../misc.js';
+import { read as fromXML, write as toXML } from '../xml.js';
 import parseXML from '../xml/parse.js';
 import { Palette } from './common.js';
 import { EagleElement } from './element.js';
@@ -23,6 +13,7 @@ import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { EagleRef } from './ref.js';
+
 function GetProxy(fn = (prop, target) => null, handlers = {}) {
   return new Proxy(
     {},

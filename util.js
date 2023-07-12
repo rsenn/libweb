@@ -2192,12 +2192,6 @@ Util.makeURL = function(...args) {
   if('host' in obj /*|| 'protocol' in obj*/) url = Util.filterOutKeys(url, [/*'protocol',*/ 'host', 'port']);
   Object.assign(url, obj);
   return url.href();
-
-  /*
-  let href = typeof args[0] === "string" ? args.shift() : this.getURL();
-  let urlObj = null;
-  urlObj = this.parseURL(href);
-  return urlObj ? urlObj.href(args[0]) : null;*/
 };
 Util.numberFromURL = function(url, fn) {
   const obj = typeof url === 'object' ? url : this.parseURL(url);

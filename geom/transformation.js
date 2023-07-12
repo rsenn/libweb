@@ -1,12 +1,6 @@
-import { isMatrix } from '../geom/matrix.js';
-import { Matrix } from '../geom/matrix.js';
+import { isMatrix, Matrix } from '../geom/matrix.js';
 import { Point } from '../geom/point.js';
-import { className } from '../misc.js';
-import { define } from '../misc.js';
-import { defineGetter } from '../misc.js';
-import { functionName } from '../misc.js';
-import { immutableClass } from '../misc.js';
-import { isObject } from '../misc.js';
+import { className, define, defineGetter, functionName, immutableClass, isObject } from '../misc.js';
 
 const RAD2DEG = 180 / Math.PI;
 const DEG2RAD = Math.PI / 180;

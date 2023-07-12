@@ -1,18 +1,7 @@
-import { bindProperties } from '../misc.js';
-import { curry } from '../misc.js';
-import { defineGetter } from '../misc.js';
-import { immutableClass } from '../misc.js';
-import { inspectSymbol } from '../misc.js';
-import { isConstructor } from '../misc.js';
-import { isObject } from '../misc.js';
-import { matchAll } from '../misc.js';
-import { memoize } from '../misc.js';
-import { roundTo } from '../misc.js';
-import { weakDefine } from '../misc.js';
+import { bindProperties, curry, defineGetter, immutableClass, inspectSymbol, isConstructor, isObject, matchAll, memoize, roundTo, weakDefine } from '../misc.js';
 import { Align } from './align.js';
 import { Line } from './line.js';
-import { isPoint } from './point.js';
-import { Point } from './point.js';
+import { isPoint, Point } from './point.js';
 import { Size } from './size.js';
 
 export function Rect(arg) {

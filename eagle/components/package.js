@@ -1,6 +1,4 @@
-import { Component } from '../../preact.mjs';
-import { Fragment } from '../../preact.mjs';
-import { h } from '../../preact.mjs';
+import { Component, Fragment, h } from '../../preact.mjs';
 import { ElementToComponent } from '../components.js';
 import { log } from '../renderUtils.js';
 

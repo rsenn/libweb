@@ -1,8 +1,6 @@
 import { SVG } from '../dom/svg.js';
-import { isLine } from './line.js';
-import { Line } from './line.js';
-import { isPoint } from './point.js';
-import { Point } from './point.js';
+import { isLine, Line } from './line.js';
+import { isPoint, Point } from './point.js';
 import { PointList } from './pointList.js';
 
 export class Polyline extends PointList {

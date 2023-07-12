@@ -1,5 +1,4 @@
-import { useCallback } from '../preact.mjs';
-import { useMemo } from '../preact.mjs';
+import { useCallback, useMemo } from '../preact.mjs';
 import { useAsyncIterator } from './useAsyncIterator.js';
 
 export function useAsyncGenerator(fn, deps) {

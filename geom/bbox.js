@@ -1,12 +1,7 @@
-import { isPoint } from '../geom/point.js';
-import { Point } from '../geom/point.js';
-import { isRect } from '../geom/rect.js';
-import { Rect } from '../geom/rect.js';
+import { isPoint, Point } from '../geom/point.js';
+import { isRect, Rect } from '../geom/rect.js';
 import { Size } from '../geom/size.js';
-import { define } from '../misc.js';
-import { isObject } from '../misc.js';
-import { roundTo } from '../misc.js';
-import { types } from '../misc.js';
+import { define, isObject, roundTo, types } from '../misc.js';
 
 export class BBox {
   static fromPoints(pts) {

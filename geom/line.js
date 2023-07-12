@@ -1,12 +1,6 @@
-import { bindProperties } from '../misc.js';
-import { defineGetter } from '../misc.js';
-import { immutableClass } from '../misc.js';
-import { isObject } from '../misc.js';
-import { memoize } from '../misc.js';
-import { roundTo } from '../misc.js';
+import { bindProperties, defineGetter, immutableClass, isObject, memoize, roundTo } from '../misc.js';
 import { BBox } from './bbox.js';
-import { isPoint } from './point.js';
-import { Point } from './point.js';
+import { isPoint, Point } from './point.js';
 
 export function Line(...args) {
   if(!new.target) if (args[0] instanceof Line) return args[0];

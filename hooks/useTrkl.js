@@ -1,5 +1,4 @@
-import { useEffect } from '../preact.mjs';
-import { useState } from '../preact.mjs';
+import { useEffect, useState } from '../preact.mjs';
 
 export const useTrkl = fn => {
   if(!(typeof fn == 'function')) return fn;

@@ -2,11 +2,7 @@ import { Rect } from '../../geom/rect.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
-import { ElementToClass } from '../renderUtils.js';
-import { log } from '../renderUtils.js';
-import { MakeCoordTransformer } from '../renderUtils.js';
-import { MakeRotation } from '../renderUtils.js';
-import { useTrkl } from '../renderUtils.js';
+import { ElementToClass, log, MakeCoordTransformer, MakeRotation, useTrkl } from '../renderUtils.js';
 
 export const Rectangle = ({ data, opts = {}, ...props }) => {
   let rectangle =

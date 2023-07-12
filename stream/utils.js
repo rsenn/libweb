@@ -2,6 +2,7 @@ import { className } from '../misc.js';
 import { isConstructor } from '../misc.js';
 import { types } from '../misc.js';
 import { Repeater } from '../repeater/repeater.js';
+
 function gotClassPrototype(name, protoFn) {
   let ctor = globalThis[name];
   return isConstructor(ctor) && ctor.prototype && typeof ctor.prototype[protoFn] == 'function';

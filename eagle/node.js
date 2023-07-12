@@ -1,23 +1,13 @@
 import * as deep from '../deep.js';
 import { BBox } from '../geom/bbox.js';
-import { className } from '../misc.js';
-import { define } from '../misc.js';
-import { defineGettersSetters } from '../misc.js';
-import { functionName } from '../misc.js';
-import { getPrototypeChain } from '../misc.js';
-import { isArray } from '../misc.js';
-import { isObject } from '../misc.js';
-import { memoize } from '../misc.js';
-import { tryCatch } from '../misc.js';
+import { className, define, defineGettersSetters, functionName, getPrototypeChain, isArray, isObject, memoize, tryCatch } from '../misc.js';
 import { Pointer } from '../pointer.js';
 import { trkl } from '../trkl.js';
 import { write as toXML } from '../xml.js';
 import { ImmutableXPath } from '../xml/xpath.js';
-import { concat } from './common.js';
-import { text } from './common.js';
+import { concat, text } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
-import { EagleRef } from './ref.js';
-import { EagleReference } from './ref.js';
+import { EagleRef, EagleReference } from './ref.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];

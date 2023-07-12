@@ -1,13 +1,9 @@
 import { RGBA } from '../color/rgba.js';
-import { BBox } from '../geom.js';
-import { Matrix } from '../geom.js';
-import { Rect } from '../geom.js';
+import { BBox, Matrix, Rect } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
-import { ucfirst } from '../misc.js';
-import { unique } from '../misc.js';
+import { ucfirst, unique } from '../misc.js';
 import { Palette } from './common.js';
-import { ElementToComponent } from './components.js';
-import { Origin } from './components.js';
+import { ElementToComponent, Origin } from './components.js';
 import { Frame } from './components/frame.js';
 import { MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';

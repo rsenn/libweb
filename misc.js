@@ -853,9 +853,6 @@ export function merge(...args) {
   let t = isMap ? a => new Map(Object.entries(a)) : a => a;
 
   if(isMap) {
-    /*  if(!args.every(arg => Util.isObject(arg) && arg instanceof Map))
-    args =args.map(arg => new Map(Util.entries(arg)));
-*/
     ret = new Map();
 
     for(let arg of args) for (let [key, value] of entries(arg)) ret.set(key, value);

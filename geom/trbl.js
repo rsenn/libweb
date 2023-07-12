@@ -1,5 +1,4 @@
-import { defineGetter } from '../misc.js';
-import { immutableClass } from '../misc.js';
+import { defineGetter, immutableClass } from '../misc.js';
 import { Rect } from './rect.js';
 /**
  * Type for TopRightBottomLeft (paddings and margins)

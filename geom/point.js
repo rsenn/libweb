@@ -1,13 +1,4 @@
-import { bindProperties } from '../misc.js';
-import { clamp } from '../misc.js';
-import { define } from '../misc.js';
-import { defineGetter } from '../misc.js';
-import { immutableClass } from '../misc.js';
-import { inspectSymbol } from '../misc.js';
-import { isObject } from '../misc.js';
-import { roundDigits } from '../misc.js';
-import { roundTo } from '../misc.js';
-import { tryCatch } from '../misc.js';
+import { bindProperties, clamp, define, defineGetter, immutableClass, inspectSymbol, isObject, roundDigits, roundTo, tryCatch } from '../misc.js';
 
 const SymSpecies = tryCatch(
   () => Symbol,

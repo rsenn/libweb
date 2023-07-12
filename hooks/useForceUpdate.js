@@ -1,5 +1,4 @@
-import { useCallback } from '../preact.mjs';
-import { useState } from '../preact.mjs';
+import { useCallback, useState } from '../preact.mjs';
 
 export const useForceUpdate = () => {
   const [, dispatch] = useState(Object.create(null));

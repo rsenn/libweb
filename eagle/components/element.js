@@ -2,8 +2,7 @@ import { ValueToNumber } from '../../eda/colorCoding.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
-import { log } from '../renderUtils.js';
-import { MakeRotation } from '../renderUtils.js';
+import { log, MakeRotation } from '../renderUtils.js';
 import { Package } from './package.js';
 
 export const Element = ({ data, opts = {}, ...props }) => {
