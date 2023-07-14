@@ -89,7 +89,7 @@ export class Graph {
   }
 
   findNode(value, key = 'label') {
-    return this.nodes.find(node => node[key]===value);
+    return this.nodes.find(node => node[key] === value);
   }
 
   randomize() {
