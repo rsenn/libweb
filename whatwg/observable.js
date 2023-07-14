@@ -1,3 +1,5 @@
+import { EventTarget, AbortController } from './abort-controller.js';
+
 // MIT License
 // copyright (c) 2017 Google, Inc, Ben Lesh, and contributors
 
