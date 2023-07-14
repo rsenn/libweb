@@ -49,7 +49,7 @@ export const Element = ({ data, opts = {}, ...props }) => {
   return h(
     'g',
     {
-      className: `element.${element.name}`,
+      class: `element.${element.name}`,
       'data-path': element.path.toString(' '),
       transform
     },

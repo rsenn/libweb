@@ -1,5 +1,4 @@
 import { ucfirst } from '../misc.js';
-import { Component } from '../preact.mjs';
 import { Arc, describeArc, polarToCartesian } from './components/arc.js';
 import { Background } from './components/background.js';
 import { Board } from './components/board.js';

@@ -1,7 +1,6 @@
 import { Lexer } from './lexer.js';
-import { Location } from './misc.js';
-
-export { Location } from './misc.js';
+import { Location } from './location.js';
+export { Location } from './location.js';
 
 export const JSDefines = {
   DecimalDigit: /[0-9]/,

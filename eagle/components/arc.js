@@ -47,7 +47,7 @@ export const Arc = ({
       describeArc(x, y, radius, startAngle + 180, startAngle + 360);
 
   return h('path', {
-    className: 'arc',
+    class: 'arc',
     stroke: color,
     d,
     'stroke-width': width,

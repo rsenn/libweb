@@ -1,3 +1,5 @@
+import { define } from '../misc.js';
+
 //Module constants
 const CMP = Symbol('insort.CMP');
 const ORDER = Symbol('insort.ORDER');

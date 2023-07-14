@@ -2,7 +2,7 @@ import { TransformationList } from '../../geom/transformation.js';
 import { roundTo } from '../../misc.js';
 import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
-import { ElementToClass, log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
+import { log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
 
 export const PinSizes = {
   long: 3,
@@ -30,10 +30,10 @@ export const Circle = ({ data, opts = {}, ...props }) => {
   const { x, y } = coordFn(circle);
   const color = circle.getColor(); //(opts && opts.color) || (layer && this.getColor(layer.color));
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
-  console.log('Circle.render ', { circle, x,y,radius, width, visible });
+  console.log('Circle.render ', { circle, x, y, radius, width, visible });
 
   return h('circle', {
-    class: ElementToClass(circle),
+    class: 'circle',
     stroke: color,
     cx: x,
     cy: y,

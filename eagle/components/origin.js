@@ -8,7 +8,7 @@ export const Origin = ({ x, y, layer, element, color, radius = 0.45, width = 0.0
   log('Origin.render', { x, y, layer, color, visible });
 
   return h(Cross, {
-    className: 'origin',
+    class: 'origin',
     x,
     y,
     visible,

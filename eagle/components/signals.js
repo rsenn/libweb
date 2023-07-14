@@ -1,6 +1,14 @@
 import { Component, h } from '../../preact.mjs';
-import { ElementToComponent } from '../components.js';
 import { log } from '../renderUtils.js';
+import { Wire } from './wire.js';
+import { Via } from './via.js';
+import { Polygon } from './polygon.js';
+
+const componentIndex = {
+  wire: Wire,
+  via: Via,
+  polygon: Polygon,
+};
 
 export const Signals = ({ data, transform, opts = {}, ...props }) => {
   log('Signals.render', { data });
@@ -29,7 +37,7 @@ export const Signals = ({ data, transform, opts = {}, ...props }) => {
       log('Signals.render', { layerNo, items });
 
       for(let item of items) {
-        let comp = ElementToComponent(item);
+        let comp = componentIndex[item.tagName];
         let signalName = item.parentNode.name;
 
         acc.push(h(comp, { data: item, 'data-signal': signalName, color: colors[i], opts }));

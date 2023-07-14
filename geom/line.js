@@ -1,5 +1,4 @@
 import { bindProperties, defineGetter, immutableClass, isObject, memoize, roundTo } from '../misc.js';
-import { BBox } from './bbox.js';
 import { isPoint, Point } from './point.js';
 
 export function Line(...args) {
@@ -273,9 +272,9 @@ Line.prototype.transform = function(m) {
 
   return this;
 };
-Line.prototype.bbox = function() {
+Line.prototype.bbox = function(proto = Object.prototype) {
   const { x1, y1, x2, y2 } = this;
-  return new BBox(x1, y1, x2, y2);
+  return Object.setPrototypeOf({ x1, y1, x2, y2 }, proto);
 };
 
 Line.prototype.points = function() {
