@@ -28,52 +28,48 @@ import { TextElement } from './components/textElement.js';
 import { Via } from './components/via.js';
 import { Wire } from './components/wire.js';
 import { WirePath } from './components/wirePath.js';
-//console.log('SchematicSymbol', SchematicSymbol);
-
-export const PrimitiveComponents = {
-  Wire,
-  Rectangle,
-  Pin,
-  Circle,
-  Cross,
-  Arc,
-  Text: TextElement,
-  Grid,
-  Pattern,
-  Pad,
-  Via: Pad,
-  Origin,
-  Polygon,
-  Symbol: SchematicSymbol,
-  Package,
-  Hole,
-  Dimension,
-  Smd: SMD,
-  Via,
-  Instance,
-  Sheet,
-  Element,
-  Board,
-  Drawing,
-  Signal,
-  Signals
-};
-
+ 
 let prevName;
 
 export const ElementNameToComponent = name => {
-  let comp = PrimitiveComponents[ucfirst(name)];
+  const comp = {
+    Wire,
+    Rectangle,
+    Pin,
+    Circle,
+    Cross,
+    Arc,
+    Text: TextElement,
+    Grid,
+    Pattern,
+    Pad,
+    Via: Pad,
+    Origin,
+    Polygon,
+    Symbol: SchematicSymbol,
+    Package,
+    Hole,
+    Dimension,
+    Smd: SMD,
+    Via,
+    Instance,
+    Sheet,
+    Element,
+    Board,
+    Drawing,
+    Signal,
+    Signals
+  }[ucfirst(name)];
 
   if(!comp && name != prevName) {
     console.debug(`Not rendering component '${name}'`);
     prevName = name;
   }
+
   return comp;
 };
 
 export const ElementToComponent = element => ElementNameToComponent(element.tagName);
-
-export const RenderElement = element => ElementToComponent(element);
 
 export { polarToCartesian, describeArc, Arc } from './components/arc.js';
 export { Background } from './components/background.js';

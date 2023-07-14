@@ -1,9 +1,9 @@
-import { Location } from '../misc.js';
+import { Location } from '../location.js';
 import * as path from '../path.js';
 import { Token } from './token.js';
 
 export { Token } from './token.js';
-export { Location } from '../misc.js';
+export { Location } from '../location.js';
 
 export function PathReplacer() {
   let re;

@@ -1,4 +1,4 @@
-export { Location } from './misc.js';
+export { Location } from './location.js';
 
 Lexer.defunct = function(chr) {
   const { loc, state } = this;

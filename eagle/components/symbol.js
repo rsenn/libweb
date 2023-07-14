@@ -7,7 +7,7 @@ import { Rectangle } from './rectangle.js';
 import { TextElement } from './textElement.js';
 import { Wire } from './wire.js';
 
-const childElements = {
+const componentIndex = {
   pin: Pin,
   text: TextElement,
   wire: Wire,
@@ -15,8 +15,6 @@ const childElements = {
   circle: Circle,
   polygon: Polygon
 };
-
-const ElementToComponent = data => childElements[data.tagName];
 
 export const SchematicSymbol = ({ data, component = Fragment, id, class: className, ...props }) => {
   log(`SchematicSymbol.render`, { data, id });
@@ -27,10 +25,10 @@ export const SchematicSymbol = ({ data, component = Fragment, id, class: classNa
 
   //children.map(data => log('data:', data.tagName));
 
-  //log(`SchematicSymbol(${data.name}).render`, children /*.map(ch=>[ch, ElementToComponent(ch)])*/);
+  //log(`SchematicSymbol(${data.name}).render`, children);
 
   return h(component, { id, class: className }, [
-    ...children.filter(({ tagName }) => tagName != 'text').map(data => h(ElementToComponent(data), { data, ...props })),
-    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(ElementToComponent(data), { data, ...props }))
+    ...children.filter(({ tagName }) => tagName != 'text').map(data => h(componentIndex[data.tagName], { data, ...props })),
+    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(componentIndex[data.tagName], { data, ...props }))
   ]);
 };
