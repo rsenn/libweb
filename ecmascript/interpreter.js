@@ -38,7 +38,7 @@ export class ECMAScriptValue {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let obj = filterKeys({ ...this}, k=>  [Symbol.for('nodejs.util.inspect.custom'), 'types'].indexOf(k) == -1);
+    let obj = filterKeys({ ...this }, k => [Symbol.for('nodejs.util.inspect.custom'), 'types'].indexOf(k) == -1);
     let t = Object.entries(ECMAScriptValue.types).find(([name, number], i) => number == this.type);
     if(obj.type === undefined || this.constructor.prototype !== ECMAScriptValue.prototype) delete obj.type;
     else if(t) obj.type = t[0];

@@ -1,7 +1,6 @@
 import { waitFor } from '../misc.js';
 
-if(globalThis.WebSocket)
-  WebSocket.makeURL = WebSocketURL;
+if(globalThis.WebSocket) WebSocket.makeURL = WebSocketURL;
 
 // Generate a Promise that listens only once for an event
 const oncePromise = (emitter, events) => {

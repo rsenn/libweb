@@ -39,18 +39,17 @@ function consume(iter) {
 }
 
 function log(...args) {
- /* let callers = getCallers(2);
+  /* let callers = getCallers(2);
 
   if(!callers[0].functionName) callers.shift();
 
   while(callers[0].fileName == '<anonymous>' || callers[0].methodName == '<anonymous>' || callers[0].methodName == '') callers.shift();*/
- 
+
   let node = args[0] instanceof ESNode && args[0];
 
   let pos = node && ESNode.assoc(node).position;
   if(pos) args.unshift(pos);
-
- }
+}
 function noop() {}
 
 function execute(func) {

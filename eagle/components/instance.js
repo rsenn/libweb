@@ -6,7 +6,6 @@ import { SchematicSymbol } from './symbol.js';
 export const Instance = ({ data, opts = {}, ...props }) => {
   // log('Instance.render', { data,opts });
   let [transformation, transform, accumulate] = useTransform(opts);
- 
 
   let instance = /*useValue(async function* () {}) || */ data;
 

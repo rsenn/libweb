@@ -28,7 +28,7 @@ import { TextElement } from './components/textElement.js';
 import { Via } from './components/via.js';
 import { Wire } from './components/wire.js';
 import { WirePath } from './components/wirePath.js';
- 
+
 let prevName;
 
 export const ElementNameToComponent = name => {

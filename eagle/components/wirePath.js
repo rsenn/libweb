@@ -2,8 +2,7 @@ import { h } from '../../preact.mjs';
 import { log, useTrkl } from '../renderUtils.js';
 
 export const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, data, ...props }) => {
-  if(data)
-    layer ??= data.document.getLayer(isNaN(+data.attributes.layer) ? data.attributes.layer : +data.attributes.layer);
+  if(data) layer ??= data.document.getLayer(isNaN(+data.attributes.layer) ? data.attributes.layer : +data.attributes.layer);
 
   let visible = !layer?.handlers || 'yes' == useTrkl(layer.handlers.visible);
   log('WirePath', layer.toString(), 'visible:', visible);

@@ -7,7 +7,7 @@ import { Polygon } from './polygon.js';
 const componentIndex = {
   wire: Wire,
   via: Via,
-  polygon: Polygon,
+  polygon: Polygon
 };
 
 export const Signals = ({ data, transform, opts = {}, ...props }) => {

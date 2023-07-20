@@ -7,20 +7,7 @@ import { Board } from './board.js';
 import { Grid, Pattern } from './grid.js';
 import { SVG } from './svg.js';
 
-export const Drawing = ({
-  data,
-  viewBox,
-  rect,
-  bounds,
-  attrs,
-  grid,
-  nodefs,
-  transform,
-  styles,
-  children,
-  style,
-  ...props
-}) => {
+export const Drawing = ({ data, viewBox, rect, bounds, attrs, grid, nodefs, transform, styles, children, style, ...props }) => {
   let size = {};
   if(data) {
     rect = data.document.getMeasures({ bbox: true }) ?? data.getBounds();
@@ -55,10 +42,7 @@ export const Drawing = ({
     const defs = nodefs ? {} : { defs: h(Pattern, { data: grid, id, attrs: attrs.grid }) };
 
     return h(SVG, { viewBox, styles, style, ...size, ...defs, ...props }, [
-      h('g', { id: 'bg', transform }, [
-        h(Background, { rect, attrs: attrs.bg }),
-        h(Grid, { data: grid, id, rect, attrs: attrs.grid })
-      ]),
+      h('g', { id: 'bg', transform }, [h(Background, { rect, attrs: attrs.bg }), h(Grid, { data: grid, id, rect, attrs: attrs.grid })]),
       ...toChildArray(children)
     ]);
   }

@@ -1,16 +1,7 @@
 import { h } from '../../preact.mjs';
 import { log, useTrkl } from '../renderUtils.js';
 
-export const Cross = ({
-  x,
-  y,
-  className = 'cross',
-  radius = 1.27 / 2,
-  width = 0.127 / 2,
-  color = '#f0f',
-  visible = true,
-  ...props
-}) => {
+export const Cross = ({ x, y, className = 'cross', radius = 1.27 / 2, width = 0.127 / 2, color = '#f0f', visible = true, ...props }) => {
   // let visible = typeof isVisible == 'function' ? useTrkl(isVisible) : true;
   log('Cross.render', { x, y, radius, width, color, visible });
 
