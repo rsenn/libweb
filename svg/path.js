@@ -218,7 +218,7 @@ SvgPath.prototype._cmd = function(letter) {
  * @param name
  * @constructor
  */
-function Command(name, ...args) {
+export function Command(name, ...args) {
   this.name = name;
   this.args = args;
 }
