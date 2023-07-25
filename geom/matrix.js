@@ -43,7 +43,7 @@ export function Matrix(...args) {
     Matrix.prototype.init.call(ret, ...args);
     /*} else if(typeof arg === 'number') {
     Matrix.prototype.init.call(ret, ...args);*/
-  } else if(typeof arg === 'string' && /matrix\([^)]*\)/.test(arg)) {
+  } else if(typeof arg === 'string') {
     let [xx, yx, xy, yy, x0, y0] = [...arg.matchAll(/[-.0-9]+([Ee][-+]?[0-9]+|)/g)].map(m => parseFloat(m[0]));
     ret[0] = xx;
     ret[1] = xy;

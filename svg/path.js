@@ -188,7 +188,9 @@ SvgPath.prototype.str = function(digits, lineSep = ' ', numSep = ',') {
     .join(lineSep);
 };
 
-SvgPath.prototype.toString = SvgPath.prototype.str;
+SvgPath.prototype.toString = function toString(...args) {
+  return SvgPath.prototype.str.call(this, ...args);
+};
 
 //setting letter commands
 commands.forEach(commandName => {
@@ -232,7 +234,7 @@ Command.prototype.toString = function(digits, sep = ' ') {
 
   if(typeof digits == 'number') args = args.map(a => +a.toFixed(digits));
 
-  return args.reduce((acc, arg, i) => acc + (i ? sep : '') + arg, name);
+  return args.reduce((acc, arg, i) => acc + (i ? sep : ' ') + arg, name);
 };
 
 SvgPath.prototype.toRelative = function() {

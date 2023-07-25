@@ -216,14 +216,14 @@ define(Point.prototype, {
     this.x = xnew;
     this.y = ynew;
     return this;
-  },
+  } /*,
   valueOf(shl = 16) {
     const { x, y } = this;
 
     if(shl < 0) return x * (1 << Math.abs(shl)) + y;
 
     return x + y * (1 << shl);
-  },
+  }*/,
   toString(opts = {}) {
     const { precision = 0.001, unit = '', separator = ',', left = '', right = '', pad = 0 } = opts;
     let x = roundTo(this.x, precision);
