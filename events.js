@@ -1,5 +1,4 @@
-import { fnmatch } from './fnmatch.js';
-import { PATH_FNM_MULTI } from './fnmatch.js';
+import { fnmatch, PATH_FNM_MULTI } from './fnmatch.js';
 
 const indexOf = (haystack, needle) => Array.prototype.indexOf.call(haystack, needle);
 

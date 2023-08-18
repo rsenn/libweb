@@ -1,5 +1,5 @@
 import { isPoint, Point } from '../geom/point.js';
-import { isRect, Rect } from '../geom/rect.js';
+import { isRect } from '../geom/rect.js';
 import { Size } from '../geom/size.js';
 import { define, isObject, roundTo, types } from '../misc.js';
 

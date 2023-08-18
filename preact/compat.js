@@ -1,8 +1,4 @@
-import { cloneElement as preactCloneElement } from '../preact.mjs';
-import { Component as PreactComponent } from '../preact.mjs';
-import { h } from '../preact.mjs';
-import { options } from '../preact.mjs';
-import { render as preactRender } from '../preact.mjs';
+import { cloneElement as preactCloneElement, Component as PreactComponent, h, options, render as preactRender } from '../preact.mjs';
 import PropTypes from '../prop-types.js';
 /* --------------------------- start of 'header' ---------------------------- */
 /* ---------------------------- end of 'header' ----------------------------- */

@@ -1,12 +1,6 @@
 import { spawn } from 'child_process';
-import { absolute } from 'path';
-import { isAbsolute } from 'path';
-import { join } from 'path';
-import { normalize } from 'path';
-import { relative } from 'path';
-import { assert } from 'util';
-import { define } from 'util';
-import { types } from 'util';
+import { absolute, isAbsolute, join, normalize, relative } from 'path';
+import { assert, define, types } from 'util';
 import inspect from 'inspect';
 
 export class Command extends Array {

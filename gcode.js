@@ -1,10 +1,4 @@
-import { GCodeLineStream } from './gcode/parser.js';
-import { noop } from './gcode/parser.js';
-import { parseFile } from './gcode/parser.js';
-import { parseFileSync } from './gcode/parser.js';
-import { parseStream } from './gcode/parser.js';
-import { parseString } from './gcode/parser.js';
-import { parseStringSync } from './gcode/parser.js';
+import { GCodeLineStream, noop, parseFile, parseFileSync, parseStream, parseString, parseStringSync } from './gcode/parser.js';
 // @create-index
 
 export { GcodeObject, gcodeToObject, parseGcode } from './gcode/gcodeToObject.js';

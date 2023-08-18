@@ -1,7 +1,4 @@
-import { mapAdapter } from './misc.js';
-import { mapFunction } from './misc.js';
-import { tryCatch } from './misc.js';
-import { tryFunction } from './misc.js';
+import { mapAdapter, mapFunction, tryCatch, tryFunction } from './misc.js';
 function LocalStore(obj) {
   Object.assign(this, obj);
   return this;

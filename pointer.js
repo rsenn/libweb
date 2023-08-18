@@ -1,7 +1,4 @@
-import { abbreviate } from './misc.js';
-import { className } from './misc.js';
-import { define } from './misc.js';
-import { isObject } from './misc.js';
+import { abbreviate, className, define, isObject } from './misc.js';
 import inspect from './objectInspect.js';
 
 export function DereferenceError(object, member, pos, prev, locator) {

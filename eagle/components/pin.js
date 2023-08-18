@@ -1,9 +1,8 @@
 import { RGBA } from '../../color/rgba.js';
-import { Line, Point, Rotation, TransformationList } from '../../geom.js';
+import { Line, Point, TransformationList } from '../../geom.js';
 import { Fragment, h } from '../../preact.mjs';
 import { Palette } from '../common.js';
 import { Alignment, AlignmentAttrs, ElementToClass, HORIZONTAL, log, MakeCoordTransformer, MakeRotation, PinSizes, VERTICAL } from '../renderUtils.js';
-import { Text } from './text.js';
 
 export const Pin = ({ data, opts = {}, ...props }) => {
   data = data || props.item;

@@ -1,4 +1,4 @@
-import { bindProperties, className, defineGetter, inspectSymbol, isObject, roundDigits, roundTo } from '../misc.js';
+import { bindProperties, defineGetter, inspectSymbol, isObject, roundDigits, roundTo } from '../misc.js';
 import { isPoint, Point } from './point.js';
 
 export function Circle(x, y, radius) {

@@ -1,5 +1,4 @@
 import { h } from '../../preact.mjs';
-import { useValue } from '../../repeater/react-hooks.js';
 import { log, MakeRotation, useTransform } from '../renderUtils.js';
 import { SchematicSymbol } from './symbol.js';
 

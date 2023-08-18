@@ -1,4 +1,4 @@
-import { Point, Rotation, TransformationList, Translation } from '../../geom.js';
+import { Point, TransformationList, Translation } from '../../geom.js';
 import { mod } from '../../misc.js';
 import { Fragment, h } from '../../preact.mjs';
 import { Alignment, AlignmentAttrs, ExtractRotation, HORIZONTAL, log, MakeRotation, RAD2DEG, useTransformation, VERTICAL } from '../renderUtils.js';

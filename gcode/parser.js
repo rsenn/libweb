@@ -1,6 +1,4 @@
 import { EventEmitter } from '../eventEmitter.js';
-import { className } from '../misc.js';
-import { getMethodNames } from '../misc.js';
 import { waitFor } from '../misc.js';
 import transformStream from '../stream/transformStream.js';
 import { PipeToRepeater } from '../stream/utils.js';

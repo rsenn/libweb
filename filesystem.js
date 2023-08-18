@@ -1,5 +1,4 @@
-import { ChunkReader } from './stream/utils.js';
-import { DebugTransformStream } from './stream/utils.js';
+import { ChunkReader, DebugTransformStream } from './stream/utils.js';
 
 export const SEEK_SET = 0;
 export const SEEK_CUR = 1;

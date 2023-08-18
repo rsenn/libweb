@@ -1,18 +1,12 @@
 import { axios } from './axios.js';
 import { HSLA } from './color.js';
-import { select } from './devtools.js';
-import { storage } from './devtools.js';
-import { Element } from './dom.js';
-import { Point } from './dom.js';
-import { Rect } from './dom.js';
-import { Renderer } from './dom.js';
-import { Select } from './dom.js';
-import { SVG } from './dom.js';
+import { select, storage } from './devtools.js';
+import { Element, Point, Rect, Renderer, SVG } from './dom.js';
 import { Polygon } from './geom.js';
 import { lazyInitializer } from './lazyInitializer.js';
 import SvgPath from './svg/path.js';
 import { TouchListener } from './touchHandler.js';
-import { base64.decode, foreach } from './misc.js';
+import { base64, decode, foreach } from './misc.js';
 if(globalThis.window) {
   window.addEventListener('load', () => {
     console.log('New cookie: ', document.cookie);

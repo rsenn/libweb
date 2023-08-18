@@ -2,7 +2,7 @@ import { TransformationList } from '../../geom.js';
 import { roundTo } from '../../misc.js';
 import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
-import { Alignment, AlignmentAttrs, ElementToClass, HORIZONTAL, log, MakeCoordTransformer, MakeRotation, RenderShape, useTrkl, VERTICAL } from '../renderUtils.js';
+import { Alignment, AlignmentAttrs, HORIZONTAL, log, MakeCoordTransformer, MakeRotation, RenderShape, useTrkl, VERTICAL } from '../renderUtils.js';
 
 export const Pad = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;

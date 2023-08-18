@@ -1,10 +1,8 @@
 import { classNames } from '../classNames.js';
 import { ImmutableTransformationList, TransformationList } from '../geom/transformation.js';
-import { Line } from '../geom/line.js';
 import { Point } from '../geom/point.js';
 import { useTrkl } from '../hooks/useTrkl.js';
-import { className, isObject, range, roundTo, unique, mod, mul } from '../misc.js';
-import { Component } from '../preact.mjs';
+import { range, roundTo, unique, mod, mul } from '../misc.js';
 export { useTrkl } from '../hooks/useTrkl.js';
 
 const PI = Math.PI;

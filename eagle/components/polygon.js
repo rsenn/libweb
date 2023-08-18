@@ -1,7 +1,7 @@
 import { Point, PointList, TransformationList } from '../../geom.js';
 import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
-import { ElementToClass, log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
+import { ElementToClass, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
 
 export const Polygon = ({ data, opts = {}, ...props }) => {
   data = data || props.item;

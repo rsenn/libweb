@@ -1,4 +1,4 @@
-import 'svgjs';
+
 
 (function () {
   let Trig = (function () {

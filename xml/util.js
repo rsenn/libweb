@@ -1,11 +1,6 @@
 import deep from '../deep.js';
 import { IteratorAdapter } from '../json/util.js';
-import { abbreviate } from '../misc.js';
-import { define } from '../misc.js';
-import { defineGetter } from '../misc.js';
-import { filterKeys } from '../misc.js';
-import { isObject } from '../misc.js';
-import { weakMapper } from '../misc.js';
+import { define, defineGetter, isObject, weakMapper } from '../misc.js';
 
 const Object2Array = (xmlObj, flat) => {
   let entries = [...deep.flatten(xmlObj, new Map()).entries()].map(([k, v]) => [{ attributes: 1, tagName: 0, children: 2 }[k], v]);

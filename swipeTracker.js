@@ -1,8 +1,6 @@
 import { rect } from '../lib/devtools.js';
-import { Point } from '../lib/dom.js';
-import { Rect } from '../lib/dom.js';
-import { bindMethods } from './misc.js';
-import { toSource } from './misc.js';
+import { Point, Rect } from '../lib/dom.js';
+import { bindMethods, toSource } from './misc.js';
 import { trkl } from './trkl.js';
 
 export class SwipeTracker {

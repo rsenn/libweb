@@ -1,6 +1,4 @@
-import { Control } from './ol.js';
-import { LayerGroup } from './ol.js';
-import { unByKey } from './ol.js';
+import { Control, LayerGroup, unByKey } from './ol.js';
 /*import Control from '../openlayers/src/ol/control.js';
  */
 /**

@@ -1,12 +1,4 @@
-import { define } from './misc.js';
-import { escape } from './misc.js';
-import { getMethods } from './misc.js';
-import { isObject } from './misc.js';
-import { keys } from './misc.js';
-import { mapFunction } from './misc.js';
-import { toString } from './misc.js';
-import { tryCatch } from './misc.js';
-import { values } from './misc.js';
+import { define, getMethods, isObject, keys, mapFunction, toString, tryCatch } from './misc.js';
 /**
  * lscache library
  * Copyright (c) 2011, Pamela Fox

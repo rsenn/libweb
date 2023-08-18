@@ -1,10 +1,5 @@
-import { BBox } from './geom.js';
-import { Line } from './geom.js';
-import { Point } from './geom.js';
-import { PointList } from './geom.js';
-import { Size } from './geom.js';
+import { BBox, Line, Point, PointList, Size } from './geom.js';
 import { filterKeys } from './misc.js';
-import inspect from 'inspect';
 /* From https://github.com/ehayon/FDGraph */
 
 /**

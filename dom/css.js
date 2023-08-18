@@ -1,5 +1,5 @@
 import { Element } from './element.js';
-import { decamelize, /*find, isIterable,*/ isObject, matchAll, memoize, tryCatch, unique } from '../misc.js';
+import { decamelize, isObject, matchAll, memoize, tryCatch, unique } from '../misc.js';
 
 function size(...args) {
   function size(obj) {

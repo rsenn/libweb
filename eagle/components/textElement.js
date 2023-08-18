@@ -1,6 +1,5 @@
 import { TransformationList } from '../../geom/transformation.js';
-import { toXML } from '../../json.js';
-import { isObject, roundTo, tryCatch } from '../../misc.js';
+import { roundTo, tryCatch } from '../../misc.js';
 import { h } from '../../preact.mjs';
 import { Alignment, ElementToClass, log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
 import { Text } from './text.js';

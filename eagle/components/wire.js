@@ -2,7 +2,6 @@ import { ArcTo, TransformationList } from '../../geom.js';
 import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass, log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
-import { Arc } from './arc.js';
 
 const RoundToMil = n => Math.round(n * 1000) / 1000;
 

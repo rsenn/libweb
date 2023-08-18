@@ -1,8 +1,4 @@
-import { parseFile } from './parser.js';
-import { parseFileSync } from './parser.js';
-import { parseStream } from './parser.js';
-import { parseString } from './parser.js';
-import { parseStringSync } from './parser.js';
+import { parseFile, parseFileSync, parseStream, parseString, parseStringSync } from './parser.js';
 /* eslint no-continue: 0 */
 const noop = () => {};
 

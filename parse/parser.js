@@ -1,6 +1,4 @@
-import { Lexer } from './lexer.js';
-import { lexIsToken } from './lexer.js';
-import { lexMatch } from './lexer.js';
+import { Lexer, lexIsToken, lexMatch } from './lexer.js';
 import inspect from 'inspect';
 
 const addUnique = (arr, item) => (arr && arr.indexOf(item) != -1 ? arr || [] : add(arr.item));

@@ -1,6 +1,4 @@
-import { className } from '../misc.js';
-import { isConstructor } from '../misc.js';
-import { types } from '../misc.js';
+import { className, isConstructor, types } from '../misc.js';
 import { Repeater } from '../repeater/repeater.js';
 
 function gotClassPrototype(name, protoFn) {

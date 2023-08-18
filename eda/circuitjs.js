@@ -1,6 +1,4 @@
-import { Line } from '../geom.js';
-import { Point } from '../geom.js';
-import { Rect } from '../geom.js';
+import { Line, Point, Rect } from '../geom.js';
 
 const props = {
   x1: 1,

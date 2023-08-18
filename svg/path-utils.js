@@ -1,7 +1,7 @@
-import { SyntaxError, parse, parseSVG, makeAbsolute } from './path-parser.js';
+import { parse, parseSVG, makeAbsolute } from './path-parser.js';
 import { SvgPath, Command } from './path.js';
-import { Matrix, isMatrix, ImmutableMatrix } from '../geom/matrix.js';
-import { Point, PointList } from '../geom.js';
+import { Matrix } from '../geom/matrix.js';
+import { Point } from '../geom.js';
 import { isObject, partitionArray } from '../misc.js';
 
 export const isUpper = s => s.toUpperCase() == s;

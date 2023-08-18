@@ -1,7 +1,6 @@
-import { Component, Fragment, h } from '../../preact.mjs';
+import { Fragment, h } from '../../preact.mjs';
 import { log } from '../renderUtils.js';
-
-import { PinSizes, Circle } from './circle.js';
+import { Circle } from './circle.js';
 import { Hole } from './hole.js';
 import { Pad } from './pad.js';
 import { Polygon } from './polygon.js';

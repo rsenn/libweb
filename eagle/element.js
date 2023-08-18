@@ -1,10 +1,9 @@
 import { RGBA } from '../color/rgba.js';
-import { BBox, Circle, isLine, Line, MakePolygon, Point, PointList, Polygon, Rect, Transformation, TransformationList } from '../geom.js';
+import { BBox, Circle, isLine, Line, MakePolygon, Point, PointList, Rect, Transformation, TransformationList } from '../geom.js';
 import { className, define, getOrCreate, inserter, isNumeric, isObject, lazyProperties, properties, roundTo, tryFunction, ucfirst } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { Repeater } from '../repeater/repeater.js';
 import trkl from '../trkl.js';
-import { ImmutableXPath } from '../xml/xpath.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleNodeMap } from './nodeMap.js';

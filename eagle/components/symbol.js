@@ -1,4 +1,4 @@
-import { Component, Fragment, h } from '../../preact.mjs';
+import { Fragment, h } from '../../preact.mjs';
 import { log, useTransform } from '../renderUtils.js';
 import { Circle } from './circle.js';
 import { Pin } from './pin.js';

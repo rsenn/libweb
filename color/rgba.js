@@ -1,4 +1,4 @@
-import { clamp, className, curry, define, defineGetter, immutableClass, randInt, roundTo, tryCatch } from '../misc.js';
+import { clamp, curry, define, defineGetter, immutableClass, randInt, roundTo, tryCatch } from '../misc.js';
 
 /**
  * @brief [brief description]
