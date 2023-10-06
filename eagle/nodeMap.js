@@ -36,6 +36,7 @@ export class EagleNodeMap {
   get(name) {
     const { owner, ref, raw } = this.list || {};
     const fn = EagleNodeMap.makePredicate(name, this.#keys ?? this.#get);
+
     const idx = raw.findIndex(fn);
 
     if(idx != -1) {
@@ -46,7 +47,7 @@ export class EagleNodeMap {
 
   set(name, value) {
     const list = this.list.raw;
-    const fn = EagleNodeMap.makePredicate(name, this.#keys);
+    const fn = EagleNodeMap.makePredicate(name, this.#keys ?? this.#get);
 
     const idx = list.findIndex(fn);
 

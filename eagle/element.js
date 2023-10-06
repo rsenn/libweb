@@ -236,7 +236,7 @@ export class EagleElement extends EagleNode {
               const pkgName = elem.handlers.package();
               const library = this.document.getLibrary(libName);
 
-              //console.log(this.tagName, { libName, pkgName, library, key });
+              console.log(this.tagName, { libName, pkgName, library, key });
 
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
@@ -396,6 +396,19 @@ export class EagleElement extends EagleNode {
         libraries: () => {
           const libraries = this.lookup(this.tagName == 'schematic' ? 'libraries' : 'eagle/drawing/schematic/libraries');
           if(libraries) return EagleNodeMap.create(libraries.children, 'name');
+        }
+      });
+    }
+
+    if(this.type == 'lbr' || this.tagName == 'library') {
+      lazyProperties(this, {
+        packages() {
+          const packages = this.lookup(this.tagName == 'library' ? 'packages' : 'eagle/drawing/library/packages');
+          if(packages) {
+            let list = EagleNodeList.create(this, packages.path.down('children'));
+
+            return EagleNodeMap.create(list, 'name');
+          }
         }
       });
     }
