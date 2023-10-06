@@ -365,15 +365,24 @@ export class EagleElement extends EagleNode {
 
     this.initCache(EagleElement, EagleNodeList.create);
 
-    if(this.tagName == 'board') {
+    if(this.tagName == 'board' || this.type == 'brd') {
       lazyProperties(this, {
-        signals: () => EagleNodeMap.create(this.get('signals').children, 'name'),
-        plain: () => {
-          const plain = this.get('plain');
-          return EagleNodeList.create(plain, plain.ref.down('children'));
+        signals: () => {
+          const signals = this.lookup(this.tagName == 'board' ? 'signals' : 'eagle/drawing/board/signals');
+          if(signals) return EagleNodeMap.create(signals.children, 'name');
         },
-        elements: () => EagleNodeMap.create(this.get('elements').children, 'name'),
-        libraries: () => EagleNodeMap.create(this.get('libraries').children, 'name')
+        plain: () => {
+          const plain = this.lookup(this.tagName == 'board' ? 'plain' : 'eagle/drawing/board/plain');
+          if(plain) return EagleNodeList.create(plain, plain.ref.down('children'));
+        },
+        elements: () => {
+          const elements = this.lookup(this.tagName == 'board' ? 'elements' : 'eagle/drawing/board/elements');
+          if(elements) return EagleNodeMap.create(elements.children, 'name');
+        },
+        libraries: () => {
+          const libraries = this.lookup(this.tagName == 'board' ? 'libraries' : 'eagle/drawing/board/libraries');
+          if(libraries) return EagleNodeMap.create(libraries.children, 'name');
+        }
       });
     }
 
@@ -385,7 +394,7 @@ export class EagleElement extends EagleNode {
         },
         parts: () => EagleNodeMap.create(this.lookup(this.tagName == 'schematic' ? 'parts' : 'eagle/drawing/schematic/parts').children, 'name'),
         libraries: () => {
-          const libraries = this.get('libraries');
+          const libraries = this.lookup(this.tagName == 'schematic' ? 'libraries' : 'eagle/drawing/schematic/libraries');
           if(libraries) return EagleNodeMap.create(libraries.children, 'name');
         }
       });
