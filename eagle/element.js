@@ -1,16 +1,16 @@
 import { RGBA } from '../color/rgba.js';
 import { BBox, Circle, isLine, Line, MakePolygon, Point, PointList, Rect, Transformation, TransformationList } from '../geom.js';
-import { className, define, getOrCreate, inserter, isNumeric, isObject, lazyProperties, properties, roundTo, tryFunction, ucfirst } from '../misc.js';
+import { className, define, getOrCreate, inserter, isNumeric, isObject, lazyProperties, lazyProperty, properties, roundTo, tryFunction, ucfirst } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { Repeater } from '../repeater/repeater.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleNodeMap } from './nodeMap.js';
-import { EagleReference } from './ref.js';
+import { EagleReference, EagleRef } from './ref.js';
 import { MakeRotation, PinSizes } from './renderUtils.js';
 
-const lazyProperty = (obj, name, getter) => define(obj, properties({ [name]: getter }));
+//const lazyProperty = (obj, name, getter) => define(obj, properties({ [name]: getter }));
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
@@ -72,24 +72,22 @@ export class EagleElement extends EagleNode {
     let doc = owner.document || owner;
     const { pathMapper, raw2element } = doc;
     let insert = inserter(pathMapper);
-    //console.log('EagleElement.get(1)', {root,ref});
+
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
-    //console.log('EagleElement.get(2)', {root,ref});
-    //
 
     if(isObject(ref) && /*Array.isArray(ref) &&*/ !(ref instanceof EagleReference)) {
       try {
-        ref = new EagleReference(owner.raw, ref);
+        ref = EagleRef(owner.raw, ref, true);
       } catch(e) {
         try {
-          ref = new EagleReference(owner, ref);
+          ref = EagleRef(owner, ref, true);
         } catch(e) {
-          ref = new EagleReference(root, ref);
+          ref = EagleRef(root, ref, true);
         }
       }
     }
     if(!isObject(ref) || !('dereference' in ref) || !(ref instanceof EagleReference)) {
-      ref = new EagleReference(root, ref.path || ref);
+      ref = EagleRef(root, ref.path || ref, false);
     }
 
     if(!raw) raw = ref.dereference();
@@ -97,13 +95,15 @@ export class EagleElement extends EagleNode {
       if(!raw && isObject(ref.path)) raw = ref.path.deref(root, true);
     } catch(e) {}
 
-    //console.log('EagleElement.get(2)', console.config({ depth: 2 }), { owner, ref, path: ref.path, raw });
     let inst = doc.raw2element(raw, owner, ref);
-    //console.log('EagleElement.get(3)', console.config({ depth: 2 }), { inst, doc });
 
     inst.ref = ref;
 
-    insert(inst, ref.path);
+    let path = ref;
+
+    while(isObject(path) && 'root' in path) path = path.path;
+
+    insert(inst, path);
     EagleElement.currentElement = inst;
     return inst;
   }
@@ -141,11 +141,13 @@ export class EagleElement extends EagleNode {
     let { tagName, attributes, children = [] } = raw;
     //this.tagName = tagName;
     define(this, { attrMap: {} });
+
     Object.defineProperty(this, 'tagName', {
       get() {
-        return this.raw.tagName;
+        if(isObject(raw)) return raw.tagName;
       },
-      enumerable: true
+      enumerable: true,
+      configurable: false
     });
 
     let doc = this.getDocument();
@@ -360,31 +362,34 @@ export class EagleElement extends EagleNode {
 
     if(['attribute', 'element', 'instance', 'label', 'moduleinst', 'pad', 'pin', 'probe', 'rectangle', 'smd', 'text'].indexOf(tagName) != -1) {
     }
-    //console.log('EagleElement.initCache', this);
+
+    this.initCache(EagleElement, EagleNodeList.create);
 
     if(this.tagName == 'board') {
       lazyProperties(this, {
-        signals: () => EagleNodeMap.create(this.lookup('signals').children, 'name'),
+        signals: () => EagleNodeMap.create(this.get('signals').children, 'name'),
         plain: () => {
-          const plain = this.lookup('plain');
+          const plain = this.get('plain');
           return EagleNodeList.create(plain, plain.ref.down('children'));
         },
-        elements: () => EagleNodeMap.create(this.lookup('elements').children, 'name'),
-        libraries: () => EagleNodeMap.create(this.lookup('libraries').children, 'name')
-      });
-    }
-    if(this.tagName == 'schematic') {
-      lazyProperties(this, {
-        sheets: () => {
-          const sheets = this.lookup('sheets');
-          return EagleNodeList.create(sheets, sheets.ref.down('children'));
-        },
-        parts: () => EagleNodeMap.create(this.lookup('parts').children, 'name'),
-        libraries: () => EagleNodeMap.create(this.lookup('libraries').children, 'name')
+        elements: () => EagleNodeMap.create(this.get('elements').children, 'name'),
+        libraries: () => EagleNodeMap.create(this.get('libraries').children, 'name')
       });
     }
 
-    this.initCache(EagleElement, EagleNodeList.create);
+    if(this.tagName == 'schematic' || this.type == 'sch') {
+      lazyProperties(this, {
+        sheets: () => {
+          const sheets = this.lookup(this.tagName == 'schematic' ? 'sheets' : 'eagle/drawing/schematic/sheets');
+          if(sheets) return EagleNodeList.create(this, sheets.path.down('children'));
+        },
+        parts: () => EagleNodeMap.create(this.lookup(this.tagName == 'schematic' ? 'parts' : 'eagle/drawing/schematic/parts').children, 'name'),
+        libraries: () => {
+          const libraries = this.get('libraries');
+          if(libraries) return EagleNodeMap.create(libraries.children, 'name');
+        }
+      });
+    }
 
     if(tagName == 'symbol') {
       lazyProperty(this, 'pins', () => {
@@ -485,6 +490,18 @@ export class EagleElement extends EagleNode {
         }
       });
     }
+
+    if(tagName == 'sheet')
+      if(!('instances' in this))
+        lazyProperty(this, 'instances', () => {
+          const { raw } = this;
+          const { children } = raw;
+
+          const index = children.findIndex(e => e.tagName == 'instances');
+          const list = EagleNodeList.create(this, this.path.concat(['children', index + '', 'children']), e => e.tagName == 'instance');
+
+          return EagleNodeMap.create(list, e => e.attributes.part);
+        });
 
     /*
     if(this.layer)

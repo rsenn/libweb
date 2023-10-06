@@ -107,6 +107,7 @@ export class MutablePath extends Array {
 
   static parse(path, out, separator = '.') {
     const len = path.length;
+
     if(typeof path != 'number') {
       if(typeof path == 'string') {
         path = path.replace(new RegExp('[./]\\[', 'g'), '[');

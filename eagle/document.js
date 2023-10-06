@@ -187,8 +187,8 @@ export class EagleDocument extends EagleNode {
           ['eagle', 'drawing', 'schematic'],
           ['eagle', 'drawing', 'schematic', 'libraries'],
           ['eagle', 'drawing', 'schematic', 'classes'],
-          ['eagle', 'drawing', 'schematic', 'parts'],
-          ['eagle', 'drawing', 'schematic', 'sheets']
+          ['eagle', 'drawing', 'schematic', 'parts']
+          //['eagle', 'drawing', 'schematic', 'sheets']
         ];
       case 'brd':
         return [
@@ -344,12 +344,15 @@ export class EagleDocument extends EagleNode {
 
     if(!sheets) return null;
 
+    if(id in sheets.children) return sheets.children[id];
+
     let i = 0;
 
     for(let sheet of sheets.children) {
       if(i == id) return sheet;
       i++;
     }
+
     return null;
   }
 

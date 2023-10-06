@@ -13,24 +13,25 @@ export class EagleReference {
       path = path.toPointer(root);
       //console.log('new EagleReference', { path });
     }
-  
+
     try {
       if(!path.deref) path = new Pointer([...path]);
     } catch(e) {}
-//path = new Pointer(path);
-  
+    //path = new Pointer(path);
+
     //console.log('new EagleReference', { path, root });
+    while(isObject(path) && 'path' in path && 'root' in path) path = path.path;
 
     this.path = path;
     this.root = root;
 
-    //console.log('EagleReference', { root: abbreviate(toXML(root), 10), path });
-
     if(check && !this.dereference(true)) {
-      let pathStr = inspect([...this.path]);
+      console.log('EagleReference.constructor', console.config({ depth: 2, compact: false }), { path, check, root });
+
+      let pathStr = inspect([...path]);
       //console.log('dereference:', { path, pathStr });
 
-      throw new Error(this.root.tagName + ' ' + pathStr);
+      throw new Error((this.root?.tagName ?? '<?doc?>') + ' ' + pathStr);
     }
   }
 
@@ -99,15 +100,15 @@ export class EagleReference {
     // return Array.prototype.concat.call(this, args);
     return new EagleReference(this.root, this.path.concat(args), false);
   }
+
   up(n = 1) {
-    return new EagleReference(this.root, this.path.slice(0, -n), false);
+    let { root, path } = this;
+
+    while(isObject(path) && 'path' in path) path = path.path;
+
+    //console.log('EagleReference.up', { root, path, n });
+    return new EagleReference(root, path.slice(0, -n), false);
   }
-  /*left(n) {
-    return new EagleReference(this.root, this.path.left(n), false);
-  }
-  right(n) {
-    return new EagleReference(this.root, this.path.right(n), false);
-  }*/
 
   shift(n = 1) {
     let root = this.root;
@@ -128,12 +129,15 @@ export class EagleReference {
   }
 }
 
-export const EagleRef = function EagleRef(root, path) {
+export function EagleRef(root, path, check = false) {
   if(isObject(root) && isObject(root.root)) root = root.root;
-  let obj = new EagleReference(root, path);
-  obj = Object.freeze(obj);
+
+  const obj = new EagleReference(root, path, check);
+
+  Object.freeze(obj);
   //console.log('EagleRef', console.config({ depth: 2 }), { root: obj.root, path: obj.path });
+
   return obj;
-};
+}
 
 Object.assign(EagleReference.prototype, { deref: EagleReference.prototype.dereference });

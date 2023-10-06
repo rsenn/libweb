@@ -1,6 +1,6 @@
 import * as deep from '../deep.js';
 import { BBox } from '../geom/bbox.js';
-import { className, define, defineGettersSetters, functionName, getPrototypeChain, isArray, isObject, memoize, tryCatch } from '../misc.js';
+import { className, define, defineGettersSetters, functionName, getPrototypeChain, isArray, isObject, memoize, tryCatch, types } from '../misc.js';
 import { Pointer } from '../pointer.js';
 import { trkl } from '../trkl.js';
 import { write as toXML } from '../xml.js';
@@ -8,6 +8,9 @@ import { ImmutableXPath } from '../xml/xpath.js';
 import { concat, text } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { EagleRef, EagleReference } from './ref.js';
+//import { Attr, CSSStyleDeclaration, Comment, Document, Element, Entities, Factory, GetType, Interface, NamedNodeMap, Node, NodeList, Parser, Prototypes, Serializer, Text, TokenList, nodeTypes } from 'dom';
+
+const rawNode = new WeakMap();
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -40,7 +43,9 @@ export class EagleNode {
   }
 
   constructor(owner, ref, raw) {
-    if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
+    //console.log('EagleNode.constructor', console.config({ compact: false }), { owner, ref, raw });
+    if(!(ref instanceof EagleReference))
+      ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, (ref && isObject(ref) && ((types.isIterable(ref) && [...ref]) || (types.isIterable(ref.path) && [...ref.path]))) || ref);
     if(!raw) raw = ref.dereference();
 
     Object.defineProperty(this, 'owner', {
@@ -96,20 +101,29 @@ export class EagleNode {
 
   get raw() {
     const { ref, path, root } = this;
+    let ret, error;
 
     if(ref)
       try {
-        return ref.dereference();
+        ret = ref.dereference();
       } catch(e) {
-        throw e;
+        error = e;
       }
 
-    if(path && root)
-      try {
-        return path.deref(root.raw);
-      } catch(e) {}
+    if(!ret)
+      if(path && root)
+        try {
+          ret = path.deref(root.raw);
+        } catch(e) {
+          error = e;
+        }
 
-    return this.getRaw();
+    if(!ret) ret = this.getRaw();
+    else rawNode.set(this, ret);
+
+    //if(!ret) throw error;
+
+    return ret;
   }
 
   cacheFields() {
@@ -459,11 +473,32 @@ define(EagleNode.prototype, {
   [Symbol.toStringTag]: 'EagleNode',
   getRaw: memoize(function () {
     const { owner, ref, document } = this;
-    let r = ref.path.deref(owner.raw, true);
-    if(!r) {
-      r = ref.path.deref(ref.root) || ref.path.deref(owner);
-      if(!r) r = document.mapper.at(ref.path);
-    }
+    let { path } = ref;
+    const { mapper } = document;
+    let r;
+
+    while(isObject(path) && 'path' in path) path = path.path;
+
+    if(!r)
+      try {
+        if(isObject(path) && 'deref' in path) r = path.deref(owner.raw, true);
+      } catch(e) {}
+
+    if(!r)
+      try {
+        r = path.deref(ref.root) || path.deref(owner);
+        if(!r) r = mapper.at(ref.path);
+      } catch(e) {}
+
+    if(!r) r = rawNode.get(this);
+    else rawNode.set(this, r);
+
     return r;
   })
+});
+
+define(EagleNode, {
+  raw(node) {
+    return rawNode.get(node);
+  }
 });

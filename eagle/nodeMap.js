@@ -1,19 +1,30 @@
-import { className, define, inspectSymbol } from '../misc.js';
+import { className, define, inspectSymbol, isFunction } from '../misc.js';
 import { text } from './common.js';
 
 const toArray = arg => (Array.isArray(arg) ? arg : [arg]);
 
 export class EagleNodeMap {
   #keys = null;
+  #get = null;
 
   constructor(list, key) {
     if(!list) throw new Error('List=' + list);
 
     define(this, { list });
-    this.#keys = toArray(key);
+
+    if(isFunction(key)) {
+      this.#get = key;
+    } else {
+      this.#keys = toArray(key);
+      this.#get = function(item) {
+        for(let i = 0; i < this.#keys.length; i++) if(this.#keys[i] in item) return item[this.#keys[i]];
+      };
+    }
   }
 
   static makePredicate(name, keys) {
+    if(isFunction(keys)) return item => keys(item) == name;
+
     keys = toArray(keys);
     return item => keys.some(key => item.attributes[key] == name);
   }
@@ -22,9 +33,9 @@ export class EagleNodeMap {
     return this.list.item(pos);
   }
 
-  get(name, keys = this.#keys) {
+  get(name) {
     const { owner, ref, raw } = this.list || {};
-    const fn = EagleNodeMap.makePredicate(name, keys);
+    const fn = EagleNodeMap.makePredicate(name, this.#keys ?? this.#get);
     const idx = raw.findIndex(fn);
 
     if(idx != -1) {
@@ -52,29 +63,29 @@ export class EagleNodeMap {
   *entries() {
     let i,
       size = this.size;
-    let prop = this.#keys[0];
+
     for(i = 0; i < size; i++) {
       let item = this.list.item(i);
-      yield [item[prop], item];
+      yield [this.#get(item), item];
     }
   }
 
   *[Symbol.iterator]() {
     let i,
       size = this.size;
-    let prop = this.#keys[0];
+
     for(i = 0; i < size; i++) {
       let item = this.list.item(i);
-      yield [item[prop], item];
+      yield [this.#get(item), item];
     }
   }
 
-  toMap(key = this.#keys[0]) {
-    return new Map(this.entries(key));
+  toMap() {
+    return new Map(this.entries());
   }
 
-  toObject(key = this.#keys[0]) {
-    return Object.fromEntries(this.entries(key));
+  toObject() {
+    return Object.fromEntries(this.entries());
   }
 
   [Symbol.inspect]() {
@@ -86,27 +97,32 @@ export class EagleNodeMap {
   }
 
   static create(list, key = 'name', filter) {
-    const Ctor = EagleNodeMap;
-    const instance = new Ctor(list, key, filter);
+    const instance = new EagleNodeMap(list, key, filter);
 
     return new Proxy(instance, {
       get(target, prop, receiver) {
         let index;
+
         if(typeof prop != 'symbol') {
           let item = instance.get(prop, key) || instance.list.item(prop);
           if(item) return item;
         }
+
         if(typeof prop == 'string') {
           if(prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
           if(prop == 'instance') return instance;
           if(prop == 'length') return instance.length;
         }
+
         if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
+
         if(typeof instance.list[prop] == 'function') {
           if(typeof prop == 'symbol') return instance.list[prop];
           return instance.list[prop].bind(instance.list);
         }
+
         if(!(prop in instance)) if (instance.list[prop]) return instance.list[prop];
+
         return Reflect.get(target, prop, receiver);
       },
       getPrototypeOf(target) {
