@@ -18,13 +18,18 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
   let { width, curve = '', x1, y1, x2, y2 } = coordFn(wire);
   let layerId = isNaN(+wire.attributes.layer) ? wire.attributes.layer : +wire.attributes.layer;
   let layer = wire.document.getLayer(layerId) ?? wire.layer;
+
   log('Wire.render ', { layerId, wire });
+
   color ??= wire.getColor();
+
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
+
   const extraStyle = {
     'stroke-linecap': 'round',
     'stroke-linejoin': 'round'
   };
+
   let extraProps = {
     class: ElementToClass(wire, layer.name),
     stroke: color,
@@ -34,16 +39,17 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     style: visible ? { ...extraStyle } : { ...extraStyle, display: 'none' },
     ...props
   };
+
   if(transform.length > 0) extraProps.transform = transform;
 
   let d = `M ${x1} ${y1} L ${x2} ${y2}`;
+
   if(!isNaN(+curve) && Math.abs(+curve) > 0) {
     let xdiff = x2 - x1,
       ydiff = y2 - y1;
     d = `M ${x1} ${y1} `;
 
     d += ArcTo(RoundToMil(xdiff), RoundToMil(ydiff), -curve);
-  } else {
   }
 
   return h('path', {

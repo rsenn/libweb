@@ -26,7 +26,7 @@ export const useGrid = data => {
 
 export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', width: 0.01 }, ...props }) => {
   log('Pattern.render ', { data, id, attrs, props });
- /* data =
+  /* data =
     useValue(async function* () {
       for await(let change of data.repeater) {
         //log('change:', change);

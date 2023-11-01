@@ -340,6 +340,13 @@ Line.prototype.round = function(precision = 0.001, digits, type) {
   this.y2 = roundTo(y2, precision, digits, type);
   return this;
 };
+
+Line.prototype.roundTo = function(...args) {
+  let ret = new Line();
+  for(let prop of ['x1', 'y1', 'x2', 'y2']) ret[prop] = roundTo(this[prop], ...args);
+  return ret;
+};
+
 Line.prototype.sum = function(...args) {
   let r = new Line(...this);
   return Line.prototype.add.call(r, ...args);
