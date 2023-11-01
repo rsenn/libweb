@@ -26,13 +26,13 @@ export const useGrid = data => {
 
 export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', width: 0.01 }, ...props }) => {
   log('Pattern.render ', { data, id, attrs, props });
-  data =
+ /* data =
     useValue(async function* () {
       for await(let change of data.repeater) {
         //log('change:', change);
         yield change;
       }
-    }) || data;
+    }) || data;*/
   const { distance = 0.1, style, multiple = 1, display, altdistance } = useGrid(data);
 
   //log('Pattern.render:', { distance, style, multiple, display, altdistance });
