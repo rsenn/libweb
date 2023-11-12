@@ -139,7 +139,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     for(let item of coll) {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
-        const layerName = item.layer.name;
+        const layerName = item.getLayer()?.name;
         layers[layerId] ??= item.layer || tPlace;
 
         if(item.layer) item.layer.elements.add(item);

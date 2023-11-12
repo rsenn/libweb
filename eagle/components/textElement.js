@@ -23,7 +23,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
   ).trim();
   log(`TextElement.render`, { text, transformation, align, size, font, rot, layer });
   let { x, y } = coordFn(data);
-  const color = data.getColor();
+  const color = data && data.getColor ? data.getColor() : undefined;
   let className = ElementToClass(data);
 
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);

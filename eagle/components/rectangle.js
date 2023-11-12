@@ -20,7 +20,7 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
 
   const { x1, x2, y1, y2 } = coordFn(rectangle);
   const { layer } = rectangle;
-  const color = rectangle.getColor();
+  const color = rectangle && rectangle.getColor ? rectangle.getColor() : undefined;
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   let rect = Rect.from({ x1, x2, y1, y2 });

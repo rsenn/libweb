@@ -28,7 +28,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
 
   const { width, radius, layer } = circle;
   const { x, y } = coordFn(circle);
-  const color = circle.getColor(); //(opts && opts.color) || (layer && this.getColor(layer.color));
+  const color = circle && circle.getColor ? circle.getColor() : undefined;
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   log('Circle.render ', { circle, x, y, radius, width, visible });

@@ -592,10 +592,12 @@ export class EagleElement extends EagleNode {
   }
 
   getLayer() {
-    if(this.raw.attributes.layer) return this.document.getLayer(this.raw.attributes.layer);
-    if(this.raw.tagName == 'pad') return 'Pads';
-    if(this.raw.tagName == 'hole') return 'Holes';
+    if(this.raw) {
+    if(this.raw.attributes?.layer) return this.document.getLayer(this.raw.attributes?.layer);
+    if(this.raw.tagName == 'pad') return this.document.layers['Pads'];
+    if(this.raw.tagName == 'hole') return this.document.layers['Holes'];
     if(this.raw.tagName == 'description') return 'Document';
+  }
   }
 
   lookup(xpath, create) {
