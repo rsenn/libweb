@@ -458,7 +458,7 @@ export class TransformationList extends Array {
 
       if(arg instanceof Transformation || className(arg) == 'Rotation') this.push(arg);
       else if(typeof arg == 'string') this.push(Transformation.fromString(arg));
-      else throw new Error('No such transformation: ' + arg + ` ${className(arg)} ${arg instanceof Rotation}` );
+      else throw new Error('No such transformation: ' + arg + ` ${className(arg)} ${arg instanceof Rotation}`);
     }
 
     return this;
