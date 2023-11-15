@@ -16,12 +16,12 @@ const componentIndex = {
   polygon: Polygon
 };
 
-export const SchematicSymbol = ({ data, component = Fragment, id, class: className, ...props }) => {
-  log(`SchematicSymbol.render`, { data, id });
+export const SchematicSymbol = ({ data, component = Fragment, id, class: className, opts, ...props }) => {
+  log(`SchematicSymbol.render`, { data, id, opts });
 
   const children = [...data.children];
 
-  let [transformation, transform, accumulate] = useTransform(props.opts);
+  let [transformation, transform, accumulate] = useTransform(opts);
 
   //children.map(data => log('data:', data.tagName));
 

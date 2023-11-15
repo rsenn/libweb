@@ -96,7 +96,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
           transform: new TransformationList() /*transformation.invert()*/
             .translate(tp.x, tp.y)
             .rotate(angle % 180)
-            .concat(transformation.invert())
+            .concat((transformation ?? new TransformationList()).invert())
         },
         h(
           'tspan',

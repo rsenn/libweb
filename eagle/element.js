@@ -152,8 +152,19 @@ export class EagleElement extends EagleNode {
 
     let doc = this.getDocument();
     let elem = this;
+
     const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
-    if(tagName == 'contactref') {
+
+    if(tagName == 'deviceset') {
+      define(
+        this,
+        properties({
+          gates: () => EagleNodeMap.create(this.get(e => e.tagName == 'gates').children, 'name'),
+          devices: () => EagleNodeMap.create(this.get(e => e.tagName == 'devices').children, 'name'),
+          name: () => this.raw.attributes.name
+        })
+      );
+    } else if(tagName == 'contactref') {
       define(
         this,
         properties({
@@ -169,6 +180,7 @@ export class EagleElement extends EagleNode {
       );
     } else {
       const names = this.names();
+
       for(let key of attributeList) {
         let prop = trkl.property(this.attrMap, key);
         let handler;
@@ -249,13 +261,13 @@ export class EagleElement extends EagleNode {
                 hfn = () => doc.getLibrary(attributes.library);
                 break;
               case 'deviceset':
-                hfn = () => this.library.devicesets[attributes.deviceset];
+                hfn = () => this.library.get(e => e.tagName == 'deviceset' && e.attributes.name == attributes.deviceset);
                 break;
               case 'value':
                 hfn = () => attributes.value || attributes.deviceset;
                 break;
               case 'device':
-                hfn = () => this.deviceset.devices[attributes.device];
+                hfn = () => this.library.get(e => e.tagName == 'deviceset' && e.attributes.name == attributes.deviceset).devices[attributes.device];
                 break;
             }
           } else if(tagName == 'instance' || tagName == 'pinref') {
@@ -270,7 +282,7 @@ export class EagleElement extends EagleNode {
                 hfn = () => this.document.get(e => e.tagName == 'part' && e.attributes.name == attributes.part);
                 break;
               case 'gate':
-                hfn = () => this.part.deviceset.gates[attributes.gate];
+                hfn = () => this.part.library.get(e => e.tagName == 'gate' && e.attributes.name == attributes.gate);
                 break;
               case 'symbol':
                 hfn = () => this.gate.symbol;
@@ -341,7 +353,7 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'gate') {
       trkl.bind(this, 'symbol', () => {
-        let { library } = this.scope2(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
+        let { library } = this.scope2();
         return library.symbols[attributes.symbol];
       });
 
@@ -409,6 +421,12 @@ export class EagleElement extends EagleNode {
 
             return EagleNodeMap.create(list, 'name');
           }
+        },
+        devicesets() {
+          return EagleNodeMap.create(this.get(e => e.tagName == 'devicesets').children, 'name');
+        },
+        symbols() {
+          return EagleNodeMap.create(this.get(e => e.tagName == 'symbols').children, 'name');
         }
       });
     }

@@ -21,7 +21,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
 
   log('Wire.render ', { layerId, wire });
 
-  color ??= wire.getColor();
+  color ??= wire && wire.getColor ? wire.getColor() : undefined;
 
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 

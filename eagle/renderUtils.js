@@ -466,6 +466,8 @@ export const useTransform = ({ transform, transformation, ...props }) => {
 
   transform = transform ? new TransformationList(transform) : new TransformationList();
 
+  //console.log('useTransform',{transformation,transform});
+
   function accumulate(opts = {}) {
     return { ...opts, transformation: transformation.concat(transform), transform };
   }
