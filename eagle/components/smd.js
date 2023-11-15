@@ -19,8 +19,9 @@ export const SMD = ({ data, opts = {}, ...props }) => {
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  const { rot, layer, x, y, dx, dy } = coordFn(smd);
-  const color = smd.getColor();
+  const { rot, x, y, dx, dy } = coordFn(smd);
+  const layer = smd.getLayer();
+  const color = smd && smd.getColor ? smd.getColor() : undefined;
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   return h('rect', {

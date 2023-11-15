@@ -110,7 +110,7 @@ export class EagleProject {
       doc = EagleDocument.open(file, this.fs);
     } catch(error) {
       err = error;
-      console.log('ERROR:', err);
+      //console.log('ERROR:', err);
     }
     if(doc) {
       console.log('Opened document', file);
@@ -131,8 +131,8 @@ export class EagleProject {
       try {
         envVar = process.env['PATH'];
       } catch(e) {}
-      envVar??='';
-      
+    envVar ??= '';
+
     let searchPath = envVar.split(/:/g);
     let bin;
     for(let dir of searchPath) {

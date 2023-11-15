@@ -70,7 +70,9 @@ export class EagleDocument extends EagleNode {
     const xml = fromXML(xmlStr); //parseXML(xmlStr);
 
     let xmlObj = deep.clone(xml[0]);
-    //console.log('EagleDocument.constructor',console.config({compact: 0,depth:4}),  { xmlObj });
+    
+    //console.log('EagleDocument.constructor', console.config({ compact: 0, depth: 4 }), { xmlObj });
+    
     super(project, EagleRef(xmlObj, []), xmlObj);
 
     define(this, {
@@ -144,23 +146,19 @@ export class EagleDocument extends EagleNode {
       });
     }
 
-    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
+    //lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
 
-    let drawing = this.lookup('eagle/drawing');
-    //console.log('drawing', drawing.raw);
-
-    let layers = /*drawing.get('layers') /*?? */ this.lookup('eagle/drawing/layers');
-    //console.log('layers', layers);
+    let layers = this.lookup('eagle/drawing/layers');
 
     lazyProperties(this, {
-      drawing: () => drawing,
+      drawing: () => this.lookup('eagle/drawing'),
       layers: () => EagleNodeMap.create(layers.children, ['name', 'number'])
     });
   }
 
   get raw() {
     if(Array.isArray(this.xml)) return this.xml[0];
-    //console.log('EagleDocument.get raw', { 'this': this.orig,xml: this.xml });
+    console.log('EagleDocument.get raw', { this: this.orig, xml: this.xml });
     return this.xml;
   }
   get filename() {

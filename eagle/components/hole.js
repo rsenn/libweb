@@ -21,7 +21,7 @@ export const Hole = ({ data, opts = {}, ...props }) => {
   let transform = `translate(${x},${y})`;
   let visible = 'yes' == useTrkl(layer.handlers.visible);
 
-  const holeColor = layer.getColor(hole) || hole.getColor();
+  const holeColor = (layer && layer.getColor ? layer.getColor(hole) : undefined) ?? (hole && hole.getColor ? hole.getColor() : undefined);
 
   const layerProps = layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {};
 

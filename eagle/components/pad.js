@@ -27,7 +27,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
 
   if(rot) transform = transform.concat(rotation);
 
-  const padColor = /*layer.getColor(pad) ||*/ pad.getColor();
+  const padColor = pad && pad.getColor ? pad.getColor() : undefined;
 
   let d = RenderShape(shape, ro, ri);
 

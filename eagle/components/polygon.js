@@ -19,12 +19,14 @@ export const Polygon = ({ data, opts = {}, ...props }) => {
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  const { width, layer } = polygon;
+  const { width } = polygon;
+  const layer = polygon.getLayer();
   const points = new PointList([...polygon.children].map(v => new Point(coordFn(v))));
-  const color = polygon.getColor();
+  const color = polygon && polygon.getColor ? polygon.getColor() : undefined;
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   const colorProps = ['Top', 'Bottom'].indexOf(layer.name) != -1 ? { stroke: color, fill: 'none' } : { stroke: 'none', fill: color };
+
   return h('polygon', {
     points,
     class: ElementToClass(polygon),

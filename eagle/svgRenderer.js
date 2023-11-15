@@ -43,14 +43,12 @@ export class EagleSVGRenderer {
       let pathStr = attrs['data-path'];
 
       if(pathStr) {
-  
-const path = new ImmutablePath([...pathStr.matchAll(/[^\[\]\s.]+/g)].map(m => m[0]).map(n => isNaN(+n) ? n : +n));
- 
+        const path = new ImmutablePath([...pathStr.matchAll(/[^\[\]\s.]+/g)].map(m => m[0]).map(n => (isNaN(+n) ? n : +n)));
+
         //  if(!isObject(path) || !(path instanceof ImmutableXPath)) path = new ImmutableXPath(path);
 
         try {
-          let e = [...path].reduce((acc, p) => acc[p], doc); // path.deref(doc);
-          let parent = e.parentNode;
+          //  let e = [...path].reduce((acc, p) => acc[p], doc); //*/ path.deref(doc);
 
           insert(path, ret);
         } catch(error) {

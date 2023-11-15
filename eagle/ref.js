@@ -26,7 +26,7 @@ export class EagleReference {
     this.root = root;
 
     if(check && !this.dereference(true)) {
-      console.log('EagleReference.constructor', console.config({ depth: 2, compact: false }), { path, check, root });
+      //console.log('EagleReference.constructor', console.config({ depth: 2, compact: false }), { path, check, root });
 
       let pathStr = inspect([...path]);
       //console.log('dereference:', { path, pathStr });

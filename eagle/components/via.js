@@ -29,7 +29,7 @@ export const Via = ({ data, opts = {}, ...props }) => {
 
   log('Via.render ', { drill, diameter, x, y, ro, ri, transform, visible });
 
-  const viaColor = /*layer.getColor(via) ||*/ via.getColor();
+  const viaColor = via && via.getColor ? via.getColor() : undefined;
   let d = RenderShape(shape, ro, ri);
 
   const layerProps = layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {};
