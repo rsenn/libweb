@@ -1,4 +1,3 @@
-
 export class Graph {
   constructor() {
     this.nodes = [];
@@ -312,12 +311,15 @@ export class Graph {
 export class Node {
   constructor(point, connections) {
     this.point = point;
+    //Object.defineProperties(this, { point: { value: point, enumerable: false} });
   }
 
   equals(node) {
     return Point.equals(node.point, this.point);
   }
 }
+
+Node.prototype.point = null;
 
 export class Edge {
   constructor(node1, node2) {
