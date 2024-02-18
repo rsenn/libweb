@@ -1217,6 +1217,20 @@ export function propertyLookup(...args) {
   return new Proxy(obj, propertyLookupHandlers(getter, setter));
 }
 
+export function lookupObject(getset, instance = {}, handlers = {}) {
+  return new Proxy(
+    instance,
+    weakDefine(handlers, {
+      get(target, prop) {
+        return getset(numericIndex(prop));
+      },
+      set(target, prop, value) {
+        return getset(numericIndex(prop), value);
+      }
+    })
+  );
+}
+
 export function padFn(len, char = ' ', fn = (str, pad) => pad) {
   return (s, n = len) => {
     let m = Util.stripAnsi(s).length;

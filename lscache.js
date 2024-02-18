@@ -110,7 +110,7 @@ function currentTime() {
  * Wrapper functions for localStorage methods
  */
 
-const Implementations = {
+export const Implementations = {
   browserCache: {
     supported() {
       return /native/.test(window.caches.constructor + '');
@@ -146,8 +146,7 @@ const Implementations = {
 
       if(request.url) request = request.url;
       let response = await this.cache.match(request, opts);
-      //console.info("getItem", {request,response});
-      //      if(response instanceof Response || (isObject(response) && typeof response.json == 'function')) response = await response.json();
+      //if(response instanceof Response || (isObject(response) && typeof response.json == 'function')) response = await response.json();
 
       if(response) {
         let { status, type, ok, statusText, headers } = response;
@@ -172,7 +171,7 @@ const Implementations = {
         type = 'application/json';
       }
       if(typeof response == 'string') response = new Blob([response], { type });*/
-      //   console.log('setItem', { request, response });
+      //console.log('setItem', { request, response });
       if(!(response instanceof Response))
         response = new Response(response, {
           url: request.url,
@@ -211,24 +210,24 @@ const Implementations = {
 
     getItem(key) {
       const { obj } = this;
-      return localStorage.getItem(CACHE_PREFIX + obj.cacheBucket + key);
+      return localStorage.getItem(CACHE_PREFIX + (obj?.cacheBucket ?? '') + key);
     },
 
     setItem(key, value) {
       const { obj } = this;
       // Fix for iPad issue - sometimes throws QUOTA_EXCEEDED_ERR on setItem.
-      localStorage.removeItem(CACHE_PREFIX + obj.cacheBucket + key);
-      localStorage.setItem(CACHE_PREFIX + obj.cacheBucket + key, value);
+      localStorage.removeItem(CACHE_PREFIX + (obj?.cacheBucket ?? '') + key);
+      localStorage.setItem(CACHE_PREFIX + (obj?.cacheBucket ?? '') + key, value);
     },
 
     removeItem(key) {
       const { obj } = this;
-      localStorage.removeItem(CACHE_PREFIX + obj.cacheBucket + key);
+      localStorage.removeItem(CACHE_PREFIX + (obj?.cacheBucket ?? '') + key);
     },
 
     eachKey(fn) {
       const { obj } = this;
-      let prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters(obj.cacheBucket) + '(.*)');
+      let prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters(obj?.cacheBucket ?? '') + '(.*)');
       // Loop in reverse as removing items will change indices of tail
       for(let i = localStorage.length - 1; i >= 0; --i) {
         let key = localStorage.key(i);
@@ -345,7 +344,7 @@ export class BaseCache {
   }
 
   incrementHits(key) {
-    let hits = mapFunction(this.hits);
+    let hits = mapFunction(this.hits ?? (a => a));
 
     return hits.update(key, (v = 0) => v + 1);
   }
@@ -438,10 +437,10 @@ export class BaseCache {
    * @param {string} key
    * @return {string|Object}
    */
-  get(key) {
+  async get(key) {
     const { impl, cache } = this;
 
-    console.info('BaseCache.get', { key, impl, cache });
+    //console.info('BaseCache.get', { key, impl, cache });
 
     //    if(!this.supportsStorage) return null;
     // Return the de-serialized item if not expired
@@ -449,30 +448,17 @@ export class BaseCache {
       return null;
     }
     // Tries to de-serialize stored value if its an object, and returns the normal value otherwise.
-    return impl.getItem.call(this, key).then(response => {
-      let time = Date.now();
-      //if(!response || !this.supportsJSON) return response;
-      this.incrementHits(response.url);
+    const response = await impl.getItem.call(this, key);
 
-      // console.log('response:', response);
-
-      // if(isObject(impl) && typeof impl.response == 'function') response = impl.response.call(this, response);
-
-      //console.log('response:', response);
-      /*
-      try {
-        // We can't tell if its JSON or a string, so we try to parse
-        let obj = JSON.parse(response);
-        response = obj;
-      } catch(e) {
-        // If we can't parse, it's probably because it isn't an object
-      }*/
-
-      response = response.clone();
-      response.cached = true;
-      response.time = time;
-      return response;
-    });
+    /*   let time = Date.now();
+    this.incrementHits(response.url);
+    console.log('response:', response);
+    try {
+      let response2 = response.clone();
+      if(typeof response2 == 'object' && response2 !== null) response = response2;
+    } catch(e) {}    response.cached = true;
+    response.time = time;*/
+    return response;
   }
 
   /*getOrCreate(createfn) {
