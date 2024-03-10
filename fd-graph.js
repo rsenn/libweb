@@ -99,11 +99,13 @@ export class Graph {
   addEdge(e) {
     let args = [...arguments];
     let ids = [];
+
     if(!(e instanceof Edge)) {
       console.log('addEdge', args);
       e = new Edge(args[0], args[1]);
       ids = [this.nodes.indexOf(args[0]), this.nodes.indexOf(args[1])];
     }
+
     e.index = this.edges.length;
     e.ids = ids;
     this.edges.push(e);

@@ -72,10 +72,12 @@ export class Graph {
 
   addConnection(node1, node2) {
     if(!node1 || !node2) {
+      console.log('node 1 or node 2 is nullish');
       return false;
     }
 
     if(node1.equals(node2)) {
+      console.log('node 1 equals node 2');
       return false;
     }
 
@@ -83,22 +85,22 @@ export class Graph {
     let node2Matches = this.nodes.filter(node => Point.equals(node.point, node2.point));
 
     if(node1Matches.length > 1) {
-      //console.log('Too many maches for node 1.  length = ' + node1Matches.length);
+      console.log('Too many matches for node 1.  length = ' + node1Matches.length);
       return false;
     }
 
     if(node2Matches.length > 1) {
-      //console.log('Too many maches for node 1.  length = ' + node2Matches.length);
+      console.log('Too many matches for node 2.  length = ' + node2Matches.length);
       return false;
     }
 
     if(node1Matches.length === 0) {
-      //console.log('No matches for node 1, doing nothing');
+      console.log('No matches for node 1, doing nothing');
       return;
     }
 
     if(node2Matches.length === 0) {
-      //console.log('No matches for node 2, doing nothing');
+      console.log('No matches for node 2, doing nothing');
       return;
     }
 
@@ -107,8 +109,9 @@ export class Graph {
     let duplicateConnections = this.connections.filter(connection => connection.equals(newConnection));
 
     if(duplicateConnections.length > 1) {
-      //console.log('TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING');
+      console.log('TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING');
     } else if(duplicateConnections.length === 1) {
+      console.log('duplicate connection');
       return;
     } else {
       this.connections.push(newConnection);
@@ -308,6 +311,8 @@ export class Graph {
   }
 }
 
+Graph.prototype[Symbol.toStringTag] = 'Graph';
+
 export class Node {
   constructor(point, connections) {
     this.point = point;
@@ -319,6 +324,7 @@ export class Node {
   }
 }
 
+Node.prototype[Symbol.toStringTag] = 'Node';
 Node.prototype.point = null;
 
 export class Edge {
@@ -331,6 +337,8 @@ export class Edge {
     return (this.node1.equals(connection.node1) && this.node2.equals(connection.node2)) || (this.node2.equals(connection.node1) && this.node1.equals(connection.node2));
   }
 }
+
+Edge.prototype[Symbol.toStringTag] = 'Edge';
 
 Graph.Node = Node;
 Graph.Edge = Edge;

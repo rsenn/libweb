@@ -118,8 +118,8 @@ export class EagleNode {
           error = e;
         }
 
-    if(!ret) ret = this.getRaw();
-    else rawNode.set(this, ret);
+    /*if(!ret) ret = this.getRaw();
+    else*/ rawNode.set(this, ret);
 
     //if(!ret) throw error;
 
@@ -470,7 +470,7 @@ export class EagleNode {
 }
 
 define(EagleNode.prototype, {
-  [Symbol.toStringTag]: 'EagleNode',
+  [Symbol.toStringTag]: 'EagleNode' /*,
   getRaw: memoize(function () {
     const { owner, ref, document } = this;
     let { path } = ref;
@@ -494,7 +494,7 @@ define(EagleNode.prototype, {
     else rawNode.set(this, r);
 
     return r;
-  })
+  })*/
 });
 
 define(EagleNode, {
