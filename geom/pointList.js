@@ -4,6 +4,9 @@ import { Point } from './point.js';
 import { Rect } from './rect.js';
 
 export class PointList extends Array {
+  _min = new Point(0, 0);
+  _max = new Point(Infinity, Infinity);
+
   constructor(...args) {
     let [points, tfn = (...args) => new Point(...args)] = args;
 
@@ -34,6 +37,145 @@ export class PointList extends Array {
       Object.setPrototypeOf(ret, proto);
     }
     if(!(this instanceof PointList)) return ret;
+  }
+
+  getXseries() {
+    const ret = [];
+    for(let pt of this) ret.push(pt.x);
+
+    return ret;
+  }
+
+  getYseries() {
+    const ret = [];
+    for(let pt of this) ret.push(pt.y);
+
+    return ret;
+  }
+  /**
+   * Update the posiiton of an existing point
+   * @param {Number} index - index of the existing point to update
+   * @param {Object} p - point that has coord we want to use as new coord. x and y values will be copied, no pointer association
+   * @return {Number} new index, the changed point may have changed its index among the x-ordered list
+   */
+  updatePoint(index, p) {
+    let newIndex = index;
+
+    if(index >= 0 && index < this.length) {
+      if(p.x >= this._min.x && p.x < this._max.x && p.y >= this._min.y && p.y < this._max.y) {
+        if(!this[index].xLocked) this[index].x = p.x;
+
+        if(!this[index].yLocked) this[index].y = p.y;
+
+        let thePointInArray = this[index];
+        this.sortPoints();
+
+        // the point may have changed its index
+        newIndex = this.indexOf(thePointInArray);
+      }
+    }
+
+    return newIndex;
+  }
+
+  sortPoints() {
+    // sorting the array upon x
+    Array.prototype.sort.call(this, (p1, p2) => p1.x - p2.x);
+  }
+
+  /**
+   * Remove the points at the given index.
+   * @param {Number} index - index of the point to remove
+   * @return {Object} the point that was just removed or null if out of bound
+   */
+  remove(index) {
+    let removedPoint = null;
+
+    if(index >= 0 && index < this.length) removedPoint = this.splice(index, 1);
+
+    return removedPoint;
+  }
+
+  /**
+   * Define the acceptable min and max bot both axis.
+   * @param {String} bound - can be "min" or "max"
+   * @param {String} axis - can be "x" or "y"
+   * @param {Number} value - a number
+   * Note that minimum boudaries are inclusive while max are exclusive
+   */
+  setBoundary(bound, axis, value) {
+    this['_' + bound][axis] = value;
+  }
+
+  /**
+   * Gets the point at such index
+   * @param {Number} index - the index of the point we want
+   * @return {Object} point that contains at least "x" and "y" properties.
+   */
+  getPoint(index) {
+    if(index >= 0 && index < this.length) return this[index];
+
+    return null;
+  }
+
+  /**
+   * Get the number of points in the collection
+   * @return {Number} the number of points
+   */
+  getNumberOfPoints() {
+    return this.length;
+  }
+
+  getClosestFrom(point) {
+    return this.nearest(point, (index, distance) => ({ index, distance }));
+  }
+
+  /**
+   * Update the posiiton of an existing point
+   * @param {Number} index - index of the existing point to update
+   * @param {Object} p - point that has coord we want to use as new coord. x and y values will be copied, no pointer association
+   * @return {Number} new index, the changed point may have changed its index among the x-ordered list
+   */
+  updatePoint(index, p) {
+    let newIndex = index;
+
+    if(index >= 0 && index < this.length) {
+      if(p.x >= this._min.x && p.x < this._max.x && p.y >= this._min.y && p.y < this._max.y) {
+        if(!this[index].xLocked) this[index].x = p.x;
+
+        if(!this[index].yLocked) this[index].y = p.y;
+
+        let thePointInArray = this[index];
+        this.sortPoints();
+
+        // the point may have changed its index
+        newIndex = this.indexOf(thePointInArray);
+      }
+    }
+
+    return newIndex;
+  }
+
+  /**
+   *
+   */
+  add(p) {
+    let newIndex = null;
+
+    if(p.x >= this._min.x && p.x <= this._max.x && p.y >= this._min.y && p.y <= this._max.y) {
+      if(!('xLocked' in p)) p.xLocked = false;
+
+      if(!('yLocked' in p)) p.yLocked = false;
+
+      if(!('safe' in p)) p.safe = false;
+
+      // adding the point
+      this.push(p);
+      this.sortPoints();
+      newIndex = this.indexOf(p);
+    }
+
+    return newIndex;
   }
 }
 
@@ -320,12 +462,12 @@ PointList.prototype.toString = function(sep = ',', prec) {
   return Array.prototype.map.call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + '')).join(' ');
 };
 
-PointList.prototype[Symbol.toStringTag] = function(sep = ',', prec) {
+/*PointList.prototype[Symbol.toStringTag] = function(sep = ',', prec) {
   return Array.prototype.map
     .call(this, point => point.round(prec))
     .map(point => `${point.x}${sep}${point.y}`)
     .join(' ');
-};
+};*/
 
 PointList.prototype.toPath = function() {
   return Array.prototype.map.call(this, (point, i) => `${i > 0 ? 'L' : 'M'}${point}`).join(' ');
@@ -352,50 +494,46 @@ PointList.prototype.toSource = function(opts = {}) {
   return 'new PointList([' + PointList.prototype.map.call(this, fn).join(',') + '])';
 };
 
-PointList.prototype.add = function(pt) {
+/*PointList.prototype.add = function(pt) {
   if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, it => Point.prototype.add.call(it, pt));
   return this;
-};
+};*/
 
 PointList.prototype.sum = function(pt) {
-  let ret = PointList.prototype.clone.call(this);
-  return PointList.prototype.add.apply(ret, arguments);
+  return PointList.prototype.map.call(this, p2 => p2.sum(pt));
 };
 
-PointList.prototype.sub = function(pt) {
+/*PointList.prototype.sub = function(pt) {
   if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, it => Point.prototype.sub.call(it, pt));
   return this;
-};
+};*/
 
 PointList.prototype.diff = function(pt) {
-  let ret = PointList.prototype.clone.call(this);
-  return PointList.prototype.sub.apply(ret, arguments);
+  return PointList.prototype.map.call(this, p2 => p2.diff(pt));
 };
 
-PointList.prototype.mul = function(pt) {
+/*PointList.prototype.mul = function(pt) {
   if(typeof pt == 'number') pt = new Point({ x: pt, y: pt });
   if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, it => Point.prototype.mul.call(it, pt));
   return this;
-};
+};*/
 
 PointList.prototype.prod = function(pt) {
-  let ret = PointList.prototype.clone.call(this);
-  return PointList.prototype.mul.apply(ret, arguments);
+  return PointList.prototype.map.call(this, p2 => p2.prod(pt));
 };
 
-PointList.prototype.div = function(pt) {
+/*PointList.prototype.div = function(pt) {
   if(typeof pt == 'number') pt = new Point({ x: pt, y: pt });
   if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, it => Point.prototype.div.call(it, pt));
   return this;
-};
+};*/
 
 PointList.prototype.quot = function(pt) {
-  let ret = PointList.prototype.clone.call(this);
-  return PointList.prototype.div.apply(ret, arguments);
+  return PointList.prototype.map.call(this, p2 => p2.qout(pt));
 };
 
 PointList.prototype.round = function(prec, digits, type) {
@@ -419,6 +557,21 @@ PointList.prototype.toMatrix = function() {
 
 PointList.prototype.toPoints = function(ctor = Array.of) {
   return ctor(...this);
+};
+
+PointList.prototype.nearest = function(pt, fn = (index, dist, pt) => index) {
+  let dist = Infinity,
+    index = -1,
+    i = 0;
+  for(let p of this) {
+    const d = p.distance(pt);
+    if(dist > d) {
+      dist = d;
+      index = i;
+    }
+    i++;
+  }
+  return fn(index, dist, this[index]);
 };
 
 PointList.prototype[inspectSymbol] = function(depth, options) {
