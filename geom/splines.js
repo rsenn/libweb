@@ -32,8 +32,7 @@ export function MonotonicCubicSpline(x, y) {
 
   for(i = 0, _ref = n - 1; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? (i += 1) : (i -= 1)) {
     delta[i] = (y[i + 1] - y[i]) / (x[i + 1] - x[i]);
-    if(i > 0) 
-      m[i] = (delta[i - 1] + delta[i]) / 2;
+    if(i > 0) m[i] = (delta[i - 1] + delta[i]) / 2;
   }
 
   m[0] = delta[0];
@@ -41,8 +40,7 @@ export function MonotonicCubicSpline(x, y) {
   to_fix = [];
 
   for(i = 0, _ref2 = n - 1; 0 <= _ref2 ? i < _ref2 : i > _ref2; 0 <= _ref2 ? (i += 1) : (i -= 1)) {
-    if(delta[i] === 0)
-      to_fix.push(i);
+    if(delta[i] === 0) to_fix.push(i);
   }
 
   for(_i = 0, _len = to_fix.length; _i < _len; _i++) {
@@ -60,8 +58,7 @@ export function MonotonicCubicSpline(x, y) {
   to_fix = [];
 
   for(i = 0, _ref4 = n - 1; 0 <= _ref4 ? i < _ref4 : i > _ref4; 0 <= _ref4 ? (i += 1) : (i -= 1)) {
-    if(dist[i] > 9)
-      to_fix.push(i);
+    if(dist[i] > 9) to_fix.push(i);
   }
 
   for(_j = 0, _len2 = to_fix.length; _j < _len2; _j++) {
@@ -79,8 +76,7 @@ MonotonicCubicSpline.prototype.interpolate = function(x) {
   let h, h00, h01, h10, h11, i, t, t2, t3, y, _ref;
 
   for(i = _ref = this.x.length - 2; _ref <= 0 ? i <= 0 : i >= 0; _ref <= 0 ? (i += 1) : (i -= 1)) {
-    if(this.x[i] <= x)
-      break;
+    if(this.x[i] <= x) break;
   }
 
   h = this.x[i + 1] - this.x[i];
@@ -200,8 +196,7 @@ CubicSpline.prototype.interpolate = function(x) {
   let deltaX, i, y, _ref;
 
   for(i = _ref = this.x.length - 1; _ref <= 0 ? i <= 0 : i >= 0; _ref <= 0 ? (i += 1) : (i -= 1)) {
-    if(this.x[i] <= x)
-      break;
+    if(this.x[i] <= x) break;
   }
 
   deltaX = x - this.x[i];
