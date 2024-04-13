@@ -328,9 +328,11 @@ function implement(method) {
 //
 // Our actual plugin
 //
-export const htmlentities = {};
+export default const htmlentities = {};
 
 //
 // Build it
 //
 for(let i = 0; i < methods.length; i++) implement(methods[i]);
+
+export const {decode,encode} = htmlentities;
