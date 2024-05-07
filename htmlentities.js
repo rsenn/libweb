@@ -1,14 +1,4 @@
-/**
- * entities.js v1.0.0
- * @author Alex Duloz ~ @alexduloz ~ http://bitspushedaround.com/
- * MIT license
- */
-
-//
-// Tables / Maps
-//
-// UTF-8
-//
+/** * entities.js v1.0.0 * @author Alex Duloz ~ @alexduloz ~ http://bitspushedaround.com/ * MIT license */ // Tables / Maps // UTF-8
 const tables = {
   utf8: {
     [' ']: '&nbsp;',
@@ -135,7 +125,7 @@ const tables = {
     ['Σ']: '&Sigma;',
     ['Τ']: '&Tau;',
     ['Υ']: '&Upsilon;',
-    ['Φ']: '&Phi;', 
+    ['Φ']: '&Phi;',
     ['Χ']: '&Chi;',
     ['Ψ']: '&Psi;',
     ['Ω']: '&Omega;',
@@ -262,79 +252,38 @@ const tables = {
     ['&']: '&amp;',
     ["'"]: '&apos;',
     ['"']: '&quot;',
-    /*["'"]: '&#039;',*/
-    ['<']: '&lt;',
+    /*["'"]: '&#039;',*/ ['<']: '&lt;',
     ['>']: '&gt;'
   }
-};
-
-//
-// Helpers
-//
+}; // Helpers
 function invert(table) {
   const result = {};
-
   for(let prop in table) result[table[prop]] = prop;
-
   return result;
 }
-
 function keys(obj) {
   const keys = [];
-
   for(let key in obj) keys.push(key);
-
   return keys;
-}
-
-//
-// Used internally for replacements
-//
+} // Used internally for replacements
 const encodings = {};
 const regexes = {};
-
 for(let table in tables) {
-  encodings[table] = {
-    encode: tables[table],
-    decode: invert(tables[table])
-  };
-
-  regexes[table] = {
-    encode: new RegExp('[' + keys(encodings[table].encode).join('') + ']', 'g'),
-    decode: new RegExp('(' + keys(encodings[table].decode).join('|') + ')', 'g')
-  };
-}
-
-//
-// Our plugin's methods
-//
-const methods = ['encode', 'decode'];
-
-//
-// Implement methods
-//
+  encodings[table] = { encode: tables[table], decode: invert(tables[table]) };
+  regexes[table] = { encode: new RegExp('[' + keys(encodings[table].encode).join('') + ']', 'g'), decode: new RegExp('(' + keys(encodings[table].decode).join('|') + ')', 'g') };
+} // Our plugin's methods
+const methods = ['encode', 'decode']; // Implement methods
 function implement(method) {
   htmlentities[method] = function(string, encoding) {
     if(string === null) return '';
-
     const table = encoding || 'utf8';
-
     return ('' + string).replace(regexes[table][method], function(match) {
       return encodings[table][method][match];
     });
   };
-}
-//
-// Our actual plugin
-//
-const htmlentities = {};
-
-//
-// Build it
-//
+} // Our actual plugin
+const htmlentities = {}; // Build it
 for(let i = 0; i < methods.length; i++) implement(methods[i]);
-
 export const { encode } = htmlentities;
 export const { decode } = htmlentities;
-
 export default htmlentities;
