@@ -37,7 +37,12 @@ function drop(count) {
 
 function concat(...streams) {
   const { readable, writable } = new TransformStream();
-  streams.reduce((prev, stream) => prev.then(() => stream.pipeTo(writable, { preventClose: true })), Promise.resolve()).then(() => writable.close());
+  streams
+    .reduce(
+      (prev, stream) => prev.then(() => stream.pipeTo(writable, { preventClose: true })),
+      Promise.resolve()
+    )
+    .then(() => writable.close());
   return readable;
 }
 
@@ -149,5 +154,18 @@ function throttle(ms) {
   });
 }
 
-export { concat, debounce, drop, enumerate, filter, iota, map, take, throttle, transform, zip, zipWith };
+export {
+  concat,
+  debounce,
+  drop,
+  enumerate,
+  filter,
+  iota,
+  map,
+  take,
+  throttle,
+  transform,
+  zip,
+  zipWith
+};
 //# sourceMappingURL=stream.js.map

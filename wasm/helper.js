@@ -12,13 +12,18 @@ export default class WasmHelper {
   }
 
   canUseWebAssembly() {
-    return window.WebAssembly !== undefined && !this.isIgnoreBrowser() && WasmHelper.validateSafariWebAssemblyBug();
+    return (
+      window.WebAssembly !== undefined &&
+      !this.isIgnoreBrowser() &&
+      WasmHelper.validateSafariWebAssemblyBug()
+    );
   }
 
   // FYI : https://github.com/brion/min-wasm-fail
   static validateSafariWebAssemblyBug() {
     const binary = new Uint8Array([
-      0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11
+      0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1,
+      4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11
     ]);
     const module = new WebAssembly.Module(binary);
     const instance = new WebAssembly.Instance(module, {});
@@ -54,6 +59,10 @@ export default class WasmHelper {
       return false;
     }
 
-    return (/Linux; U;/.test(ua) && !/Chrome/.test(ua)) || (/Chrome/.test(ua) && /Version/.test(ua)) || (/Chrome/.test(ua) && /SamsungBrowser/.test(ua));
+    return (
+      (/Linux; U;/.test(ua) && !/Chrome/.test(ua)) ||
+      (/Chrome/.test(ua) && /Version/.test(ua)) ||
+      (/Chrome/.test(ua) && /SamsungBrowser/.test(ua))
+    );
   }
 }

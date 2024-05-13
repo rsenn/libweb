@@ -20,7 +20,9 @@ export const autoBind = (() => {
     if(proxiesMap.has(target)) return proxiesMap.get(target);
 
     if((typeof target !== 'object' && typeof target !== 'function') || target === null) {
-      throw TypeError('expected a non-null object, ' + `got ${target === null ? 'null' : typeof target}`);
+      throw TypeError(
+        'expected a non-null object, ' + `got ${target === null ? 'null' : typeof target}`
+      );
     }
 
     const boundFuncs = new WeakMap();

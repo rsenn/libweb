@@ -43,7 +43,9 @@ function parseCommentTag(comment) {
         const key = camelize(commentTagKeyValue[0]);
 
         // Parse to number, if it's a number
-        const value = Number.isNaN(Number(commentTagKeyValue[1])) ? commentTagKeyValue[1] : Number(commentTagKeyValue[1]);
+        const value = Number.isNaN(Number(commentTagKeyValue[1]))
+          ? commentTagKeyValue[1]
+          : Number(commentTagKeyValue[1]);
 
         commentTag.args = JSON.parse(`{"${key}": ${value}}`);
       } else {
@@ -83,7 +85,12 @@ export function gcodeToObject(gcode) {
   // If we can find a command, assign it, otherwise keep the "command" value set to undefined
   const commandRegex = /[GM]\d+/;
   const commandResult = gcodeWithoutComment.toUpperCase().match(commandRegex);
-  gcodeObject.command = (commandResult !== undefined || commandResult !== null) && Array.isArray(commandResult) && commandResult.length > 0 ? commandResult[0] : undefined;
+  gcodeObject.command =
+    (commandResult !== undefined || commandResult !== null) &&
+    Array.isArray(commandResult) &&
+    commandResult.length > 0
+      ? commandResult[0]
+      : undefined;
 
   // Set the gcode to lower case and remove any G<number> or M<number> commands
   const gcodeArgString = gcodeWithoutComment.toLowerCase().replace(/[gm]\d+/, '');

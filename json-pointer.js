@@ -131,7 +131,9 @@ function decodePointer(ptr) {
     return [];
   }
   if(ptr[0] !== '/') {
-    throw new ReferenceError('Invalid JSON Pointer syntax. Non-empty pointer must begin with a solidus `/`.');
+    throw new ReferenceError(
+      'Invalid JSON Pointer syntax. Non-empty pointer must begin with a solidus `/`.'
+    );
   }
   return decodePointerSegments(ptr.substring(1).split('/'));
 }
@@ -151,7 +153,9 @@ function decodeUriFragmentIdentifier(ptr) {
     throw new TypeError('Invalid type: JSON Pointers are represented as strings.');
   }
   if(ptr.length === 0 || ptr[0] !== '#') {
-    throw new ReferenceError('Invalid JSON Pointer syntax; URI fragment idetifiers must begin with a hash.');
+    throw new ReferenceError(
+      'Invalid JSON Pointer syntax; URI fragment idetifiers must begin with a hash.'
+    );
   }
   if(ptr.length === 1) {
     return [];
@@ -351,7 +355,10 @@ function pickDecoder(ptr) {
 }
 
 JsonReference.isReference = function(obj) {
-  return (obj && obj instanceof JsonReference) || (typeof obj.$ref === 'string' && typeof obj.resolve === 'function');
+  return (
+    (obj && obj instanceof JsonReference) ||
+    (typeof obj.$ref === 'string' && typeof obj.resolve === 'function')
+  );
 };
 
 function visit(target, visitor, cycle) {

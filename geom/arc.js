@@ -34,7 +34,10 @@ export class Arc {
     let radsq = radius * radius;
     let p3 = { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
     let chord = Point.distance([x1, y1], [x2, y2]);
-    return new Point(p3.x + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((y1 - y2) / chord), p3.y + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((x2 - x1) / chord));
+    return new Point(
+      p3.x + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((y1 - y2) / chord),
+      p3.y + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((x2 - x1) / chord)
+    );
   }
 
   static chordFromAngle(radius, angle) {

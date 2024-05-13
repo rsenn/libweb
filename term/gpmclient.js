@@ -151,7 +151,15 @@ function GpmClient(options) {
               self.emit('move', evnt.buttons, evnt.modifiers, evnt.x, evnt.y);
             }
             if(evnt.wdx || evnt.wdy) {
-              self.emit('mousewheel', evnt.buttons, evnt.modifiers, evnt.x, evnt.y, evnt.wdx, evnt.wdy);
+              self.emit(
+                'mousewheel',
+                evnt.buttons,
+                evnt.modifiers,
+                evnt.x,
+                evnt.y,
+                evnt.wdx,
+                evnt.wdy
+              );
             }
             break;
           case GPM_DRAG:
@@ -159,7 +167,15 @@ function GpmClient(options) {
               self.emit('drag', evnt.buttons, evnt.modifiers, evnt.x, evnt.y);
             }
             if(evnt.wdx || evnt.wdy) {
-              self.emit('mousewheel', evnt.buttons, evnt.modifiers, evnt.x, evnt.y, evnt.wdx, evnt.wdy);
+              self.emit(
+                'mousewheel',
+                evnt.buttons,
+                evnt.modifiers,
+                evnt.x,
+                evnt.y,
+                evnt.wdx,
+                evnt.wdy
+              );
             }
             break;
           case GPM_DOWN:

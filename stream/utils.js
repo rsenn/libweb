@@ -67,7 +67,8 @@ export const AcquireReader =
               for(let eventName in listeners) stream.addListener(eventName, listeners[eventName]);
             }
             function removeListeners() {
-              for(let eventName in listeners) stream.removeListener(eventName, listeners[eventName]);
+              for(let eventName in listeners)
+                stream.removeListener(eventName, listeners[eventName]);
             }
 
             addListeners();
@@ -103,7 +104,9 @@ export const AcquireWriter =
       let ret = await fn({
         write(chunk) {
           return stream.write(chunk);
-          return new Promise((resolve, reject) => stream.write(chunk, 'utf-8', err => (err ? reject(err) : resolve(chunk.length))));
+          return new Promise((resolve, reject) =>
+            stream.write(chunk, 'utf-8', err => (err ? reject(err) : resolve(chunk.length)))
+          );
         }
       });
       return ret;
@@ -346,7 +349,8 @@ export async function CreateWritableStream(handler, options = { decodeStrings: f
         super(...args);
       }
       _write(chunk, encoding, callback) {
-        if(options.decodeStrings === false && typeof chunk.toString == 'function') chunk = chunk.toString();
+        if(options.decodeStrings === false && typeof chunk.toString == 'function')
+          chunk = chunk.toString();
         let ret = handler.write(chunk);
 
         handleReturnValue(ret, callback);
@@ -402,7 +406,8 @@ export async function CreateTransformStream(handler, options = { decodeStrings: 
       _transform(chunk, encoding, done) {
         if(!('instance' in controller)) controller.instance = this;
         controller.callback = done;
-        if(options.decodeStrings == false && typeof chunk.toString == 'function') chunk = chunk.toString();
+        if(options.decodeStrings == false && typeof chunk.toString == 'function')
+          chunk = chunk.toString();
 
         handler.transform(chunk, controller);
 
@@ -481,7 +486,8 @@ export async function LineBufferStream(options = {}) {
       queue(str) {
         if(typeof str != 'string') if (typeof str.toString == 'function') str = str.toString();
 
-        if(lines.length > 0 && !lines[lines.length - 1].endsWith('\n')) lines[lines.length - 1] += str;
+        if(lines.length > 0 && !lines[lines.length - 1].endsWith('\n'))
+          lines[lines.length - 1] += str;
         else lines.push(str);
       },
       transform(chunk, controller) {
@@ -492,7 +498,8 @@ export async function LineBufferStream(options = {}) {
           this.queue(j ? chunk.slice(i, j) : chunk.slice(i));
           if(j == 0) break;
         }
-        while(lines.length > 0 && !(lines.length == 1 && !lines[0].endsWith('\n'))) if(!controller.enqueue(lines.shift())) return false;
+        while(lines.length > 0 && !(lines.length == 1 && !lines[0].endsWith('\n')))
+          if(!controller.enqueue(lines.shift())) return false;
       },
       flush(controller) {
         while(lines.length > 0) controller.enqueue(lines.shift());

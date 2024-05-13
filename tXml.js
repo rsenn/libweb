@@ -59,7 +59,15 @@ function tXml(S, options) {
         } else if(S.charCodeAt(pos + 1) === exclamationCC) {
           if(S.charCodeAt(pos + 2) == minusCC) {
             //comment support
-            while(pos !== -1 && !(S.charCodeAt(pos) === closeBracketCC && S.charCodeAt(pos - 1) == minusCC && S.charCodeAt(pos - 2) == minusCC && pos != -1)) {
+            while(
+              pos !== -1 &&
+              !(
+                S.charCodeAt(pos) === closeBracketCC &&
+                S.charCodeAt(pos - 1) == minusCC &&
+                S.charCodeAt(pos - 2) == minusCC &&
+                pos != -1
+              )
+            ) {
               pos = S.indexOf(closeBracket, pos + 1);
             }
             if(pos === -1) {
@@ -129,7 +137,13 @@ function tXml(S, options) {
         var name = parseName();
         //search beginning of the string
         let code = S.charCodeAt(pos);
-        while(code && code !== singleQuoteCC && code !== doubleQuoteCC && !((code > 64 && code < 91) || (code > 96 && code < 123)) && code !== closeBracketCC) {
+        while(
+          code &&
+          code !== singleQuoteCC &&
+          code !== doubleQuoteCC &&
+          !((code > 64 && code < 91) || (code > 96 && code < 123)) &&
+          code !== closeBracketCC
+        ) {
           pos++;
           code = S.charCodeAt(pos);
         }
@@ -191,7 +205,9 @@ function tXml(S, options) {
    *
    */
   function findElements() {
-    let r = new RegExp('\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]').exec(S);
+    let r = new RegExp('\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]').exec(
+      S
+    );
     if(r) {
       return r.index;
     }

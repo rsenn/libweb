@@ -109,7 +109,8 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
           if(typeof index != 'number' || typeof index != 'string') index = key;
         }
 
-        let ret = typeof proto[key] == 'function' ? proto[key] : Reflect.get(target, index, receiver);
+        let ret =
+          typeof proto[key] == 'function' ? proto[key] : Reflect.get(target, index, receiver);
 
         if(typeof ret == 'object' && typeof index == 'number') {
           key = lookup(ret);

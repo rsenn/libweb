@@ -57,7 +57,10 @@ function pd(event) {
 function setCancelFlag(data) {
   if(data.passiveListener != null) {
     if(typeof console !== 'undefined' && typeof console.error === 'function') {
-      console.error('Unable to preventDefault inside passive event listener invocation.', data.passiveListener);
+      console.error(
+        'Unable to preventDefault inside passive event listener invocation.',
+        data.passiveListener
+      );
     }
     return;
   }
@@ -393,7 +396,11 @@ function defineWrapper(BaseEvent, proto) {
     if(!(key in BaseEvent.prototype)) {
       const descriptor = Object.getOwnPropertyDescriptor(proto, key);
       const isFunc = typeof descriptor.value === 'function';
-      Object.defineProperty(CustomEvent.prototype, key, isFunc ? defineCallDescriptor(key) : defineRedirectDescriptor(key));
+      Object.defineProperty(
+        CustomEvent.prototype,
+        key,
+        isFunc ? defineCallDescriptor(key) : defineRedirectDescriptor(key)
+      );
     }
   }
 
@@ -592,7 +599,11 @@ function defineEventAttributeDescriptor(eventName) {
  * @returns {void}
  */
 export function defineEventAttribute(eventTargetPrototype, eventName) {
-  Object.defineProperty(eventTargetPrototype, `on${eventName}`, defineEventAttributeDescriptor(eventName));
+  Object.defineProperty(
+    eventTargetPrototype,
+    `on${eventName}`,
+    defineEventAttributeDescriptor(eventName)
+  );
 }
 
 /**
@@ -789,7 +800,10 @@ EventTarget.prototype = {
             console.error(err);
           }
         }
-      } else if(node.listenerType !== ATTRIBUTE && typeof node.listener.handleEvent === 'function') {
+      } else if(
+        node.listenerType !== ATTRIBUTE &&
+        typeof node.listener.handleEvent === 'function'
+      ) {
         node.listener.handleEvent(wrappedEvent);
       }
 
@@ -843,7 +857,11 @@ export class AbortSignal extends EventTarget {
   get aborted() {
     const aborted = abortedFlags.get(this);
     if(typeof aborted !== 'boolean') {
-      throw new TypeError(`Expected 'this' to be an 'AbortSignal' object, but got ${this === null ? 'null' : typeof this}`);
+      throw new TypeError(
+        `Expected 'this' to be an 'AbortSignal' object, but got ${
+          this === null ? 'null' : typeof this
+        }`
+      );
     }
     return aborted;
   }
@@ -918,7 +936,11 @@ const signals = new WeakMap();
 function getSignal(controller) {
   const signal = signals.get(controller);
   if(signal == null) {
-    throw new TypeError(`Expected 'this' to be an 'AbortController' object, but got ${controller === null ? 'null' : typeof controller}`);
+    throw new TypeError(
+      `Expected 'this' to be an 'AbortController' object, but got ${
+        controller === null ? 'null' : typeof controller
+      }`
+    );
   }
   return signal;
 }

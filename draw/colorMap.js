@@ -22,7 +22,13 @@ export class ColorMap extends Map {
         if(typeof item == 'string') {
           console.log(type);
           item = type.fromString(item);
-        } else if(!(color instanceof type) && type === HSLA && Util.isObject(item) && typeof item.toHSLA == 'function') item = item.toHSLA();
+        } else if(
+          !(color instanceof type) &&
+          type === HSLA &&
+          Util.isObject(item) &&
+          typeof item.toHSLA == 'function'
+        )
+          item = item.toHSLA();
         obj.set(key, item || color);
       }
     }
@@ -33,7 +39,8 @@ export class ColorMap extends Map {
   toString(opts = {}) {
     const base = opts.base || this.base;
     let a = [];
-    for(let [key, color] of this) a.push(color.toString ? color.toString(',', num => num.toString(base)) : '' + color);
+    for(let [key, color] of this)
+      a.push(color.toString ? color.toString(',', num => num.toString(base)) : '' + color);
     a.join(',');
   }
 
@@ -42,7 +49,8 @@ export class ColorMap extends Map {
   }
 
   getMinMax() {
-    let channels = this.type == RGBA ? ['r', 'g', 'b', 'a'] : this.type == HSLA ? ['h', 's', 'l', 'a'] : [];
+    let channels =
+      this.type == RGBA ? ['r', 'g', 'b', 'a'] : this.type == HSLA ? ['h', 's', 'l', 'a'] : [];
     const minmax = a => [Math.min(...a), Math.max(...a)];
     return channels.reduce(
       (acc, chan) => ({

@@ -106,4 +106,5 @@ DropArea.propTypes = {
   onDragLeave: PropTypes.func
 };
 
-export default props => h(Context.Consumer, null, values => h(DropArea, _extends({}, props, values)));
+export default props =>
+  h(Context.Consumer, null, values => h(DropArea, _extends({}, props, values)));

@@ -266,10 +266,16 @@ var PointerEvent = /*#__PURE__*/ (function () {
             }
 
             if(pointerClass === that.curPointerClass) {
-              var pointerXY = pointerClass === 'touch' ? getTouchById(event.changedTouches, that.curTouchId) : event;
+              var pointerXY =
+                pointerClass === 'touch'
+                  ? getTouchById(event.changedTouches, that.curTouchId)
+                  : event;
 
               if(hasXY(pointerXY)) {
-                if(pointerXY.clientX !== that.lastPointerXY.clientX || pointerXY.clientY !== that.lastPointerXY.clientY) {
+                if(
+                  pointerXY.clientX !== that.lastPointerXY.clientX ||
+                  pointerXY.clientY !== that.lastPointerXY.clientY
+                ) {
                   that.move(pointerXY);
                 }
 

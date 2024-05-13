@@ -41,7 +41,12 @@ function normalizeStringPosix(path, allowAboveRoot) {
       if(lastSlash === i - 1 || dots === 1) {
         // NOOP
       } else if(lastSlash !== i - 1 && dots === 2) {
-        if(res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== 46 /*.*/ || res.charCodeAt(res.length - 2) !== 46 /*.*/) {
+        if(
+          res.length < 2 ||
+          lastSegmentLength !== 2 ||
+          res.charCodeAt(res.length - 1) !== 46 /*.*/ ||
+          res.charCodeAt(res.length - 2) !== 46 /*.*/
+        ) {
           if(res.length > 2) {
             let lastSlashIndex = res.lastIndexOf('/');
             if(lastSlashIndex !== res.length - 1) {
@@ -306,7 +311,8 @@ export function dirname(path) {
 }
 
 export function basename(path, ext) {
-  if(ext !== undefined && !(typeof ext == 'string' || ext instanceof RegExp)) throw new TypeError('"ext" argument must be a string or RegExp');
+  if(ext !== undefined && !(typeof ext == 'string' || ext instanceof RegExp))
+    throw new TypeError('"ext" argument must be a string or RegExp');
   assertPath(path);
 
   let start = 0;
@@ -314,7 +320,9 @@ export function basename(path, ext) {
   let matchedSlash = true;
   let i;
 
-  if(ext !== undefined /* && typeof ext == 'string' && ext.length > 0 && ext.length <= path.length*/) {
+  if(
+    ext !== undefined /* && typeof ext == 'string' && ext.length > 0 && ext.length <= path.length*/
+  ) {
     if(typeof ext == 'string') if (ext.length === path.length && ext === path) return '';
 
     let extIdx = ext.length - 1;
@@ -440,7 +448,9 @@ export function extname(path) {
 
 export function format(pathObject) {
   if(pathObject === null || typeof pathObject !== 'object') {
-    throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject);
+    throw new TypeError(
+      'The "pathObject" argument must be of type Object. Received type ' + typeof pathObject
+    );
   }
   return _format('/', pathObject);
 }

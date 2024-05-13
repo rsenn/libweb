@@ -19,7 +19,8 @@ export const concat = coloring.concat.bind(coloring);
 
 export const text = coloring.text.bind(coloring);
 
-export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
+export const dingbatCode = digit =>
+  digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1);
 
 export const Palette = {
   board: (m = (r, g, b) => [r, g, b]) =>
@@ -67,7 +68,8 @@ export const Palette = {
 };
 
 export const dump = (o, depth = 2, breakLength = 400) => {
-  const isElement = o => isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(className(o)) != -1;
+  const isElement = o =>
+    isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(className(o)) != -1;
   let s;
   if(o instanceof Array) {
     s = '';
@@ -126,7 +128,8 @@ export const traverse = function* (obj, path = [], doc) {
     if(Array.isArray(obj)) {
       for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.concat([i]), doc);
     } else if('children' in obj && Array.isArray(obj.children)) {
-      for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.concat(['children', i]), doc);
+      for(let i = 0; i < obj.children.length; i++)
+        yield* traverse(obj.children[i], path.concat(['children', i]), doc);
     }
   }
 };

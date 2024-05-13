@@ -23,7 +23,8 @@ export const JSDefines = {
   ExponentPart: /{ExponentIndicator}{SignedInteger}/,
   OctalIntegerLiteral: /[0]o?{OctalDigits}/,
   HexIntegerLiteral: /[0][xX]{HexDigits}/,
-  DecimalLiteral: /{DecimalIntegerLiteral}\.({DecimalDigits}|)({ExponentPart})?|\.{DecimalDigits}({ExponentPart})?|{DecimalIntegerLiteral}({ExponentPart})?/,
+  DecimalLiteral:
+    /{DecimalIntegerLiteral}\.({DecimalDigits}|)({ExponentPart})?|\.{DecimalDigits}({ExponentPart})?|{DecimalIntegerLiteral}({ExponentPart})?/,
   LineContinuation: /\\(\r\n|\r|\n)/,
   OctalEscapeSequence: /(?:[1-7][0-7]{0,2}|[0-7]{1,3})/,
   HexEscapeSequence: /[x]{HexDigit}{2}/,
@@ -31,7 +32,8 @@ export const JSDefines = {
   SingleEscapeCharacter: /[\'\"\"\\abfnrtv]/,
   NonEscapeCharacter: /[^\'\"\"\\abfnrtv0-9xu]/,
   CharacterEscapeSequence: /({SingleEscapeCharacter}|{NonEscapeCharacter})/,
-  EscapeSequence: /\\{SingleEscapeCharacter}|\\{OctalEscapeSequence}|\\{HexEscapeSequence}|\\{UnicodeEscapeSequence}/,
+  EscapeSequence:
+    /\\{SingleEscapeCharacter}|\\{OctalEscapeSequence}|\\{HexEscapeSequence}|\\{UnicodeEscapeSequence}/,
   DoubleStringCharacter: /([^\"\\\n\r]+|{EscapeSequence}|{LineContinuation})/,
   SingleStringCharacter: /([^\'\\\n\r]+|{EscapeSequence}|{LineContinuation})/,
   TemplateStringCharacter: /([^\`\\\n\r\$]+|{EscapeSequence}|{LineContinuation})/,
@@ -41,8 +43,10 @@ export const JSDefines = {
   RegularExpressionClassChar: /[^\n\r\]\\]|{RegularExpressionBackslashSequence}/,
   RegularExpressionClass: /\[({RegularExpressionClassChar})*\]/,
   RegularExpressionFlags: /({IdentifierPart})*/,
-  RegularExpressionFirstChar: /[^\n\r\*\\\/]|{RegularExpressionBackslashSequence}|\\\/|{RegularExpressionClass}/,
-  RegularExpressionChar: /[^\n\r\\\[\/]|{RegularExpressionBackslashSequence}|{RegularExpressionClass}/,
+  RegularExpressionFirstChar:
+    /[^\n\r\*\\\/]|{RegularExpressionBackslashSequence}|\\\/|{RegularExpressionClass}/,
+  RegularExpressionChar:
+    /[^\n\r\\\[\/]|{RegularExpressionBackslashSequence}|{RegularExpressionClass}/,
   RegularExpressionBody: /({RegularExpressionFirstChar})({RegularExpressionChar})*/,
   RegularExpressionLiteral: /\/{RegularExpressionBody}\/{RegularExpressionFlags}/,
   BooleanValue: /(true|false)/,
@@ -96,7 +100,10 @@ export const JSRules = [
       }
     }
   ],
-  ['numericLiteral', '<INITIAL,NOREGEX,NESTED>({OctalIntegerLiteral}|{HexIntegerLiteral}|{DecimalLiteral})[lmn]?'],
+  [
+    'numericLiteral',
+    '<INITIAL,NOREGEX,NESTED>({OctalIntegerLiteral}|{HexIntegerLiteral}|{DecimalLiteral})[lmn]?'
+  ],
   ['stringLiteral', '<INITIAL,NOREGEX,NESTED>{StringLiteral}'],
 
   ['booleanLiteral', '<INITIAL,NOREGEX,NESTED>{BooleanValue}'],

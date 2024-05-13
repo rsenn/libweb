@@ -90,7 +90,9 @@ export class RUG extends React.Component {
         };
       }
 
-      this.setImage(uid, { ...changes, error: false, done: false, progress: 0 }, image => this.upload(image));
+      this.setImage(uid, { ...changes, error: false, done: false, progress: 0 }, image =>
+        this.upload(image)
+      );
     } catch(e) {}
   }
 

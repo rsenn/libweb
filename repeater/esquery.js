@@ -7,7 +7,12 @@ function _typeof(obj) {
     };
   } else {
     _typeof = function(obj) {
-      return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
+      return obj &&
+        typeof Symbol === 'function' &&
+        obj.constructor === Symbol &&
+        obj !== Symbol.prototype
+        ? 'symbol'
+        : typeof obj;
     };
   }
 
@@ -15,11 +20,21 @@ function _typeof(obj) {
 }
 
 function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  return (
+    _arrayWithHoles(arr) ||
+    _iterableToArrayLimit(arr, i) ||
+    _unsupportedIterableToArray(arr, i) ||
+    _nonIterableRest()
+  );
 }
 
 function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  return (
+    _arrayWithoutHoles(arr) ||
+    _iterableToArray(arr) ||
+    _unsupportedIterableToArray(arr) ||
+    _nonIterableSpread()
+  );
 }
 
 function _arrayWithoutHoles(arr) {
@@ -67,7 +82,8 @@ function _unsupportedIterableToArray(o, minLen) {
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if(n === 'Object' && o.constructor) n = o.constructor.name;
   if(n === 'Map' || n === 'Set') return Array.from(n);
-  if(n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  if(n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
 }
 
 function _arrayLikeToArray(arr, len) {
@@ -79,14 +95,27 @@ function _arrayLikeToArray(arr, len) {
 }
 
 function _nonIterableSpread() {
-  throw new TypeError('Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
+  throw new TypeError(
+    'Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+  );
 }
 
 function _nonIterableRest() {
-  throw new TypeError('Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
+  throw new TypeError(
+    'Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+  );
 }
 
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+var commonjsGlobal =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+    ? window
+    : typeof global !== 'undefined'
+    ? global
+    : typeof self !== 'undefined'
+    ? self
+    : {};
 
 function createCommonjsModule(fn, module) {
   return (module = { exports: {} }), fn(module, module.exports), module.exports;
@@ -422,7 +451,11 @@ var estraverse = createCommonjsModule(function (module, exports) {
       this.__state = null;
 
       if(callback) {
-        result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+        result = callback.call(
+          this,
+          element.node,
+          this.__leavelist[this.__leavelist.length - 1].node
+        );
       }
 
       this.__current = previous;
@@ -480,7 +513,10 @@ var estraverse = createCommonjsModule(function (module, exports) {
     }
 
     function isProperty(nodeType, key) {
-      return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
+      return (
+        (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) &&
+        'properties' === key
+      );
     }
 
     function candidateExistsInLeaveList(leavelist, candidate) {
@@ -494,7 +530,18 @@ var estraverse = createCommonjsModule(function (module, exports) {
     }
 
     Controller.prototype.traverse = function traverse(root, visitor) {
-      var worklist, leavelist, element, node, nodeType, ret, key, current, current2, candidates, candidate, sentinel;
+      var worklist,
+        leavelist,
+        element,
+        node,
+        nodeType,
+        ret,
+        key,
+        current,
+        current2,
+        candidates,
+        candidate,
+        sentinel;
 
       this.__initialize(root, visitor);
 
@@ -591,7 +638,19 @@ var estraverse = createCommonjsModule(function (module, exports) {
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
-      var worklist, leavelist, node, nodeType, target, element, current, current2, candidates, candidate, sentinel, outer, key;
+      var worklist,
+        leavelist,
+        node,
+        nodeType,
+        target,
+        element,
+        current,
+        current2,
+        candidates,
+        candidate,
+        sentinel,
+        outer,
+        key;
 
       function removeElem(element) {
         var i, key, nextElem, parent;
@@ -716,9 +775,19 @@ var estraverse = createCommonjsModule(function (module, exports) {
               }
 
               if(isProperty(nodeType, candidates[current])) {
-                element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
+                element = new Element(
+                  candidate[current2],
+                  [key, current2],
+                  'Property',
+                  new Reference(candidate, current2)
+                );
               } else if(isNode(candidate[current2])) {
-                element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
+                element = new Element(
+                  candidate[current2],
+                  [key, current2],
+                  null,
+                  new Reference(candidate, current2)
+                );
               } else {
                 continue;
               }
@@ -924,7 +993,10 @@ var parser = createCommonjsModule(function (module) {
             i;
 
           for(i = 0; i < expectation.parts.length; i++) {
-            escapedParts += expectation.parts[i] instanceof Array ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1]) : classEscape(expectation.parts[i]);
+            escapedParts +=
+              expectation.parts[i] instanceof Array
+                ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1])
+                : classEscape(expectation.parts[i]);
           }
 
           return '[' + (expectation.inverted ? '^' : '') + escapedParts + ']';
@@ -1012,7 +1084,9 @@ var parser = createCommonjsModule(function (module) {
             return descriptions[0] + ' or ' + descriptions[1];
 
           default:
-            return descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1];
+            return (
+              descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1]
+            );
         }
       }
 
@@ -1045,7 +1119,11 @@ var parser = createCommonjsModule(function (module) {
         peg$c2 = ' ',
         peg$c3 = peg$literalExpectation(' ', false),
         peg$c4 = /^[^ [\],():#!=><~+.]/,
-        peg$c5 = peg$classExpectation([' ', '[', ']', ',', '(', ')', ':', '#', '!', '=', '>', '<', '~', '+', '.'], true, false),
+        peg$c5 = peg$classExpectation(
+          [' ', '[', ']', ',', '(', ')', ':', '#', '!', '=', '>', '<', '~', '+', '.'],
+          true,
+          false
+        ),
         peg$c6 = function peg$c6(i) {
           return i.join('');
         },
@@ -1391,7 +1469,12 @@ var parser = createCommonjsModule(function (module) {
       }
 
       function peg$buildStructuredError(expected, found, location) {
-        return new peg$SyntaxError(peg$SyntaxError.buildMessage(expected, found), expected, found, location);
+        return new peg$SyntaxError(
+          peg$SyntaxError.buildMessage(expected, found),
+          expected,
+          found,
+          location
+        );
       }
 
       function peg$parsestart() {
@@ -3979,7 +4062,9 @@ var parser = createCommonjsModule(function (module) {
         throw peg$buildStructuredError(
           peg$maxFailExpected,
           peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null,
-          peg$maxFailPos < input.length ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1) : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
+          peg$maxFailPos < input.length
+            ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1)
+            : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
         );
       }
     }
@@ -4248,14 +4333,20 @@ function matches(node, selector, ancestry) {
 
     case 'sibling':
       return (
-        (matches(node, selector.right, ancestry) && sibling(node, selector.left, ancestry, LEFT_SIDE)) ||
-        (selector.left.subject && matches(node, selector.left, ancestry) && sibling(node, selector.right, ancestry, RIGHT_SIDE))
+        (matches(node, selector.right, ancestry) &&
+          sibling(node, selector.left, ancestry, LEFT_SIDE)) ||
+        (selector.left.subject &&
+          matches(node, selector.left, ancestry) &&
+          sibling(node, selector.right, ancestry, RIGHT_SIDE))
       );
 
     case 'adjacent':
       return (
-        (matches(node, selector.right, ancestry) && adjacent(node, selector.left, ancestry, LEFT_SIDE)) ||
-        (selector.right.subject && matches(node, selector.left, ancestry) && adjacent(node, selector.right, ancestry, RIGHT_SIDE))
+        (matches(node, selector.right, ancestry) &&
+          adjacent(node, selector.left, ancestry, LEFT_SIDE)) ||
+        (selector.right.subject &&
+          matches(node, selector.left, ancestry) &&
+          adjacent(node, selector.right, ancestry, RIGHT_SIDE))
       );
 
     case 'nth-child':
@@ -4291,12 +4382,17 @@ function matches(node, selector, ancestry) {
           return (
             node.type.slice(-10) === 'Expression' ||
             node.type.slice(-7) === 'Literal' ||
-            (node.type === 'Identifier' && (ancestry.length === 0 || ancestry[0].type !== 'MetaProperty')) ||
+            (node.type === 'Identifier' &&
+              (ancestry.length === 0 || ancestry[0].type !== 'MetaProperty')) ||
             node.type === 'MetaProperty'
           );
 
         case 'function':
-          return node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression';
+          return (
+            node.type === 'FunctionDeclaration' ||
+            node.type === 'FunctionExpression' ||
+            node.type === 'ArrowFunctionExpression'
+          );
       }
 
       throw new Error('Unknown class name: '.concat(selector.name));
@@ -4391,7 +4487,11 @@ function adjacent(node, selector, ancestry, side) {
         return true;
       }
 
-      if(side === RIGHT_SIDE && idx < listProp.length - 1 && matches(listProp[idx + 1], selector, ancestry)) {
+      if(
+        side === RIGHT_SIDE &&
+        idx < listProp.length - 1 &&
+        matches(listProp[idx + 1], selector, ancestry)
+      ) {
         return true;
       }
     }
@@ -4459,7 +4559,11 @@ function subjects(selector, ancestor) {
 
   var results = selector.subject ? [ancestor] : [];
 
-  for(var _i5 = 0, _Object$entries = _objectEntries(selector); _i5 < _Object$entries.length; _i5++) {
+  for(
+    var _i5 = 0, _Object$entries = _objectEntries(selector);
+    _i5 < _Object$entries.length;
+    _i5++
+  ) {
     var _Object$entries$_i = _slicedToArray(_Object$entries[_i5], 2),
       p = _Object$entries$_i[0],
       sel = _Object$entries$_i[1];

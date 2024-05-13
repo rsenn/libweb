@@ -19,7 +19,13 @@ export function string(str) {
 
 export function token(str) {
   let tok = str instanceof RegExp ? regex(str) : typeof str == 'string' ? string(str) : str;
-  return one(concat(ignore(any(char(' \n\r\t'))), str instanceof RegExp ? regex(str) : typeof str == 'function' ? str : string(str), ignore(any(char(' \n\r\t')))));
+  return one(
+    concat(
+      ignore(any(char(' \n\r\t'))),
+      str instanceof RegExp ? regex(str) : typeof str == 'function' ? str : string(str),
+      ignore(any(char(' \n\r\t')))
+    )
+  );
   return one(concat(ignore(any(char(' \n\r\t'))), tok /*, ignore(any(char(' \n\r\t')))*/));
   return tok;
 }
@@ -219,7 +225,10 @@ export function option(parser) {
  * @return {Function}
  */
 export function ignore(parser) {
-  return map(parser, result => null /*(result instanceof Array && result.length == 0) ? null : result*/);
+  return map(
+    parser,
+    result => null /*(result instanceof Array && result.length == 0) ? null : result*/
+  );
 }
 
 /**
@@ -227,7 +236,9 @@ export function ignore(parser) {
  * @return {Function}
  */
 export function one(parser) {
-  return map(parser, result => (result instanceof Array && result.length == 1 ? result[0] : result));
+  return map(parser, result =>
+    result instanceof Array && result.length == 1 ? result[0] : result
+  );
 }
 
 /**

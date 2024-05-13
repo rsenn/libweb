@@ -78,7 +78,8 @@ function json2xml_translator() {
             //legacy form
             if(m == '#text') xml += v[m];
             else if(m == '#cdata') xml += '<![CDATA[' + v[m] + ']]>';
-            else if(m.charAt(0) != '@') xml += X.toXml(v[m], m, ind + '\t', newSiblingAttrs[m]) + '\n';
+            else if(m.charAt(0) != '@')
+              xml += X.toXml(v[m], m, ind + '\t', newSiblingAttrs[m]) + '\n';
           }
           if(name != null) {
             xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>\n';

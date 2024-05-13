@@ -134,7 +134,10 @@ const JSONPatcherProxy = (function () {
         //`undefined` is being set to an already undefined value, keep silent
         return reflectionResult;
       }
-      if(wasKeyInTreeBeforeReflection && !isSignificantChange(valueBeforeReflection, newValue, isTreeAnArray)) {
+      if(
+        wasKeyInTreeBeforeReflection &&
+        !isSignificantChange(valueBeforeReflection, newValue, isTreeAnArray)
+      ) {
         return reflectionResult; //Value wasn't actually changed with respect to its JSON projection
       }
       //when array element is set to `undefined`, should generate replace to `null`
@@ -157,7 +160,9 @@ const JSONPatcherProxy = (function () {
       if(isNonSerializableArrayProperty) {
         /* array props (as opposed to indices) don't emit any patches, to avoid needless `length` patches */
         if(key != 'length' && !warnedAboutNonIntegrerArrayProp) {
-          console.warn(`JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch`);
+          console.warn(
+            `JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch`
+          );
         }
         return reflectionResult;
       }
@@ -338,7 +343,8 @@ const JSONPatcherProxy = (function () {
    */
   JSONPatcherProxy.prototype._disableTrapsForTreeMetadata = function(treeMetadata) {
     if(this._showDetachedWarning) {
-      const message = "You're accessing an object that is detached from the observedObject tree, see https://github.com/Palindrom/JSONPatcherProxy#detached-objects";
+      const message =
+        "You're accessing an object that is detached from the observedObject tree, see https://github.com/Palindrom/JSONPatcherProxy#detached-objects";
 
       treeMetadata.handler.set = (parent, key, newValue) => {
         console.warn(message);

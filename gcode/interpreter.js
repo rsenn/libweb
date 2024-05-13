@@ -59,7 +59,16 @@ const interpret = (self, data) => {
       args = fromPairs(words.slice(1));
 
       // Motion Mode
-      if(code === 0 || code === 1 || code === 2 || code === 3 || code === 38.2 || code === 38.3 || code === 38.4 || code === 38.5) {
+      if(
+        code === 0 ||
+        code === 1 ||
+        code === 2 ||
+        code === 3 ||
+        code === 38.2 ||
+        code === 38.3 ||
+        code === 38.4 ||
+        code === 38.5
+      ) {
         self.motionMode = cmd;
       } else if(code === 80) {
         self.motionMode = '';
@@ -75,7 +84,17 @@ const interpret = (self, data) => {
       // F750 ; w/o motion command
       cmd = letter;
       args = code;
-    } else if(letter === 'X' || letter === 'Y' || letter === 'Z' || letter === 'A' || letter === 'B' || letter === 'C' || letter === 'I' || letter === 'J' || letter === 'K') {
+    } else if(
+      letter === 'X' ||
+      letter === 'Y' ||
+      letter === 'Z' ||
+      letter === 'A' ||
+      letter === 'B' ||
+      letter === 'C' ||
+      letter === 'I' ||
+      letter === 'J' ||
+      letter === 'K'
+    ) {
       // Use previous motion command if the line does not start with G-code or M-code.
       // @example
       //   G0 Z0.25

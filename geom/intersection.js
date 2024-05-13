@@ -14,7 +14,8 @@ export class Intersection {
 
     //https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
 
-    denominator = (line2.y2 - line2.y1) * (line1.x2 - line1.x1) - (line2.x2 - line2.x1) * (line1.y2 - line1.y1);
+    denominator =
+      (line2.y2 - line2.y1) * (line1.x2 - line1.x1) - (line2.x2 - line2.x1) * (line1.y2 - line1.y1);
 
     if(denominator == 0) return null;
 
@@ -43,8 +44,10 @@ export class Intersection {
   static equals(intersection1, intersection2) {
     return (
       Point.equals(intersection1.point, intersection2.point) &&
-      ((Line.equals(intersection1.line1, intersection2.line1) && Line.equals(intersection1.line2, intersection2.line2)) ||
-        (Line.equals(intersection1.line1, intersection2.line2) && Line.equals(intersection1.line2, intersection2.line1)))
+      ((Line.equals(intersection1.line1, intersection2.line1) &&
+        Line.equals(intersection1.line2, intersection2.line2)) ||
+        (Line.equals(intersection1.line1, intersection2.line2) &&
+          Line.equals(intersection1.line2, intersection2.line1)))
     );
   }
 }

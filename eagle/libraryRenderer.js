@@ -39,7 +39,16 @@ export class LibraryRenderer extends EagleSVGRenderer {
    * @param      {<type>}  [opts={}]  The options
    */
   renderItem(item, options = {}) {
-    let { transform, transformation = this.mirrorY, viewRect, viewSize, svgElement = true, create = this.create, index, ...opts } = options;
+    let {
+      transform,
+      transformation = this.mirrorY,
+      viewRect,
+      viewSize,
+      svgElement = true,
+      create = this.create,
+      index,
+      ...opts
+    } = options;
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     //  this.debug(`LibraryRenderer.renderItem`, item, item.raw);
     const layer = item.layer;
@@ -61,15 +70,24 @@ export class LibraryRenderer extends EagleSVGRenderer {
         children
       );
 
-    let devicesets = [...this.doc.getAll(e => e && e.attributes && e.attributes[item.tagName] == item.name)]
+    let devicesets = [
+      ...this.doc.getAll(e => e && e.attributes && e.attributes[item.tagName] == item.name)
+    ]
       .map(e => [e, e.scope().deviceset])
       .map(([e, deviceset]) => deviceset)
       .filter(deviceset => !!deviceset);
-    let prefixes = unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix));
+    let prefixes = unique(
+      devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix)
+    );
     let suffix = '';
     if(item.tagName == 'symbol') {
       let symbolUsages = devicesets
-        .map(set => [set, [...set.gates.list].map((g, i) => [i, g.name, g.symbol]).filter(([i, name, symbol]) => symbol.name == item.name)])
+        .map(set => [
+          set,
+          [...set.gates.list]
+            .map((g, i) => [i, g.name, g.symbol])
+            .filter(([i, name, symbol]) => symbol.name == item.name)
+        ])
         .filter(([set, gates]) => gates.length > 0);
 
       if(symbolUsages[0]) {
@@ -123,7 +141,9 @@ export class LibraryRenderer extends EagleSVGRenderer {
       let matrix = new Matrix().affineTransform(measure.toPoints(), new Rect(bounds).toPoints());
       //  console.debug("LibraryRenderer.renderItem ", {matrix});
 
-      let { scaling, translation } = (transformation = transformation.concat(TransformationList.fromMatrix(matrix)));
+      let { scaling, translation } = (transformation = transformation.concat(
+        TransformationList.fromMatrix(matrix)
+      ));
 
       let factor = Math.min(scaling.x, scaling.y);
       scaling.x = factor;
@@ -138,7 +158,9 @@ if(translation) {
 
       window.matrix = matrix;
 
-      component = super.render(item, { ...options, index, transform: transformation, bounds }, [group]);
+      component = super.render(item, { ...options, index, transform: transformation, bounds }, [
+        group
+      ]);
     }
     return component;
   }
@@ -147,12 +169,21 @@ if(translation) {
     if(collection instanceof EagleElement) collection = [...collection.children];
 
     this.debug('LibraryRenderer.renderCollection', { collection, options });
-    let items = collection.map((item, index) => [[ucfirst(item.tagName), item.name], this.renderItem(item, { ...options, index })]);
+    let items = collection.map((item, index) => [
+      [ucfirst(item.tagName), item.name],
+      this.renderItem(item, { ...options, index })
+    ]);
     return items;
   }
 
   render(options = {}) {
-    let { component = Fragment, props = {}, item = { component: Fragment, props: {} }, asEntries = false, ...opts } = options;
+    let {
+      component = Fragment,
+      props = {},
+      item = { component: Fragment, props: {} },
+      asEntries = false,
+      ...opts
+    } = options;
     const { symbols, packages, devicesets } = this.doc.library;
     let allItems = (window.allItems = [...symbols.children, ...packages.children]);
     let bbox = allItems.reduce((a, it) => a.update(it.getBounds()), new BBox());

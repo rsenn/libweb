@@ -309,9 +309,15 @@ class XCFCompositer {
   compose(backColour, layerColour) {
     var a1 = xcfToFloat(backColour.alpha);
     var a2 = xcfToFloat(isUnset(layerColour.alpha) ? 255 : layerColour.alpha) * this._opacity;
-    var red = floatToXcf(this.blend(a1, xcfToFloat(backColour.red), a2, xcfToFloat(layerColour.red)));
-    var green = floatToXcf(this.blend(a1, xcfToFloat(backColour.green), a2, xcfToFloat(layerColour.green)));
-    var blue = floatToXcf(this.blend(a1, xcfToFloat(backColour.blue), a2, xcfToFloat(layerColour.blue)));
+    var red = floatToXcf(
+      this.blend(a1, xcfToFloat(backColour.red), a2, xcfToFloat(layerColour.red))
+    );
+    var green = floatToXcf(
+      this.blend(a1, xcfToFloat(backColour.green), a2, xcfToFloat(layerColour.green))
+    );
+    var blue = floatToXcf(
+      this.blend(a1, xcfToFloat(backColour.blue), a2, xcfToFloat(layerColour.blue))
+    );
     return {
       red: red,
       green: green,
@@ -364,9 +370,15 @@ class GeneralCompositer extends XCFCompositer {
   compose(backColour, layerColour) {
     var a1 = xcfToFloat(backColour.alpha);
     var a2 = xcfToFloat(isUnset(layerColour.alpha) ? 255 : layerColour.alpha) * this._opacity;
-    var red = floatToXcf(this.performBlend(a1, xcfToFloat(backColour.red), a2, xcfToFloat(layerColour.red)));
-    var green = floatToXcf(this.performBlend(a1, xcfToFloat(backColour.green), a2, xcfToFloat(layerColour.green)));
-    var blue = floatToXcf(this.performBlend(a1, xcfToFloat(backColour.blue), a2, xcfToFloat(layerColour.blue)));
+    var red = floatToXcf(
+      this.performBlend(a1, xcfToFloat(backColour.red), a2, xcfToFloat(layerColour.red))
+    );
+    var green = floatToXcf(
+      this.performBlend(a1, xcfToFloat(backColour.green), a2, xcfToFloat(layerColour.green))
+    );
+    var blue = floatToXcf(
+      this.performBlend(a1, xcfToFloat(backColour.blue), a2, xcfToFloat(layerColour.blue))
+    );
     return {
       red: red,
       green: green,

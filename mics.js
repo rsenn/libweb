@@ -44,8 +44,12 @@ function mix(...args) {
     mixins: { value: args, writable: false }
   });
   const Class = mixin(superclass);
-  const constructor = Class.hasOwnProperty('constructor') ? Class.constructor.bind(Class) : (...args) => new Class(...args);
-  Object.getOwnPropertyNames(Class).forEach(k => Object.defineProperty(constructor, k, { value: Class[k] }));
+  const constructor = Class.hasOwnProperty('constructor')
+    ? Class.constructor.bind(Class)
+    : (...args) => new Class(...args);
+  Object.getOwnPropertyNames(Class).forEach(k =>
+    Object.defineProperty(constructor, k, { value: Class[k] })
+  );
   return Object.defineProperties(constructor, {
     mixin: { value: mixin, writable: false },
     class: { value: Class, writable: false },
@@ -70,7 +74,8 @@ function is(x, type) {
   if(typeof x == 'object') {
     if(x instanceof type) return true;
     if(type.class && x instanceof type.class) return true;
-    if(type.mixin && type.mixin.classes) return type.mixin.classes.reduce((f, c) => f || is(x, c), false);
+    if(type.mixin && type.mixin.classes)
+      return type.mixin.classes.reduce((f, c) => f || is(x, c), false);
   } else if(typeof x == 'function') {
     if(x.mixin && x.mixin.mixins.indexOf(type) !== -1) return true;
     let c = x;
@@ -108,7 +113,13 @@ function like(x, type) {
   if(is(x, type)) return true;
   const itf = type.interface || (typeof type == 'function' && getInterface(type.prototype));
   const subject = typeof x == 'function' ? x.interface || getInterface(x.prototype) : x;
-  return itf && Object.keys(itf).reduce((f, k) => f && (typeof itf[k] == 'function' ? typeof subject[k] == 'function' : k in subject), true);
+  return (
+    itf &&
+    Object.keys(itf).reduce(
+      (f, k) => f && (typeof itf[k] == 'function' ? typeof subject[k] == 'function' : k in subject),
+      true
+    )
+  );
 }
 
 /**
@@ -133,7 +144,10 @@ function getInterface(proto) {
 function getPropertyNames(proto) {
   const results = [];
   while(proto !== Object.prototype) {
-    Object.getOwnPropertyNames(proto).reduce((arr, k) => (arr.indexOf(k) === -1 ? arr.push(k) && arr : arr), results);
+    Object.getOwnPropertyNames(proto).reduce(
+      (arr, k) => (arr.indexOf(k) === -1 ? arr.push(k) && arr : arr),
+      results
+    );
     proto = Object.getPrototypeOf(proto).constructor.prototype;
   }
   return results;
@@ -146,7 +160,10 @@ function isMixin(x) {
 function isClass(x) {
   if(typeof x != 'function') return false;
   const s = x.toString();
-  return /^class\s/.test(s) || /^.*classCallCheck\(/.test(s.replace(/^[^{]*{\s*/, '').replace(/\s*}[^}]*$/, ''));
+  return (
+    /^class\s/.test(s) ||
+    /^.*classCallCheck\(/.test(s.replace(/^[^{]*{\s*/, '').replace(/\s*}[^}]*$/, ''))
+  );
 }
 
 function isFactory(x) {

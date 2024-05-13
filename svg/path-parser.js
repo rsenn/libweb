@@ -36,7 +36,10 @@ peg$SyntaxError.buildMessage = function(expected, found) {
         i;
 
       for(i = 0; i < expectation.parts.length; i++) {
-        escapedParts += expectation.parts[i] instanceof Array ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1]) : classEscape(expectation.parts[i]);
+        escapedParts +=
+          expectation.parts[i] instanceof Array
+            ? classEscape(expectation.parts[i][0]) + '-' + classEscape(expectation.parts[i][1])
+            : classEscape(expectation.parts[i]);
       }
 
       return '[' + (expectation.inverted ? '^' : '') + escapedParts + ']';
@@ -115,7 +118,9 @@ peg$SyntaxError.buildMessage = function(expected, found) {
         return descriptions[0] + ' or ' + descriptions[1];
 
       default:
-        return descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1];
+        return (
+          descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1]
+        );
     }
   }
 
@@ -271,7 +276,11 @@ function peg$parse(input, options) {
   function expected(description, location) {
     location = location !== void 0 ? location : peg$computeLocation(peg$savedPos, peg$currPos);
 
-    throw peg$buildStructuredError([peg$otherExpectation(description)], input.substring(peg$savedPos, peg$currPos), location);
+    throw peg$buildStructuredError(
+      [peg$otherExpectation(description)],
+      input.substring(peg$savedPos, peg$currPos),
+      location
+    );
   }
 
   function error(message, location) {
@@ -374,7 +383,12 @@ function peg$parse(input, options) {
   }
 
   function peg$buildStructuredError(expected, found, location) {
-    return new peg$SyntaxError(peg$SyntaxError.buildMessage(expected, found), expected, found, location);
+    return new peg$SyntaxError(
+      peg$SyntaxError.buildMessage(expected, found),
+      expected,
+      found,
+      location
+    );
   }
 
   function peg$parsesvg_path() {
@@ -2136,7 +2150,9 @@ function peg$parse(input, options) {
   throw peg$buildStructuredError(
     peg$maxFailExpected,
     peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null,
-    peg$maxFailPos < input.length ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1) : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
+    peg$maxFailPos < input.length
+      ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1)
+      : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
   );
 }
 

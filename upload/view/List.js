@@ -27,7 +27,21 @@ export class List extends React.Component {
 
   render() {
     const {
-        image: { uid, name, size, done, abort, click, error, remove, src, upload, refresh, progress, uploading },
+        image: {
+          uid,
+          name,
+          size,
+          done,
+          abort,
+          click,
+          error,
+          remove,
+          src,
+          upload,
+          refresh,
+          progress,
+          uploading
+        },
         ...props
       } = this.props,
       { spin } = this.state,

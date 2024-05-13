@@ -10,7 +10,11 @@ const some = parser => str => {
       return [memo, remaining];
     }
     const result = parser(remaining);
-    return !result.length ? (!memo ? [] : [memo, remaining]) : recurse(`${memo}${result[0]}`, result[1]);
+    return !result.length
+      ? !memo
+        ? []
+        : [memo, remaining]
+      : recurse(`${memo}${result[0]}`, result[1]);
   };
   return recurse('', str);
 };
@@ -23,10 +27,15 @@ const seq =
         return [memo, remainingStr];
       }
       const result = remainingParsers[0](remainingStr);
-      return !result.length ? [] : recurse(remainingParsers.slice(1), [[...memo, result[0]], result[1]]);
+      return !result.length
+        ? []
+        : recurse(remainingParsers.slice(1), [[...memo, result[0]], result[1]]);
     };
 
-    const [result, remaining] = recurse(typeof parsers === 'function' ? parsers() : parsers, [[], str]);
+    const [result, remaining] = recurse(typeof parsers === 'function' ? parsers() : parsers, [
+      [],
+      str
+    ]);
     return !result ? [] : [reducer(result), remaining];
   };
 

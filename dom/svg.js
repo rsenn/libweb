@@ -35,8 +35,15 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static factory(...args) {
-    let delegate = isObject(args[0]) && ('append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0]) ? args.shift() : {};
-    let parent = isObject(args[0]) ? (typeof args[0] == 'function' || 'tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null) : null;
+    let delegate =
+      isObject(args[0]) && ('append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0])
+        ? args.shift()
+        : {};
+    let parent = isObject(args[0])
+      ? typeof args[0] == 'function' || 'tagName' in args[0] || 'appendChild' in args[0]
+        ? args.shift()
+        : null
+      : null;
     let size = isSize(args[0]) ? args.shift() : null;
 
     delegate = {
@@ -83,7 +90,19 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     delegate.append_to = function(elem, p) {
       p = p || this.root;
-      if(['style', 'gradient', 'pattern', 'filter', 'hatch', 'radialGradient', 'linearGradient', 'solidcolor'].indexOf(elem.tagName) != -1) p = p.querySelector('defs');
+      if(
+        [
+          'style',
+          'gradient',
+          'pattern',
+          'filter',
+          'hatch',
+          'radialGradient',
+          'linearGradient',
+          'solidcolor'
+        ].indexOf(elem.tagName) != -1
+      )
+        p = p.querySelector('defs');
       append_to(elem, p);
     };
 
@@ -128,7 +147,14 @@ else */ if(text) svg.innerHTML = innerHTML;
     factory.clear = function() {
       let p = parent || delegate.root;
       window.p = p;
-      console.log('p:', p, ' p.firstChild:', p.firstChild, ' p.firstElementChild:', p.firstElementChild);
+      console.log(
+        'p:',
+        p,
+        ' p.firstChild:',
+        p.firstChild,
+        ' p.firstElementChild:',
+        p.firstElementChild
+      );
       while(p.firstElementChild) p.removeChild(p.firstElementChild);
       return this;
     };
@@ -222,14 +248,21 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static *coloredElements(elem) {
-    for(let item of Element.iterator(elem, (e, d) => ['fill', 'stroke'].some(a => e.hasAttribute(a)))) {
+    for(let item of Element.iterator(elem, (e, d) =>
+      ['fill', 'stroke'].some(a => e.hasAttribute(a))
+    )) {
       const { fill, stroke } = this.getProperties(item, ['fill', 'stroke']);
-      const a = Object.entries({ fill, stroke }).filter(([k, v]) => v !== undefined && v !== 'none');
+      const a = Object.entries({ fill, stroke }).filter(
+        ([k, v]) => v !== undefined && v !== 'none'
+      );
       if(a.length == 0) continue;
 
       const value = {
         item,
-        props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }), {})
+        props: a.reduce(
+          (acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }),
+          {}
+        )
       };
       yield value;
       //console.log(value);
@@ -255,7 +288,9 @@ else */ if(text) svg.innerHTML = innerHTML;
         return this.list.map(item => item.color);
       },
       index(name) {
-        return typeof name == 'number' && this.list[name] ? name : this.list.findIndex(item => item.color === name);
+        return typeof name == 'number' && this.list[name]
+          ? name
+          : this.list.findIndex(item => item.color === name);
       },
       name(i) {
         return typeof i == 'number' ? this.list[i].name : typeof i == 'string' ? i : null;
@@ -283,7 +318,9 @@ else */ if(text) svg.innerHTML = innerHTML;
 
         for(let i = 0; i < this.list.length; i++) {
           for(let j = 0; j < this.list.length; j++) {
-            const dist = RGBA.fromString(this.list[i].color).contrast(RGBA.fromString(this.list[j].color));
+            const dist = RGBA.fromString(this.list[i].color).contrast(
+              RGBA.fromString(this.list[j].color)
+            );
 
             if(/*ret[i][j] == null &&*/ j != i) ret[j][i] = +dist.toFixed(3);
             else ret[j][i] = Number.POSITIVE_INFINITY;
@@ -457,7 +494,8 @@ else */ if(text) svg.innerHTML = innerHTML;
     };
     let data = new SvgPath();
 
-    if(typeof path != 'string' && isObject(path) && typeof path.getAttribute == 'function') path = path.getAttribute('d');
+    if(typeof path != 'string' && isObject(path) && typeof path.getAttribute == 'function')
+      path = path.getAttribute('d');
 
     path.replace(segment, (_, command, args) => {
       let type = command.toLowerCase();
@@ -474,7 +512,10 @@ else */ if(text) svg.innerHTML = innerHTML;
           data.cmd(...args);
           return;
         }
-        if(args.length < length[type]) throw new Error(`malformed path data (${args.length} < ${length[type]}): ${command} ${args}`);
+        if(args.length < length[type])
+          throw new Error(
+            `malformed path data (${args.length} < ${length[type]}): ${command} ${args}`
+          );
         data.cmd(...[command].concat(args.splice(0, length[type])));
       }
     });
@@ -495,7 +536,12 @@ else */ if(text) svg.innerHTML = innerHTML;
     else if(isObject(path) && 'd' in path) path = path.d;
     let ret = [...(path + '').matchAll(/([A-Za-z])([^A-Za-z]*)/g)];
     ret = ret.map(command => [...command].slice(1));
-    ret = ret.map(([command, args]) => [command, ...[...args.matchAll(/(0|-?([1-9][0-9]*|)(\.[0-9]*|))/g)].map(m => m[0]).filter(arg => arg !== '')]);
+    ret = ret.map(([command, args]) => [
+      command,
+      ...[...args.matchAll(/(0|-?([1-9][0-9]*|)(\.[0-9]*|))/g)]
+        .map(m => m[0])
+        .filter(arg => arg !== '')
+    ]);
 
     //ret = ret.map(command => [...command][0].trim());
     //  ret = ret.map(command => command.split(/(,|\s+)/g));

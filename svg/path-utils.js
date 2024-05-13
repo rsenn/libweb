@@ -7,7 +7,9 @@ import { isObject, partitionArray } from '../misc.js';
 export const isUpper = s => s.toUpperCase() == s;
 
 function SvgCommand(peg) {
-  const [name, ...args] = Object.values(util.filterKeys(peg, k => ['command', 'relative'].indexOf(k) == -1));
+  const [name, ...args] = Object.values(
+    util.filterKeys(peg, k => ['command', 'relative'].indexOf(k) == -1)
+  );
 
   return Object.setPrototypeOf({ name, args }, SvgCommand.prototype);
 }
@@ -32,7 +34,10 @@ export function parseSvgPath(str, absolute) {
   if(typeof str != 'string') return new parseSvgPath('', absolute);
   let path = parseSVG(str);
   if(absolute) path = makeAbsolute(path);
-  return Object.setPrototypeOf({ commands: path.map(cmd => SvgCommand(cmd)) }, parseSvgPath.prototype);
+  return Object.setPrototypeOf(
+    { commands: path.map(cmd => SvgCommand(cmd)) },
+    parseSvgPath.prototype
+  );
 }
 
 parseSvgPath.prototype = new SvgPath();
@@ -108,7 +113,11 @@ Object.assign(parseSvgPath.prototype, {
 
         args[0] = matrix.transformWH(arg, arg)[i];
       } else if(!isUpper(name) && args.length >= 2) {
-        args.splice(0, args.length, ...[...partitionArray(args, 2)].map(([x, y]) => matrix.transformWH(x, y)));
+        args.splice(
+          0,
+          args.length,
+          ...[...partitionArray(args, 2)].map(([x, y]) => matrix.transformWH(x, y))
+        );
       }
 
       commands.push(Object.setPrototypeOf({ name, args }, SvgCommand.prototype));

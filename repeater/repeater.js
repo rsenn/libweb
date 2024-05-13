@@ -209,7 +209,8 @@ function finish(r) {
   r.state = Done;
   r.buffer = undefined;
   for(const next of r.nexts) {
-    const execution = r.pending === undefined ? consumeExecution(r) : r.pending.then(() => consumeExecution(r));
+    const execution =
+      r.pending === undefined ? consumeExecution(r) : r.pending.then(() => consumeExecution(r));
     next.resolve(createIteration(r, execution));
   }
   r.pushes = [];
@@ -235,7 +236,9 @@ function reject(r) {
 function push(r, value) {
   swallow(value);
   if(r.pushes.length >= MAX_QUEUE_LENGTH) {
-    throw new RepeaterOverflowError(`No more than ${MAX_QUEUE_LENGTH} pending calls to push are allowed on a single repeater.`);
+    throw new RepeaterOverflowError(
+      `No more than ${MAX_QUEUE_LENGTH} pending calls to push are allowed on a single repeater.`
+    );
   } else if(r.state >= Stopped) {
     return Promise.resolve(undefined);
   }
@@ -343,7 +346,9 @@ class Repeater {
       throw new Error('WeakMap error');
     }
     if(r.nexts.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError(`No more than ${MAX_QUEUE_LENGTH} pending calls to next are allowed on a single repeater.`);
+      throw new RepeaterOverflowError(
+        `No more than ${MAX_QUEUE_LENGTH} pending calls to next are allowed on a single repeater.`
+      );
     }
     if(r.state <= Initial) {
       execute(r);
@@ -383,7 +388,11 @@ class Repeater {
     if(r === undefined) {
       throw new Error('WeakMap error');
     }
-    if(r.state <= Initial || r.state >= Stopped || (typeof r.buffer !== 'undefined' && !r.buffer.empty)) {
+    if(
+      r.state <= Initial ||
+      r.state >= Stopped ||
+      (typeof r.buffer !== 'undefined' && !r.buffer.empty)
+    ) {
       finish(r);
       // If r.err is already set, that mean the repeater has already produced an error, so we throw that error rather than the error passed in, because doing so might be more informative for the caller.
       if(r.err == null) {

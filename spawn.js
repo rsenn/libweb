@@ -1,4 +1,5 @@
-const zip = a => a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
+const zip = a =>
+  a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
 const once = (fn, thisObj) => {
   let ran, ret;
   return async function(...args) {
@@ -16,7 +17,9 @@ function QuickJSSpawn(os, ffi) {
       let { stdio, ...opts } = options;
       stdio = (stdio || []).concat(['pipe', 'pipe', 'pipe']).slice(0, 3);
 
-      let pipes = stdio.map((mode, chan) => (mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()));
+      let pipes = stdio.map((mode, chan) =>
+        mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()
+      );
 
       let [cfds, pfds] = zip(pipes);
       //console.log('pipes:', console.config({ compact: -1 }), pipes);
