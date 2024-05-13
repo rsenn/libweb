@@ -456,7 +456,7 @@ export class EagleElement extends EagleNode {
       trkl.bind(this, 'contacts', () =>
         Object.fromEntries(
           [
-            ...doc.board.signals.getAll({
+            ...doc.board.signals.owner.getAll({
               tagName: 'contactref',
               element: attributes.name
             })
@@ -466,7 +466,7 @@ export class EagleElement extends EagleNode {
       trkl.bind(this, 'contactrefs', () =>
         Object.fromEntries(
           [
-            ...doc.board.signals.getAll({
+            ...doc.board.signals.owner.getAll({
               tagName: 'contactref',
               element: attributes.name
             })
