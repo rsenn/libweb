@@ -225,7 +225,10 @@ export class Rotation extends Transformation {
   }
 }
 
-Object.defineProperty(Rotation.prototype, Symbol.toStringTag, { value: 'Rotation', enumerable: false });
+Object.defineProperty(Rotation.prototype, Symbol.toStringTag, {
+  value: 'Rotation',
+  enumerable: false
+});
 
 export const ImmutableRotation = immutableClass(Rotation);
 
@@ -284,7 +287,10 @@ export class Translation extends Transformation {
   }
 }
 
-Object.defineProperty(Translation.prototype, Symbol.toStringTag, { value: 'Translation', enumerable: false });
+Object.defineProperty(Translation.prototype, Symbol.toStringTag, {
+  value: 'Translation',
+  enumerable: false
+});
 
 export const ImmutableTranslation = immutableClass(Translation);
 
@@ -348,7 +354,10 @@ export class Scaling extends Transformation {
   }
 }
 
-Object.defineProperty(Scaling.prototype, Symbol.toStringTag, { value: 'Scaling', enumerable: false });
+Object.defineProperty(Scaling.prototype, Symbol.toStringTag, {
+  value: 'Scaling',
+  enumerable: false
+});
 
 export const ImmutableScaling = immutableClass(Scaling);
 

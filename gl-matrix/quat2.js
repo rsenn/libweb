@@ -16,7 +16,7 @@ import * as quat from './quat.js';
  */
 export function create() {
   let dq = new glMatrix.ARRAY_TYPE(8);
-  if (glMatrix.ARRAY_TYPE != Float32Array) {
+  if(glMatrix.ARRAY_TYPE != Float32Array) {
     dq[0] = 0;
     dq[1] = 0;
     dq[2] = 0;
@@ -533,7 +533,7 @@ export function rotateByQuatPrepend(out, q, a) {
  */
 export function rotateAroundAxis(out, a, axis, rad) {
   //Special case for rad = 0
-  if (Math.abs(rad) < glMatrix.EPSILON) {
+  if(Math.abs(rad) < glMatrix.EPSILON) {
     return copy(out, a);
   }
   let axisLength = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
@@ -616,42 +616,10 @@ export function multiply(out, a, b) {
   out[1] = ay0 * bw0 + aw0 * by0 + az0 * bx0 - ax0 * bz0;
   out[2] = az0 * bw0 + aw0 * bz0 + ax0 * by0 - ay0 * bx0;
   out[3] = aw0 * bw0 - ax0 * bx0 - ay0 * by0 - az0 * bz0;
-  out[4] =
-    ax0 * bw1 +
-    aw0 * bx1 +
-    ay0 * bz1 -
-    az0 * by1 +
-    ax1 * bw0 +
-    aw1 * bx0 +
-    ay1 * bz0 -
-    az1 * by0;
-  out[5] =
-    ay0 * bw1 +
-    aw0 * by1 +
-    az0 * bx1 -
-    ax0 * bz1 +
-    ay1 * bw0 +
-    aw1 * by0 +
-    az1 * bx0 -
-    ax1 * bz0;
-  out[6] =
-    az0 * bw1 +
-    aw0 * bz1 +
-    ax0 * by1 -
-    ay0 * bx1 +
-    az1 * bw0 +
-    aw1 * bz0 +
-    ax1 * by0 -
-    ay1 * bx0;
-  out[7] =
-    aw0 * bw1 -
-    ax0 * bx1 -
-    ay0 * by1 -
-    az0 * bz1 +
-    aw1 * bw0 -
-    ax1 * bx0 -
-    ay1 * by0 -
-    az1 * bz0;
+  out[4] = ax0 * bw1 + aw0 * bx1 + ay0 * bz1 - az0 * by1 + ax1 * bw0 + aw1 * bx0 + ay1 * bz0 - az1 * by0;
+  out[5] = ay0 * bw1 + aw0 * by1 + az0 * bx1 - ax0 * bz1 + ay1 * bw0 + aw1 * by0 + az1 * bx0 - ax1 * bz0;
+  out[6] = az0 * bw1 + aw0 * bz1 + ax0 * by1 - ay0 * bx1 + az1 * bw0 + aw1 * bz0 + ax1 * by0 - ay1 * bx0;
+  out[7] = aw0 * bw1 - ax0 * bx1 - ay0 * by1 - az0 * bz1 + aw1 * bw0 - ax1 * bx0 - ay1 * by0 - az1 * bz0;
   return out;
 }
 
@@ -704,7 +672,7 @@ export const dot = quat.dot;
  */
 export function lerp(out, a, b, t) {
   let mt = 1 - t;
-  if (dot(a, b) < 0) t = -t;
+  if(dot(a, b) < 0) t = -t;
 
   out[0] = a[0] * mt + b[0] * t;
   out[1] = a[1] * mt + b[1] * t;
@@ -798,7 +766,7 @@ export const sqrLen = squaredLength;
  */
 export function normalize(out, a) {
   let magnitude = squaredLength(a);
-  if (magnitude > 0) {
+  if(magnitude > 0) {
     magnitude = Math.sqrt(magnitude);
 
     let a0 = a[0] / magnitude;
@@ -833,25 +801,7 @@ export function normalize(out, a) {
  * @returns {String} string representation of the dual quat
  */
 export function str(a) {
-  return (
-    "quat2(" +
-    a[0] +
-    ", " +
-    a[1] +
-    ", " +
-    a[2] +
-    ", " +
-    a[3] +
-    ", " +
-    a[4] +
-    ", " +
-    a[5] +
-    ", " +
-    a[6] +
-    ", " +
-    a[7] +
-    ")"
-  );
+  return 'quat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ')';
 }
 
 /**
@@ -862,16 +812,7 @@ export function str(a) {
  * @returns {Boolean} true if the dual quaternions are equal, false otherwise.
  */
 export function exactEquals(a, b) {
-  return (
-    a[0] === b[0] &&
-    a[1] === b[1] &&
-    a[2] === b[2] &&
-    a[3] === b[3] &&
-    a[4] === b[4] &&
-    a[5] === b[5] &&
-    a[6] === b[6] &&
-    a[7] === b[7]
-  );
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7];
 }
 
 /**
@@ -899,21 +840,13 @@ export function equals(a, b) {
     b6 = b[6],
     b7 = b[7];
   return (
-    Math.abs(a0 - b0) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-    Math.abs(a1 - b1) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-    Math.abs(a2 - b2) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-    Math.abs(a3 - b3) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
-    Math.abs(a4 - b4) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
-    Math.abs(a5 - b5) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
-    Math.abs(a6 - b6) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
-    Math.abs(a7 - b7) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7))
+    Math.abs(a0 - b0) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+    Math.abs(a1 - b1) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+    Math.abs(a2 - b2) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+    Math.abs(a3 - b3) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+    Math.abs(a4 - b4) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+    Math.abs(a5 - b5) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+    Math.abs(a6 - b6) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+    Math.abs(a7 - b7) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7))
   );
 }

@@ -1,5 +1,5 @@
 import gcodeInterp from './gcode-interp.js';
-'use strict';
+('use strict');
 function State(v, e, f, time, vrel, erel, fp, spindle, tool, program, arc) {
   this.v = v;
   this.e = e;

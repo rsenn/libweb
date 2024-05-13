@@ -14,7 +14,7 @@ import * as vec4 from './vec4.js';
  */
 export function create() {
   let out = new glMatrix.ARRAY_TYPE(4);
-  if (glMatrix.ARRAY_TYPE != Float32Array) {
+  if(glMatrix.ARRAY_TYPE != Float32Array) {
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -72,7 +72,7 @@ export function setAxisAngle(out, axis, rad) {
 export function getAxisAngle(out_axis, q) {
   let rad = Math.acos(q[3]) * 2.0;
   let s = Math.sin(rad / 2.0);
-  if (s > glMatrix.EPSILON) {
+  if(s > glMatrix.EPSILON) {
     out_axis[0] = q[0] / s;
     out_axis[1] = q[1] / s;
     out_axis[2] = q[2] / s;
@@ -309,7 +309,7 @@ export function slerp(out, a, b, t) {
   // calc cosine
   cosom = ax * bx + ay * by + az * bz + aw * bw;
   // adjust signs (if necessary)
-  if (cosom < 0.0) {
+  if(cosom < 0.0) {
     cosom = -cosom;
     bx = -bx;
     by = -by;
@@ -317,7 +317,7 @@ export function slerp(out, a, b, t) {
     bw = -bw;
   }
   // calculate coefficients
-  if (1.0 - cosom > glMatrix.EPSILON) {
+  if(1.0 - cosom > glMatrix.EPSILON) {
     // standard case (slerp)
     omega = Math.acos(cosom);
     sinom = Math.sin(omega);
@@ -418,7 +418,7 @@ export function fromMat3(out, m) {
   let fTrace = m[0] + m[4] + m[8];
   let fRoot;
 
-  if (fTrace > 0.0) {
+  if(fTrace > 0.0) {
     // |w| > 1/2, may as well choose w > 1/2
     fRoot = Math.sqrt(fTrace + 1.0); // 2w
     out[3] = 0.5 * fRoot;
@@ -429,8 +429,8 @@ export function fromMat3(out, m) {
   } else {
     // |w| <= 1/2
     let i = 0;
-    if (m[4] > m[0]) i = 1;
-    if (m[8] > m[i * 3 + i]) i = 2;
+    if(m[4] > m[0]) i = 1;
+    if(m[8] > m[i * 3 + i]) i = 2;
     let j = (i + 1) % 3;
     let k = (i + 2) % 3;
 
@@ -470,42 +470,42 @@ export function fromEuler(out, x, y, z, order = glMatrix.ANGLE_ORDER) {
   let cz = Math.cos(z);
 
   switch (order) {
-    case "xyz":
+    case 'xyz':
       out[0] = sx * cy * cz + cx * sy * sz;
       out[1] = cx * sy * cz - sx * cy * sz;
       out[2] = cx * cy * sz + sx * sy * cz;
       out[3] = cx * cy * cz - sx * sy * sz;
       break;
 
-    case "xzy":
+    case 'xzy':
       out[0] = sx * cy * cz - cx * sy * sz;
       out[1] = cx * sy * cz - sx * cy * sz;
       out[2] = cx * cy * sz + sx * sy * cz;
       out[3] = cx * cy * cz + sx * sy * sz;
       break;
 
-    case "yxz":
+    case 'yxz':
       out[0] = sx * cy * cz + cx * sy * sz;
       out[1] = cx * sy * cz - sx * cy * sz;
       out[2] = cx * cy * sz - sx * sy * cz;
       out[3] = cx * cy * cz + sx * sy * sz;
       break;
 
-    case "yzx":
+    case 'yzx':
       out[0] = sx * cy * cz + cx * sy * sz;
       out[1] = cx * sy * cz + sx * cy * sz;
       out[2] = cx * cy * sz - sx * sy * cz;
       out[3] = cx * cy * cz - sx * sy * sz;
       break;
 
-    case "zxy":
+    case 'zxy':
       out[0] = sx * cy * cz - cx * sy * sz;
       out[1] = cx * sy * cz + sx * cy * sz;
       out[2] = cx * cy * sz + sx * sy * cz;
       out[3] = cx * cy * cz - sx * sy * sz;
       break;
 
-    case "zyx":
+    case 'zyx':
       out[0] = sx * cy * cz - cx * sy * sz;
       out[1] = cx * sy * cz + sx * cy * sz;
       out[2] = cx * cy * sz - sx * sy * cz;
@@ -526,7 +526,7 @@ export function fromEuler(out, x, y, z, order = glMatrix.ANGLE_ORDER) {
  * @returns {String} string representation of the vector
  */
 export function str(a) {
-  return "quat(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ")";
+  return 'quat(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
 }
 
 /**
@@ -681,7 +681,7 @@ export const exactEquals = vec4.exactEquals;
  * @returns {Boolean} True if the quaternions are equal, false otherwise.
  */
 export function equals(a, b) {
-    return Math.abs(vec4.dot(a, b)) >= 1 - glMatrix.EPSILON;
+  return Math.abs(vec4.dot(a, b)) >= 1 - glMatrix.EPSILON;
 }
 
 /**
@@ -700,15 +700,15 @@ export const rotationTo = (function () {
   let xUnitVec3 = vec3.fromValues(1, 0, 0);
   let yUnitVec3 = vec3.fromValues(0, 1, 0);
 
-  return function (out, a, b) {
+  return function(out, a, b) {
     let dot = vec3.dot(a, b);
-    if (dot < -0.999999) {
+    if(dot < -0.999999) {
       vec3.cross(tmpvec3, xUnitVec3, a);
-      if (vec3.len(tmpvec3) < 0.000001) vec3.cross(tmpvec3, yUnitVec3, a);
+      if(vec3.len(tmpvec3) < 0.000001) vec3.cross(tmpvec3, yUnitVec3, a);
       vec3.normalize(tmpvec3, tmpvec3);
       setAxisAngle(out, tmpvec3, Math.PI);
       return out;
-    } else if (dot > 0.999999) {
+    } else if(dot > 0.999999) {
       out[0] = 0;
       out[1] = 0;
       out[2] = 0;
@@ -740,7 +740,7 @@ export const sqlerp = (function () {
   let temp1 = create();
   let temp2 = create();
 
-  return function (out, a, b, c, d, t) {
+  return function(out, a, b, c, d, t) {
     slerp(temp1, a, d, t);
     slerp(temp2, b, c, t);
     slerp(out, temp1, temp2, 2 * t * (1 - t));
@@ -762,7 +762,7 @@ export const sqlerp = (function () {
 export const setAxes = (function () {
   let matr = mat3.create();
 
-  return function (out, view, right, up) {
+  return function(out, view, right, up) {
     matr[0] = right[0];
     matr[3] = right[1];
     matr[6] = right[2];

@@ -11,7 +11,7 @@ import * as glMatrix from './common.js';
  */
 export function create() {
   let out = new glMatrix.ARRAY_TYPE(4);
-  if (glMatrix.ARRAY_TYPE != Float32Array) {
+  if(glMatrix.ARRAY_TYPE != Float32Array) {
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -361,7 +361,7 @@ export function normalize(out, a) {
   let z = a[2];
   let w = a[3];
   let len = x * x + y * y + z * z + w * w;
-  if (len > 0) {
+  if(len > 0) {
     len = 1 / Math.sqrt(len);
   }
   out[0] = x * len;
@@ -451,12 +451,12 @@ export function random(out, scale) {
     v1 = glMatrix.RANDOM() * 2 - 1;
     v2 = glMatrix.RANDOM() * 2 - 1;
     s1 = v1 * v1 + v2 * v2;
-  } while (s1 >= 1);
+  } while(s1 >= 1);
   do {
     v3 = glMatrix.RANDOM() * 2 - 1;
     v4 = glMatrix.RANDOM() * 2 - 1;
     s2 = v3 * v3 + v4 * v4;
-  } while (s2 >= 1);
+  } while(s2 >= 1);
 
   var d = Math.sqrt((1 - s1) / s2);
   out[0] = scale * v1;
@@ -538,7 +538,7 @@ export function zero(out) {
  * @returns {String} string representation of the vector
  */
 export function str(a) {
-  return "vec4(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ")";
+  return 'vec4(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
 }
 
 /**
@@ -569,14 +569,10 @@ export function equals(a, b) {
     b2 = b[2],
     b3 = b[3];
   return (
-    Math.abs(a0 - b0) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-    Math.abs(a1 - b1) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-    Math.abs(a2 - b2) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-    Math.abs(a3 - b3) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3))
+    Math.abs(a0 - b0) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+    Math.abs(a1 - b1) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+    Math.abs(a2 - b2) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+    Math.abs(a3 - b3) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3))
   );
 }
 
@@ -634,26 +630,26 @@ export const sqrLen = squaredLength;
  * @returns {Array} a
  * @function
  */
-export const forEach = (function() {
+export const forEach = (function () {
   let vec = create();
 
   return function(a, stride, offset, count, fn, arg) {
     let i, l;
-    if (!stride) {
+    if(!stride) {
       stride = 4;
     }
 
-    if (!offset) {
+    if(!offset) {
       offset = 0;
     }
 
-    if (count) {
+    if(count) {
       l = Math.min(count * stride + offset, a.length);
     } else {
       l = a.length;
     }
 
-    for (i = offset; i < l; i += stride) {
+    for(i = offset; i < l; i += stride) {
       vec[0] = a[i];
       vec[1] = a[i + 1];
       vec[2] = a[i + 2];

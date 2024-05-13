@@ -11,7 +11,7 @@ import * as glMatrix from './common.js';
  */
 export function create() {
   let out = new glMatrix.ARRAY_TYPE(16);
-  if (glMatrix.ARRAY_TYPE != Float32Array) {
+  if(glMatrix.ARRAY_TYPE != Float32Array) {
     out[1] = 0;
     out[2] = 0;
     out[3] = 0;
@@ -107,24 +107,7 @@ export function copy(out, a) {
  * @param {Number} m33 Component in column 3, row 3 position (index 15)
  * @returns {mat4} A new mat4
  */
-export function fromValues(
-  m00,
-  m01,
-  m02,
-  m03,
-  m10,
-  m11,
-  m12,
-  m13,
-  m20,
-  m21,
-  m22,
-  m23,
-  m30,
-  m31,
-  m32,
-  m33
-) {
+export function fromValues(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
   let out = new glMatrix.ARRAY_TYPE(16);
   out[0] = m00;
   out[1] = m01;
@@ -167,25 +150,7 @@ export function fromValues(
  * @param {Number} m33 Component in column 3, row 3 position (index 15)
  * @returns {mat4} out
  */
-export function set(
-  out,
-  m00,
-  m01,
-  m02,
-  m03,
-  m10,
-  m11,
-  m12,
-  m13,
-  m20,
-  m21,
-  m22,
-  m23,
-  m30,
-  m31,
-  m32,
-  m33
-) {
+export function set(out, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
   out[0] = m00;
   out[1] = m01;
   out[2] = m02;
@@ -240,7 +205,7 @@ export function identity(out) {
  */
 export function transpose(out, a) {
   // If we are transposing ourselves we can skip a few steps but have to cache some values
-  if (out === a) {
+  if(out === a) {
     let a01 = a[1],
       a02 = a[2],
       a03 = a[3];
@@ -321,10 +286,9 @@ export function invert(out, a) {
   let b11 = a22 * a33 - a23 * a32;
 
   // Calculate the determinant
-  let det =
-    b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+  let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 
-  if (!det) {
+  if(!det) {
     return null;
   }
   det = 1.0 / det;
@@ -526,7 +490,7 @@ export function translate(out, a, v) {
   let a10, a11, a12, a13;
   let a20, a21, a22, a23;
 
-  if (a === out) {
+  if(a === out) {
     out[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
     out[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
     out[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
@@ -621,7 +585,7 @@ export function rotate(out, a, rad, axis) {
   let b10, b11, b12;
   let b20, b21, b22;
 
-  if (len < glMatrix.EPSILON) {
+  if(len < glMatrix.EPSILON) {
     return null;
   }
 
@@ -672,7 +636,7 @@ export function rotate(out, a, rad, axis) {
   out[10] = a02 * b20 + a12 * b21 + a22 * b22;
   out[11] = a03 * b20 + a13 * b21 + a23 * b22;
 
-  if (a !== out) {
+  if(a !== out) {
     // If the source and destination differ, copy the unchanged last row
     out[12] = a[12];
     out[13] = a[13];
@@ -702,7 +666,7 @@ export function rotateX(out, a, rad) {
   let a22 = a[10];
   let a23 = a[11];
 
-  if (a !== out) {
+  if(a !== out) {
     // If the source and destination differ, copy the unchanged rows
     out[0] = a[0];
     out[1] = a[1];
@@ -746,7 +710,7 @@ export function rotateY(out, a, rad) {
   let a22 = a[10];
   let a23 = a[11];
 
-  if (a !== out) {
+  if(a !== out) {
     // If the source and destination differ, copy the unchanged rows
     out[4] = a[4];
     out[5] = a[5];
@@ -790,7 +754,7 @@ export function rotateZ(out, a, rad) {
   let a12 = a[6];
   let a13 = a[7];
 
-  if (a !== out) {
+  if(a !== out) {
     // If the source and destination differ, copy the unchanged last row
     out[8] = a[8];
     out[9] = a[9];
@@ -895,7 +859,7 @@ export function fromRotation(out, rad, axis) {
   let len = Math.sqrt(x * x + y * y + z * z);
   let s, c, t;
 
-  if (len < glMatrix.EPSILON) {
+  if(len < glMatrix.EPSILON) {
     return null;
   }
 
@@ -1108,7 +1072,7 @@ export function fromQuat2(out, a) {
 
   let magnitude = bx * bx + by * by + bz * bz + bw * bw;
   //Only scale if it makes sense
-  if (magnitude > 0) {
+  if(magnitude > 0) {
     translation[0] = ((ax * bw + aw * bx + ay * bz - az * by) * 2) / magnitude;
     translation[1] = ((ay * bw + aw * by + az * bx - ax * bz) * 2) / magnitude;
     translation[2] = ((az * bw + aw * bz + ax * by - ay * bx) * 2) / magnitude;
@@ -1196,19 +1160,19 @@ export function getRotation(out, mat) {
   let trace = sm11 + sm22 + sm33;
   let S = 0;
 
-  if (trace > 0) {
+  if(trace > 0) {
     S = Math.sqrt(trace + 1.0) * 2;
     out[3] = 0.25 * S;
     out[0] = (sm23 - sm32) / S;
     out[1] = (sm31 - sm13) / S;
     out[2] = (sm12 - sm21) / S;
-  } else if (sm11 > sm22 && sm11 > sm33) {
+  } else if(sm11 > sm22 && sm11 > sm33) {
     S = Math.sqrt(1.0 + sm11 - sm22 - sm33) * 2;
     out[3] = (sm23 - sm32) / S;
     out[0] = 0.25 * S;
     out[1] = (sm12 + sm21) / S;
     out[2] = (sm31 + sm13) / S;
-  } else if (sm22 > sm33) {
+  } else if(sm22 > sm33) {
     S = Math.sqrt(1.0 + sm22 - sm11 - sm33) * 2;
     out[3] = (sm31 - sm13) / S;
     out[0] = (sm12 + sm21) / S;
@@ -1270,19 +1234,19 @@ export function decompose(out_r, out_t, out_s, mat) {
   let trace = sm11 + sm22 + sm33;
   let S = 0;
 
-  if (trace > 0) {
+  if(trace > 0) {
     S = Math.sqrt(trace + 1.0) * 2;
     out_r[3] = 0.25 * S;
     out_r[0] = (sm23 - sm32) / S;
     out_r[1] = (sm31 - sm13) / S;
     out_r[2] = (sm12 - sm21) / S;
-  } else if (sm11 > sm22 && sm11 > sm33) {
+  } else if(sm11 > sm22 && sm11 > sm33) {
     S = Math.sqrt(1.0 + sm11 - sm22 - sm33) * 2;
     out_r[3] = (sm23 - sm32) / S;
     out_r[0] = 0.25 * S;
     out_r[1] = (sm12 + sm21) / S;
     out_r[2] = (sm31 + sm13) / S;
-  } else if (sm22 > sm33) {
+  } else if(sm22 > sm33) {
     S = Math.sqrt(1.0 + sm22 - sm11 - sm33) * 2;
     out_r[3] = (sm31 - sm13) / S;
     out_r[0] = (sm12 + sm21) / S;
@@ -1551,7 +1515,7 @@ export function perspectiveNO(out, fovy, aspect, near, far) {
   out[12] = 0;
   out[13] = 0;
   out[15] = 0;
-  if (far != null && far !== Infinity) {
+  if(far != null && far !== Infinity) {
     const nf = 1 / (near - far);
     out[10] = (far + near) * nf;
     out[14] = 2 * far * near * nf;
@@ -1597,7 +1561,7 @@ export function perspectiveZO(out, fovy, aspect, near, far) {
   out[12] = 0;
   out[13] = 0;
   out[15] = 0;
-  if (far != null && far !== Infinity) {
+  if(far != null && far !== Infinity) {
     const nf = 1 / (near - far);
     out[10] = far * nf;
     out[14] = far * near * nf;
@@ -1748,11 +1712,7 @@ export function lookAt(out, eye, center, up) {
   let centery = center[1];
   let centerz = center[2];
 
-  if (
-    Math.abs(eyex - centerx) < glMatrix.EPSILON &&
-    Math.abs(eyey - centery) < glMatrix.EPSILON &&
-    Math.abs(eyez - centerz) < glMatrix.EPSILON
-  ) {
+  if(Math.abs(eyex - centerx) < glMatrix.EPSILON && Math.abs(eyey - centery) < glMatrix.EPSILON && Math.abs(eyez - centerz) < glMatrix.EPSILON) {
     return identity(out);
   }
 
@@ -1769,7 +1729,7 @@ export function lookAt(out, eye, center, up) {
   x1 = upz * z0 - upx * z2;
   x2 = upx * z1 - upy * z0;
   len = Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
-  if (!len) {
+  if(!len) {
     x0 = 0;
     x1 = 0;
     x2 = 0;
@@ -1785,7 +1745,7 @@ export function lookAt(out, eye, center, up) {
   y2 = z0 * x1 - z1 * x0;
 
   len = Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
-  if (!len) {
+  if(!len) {
     y0 = 0;
     y1 = 0;
     y2 = 0;
@@ -1838,7 +1798,7 @@ export function targetTo(out, eye, target, up) {
     z2 = eyez - target[2];
 
   let len = z0 * z0 + z1 * z1 + z2 * z2;
-  if (len > 0) {
+  if(len > 0) {
     len = 1 / Math.sqrt(len);
     z0 *= len;
     z1 *= len;
@@ -1850,7 +1810,7 @@ export function targetTo(out, eye, target, up) {
     x2 = upx * z1 - upy * z0;
 
   len = x0 * x0 + x1 * x1 + x2 * x2;
-  if (len > 0) {
+  if(len > 0) {
     len = 1 / Math.sqrt(len);
     x0 *= len;
     x1 *= len;
@@ -1884,39 +1844,39 @@ export function targetTo(out, eye, target, up) {
  */
 export function str(a) {
   return (
-    "mat4(" +
+    'mat4(' +
     a[0] +
-    ", " +
+    ', ' +
     a[1] +
-    ", " +
+    ', ' +
     a[2] +
-    ", " +
+    ', ' +
     a[3] +
-    ", " +
+    ', ' +
     a[4] +
-    ", " +
+    ', ' +
     a[5] +
-    ", " +
+    ', ' +
     a[6] +
-    ", " +
+    ', ' +
     a[7] +
-    ", " +
+    ', ' +
     a[8] +
-    ", " +
+    ', ' +
     a[9] +
-    ", " +
+    ', ' +
     a[10] +
-    ", " +
+    ', ' +
     a[11] +
-    ", " +
+    ', ' +
     a[12] +
-    ", " +
+    ', ' +
     a[13] +
-    ", " +
+    ', ' +
     a[14] +
-    ", " +
+    ', ' +
     a[15] +
-    ")"
+    ')'
   );
 }
 
@@ -1929,21 +1889,21 @@ export function str(a) {
 export function frob(a) {
   return Math.sqrt(
     a[0] * a[0] +
-    a[1] * a[1] +
-    a[2] * a[2] +
-    a[3] * a[3] +
-    a[4] * a[4] +
-    a[5] * a[5] +
-    a[6] * a[6] +
-    a[7] * a[7] +
-    a[8] * a[8] +
-    a[9] * a[9] +
-    a[10] * a[10] +
-    a[11] * a[11] +
-    a[12] * a[12] +
-    a[13] * a[13] +
-    a[14] * a[14] +
-    a[15] * a[15]
+      a[1] * a[1] +
+      a[2] * a[2] +
+      a[3] * a[3] +
+      a[4] * a[4] +
+      a[5] * a[5] +
+      a[6] * a[6] +
+      a[7] * a[7] +
+      a[8] * a[8] +
+      a[9] * a[9] +
+      a[10] * a[10] +
+      a[11] * a[11] +
+      a[12] * a[12] +
+      a[13] * a[13] +
+      a[14] * a[14] +
+      a[15] * a[15]
   );
 }
 
@@ -2131,38 +2091,22 @@ export function equals(a, b) {
     b15 = b[15];
 
   return (
-    Math.abs(a0 - b0) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-    Math.abs(a1 - b1) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-    Math.abs(a2 - b2) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-    Math.abs(a3 - b3) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
-    Math.abs(a4 - b4) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
-    Math.abs(a5 - b5) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
-    Math.abs(a6 - b6) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
-    Math.abs(a7 - b7) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
-    Math.abs(a8 - b8) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8)) &&
-    Math.abs(a9 - b9) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a9), Math.abs(b9)) &&
-    Math.abs(a10 - b10) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a10), Math.abs(b10)) &&
-    Math.abs(a11 - b11) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a11), Math.abs(b11)) &&
-    Math.abs(a12 - b12) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a12), Math.abs(b12)) &&
-    Math.abs(a13 - b13) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a13), Math.abs(b13)) &&
-    Math.abs(a14 - b14) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a14), Math.abs(b14)) &&
-    Math.abs(a15 - b15) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a15), Math.abs(b15))
+    Math.abs(a0 - b0) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+    Math.abs(a1 - b1) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+    Math.abs(a2 - b2) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+    Math.abs(a3 - b3) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+    Math.abs(a4 - b4) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+    Math.abs(a5 - b5) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+    Math.abs(a6 - b6) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+    Math.abs(a7 - b7) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
+    Math.abs(a8 - b8) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8)) &&
+    Math.abs(a9 - b9) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a9), Math.abs(b9)) &&
+    Math.abs(a10 - b10) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a10), Math.abs(b10)) &&
+    Math.abs(a11 - b11) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a11), Math.abs(b11)) &&
+    Math.abs(a12 - b12) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a12), Math.abs(b12)) &&
+    Math.abs(a13 - b13) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a13), Math.abs(b13)) &&
+    Math.abs(a14 - b14) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a14), Math.abs(b14)) &&
+    Math.abs(a15 - b15) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a15), Math.abs(b15))
   );
 }
 

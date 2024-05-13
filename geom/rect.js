@@ -302,7 +302,7 @@ Rect.COVER = 32;
 
 Rect.prototype.fit = function(other, align = Align.CENTER | Align.MIDDLE | Rect.CONTAIN) {
   let size = [...other];
-  size=new Size(...size.slice(size.length -2));
+  size = new Size(...size.slice(size.length - 2));
   let factors = Size.prototype.fitFactors.call(this, size).sort((a, b) => a - b);
   // console.log('Rect.prototype.fit:', this, ...factors, { factors, other, align });
 
@@ -476,7 +476,10 @@ Rect.bind = rect => {
 
 Rect.inside = (rect, point) => point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 Rect.from = function(obj) {
-  //const { x1,y1,x2,y2 } = obj;
+  if(isObject(obj) && 'getBoundingClientRect' in obj) return new Rect(obj.getBoundingClientRect());
+
+  console.log('Rect.from', obj);
+
   const fn = (v1, v2) => [Math.min(v1, v2), Math.max(v1, v2)];
 
   const h = fn(obj.x1, obj.x2);

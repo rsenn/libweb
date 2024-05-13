@@ -4,7 +4,7 @@ export default class FsMemoryAdapter {
   constructor(db) {
     this.db = db;
   }
-  
+
   readFile(filename, options, callback) {
     if(typeof options === 'function') {
       callback = options;

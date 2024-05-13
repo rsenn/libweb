@@ -1,6 +1,97 @@
 import { ScrollDisabler } from '../lib/scrollHandler.js';
-import { Element, isPoint, Line, Point, PointList, Rect } from './dom.js';
+//import { Element } from './dom.js';
 import { trkl } from './trkl.js';
+import { roundDigits, roundTo } from './misc.js';
+
+function CreateElement(tag, attributes = {}, parent = document.body) {
+  let e = attributes.xmlns ? document.createElementNS(attributes.xmlns, tag) : document.createElement(tag);
+
+  for(let attr in attributes) e.setAttribute(attr, attributes[attr]);
+
+  if(parent) parent.appendChild(e);
+
+  return e;
+}
+
+function SetCSS(element, properties) {
+  Object.assign(element.style, properties);
+  return element;
+}
+
+function isPoint(a) {
+  return typeof a == 'object' && 'x' in a && 'y' in a;
+}
+
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  add(other) {
+    this.x += other.x;
+    this.y += other.y;
+    return this;
+  }
+
+  static sub(pt, other) {
+    pt.x -= other.x;
+    pt.y -= other.y;
+    return pt;
+  }
+
+  static distanceSquared(a, b) {
+    return (b.y - a.y) * (b.y - a.y) + (b.x - a.x) * (b.x - a.x);
+  }
+  static distance(a, b) {
+    return Math.sqrt(Point.distanceSquared(a, b));
+  }
+
+  static toAngle(pt, deg = false) {
+    return Math.atan2(pt.x, pt.y) * (deg ? 180 / Math.PI : 1);
+  }
+  static diff(a, b) {
+    return { x: b.x - a.x, y: b.y - a.y };
+  }
+
+  static angle(pt, other, deg = false) {
+    return Point.toAngle(Point.diff(pt, other), deg);
+  }
+
+  static round(pt, prec = 1) {
+    pt.x = roundTo(pt.x, prec);
+    pt.y = roundTo(pt.y, prec);
+    return pt;
+  }
+}
+
+class Rect {
+  static round(rt, prec = 1) {
+    rt.x = roundTo(rt.x, prec);
+    rt.y = roundTo(rt.y, prec);
+    rt.width = roundTo(rt.width, prec);
+    rt.height = roundTo(rt.height, prec);
+    return pt;
+  }
+}
+
+class Line {
+  constructor(a, b) {
+    this.x1 = a.x;
+    this.y1 = a.y;
+    this.x2 = b.x;
+    this.y2 = b.y;
+  }
+
+  bbox() {
+    return {
+      x: Math.min(this.x1, this.x2),
+      y: Math.min(this.y1, this.y2),
+      width: Math.abs(this.x1 - this.x2),
+      height: Math.abs(this.y1 - this.y2)
+    };
+  }
+}
 
 export function MovementListener(handler, options) {
   let start = null;
@@ -9,7 +100,7 @@ export function MovementListener(handler, options) {
   let index = 0;
   let active = false;
   let starttime = 0;
-  let points = new PointList();
+  let points = [];
   let prev;
 
   const cancel = trkl(event => {
@@ -19,7 +110,7 @@ export function MovementListener(handler, options) {
     index = 0;
     active = false;
     starttime = 0;
-    points = new PointList();
+    points = [];
     prev = {};
     //console.log('MovementListener cancelled');
   });
@@ -100,7 +191,7 @@ export function MovementListener(handler, options) {
       let angle;
       if(started) {
         index = 0;
-        points = new PointList();
+        points = [];
         newpos.prev = null;
         starttime = Date.now();
         start = {
@@ -185,7 +276,7 @@ export function MultitouchListener(handler, options) {
   let index = 0;
   let active = false;
   let starttime = 0;
-  let points = new PointList();
+  let points = [];
   let prev;
 
   options = { num: 1, noscroll: true, ...options };
@@ -202,7 +293,7 @@ export function MultitouchListener(handler, options) {
     index = 0;
     active = false;
     starttime = 0;
-    points = new PointList();
+    points = [];
     //console.log('MultitouchListener cancelled');
   });
 
@@ -397,8 +488,8 @@ export function SelectionRenderer() {
     element: null,
     create(rect) {
       //console.log("SelectionListener.create(", rect, ")");
-      this.element = Element.create('div', { id: `selection-rect` }, globalThis.window ? window.document.body : null);
-      Element.setCSS(this.element, {
+      this.element = CreateElement('div', { id: `selection-rect` }, globalThis.window ? window.document.body : null);
+      SetCSS(this.element, {
         position: 'fixed',
         border: '3px dashed white',
         filter: `drop-shadow(1px 1px 1px black)`,
@@ -411,8 +502,8 @@ export function SelectionRenderer() {
       Element.rect(this.element, rect, { position: 'absolute' });
     },
     destroy() {
-      //console.log("SelectionListener.destroy()");
-      Element.remove(this.element);
+      //Element.remove(this.element);
+      this.element.parentElement.removeChild(this.element);
     }
   };
 }

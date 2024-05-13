@@ -11,7 +11,7 @@ import * as glMatrix from './common.js';
  */
 export function create() {
   let out = new glMatrix.ARRAY_TYPE(9);
-  if (glMatrix.ARRAY_TYPE != Float32Array) {
+  if(glMatrix.ARRAY_TYPE != Float32Array) {
     out[1] = 0;
     out[2] = 0;
     out[3] = 0;
@@ -169,7 +169,7 @@ export function identity(out) {
  */
 export function transpose(out, a) {
   // If we are transposing ourselves we can skip a few steps but have to cache some values
-  if (out === a) {
+  if(out === a) {
     let a01 = a[1],
       a02 = a[2],
       a12 = a[5];
@@ -219,7 +219,7 @@ export function invert(out, a) {
   // Calculate the determinant
   let det = a00 * b01 + a01 * b11 + a02 * b21;
 
-  if (!det) {
+  if(!det) {
     return null;
   }
   det = 1.0 / det;
@@ -283,11 +283,7 @@ export function determinant(a) {
     a21 = a[7],
     a22 = a[8];
 
-  return (
-    a00 * (a22 * a11 - a12 * a21) +
-    a01 * (-a22 * a10 + a12 * a20) +
-    a02 * (a21 * a10 - a11 * a20)
-  );
+  return a00 * (a22 * a11 - a12 * a21) + a01 * (-a22 * a10 + a12 * a20) + a02 * (a21 * a10 - a11 * a20);
 }
 
 /**
@@ -612,10 +608,9 @@ export function normalFromMat4(out, a) {
   let b11 = a22 * a33 - a23 * a32;
 
   // Calculate the determinant
-  let det =
-    b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+  let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 
-  if (!det) {
+  if(!det) {
     return null;
   }
   det = 1.0 / det;
@@ -663,27 +658,7 @@ export function projection(out, width, height) {
  * @returns {String} string representation of the matrix
  */
 export function str(a) {
-  return (
-    "mat3(" +
-    a[0] +
-    ", " +
-    a[1] +
-    ", " +
-    a[2] +
-    ", " +
-    a[3] +
-    ", " +
-    a[4] +
-    ", " +
-    a[5] +
-    ", " +
-    a[6] +
-    ", " +
-    a[7] +
-    ", " +
-    a[8] +
-    ")"
-  );
+  return 'mat3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ', ' + a[8] + ')';
 }
 
 /**
@@ -693,17 +668,7 @@ export function str(a) {
  * @returns {Number} Frobenius norm
  */
 export function frob(a) {
-  return Math.sqrt(
-    a[0] * a[0] +
-    a[1] * a[1] +
-    a[2] * a[2] +
-    a[3] * a[3] +
-    a[4] * a[4] +
-    a[5] * a[5] +
-    a[6] * a[6] +
-    a[7] * a[7] +
-    a[8] * a[8]
-  );
+  return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3] + a[4] * a[4] + a[5] * a[5] + a[6] * a[6] + a[7] * a[7] + a[8] * a[8]);
 }
 
 /**
@@ -799,17 +764,7 @@ export function multiplyScalarAndAdd(out, a, b, scale) {
  * @returns {Boolean} True if the matrices are equal, false otherwise.
  */
 export function exactEquals(a, b) {
-  return (
-    a[0] === b[0] &&
-    a[1] === b[1] &&
-    a[2] === b[2] &&
-    a[3] === b[3] &&
-    a[4] === b[4] &&
-    a[5] === b[5] &&
-    a[6] === b[6] &&
-    a[7] === b[7] &&
-    a[8] === b[8]
-  );
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8];
 }
 
 /**
@@ -839,24 +794,15 @@ export function equals(a, b) {
     b7 = b[7],
     b8 = b[8];
   return (
-    Math.abs(a0 - b0) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-    Math.abs(a1 - b1) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-    Math.abs(a2 - b2) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-    Math.abs(a3 - b3) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
-    Math.abs(a4 - b4) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
-    Math.abs(a5 - b5) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
-    Math.abs(a6 - b6) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
-    Math.abs(a7 - b7) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
-    Math.abs(a8 - b8) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8))
+    Math.abs(a0 - b0) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+    Math.abs(a1 - b1) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+    Math.abs(a2 - b2) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+    Math.abs(a3 - b3) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+    Math.abs(a4 - b4) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+    Math.abs(a5 - b5) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+    Math.abs(a6 - b6) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+    Math.abs(a7 - b7) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
+    Math.abs(a8 - b8) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8))
   );
 }
 

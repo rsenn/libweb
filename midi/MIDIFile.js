@@ -67,6 +67,9 @@ function writeHeader(stream) {
   stream.writeShort(this.timeDivision);
 }
 
-Object.defineProperty(MIDIFile.prototype, Symbol.toStringTag, { value: 'MIDIFile', enumerable: false });
+Object.defineProperty(MIDIFile.prototype, Symbol.toStringTag, {
+  value: 'MIDIFile',
+  enumerable: false
+});
 
 export default MIDIFile;

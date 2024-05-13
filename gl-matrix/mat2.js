@@ -11,7 +11,7 @@ import * as glMatrix from './common.js';
  */
 export function create() {
   let out = new glMatrix.ARRAY_TYPE(4);
-  if (glMatrix.ARRAY_TYPE != Float32Array) {
+  if(glMatrix.ARRAY_TYPE != Float32Array) {
     out[1] = 0;
     out[2] = 0;
   }
@@ -110,7 +110,7 @@ export function set(out, m00, m01, m10, m11) {
 export function transpose(out, a) {
   // If we are transposing ourselves we can skip a few steps but have to cache
   // some values
-  if (out === a) {
+  if(out === a) {
     let a1 = a[1];
     out[1] = a[2];
     out[2] = a1;
@@ -140,7 +140,7 @@ export function invert(out, a) {
   // Calculate the determinant
   let det = a0 * a3 - a2 * a1;
 
-  if (!det) {
+  if(!det) {
     return null;
   }
   det = 1.0 / det;
@@ -296,7 +296,7 @@ export function fromScaling(out, v) {
  * @returns {String} string representation of the matrix
  */
 export function str(a) {
-  return "mat2(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ")";
+  return 'mat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
 }
 
 /**
@@ -385,14 +385,10 @@ export function equals(a, b) {
     b2 = b[2],
     b3 = b[3];
   return (
-    Math.abs(a0 - b0) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-    Math.abs(a1 - b1) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-    Math.abs(a2 - b2) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-    Math.abs(a3 - b3) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3))
+    Math.abs(a0 - b0) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+    Math.abs(a1 - b1) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+    Math.abs(a2 - b2) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+    Math.abs(a3 - b3) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3))
   );
 }
 

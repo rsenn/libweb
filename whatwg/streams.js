@@ -515,7 +515,9 @@ if(typeof SymbolPolyfill.asyncIterator === 'symbol') {
       return this;
     }
   };
-  Object.defineProperty(AsyncIteratorPrototype, SymbolPolyfill.asyncIterator, { enumerable: false });
+  Object.defineProperty(AsyncIteratorPrototype, SymbolPolyfill.asyncIterator, {
+    enumerable: false
+  });
 }
 
 /// <reference lib="es2018.asynciterable" />
@@ -2557,7 +2559,11 @@ function createDOMExceptionPolyfill() {
     }
   };
   ctor.prototype = Object.create(Error.prototype);
-  Object.defineProperty(ctor.prototype, 'constructor', { value: ctor, writable: true, configurable: true });
+  Object.defineProperty(ctor.prototype, 'constructor', {
+    value: ctor,
+    writable: true,
+    configurable: true
+  });
   return ctor;
 }
 // eslint-disable-next-line no-redeclare

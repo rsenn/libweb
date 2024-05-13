@@ -270,7 +270,10 @@ const encodings = {};
 const regexes = {};
 for(let table in tables) {
   encodings[table] = { encode: tables[table], decode: invert(tables[table]) };
-  regexes[table] = { encode: new RegExp('[' + keys(encodings[table].encode).join('') + ']', 'g'), decode: new RegExp('(' + keys(encodings[table].decode).join('|') + ')', 'g') };
+  regexes[table] = {
+    encode: new RegExp('[' + keys(encodings[table].encode).join('') + ']', 'g'),
+    decode: new RegExp('(' + keys(encodings[table].decode).join('|') + ')', 'g')
+  };
 } // Our plugin's methods
 const methods = ['encode', 'decode']; // Implement methods
 function implement(method) {

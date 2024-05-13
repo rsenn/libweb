@@ -1,4 +1,3 @@
-
 const lexComment = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 2);
   if(s.startsWith('/*') || s.startsWith('//')) {

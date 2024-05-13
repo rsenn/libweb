@@ -105,7 +105,9 @@ export class EagleDocument extends EagleNode {
     define(this, { xml });
     const orig = xml[0];
     define(this, { orig });
-    define(this, { palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b)) });
+    define(this, {
+      palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
+    });
 
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 

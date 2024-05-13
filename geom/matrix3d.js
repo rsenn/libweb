@@ -1,4 +1,3 @@
-
 /**
  * A really simple and basic 4x4 matrix implementation, compatible with CSS. Transform them, and
  * apply the toString() output to a node's transform style. Don't forget perspective :)

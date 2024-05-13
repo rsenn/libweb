@@ -736,7 +736,15 @@
               return n.minX <= t.maxX && n.minY <= t.maxY && n.maxX >= t.minX && n.maxY >= t.minY;
             }
             function d(t) {
-              return { children: t, height: 1, leaf: !0, minX: 1 / 0, minY: 1 / 0, maxX: -1 / 0, maxY: -1 / 0 };
+              return {
+                children: t,
+                height: 1,
+                leaf: !0,
+                minX: 1 / 0,
+                minY: 1 / 0,
+                maxX: -1 / 0,
+                maxY: -1 / 0
+              };
             }
             function p(n, i, r, e, o) {
               for(var s = [i, r]; s.length; )
@@ -944,7 +952,15 @@
               s = e.asyncIterator || '@@asyncIterator',
               u = e.toStringTag || '@@toStringTag';
             function a(t, n, i) {
-              return Object.defineProperty(t, n, { value: i, enumerable: !0, configurable: !0, writable: !0 }), t[n];
+              return (
+                Object.defineProperty(t, n, {
+                  value: i,
+                  enumerable: !0,
+                  configurable: !0,
+                  writable: !0
+                }),
+                t[n]
+              );
             }
             try {
               a({}, '');
@@ -2145,7 +2161,17 @@
               function n(n) {
                 var i = this,
                   r = ct;
-                return ((i = t.call(this, n.tileCoord, r, { transition: n.transition, interpolate: n.interpolate }) || this).U = n.loader), (i.B = null), (i.V = null), (i.W = n.size || [256, 256]), i;
+                return (
+                  ((i =
+                    t.call(this, n.tileCoord, r, {
+                      transition: n.transition,
+                      interpolate: n.interpolate
+                    }) || this).U = n.loader),
+                  (i.B = null),
+                  (i.V = null),
+                  (i.W = n.size || [256, 256]),
+                  i
+                );
               }
               return (
                 Mt(n, t),
@@ -2280,7 +2306,13 @@
               TILE_PIXELS: 'tile-pixels',
               USFEET: 'us-ft'
             },
-            It = { 9001: kt.METERS, 9002: kt.FEET, 9003: kt.USFEET, 9101: kt.RADIANS, 9102: kt.DEGREES };
+            It = {
+              9001: kt.METERS,
+              9002: kt.FEET,
+              9003: kt.USFEET,
+              9101: kt.RADIANS,
+              9102: kt.DEGREES
+            };
           function Nt(t) {
             return It[t];
           }
@@ -5041,7 +5073,19 @@
             js = function(t) {
               var n = t.match(Ss);
               if(!n) return null;
-              for(var i = { lineHeight: 'normal', size: '1.2em', style: 'normal', weight: 'normal', variant: 'normal' }, r = 0, e = Os.length; r < e; ++r) {
+              for(
+                var i = {
+                    lineHeight: 'normal',
+                    size: '1.2em',
+                    style: 'normal',
+                    weight: 'normal',
+                    variant: 'normal'
+                  },
+                  r = 0,
+                  e = Os.length;
+                r < e;
+                ++r
+              ) {
                 var o = n[r + 1];
                 void 0 !== o && (i[Os[r]] = o);
               }
@@ -6491,7 +6535,13 @@
                     void 0 !== t.controls && (Array.isArray(t.controls) ? (i = new ft(t.controls.slice())) : (St('function' == typeof t.controls.getArray, 47), (i = t.controls)));
                   void 0 !== t.interactions && (Array.isArray(t.interactions) ? (r = new ft(t.interactions.slice())) : (St('function' == typeof t.interactions.getArray, 48), (r = t.interactions)));
                   void 0 !== t.overlays ? (Array.isArray(t.overlays) ? (e = new ft(t.overlays.slice())) : (St('function' == typeof t.overlays.getArray, 49), (e = t.overlays))) : (e = new ft());
-                  return { controls: i, interactions: r, keyboardEventTarget: n, overlays: e, values: o };
+                  return {
+                    controls: i,
+                    interactions: r,
+                    keyboardEventTarget: n,
+                    overlays: e,
+                    values: o
+                  };
                 })(n);
                 i.Ri,
                   (i.Fi = !0),
@@ -7066,7 +7116,12 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                ((i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this)._r = document.createElement('ul')),
+                ((i =
+                  t.call(this, {
+                    element: document.createElement('div'),
+                    render: r.render,
+                    target: r.target
+                  }) || this)._r = document.createElement('ul')),
                   (i.Sr = void 0 === r.collapsed || r.collapsed),
                   (i.jr = i.Sr),
                   (i.Er = void 0 !== r.collapsible),
@@ -7173,7 +7228,12 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this;
+                i =
+                  t.call(this, {
+                    element: document.createElement('div'),
+                    render: r.render,
+                    target: r.target
+                  }) || this;
                 var e = void 0 !== r.className ? r.className : 'ol-rotate',
                   o = void 0 !== r.label ? r.label : '⇧',
                   s = void 0 !== r.compassClassName ? r.compassClassName : 'ol-compass';
@@ -7318,7 +7378,11 @@
             var r = t.getCenterInternal();
             if(r) {
               var e = [r[0] + n[0], r[1] + n[1]];
-              t.animateInternal({ duration: void 0 !== i ? i : 250, easing: gt, center: t.getConstrainedCenter(e) });
+              t.animateInternal({
+                duration: void 0 !== i ? i : 250,
+                easing: gt,
+                center: t.getConstrainedCenter(e)
+              });
             }
           }
           function ya(t, n, i, r) {
@@ -7326,7 +7390,13 @@
             if(void 0 !== e) {
               var o = t.getConstrainedZoom(e + n),
                 s = t.getResolutionForZoom(o);
-              t.getAnimating() && t.cancelAnimations(), t.animate({ resolution: s, anchor: i, duration: void 0 !== r ? r : 250, easing: mt });
+              t.getAnimating() && t.cancelAnimations(),
+                t.animate({
+                  resolution: s,
+                  anchor: i,
+                  duration: void 0 !== r ? r : 250,
+                  easing: mt
+                });
             }
           }
           var ma = (function (t) {
@@ -7579,7 +7649,11 @@
                         o = i.getCenterInternal(),
                         s = n.getPixelFromCoordinateInternal(o),
                         u = n.getCoordinateFromPixelInternal([s[0] - r * Math.cos(e), s[1] - r * Math.sin(e)]);
-                      i.animateInternal({ center: i.getConstrainedCenter(u), duration: 500, easing: mt });
+                      i.animateInternal({
+                        center: i.getConstrainedCenter(u),
+                        duration: 500,
+                        easing: mt
+                      });
                     }
                     return this.Yr && ((this.Yr = !1), i.endInteraction()), !1;
                   }
@@ -7815,7 +7889,12 @@
                   r = n || {},
                   e = r.condition ? r.condition : Ia;
                 return (
-                  ((i = t.call(this, { condition: e, className: r.className || 'ol-dragzoom', minArea: r.minArea }) || this).Fr = void 0 !== r.duration ? r.duration : 200),
+                  ((i =
+                    t.call(this, {
+                      condition: e,
+                      className: r.className || 'ol-dragzoom',
+                      minArea: r.minArea
+                    }) || this).Fr = void 0 !== r.duration ? r.duration : 200),
                   (i.ee = void 0 !== r.out && r.out),
                   i
                 );
@@ -10084,7 +10163,10 @@
                   t.uniforms &&
                     Object.keys(t.uniforms).forEach(
                       function(i) {
-                        this.Xo.push({ value: t.uniforms[i], location: n.getUniformLocation(this.Fo, i) });
+                        this.Xo.push({
+                          value: t.uniforms[i],
+                          location: n.getUniformLocation(this.Fo, i)
+                        });
                       }.bind(this)
                     );
               }
@@ -10745,7 +10827,12 @@
                   if(
                     (this.Ps.forEach(
                       function(n, i, r) {
-                        n && n.getState() == vt && t.push({ extent: this.Es.getTileCoordExtent(n.tileCoord), image: n.getImage() });
+                        n &&
+                          n.getState() == vt &&
+                          t.push({
+                            extent: this.Es.getTileCoordExtent(n.tileCoord),
+                            image: n.getImage()
+                          });
                       }.bind(this)
                     ),
                     (this.Ps.length = 0),
@@ -11123,7 +11210,11 @@
                     var f = 'map/' + t.mapId + '/group/' + r;
                     (this.helper && this.helper.canvasCacheKeyMatches(f)) ||
                       (this.removeHelper(),
-                      (this.helper = new zc({ postProcesses: this.Bs, uniforms: this.Xo, canvasCacheKey: f })),
+                      (this.helper = new zc({
+                        postProcesses: this.Bs,
+                        uniforms: this.Xo,
+                        canvasCacheKey: f
+                      })),
                       e && (this.helper.getCanvas().className = e),
                       this.afterHelperCreated());
                   }
@@ -12154,7 +12245,13 @@
               o = n.offset || [0, 0],
               s = void 0 !== n.opacity ? n.opacity : 1,
               u = void 0 !== n.rotation ? n.rotation : 0,
-              a = { inFragmentShader: !1, variables: [], attributes: [], stringLiteralsMap: {}, functions: {} },
+              a = {
+                inFragmentShader: !1,
+                variables: [],
+                attributes: [],
+                stringLiteralsMap: {},
+                functions: {}
+              },
               h = Cl(a, i, bl | yl),
               f = Cl(a, o, bl),
               c = Cl(a, e, bl),
@@ -12311,7 +12408,14 @@
                   c ? o.push([n.TopLeftCorner[1], n.TopLeftCorner[0]]) : o.push(n.TopLeftCorner), r.push(i), s.push(h == l ? h : [h, l]), u.push([n.MatrixWidth, n.MatrixHeight]);
                 }
               }),
-              new $l({ extent: n, origins: o, resolutions: r, matrixIds: e, tileSizes: s, sizes: u })
+              new $l({
+                extent: n,
+                origins: o,
+                resolutions: r,
+                matrixIds: e,
+                tileSizes: s,
+                sizes: u
+              })
             );
           }
           var Jl = (function () {
@@ -13189,7 +13293,11 @@
               (t.Circle = t.Polygon.concat(t.LineString)),
               (t.Point = [
                 new wv({
-                  image: new iv({ radius: 6, fill: new rv({ color: i }), stroke: new mv({ color: n, width: 1.5 }) }),
+                  image: new iv({
+                    radius: 6,
+                    fill: new rv({ color: i }),
+                    stroke: new mv({ color: n, width: 1.5 })
+                  }),
                   zIndex: 1 / 0
                 })
               ]),
@@ -16018,7 +16126,14 @@
                           { start: f, end: c, total: l } = Zd(h['content-range']),
                           v = i + o.length + a + Vd.length,
                           d = parseInt(c, 10) + 1 - parseInt(f, 10);
-                        e.push({ headers: h, data: t.slice(v, v + d), offset: f, length: d, fileSize: l }), (i = v + d + 4);
+                        e.push({
+                          headers: h,
+                          data: t.slice(v, v + d),
+                          offset: f,
+                          length: d,
+                          fileSize: l
+                        }),
+                          (i = v + d + 4);
                       }
                       return e;
                     })(await i.getData(), e.boundary);
@@ -16921,7 +17036,13 @@
                             o = n[1],
                             s = n[2],
                             u = o + s * f[e][0],
-                            a = { z: e, x: o, y: s, tileIndex: u, TileGroup: 'TileGroup' + (((u + y[e]) / M) | 0) };
+                            a = {
+                              z: e,
+                              x: o,
+                              y: s,
+                              tileIndex: u,
+                              TileGroup: 'TileGroup' + (((u + y[e]) / M) | 0)
+                            };
                           return t.replace(/\{(\w+?)\}/g, function(t, n) {
                             return a[n];
                           });
@@ -17724,7 +17845,12 @@
                   r = void 0 === n.imageSmoothing || n.imageSmoothing;
                 return (
                   void 0 !== n.interpolate && (r = n.interpolate),
-                  ((i = t.call(this, { interpolate: r, projection: n.projection, resolutions: n.resolutions }) || this).Bt = void 0 !== n.crossOrigin ? n.crossOrigin : null),
+                  ((i =
+                    t.call(this, {
+                      interpolate: r,
+                      projection: n.projection,
+                      resolutions: n.resolutions
+                    }) || this).Bt = void 0 !== n.crossOrigin ? n.crossOrigin : null),
                   (i.Eh = void 0 !== n.displayDpi ? n.displayDpi : 96),
                   (i.xh = n.params || {}),
                   (i.Fe = n.url),
@@ -17820,7 +17946,12 @@
                   o = void 0 === n.imageSmoothing || n.imageSmoothing;
                 return (
                   void 0 !== n.interpolate && (o = n.interpolate),
-                  ((i = t.call(this, { attributions: n.attributions, interpolate: o, projection: yr(n.projection) }) || this).Fe = n.url),
+                  ((i =
+                    t.call(this, {
+                      attributions: n.attributions,
+                      interpolate: o,
+                      projection: yr(n.projection)
+                    }) || this).Fe = n.url),
                   (i.Ah = n.imageExtent),
                   (i.Lt = new bo(i.Ah, void 0, 1, i.Fe, r, e)),
                   (i.Mh = n.imageSize ? n.imageSize : null),
@@ -17938,7 +18069,12 @@
                 }),
                 (n.prototype.getLegendUrl = function(t, n) {
                   if(void 0 !== this.Fe) {
-                    var i = { SERVICE: 'WMS', VERSION: Ty, REQUEST: 'GetLegendGraphic', FORMAT: 'image/png' };
+                    var i = {
+                      SERVICE: 'WMS',
+                      VERSION: Ty,
+                      REQUEST: 'GetLegendGraphic',
+                      FORMAT: 'image/png'
+                    };
                     if(void 0 === n || void 0 === n.LAYER) {
                       var r = this.xh.LAYERS;
                       if(!(!Array.isArray(r) || 1 === r.length)) return;
@@ -17963,7 +18099,13 @@
                     u = Bn(o, e, 0, [wi((this.Sh * $n(t)) / e, 4), wi((this.Sh * Vn(t)) / e, 4)]),
                     a = this.Lt;
                   if(a && this._h == this.getRevision() && a.getResolution() == n && a.getPixelRatio() == i && xn(a.getExtent(), s)) return a;
-                  var h = { SERVICE: 'WMS', VERSION: Ty, REQUEST: 'GetMap', FORMAT: 'image/png', TRANSPARENT: !0 };
+                  var h = {
+                    SERVICE: 'WMS',
+                    VERSION: Ty,
+                    REQUEST: 'GetMap',
+                    FORMAT: 'image/png',
+                    TRANSPARENT: !0
+                  };
                   A(h, this.xh), (this.Mh[0] = yi($n(u) / e, 4)), (this.Mh[1] = yi(Vn(u) / e, 4));
                   var f = this.Oh(u, this.Mh, i, r, h);
                   return (this.Lt = new bo(u, n, i, f, this.Bt, this.Rt)), (this._h = this.getRevision()), this.Lt.addEventListener(L, this.handleImageChange.bind(this)), this.Lt;
@@ -18098,7 +18240,13 @@
                   Wn(w, [M, O, _, j], w);
               }
             }
-            var E = new xf({ origins: d, resolutions: p, sizes: y, tileSizes: m, extent: r ? w : void 0 }),
+            var E = new xf({
+                origins: d,
+                resolutions: p,
+                sizes: y,
+                tileSizes: m,
+                extent: r ? w : void 0
+              }),
               T = t.context,
               P = t.url;
             return {
@@ -18184,7 +18332,12 @@
                       wrapX: void 0 === n.wrapX || n.wrapX,
                       transition: n.transition
                     }) || this),
-                  Ry({ url: n.url, projection: i.getProjection(), mediaType: n.mediaType, context: n.context || null })
+                  Ry({
+                    url: n.url,
+                    projection: i.getProjection(),
+                    mediaType: n.mediaType,
+                    context: n.context || null
+                  })
                     .then(i.Ih.bind(i))
                     .catch(i.Nh.bind(i)),
                   i
@@ -18399,7 +18552,13 @@
                       ++u
                     )
                       e.push(e[u - 1] / 2), o.push(o[u - 1]), s.push(s[u - 1]);
-                    (i = new xf({ extent: r.getExtent(), origins: o, resolutions: e, tileSizes: s })), (this.Lh[n] = i);
+                    (i = new xf({
+                      extent: r.getExtent(),
+                      origins: o,
+                      resolutions: e,
+                      tileSizes: s
+                    })),
+                      (this.Lh[n] = i);
                   }
                   return i;
                 }),
@@ -19348,7 +19507,16 @@
                     if(((this._running = e), 1 !== e))
                       for(var o = t.inputs[0].data.length, s = 4 * Math.ceil(o / 4 / e), u = 0; u < e; ++u) {
                         for(var a = u * s, h = [], f = 0, c = r.length; f < c; ++f) h.push(r[f].slice(a, a + s));
-                        this._workers[u].postMessage({ buffers: h, meta: t.meta, imageOps: this._imageOps, width: n, height: i }, h);
+                        this._workers[u].postMessage(
+                          {
+                            buffers: h,
+                            meta: t.meta,
+                            imageOps: this._imageOps,
+                            width: n,
+                            height: i
+                          },
+                          h
+                        );
                       }
                     else this._workers[0].postMessage({ buffers: r, meta: t.meta, imageOps: this._imageOps, width: n, height: i }, r);
                   }
@@ -19455,7 +19623,15 @@
               return (
                 vm(n, t),
                 (n.prototype.setOperation = function(t, n) {
-                  this.Gh && this.Gh.dispose(), (this.Gh = new wm({ operation: t, imageOps: this.Dh === Mm, queue: 1, lib: n, threads: this.qh })), this.changed();
+                  this.Gh && this.Gh.dispose(),
+                    (this.Gh = new wm({
+                      operation: t,
+                      imageOps: this.Dh === Mm,
+                      queue: 1,
+                      lib: n,
+                      threads: this.qh
+                    })),
+                    this.changed();
                 }),
                 (n.prototype.Vh = function(t, n, i) {
                   var r = A({}, this.Zi);
@@ -19936,7 +20112,12 @@
                 }),
                 (n.prototype.getLegendUrl = function(t, n) {
                   if(void 0 !== this.urls[0]) {
-                    var i = { SERVICE: 'WMS', VERSION: Ty, REQUEST: 'GetLegendGraphic', FORMAT: 'image/png' };
+                    var i = {
+                      SERVICE: 'WMS',
+                      VERSION: Ty,
+                      REQUEST: 'GetLegendGraphic',
+                      FORMAT: 'image/png'
+                    };
                     if(void 0 === n || void 0 === n.LAYER) {
                       var r = this.xh.LAYERS;
                       if(!(!Array.isArray(r) || 1 === r.length)) return;
@@ -20011,7 +20192,13 @@
                       s = Qu(r.getTileSize(t[0]), this.tmpSize),
                       u = this.js;
                     0 !== u && ((s = Ku(s, u, this.tmpSize)), (o = mn(o, e * u, o))), 1 != n && (s = Ju(s, n, this.tmpSize));
-                    var a = { SERVICE: 'WMS', VERSION: Ty, REQUEST: 'GetMap', FORMAT: 'image/png', TRANSPARENT: !0 };
+                    var a = {
+                      SERVICE: 'WMS',
+                      VERSION: Ty,
+                      REQUEST: 'GetMap',
+                      FORMAT: 'image/png',
+                      TRANSPARENT: !0
+                    };
                     return A(a, this.xh), this.Oh(t, s, o, n, i, a);
                   }
                 }),
@@ -20124,7 +20311,12 @@
             })(xt),
             Xm = (function (t) {
               function n(n) {
-                var i = t.call(this, { projection: yr('EPSG:3857'), state: 'loading', zDirection: n.zDirection }) || this;
+                var i =
+                  t.call(this, {
+                    projection: yr('EPSG:3857'),
+                    state: 'loading',
+                    zDirection: n.zDirection
+                  }) || this;
                 if(((i.Qh = void 0 === n.preemptive || n.preemptive), (i.ef = kf), (i.uf = void 0), (i.if = n.jsonp || !1), n.url))
                   if(i.if) Zh(n.url, i.handleTileJSONResponse.bind(i), i.handleTileJSONError.bind(i));
                   else {
@@ -20307,7 +20499,13 @@
                 (n.prototype.createFromWMTSTemplate = function(t) {
                   var n = this.cf,
                     i = { layer: this.Ds, style: this.H, tilematrixset: this.ff };
-                  'KVP' == n && A(i, { Service: 'WMTS', Request: 'GetTile', Version: this.af, Format: this.ze }),
+                  'KVP' == n &&
+                    A(i, {
+                      Service: 'WMTS',
+                      Request: 'GetTile',
+                      Version: this.af,
+                      Format: this.ze
+                    }),
                     (t =
                       'KVP' == n
                         ? Nf(t, i)
@@ -20510,7 +20708,12 @@
                   (r.Lf = [$(a, Qv, r.zf, r), $(a, td, r.Rf, r), $(a, id, r.Ff, r), $(a, nd, r.Gf, r)]),
                   a.forEachFeature(
                     function(t) {
-                      (this.If[o(t)] = { feature: t, properties: t.getProperties(), geometry: t.getGeometry() }), this.Nf++;
+                      (this.If[o(t)] = {
+                        feature: t,
+                        properties: t.getProperties(),
+                        geometry: t.getGeometry()
+                      }),
+                        this.Nf++;
                     }.bind(r)
                   ),
                   r
@@ -20523,11 +20726,20 @@
                 }),
                 (n.prototype.zf = function(t) {
                   var n = t.feature;
-                  (this.If[o(n)] = { feature: n, properties: n.getProperties(), geometry: n.getGeometry() }), this.Nf++;
+                  (this.If[o(n)] = {
+                    feature: n,
+                    properties: n.getProperties(),
+                    geometry: n.getGeometry()
+                  }),
+                    this.Nf++;
                 }),
                 (n.prototype.Rf = function(t) {
                   var n = t.feature;
-                  this.If[o(n)] = { feature: n, properties: n.getProperties(), geometry: n.getGeometry() };
+                  this.If[o(n)] = {
+                    feature: n,
+                    properties: n.getProperties(),
+                    geometry: n.getGeometry()
+                  };
                 }),
                 (n.prototype.Ff = function(t) {
                   var n = t.feature;
@@ -21794,7 +22006,13 @@
                       drawImageH: b,
                       originX: a,
                       originY: h,
-                      declutterBox: { minX: bw[0], minY: bw[1], maxX: bw[2], maxY: bw[3], value: p },
+                      declutterBox: {
+                        minX: bw[0],
+                        minY: bw[1],
+                        maxX: bw[2],
+                        maxY: bw[3],
+                        value: p
+                      },
                       canvasTransform: y,
                       scale: c
                     }
@@ -21869,7 +22087,12 @@
                       I = this.dc,
                       N = this.Ge,
                       L = Math.round(1e12 * Math.atan2(-i[1], i[0])) / 1e12,
-                      z = { context: t, pixelRatio: this.pixelRatio, resolution: this.resolution, rotation: N },
+                      z = {
+                        context: t,
+                        pixelRatio: this.pixelRatio,
+                        resolution: this.resolution,
+                        rotation: N
+                      },
                       R = this.instructions != r || this.overlaps ? 0 : 200;
                     j < E;
 
@@ -22391,7 +22614,15 @@
                           }
                         } else {
                           if(0 === i) return (c[s] = !0), r(t, f, n);
-                          e.push((c[s] = { feature: t, layer: f, geometry: n, distanceSq: i, callback: r }));
+                          e.push(
+                            (c[s] = {
+                              feature: t,
+                              layer: f,
+                              geometry: n,
+                              distanceSq: i,
+                              callback: r
+                            })
+                          );
                         }
                       },
                       v = [this.Gc];
@@ -22754,7 +22985,15 @@
                           }
                         } else {
                           if(0 === i) return (l[s] = !0), r(t, a, n);
-                          e.push((l[s] = { feature: t, layer: a, geometry: n, distanceSq: i, callback: r }));
+                          e.push(
+                            (l[s] = {
+                              feature: t,
+                              layer: a,
+                              geometry: n,
+                              distanceSq: i,
+                              callback: r
+                            })
+                          );
                         }
                       },
                       d = this.renderedTiles,
@@ -24075,7 +24314,13 @@
                   return this.adaptOptions(i);
                 }),
                 (t.prototype.adaptOptions = function(t) {
-                  return A({ dataProjection: this.dataProjection, featureProjection: this.defaultFeatureProjection }, t);
+                  return A(
+                    {
+                      dataProjection: this.dataProjection,
+                      featureProjection: this.defaultFeatureProjection
+                    },
+                    t
+                  );
                 }),
                 (t.prototype.getType = function() {
                   return r();
@@ -24984,7 +25229,16 @@
                     for(var r = {}, e = {}, o = [], s = 0; s < i.length; s++) {
                       var u = i[s],
                         a = u[0].zoom;
-                      void 0 === r[a] && ((r[a] = { zoom: a, type: t.type, property: t.property, default: t.default }), (e[a] = []), o.push(a)), e[a].push([u[0].value, u[1]]);
+                      void 0 === r[a] &&
+                        ((r[a] = {
+                          zoom: a,
+                          type: t.type,
+                          property: t.property,
+                          default: t.default
+                        }),
+                        (e[a] = []),
+                        o.push(a)),
+                        e[a].push([u[0].value, u[1]]);
                     }
                     if('exponential' === hb({}, n)) {
                       for(var h = [eb(t), ['linear'], ['zoom']], f = 0, c = o; f < c.length; f += 1) {
@@ -26243,7 +26497,12 @@
               forward: zx,
               reverse: Rx,
               interpolate: function(t, n, i) {
-                return { l: _x(t.l, n.l, i), a: _x(t.a, n.a, i), b: _x(t.b, n.b, i), alpha: _x(t.alpha, n.alpha, i) };
+                return {
+                  l: _x(t.l, n.l, i),
+                  a: _x(t.a, n.a, i),
+                  b: _x(t.b, n.b, i),
+                  alpha: _x(t.alpha, n.alpha, i)
+                };
               }
             },
             Dx = {
@@ -26261,7 +26520,12 @@
                 return Rx({ l: t.l, a: Math.cos(n) * i, b: Math.sin(n) * i, alpha: t.alpha });
               },
               interpolate: function(t, n, i) {
-                return { h: Fx(t.h, n.h, i), c: _x(t.c, n.c, i), l: _x(t.l, n.l, i), alpha: _x(t.alpha, n.alpha, i) };
+                return {
+                  h: Fx(t.h, n.h, i),
+                  c: _x(t.c, n.c, i),
+                  l: _x(t.l, n.l, i),
+                  alpha: _x(t.alpha, n.alpha, i)
+                };
               }
             },
             qx = function(t, n, i, r, e) {
@@ -27787,7 +28051,12 @@
               type: { required: !0, type: 'enum', values: { vector: {} } },
               url: { type: 'string' },
               tiles: { type: 'array', value: 'string' },
-              bounds: { type: 'array', value: 'number', length: 4, default: [-180, -85.051129, 180, 85.051129] },
+              bounds: {
+                type: 'array',
+                value: 'number',
+                length: 4,
+                default: [-180, -85.051129, 180, 85.051129]
+              },
               scheme: { type: 'enum', values: { xyz: {}, tms: {} }, default: 'xyz' },
               minzoom: { type: 'number', default: 0 },
               maxzoom: { type: 'number', default: 22 },
@@ -27800,7 +28069,12 @@
               type: { required: !0, type: 'enum', values: { raster: {} } },
               url: { type: 'string' },
               tiles: { type: 'array', value: 'string' },
-              bounds: { type: 'array', value: 'number', length: 4, default: [-180, -85.051129, 180, 85.051129] },
+              bounds: {
+                type: 'array',
+                value: 'number',
+                length: 4,
+                default: [-180, -85.051129, 180, 85.051129]
+              },
               minzoom: { type: 'number', default: 0 },
               maxzoom: { type: 'number', default: 22 },
               tileSize: { type: 'number', default: 512, units: 'pixels' },
@@ -27813,7 +28087,12 @@
               type: { required: !0, type: 'enum', values: { 'raster-dem': {} } },
               url: { type: 'string' },
               tiles: { type: 'array', value: 'string' },
-              bounds: { type: 'array', value: 'number', length: 4, default: [-180, -85.051129, 180, 85.051129] },
+              bounds: {
+                type: 'array',
+                value: 'number',
+                length: 4,
+                default: [-180, -85.051129, 180, 85.051129]
+              },
               minzoom: { type: 'number', default: 0 },
               maxzoom: { type: 'number', default: 22 },
               tileSize: { type: 'number', default: 512, units: 'pixels' },
@@ -28369,7 +28648,10 @@
               default: !1,
               transition: !1,
               'property-type': 'data-driven',
-              expression: { interpolated: !1, parameters: ['zoom', 'feature', 'pitch', 'distance-from-center'] }
+              expression: {
+                interpolated: !1,
+                parameters: ['zoom', 'feature', 'pitch', 'distance-from-center']
+              }
             },
             filter_fill: {
               type: 'boolean',
@@ -28439,7 +28721,13 @@
               colorSpace: { type: 'enum', values: { rgb: {}, lab: {}, hcl: {} }, default: 'rgb' },
               default: { type: '*', required: !1 }
             },
-            function_stop: { type: 'array', minimum: 0, maximum: 24, value: ['number', 'color'], length: 2 },
+            function_stop: {
+              type: 'array',
+              minimum: 0,
+              maximum: 24,
+              value: ['number', 'color'],
+              length: 2
+            },
             expression: { type: 'array', value: '*', minimum: 1 },
             expression_name: {
               type: 'enum',
@@ -29457,7 +29745,12 @@
               }),
                 (a = !vx(h.value.expression));
             }
-            return { filter: (s = s), dynamicFilter: u || void 0, needGeometry: CM(r), needFeature: !!a };
+            return {
+              filter: (s = s),
+              dynamicFilter: u || void 0,
+              needGeometry: CM(r),
+              needFeature: !!a
+            };
           }
           function jM(t) {
             if(!Array.isArray(t)) return t;
@@ -29840,7 +30133,14 @@
           }
           var p_,
             y_,
-            m_ = { Point: 1, MultiPoint: 1, LineString: 2, MultiLineString: 2, Polygon: 3, MultiPolygon: 3 },
+            m_ = {
+              Point: 1,
+              MultiPoint: 1,
+              LineString: 2,
+              MultiLineString: 2,
+              Polygon: 3,
+              MultiPolygon: 3
+            },
             w_ = {
               center: [0.5, 0.5],
               left: [0, 0.5],
@@ -30029,7 +30329,11 @@
                               (k || z) &&
                                 (++b,
                                 (!(R = A[b]) || (k && !R.getFill()) || (!k && R.getFill()) || (z && !R.getStroke()) || (!z && R.getStroke()) || R.getText()) &&
-                                  ((R = new Sv({ fill: k ? new rv() : void 0, stroke: z ? new mv() : void 0 })), (A[b] = R)),
+                                  ((R = new Sv({
+                                    fill: k ? new rv() : void 0,
+                                    stroke: z ? new mv() : void 0
+                                  })),
+                                  (A[b] = R)),
                                 k && (N = R.getFill()).setColor(k),
                                 z && ((L = R.getStroke()).setColor(z), L.setWidth(0.5)),
                                 R.setZIndex(F));
@@ -32284,7 +32588,13 @@
                       this.fp(r, n);
                       var p = [];
                       if((void 0 !== u && (this.Gd.remove(u), p.push(u.segment[0])), void 0 !== h && (this.Gd.remove(h), p.push(h.segment[1])), void 0 !== u && void 0 !== h)) {
-                        var y = { depth: f.depth, feature: f.feature, geometry: f.geometry, index: a, segment: p };
+                        var y = {
+                          depth: f.depth,
+                          feature: f.feature,
+                          geometry: f.geometry,
+                          index: a,
+                          segment: p
+                        };
                         this.Gd.insert(yn(y.segment), y);
                       }
                       this.lp(r, s, f.depth, -1), this.dd && (this.Kv.getSource().removeFeature(this.dd), (this.dd = null)), (l.length = 0);
@@ -33017,7 +33327,11 @@
                   if(e) {
                     i.geometry = oO(e, n);
                     var o = n && (n.dataProjection || n.featureProjection);
-                    o && (i.geometry.spatialReference = { wkid: Number(yr(o).getCode().split(':').pop()) }), delete r[t.getGeometryName()];
+                    o &&
+                      (i.geometry.spatialReference = {
+                        wkid: Number(yr(o).getCode().split(':').pop())
+                      }),
+                      delete r[t.getGeometryName()];
                   }
                   return k(r) ? (i.attributes = {}) : (i.attributes = r), i;
                 }),
@@ -33693,7 +34007,9 @@
                 outerBoundaryIs: PO.prototype.outerBoundaryIsParser
               }
             }),
-            (PO.prototype.ty = { 'http://www.opengis.net/gml': { coordinates: Hf(PO.prototype.readFlatCoordinates) } }),
+            (PO.prototype.ty = {
+              'http://www.opengis.net/gml': { coordinates: Hf(PO.prototype.readFlatCoordinates) }
+            }),
             (PO.prototype.GEOMETRY_PARSERS = {
               'http://www.opengis.net/gml': {
                 Point: Jf(vO.prototype.readPoint),
@@ -34161,8 +34477,12 @@
                 Surface: Hf(NO.prototype.readSurface)
               }
             }),
-            (NO.prototype.SURFACE_PARSERS = { 'http://www.opengis.net/gml': { patches: Jf(NO.prototype.readPatch) } }),
-            (NO.prototype.CURVE_PARSERS = { 'http://www.opengis.net/gml': { segments: Jf(NO.prototype.readSegment) } }),
+            (NO.prototype.SURFACE_PARSERS = {
+              'http://www.opengis.net/gml': { patches: Jf(NO.prototype.readPatch) }
+            }),
+            (NO.prototype.CURVE_PARSERS = {
+              'http://www.opengis.net/gml': { segments: Jf(NO.prototype.readSegment) }
+            }),
             (NO.prototype.ENVELOPE_PARSERS = {
               'http://www.opengis.net/gml': {
                 lowerCorner: Hf(NO.prototype.readFlatPosList),
@@ -34173,7 +34493,9 @@
               'http://www.opengis.net/gml': { PolygonPatch: Jf(NO.prototype.readPolygonPatch) }
             }),
             (NO.prototype.SEGMENTS_PARSERS = {
-              'http://www.opengis.net/gml': { LineStringSegment: Kf(NO.prototype.readLineStringSegment) }
+              'http://www.opengis.net/gml': {
+                LineStringSegment: Kf(NO.prototype.readLineStringSegment)
+              }
             }),
             (vO.prototype.RING_PARSERS = {
               'http://www.opengis.net/gml': {
@@ -34324,7 +34646,9 @@
               'http://www.opengis.net/gml/3.2': { PolygonPatch: Jf(LO.prototype.readPolygonPatch) }
             }),
             (GO.prototype.SEGMENTS_PARSERS = {
-              'http://www.opengis.net/gml/3.2': { LineStringSegment: Kf(LO.prototype.readLineStringSegment) }
+              'http://www.opengis.net/gml/3.2': {
+                LineStringSegment: Kf(LO.prototype.readLineStringSegment)
+              }
             }),
             (GO.prototype.MULTIPOINT_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
@@ -34345,7 +34669,9 @@
               }
             }),
             (GO.prototype.POINTMEMBER_PARSERS = {
-              'http://www.opengis.net/gml/3.2': { Point: Hf(vO.prototype.readFlatCoordinatesFromNode) }
+              'http://www.opengis.net/gml/3.2': {
+                Point: Hf(vO.prototype.readFlatCoordinatesFromNode)
+              }
             }),
             (GO.prototype.LINESTRINGMEMBER_PARSERS = {
               'http://www.opengis.net/gml/3.2': { LineString: Hf(vO.prototype.readLineString) }
@@ -35560,7 +35886,10 @@
               var i = ac({}, wE, t, n);
               if(i) {
                 var r = n[n.length - 1],
-                  e = new Ev({ fill: new rv({ color: 'color' in i ? i.color : Oj }), scale: i.scale });
+                  e = new Ev({
+                    fill: new rv({ color: 'color' in i ? i.color : Oj }),
+                    scale: i.scale
+                  });
                 r.textStyle = e;
               }
             },
@@ -35568,7 +35897,10 @@
               var i = ac({}, gE, t, n);
               if(i) {
                 var r = n[n.length - 1],
-                  e = new mv({ color: 'color' in i ? i.color : Oj, width: 'width' in i ? i.width : 1 });
+                  e = new mv({
+                    color: 'color' in i ? i.color : Oj,
+                    width: 'width' in i ? i.width : 1
+                  });
                 r.strokeStyle = e;
               }
             },
@@ -35703,7 +36035,12 @@
             east: tc(mO),
             west: tc(mO)
           });
-          var YE = sc(Bj, { minLodPixels: tc(mO), maxLodPixels: tc(mO), minFadeExtent: tc(mO), maxFadeExtent: tc(mO) });
+          var YE = sc(Bj, {
+            minLodPixels: tc(mO),
+            maxLodPixels: tc(mO),
+            minFadeExtent: tc(mO),
+            maxFadeExtent: tc(mO)
+          });
           var ZE = sc(Bj, { LinearRing: Hf(ME) });
           var $E = sc(Bj, { LinearRing: Jf(ME) });
           function KE(t, n) {
@@ -35776,7 +36113,12 @@
             vT = rc('LineString'),
             dT = rc('LinearRing'),
             pT = rc('Polygon'),
-            yT = sc(Bj, { LineString: nc(jT), Point: nc(jT), Polygon: nc(CT), GeometryCollection: nc(mT) });
+            yT = sc(Bj, {
+              LineString: nc(jT),
+              Point: nc(jT),
+              Polygon: nc(CT),
+              GeometryCollection: nc(mT)
+            });
           function mT(t, n, i) {
             var r,
               e = { node: t },
@@ -35853,7 +36195,15 @@
             var r = { node: t };
             n.getId() && t.setAttribute('id', n.getId());
             var e = n.getProperties(),
-              o = { address: 1, description: 1, name: 1, open: 1, phoneNumber: 1, styleUrl: 1, visibility: 1 };
+              o = {
+                address: 1,
+                description: 1,
+                name: 1,
+                open: 1,
+                phoneNumber: 1,
+                styleUrl: 1,
+                visibility: 1
+              };
             o[n.getGeometryName()] = 1;
             var s = Object.keys(e || {})
                 .sort()
@@ -36032,7 +36382,11 @@
                 var r = { node: t },
                   e = n.getFill(),
                   o = n.getStroke(),
-                  s = { color: e ? e.getColor() : void 0, fill: !!e && void 0, outline: !!o && void 0 },
+                  s = {
+                    color: e ? e.getColor() : void 0,
+                    fill: !!e && void 0,
+                    outline: !!o && void 0
+                  },
                   u = i[i.length - 1].node,
                   a = ET[u.namespaceURI],
                   h = oc(s, a);
@@ -37183,12 +37537,22 @@
               };
             })(),
             AP = {
-              'http://www.opengis.net/gml': { boundedBy: tc(vO.prototype.readExtentElement, 'bounds') },
+              'http://www.opengis.net/gml': {
+                boundedBy: tc(vO.prototype.readExtentElement, 'bounds')
+              },
               'http://www.opengis.net/wfs/2.0': { member: Hf(vO.prototype.readFeaturesInternal) }
             },
             PP = {
-              'http://www.opengis.net/wfs': { totalInserted: tc(gO), totalUpdated: tc(gO), totalDeleted: tc(gO) },
-              'http://www.opengis.net/wfs/2.0': { totalInserted: tc(gO), totalUpdated: tc(gO), totalDeleted: tc(gO) }
+              'http://www.opengis.net/wfs': {
+                totalInserted: tc(gO),
+                totalUpdated: tc(gO),
+                totalDeleted: tc(gO)
+              },
+              'http://www.opengis.net/wfs/2.0': {
+                totalInserted: tc(gO),
+                totalUpdated: tc(gO),
+                totalDeleted: tc(gO)
+              }
             },
             CP = {
               'http://www.opengis.net/wfs': {
@@ -37409,7 +37773,10 @@
           function VP(t, n) {
             uc(XP, t, n);
           }
-          var WP = { 'http://www.opengis.net/wfs': { Feature: VP }, 'http://www.opengis.net/wfs/2.0': { Feature: VP } };
+          var WP = {
+            'http://www.opengis.net/wfs': { Feature: VP },
+            'http://www.opengis.net/wfs/2.0': { Feature: VP }
+          };
           function YP(t, n) {
             return ac([], WP, t, n);
           }
@@ -38052,7 +38419,14 @@
                 t(n, i), (n.prototype = null === i ? Object.create(i) : ((r.prototype = i.prototype), new r()));
               };
             })(),
-            RC = { POINT: Se, LINESTRING: ng, POLYGON: We, MULTIPOINT: Kw, MULTILINESTRING: rg, MULTIPOLYGON: sg },
+            RC = {
+              POINT: Se,
+              LINESTRING: ng,
+              POLYGON: We,
+              MULTIPOINT: Kw,
+              MULTILINESTRING: rg,
+              MULTIPOLYGON: sg
+            },
             FC = 'EMPTY',
             GC = 0,
             DC = 1,
@@ -38749,7 +39123,12 @@
                   return o;
                 })
               },
-              sc(kk, { Title: tc(xO), Abstract: tc(xO), WGS84BoundingBox: tc(Vk), Identifier: tc(xO) })
+              sc(kk, {
+                Title: tc(xO),
+                Abstract: tc(xO),
+                WGS84BoundingBox: tc(Vk),
+                Identifier: tc(xO)
+              })
             ),
             Rk = sc(
               Ck,
@@ -39074,7 +39453,12 @@
               function n(n) {
                 var i = this,
                   r = n || {};
-                ((i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this).iw = i.rw.bind(i)),
+                ((i =
+                  t.call(this, {
+                    element: document.createElement('div'),
+                    render: r.render,
+                    target: r.target
+                  }) || this).iw = i.rw.bind(i)),
                   (i.Sr = void 0 === r.collapsed || r.collapsed),
                   (i.Tr = void 0 === r.collapsible || r.collapsible),
                   i.Tr || (i.Sr = !1),
@@ -39303,7 +39687,12 @@
                   r = n || {},
                   e = void 0 !== r.className ? r.className : r.bar ? 'ol-scale-bar' : 'ol-scale-line';
                 return (
-                  (i = t.call(this, { element: document.createElement('div'), render: r.render, target: r.target }) || this).on,
+                  (i =
+                    t.call(this, {
+                      element: document.createElement('div'),
+                      render: r.render,
+                      target: r.target
+                    }) || this).on,
                   i.once,
                   i.un,
                   (i.ww = document.createElement('div')),
@@ -40387,7 +40776,15 @@
                 if(!yr(o)) {
                   var s = t.defs(o),
                     u = s.units;
-                  u || 'longlat' !== s.projName || (u = Rt.DEGREES), dr(new ei({ code: o, axisOrientation: s.axis, metersPerUnit: s.to_meter, units: u }));
+                  u || 'longlat' !== s.projName || (u = Rt.DEGREES),
+                    dr(
+                      new ei({
+                        code: o,
+                        axisOrientation: s.axis,
+                        metersPerUnit: s.to_meter,
+                        units: u
+                      })
+                    );
                 }
               }
               for(n = 0; n < e; ++n) {
@@ -40688,7 +41085,12 @@
               var d = !1,
                 p = 'ne' == f.getAxisOrientation().substr(0, 2),
                 m = c.TileMatrix[0],
-                w = { MinTileCol: 0, MinTileRow: 0, MaxTileCol: m.MatrixWidth - 1, MaxTileRow: m.MatrixHeight - 1 };
+                w = {
+                  MinTileCol: 0,
+                  MinTileRow: 0,
+                  MaxTileCol: m.MatrixWidth - 1,
+                  MaxTileRow: m.MatrixHeight - 1
+                };
               if(s) {
                 w = s[s.length - 1];
                 var g = b(c.TileMatrix, function(t) {

@@ -1,4 +1,3 @@
-
 /*
  * Parses a JSON object and returns a line of GCode
  * Expects a JSON object with each key value pair representing an axis and its corresponding value

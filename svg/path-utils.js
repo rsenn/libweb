@@ -222,6 +222,11 @@ export function DrawSVGText(str, font) {
   return {
     tagName: 'svg',
     attributes: { version: '1.1', viewBox: '0 0 10000 5000', width: '10000', height: '5000' },
-    children: [{ tagName: 'path', attributes: { stroke: 'none', 'stroke-width': 10, fill: 'black', d: MakeText(str, font) } }]
+    children: [
+      {
+        tagName: 'path',
+        attributes: { stroke: 'none', 'stroke-width': 10, fill: 'black', d: MakeText(str, font) }
+      }
+    ]
   };
 }

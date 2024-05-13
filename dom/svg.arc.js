@@ -1,5 +1,3 @@
-
-
 (function () {
   let Trig = (function () {
     function Trig() {}

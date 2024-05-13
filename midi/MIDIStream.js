@@ -117,6 +117,9 @@ export class MIDIStream {
   }
 }
 
-Object.defineProperty(MIDIStream.prototype, Symbol.toStringTag, { value: 'MIDIStream', enumerable: false });
+Object.defineProperty(MIDIStream.prototype, Symbol.toStringTag, {
+  value: 'MIDIStream',
+  enumerable: false
+});
 
 export default MIDIStream;

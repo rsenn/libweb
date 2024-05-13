@@ -1,4 +1,3 @@
-
 export class Rule {
   productions = [];
   fragment = false;

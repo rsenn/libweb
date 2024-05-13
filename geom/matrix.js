@@ -1,4 +1,5 @@
 import { curry, define, defineGetter, getMethods, immutableClass, inspectSymbol, isObject, roundTo } from '../misc.js';
+
 function matrixMultiply(a, b) {
   var result = [];
   for(let i = 0; i < a.length; i++) {

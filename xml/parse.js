@@ -1,4 +1,3 @@
-
 const WS = 0x01;
 const START = 0x02;
 const END = 0x04;
@@ -173,7 +172,7 @@ export let parse2 = function parse2(g) {
     return !done;
   };
   const is = (ch, cl) => m[ch] & cl;
-  const str = s=>s+''; 
+  const str = s => s + '';
   const skip = pred => {
     data = [];
     while(!done) {

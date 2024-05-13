@@ -1,4 +1,3 @@
-
 /**
  * LogJS (c)2013 Brett Fattori
  * Lightweight JavaScript logging framework
@@ -15,12 +14,11 @@ export var LogJS = {
   version: 'LogJS v1.2.2',
   get window_() {
     try {
-      if(global.window)
-        return global.window;
-    }catch(e) {}
+      if(global.window) return global.window;
+    } catch(e) {}
     try {
-        return globalThis.window;
-    }catch(e) {}
+      return globalThis.window;
+    } catch(e) {}
   }
 };
 

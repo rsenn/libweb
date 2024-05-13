@@ -3,7 +3,6 @@
  * https://blobfolio.com/2018/06/lazy-loading-sprites-inline/
  */
 
-
 /**
  * Process SVGs onLoad
  *

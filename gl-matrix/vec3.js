@@ -11,7 +11,7 @@ import * as glMatrix from './common.js';
  */
 export function create() {
   let out = new glMatrix.ARRAY_TYPE(3);
-  if (glMatrix.ARRAY_TYPE != Float32Array) {
+  if(glMatrix.ARRAY_TYPE != Float32Array) {
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -336,7 +336,7 @@ export function normalize(out, a) {
   let y = a[1];
   let z = a[2];
   let len = x * x + y * y + z * z;
-  if (len > 0) {
+  if(len > 0) {
     //TODO: evaluate use of glm_invsqrt here?
     len = 1 / Math.sqrt(len);
   }
@@ -699,7 +699,7 @@ export function zero(out) {
  * @returns {String} string representation of the vector
  */
 export function str(a) {
-  return "vec3(" + a[0] + ", " + a[1] + ", " + a[2] + ")";
+  return 'vec3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ')';
 }
 
 /**
@@ -728,12 +728,9 @@ export function equals(a, b) {
     b1 = b[1],
     b2 = b[2];
   return (
-    Math.abs(a0 - b0) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-    Math.abs(a1 - b1) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-    Math.abs(a2 - b2) <=
-      glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2))
+    Math.abs(a0 - b0) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+    Math.abs(a1 - b1) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+    Math.abs(a2 - b2) <= glMatrix.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2))
   );
 }
 
@@ -794,23 +791,23 @@ export const sqrLen = squaredLength;
 export const forEach = (function () {
   let vec = create();
 
-  return function (a, stride, offset, count, fn, arg) {
+  return function(a, stride, offset, count, fn, arg) {
     let i, l;
-    if (!stride) {
+    if(!stride) {
       stride = 3;
     }
 
-    if (!offset) {
+    if(!offset) {
       offset = 0;
     }
 
-    if (count) {
+    if(count) {
       l = Math.min(count * stride + offset, a.length);
     } else {
       l = a.length;
     }
 
-    for (i = offset; i < l; i += stride) {
+    for(i = offset; i < l; i += stride) {
       vec[0] = a[i];
       vec[1] = a[i + 1];
       vec[2] = a[i + 2];

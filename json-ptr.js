@@ -1,4 +1,3 @@
-
 const { curry } = Util;
 
 export const nil = '';

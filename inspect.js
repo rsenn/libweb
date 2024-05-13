@@ -1,4 +1,3 @@
-
 Util.getPlatform() == 'quickjs'
   ? import('inspect')
       .catch(() => import('inspect.so'))

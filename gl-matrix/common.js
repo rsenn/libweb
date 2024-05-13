@@ -5,10 +5,9 @@
 
 // Configuration Constants
 export const EPSILON = 0.000001;
-export let ARRAY_TYPE =
-  typeof Float32Array !== "undefined" ? Float32Array : Array;
+export let ARRAY_TYPE = typeof Float32Array !== 'undefined' ? Float32Array : Array;
 export let RANDOM = Math.random;
-export let ANGLE_ORDER = "zyx";
+export let ANGLE_ORDER = 'zyx';
 
 /**
  * Symmetric round
@@ -17,10 +16,9 @@ export let ANGLE_ORDER = "zyx";
  * @param {Number} a value to round
  */
 export function round(a) {
-  if (a >= 0)
-    return Math.round(a);
+  if(a >= 0) return Math.round(a);
 
-  return (a % 0.5 === 0) ? Math.floor(a) : Math.round(a);
+  return a % 0.5 === 0 ? Math.floor(a) : Math.round(a);
 }
 
 /**
