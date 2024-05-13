@@ -6,3 +6,5 @@ export const FindIndexDecorator = {
     return this[this.findLastIndex(cb, thisArg)];
   }
 };
+
+export default FindIndexDecorator;
