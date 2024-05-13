@@ -1,14 +1,12 @@
 import { curry, define, defineGetter, getMethods, immutableClass, inspectSymbol, isObject, roundTo } from '../misc.js';
 
 function matrixMultiply(a, b) {
-  var result = [];
+  let result = [];
   for(let i = 0; i < a.length; i++) {
     result[i] = [];
     for(let j = 0; j < b[0].length; j++) {
-      var sum = 0;
-      for(let k = 0; k < a[0].length; k++) {
-        sum += a[i][k] * b[k][j];
-      }
+      let sum = 0;
+      for(let k = 0; k < a[0].length; k++) sum += a[i][k] * b[k][j];
       result[i][j] = sum;
     }
   }
@@ -209,20 +207,8 @@ define(Matrix.prototype, {
   },
 
   invert() {
-    /* const det = Matrix.prototype.determinant.call(this);
-  return new Matrix([
-    (this[4] * this[8] - this[5] * this[7]) / det,
-    (this[2] * this[7] - this[1] * this[8]) / det,
-    (this[1] * this[5] - this[2] * this[4]) / det,
-    (this[5] * this[6] - this[3] * this[8]) / det,
-    (this[0] * this[8] - this[2] * this[6]) / det,
-    (this[2] * this[3] - this[0] * this[5]) / det,
-    (this[3] * this[7] - this[4] * this[6]) / det,
-    (this[6] * this[1] - this[0] * this[7]) / det,
-    (this[0] * this[4] - this[1] * this[3]) / det
-  ]);*/
-    let { a, b, c, d, e, f } = this;
-    let den = a * d - b * c;
+    const { a, b, c, d, e, f } = this;
+    const den = a * d - b * c;
 
     return new Matrix({
       a: d / den,
@@ -377,30 +363,32 @@ define(Matrix.prototype, {
     return this[0] * this[4] < 0 || this[1] * this[3] > 0 ? -1 : 1;
   },
   affineTransform(a, b) {
-    let xx, yx, xy, yy, tx, ty;
     if(typeof a == 'object' && a.toPoints !== undefined) a = a.toPoints();
     if(typeof b == 'object' && b.toPoints !== undefined) b = b.toPoints();
-    xx =
+
+    const xx =
       (b[0].x * a[1].y + b[1].x * a[2].y + b[2].x * a[0].y - b[0].x * a[2].y - b[1].x * a[0].y - b[2].x * a[1].y) /
       (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-    yx =
+    const yx =
       (b[0].y * a[1].y + b[1].y * a[2].y + b[2].y * a[0].y - b[0].y * a[2].y - b[1].y * a[0].y - b[2].y * a[1].y) /
       (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-    xy =
+    const xy =
       (a[0].x * b[1].x + a[1].x * b[2].x + a[2].x * b[0].x - a[0].x * b[2].x - a[1].x * b[0].x - a[2].x * b[1].x) /
       (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-    yy =
+    const yy =
       (a[0].x * b[1].y + a[1].x * b[2].y + a[2].x * b[0].y - a[0].x * b[2].y - a[1].x * b[0].y - a[2].x * b[1].y) /
       (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-    tx =
+    const tx =
       (a[0].x * a[1].y * b[2].x + a[1].x * a[2].y * b[0].x + a[2].x * a[0].y * b[1].x - a[0].x * a[2].y * b[1].x - a[1].x * a[0].y * b[2].x - a[2].x * a[1].y * b[0].x) /
       (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-    ty =
+    const ty =
       (a[0].x * a[1].y * b[2].y + a[1].x * a[2].y * b[0].y + a[2].x * a[0].y * b[1].y - a[0].x * a[2].y * b[1].y - a[1].x * a[0].y * b[2].y - a[2].x * a[1].y * b[0].y) /
       (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+
     this.setRow.call(this, 0, xx, xy, tx);
     this.setRow.call(this, 1, yx, yy, ty);
     this.setRow.call(this, 2, 0, 0, 1);
+
     return this;
   },
 
@@ -503,15 +491,6 @@ define(Matrix.prototype, {
     const c = Math.cos(rad);
 
     return Matrix.prototype.init.call(this, c, -s, 0, s, c, 0);
-    /*  Matrix.prototype.setRow.call(this, 0, c, s, 0);
-  Matrix.prototype.setRow.call(this, 1, -s, c, 0);
-  Matrix.prototype.setRow.call(this, 2, 0,0,1);*/
-
-    /*  Matrix.prototype.setRow.call(this, 0, c, -s, 0);
-  Matrix.prototype.setRow.call(this, 1, s, c, 0);
-  Matrix.prototype.setRow.call(this, 2, 0, 0, 1);*/
-
-    return this;
   },
   initSkew(x, y, deg = false) {
     const ax = Math.tan(deg ? DEG2RAD * x : x);
@@ -567,18 +546,19 @@ const MatrixProps = (obj = {}) =>
   );
 
 define(Matrix, {
-  fromJSON: obj => new Matrix(obj),
-  fromDOM: matrix => {
+  fromJSON(obj) {
+    return new Matrix(obj);
+  },
+  fromDOM(matrix, method = 'getScreenCTM') {
+    if(isObject(matrix) && method in matrix) matrix = matrix[method]();
+
     const { a, b, c, d, e, f } = matrix;
     return new Matrix(a, c, e, b, d, f);
   },
-  fromCSS: str => {
+  fromCSS(str) {
     let [xx, yx, xy, yy, x0, y0] = [...str.matchAll(/[-.0-9]+([Ee][-+]?[0-9]+|)/g)].map(m => parseFloat(m[0]));
     return new Matrix(xx, xy, x0, yx, yy, y0);
   },
-  /* equals(other) {
-    return this.length <= other.length && Array.prototype.every.call(this, (n, i) => other[i] == n);
-  },*/
   getAffineTransform(a, b) {
     let matrix = new Matrix();
     matrix.affineTransform(a, b);

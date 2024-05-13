@@ -70,6 +70,7 @@ export class Transformation {
   toString(tUnit) {
     return `${this.type}${this.is3D ? '3d' : ''}(${this.vector(tUnit).join(', ')})`;
   }
+
   clone() {
     let desc = Object.getOwnPropertyDescriptors(this);
     let props = this.props.reduce((acc, prop) => ({ ...acc, [prop]: desc[prop] }), {});
