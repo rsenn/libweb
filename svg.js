@@ -1,24 +1,23 @@
 /*!
-* @svgdotjs/svg.js - A lightweight library for manipulating and animating SVG.
-* @version 3.2.0
-* https://svgjs.dev/
-*
-* @copyright Wout Fierens <wout@mick-wout.com>
-* @license MIT
-*
-* BUILT: Tue May 14 2024 11:37:35 GMT+0200 (Mitteleuropäische Sommerzeit)
-*/;
-const methods$1 = {};
+ * @svgdotjs/svg.js - A lightweight library for manipulating and animating SVG.
+ * @version 3.2.0
+ * https://svgjs.dev/
+ *
+ * @copyright Wout Fierens <wout@mick-wout.com>
+ * @license MIT
+ *
+ * BUILT: Tue May 14 2024 11:37:35 GMT+0200 (Mitteleuropäische Sommerzeit)
+ */ const methods$1 = {};
 const names = [];
 function registerMethods(name, m) {
-  if (Array.isArray(name)) {
-    for (const _name of name) {
+  if(Array.isArray(name)) {
+    for(const _name of name) {
       registerMethods(_name, m);
     }
     return;
   }
-  if (typeof name === 'object') {
-    for (const _name in name) {
+  if(typeof name === 'object') {
+    for(const _name in name) {
       registerMethods(_name, name[_name]);
     }
     return;
@@ -41,7 +40,7 @@ function map(array, block) {
   let i;
   const il = array.length;
   const result = [];
-  for (i = 0; i < il; i++) {
+  for(i = 0; i < il; i++) {
     result.push(block(array[i]));
   }
   return result;
@@ -52,8 +51,8 @@ function filter(array, block) {
   let i;
   const il = array.length;
   const result = [];
-  for (i = 0; i < il; i++) {
-    if (block(array[i])) {
+  for(i = 0; i < il; i++) {
+    if(block(array[i])) {
       result.push(array[i]);
     }
   }
@@ -62,17 +61,17 @@ function filter(array, block) {
 
 // Degrees to radians
 function radians(d) {
-  return d % 360 * Math.PI / 180;
+  return ((d % 360) * Math.PI) / 180;
 }
 
 // Radians to degrees
 function degrees(r) {
-  return r * 180 / Math.PI % 360;
+  return ((r * 180) / Math.PI) % 360;
 }
 
 // Convert camel cased string to dash separated
 function unCamelCase(s) {
-  return s.replace(/([A-Z])/g, function (m, g) {
+  return s.replace(/([A-Z])/g, function(m, g) {
     return '-' + g.toLowerCase();
   });
 }
@@ -84,12 +83,12 @@ function capitalize(s) {
 
 // Calculate proportional width and height values when necessary
 function proportionalSize(element, width, height, box) {
-  if (width == null || height == null) {
+  if(width == null || height == null) {
     box = box || element.bbox();
-    if (width == null) {
-      width = box.width / box.height * height;
-    } else if (height == null) {
-      height = box.height / box.width * width;
+    if(width == null) {
+      width = (box.width / box.height) * height;
+    } else if(height == null) {
+      height = (box.height / box.width) * width;
     }
   }
   return {
@@ -110,26 +109,21 @@ function getOrigin(o, element) {
   let oy = o.oy != null ? o.oy : o.originY != null ? o.originY : 'center';
 
   // Then check if origin was used and overwrite in that case
-  if (origin != null) {
+  if(origin != null) {
     [ox, oy] = Array.isArray(origin) ? origin : typeof origin === 'object' ? [origin.x, origin.y] : [origin, origin];
   }
 
   // Make sure to only call bbox when actually needed
   const condX = typeof ox === 'string';
   const condY = typeof oy === 'string';
-  if (condX || condY) {
-    const {
-      height,
-      width,
-      x,
-      y
-    } = element.bbox();
+  if(condX || condY) {
+    const { height, width, x, y } = element.bbox();
 
     // And only overwrite if string was passed for this specific axis
-    if (condX) {
+    if(condX) {
       ox = ox.includes('left') ? x : ox.includes('right') ? x + width : x + width / 2;
     }
-    if (condY) {
+    if(condY) {
       oy = oy.includes('top') ? y : oy.includes('bottom') ? y + height : y + height / 2;
     }
   }
@@ -143,12 +137,12 @@ const writeDataToDom = (element, data, defaults = {}) => {
   const cloned = {
     ...data
   };
-  for (const key in cloned) {
-    if (cloned[key].valueOf() === defaults[key]) {
+  for(const key in cloned) {
+    if(cloned[key].valueOf() === defaults[key]) {
       delete cloned[key];
     }
   }
-  if (Object.keys(cloned).length) {
+  if(Object.keys(cloned).length) {
     element.node.setAttribute('data-svgjs', JSON.stringify(cloned)); // see #428
   } else {
     element.node.removeAttribute('data-svgjs');
@@ -215,7 +209,7 @@ class Base {
   // constructor (node/*, {extensions = []} */) {
   //   // this.tags = []
   //   //
-  //   // for (let extension of extensions) {
+  //   // for(let extension of extensions) {
   //   //   extension.setup.call(this, node)
   //   //   this.tags.push(extension.name)
   //   // }
@@ -231,14 +225,14 @@ function create(name, ns = svg) {
   return globals.document.createElementNS(ns, name);
 }
 function makeInstance(element, isHTML = false) {
-  if (element instanceof Base) return element;
-  if (typeof element === 'object') {
+  if(element instanceof Base) return element;
+  if(typeof element === 'object') {
     return adopter(element);
   }
-  if (element == null) {
+  if(element == null) {
     return new elements[root]();
   }
-  if (typeof element === 'string' && element.charAt(0) !== '<') {
+  if(typeof element === 'string' && element.charAt(0) !== '<') {
     return adopter(globals.document.querySelector(element));
   }
 
@@ -255,17 +249,17 @@ function makeInstance(element, isHTML = false) {
   return element;
 }
 function nodeOrNew(name, node) {
-  return node && (node instanceof globals.window.Node || node.ownerDocument && node instanceof node.ownerDocument.defaultView.Node) ? node : create(name);
+  return node && (node instanceof globals.window.Node || (node.ownerDocument && node instanceof node.ownerDocument.defaultView.Node)) ? node : create(name);
 }
 
 // Adopt existing svg elements
 function adopt(node) {
   // check for presence of node
-  if (!node) return null;
+  if(!node) return null;
 
   // make sure a node isn't already adopted
-  if (node.instance instanceof Base) return node.instance;
-  if (node.nodeName === '#document-fragment') {
+  if(node.instance instanceof Base) return node.instance;
+  if(node.nodeName === '#document-fragment') {
     return new elements.Fragment(node);
   }
 
@@ -273,11 +267,11 @@ function adopt(node) {
   let className = capitalize(node.nodeName || 'Dom');
 
   // Make sure that gradients are adopted correctly
-  if (className === 'LinearGradient' || className === 'RadialGradient') {
+  if(className === 'LinearGradient' || className === 'RadialGradient') {
     className = 'Gradient';
 
     // Fallback to Dom if element is not known
-  } else if (!elements[className]) {
+  } else if(!elements[className]) {
     className = 'Dom';
   }
   return new elements[className](node);
@@ -288,7 +282,7 @@ function mockAdopt(mock = adopt) {
 }
 function register(element, name = element.name, asRoot = false) {
   elements[name] = element;
-  if (asRoot) elements[root] = element;
+  if(asRoot) elements[root] = element;
   addMethodNames(Object.getOwnPropertyNames(element.prototype));
   return element;
 }
@@ -307,10 +301,10 @@ function eid(name) {
 // Deep new id assignment
 function assignNewId(node) {
   // do the same for SVG child nodes as well
-  for (let i = node.children.length - 1; i >= 0; i--) {
+  for(let i = node.children.length - 1; i >= 0; i--) {
     assignNewId(node.children[i]);
   }
-  if (node.id) {
+  if(node.id) {
     node.id = eid(node.nodeName);
     return node;
   }
@@ -321,16 +315,16 @@ function assignNewId(node) {
 function extend(modules, methods) {
   let key, i;
   modules = Array.isArray(modules) ? modules : [modules];
-  for (i = modules.length - 1; i >= 0; i--) {
-    for (key in methods) {
+  for(i = modules.length - 1; i >= 0; i--) {
+    for(key in methods) {
       modules[i].prototype[key] = methods[key];
     }
   }
 }
 function wrapWithAttrCheck(fn) {
-  return function (...args) {
+  return function(...args) {
     const o = args[args.length - 1];
-    if (o && o.constructor === Object && !(o instanceof Array)) {
+    if(o && o.constructor === Object && !(o instanceof Array)) {
       return fn.apply(this, args.slice(0, -1)).attr(o);
     } else {
       return fn.apply(this, args);
@@ -505,7 +499,7 @@ function hasClass(name) {
 
 // Add class to the node
 function addClass(name) {
-  if (!this.hasClass(name)) {
+  if(!this.hasClass(name)) {
     const array = this.classes();
     array.push(name);
     this.attr('class', array.join(' '));
@@ -515,10 +509,15 @@ function addClass(name) {
 
 // Remove class from the node
 function removeClass(name) {
-  if (this.hasClass(name)) {
-    this.attr('class', this.classes().filter(function (c) {
-      return c !== name;
-    }).join(' '));
+  if(this.hasClass(name)) {
+    this.attr(
+      'class',
+      this.classes()
+        .filter(function (c) {
+          return c !== name;
+        })
+        .join(' ')
+    );
   }
   return this;
 }
@@ -538,20 +537,23 @@ registerMethods('Dom', {
 // Dynamic style generator
 function css(style, val) {
   const ret = {};
-  if (arguments.length === 0) {
+  if(arguments.length === 0) {
     // get full style as object
-    this.node.style.cssText.split(/\s*;\s*/).filter(function (el) {
-      return !!el.length;
-    }).forEach(function (el) {
-      const t = el.split(/\s*:\s*/);
-      ret[t[0]] = t[1];
-    });
+    this.node.style.cssText
+      .split(/\s*;\s*/)
+      .filter(function (el) {
+        return !!el.length;
+      })
+      .forEach(function (el) {
+        const t = el.split(/\s*:\s*/);
+        ret[t[0]] = t[1];
+      });
     return ret;
   }
-  if (arguments.length < 2) {
+  if(arguments.length < 2) {
     // get style properties as array
-    if (Array.isArray(style)) {
-      for (const name of style) {
+    if(Array.isArray(style)) {
+      for(const name of style) {
         const cased = name;
         ret[name] = this.node.style.getPropertyValue(cased);
       }
@@ -559,13 +561,13 @@ function css(style, val) {
     }
 
     // get style for property
-    if (typeof style === 'string') {
+    if(typeof style === 'string') {
       return this.node.style.getPropertyValue(style);
     }
 
     // set styles in object
-    if (typeof style === 'object') {
-      for (const name in style) {
+    if(typeof style === 'object') {
+      for(const name in style) {
         // set empty string if null/undefined/'' was given
         this.node.style.setProperty(name, style[name] == null || isBlank.test(style[name]) ? '' : style[name]);
       }
@@ -573,7 +575,7 @@ function css(style, val) {
   }
 
   // set style for property
-  if (arguments.length === 2) {
+  if(arguments.length === 2) {
     this.node.style.setProperty(style, val == null || isBlank.test(val) ? '' : val);
   }
   return this;
@@ -602,23 +604,28 @@ registerMethods('Dom', {
 
 // Store data values on svg nodes
 function data(a, v, r) {
-  if (a == null) {
+  if(a == null) {
     // get an object of attributes
-    return this.data(map(filter(this.node.attributes, el => el.nodeName.indexOf('data-') === 0), el => el.nodeName.slice(5)));
-  } else if (a instanceof Array) {
+    return this.data(
+      map(
+        filter(this.node.attributes, el => el.nodeName.indexOf('data-') === 0),
+        el => el.nodeName.slice(5)
+      )
+    );
+  } else if(a instanceof Array) {
     const data = {};
-    for (const key of a) {
+    for(const key of a) {
       data[key] = this.data(key);
     }
     return data;
-  } else if (typeof a === 'object') {
-    for (v in a) {
+  } else if(typeof a === 'object') {
+    for(v in a) {
       this.data(v, a[v]);
     }
-  } else if (arguments.length < 2) {
+  } else if(arguments.length < 2) {
     try {
       return JSON.parse(this.attr('data-' + a));
-    } catch (e) {
+    } catch(e) {
       return this.attr('data-' + a);
     }
   } else {
@@ -633,11 +640,11 @@ registerMethods('Dom', {
 // Remember arbitrary data
 function remember(k, v) {
   // remember every item in an object individually
-  if (typeof arguments[0] === 'object') {
-    for (const key in k) {
+  if(typeof arguments[0] === 'object') {
+    for(const key in k) {
       this.remember(key, k[key]);
     }
-  } else if (arguments.length === 1) {
+  } else if(arguments.length === 1) {
     // retrieve memory
     return this.memory()[k];
   } else {
@@ -649,10 +656,10 @@ function remember(k, v) {
 
 // Erase a given memory
 function forget() {
-  if (arguments.length === 0) {
+  if(arguments.length === 0) {
     this._memory = {};
   } else {
-    for (let i = arguments.length - 1; i >= 0; i--) {
+    for(let i = arguments.length - 1; i >= 0; i--) {
       delete this.memory()[arguments[i]];
     }
   }
@@ -663,7 +670,7 @@ function forget() {
 // However, this function is not rarely used so it will not happen frequently
 // Return local memory object
 function memory() {
-  return this._memory = this._memory || {};
+  return (this._memory = this._memory || {});
 }
 registerMethods('Dom', {
   remember,
@@ -681,72 +688,84 @@ function componentHex(component) {
   return hex.length === 1 ? '0' + hex : hex;
 }
 function is(object, space) {
-  for (let i = space.length; i--;) {
-    if (object[space[i]] == null) {
+  for(let i = space.length; i--; ) {
+    if(object[space[i]] == null) {
       return false;
     }
   }
   return true;
 }
 function getParameters(a, b) {
-  const params = is(a, 'rgb') ? {
-    _a: a.r,
-    _b: a.g,
-    _c: a.b,
-    _d: 0,
-    space: 'rgb'
-  } : is(a, 'xyz') ? {
-    _a: a.x,
-    _b: a.y,
-    _c: a.z,
-    _d: 0,
-    space: 'xyz'
-  } : is(a, 'hsl') ? {
-    _a: a.h,
-    _b: a.s,
-    _c: a.l,
-    _d: 0,
-    space: 'hsl'
-  } : is(a, 'lab') ? {
-    _a: a.l,
-    _b: a.a,
-    _c: a.b,
-    _d: 0,
-    space: 'lab'
-  } : is(a, 'lch') ? {
-    _a: a.l,
-    _b: a.c,
-    _c: a.h,
-    _d: 0,
-    space: 'lch'
-  } : is(a, 'cmyk') ? {
-    _a: a.c,
-    _b: a.m,
-    _c: a.y,
-    _d: a.k,
-    space: 'cmyk'
-  } : {
-    _a: 0,
-    _b: 0,
-    _c: 0,
-    space: 'rgb'
-  };
+  const params = is(a, 'rgb')
+    ? {
+        _a: a.r,
+        _b: a.g,
+        _c: a.b,
+        _d: 0,
+        space: 'rgb'
+      }
+    : is(a, 'xyz')
+    ? {
+        _a: a.x,
+        _b: a.y,
+        _c: a.z,
+        _d: 0,
+        space: 'xyz'
+      }
+    : is(a, 'hsl')
+    ? {
+        _a: a.h,
+        _b: a.s,
+        _c: a.l,
+        _d: 0,
+        space: 'hsl'
+      }
+    : is(a, 'lab')
+    ? {
+        _a: a.l,
+        _b: a.a,
+        _c: a.b,
+        _d: 0,
+        space: 'lab'
+      }
+    : is(a, 'lch')
+    ? {
+        _a: a.l,
+        _b: a.c,
+        _c: a.h,
+        _d: 0,
+        space: 'lch'
+      }
+    : is(a, 'cmyk')
+    ? {
+        _a: a.c,
+        _b: a.m,
+        _c: a.y,
+        _d: a.k,
+        space: 'cmyk'
+      }
+    : {
+        _a: 0,
+        _b: 0,
+        _c: 0,
+        space: 'rgb'
+      };
   params.space = b || params.space;
   return params;
 }
 function cieSpace(space) {
-  if (space === 'lab' || space === 'xyz' || space === 'lch') {
+  if(space === 'lab' || space === 'xyz' || space === 'lch') {
     return true;
   } else {
     return false;
   }
 }
 function hueToRgb(p, q, t) {
-  if (t < 0) t += 1;
-  if (t > 1) t -= 1;
-  if (t < 1 / 6) return p + (q - p) * 6 * t;
-  if (t < 1 / 2) return q;
-  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+  if(t < 0) t += 1;
+  if(t > 1) t -= 1;
+  if(t < 1 / 6) return p + (q - p) * 6 * t;
+  if(t < 1 / 2) return q;
+  if(t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
   return p;
 }
 class Color {
@@ -769,52 +788,47 @@ class Color {
   */
   static random(mode = 'vibrant', t) {
     // Get the math modules
-    const {
-      random,
-      round,
-      sin,
-      PI: pi
-    } = Math;
+    const { random, round, sin, PI: pi } = Math;
 
     // Run the correct generator
-    if (mode === 'vibrant') {
+    if(mode === 'vibrant') {
       const l = (81 - 57) * random() + 57;
       const c = (83 - 45) * random() + 45;
       const h = 360 * random();
       const color = new Color(l, c, h, 'lch');
       return color;
-    } else if (mode === 'sine') {
+    } else if(mode === 'sine') {
       t = t == null ? random() : t;
-      const r = round(80 * sin(2 * pi * t / 0.5 + 0.01) + 150);
-      const g = round(50 * sin(2 * pi * t / 0.5 + 4.6) + 200);
-      const b = round(100 * sin(2 * pi * t / 0.5 + 2.3) + 150);
+      const r = round(80 * sin((2 * pi * t) / 0.5 + 0.01) + 150);
+      const g = round(50 * sin((2 * pi * t) / 0.5 + 4.6) + 200);
+      const b = round(100 * sin((2 * pi * t) / 0.5 + 2.3) + 150);
       const color = new Color(r, g, b);
       return color;
-    } else if (mode === 'pastel') {
+    } else if(mode === 'pastel') {
       const l = (94 - 86) * random() + 86;
       const c = (26 - 9) * random() + 9;
       const h = 360 * random();
       const color = new Color(l, c, h, 'lch');
       return color;
-    } else if (mode === 'dark') {
+    } else if(mode === 'dark') {
       const l = 10 + 10 * random();
       const c = (125 - 75) * random() + 86;
       const h = 360 * random();
       const color = new Color(l, c, h, 'lch');
       return color;
-    } else if (mode === 'rgb') {
+    } else if(mode === 'rgb') {
       const r = 255 * random();
       const g = 255 * random();
       const b = 255 * random();
       const color = new Color(r, g, b);
       return color;
-    } else if (mode === 'lab') {
+    } else if(mode === 'lab') {
       const l = 100 * random();
       const a = 256 * random() - 128;
       const b = 256 * random() - 128;
       const color = new Color(l, a, b, 'lab');
       return color;
-    } else if (mode === 'grey') {
+    } else if(mode === 'grey') {
       const grey = 255 * random();
       const color = new Color(grey, grey, grey);
       return color;
@@ -829,16 +843,12 @@ class Color {
   }
   cmyk() {
     // Get the rgb values for the current color
-    const {
-      _a,
-      _b,
-      _c
-    } = this.rgb();
+    const { _a, _b, _c } = this.rgb();
     const [r, g, b] = [_a, _b, _c].map(v => v / 255);
 
     // Get the cmyk values in an unbounded format
     const k = Math.min(1 - r, 1 - g, 1 - b);
-    if (k === 1) {
+    if(k === 1) {
       // Catch the black case
       return new Color(0, 0, 0, 1, 'cmyk');
     }
@@ -852,11 +862,7 @@ class Color {
   }
   hsl() {
     // Get the rgb values
-    const {
-      _a,
-      _b,
-      _c
-    } = this.rgb();
+    const { _a, _b, _c } = this.rgb();
     const [r, g, b] = [_a, _b, _c].map(v => v / 255);
 
     // Find the maximum and minimum values to get the lightness
@@ -881,12 +887,12 @@ class Color {
     a = !a ? 0 : a;
 
     // Reset all values in case the init function is rerun with new color space
-    if (this.space) {
-      for (const component in this.space) {
+    if(this.space) {
+      for(const component in this.space) {
         delete this[this.space[component]];
       }
     }
-    if (typeof a === 'number') {
+    if(typeof a === 'number') {
       // Allow for the case that we don't need d...
       space = typeof d === 'string' ? d : space;
       d = typeof d === 'string' ? 0 : d;
@@ -900,7 +906,7 @@ class Color {
         space
       });
       // If the user gave us an array, make the color from it
-    } else if (a instanceof Array) {
+    } else if(a instanceof Array) {
       this.space = b || (typeof a[3] === 'string' ? a[3] : a[4]) || 'rgb';
       Object.assign(this, {
         _a: a[0],
@@ -908,14 +914,17 @@ class Color {
         _c: a[2],
         _d: a[3] || 0
       });
-    } else if (a instanceof Object) {
+    } else if(a instanceof Object) {
       // Set the object up and assign its values directly
       const values = getParameters(a, b);
       Object.assign(this, values);
-    } else if (typeof a === 'string') {
-      if (isRgb.test(a)) {
+    } else if(typeof a === 'string') {
+      if(isRgb.test(a)) {
         const noWhitespace = a.replace(whitespace, '');
-        const [_a, _b, _c] = rgb.exec(noWhitespace).slice(1, 4).map(v => parseInt(v));
+        const [_a, _b, _c] = rgb
+          .exec(noWhitespace)
+          .slice(1, 4)
+          .map(v => parseInt(v));
         Object.assign(this, {
           _a,
           _b,
@@ -923,7 +932,7 @@ class Color {
           _d: 0,
           space: 'rgb'
         });
-      } else if (isHex.test(a)) {
+      } else if(isHex.test(a)) {
         const hexParse = v => parseInt(v, 16);
         const [, _a, _b, _c] = hex.exec(sixDigitHex(a)).map(hexParse);
         Object.assign(this, {
@@ -937,47 +946,51 @@ class Color {
     }
 
     // Now add the components as a convenience
-    const {
-      _a,
-      _b,
-      _c,
-      _d
-    } = this;
-    const components = this.space === 'rgb' ? {
-      r: _a,
-      g: _b,
-      b: _c
-    } : this.space === 'xyz' ? {
-      x: _a,
-      y: _b,
-      z: _c
-    } : this.space === 'hsl' ? {
-      h: _a,
-      s: _b,
-      l: _c
-    } : this.space === 'lab' ? {
-      l: _a,
-      a: _b,
-      b: _c
-    } : this.space === 'lch' ? {
-      l: _a,
-      c: _b,
-      h: _c
-    } : this.space === 'cmyk' ? {
-      c: _a,
-      m: _b,
-      y: _c,
-      k: _d
-    } : {};
+    const { _a, _b, _c, _d } = this;
+    const components =
+      this.space === 'rgb'
+        ? {
+            r: _a,
+            g: _b,
+            b: _c
+          }
+        : this.space === 'xyz'
+        ? {
+            x: _a,
+            y: _b,
+            z: _c
+          }
+        : this.space === 'hsl'
+        ? {
+            h: _a,
+            s: _b,
+            l: _c
+          }
+        : this.space === 'lab'
+        ? {
+            l: _a,
+            a: _b,
+            b: _c
+          }
+        : this.space === 'lch'
+        ? {
+            l: _a,
+            c: _b,
+            h: _c
+          }
+        : this.space === 'cmyk'
+        ? {
+            c: _a,
+            m: _b,
+            y: _c,
+            k: _d
+          }
+        : {};
     Object.assign(this, components);
   }
   lab() {
     // Get the xyz color
-    const {
-      x,
-      y,
-      z
-    } = this.xyz();
+    const { x, y, z } = this.xyz();
 
     // Get the lab components
     const l = 116 * y - 16;
@@ -990,16 +1003,12 @@ class Color {
   }
   lch() {
     // Get the lab color directly
-    const {
-      l,
-      a,
-      b
-    } = this.lab();
+    const { l, a, b } = this.lab();
 
     // Get the chromaticity and the hue using polar coordinates
     const c = Math.sqrt(a ** 2 + b ** 2);
-    let h = 180 * Math.atan2(b, a) / Math.PI;
-    if (h < 0) {
+    let h = (180 * Math.atan2(b, a)) / Math.PI;
+    if(h < 0) {
       h *= -1;
       h = 360 - h;
     }
@@ -1013,27 +1022,16 @@ class Color {
   */
 
   rgb() {
-    if (this.space === 'rgb') {
+    if(this.space === 'rgb') {
       return this;
-    } else if (cieSpace(this.space)) {
+    } else if(cieSpace(this.space)) {
       // Convert to the xyz color space
-      let {
-        x,
-        y,
-        z
-      } = this;
-      if (this.space === 'lab' || this.space === 'lch') {
+      let { x, y, z } = this;
+      if(this.space === 'lab' || this.space === 'lch') {
         // Get the values in the lab space
-        let {
-          l,
-          a,
-          b
-        } = this;
-        if (this.space === 'lch') {
-          const {
-            c,
-            h
-          } = this;
+        let { l, a, b } = this;
+        if(this.space === 'lch') {
+          const { c, h } = this;
           const dToR = Math.PI / 180;
           a = c * Math.cos(dToR * h);
           b = c * Math.sin(dToR * h);
@@ -1068,20 +1066,16 @@ class Color {
       // Make and return the color
       const color = new Color(255 * r, 255 * g, 255 * b);
       return color;
-    } else if (this.space === 'hsl') {
+    } else if(this.space === 'hsl') {
       // https://bgrins.github.io/TinyColor/docs/tinycolor.html
       // Get the current hsl values
-      let {
-        h,
-        s,
-        l
-      } = this;
+      let { h, s, l } = this;
       h /= 360;
       s /= 100;
       l /= 100;
 
       // If we are grey, then just make the color directly
-      if (s === 0) {
+      if(s === 0) {
         l *= 255;
         const color = new Color(l, l, l);
         return color;
@@ -1099,15 +1093,10 @@ class Color {
       // Make a new color
       const color = new Color(r, g, b);
       return color;
-    } else if (this.space === 'cmyk') {
+    } else if(this.space === 'cmyk') {
       // https://gist.github.com/felipesabino/5066336
       // Get the normalised cmyk values
-      const {
-        c,
-        m,
-        y,
-        k
-      } = this;
+      const { c, m, y, k } = this;
 
       // Get the rgb values
       const r = 255 * (1 - Math.min(1, c * (1 - k) + k));
@@ -1122,13 +1111,7 @@ class Color {
     }
   }
   toArray() {
-    const {
-      _a,
-      _b,
-      _c,
-      _d,
-      space
-    } = this;
+    const { _a, _b, _c, _d, space } = this;
     return [_a, _b, _c, _d, space];
   }
   toHex() {
@@ -1145,11 +1128,7 @@ class Color {
   }
   xyz() {
     // Normalise the red, green and blue values
-    const {
-      _a: r255,
-      _b: g255,
-      _c: b255
-    } = this.rgb();
+    const { _a: r255, _b: g255, _c: b255 } = this.rgb();
     const [r, g, b] = [r255, g255, b255].map(v => v / 255);
 
     // Convert to the lab rgb space
@@ -1177,16 +1156,8 @@ class Color {
   */
 
   _clamped() {
-    const {
-      _a,
-      _b,
-      _c
-    } = this.rgb();
-    const {
-      max,
-      min,
-      round
-    } = Math;
+    const { _a, _b, _c } = this.rgb();
+    const { max, min, round } = Math;
     const format = v => max(0, min(round(v), 255));
     return [_a, _b, _c].map(format);
   }
@@ -1213,16 +1184,20 @@ class Point {
     };
 
     // ensure source as object
-    const source = Array.isArray(x) ? {
-      x: x[0],
-      y: x[1]
-    } : typeof x === 'object' ? {
-      x: x.x,
-      y: x.y
-    } : {
-      x: x,
-      y: y
-    };
+    const source = Array.isArray(x)
+      ? {
+          x: x[0],
+          y: x[1]
+        }
+      : typeof x === 'object'
+      ? {
+          x: x.x,
+          y: x.y
+        }
+      : {
+          x: x,
+          y: y
+        };
 
     // merge source
     this.x = source.x == null ? base.x : source.x;
@@ -1238,13 +1213,10 @@ class Point {
 
   // Transform point with matrix
   transformO(m) {
-    if (!Matrix.isMatrixLike(m)) {
+    if(!Matrix.isMatrixLike(m)) {
       m = new Matrix(m);
     }
-    const {
-      x,
-      y
-    } = this;
+    const { x, y } = this;
 
     // Perform the matrix multiplication
     this.x = m.a * x + m.c * y + m.e;
@@ -1373,14 +1345,14 @@ class Matrix {
     // and the rotation of the resulting matrix
     const sx = ccw * Math.sqrt(a * a + b * b);
     const thetaRad = Math.atan2(ccw * b, ccw * a);
-    const theta = 180 / Math.PI * thetaRad;
+    const theta = (180 / Math.PI) * thetaRad;
     const ct = Math.cos(thetaRad);
     const st = Math.sin(thetaRad);
 
     // We can then solve the y basis vector simultaneously to get the other
     // two affine parameters directly from these parameters
     const lam = (a * c + b * d) / determinant;
-    const sy = c * sx / (lam * a - b) || d * sx / (lam * b + a);
+    const sy = (c * sx) / (lam * a - b) || (d * sx) / (lam * b + a);
 
     // Use the translations
     const tx = e - cx + cx * ct * sx + cy * (lam * ct * sx - st * sy);
@@ -1409,7 +1381,7 @@ class Matrix {
 
   // Check if two matrices are equal
   equals(other) {
-    if (other === this) return true;
+    if(other === this) return true;
     const comp = new Matrix(other);
     return closeEnough(this.a, comp.a) && closeEnough(this.b, comp.b) && closeEnough(this.c, comp.c) && closeEnough(this.d, comp.d) && closeEnough(this.e, comp.e) && closeEnough(this.f, comp.f);
   }
@@ -1427,7 +1399,20 @@ class Matrix {
     const base = Matrix.fromArray([1, 0, 0, 1, 0, 0]);
 
     // ensure source as object
-    source = source instanceof Element ? source.matrixify() : typeof source === 'string' ? Matrix.fromArray(source.split(delimiter).map(parseFloat)) : Array.isArray(source) ? Matrix.fromArray(source) : typeof source === 'object' && Matrix.isMatrixLike(source) ? source : typeof source === 'object' ? new Matrix().transform(source) : arguments.length === 6 ? Matrix.fromArray([].slice.call(arguments)) : base;
+    source =
+      source instanceof Element
+        ? source.matrixify()
+        : typeof source === 'string'
+        ? Matrix.fromArray(source.split(delimiter).map(parseFloat))
+        : Array.isArray(source)
+        ? Matrix.fromArray(source)
+        : typeof source === 'object' && Matrix.isMatrixLike(source)
+        ? source
+        : typeof source === 'object'
+        ? new Matrix().transform(source)
+        : arguments.length === 6
+        ? Matrix.fromArray([].slice.call(arguments))
+        : base;
 
     // Merge the source matrix with the base matrix
     this.a = source.a != null ? source.a : base.a;
@@ -1454,7 +1439,7 @@ class Matrix {
 
     // Invert the 2x2 matrix in the top left
     const det = a * d - b * c;
-    if (!det) throw new Error('Cannot invert ' + this);
+    if(!det) throw new Error('Cannot invert ' + this);
 
     // Calculate the top 2x2 matrix
     const na = d / det;
@@ -1504,14 +1489,7 @@ class Matrix {
     r = radians(r);
     const cos = Math.cos(r);
     const sin = Math.sin(r);
-    const {
-      a,
-      b,
-      c,
-      d,
-      e,
-      f
-    } = this;
+    const { a, b, c, d, e, f } = this;
     this.a = a * cos - b * sin;
     this.b = b * cos + a * sin;
     this.c = c * cos - d * sin;
@@ -1527,19 +1505,12 @@ class Matrix {
   }
   scaleO(x, y = x, cx = 0, cy = 0) {
     // Support uniform scaling
-    if (arguments.length === 3) {
+    if(arguments.length === 3) {
       cy = cx;
       cx = y;
       y = x;
     }
-    const {
-      a,
-      b,
-      c,
-      d,
-      e,
-      f
-    } = this;
+    const { a, b, c, d, e, f } = this;
     this.a = a * x;
     this.b = b * y;
     this.c = c * x;
@@ -1556,14 +1527,7 @@ class Matrix {
 
   // eslint-disable-next-line no-unused-vars
   shearO(lx, cx = 0, cy = 0) {
-    const {
-      a,
-      b,
-      c,
-      d,
-      e,
-      f
-    } = this;
+    const { a, b, c, d, e, f } = this;
     this.a = a + b * lx;
     this.c = c + d * lx;
     this.e = e + f * lx - cy * lx;
@@ -1576,7 +1540,7 @@ class Matrix {
   }
   skewO(x, y = x, cx = 0, cy = 0) {
     // support uniformal skew
-    if (arguments.length === 3) {
+    if(arguments.length === 3) {
       cy = cx;
       cx = y;
       y = x;
@@ -1587,14 +1551,7 @@ class Matrix {
     y = radians(y);
     const lx = Math.tan(x);
     const ly = Math.tan(y);
-    const {
-      a,
-      b,
-      c,
-      d,
-      e,
-      f
-    } = this;
+    const { a, b, c, d, e, f } = this;
     this.a = a + b * lx;
     this.b = b + a * ly;
     this.c = c + d * lx;
@@ -1625,7 +1582,7 @@ class Matrix {
   // Transform a matrix into another matrix by manipulating the space
   transform(o) {
     // Check if o is a matrix and then left multiply it directly
-    if (Matrix.isMatrixLike(o)) {
+    if(Matrix.isMatrixLike(o)) {
       const matrix = new Matrix(o);
       return matrix.multiplyO(this);
     }
@@ -1633,16 +1590,21 @@ class Matrix {
     // Get the proposed transformations and the current transformations
     const t = Matrix.formatTransforms(o);
     const current = this;
-    const {
-      x: ox,
-      y: oy
-    } = new Point(t.ox, t.oy).transform(current);
+    const { x: ox, y: oy } = new Point(t.ox, t.oy).transform(current);
 
     // Construct the resulting matrix
-    const transformer = new Matrix().translateO(t.rx, t.ry).lmultiplyO(current).translateO(-ox, -oy).scaleO(t.scaleX, t.scaleY).skewO(t.skewX, t.skewY).shearO(t.shear).rotateO(t.theta).translateO(ox, oy);
+    const transformer = new Matrix()
+      .translateO(t.rx, t.ry)
+      .lmultiplyO(current)
+      .translateO(-ox, -oy)
+      .scaleO(t.scaleX, t.scaleY)
+      .skewO(t.skewX, t.skewY)
+      .shearO(t.shear)
+      .rotateO(t.theta)
+      .translateO(ox, oy);
 
     // If we want the origin at a particular place, we force it there
-    if (isFinite(t.px) || isFinite(t.py)) {
+    if(isFinite(t.px) || isFinite(t.py)) {
       const origin = new Point(ox, oy).transform(transformer);
       // TODO: Replace t.px with isFinite(t.px)
       // Doesn't work because t.px is also 0 if it wasn't passed
@@ -1685,14 +1647,14 @@ function screenCTM() {
        This is needed because FF does not return the transformation matrix
        for the inner coordinate system when getScreenCTM() is called on nested svgs.
        However all other Browsers do that */
-    if (typeof this.isRoot === 'function' && !this.isRoot()) {
+    if(typeof this.isRoot === 'function' && !this.isRoot()) {
       const rect = this.rect(1, 1);
       const m = rect.node.getScreenCTM();
       rect.remove();
       return new Matrix(m);
     }
     return new Matrix(this.node.getScreenCTM());
-  } catch (e) {
+  } catch(e) {
     console.warn(`Cannot get CTM from SVG node ${this.node.nodeName}. Is the element rendered?`);
     return new Matrix();
   }
@@ -1701,7 +1663,7 @@ register(Matrix, 'Matrix');
 
 function parser() {
   // Reuse cached element if possible
-  if (!parser.nodes) {
+  if(!parser.nodes) {
     const svg = makeInstance().size(2, 0);
     svg.node.style.cssText = ['opacity: 0', 'position: absolute', 'left: -100%', 'top: -100%', 'overflow: hidden'].join(';');
     svg.attr('focusable', 'false');
@@ -1712,7 +1674,7 @@ function parser() {
       path
     };
   }
-  if (!parser.nodes.svg.node.parentNode) {
+  if(!parser.nodes.svg.node.parentNode) {
     const b = globals.document.body || globals.document.documentElement;
     parser.nodes.svg.addTo(b);
   }
@@ -1723,13 +1685,19 @@ function isNulledBox(box) {
   return !box.width && !box.height && !box.x && !box.y;
 }
 function domContains(node) {
-  return node === globals.document || (globals.document.documentElement.contains || function (node) {
-    // This is IE - it does not support contains() for top-level SVGs
-    while (node.parentNode) {
-      node = node.parentNode;
-    }
-    return node === globals.document;
-  }).call(globals.document.documentElement, node);
+  return (
+    node === globals.document ||
+    (
+      globals.document.documentElement.contains ||
+      function(node) {
+        // This is IE - it does not support contains() for top-level SVGs
+        while(node.parentNode) {
+          node = node.parentNode;
+        }
+        return node === globals.document;
+      }
+    ).call(globals.document.documentElement, node)
+  );
 }
 class Box {
   constructor(...args) {
@@ -1743,7 +1711,16 @@ class Box {
   }
   init(source) {
     const base = [0, 0, 0, 0];
-    source = typeof source === 'string' ? source.split(delimiter).map(parseFloat) : Array.isArray(source) ? source : typeof source === 'object' ? [source.left != null ? source.left : source.x, source.top != null ? source.top : source.y, source.width, source.height] : arguments.length === 4 ? [].slice.call(arguments) : base;
+    source =
+      typeof source === 'string'
+        ? source.split(delimiter).map(parseFloat)
+        : Array.isArray(source)
+        ? source
+        : typeof source === 'object'
+        ? [source.left != null ? source.left : source.x, source.top != null ? source.top : source.y, source.width, source.height]
+        : arguments.length === 4
+        ? [].slice.call(arguments)
+        : base;
     this.x = source[0] || 0;
     this.y = source[1] || 0;
     this.width = this.w = source[2] || 0;
@@ -1775,7 +1752,7 @@ class Box {
     return this.x + ' ' + this.y + ' ' + this.width + ' ' + this.height;
   }
   transform(m) {
-    if (!(m instanceof Matrix)) {
+    if(!(m instanceof Matrix)) {
       m = new Matrix(m);
     }
     let xMin = Infinity;
@@ -1801,10 +1778,10 @@ function getBox(el, getBBoxFn, retry) {
 
     // If the box is worthless and not even in the dom, retry
     // by throwing an error here...
-    if (isNulledBox(box) && !domContains(el.node)) {
+    if(isNulledBox(box) && !domContains(el.node)) {
       throw new Error('Element not in the dom');
     }
-  } catch (e) {
+  } catch(e) {
     // ... and calling the retry handler here
     box = retry(el);
   }
@@ -1822,7 +1799,7 @@ function bbox() {
       const box = clone.node.getBBox();
       clone.remove();
       return box;
-    } catch (e) {
+    } catch(e) {
       // We give up...
       throw new Error(`Getting bbox of element "${el.node.nodeName}" is not possible: ${e.toString()}`);
     }
@@ -1842,7 +1819,7 @@ function rbox(el) {
   const rbox = new Box(box);
 
   // If an element was passed, we want the bbox in the coordinate system of that element
-  if (el) {
+  if(el) {
     return rbox.transform(el.screenCTM().inverseO());
   }
 
@@ -1860,7 +1837,7 @@ registerMethods({
   viewbox: {
     viewbox(x, y, width, height) {
       // act as getter
-      if (x == null) return new Box(this.attr('viewBox'));
+      if(x == null) return new Box(this.attr('viewBox'));
 
       // act as setter
       return this.attr('viewBox', new Box(x, y, width, height));
@@ -1873,39 +1850,38 @@ registerMethods({
       //                        Furthermore this size is incorrect if the element is further transformed by its parents
       // computedStyle: Only returns meaningful values if css was used with px. We dont go this route here!
       // getBBox: returns the bounding box of its content - that doesn't help!
-      let {
-        width,
-        height
-      } = this.attr(['width', 'height']);
+      let { width, height } = this.attr(['width', 'height']);
 
       // Width and height is a string when a number with a unit is present which we can't use
       // So we try clientXYZ
-      if (!width && !height || typeof width === 'string' || typeof height === 'string') {
+      if((!width && !height) || typeof width === 'string' || typeof height === 'string') {
         width = this.node.clientWidth;
         height = this.node.clientHeight;
       }
 
       // Giving up...
-      if (!width || !height) {
+      if(!width || !height) {
         throw new Error('Impossible to get absolute width and height. Please provide an absolute width and height attribute on the zooming element');
       }
       const v = this.viewbox();
       const zoomX = width / v.width;
       const zoomY = height / v.height;
       const zoom = Math.min(zoomX, zoomY);
-      if (level == null) {
+      if(level == null) {
         return zoom;
       }
       let zoomAmount = zoom / level;
 
       // Set the zoomAmount to the highest value which is safe to process and recover from
       // The * 100 is a bit of wiggle room for the matrix transformation
-      if (zoomAmount === Infinity) zoomAmount = Number.MAX_SAFE_INTEGER / 100;
+      if(zoomAmount === Infinity) zoomAmount = Number.MAX_SAFE_INTEGER / 100;
       point = point || new Point(width / 2 / zoomX + v.x, height / 2 / zoomY + v.y);
-      const box = new Box(v).transform(new Matrix({
-        scale: zoomAmount,
-        origin: point
-      }));
+      const box = new Box(v).transform(
+        new Matrix({
+          scale: zoomAmount,
+          origin: point
+        })
+      );
       return this.viewbox(box);
     }
   }
@@ -1917,14 +1893,14 @@ register(Box, 'Box');
 class List extends Array {
   constructor(arr = [], ...args) {
     super(arr, ...args);
-    if (typeof arr === 'number') return this;
+    if(typeof arr === 'number') return this;
     this.length = 0;
     this.push(...arr);
   }
 }
 extend([List], {
   each(fnOrMethodName, ...args) {
-    if (typeof fnOrMethodName === 'function') {
+    if(typeof fnOrMethodName === 'function') {
       return this.map((el, i, arr) => {
         return fnOrMethodName.call(el, el, i, arr);
       });
@@ -1939,21 +1915,21 @@ extend([List], {
   }
 });
 const reserved = ['toArray', 'constructor', 'each'];
-List.extend = function (methods) {
+List.extend = function(methods) {
   methods = methods.reduce((obj, name) => {
     // Don't overwrite own methods
-    if (reserved.includes(name)) return obj;
+    if(reserved.includes(name)) return obj;
 
     // Don't add private methods
-    if (name[0] === '_') return obj;
+    if(name[0] === '_') return obj;
 
     // Allow access to original Array methods through a prefix
-    if (name in Array.prototype) {
+    if(name in Array.prototype) {
       obj['$' + name] = Array.prototype[name];
     }
 
     // Relay every call to each()
-    obj[name] = function (...attrs) {
+    obj[name] = function(...attrs) {
       return this.each(name, ...attrs);
     };
     return obj;
@@ -1962,9 +1938,11 @@ List.extend = function (methods) {
 };
 
 function baseFind(query, parent) {
-  return new List(map((parent || globals.document).querySelectorAll(query), function (node) {
-    return adopt(node);
-  }));
+  return new List(
+    map((parent || globals.document).querySelectorAll(query), function(node) {
+      return adopt(node);
+    })
+  );
 }
 
 // Scoped find method
@@ -1981,8 +1959,8 @@ function getEvents(instance) {
   let n = instance.getEventHolder();
 
   // We dont want to save events in global space
-  if (n === globals.window) n = windowEvents;
-  if (!n.events) n.events = {};
+  if(n === globals.window) n = windowEvents;
+  if(!n.events) n.events = {};
   return n.events;
 }
 function getEventTarget(instance) {
@@ -1990,8 +1968,8 @@ function getEventTarget(instance) {
 }
 function clearEvents(instance) {
   let n = instance.getEventHolder();
-  if (n === globals.window) n = windowEvents;
-  if (n.events) n.events = {};
+  if(n === globals.window) n = windowEvents;
+  if(n.events) n.events = {};
 }
 
 // Add event binder in the SVG namespace
@@ -2005,7 +1983,7 @@ function on(node, events, listener, binding, options) {
   events = Array.isArray(events) ? events : events.split(delimiter);
 
   // add id to listener
-  if (!listener._svgjsListenerId) {
+  if(!listener._svgjsListenerId) {
     listener._svgjsListenerId = ++listenerId;
   }
   events.forEach(function (event) {
@@ -2031,9 +2009,9 @@ function off(node, events, listener, options) {
   const n = getEventTarget(instance);
 
   // listener can be a function or a number
-  if (typeof listener === 'function') {
+  if(typeof listener === 'function') {
     listener = listener._svgjsListenerId;
-    if (!listener) return;
+    if(!listener) return;
   }
 
   // events can be an array of events or a string or undefined
@@ -2042,41 +2020,41 @@ function off(node, events, listener, options) {
     const ev = event && event.split('.')[0];
     const ns = event && event.split('.')[1];
     let namespace, l;
-    if (listener) {
+    if(listener) {
       // remove listener reference
-      if (bag[ev] && bag[ev][ns || '*']) {
+      if(bag[ev] && bag[ev][ns || '*']) {
         // removeListener
         n.removeEventListener(ev, bag[ev][ns || '*'][listener], options || false);
         delete bag[ev][ns || '*'][listener];
       }
-    } else if (ev && ns) {
+    } else if(ev && ns) {
       // remove all listeners for a namespaced event
-      if (bag[ev] && bag[ev][ns]) {
-        for (l in bag[ev][ns]) {
+      if(bag[ev] && bag[ev][ns]) {
+        for(l in bag[ev][ns]) {
           off(n, [ev, ns].join('.'), l);
         }
         delete bag[ev][ns];
       }
-    } else if (ns) {
+    } else if(ns) {
       // remove all listeners for a specific namespace
-      for (event in bag) {
-        for (namespace in bag[event]) {
-          if (ns === namespace) {
+      for(event in bag) {
+        for(namespace in bag[event]) {
+          if(ns === namespace) {
             off(n, [event, ns].join('.'));
           }
         }
       }
-    } else if (ev) {
+    } else if(ev) {
       // remove all listeners for the event
-      if (bag[ev]) {
-        for (namespace in bag[ev]) {
+      if(bag[ev]) {
+        for(namespace in bag[ev]) {
           off(n, [ev, namespace].join('.'));
         }
         delete bag[ev];
       }
     } else {
       // remove all listeners on a given node
-      for (event in bag) {
+      for(event in bag) {
         off(n, event);
       }
       clearEvents(instance);
@@ -2087,7 +2065,7 @@ function dispatch(node, event, data, options) {
   const n = getEventTarget(node);
 
   // Dispatch event
-  if (event instanceof globals.window.Event) {
+  if(event instanceof globals.window.Event) {
     n.dispatchEvent(event);
   } else {
     event = new globals.window.CustomEvent(event, {
@@ -2107,10 +2085,10 @@ class EventTarget extends Base {
   }
   dispatchEvent(event) {
     const bag = this.getEventHolder().events;
-    if (!bag) return true;
+    if(!bag) return true;
     const events = bag[event.type];
-    for (const i in events) {
-      for (const j in events[i]) {
+    for(const i in events) {
+      for(const j in events[i]) {
         events[i][j](event);
       }
     }
@@ -2201,7 +2179,7 @@ class SVGArray extends Array {
   }
   init(arr) {
     // This catches the case, that native map tries to create an array with new Array(1)
-    if (typeof arr === 'number') return this;
+    if(typeof arr === 'number') return this;
     this.length = 0;
     this.push(...this.parse(arr));
     return this;
@@ -2210,7 +2188,7 @@ class SVGArray extends Array {
   // Parse whitespace separated string
   parse(array = []) {
     // If already is an array, no need to parse it
-    if (array instanceof Array) return array;
+    if(array instanceof Array) return array;
     return array.trim().split(delimiter).map(parseFloat);
   }
   toArray() {
@@ -2255,19 +2233,19 @@ class SVGNumber {
     this.unit = unit || '';
 
     // parse value
-    if (typeof value === 'number') {
+    if(typeof value === 'number') {
       // ensure a valid numeric value
-      this.value = isNaN(value) ? 0 : !isFinite(value) ? value < 0 ? -3.4e38 : +3.4e38 : value;
-    } else if (typeof value === 'string') {
+      this.value = isNaN(value) ? 0 : !isFinite(value) ? (value < 0 ? -3.4e38 : +3.4e38) : value;
+    } else if(typeof value === 'string') {
       unit = value.match(numberAndUnit);
-      if (unit) {
+      if(unit) {
         // make value numeric
         this.value = parseFloat(unit[1]);
 
         // normalize
-        if (unit[5] === '%') {
+        if(unit[5] === '%') {
           this.value /= 100;
-        } else if (unit[5] === 's') {
+        } else if(unit[5] === 's') {
           this.value *= 1000;
         }
 
@@ -2275,7 +2253,7 @@ class SVGNumber {
         this.unit = unit[5];
       }
     } else {
-      if (value instanceof SVGNumber) {
+      if(value instanceof SVGNumber) {
         this.value = value.valueOf();
         this.unit = value.unit;
       }
@@ -2323,27 +2301,27 @@ function registerAttrHook(fn) {
 // Set svg element attribute
 function attr(attr, val, ns) {
   // act as full getter
-  if (attr == null) {
+  if(attr == null) {
     // get an object of attributes
     attr = {};
     val = this.node.attributes;
-    for (const node of val) {
+    for(const node of val) {
       attr[node.nodeName] = isNumber.test(node.nodeValue) ? parseFloat(node.nodeValue) : node.nodeValue;
     }
     return attr;
-  } else if (attr instanceof Array) {
+  } else if(attr instanceof Array) {
     // loop through array and get all values
     return attr.reduce((last, curr) => {
       last[curr] = this.attr(curr);
       return last;
     }, {});
-  } else if (typeof attr === 'object' && attr.constructor === Object) {
+  } else if(typeof attr === 'object' && attr.constructor === Object) {
     // apply every attribute individually if an object is passed
-    for (val in attr) this.attr(val, attr[val]);
-  } else if (val === null) {
+    for(val in attr) this.attr(val, attr[val]);
+  } else if(val === null) {
     // remove value
     this.node.removeAttribute(attr);
-  } else if (val == null) {
+  } else if(val == null) {
     // act as a getter if the first and only argument is not an object
     val = this.node.getAttribute(attr);
     return val == null ? attrs[attr] : isNumber.test(val) ? parseFloat(val) : val;
@@ -2354,20 +2332,20 @@ function attr(attr, val, ns) {
     }, val);
 
     // ensure correct numeric values (also accepts NaN and Infinity)
-    if (typeof val === 'number') {
+    if(typeof val === 'number') {
       val = new SVGNumber(val);
-    } else if (colorAttributes.has(attr) && Color.isColor(val)) {
+    } else if(colorAttributes.has(attr) && Color.isColor(val)) {
       // ensure full hex color
       val = new Color(val);
-    } else if (val.constructor === Array) {
+    } else if(val.constructor === Array) {
       // Check for plain arrays and parse array values
       val = new SVGArray(val);
     }
 
     // if the passed attribute is leading...
-    if (attr === 'leading') {
+    if(attr === 'leading') {
       // ... call the leading method instead
-      if (this.leading) {
+      if(this.leading) {
         this.leading(val);
       }
     } else {
@@ -2376,7 +2354,7 @@ function attr(attr, val, ns) {
     }
 
     // rebuild if required
-    if (this.rebuild && (attr === 'font-size' || attr === 'x')) {
+    if(this.rebuild && (attr === 'font-size' || attr === 'x')) {
       this.rebuild();
     }
   }
@@ -2388,7 +2366,7 @@ class Dom extends EventTarget {
     super();
     this.node = node;
     this.type = node.nodeName;
-    if (attrs && node !== attrs) {
+    if(attrs && node !== attrs) {
       this.attr(attrs);
     }
   }
@@ -2398,12 +2376,12 @@ class Dom extends EventTarget {
     element = makeInstance(element);
 
     // If non-root svg nodes are added we have to remove their namespaces
-    if (element.removeNamespace && this.node instanceof globals.window.SVGElement) {
+    if(element.removeNamespace && this.node instanceof globals.window.SVGElement) {
       element.removeNamespace();
     }
-    if (i == null) {
+    if(i == null) {
       this.node.appendChild(element.node);
-    } else if (element.node !== this.node.childNodes[i]) {
+    } else if(element.node !== this.node.childNodes[i]) {
       this.node.insertBefore(element.node, this.node.childNodes[i]);
     }
     return this;
@@ -2416,15 +2394,17 @@ class Dom extends EventTarget {
 
   // Returns all child elements
   children() {
-    return new List(map(this.node.children, function (node) {
-      return adopt(node);
-    }));
+    return new List(
+      map(this.node.children, function(node) {
+        return adopt(node);
+      })
+    );
   }
 
   // Remove all elements in this container
   clear() {
     // remove children
-    while (this.node.hasChildNodes()) {
+    while(this.node.hasChildNodes()) {
       this.node.removeChild(this.node.lastChild);
     }
     return this;
@@ -2437,7 +2417,7 @@ class Dom extends EventTarget {
 
     // clone element
     let nodeClone = this.node.cloneNode(deep);
-    if (assignNewIds) {
+    if(assignNewIds) {
       // assign new id
       nodeClone = assignNewId(nodeClone);
     }
@@ -2448,9 +2428,9 @@ class Dom extends EventTarget {
   each(block, deep) {
     const children = this.children();
     let i, il;
-    for (i = 0, il = children.length; i < il; i++) {
+    for(i = 0, il = children.length; i < il; i++) {
       block.apply(children[i], [i, children]);
-      if (deep) {
+      if(deep) {
         children[i].each(block, deep);
       }
     }
@@ -2487,7 +2467,7 @@ class Dom extends EventTarget {
   // Get / set id
   id(id) {
     // generate new id if no id set
-    if (typeof id === 'undefined' && !this.node.id) {
+    if(typeof id === 'undefined' && !this.node.id) {
       this.node.id = eid(this.type);
     }
 
@@ -2517,16 +2497,16 @@ class Dom extends EventTarget {
     let parent = this;
 
     // check for parent
-    if (!parent.node.parentNode) return null;
+    if(!parent.node.parentNode) return null;
 
     // get parent element
     parent = adopt(parent.node.parentNode);
-    if (!type) return parent;
+    if(!type) return parent;
 
     // loop through ancestors if type is given
     do {
-      if (typeof type === 'string' ? parent.matches(type) : parent instanceof type) return parent;
-    } while (parent = adopt(parent.node.parentNode));
+      if(typeof type === 'string' ? parent.matches(type) : parent instanceof type) return parent;
+    } while((parent = adopt(parent.node.parentNode)));
     return parent;
   }
 
@@ -2544,7 +2524,7 @@ class Dom extends EventTarget {
 
   // Remove element
   remove() {
-    if (this.parent()) {
+    if(this.parent()) {
       this.parent().removeElement(this);
     }
     return this;
@@ -2559,7 +2539,7 @@ class Dom extends EventTarget {
   // Replace this with element
   replace(element) {
     element = makeInstance(element);
-    if (this.node.parentNode) {
+    if(this.node.parentNode) {
       this.node.parentNode.replaceChild(element.node, this.node);
     }
     return element;
@@ -2567,8 +2547,8 @@ class Dom extends EventTarget {
   round(precision = 2, map = null) {
     const factor = 10 ** precision;
     const attrs = this.attr(map);
-    for (const i in attrs) {
-      if (typeof attrs[i] === 'number') {
+    for(const i in attrs) {
+      if(typeof attrs[i] === 'number') {
         attrs[i] = Math.round(attrs[i] * factor) / factor;
       }
     }
@@ -2592,7 +2572,7 @@ class Dom extends EventTarget {
   }
   wrap(node) {
     const parent = this.parent();
-    if (!parent) {
+    if(!parent) {
       return this.addTo(node);
     }
     const position = parent.index(this);
@@ -2610,14 +2590,14 @@ class Dom extends EventTarget {
 
   // Import / Export raw svg
   xml(xmlOrFn, outerXML, ns) {
-    if (typeof xmlOrFn === 'boolean') {
+    if(typeof xmlOrFn === 'boolean') {
       ns = outerXML;
       outerXML = xmlOrFn;
       xmlOrFn = null;
     }
 
     // act as getter if no svg string is given
-    if (xmlOrFn == null || typeof xmlOrFn === 'function') {
+    if(xmlOrFn == null || typeof xmlOrFn === 'function') {
       // The default for exports is, that the outerNode is included
       outerXML = outerXML == null ? true : outerXML;
 
@@ -2626,16 +2606,16 @@ class Dom extends EventTarget {
       let current = this;
 
       // An export modifier was passed
-      if (xmlOrFn != null) {
+      if(xmlOrFn != null) {
         current = adopt(current.node.cloneNode(true));
 
         // If the user wants outerHTML we need to process this node, too
-        if (outerXML) {
+        if(outerXML) {
           const result = xmlOrFn(current);
           current = result || current;
 
           // The user does not want this node? Well, then he gets nothing
-          if (result === false) return '';
+          if(result === false) return '';
         }
 
         // Deep loop through all children and apply modifier
@@ -2644,11 +2624,11 @@ class Dom extends EventTarget {
           const _this = result || this;
 
           // If modifier returns false, discard node
-          if (result === false) {
+          if(result === false) {
             this.remove();
 
             // If modifier returns new node, use it
-          } else if (result && this !== _this) {
+          } else if(result && this !== _this) {
             this.replace(_this);
           }
         }, true);
@@ -2671,7 +2651,7 @@ class Dom extends EventTarget {
     well.innerHTML = xmlOrFn;
 
     // Transplant nodes into the fragment
-    for (let len = well.children.length; len--;) {
+    for(let len = well.children.length; len--; ) {
       fragment.appendChild(well.firstElementChild);
     }
     const parent = this.parent();
@@ -2696,7 +2676,7 @@ class Element extends Dom {
 
     // create circular reference
     this.node.instance = this;
-    if (node.hasAttribute('data-svgjs') || node.hasAttribute('svgjs:data')) {
+    if(node.hasAttribute('data-svgjs') || node.hasAttribute('svgjs:data')) {
       var _ref, _JSON$parse;
       // pull svgjs data from the dom (getAttributeNS doesn't work in html5)
       this.setData((_ref = (_JSON$parse = JSON.parse(node.getAttribute('data-svgjs'))) != null ? _JSON$parse : JSON.parse(node.getAttribute('svgjs:data'))) != null ? _ref : {});
@@ -2755,20 +2735,20 @@ class Element extends Dom {
   // return array of all ancestors of given type up to the root svg
   parents(until = this.root()) {
     const isSelector = typeof until === 'string';
-    if (!isSelector) {
+    if(!isSelector) {
       until = makeInstance(until);
     }
     const parents = new List();
     let parent = this;
-    while ((parent = parent.parent()) && parent.node !== globals.document && parent.nodeName !== '#document-fragment') {
+    while((parent = parent.parent()) && parent.node !== globals.document && parent.nodeName !== '#document-fragment') {
       parents.push(parent);
-      if (!isSelector && parent.node === until.node) {
+      if(!isSelector && parent.node === until.node) {
         break;
       }
-      if (isSelector && parent.matches(until)) {
+      if(isSelector && parent.matches(until)) {
         break;
       }
-      if (parent.node === this.root().node) {
+      if(parent.node === this.root().node) {
         // We worked our way to the root and didn't match `until`
         return null;
       }
@@ -2779,7 +2759,7 @@ class Element extends Dom {
   // Get referenced element form attribute value
   reference(attr) {
     attr = this.attr(attr);
-    if (!attr) return null;
+    if(!attr) return null;
     const m = (attr + '').match(reference);
     return m ? makeInstance(m[1]) : null;
   }
@@ -2837,26 +2817,25 @@ register(Element, 'Element');
 const sugar = {
   stroke: ['color', 'width', 'opacity', 'linecap', 'linejoin', 'miterlimit', 'dasharray', 'dashoffset'],
   fill: ['color', 'opacity', 'rule'],
-  prefix: function (t, a) {
+  prefix: function(t, a) {
     return a === 'color' ? t : t + '-' + a;
   }
-}
+};
 
 // Add sugar for fill and stroke
-;
 ['fill', 'stroke'].forEach(function (m) {
   const extension = {};
   let i;
-  extension[m] = function (o) {
-    if (typeof o === 'undefined') {
+  extension[m] = function(o) {
+    if(typeof o === 'undefined') {
       return this.attr(m);
     }
-    if (typeof o === 'string' || o instanceof Color || Color.isRgb(o) || o instanceof Element) {
+    if(typeof o === 'string' || o instanceof Color || Color.isRgb(o) || o instanceof Element) {
       this.attr(m, o);
     } else {
       // set all attributes from sugar.fill and sugar.stroke list
-      for (i = sugar[m].length - 1; i >= 0; i--) {
-        if (o[sugar[m][i]] != null) {
+      for(i = sugar[m].length - 1; i >= 0; i--) {
+        if(o[sugar[m][i]] != null) {
           this.attr(sugar.prefix(m, sugar[m][i]), o[sugar[m][i]]);
         }
       }
@@ -2867,9 +2846,9 @@ const sugar = {
 });
 registerMethods(['Element', 'Runner'], {
   // Let the user set the matrix directly
-  matrix: function (mat, b, c, d, e, f) {
+  matrix: function(mat, b, c, d, e, f) {
     // Act as a getter
-    if (mat == null) {
+    if(mat == null) {
       return new Matrix(this);
     }
 
@@ -2877,105 +2856,164 @@ registerMethods(['Element', 'Runner'], {
     return this.attr('transform', new Matrix(mat, b, c, d, e, f));
   },
   // Map rotation to transform
-  rotate: function (angle, cx, cy) {
-    return this.transform({
-      rotate: angle,
-      ox: cx,
-      oy: cy
-    }, true);
+  rotate: function(angle, cx, cy) {
+    return this.transform(
+      {
+        rotate: angle,
+        ox: cx,
+        oy: cy
+      },
+      true
+    );
   },
   // Map skew to transform
-  skew: function (x, y, cx, cy) {
-    return arguments.length === 1 || arguments.length === 3 ? this.transform({
-      skew: x,
-      ox: y,
-      oy: cx
-    }, true) : this.transform({
-      skew: [x, y],
-      ox: cx,
-      oy: cy
-    }, true);
+  skew: function(x, y, cx, cy) {
+    return arguments.length === 1 || arguments.length === 3
+      ? this.transform(
+          {
+            skew: x,
+            ox: y,
+            oy: cx
+          },
+          true
+        )
+      : this.transform(
+          {
+            skew: [x, y],
+            ox: cx,
+            oy: cy
+          },
+          true
+        );
   },
-  shear: function (lam, cx, cy) {
-    return this.transform({
-      shear: lam,
-      ox: cx,
-      oy: cy
-    }, true);
+  shear: function(lam, cx, cy) {
+    return this.transform(
+      {
+        shear: lam,
+        ox: cx,
+        oy: cy
+      },
+      true
+    );
   },
   // Map scale to transform
-  scale: function (x, y, cx, cy) {
-    return arguments.length === 1 || arguments.length === 3 ? this.transform({
-      scale: x,
-      ox: y,
-      oy: cx
-    }, true) : this.transform({
-      scale: [x, y],
-      ox: cx,
-      oy: cy
-    }, true);
+  scale: function(x, y, cx, cy) {
+    return arguments.length === 1 || arguments.length === 3
+      ? this.transform(
+          {
+            scale: x,
+            ox: y,
+            oy: cx
+          },
+          true
+        )
+      : this.transform(
+          {
+            scale: [x, y],
+            ox: cx,
+            oy: cy
+          },
+          true
+        );
   },
   // Map translate to transform
-  translate: function (x, y) {
-    return this.transform({
-      translate: [x, y]
-    }, true);
+  translate: function(x, y) {
+    return this.transform(
+      {
+        translate: [x, y]
+      },
+      true
+    );
   },
   // Map relative translations to transform
-  relative: function (x, y) {
-    return this.transform({
-      relative: [x, y]
-    }, true);
+  relative: function(x, y) {
+    return this.transform(
+      {
+        relative: [x, y]
+      },
+      true
+    );
   },
   // Map flip to transform
-  flip: function (direction = 'both', origin = 'center') {
-    if ('xybothtrue'.indexOf(direction) === -1) {
+  flip: function(direction = 'both', origin = 'center') {
+    if('xybothtrue'.indexOf(direction) === -1) {
       origin = direction;
       direction = 'both';
     }
-    return this.transform({
-      flip: direction,
-      origin: origin
-    }, true);
+    return this.transform(
+      {
+        flip: direction,
+        origin: origin
+      },
+      true
+    );
   },
   // Opacity
-  opacity: function (value) {
+  opacity: function(value) {
     return this.attr('opacity', value);
   }
 });
 registerMethods('radius', {
   // Add x and y radius
-  radius: function (x, y = x) {
+  radius: function(x, y = x) {
     const type = (this._element || this).type;
     return type === 'radialGradient' ? this.attr('r', new SVGNumber(x)) : this.rx(x).ry(y);
   }
 });
 registerMethods('Path', {
   // Get path length
-  length: function () {
+  length: function() {
     return this.node.getTotalLength();
   },
   // Get point at length
-  pointAt: function (length) {
+  pointAt: function(length) {
     return new Point(this.node.getPointAtLength(length));
   }
 });
 registerMethods(['Element', 'Runner'], {
   // Set font
-  font: function (a, v) {
-    if (typeof a === 'object') {
-      for (v in a) this.font(v, a[v]);
+  font: function(a, v) {
+    if(typeof a === 'object') {
+      for(v in a) this.font(v, a[v]);
       return this;
     }
-    return a === 'leading' ? this.leading(v) : a === 'anchor' ? this.attr('text-anchor', v) : a === 'size' || a === 'family' || a === 'weight' || a === 'stretch' || a === 'variant' || a === 'style' ? this.attr('font-' + a, v) : this.attr(a, v);
+    return a === 'leading'
+      ? this.leading(v)
+      : a === 'anchor'
+      ? this.attr('text-anchor', v)
+      : a === 'size' || a === 'family' || a === 'weight' || a === 'stretch' || a === 'variant' || a === 'style'
+      ? this.attr('font-' + a, v)
+      : this.attr(a, v);
   }
 });
 
 // Add events to elements
-const methods = ['click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mousemove', 'mouseenter', 'mouseleave', 'touchstart', 'touchmove', 'touchleave', 'touchend', 'touchcancel', 'contextmenu', 'wheel', 'pointerdown', 'pointermove', 'pointerup', 'pointerleave', 'pointercancel'].reduce(function (last, event) {
+const methods = [
+  'click',
+  'dblclick',
+  'mousedown',
+  'mouseup',
+  'mouseover',
+  'mouseout',
+  'mousemove',
+  'mouseenter',
+  'mouseleave',
+  'touchstart',
+  'touchmove',
+  'touchleave',
+  'touchend',
+  'touchcancel',
+  'contextmenu',
+  'wheel',
+  'pointerdown',
+  'pointermove',
+  'pointerup',
+  'pointerleave',
+  'pointercancel'
+].reduce(function (last, event) {
   // add event to Element
-  const fn = function (f) {
-    if (f === null) {
+  const fn = function(f) {
+    if(f === null) {
       this.off(event);
     } else {
       this.on(event, f);
@@ -2994,29 +3032,35 @@ function untransform() {
 
 // merge the whole transformation chain into one matrix and returns it
 function matrixify() {
-  const matrix = (this.attr('transform') || ''
-  // split transformations
-  ).split(transforms).slice(0, -1).map(function (str) {
-    // generate key => value pairs
-    const kv = str.trim().split('(');
-    return [kv[0], kv[1].split(delimiter).map(function (str) {
-      return parseFloat(str);
-    })];
-  }).reverse()
-  // merge every transformation into one matrix
-  .reduce(function (matrix, transform) {
-    if (transform[0] === 'matrix') {
-      return matrix.lmultiply(Matrix.fromArray(transform[1]));
-    }
-    return matrix[transform[0]].apply(matrix, transform[1]);
-  }, new Matrix());
+  const matrix = (this.attr('transform') || '')
+    // split transformations
+    .split(transforms)
+    .slice(0, -1)
+    .map(function (str) {
+      // generate key => value pairs
+      const kv = str.trim().split('(');
+      return [
+        kv[0],
+        kv[1].split(delimiter).map(function (str) {
+          return parseFloat(str);
+        })
+      ];
+    })
+    .reverse()
+    // merge every transformation into one matrix
+    .reduce(function (matrix, transform) {
+      if(transform[0] === 'matrix') {
+        return matrix.lmultiply(Matrix.fromArray(transform[1]));
+      }
+      return matrix[transform[0]].apply(matrix, transform[1]);
+    }, new Matrix());
   return matrix;
 }
 
 // add an element to another parent without changing the visual representation on the screen
 function toParent(parent, i) {
-  if (this === parent) return this;
-  if (isDescriptive(this.node)) return this.addTo(parent, i);
+  if(this === parent) return this;
+  if(isDescriptive(this.node)) return this.addTo(parent, i);
   const ctm = this.screenCTM();
   const pCtm = parent.screenCTM().inverse();
   this.addTo(parent, i).untransform().transform(pCtm.multiply(ctm));
@@ -3031,11 +3075,11 @@ function toRoot(i) {
 // Add transformations
 function transform(o, relative) {
   // Act as a getter if no object was passed
-  if (o == null || typeof o === 'string') {
+  if(o == null || typeof o === 'string') {
     const decomposed = new Matrix(this).decompose();
     return o == null ? decomposed : decomposed[o];
   }
-  if (!Matrix.isMatrixLike(o)) {
+  if(!Matrix.isMatrixLike(o)) {
     // Set the origin according to the defined transform
     o = {
       ...o,
@@ -3059,7 +3103,7 @@ registerMethods('Element', {
 class Container extends Element {
   flatten() {
     this.each(function () {
-      if (this instanceof Container) {
+      if(this instanceof Container) {
         return this.flatten().ungroup();
       }
     });
@@ -3170,7 +3214,7 @@ class Fragment extends Dom {
 
   // Import / Export raw xml
   xml(xmlOrFn, outerXML, ns) {
-    if (typeof xmlOrFn === 'boolean') {
+    if(typeof xmlOrFn === 'boolean') {
       ns = outerXML;
       outerXML = xmlOrFn;
       xmlOrFn = null;
@@ -3178,7 +3222,7 @@ class Fragment extends Dom {
 
     // because this is a fragment we have to put all elements into a wrapper first
     // before we can get the innerXML from it
-    if (xmlOrFn == null || typeof xmlOrFn === 'function') {
+    if(xmlOrFn == null || typeof xmlOrFn === 'function') {
       const wrapper = new Dom(create('wrapper', ns));
       wrapper.add(this.node.cloneNode(true));
       return wrapper.xml(false, ns);
@@ -3191,22 +3235,26 @@ class Fragment extends Dom {
 register(Fragment, 'Fragment');
 
 function from(x, y) {
-  return (this._element || this).type === 'radialGradient' ? this.attr({
-    fx: new SVGNumber(x),
-    fy: new SVGNumber(y)
-  }) : this.attr({
-    x1: new SVGNumber(x),
-    y1: new SVGNumber(y)
-  });
+  return (this._element || this).type === 'radialGradient'
+    ? this.attr({
+        fx: new SVGNumber(x),
+        fy: new SVGNumber(y)
+      })
+    : this.attr({
+        x1: new SVGNumber(x),
+        y1: new SVGNumber(y)
+      });
 }
 function to(x, y) {
-  return (this._element || this).type === 'radialGradient' ? this.attr({
-    cx: new SVGNumber(x),
-    cy: new SVGNumber(y)
-  }) : this.attr({
-    x2: new SVGNumber(x),
-    y2: new SVGNumber(y)
-  });
+  return (this._element || this).type === 'radialGradient'
+    ? this.attr({
+        cx: new SVGNumber(x),
+        cy: new SVGNumber(y)
+      })
+    : this.attr({
+        x2: new SVGNumber(x),
+        y2: new SVGNumber(y)
+      });
 }
 
 var gradiented = {
@@ -3222,7 +3270,7 @@ class Gradient extends Container {
 
   // custom attr to handle transform
   attr(a, b, c) {
-    if (a === 'transform') a = 'gradientTransform';
+    if(a === 'transform') a = 'gradientTransform';
     return super.attr(a, b, c);
   }
   bbox() {
@@ -3243,7 +3291,7 @@ class Gradient extends Container {
     this.clear();
 
     // invoke passed block
-    if (typeof block === 'function') {
+    if(typeof block === 'function') {
       block.call(this, this);
     }
     return this;
@@ -3279,7 +3327,7 @@ class Pattern extends Container {
 
   // custom attr to handle transform
   attr(a, b, c) {
-    if (a === 'transform') a = 'patternTransform';
+    if(a === 'transform') a = 'patternTransform';
     return super.attr(a, b, c);
   }
   bbox() {
@@ -3300,7 +3348,7 @@ class Pattern extends Container {
     this.clear();
 
     // invoke passed block
-    if (typeof block === 'function') {
+    if(typeof block === 'function') {
       block.call(this, this);
     }
     return this;
@@ -3339,43 +3387,51 @@ class Image extends Shape {
 
   // (re)load image
   load(url, callback) {
-    if (!url) return this;
+    if(!url) return this;
     const img = new globals.window.Image();
-    on(img, 'load', function (e) {
-      const p = this.parent(Pattern);
+    on(
+      img,
+      'load',
+      function(e) {
+        const p = this.parent(Pattern);
 
-      // ensure image size
-      if (this.width() === 0 && this.height() === 0) {
-        this.size(img.width, img.height);
-      }
-      if (p instanceof Pattern) {
-        // ensure pattern size if not set
-        if (p.width() === 0 && p.height() === 0) {
-          p.size(this.width(), this.height());
+        // ensure image size
+        if(this.width() === 0 && this.height() === 0) {
+          this.size(img.width, img.height);
         }
-      }
-      if (typeof callback === 'function') {
-        callback.call(this, e);
-      }
-    }, this);
-    on(img, 'load error', function () {
+        if(p instanceof Pattern) {
+          // ensure pattern size if not set
+          if(p.width() === 0 && p.height() === 0) {
+            p.size(this.width(), this.height());
+          }
+        }
+        if(typeof callback === 'function') {
+          callback.call(this, e);
+        }
+      },
+      this
+    );
+    on(img, 'load error', function() {
       // dont forget to unbind memory leaking events
       off(img);
     });
-    return this.attr('href', img.src = url, xlink);
+    return this.attr('href', (img.src = url), xlink);
   }
 }
 registerAttrHook(function (attr, val, _this) {
   // convert image fill and stroke to patterns
-  if (attr === 'fill' || attr === 'stroke') {
-    if (isImage.test(val)) {
+  if(attr === 'fill' || attr === 'stroke') {
+    if(isImage.test(val)) {
       val = _this.root().defs().image(val);
     }
   }
-  if (val instanceof Image) {
-    val = _this.root().defs().pattern(0, 0, pattern => {
-      pattern.add(val);
-    });
+  if(val instanceof Image) {
+    val = _this
+      .root()
+      .defs()
+      .pattern(0, 0, pattern => {
+        pattern.add(val);
+      });
   }
   return val;
 });
@@ -3414,8 +3470,8 @@ class PointArray extends SVGArray {
     y -= box.y;
 
     // move every point
-    if (!isNaN(x) && !isNaN(y)) {
-      for (let i = this.length - 1; i >= 0; i--) {
+    if(!isNaN(x) && !isNaN(y)) {
+      for(let i = this.length - 1; i >= 0; i--) {
         this[i] = [this[i][0] + x, this[i][1] + y];
       }
     }
@@ -3427,7 +3483,7 @@ class PointArray extends SVGArray {
     const points = [];
 
     // if it is an array, we flatten it and therefore clone it to 1 depths
-    if (array instanceof Array) {
+    if(array instanceof Array) {
       array = Array.prototype.concat.apply([], array);
     } else {
       // Else, it is considered as a string
@@ -3437,10 +3493,10 @@ class PointArray extends SVGArray {
 
     // validate points - https://svgwg.org/svg2-draft/shapes.html#DataTypePoints
     // Odd number of coordinates is an error. In such cases, drop the last odd coordinate.
-    if (array.length % 2 !== 0) array.pop();
+    if(array.length % 2 !== 0) array.pop();
 
     // wrap points in two-tuples
-    for (let i = 0, len = array.length; i < len; i = i + 2) {
+    for(let i = 0, len = array.length; i < len; i = i + 2) {
       points.push([array[i], array[i + 1]]);
     }
     return points;
@@ -3452,9 +3508,9 @@ class PointArray extends SVGArray {
     const box = this.bbox();
 
     // recalculate position of all points according to new size
-    for (i = this.length - 1; i >= 0; i--) {
-      if (box.width) this[i][0] = (this[i][0] - box.x) * width / box.width + box.x;
-      if (box.height) this[i][1] = (this[i][1] - box.y) * height / box.height + box.y;
+    for(i = this.length - 1; i >= 0; i--) {
+      if(box.width) this[i][0] = ((this[i][0] - box.x) * width) / box.width + box.x;
+      if(box.height) this[i][1] = ((this[i][1] - box.y) * height) / box.height + box.y;
     }
     return this;
   }
@@ -3473,7 +3529,7 @@ class PointArray extends SVGArray {
   toString() {
     const array = [];
     // convert to a poly point string
-    for (let i = 0, il = this.length; i < il; i++) {
+    for(let i = 0, il = this.length; i < il; i++) {
       array.push(this[i].join(','));
     }
     return array.join(' ');
@@ -3484,10 +3540,10 @@ class PointArray extends SVGArray {
 
   // transform points with matrix (similar to Point.transform)
   transformO(m) {
-    if (!Matrix.isMatrixLike(m)) {
+    if(!Matrix.isMatrixLike(m)) {
       m = new Matrix(m);
     }
-    for (let i = this.length; i--;) {
+    for(let i = this.length; i--; ) {
       // Perform the matrix multiplication
       const [x, y] = this[i];
       this[i][0] = m.a * x + m.c * y + m.e;
@@ -3538,7 +3594,10 @@ class Line extends Shape {
 
   // Get array
   array() {
-    return new PointArray([[this.attr('x1'), this.attr('y1')], [this.attr('x2'), this.attr('y2')]]);
+    return new PointArray([
+      [this.attr('x1'), this.attr('y1')],
+      [this.attr('x2'), this.attr('y2')]
+    ]);
   }
 
   // Move by left top corner
@@ -3548,9 +3607,9 @@ class Line extends Shape {
 
   // Overwrite native plot() method
   plot(x1, y1, x2, y2) {
-    if (x1 == null) {
+    if(x1 == null) {
       return this.array();
-    } else if (typeof y1 !== 'undefined') {
+    } else if(typeof y1 !== 'undefined') {
       x1 = {
         x1,
         y1,
@@ -3612,7 +3671,7 @@ class Marker extends Container {
     this.clear();
 
     // invoke passed block
-    if (typeof block === 'function') {
+    if(typeof block === 'function') {
       block.call(this, this);
     }
     return this;
@@ -3634,7 +3693,12 @@ registerMethods({
     // Create marker
     marker: wrapWithAttrCheck(function (width, height, block) {
       // Set default viewbox to match the width and height, set ref to cx and cy and set orient to auto
-      return this.put(new Marker()).size(width, height).ref(width / 2, height / 2).viewbox(0, 0, width, height).attr('orient', 'auto').update(block);
+      return this.put(new Marker())
+        .size(width, height)
+        .ref(width / 2, height / 2)
+        .viewbox(0, 0, width, height)
+        .attr('orient', 'auto')
+        .update(block);
     })
   },
   marker: {
@@ -3643,7 +3707,7 @@ registerMethods({
       let attr = ['marker'];
 
       // Build attribute name
-      if (marker !== 'all') attr.push(marker);
+      if(marker !== 'all') attr.push(marker);
       attr = attr.join('-');
 
       // Set marker attribute
@@ -3661,42 +3725,42 @@ The base stepper class that will be
 ***/
 
 function makeSetterGetter(k, f) {
-  return function (v) {
-    if (v == null) return this[k];
+  return function(v) {
+    if(v == null) return this[k];
     this[k] = v;
-    if (f) f.call(this);
+    if(f) f.call(this);
     return this;
   };
 }
 const easing = {
-  '-': function (pos) {
+  '-': function(pos) {
     return pos;
   },
-  '<>': function (pos) {
+  '<>': function(pos) {
     return -Math.cos(pos * Math.PI) / 2 + 0.5;
   },
-  '>': function (pos) {
-    return Math.sin(pos * Math.PI / 2);
+  '>': function(pos) {
+    return Math.sin((pos * Math.PI) / 2);
   },
-  '<': function (pos) {
-    return -Math.cos(pos * Math.PI / 2) + 1;
+  '<': function(pos) {
+    return -Math.cos((pos * Math.PI) / 2) + 1;
   },
-  bezier: function (x1, y1, x2, y2) {
+  bezier: function(x1, y1, x2, y2) {
     // see https://www.w3.org/TR/css-easing-1/#cubic-bezier-algo
-    return function (t) {
-      if (t < 0) {
-        if (x1 > 0) {
-          return y1 / x1 * t;
-        } else if (x2 > 0) {
-          return y2 / x2 * t;
+    return function(t) {
+      if(t < 0) {
+        if(x1 > 0) {
+          return (y1 / x1) * t;
+        } else if(x2 > 0) {
+          return (y2 / x2) * t;
         } else {
           return 0;
         }
-      } else if (t > 1) {
-        if (x2 < 1) {
-          return (1 - y2) / (1 - x2) * t + (y2 - x2) / (1 - x2);
-        } else if (x1 < 1) {
-          return (1 - y1) / (1 - x1) * t + (y1 - x1) / (1 - x1);
+      } else if(t > 1) {
+        if(x2 < 1) {
+          return ((1 - y2) / (1 - x2)) * t + (y2 - x2) / (1 - x2);
+        } else if(x1 < 1) {
+          return ((1 - y1) / (1 - x1)) * t + (y1 - x1) / (1 - x1);
         } else {
           return 1;
         }
@@ -3706,13 +3770,13 @@ const easing = {
     };
   },
   // see https://www.w3.org/TR/css-easing-1/#step-timing-function-algo
-  steps: function (steps, stepPosition = 'end') {
+  steps: function(steps, stepPosition = 'end') {
     // deal with "jump-" prefix
     stepPosition = stepPosition.split('-').reverse()[0];
     let jumps = steps;
-    if (stepPosition === 'none') {
+    if(stepPosition === 'none') {
       --jumps;
-    } else if (stepPosition === 'both') {
+    } else if(stepPosition === 'both') {
       ++jumps;
     }
 
@@ -3720,17 +3784,17 @@ const easing = {
     return (t, beforeFlag = false) => {
       // Step is called currentStep in referenced url
       let step = Math.floor(t * steps);
-      const jumping = t * step % 1 === 0;
-      if (stepPosition === 'start' || stepPosition === 'both') {
+      const jumping = (t * step) % 1 === 0;
+      if(stepPosition === 'start' || stepPosition === 'both') {
         ++step;
       }
-      if (beforeFlag && jumping) {
+      if(beforeFlag && jumping) {
         --step;
       }
-      if (t >= 0 && step < 0) {
+      if(t >= 0 && step < 0) {
         step = 0;
       }
-      if (t <= 1 && step > jumps) {
+      if(t <= 1 && step > jumps) {
         step = jumps;
       }
       return step / jumps;
@@ -3754,7 +3818,7 @@ class Ease extends Stepper {
     this.ease = easing[fn] || fn;
   }
   step(from, to, pos) {
-    if (typeof from !== 'number') {
+    if(typeof from !== 'number') {
       return pos < 1 ? from : to;
     }
     return from + (to - from) * this.ease(pos);
@@ -3800,11 +3864,11 @@ class Spring extends Controller {
     this.duration(duration).overshoot(overshoot);
   }
   step(current, target, dt, c) {
-    if (typeof current === 'string') return current;
+    if(typeof current === 'string') return current;
     c.done = dt === Infinity;
-    if (dt === Infinity) return target;
-    if (dt === 0) return current;
-    if (dt > 100) dt = 16;
+    if(dt === Infinity) return target;
+    if(dt === 0) return current;
+    if(dt > 100) dt = 16;
     dt /= 1000;
 
     // Get the previous velocity
@@ -3812,7 +3876,7 @@ class Spring extends Controller {
 
     // Apply the control to get the new position and store it
     const acceleration = -this.d * velocity - this.k * (current - target);
-    const newPosition = current + velocity * dt + acceleration * dt * dt / 2;
+    const newPosition = current + velocity * dt + (acceleration * dt * dt) / 2;
 
     // Store the velocity
     c.velocity = velocity + acceleration * dt;
@@ -3832,17 +3896,17 @@ class PID extends Controller {
     this.p(p).i(i).d(d).windup(windup);
   }
   step(current, target, dt, c) {
-    if (typeof current === 'string') return current;
+    if(typeof current === 'string') return current;
     c.done = dt === Infinity;
-    if (dt === Infinity) return target;
-    if (dt === 0) return current;
+    if(dt === Infinity) return target;
+    if(dt === 0) return current;
     const p = target - current;
     let i = (c.integral || 0) + p * dt;
     const d = (p - (c.error || 0)) / dt;
     const windup = this._windup;
 
     // antiwindup
-    if (windup !== false) {
+    if(windup !== false) {
       i = Math.max(-windup, Math.min(i, windup));
     }
     c.error = p;
@@ -3871,70 +3935,72 @@ const segmentParameters = {
   Z: 0
 };
 const pathHandlers = {
-  M: function (c, p, p0) {
+  M: function(c, p, p0) {
     p.x = p0.x = c[0];
     p.y = p0.y = c[1];
     return ['M', p.x, p.y];
   },
-  L: function (c, p) {
+  L: function(c, p) {
     p.x = c[0];
     p.y = c[1];
     return ['L', c[0], c[1]];
   },
-  H: function (c, p) {
+  H: function(c, p) {
     p.x = c[0];
     return ['H', c[0]];
   },
-  V: function (c, p) {
+  V: function(c, p) {
     p.y = c[0];
     return ['V', c[0]];
   },
-  C: function (c, p) {
+  C: function(c, p) {
     p.x = c[4];
     p.y = c[5];
     return ['C', c[0], c[1], c[2], c[3], c[4], c[5]];
   },
-  S: function (c, p) {
+  S: function(c, p) {
     p.x = c[2];
     p.y = c[3];
     return ['S', c[0], c[1], c[2], c[3]];
   },
-  Q: function (c, p) {
+  Q: function(c, p) {
     p.x = c[2];
     p.y = c[3];
     return ['Q', c[0], c[1], c[2], c[3]];
   },
-  T: function (c, p) {
+  T: function(c, p) {
     p.x = c[0];
     p.y = c[1];
     return ['T', c[0], c[1]];
   },
-  Z: function (c, p, p0) {
+  Z: function(c, p, p0) {
     p.x = p0.x;
     p.y = p0.y;
     return ['Z'];
   },
-  A: function (c, p) {
+  A: function(c, p) {
     p.x = c[5];
     p.y = c[6];
     return ['A', c[0], c[1], c[2], c[3], c[4], c[5], c[6]];
   }
 };
 const mlhvqtcsaz = 'mlhvqtcsaz'.split('');
-for (let i = 0, il = mlhvqtcsaz.length; i < il; ++i) {
-  pathHandlers[mlhvqtcsaz[i]] = function (i) {
-    return function (c, p, p0) {
-      if (i === 'H') c[0] = c[0] + p.x;else if (i === 'V') c[0] = c[0] + p.y;else if (i === 'A') {
+for(let i = 0, il = mlhvqtcsaz.length; i < il; ++i) {
+  pathHandlers[mlhvqtcsaz[i]] = (function (i) {
+    return function(c, p, p0) {
+      if(i === 'H') c[0] = c[0] + p.x;
+      else if(i === 'V') c[0] = c[0] + p.y;
+      else if(i === 'A') {
         c[5] = c[5] + p.x;
         c[6] = c[6] + p.y;
       } else {
-        for (let j = 0, jl = c.length; j < jl; ++j) {
+        for(let j = 0, jl = c.length; j < jl; ++j) {
           c[j] = c[j] + (j % 2 ? p.y : p.x);
         }
       }
       return pathHandlers[i](c, p, p0);
     };
-  }(mlhvqtcsaz[i].toUpperCase());
+  })(mlhvqtcsaz[i].toUpperCase());
 }
 function makeAbsolut(parser) {
   const command = parser.segment[0];
@@ -3946,38 +4012,38 @@ function segmentComplete(parser) {
 function startNewSegment(parser, token) {
   parser.inNumber && finalizeNumber(parser, false);
   const pathLetter = isPathLetter.test(token);
-  if (pathLetter) {
+  if(pathLetter) {
     parser.segment = [token];
   } else {
     const lastCommand = parser.lastCommand;
     const small = lastCommand.toLowerCase();
     const isSmall = lastCommand === small;
-    parser.segment = [small === 'm' ? isSmall ? 'l' : 'L' : lastCommand];
+    parser.segment = [small === 'm' ? (isSmall ? 'l' : 'L') : lastCommand];
   }
   parser.inSegment = true;
   parser.lastCommand = parser.segment[0];
   return pathLetter;
 }
 function finalizeNumber(parser, inNumber) {
-  if (!parser.inNumber) throw new Error('Parser Error');
+  if(!parser.inNumber) throw new Error('Parser Error');
   parser.number && parser.segment.push(parseFloat(parser.number));
   parser.inNumber = inNumber;
   parser.number = '';
   parser.pointSeen = false;
   parser.hasExponent = false;
-  if (segmentComplete(parser)) {
+  if(segmentComplete(parser)) {
     finalizeSegment(parser);
   }
 }
 function finalizeSegment(parser) {
   parser.inSegment = false;
-  if (parser.absolute) {
+  if(parser.absolute) {
     parser.segment = makeAbsolut(parser);
   }
   parser.segments.push(parser.segment);
 }
 function isArcFlag(parser) {
-  if (!parser.segment.length) return false;
+  if(!parser.segment.length) return false;
   const isArc = parser.segment[0].toUpperCase() === 'A';
   const length = parser.segment.length;
   return isArc && (length === 4 || length === 5);
@@ -4002,14 +4068,14 @@ function pathParser(d, toAbsolute = true) {
     p0: new Point(),
     p: new Point()
   };
-  while (parser.lastToken = token, token = d.charAt(index++)) {
-    if (!parser.inSegment) {
-      if (startNewSegment(parser, token)) {
+  while(((parser.lastToken = token), (token = d.charAt(index++)))) {
+    if(!parser.inSegment) {
+      if(startNewSegment(parser, token)) {
         continue;
       }
     }
-    if (token === '.') {
-      if (parser.pointSeen || parser.hasExponent) {
+    if(token === '.') {
+      if(parser.pointSeen || parser.hasExponent) {
         finalizeNumber(parser, false);
         --index;
         continue;
@@ -4019,8 +4085,8 @@ function pathParser(d, toAbsolute = true) {
       parser.number += token;
       continue;
     }
-    if (!isNaN(parseInt(token))) {
-      if (parser.number === '0' || isArcFlag(parser)) {
+    if(!isNaN(parseInt(token))) {
+      if(parser.number === '0' || isArcFlag(parser)) {
         parser.inNumber = true;
         parser.number = token;
         finalizeNumber(parser, true);
@@ -4030,14 +4096,14 @@ function pathParser(d, toAbsolute = true) {
       parser.number += token;
       continue;
     }
-    if (pathDelimiters.has(token)) {
-      if (parser.inNumber) {
+    if(pathDelimiters.has(token)) {
+      if(parser.inNumber) {
         finalizeNumber(parser, false);
       }
       continue;
     }
-    if (token === '-' || token === '+') {
-      if (parser.inNumber && !isExponential(parser)) {
+    if(token === '-' || token === '+') {
+      if(parser.inNumber && !isExponential(parser)) {
         finalizeNumber(parser, false);
         --index;
         continue;
@@ -4046,15 +4112,15 @@ function pathParser(d, toAbsolute = true) {
       parser.inNumber = true;
       continue;
     }
-    if (token.toUpperCase() === 'E') {
+    if(token.toUpperCase() === 'E') {
       parser.number += token;
       parser.hasExponent = true;
       continue;
     }
-    if (isPathLetter.test(token)) {
-      if (parser.inNumber) {
+    if(isPathLetter.test(token)) {
+      if(parser.inNumber) {
         finalizeNumber(parser, false);
-      } else if (!segmentComplete(parser)) {
+      } else if(!segmentComplete(parser)) {
         throw new Error('parser Error');
       } else {
         finalizeSegment(parser);
@@ -4062,10 +4128,10 @@ function pathParser(d, toAbsolute = true) {
       --index;
     }
   }
-  if (parser.inNumber) {
+  if(parser.inNumber) {
     finalizeNumber(parser, false);
   }
-  if (parser.inSegment && segmentComplete(parser)) {
+  if(parser.inSegment && segmentComplete(parser)) {
     finalizeSegment(parser);
   }
   return parser.segments;
@@ -4073,24 +4139,24 @@ function pathParser(d, toAbsolute = true) {
 
 function arrayToString(a) {
   let s = '';
-  for (let i = 0, il = a.length; i < il; i++) {
+  for(let i = 0, il = a.length; i < il; i++) {
     s += a[i][0];
-    if (a[i][1] != null) {
+    if(a[i][1] != null) {
       s += a[i][1];
-      if (a[i][2] != null) {
+      if(a[i][2] != null) {
         s += ' ';
         s += a[i][2];
-        if (a[i][3] != null) {
+        if(a[i][3] != null) {
           s += ' ';
           s += a[i][3];
           s += ' ';
           s += a[i][4];
-          if (a[i][5] != null) {
+          if(a[i][5] != null) {
             s += ' ';
             s += a[i][5];
             s += ' ';
             s += a[i][6];
-            if (a[i][7] != null) {
+            if(a[i][7] != null) {
               s += ' ';
               s += a[i][7];
             }
@@ -4116,27 +4182,27 @@ class PathArray extends SVGArray {
     // get relative offset
     x -= box.x;
     y -= box.y;
-    if (!isNaN(x) && !isNaN(y)) {
+    if(!isNaN(x) && !isNaN(y)) {
       // move every point
-      for (let l, i = this.length - 1; i >= 0; i--) {
+      for(let l, i = this.length - 1; i >= 0; i--) {
         l = this[i][0];
-        if (l === 'M' || l === 'L' || l === 'T') {
+        if(l === 'M' || l === 'L' || l === 'T') {
           this[i][1] += x;
           this[i][2] += y;
-        } else if (l === 'H') {
+        } else if(l === 'H') {
           this[i][1] += x;
-        } else if (l === 'V') {
+        } else if(l === 'V') {
           this[i][1] += y;
-        } else if (l === 'C' || l === 'S' || l === 'Q') {
+        } else if(l === 'C' || l === 'S' || l === 'Q') {
           this[i][1] += x;
           this[i][2] += y;
           this[i][3] += x;
           this[i][4] += y;
-          if (l === 'C') {
+          if(l === 'C') {
             this[i][5] += x;
             this[i][6] += y;
           }
-        } else if (l === 'A') {
+        } else if(l === 'A') {
           this[i][6] += x;
           this[i][7] += y;
         }
@@ -4147,7 +4213,7 @@ class PathArray extends SVGArray {
 
   // Absolutize and parse path to array
   parse(d = 'M0 0') {
-    if (Array.isArray(d)) {
+    if(Array.isArray(d)) {
       d = Array.prototype.concat.apply([], d).toString();
     }
     return pathParser(d);
@@ -4165,32 +4231,32 @@ class PathArray extends SVGArray {
     box.height = box.height === 0 ? 1 : box.height;
 
     // recalculate position of all points according to new size
-    for (i = this.length - 1; i >= 0; i--) {
+    for(i = this.length - 1; i >= 0; i--) {
       l = this[i][0];
-      if (l === 'M' || l === 'L' || l === 'T') {
-        this[i][1] = (this[i][1] - box.x) * width / box.width + box.x;
-        this[i][2] = (this[i][2] - box.y) * height / box.height + box.y;
-      } else if (l === 'H') {
-        this[i][1] = (this[i][1] - box.x) * width / box.width + box.x;
-      } else if (l === 'V') {
-        this[i][1] = (this[i][1] - box.y) * height / box.height + box.y;
-      } else if (l === 'C' || l === 'S' || l === 'Q') {
-        this[i][1] = (this[i][1] - box.x) * width / box.width + box.x;
-        this[i][2] = (this[i][2] - box.y) * height / box.height + box.y;
-        this[i][3] = (this[i][3] - box.x) * width / box.width + box.x;
-        this[i][4] = (this[i][4] - box.y) * height / box.height + box.y;
-        if (l === 'C') {
-          this[i][5] = (this[i][5] - box.x) * width / box.width + box.x;
-          this[i][6] = (this[i][6] - box.y) * height / box.height + box.y;
+      if(l === 'M' || l === 'L' || l === 'T') {
+        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x;
+        this[i][2] = ((this[i][2] - box.y) * height) / box.height + box.y;
+      } else if(l === 'H') {
+        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x;
+      } else if(l === 'V') {
+        this[i][1] = ((this[i][1] - box.y) * height) / box.height + box.y;
+      } else if(l === 'C' || l === 'S' || l === 'Q') {
+        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x;
+        this[i][2] = ((this[i][2] - box.y) * height) / box.height + box.y;
+        this[i][3] = ((this[i][3] - box.x) * width) / box.width + box.x;
+        this[i][4] = ((this[i][4] - box.y) * height) / box.height + box.y;
+        if(l === 'C') {
+          this[i][5] = ((this[i][5] - box.x) * width) / box.width + box.x;
+          this[i][6] = ((this[i][6] - box.y) * height) / box.height + box.y;
         }
-      } else if (l === 'A') {
+      } else if(l === 'A') {
         // resize radii
-        this[i][1] = this[i][1] * width / box.width;
-        this[i][2] = this[i][2] * height / box.height;
+        this[i][1] = (this[i][1] * width) / box.width;
+        this[i][2] = (this[i][2] * height) / box.height;
 
         // move position values
-        this[i][6] = (this[i][6] - box.x) * width / box.width + box.x;
-        this[i][7] = (this[i][7] - box.y) * height / box.height + box.y;
+        this[i][6] = ((this[i][6] - box.x) * width) / box.width + box.x;
+        this[i][7] = ((this[i][7] - box.y) * height) / box.height + box.y;
       }
     }
     return this;
@@ -4204,23 +4270,23 @@ class PathArray extends SVGArray {
 
 const getClassForType = value => {
   const type = typeof value;
-  if (type === 'number') {
+  if(type === 'number') {
     return SVGNumber;
-  } else if (type === 'string') {
-    if (Color.isColor(value)) {
+  } else if(type === 'string') {
+    if(Color.isColor(value)) {
       return Color;
-    } else if (delimiter.test(value)) {
+    } else if(delimiter.test(value)) {
       return isPathLetter.test(value) ? PathArray : SVGArray;
-    } else if (numberAndUnit.test(value)) {
+    } else if(numberAndUnit.test(value)) {
       return SVGNumber;
     } else {
       return NonMorphable;
     }
-  } else if (morphableTypes.indexOf(value.constructor) > -1) {
+  } else if(morphableTypes.indexOf(value.constructor) > -1) {
     return value.constructor;
-  } else if (Array.isArray(value)) {
+  } else if(Array.isArray(value)) {
     return SVGArray;
-  } else if (type === 'object') {
+  } else if(type === 'object') {
     return ObjectBag;
   } else {
     return NonMorphable;
@@ -4245,19 +4311,19 @@ class Morphable {
     return complete;
   }
   from(val) {
-    if (val == null) {
+    if(val == null) {
       return this._from;
     }
     this._from = this._set(val);
     return this;
   }
   stepper(stepper) {
-    if (stepper == null) return this._stepper;
+    if(stepper == null) return this._stepper;
     this._stepper = stepper;
     return this;
   }
   to(val) {
-    if (val == null) {
+    if(val == null) {
       return this._to;
     }
     this._to = this._set(val);
@@ -4265,7 +4331,7 @@ class Morphable {
   }
   type(type) {
     // getter
-    if (type == null) {
+    if(type == null) {
       return this._type;
     }
 
@@ -4274,22 +4340,26 @@ class Morphable {
     return this;
   }
   _set(value) {
-    if (!this._type) {
+    if(!this._type) {
       this.type(getClassForType(value));
     }
     let result = new this._type(value);
-    if (this._type === Color) {
+    if(this._type === Color) {
       result = this._to ? result[this._to[4]]() : this._from ? result[this._from[4]]() : result;
     }
-    if (this._type === ObjectBag) {
+    if(this._type === ObjectBag) {
       result = this._to ? result.align(this._to) : this._from ? result.align(this._from) : result;
     }
     result = result.toConsumable();
     this._morphObj = this._morphObj || new this._type();
-    this._context = this._context || Array.apply(null, Array(result.length)).map(Object).map(function (o) {
-      o.done = true;
-      return o;
-    });
+    this._context =
+      this._context ||
+      Array.apply(null, Array(result.length))
+        .map(Object)
+        .map(function (o) {
+          o.done = true;
+          return o;
+        });
     return result;
   }
 }
@@ -4314,7 +4384,7 @@ class TransformBag {
     this.init(...args);
   }
   init(obj) {
-    if (Array.isArray(obj)) {
+    if(Array.isArray(obj)) {
       obj = {
         scaleX: obj[0],
         scaleY: obj[1],
@@ -4353,10 +4423,10 @@ class ObjectBag {
   }
   align(other) {
     const values = this.values;
-    for (let i = 0, il = values.length; i < il; ++i) {
+    for(let i = 0, il = values.length; i < il; ++i) {
       // If the type is the same we only need to check if the color is in the correct format
-      if (values[i + 1] === other[i + 1]) {
-        if (values[i + 1] === Color && other[i + 7] !== values[i + 7]) {
+      if(values[i + 1] === other[i + 1]) {
+        if(values[i + 1] === Color && other[i + 7] !== values[i + 7]) {
           const space = other[i + 7];
           const color = new Color(this.values.splice(i + 3, 5))[space]().toArray();
           this.values.splice(i + 3, 0, ...color);
@@ -4364,7 +4434,7 @@ class ObjectBag {
         i += values[i + 2] + 2;
         continue;
       }
-      if (!other[i + 1]) {
+      if(!other[i + 1]) {
         return this;
       }
 
@@ -4381,13 +4451,13 @@ class ObjectBag {
   }
   init(objOrArr) {
     this.values = [];
-    if (Array.isArray(objOrArr)) {
+    if(Array.isArray(objOrArr)) {
       this.values = objOrArr.slice();
       return;
     }
     objOrArr = objOrArr || {};
     const entries = [];
-    for (const i in objOrArr) {
+    for(const i in objOrArr) {
       const Type = getClassForType(objOrArr[i]);
       const val = new Type(objOrArr[i]).toArray();
       entries.push([i, Type, val.length, ...val]);
@@ -4403,8 +4473,8 @@ class ObjectBag {
     const obj = {};
     const arr = this.values;
 
-    // for (var i = 0, len = arr.length; i < len; i += 2) {
-    while (arr.length) {
+    // for(var i = 0, len = arr.length; i < len; i += 2) {
+    while(arr.length) {
       const key = arr.shift();
       const Type = arr.shift();
       const num = arr.shift();
@@ -4422,8 +4492,10 @@ function registerMorphableType(type = []) {
 function makeMorphable() {
   extend(morphableTypes, {
     to(val) {
-      return new Morphable().type(this.constructor).from(this.toArray()) // this.valueOf())
-      .to(val);
+      return new Morphable()
+        .type(this.constructor)
+        .from(this.toArray()) // this.valueOf())
+        .to(val);
     },
     fromArray(arr) {
       this.init(arr);
@@ -4433,7 +4505,7 @@ function makeMorphable() {
       return this.toArray();
     },
     morph(from, to, pos, stepper, context) {
-      const mapper = function (i, index) {
+      const mapper = function(i, index) {
         return stepper.step(i, to[index], pos, context[index], context);
       };
       return this.fromArray(from.map(mapper));
@@ -4470,7 +4542,7 @@ class Path extends Shape {
 
   // Plot new path
   plot(d) {
-    return d == null ? this.array() : this.clear().attr('d', typeof d === 'string' ? d : this._array = new PathArray(d));
+    return d == null ? this.array() : this.clear().attr('d', typeof d === 'string' ? d : (this._array = new PathArray(d)));
   }
 
   // Set element size to given width and height
@@ -4528,7 +4600,7 @@ function move$2(x, y) {
 
 // Plot new path
 function plot(p) {
-  return p == null ? this.array() : this.clear().attr('points', typeof p === 'string' ? p : this._array = new PointArray(p));
+  return p == null ? this.array() : this.clear().attr('points', typeof p === 'string' ? p : (this._array = new PointArray(p)));
 }
 
 // Set element size to given width and height
@@ -4621,14 +4693,17 @@ class Queue {
   }
   push(value) {
     // An item stores an id and the provided value
-    const item = typeof value.next !== 'undefined' ? value : {
-      value: value,
-      next: null,
-      prev: null
-    };
+    const item =
+      typeof value.next !== 'undefined'
+        ? value
+        : {
+            value: value,
+            next: null,
+            prev: null
+          };
 
     // Deal with the queue being empty or populated
-    if (this._last) {
+    if(this._last) {
       item.prev = this._last;
       this._last.next = item;
       this._last = item;
@@ -4644,10 +4719,10 @@ class Queue {
   // Removes the item that was returned from the push
   remove(item) {
     // Relink the previous item
-    if (item.prev) item.prev.next = item.next;
-    if (item.next) item.next.prev = item.prev;
-    if (item === this._last) this._last = item.prev;
-    if (item === this._first) this._first = item.next;
+    if(item.prev) item.prev.next = item.next;
+    if(item.next) item.next.prev = item.prev;
+    if(item === this._last) this._last = item.prev;
+    if(item === this._first) this._first = item.next;
 
     // Invalidate item
     item.prev = null;
@@ -4656,11 +4731,11 @@ class Queue {
   shift() {
     // Check if we have a value
     const remove = this._first;
-    if (!remove) return null;
+    if(!remove) return null;
 
     // If we do, remove it and relink things
     this._first = remove.next;
-    if (this._first) this._first.prev = null;
+    if(this._first) this._first.prev = null;
     this._last = this._first ? this._last : null;
     return remove.value;
   }
@@ -4680,7 +4755,7 @@ const Animator = {
     });
 
     // Request an animation frame if we don't have one
-    if (Animator.nextDraw === null) {
+    if(Animator.nextDraw === null) {
       Animator.nextDraw = globals.window.requestAnimationFrame(Animator._draw);
     }
 
@@ -4700,7 +4775,7 @@ const Animator = {
     });
 
     // Request another animation frame if we need one
-    if (Animator.nextDraw === null) {
+    if(Animator.nextDraw === null) {
       Animator.nextDraw = globals.window.requestAnimationFrame(Animator._draw);
     }
     return node;
@@ -4709,7 +4784,7 @@ const Animator = {
     // Add the immediate fn to the end of the queue
     const node = Animator.immediates.push(fn);
     // Request another animation frame if we need one
-    if (Animator.nextDraw === null) {
+    if(Animator.nextDraw === null) {
       Animator.nextDraw = globals.window.requestAnimationFrame(Animator._draw);
     }
     return node;
@@ -4728,26 +4803,26 @@ const Animator = {
     // to the end of the queue immediately! (bad timeouts!!! [sarcasm])
     let nextTimeout = null;
     const lastTimeout = Animator.timeouts.last();
-    while (nextTimeout = Animator.timeouts.shift()) {
+    while((nextTimeout = Animator.timeouts.shift())) {
       // Run the timeout if its time, or push it to the end
-      if (now >= nextTimeout.time) {
+      if(now >= nextTimeout.time) {
         nextTimeout.run();
       } else {
         Animator.timeouts.push(nextTimeout);
       }
 
       // If we hit the last item, we should stop shifting out more items
-      if (nextTimeout === lastTimeout) break;
+      if(nextTimeout === lastTimeout) break;
     }
 
     // Run all of the animation frames
     let nextFrame = null;
     const lastFrame = Animator.frames.last();
-    while (nextFrame !== lastFrame && (nextFrame = Animator.frames.shift())) {
+    while(nextFrame !== lastFrame && (nextFrame = Animator.frames.shift())) {
       nextFrame.run(now);
     }
     let nextImmediate = null;
-    while (nextImmediate = Animator.immediates.shift()) {
+    while((nextImmediate = Animator.immediates.shift())) {
       nextImmediate();
     }
 
@@ -4756,7 +4831,7 @@ const Animator = {
   }
 };
 
-const makeSchedule = function (runnerInfo) {
+const makeSchedule = function(runnerInfo) {
   const start = runnerInfo.start;
   const duration = runnerInfo.runner.duration();
   const end = start + duration;
@@ -4767,7 +4842,7 @@ const makeSchedule = function (runnerInfo) {
     runner: runnerInfo.runner
   };
 };
-const defaultSource = function () {
+const defaultSource = function() {
   const w = globals.window;
   return (w.performance || w.Date).now();
 };
@@ -4811,7 +4886,7 @@ class Timeline extends EventTarget {
     return this._continue();
   }
   persist(dtOrForever) {
-    if (dtOrForever == null) return this._persist;
+    if(dtOrForever == null) return this._persist;
     this._persist = dtOrForever;
     return this;
   }
@@ -4822,14 +4897,14 @@ class Timeline extends EventTarget {
   }
   reverse(yes) {
     const currentSpeed = this.speed();
-    if (yes == null) return this.speed(-currentSpeed);
+    if(yes == null) return this.speed(-currentSpeed);
     const positive = Math.abs(currentSpeed);
     return this.speed(yes ? -positive : positive);
   }
 
   // schedules a runner on the timeline
   schedule(runner, delay, when) {
-    if (runner == null) {
+    if(runner == null) {
       return this._runners.map(makeSchedule);
     }
 
@@ -4842,21 +4917,21 @@ class Timeline extends EventTarget {
     delay = delay || 0;
 
     // Work out when to start the animation
-    if (when == null || when === 'last' || when === 'after') {
+    if(when == null || when === 'last' || when === 'after') {
       // Take the last time and increment
       absoluteStartTime = endTime;
-    } else if (when === 'absolute' || when === 'start') {
+    } else if(when === 'absolute' || when === 'start') {
       absoluteStartTime = delay;
       delay = 0;
-    } else if (when === 'now') {
+    } else if(when === 'now') {
       absoluteStartTime = this._time;
-    } else if (when === 'relative') {
+    } else if(when === 'relative') {
       const runnerInfo = this.getRunnerInfoById(runner.id);
-      if (runnerInfo) {
+      if(runnerInfo) {
         absoluteStartTime = runnerInfo.start + delay;
         delay = 0;
       }
-    } else if (when === 'with-last') {
+    } else if(when === 'with-last') {
       const lastRunnerInfo = this.getLastRunnerInfo();
       const lastStartTime = lastRunnerInfo ? lastRunnerInfo.start : this._time;
       absoluteStartTime = lastStartTime;
@@ -4884,12 +4959,12 @@ class Timeline extends EventTarget {
     return this.time(this._time + dt);
   }
   source(fn) {
-    if (fn == null) return this._timeSource;
+    if(fn == null) return this._timeSource;
     this._timeSource = fn;
     return this;
   }
   speed(speed) {
-    if (speed == null) return this._speed;
+    if(speed == null) return this._speed;
     this._speed = speed;
     return this;
   }
@@ -4899,7 +4974,7 @@ class Timeline extends EventTarget {
     return this.pause();
   }
   time(time) {
-    if (time == null) return this._time;
+    if(time == null) return this._time;
     this._time = time;
     return this._continue(true);
   }
@@ -4907,7 +4982,7 @@ class Timeline extends EventTarget {
   // Remove the runner from this timeline
   unschedule(runner) {
     const index = this._runnerIds.indexOf(runner.id);
-    if (index < 0) return this;
+    if(index < 0) return this;
     this._runners.splice(index, 1);
     this._runnerIds.splice(index, 1);
     runner.timeline(null);
@@ -4916,7 +4991,7 @@ class Timeline extends EventTarget {
 
   // Makes sure, that after pausing the time doesn't jump
   updateTime() {
-    if (!this.active()) {
+    if(!this.active()) {
       this._lastSourceTime = this._timeSource();
     }
     return this;
@@ -4926,8 +5001,8 @@ class Timeline extends EventTarget {
   _continue(immediateStep = false) {
     Animator.cancelFrame(this._nextFrame);
     this._nextFrame = null;
-    if (immediateStep) return this._stepImmediate();
-    if (this._paused) return this;
+    if(immediateStep) return this._stepImmediate();
+    if(this._paused) return this;
     this._nextFrame = Animator.frame(this._step);
     return this;
   }
@@ -4935,13 +5010,13 @@ class Timeline extends EventTarget {
     // Get the time delta from the last time and update the time
     const time = this._timeSource();
     let dtSource = time - this._lastSourceTime;
-    if (immediateStep) dtSource = 0;
+    if(immediateStep) dtSource = 0;
     const dtTime = this._speed * dtSource + (this._time - this._lastStepTime);
     this._lastSourceTime = time;
 
     // Only update the time if we use the timeSource.
     // Otherwise use the current time
-    if (!immediateStep) {
+    if(!immediateStep) {
       // Update the time
       this._time += dtTime;
       this._time = this._time < 0 ? 0 : this._time;
@@ -4960,7 +5035,7 @@ class Timeline extends EventTarget {
     // runner always wins the reset even if the other runner started earlier
     // and therefore should win the attribute battle
     // this can be solved by resetting them backwards
-    for (let k = this._runners.length; k--;) {
+    for(let k = this._runners.length; k--; ) {
       // Get and run the current runner and ignore it if its inactive
       const runnerInfo = this._runners[k];
       const runner = runnerInfo.runner;
@@ -4971,14 +5046,14 @@ class Timeline extends EventTarget {
 
       // Dont run runner if not started yet
       // and try to reset it
-      if (dtToStart <= 0) {
+      if(dtToStart <= 0) {
         runner.reset();
       }
     }
 
     // Run all of the runners directly
     let runnersLeft = false;
-    for (let i = 0, len = this._runners.length; i < len; i++) {
+    for(let i = 0, len = this._runners.length; i < len; i++) {
       // Get and run the current runner and ignore it if its inactive
       const runnerInfo = this._runners[i];
       const runner = runnerInfo.runner;
@@ -4989,25 +5064,25 @@ class Timeline extends EventTarget {
       const dtToStart = this._time - runnerInfo.start;
 
       // Dont run runner if not started yet
-      if (dtToStart <= 0) {
+      if(dtToStart <= 0) {
         runnersLeft = true;
         continue;
-      } else if (dtToStart < dt) {
+      } else if(dtToStart < dt) {
         // Adjust dt to make sure that animation is on point
         dt = dtToStart;
       }
-      if (!runner.active()) continue;
+      if(!runner.active()) continue;
 
       // If this runner is still going, signal that we need another animation
       // frame, otherwise, remove the completed runner
       const finished = runner.step(dt).done;
-      if (!finished) {
+      if(!finished) {
         runnersLeft = true;
         // continue
-      } else if (runnerInfo.persist !== true) {
+      } else if(runnerInfo.persist !== true) {
         // runner is finished. And runner might get removed
         const endTime = runner.duration() - runner.time() + this._time;
-        if (endTime + runnerInfo.persist < this._time) {
+        if(endTime + runnerInfo.persist < this._time) {
           // Delete runner and correct index
           runner.unschedule();
           --i;
@@ -5018,7 +5093,7 @@ class Timeline extends EventTarget {
 
     // Basically: we continue when there are runners right from us in time
     // when -->, and when runners are left from us when <--
-    if (runnersLeft && !(this._speed < 0 && this._time === 0) || this._runnerIds.length && this._speed < 0 && this._time > 0) {
+    if((runnersLeft && !(this._speed < 0 && this._time === 0)) || (this._runnerIds.length && this._speed < 0 && this._time > 0)) {
       this._continue();
     } else {
       this.pause();
@@ -5053,8 +5128,8 @@ class Timeline extends EventTarget {
 }
 registerMethods({
   Element: {
-    timeline: function (timeline) {
-      if (timeline == null) {
+    timeline: function(timeline) {
+      if(timeline == null) {
         this._timeline = this._timeline || new Timeline();
         return this._timeline;
       } else {
@@ -5127,7 +5202,7 @@ class Runner extends EventTarget {
     when = when || 'last';
 
     // If we have an object, unpack the values
-    if (typeof duration === 'object' && !(duration instanceof Stepper)) {
+    if(typeof duration === 'object' && !(duration instanceof Stepper)) {
       var _duration$delay, _duration$when, _duration$times, _duration$wait, _duration$duration;
       delay = (_duration$delay = duration.delay) != null ? _duration$delay : delay;
       when = (_duration$when = duration.when) != null ? _duration$when : when;
@@ -5146,7 +5221,7 @@ class Runner extends EventTarget {
     };
   }
   active(enabled) {
-    if (enabled == null) return this.enabled;
+    if(enabled == null) return this.enabled;
     this.enabled = enabled;
     return this;
   }
@@ -5166,8 +5241,8 @@ class Runner extends EventTarget {
   animate(duration, delay, when) {
     const o = Runner.sanitise(duration, delay, when);
     const runner = new Runner(o.duration);
-    if (this._timeline) runner.timeline(this._timeline);
-    if (this._element) runner.element(this._element);
+    if(this._timeline) runner.timeline(this._timeline);
+    if(this._element) runner.element(this._element);
     return runner.loop(o).schedule(o.delay, o.when);
   }
   clearTransform() {
@@ -5177,7 +5252,7 @@ class Runner extends EventTarget {
 
   // TODO: Keep track of all transformations so that deletion is faster
   clearTransformsFromQueue() {
-    if (!this.done || !this._timeline || !this._timeline._runnerIds.includes(this.id)) {
+    if(!this.done || !this._timeline || !this._timeline._runnerIds.includes(this.id)) {
       this._queue = this._queue.filter(item => {
         return !item.isTransform;
       });
@@ -5204,7 +5279,7 @@ class Runner extends EventTarget {
   */
 
   element(element) {
-    if (element == null) return this._element;
+    if(element == null) return this._element;
     this._element = element;
     element._prepareRunner();
     return this;
@@ -5214,7 +5289,7 @@ class Runner extends EventTarget {
   }
   loop(times, swing, wait) {
     // Deal with the user passing in an object
-    if (typeof times === 'object') {
+    if(typeof times === 'object') {
       swing = times.swing;
       wait = times.wait;
       times = times.times;
@@ -5226,14 +5301,14 @@ class Runner extends EventTarget {
     this._wait = wait || 0;
 
     // Allow true to be passed
-    if (this._times === true) {
+    if(this._times === true) {
       this._times = Infinity;
     }
     return this;
   }
   loops(p) {
     const loopDuration = this._duration + this._wait;
-    if (p == null) {
+    if(p == null) {
       const loopsDone = Math.floor(this._time / loopDuration);
       const relativeTime = this._time - loopsDone * loopDuration;
       const position = relativeTime / this._duration;
@@ -5245,7 +5320,7 @@ class Runner extends EventTarget {
     return this.time(time);
   }
   persist(dtOrForever) {
-    if (dtOrForever == null) return this._persist;
+    if(dtOrForever == null) return this._persist;
     this._persist = dtOrForever;
     return this;
   }
@@ -5258,7 +5333,7 @@ class Runner extends EventTarget {
     const s = this._swing;
     const r = this._reverse;
     let position;
-    if (p == null) {
+    if(p == null) {
       /*
       This function converts a time to a position in the range [0, 1]
       The full explanation can be found in this desmos demonstration
@@ -5267,10 +5342,10 @@ class Runner extends EventTarget {
       */
 
       // Figure out the value without thinking about the start or end time
-      const f = function (x) {
-        const swinging = s * Math.floor(x % (2 * (w + d)) / (w + d));
-        const backwards = swinging && !r || !swinging && r;
-        const uncliped = Math.pow(-1, backwards) * (x % (w + d)) / d + backwards;
+      const f = function(x) {
+        const swinging = s * Math.floor((x % (2 * (w + d))) / (w + d));
+        const backwards = (swinging && !r) || (!swinging && r);
+        const uncliped = (Math.pow(-1, backwards) * (x % (w + d))) / d + backwards;
         const clipped = Math.max(Math.min(uncliped, 1), 0);
         return clipped;
       };
@@ -5284,12 +5359,12 @@ class Runner extends EventTarget {
     // Work out the loops done and add the position to the loops done
     const loopsDone = Math.floor(this.loops());
     const swingForward = s && loopsDone % 2 === 0;
-    const forwards = swingForward && !r || r && swingForward;
+    const forwards = (swingForward && !r) || (r && swingForward);
     position = loopsDone + (forwards ? p : 1 - p);
     return this.loops(position);
   }
   progress(p) {
-    if (p == null) {
+    if(p == null) {
       return Math.min(1, this._time / this.duration());
     }
     return this.time(p * this.duration());
@@ -5314,7 +5389,7 @@ class Runner extends EventTarget {
     return this;
   }
   reset() {
-    if (this._reseted) return this;
+    if(this._reseted) return this;
     this.time(0);
     this._reseted = true;
     return this;
@@ -5325,14 +5400,14 @@ class Runner extends EventTarget {
   }
   schedule(timeline, delay, when) {
     // The user doesn't need to pass a timeline if we already have one
-    if (!(timeline instanceof Timeline)) {
+    if(!(timeline instanceof Timeline)) {
       when = delay;
       delay = timeline;
       timeline = this.timeline();
     }
 
     // If there is no timeline, yell at the user...
-    if (!timeline) {
+    if(!timeline) {
       throw Error('Runner cannot be scheduled without timeline');
     }
 
@@ -5342,7 +5417,7 @@ class Runner extends EventTarget {
   }
   step(dt) {
     // If we are inactive, this stepper just gets skipped
-    if (!this.enabled) return this;
+    if(!this.enabled) return this;
 
     // Update the time and get the new position
     dt = dt == null ? 16 : dt;
@@ -5358,7 +5433,7 @@ class Runner extends EventTarget {
     const justStarted = this._lastTime <= 0 && this._time > 0;
     const justFinished = this._lastTime < duration && this._time >= duration;
     this._lastTime = this._time;
-    if (justStarted) {
+    if(justStarted) {
       this.fire('start', this);
     }
 
@@ -5372,7 +5447,7 @@ class Runner extends EventTarget {
     this._reseted = false;
     let converged = false;
     // Call initialise and the run function
-    if (running || declarative) {
+    if(running || declarative) {
       this._initialise(running);
 
       // clear the transforms on this runner so they dont get added again and again
@@ -5382,8 +5457,8 @@ class Runner extends EventTarget {
     }
     // correct the done flag here
     // declarative animations itself know when they converged
-    this.done = this.done || converged && declarative;
-    if (justFinished) {
+    this.done = this.done || (converged && declarative);
+    if(justFinished) {
       this.fire('finished', this);
     }
     return this;
@@ -5395,7 +5470,7 @@ class Runner extends EventTarget {
   Control how the animation plays
   */
   time(time) {
-    if (time == null) {
+    if(time == null) {
       return this._time;
     }
     const dt = time - this._time;
@@ -5404,7 +5479,7 @@ class Runner extends EventTarget {
   }
   timeline(timeline) {
     // check explicitly for undefined so we can set the timeline to null
-    if (typeof timeline === 'undefined') return this._timeline;
+    if(typeof timeline === 'undefined') return this._timeline;
     this._timeline = timeline;
     return this;
   }
@@ -5417,19 +5492,19 @@ class Runner extends EventTarget {
   // Run each initialise function in the runner if required
   _initialise(running) {
     // If we aren't running, we shouldn't initialise when not declarative
-    if (!running && !this._isDeclarative) return;
+    if(!running && !this._isDeclarative) return;
 
     // Loop through all of the initialisers
-    for (let i = 0, len = this._queue.length; i < len; ++i) {
+    for(let i = 0, len = this._queue.length; i < len; ++i) {
       // Get the current initialiser
       const current = this._queue[i];
 
       // Determine whether we need to initialise
-      const needsIt = this._isDeclarative || !current.initialised && running;
+      const needsIt = this._isDeclarative || (!current.initialised && running);
       running = !current.finished;
 
       // Call the initialiser if we need to
-      if (needsIt && running) {
+      if(needsIt && running) {
         current.initialiser.call(this);
         current.initialised = true;
       }
@@ -5449,7 +5524,7 @@ class Runner extends EventTarget {
     //    anim = el.animate(new SVG.Spring)
     // and later
     //    anim.move(...)
-    if (this._isDeclarative) {
+    if(this._isDeclarative) {
       const timeline = this.timeline();
       timeline && timeline.play();
     }
@@ -5460,7 +5535,7 @@ class Runner extends EventTarget {
   _run(positionOrDt) {
     // Run all of the _queue directly
     let allfinished = true;
-    for (let i = 0, len = this._queue.length; i < len; ++i) {
+    for(let i = 0, len = this._queue.length; i < len; ++i) {
       // Get the current function to run
       const current = this._queue[i];
 
@@ -5477,9 +5552,9 @@ class Runner extends EventTarget {
 
   // do nothing and return false
   _tryRetarget(method, target, extra) {
-    if (this._history[method]) {
+    if(this._history[method]) {
       // if the last method wasn't even initialised, throw it away
-      if (!this._history[method].caller.initialised) {
+      if(!this._history[method].caller.initialised) {
         const index = this._queue.indexOf(this._history[method].caller);
         this._queue.splice(index, 1);
         return false;
@@ -5487,7 +5562,7 @@ class Runner extends EventTarget {
 
       // for the case of transformations, we use the special retarget function
       // which has access to the outer scope
-      if (this._history[method].caller.retarget) {
+      if(this._history[method].caller.retarget) {
         this._history[method].caller.retarget.call(this, target, extra);
         // for everything else a simple morpher change is sufficient
       } else {
@@ -5526,7 +5601,7 @@ function mergeTransforms() {
   const netTransform = runners.map(getRunnerTransform).reduce(lmultiply, new Matrix());
   this.transform(netTransform);
   this._transformationRunners.merge();
-  if (this._transformationRunners.length() === 1) {
+  if(this._transformationRunners.length() === 1) {
     this._frameId = null;
   }
 }
@@ -5536,7 +5611,7 @@ class RunnerArray {
     this.ids = [];
   }
   add(runner) {
-    if (this.runners.includes(runner)) return;
+    if(this.runners.includes(runner)) return;
     const id = runner.id + 1;
     this.runners.push(runner);
     this.ids.push(id);
@@ -5562,12 +5637,16 @@ class RunnerArray {
   }
   merge() {
     let lastRunner = null;
-    for (let i = 0; i < this.runners.length; ++i) {
+    for(let i = 0; i < this.runners.length; ++i) {
       const runner = this.runners[i];
-      const condition = lastRunner && runner.done && lastRunner.done && (
-      // don't merge runner when persisted on timeline
-      !runner._timeline || !runner._timeline._runnerIds.includes(runner.id)) && (!lastRunner._timeline || !lastRunner._timeline._runnerIds.includes(lastRunner.id));
-      if (condition) {
+      const condition =
+        lastRunner &&
+        runner.done &&
+        lastRunner.done &&
+        // don't merge runner when persisted on timeline
+        (!runner._timeline || !runner._timeline._runnerIds.includes(runner.id)) &&
+        (!lastRunner._timeline || !lastRunner._timeline._runnerIds.includes(lastRunner.id));
+      if(condition) {
         // the +1 happens in the function
         this.remove(runner.id);
         const newRunner = runner.mergeWith(lastRunner);
@@ -5605,11 +5684,15 @@ registerMethods({
       this._transformationRunners.clearBefore(currentRunner.id);
     },
     _currentTransform(current) {
-      return this._transformationRunners.runners
-      // we need the equal sign here to make sure, that also transformations
-      // on the same runner which execute before the current transformation are
-      // taken into account
-      .filter(runner => runner.id <= current.id).map(getRunnerTransform).reduce(lmultiply, new Matrix());
+      return (
+        this._transformationRunners.runners
+          // we need the equal sign here to make sure, that also transformations
+          // on the same runner which execute before the current transformation are
+          // taken into account
+          .filter(runner => runner.id <= current.id)
+          .map(getRunnerTransform)
+          .reduce(lmultiply, new Matrix())
+      );
     },
     _addRunner(runner) {
       this._transformationRunners.add(runner);
@@ -5621,7 +5704,7 @@ registerMethods({
       this._frameId = Animator.immediate(mergeTransforms.bind(this));
     },
     _prepareRunner() {
-      if (this._frameId == null) {
+      if(this._frameId == null) {
         this._transformationRunners = new RunnerArray().add(new FakeRunner(new Matrix(this)));
       }
     }
@@ -5639,66 +5722,74 @@ extend(Runner, {
     return this.styleAttr('css', s, v);
   },
   styleAttr(type, nameOrAttrs, val) {
-    if (typeof nameOrAttrs === 'string') {
+    if(typeof nameOrAttrs === 'string') {
       return this.styleAttr(type, {
         [nameOrAttrs]: val
       });
     }
     let attrs = nameOrAttrs;
-    if (this._tryRetarget(type, attrs)) return this;
+    if(this._tryRetarget(type, attrs)) return this;
     let morpher = new Morphable(this._stepper).to(attrs);
     let keys = Object.keys(attrs);
-    this.queue(function () {
-      morpher = morpher.from(this.element()[type](keys));
-    }, function (pos) {
-      this.element()[type](morpher.at(pos).valueOf());
-      return morpher.done();
-    }, function (newToAttrs) {
-      // Check if any new keys were added
-      const newKeys = Object.keys(newToAttrs);
-      const differences = difference(newKeys, keys);
+    this.queue(
+      function() {
+        morpher = morpher.from(this.element()[type](keys));
+      },
+      function(pos) {
+        this.element()[type](morpher.at(pos).valueOf());
+        return morpher.done();
+      },
+      function(newToAttrs) {
+        // Check if any new keys were added
+        const newKeys = Object.keys(newToAttrs);
+        const differences = difference(newKeys, keys);
 
-      // If their are new keys, initialize them and add them to morpher
-      if (differences.length) {
-        // Get the values
-        const addedFromAttrs = this.element()[type](differences);
+        // If their are new keys, initialize them and add them to morpher
+        if(differences.length) {
+          // Get the values
+          const addedFromAttrs = this.element()[type](differences);
 
-        // Get the already initialized values
-        const oldFromAttrs = new ObjectBag(morpher.from()).valueOf();
+          // Get the already initialized values
+          const oldFromAttrs = new ObjectBag(morpher.from()).valueOf();
 
-        // Merge old and new
-        Object.assign(oldFromAttrs, addedFromAttrs);
-        morpher.from(oldFromAttrs);
+          // Merge old and new
+          Object.assign(oldFromAttrs, addedFromAttrs);
+          morpher.from(oldFromAttrs);
+        }
+
+        // Get the object from the morpher
+        const oldToAttrs = new ObjectBag(morpher.to()).valueOf();
+
+        // Merge in new attributes
+        Object.assign(oldToAttrs, newToAttrs);
+
+        // Change morpher target
+        morpher.to(oldToAttrs);
+
+        // Make sure that we save the work we did so we don't need it to do again
+        keys = newKeys;
+        attrs = newToAttrs;
       }
-
-      // Get the object from the morpher
-      const oldToAttrs = new ObjectBag(morpher.to()).valueOf();
-
-      // Merge in new attributes
-      Object.assign(oldToAttrs, newToAttrs);
-
-      // Change morpher target
-      morpher.to(oldToAttrs);
-
-      // Make sure that we save the work we did so we don't need it to do again
-      keys = newKeys;
-      attrs = newToAttrs;
-    });
+    );
     this._rememberMorpher(type, morpher);
     return this;
   },
   zoom(level, point) {
-    if (this._tryRetarget('zoom', level, point)) return this;
+    if(this._tryRetarget('zoom', level, point)) return this;
     let morpher = new Morphable(this._stepper).to(new SVGNumber(level));
-    this.queue(function () {
-      morpher = morpher.from(this.element().zoom());
-    }, function (pos) {
-      this.element().zoom(morpher.at(pos), point);
-      return morpher.done();
-    }, function (newLevel, newPoint) {
-      point = newPoint;
-      morpher.to(newLevel);
-    });
+    this.queue(
+      function() {
+        morpher = morpher.from(this.element().zoom());
+      },
+      function(pos) {
+        this.element().zoom(morpher.at(pos), point);
+        return morpher.done();
+      },
+      function(newLevel, newPoint) {
+        point = newPoint;
+        morpher.to(newLevel);
+      }
+    );
     this._rememberMorpher('zoom', morpher);
     return this;
   },
@@ -5722,7 +5813,7 @@ extend(Runner, {
   transform(transforms, relative, affine) {
     // If we have a declarative function, we should retarget it if possible
     relative = transforms.relative || relative;
-    if (this._isDeclarative && !relative && this._tryRetarget('transform', transforms)) {
+    if(this._isDeclarative && !relative && this._tryRetarget('transform', transforms)) {
       return this;
     }
 
@@ -5747,24 +5838,21 @@ extend(Runner, {
       element._addRunner(this);
 
       // Deactivate all transforms that have run so far if we are absolute
-      if (!relative) {
+      if(!relative) {
         element._clearTransformRunnersBefore(this);
       }
     }
     function run(pos) {
       // clear all other transforms before this in case something is saved
       // on this runner. We are absolute. We dont need these!
-      if (!relative) this.clearTransform();
-      const {
-        x,
-        y
-      } = new Point(origin).transform(element._currentTransform(this));
+      if(!relative) this.clearTransform();
+      const { x, y } = new Point(origin).transform(element._currentTransform(this));
       let target = new Matrix({
         ...transforms,
         origin: [x, y]
       });
       let start = this._isDeclarative && current ? current : startTransform;
-      if (affine) {
+      if(affine) {
         target = target.decompose(x, y);
         start = start.decompose(x, y);
 
@@ -5779,13 +5867,13 @@ extend(Runner, {
         const index = distances.indexOf(shortest);
         target.rotate = possibilities[index];
       }
-      if (relative) {
+      if(relative) {
         // we have to be careful here not to overwrite the rotation
         // with the rotate method of Matrix
-        if (!isMatrix) {
+        if(!isMatrix) {
           target.rotate = transforms.rotate || 0;
         }
-        if (this._isDeclarative && currentAngle) {
+        if(this._isDeclarative && currentAngle) {
           start.rotate = currentAngle;
         }
       }
@@ -5800,7 +5888,7 @@ extend(Runner, {
     }
     function retarget(newTransforms) {
       // only get a new origin if it changed since the last call
-      if ((newTransforms.origin || 'center').toString() !== (transforms.origin || 'center').toString()) {
+      if((newTransforms.origin || 'center').toString() !== (transforms.origin || 'center').toString()) {
         origin = getOrigin(newTransforms, element);
       }
 
@@ -5841,21 +5929,25 @@ extend(Runner, {
     to = new SVGNumber(to);
 
     // Try to change the target if we have this method already registered
-    if (this._tryRetarget(method, to)) return this;
+    if(this._tryRetarget(method, to)) return this;
 
     // Make a morpher and queue the animation
     const morpher = new Morphable(this._stepper).to(to);
     let from = null;
-    this.queue(function () {
-      from = this.element()[method]();
-      morpher.from(from);
-      morpher.to(from + to);
-    }, function (pos) {
-      this.element()[method](morpher.at(pos));
-      return morpher.done();
-    }, function (newTo) {
-      morpher.to(from + new SVGNumber(newTo));
-    });
+    this.queue(
+      function() {
+        from = this.element()[method]();
+        morpher.from(from);
+        morpher.to(from + to);
+      },
+      function(pos) {
+        this.element()[method](morpher.at(pos));
+        return morpher.done();
+      },
+      function(newTo) {
+        morpher.to(from + new SVGNumber(newTo));
+      }
+    );
 
     // Register the morpher so that if it is changed again, we can retarget it
     this._rememberMorpher(method, morpher);
@@ -5863,16 +5955,19 @@ extend(Runner, {
   },
   _queueObject(method, to) {
     // Try to change the target if we have this method already registered
-    if (this._tryRetarget(method, to)) return this;
+    if(this._tryRetarget(method, to)) return this;
 
     // Make a morpher and queue the animation
     const morpher = new Morphable(this._stepper).to(to);
-    this.queue(function () {
-      morpher.from(this.element()[method]());
-    }, function (pos) {
-      this.element()[method](morpher.at(pos));
-      return morpher.done();
-    });
+    this.queue(
+      function() {
+        morpher.from(this.element()[method]());
+      },
+      function(pos) {
+        this.element()[method](morpher.at(pos));
+        return morpher.done();
+      }
+    );
 
     // Register the morpher so that if it is changed again, we can retarget it
     this._rememberMorpher(method, morpher);
@@ -5904,14 +5999,14 @@ extend(Runner, {
   size(width, height) {
     // animate bbox based size for all other elements
     let box;
-    if (!width || !height) {
+    if(!width || !height) {
       box = this._element.bbox();
     }
-    if (!width) {
-      width = box.width / box.height * height;
+    if(!width) {
+      width = (box.width / box.height) * height;
     }
-    if (!height) {
-      height = box.height / box.width * width;
+    if(!height) {
+      height = (box.height / box.width) * width;
     }
     return this.width(width).height(height);
   },
@@ -5926,17 +6021,20 @@ extend(Runner, {
   // Add animatable plot
   plot(a, b, c, d) {
     // Lines can be plotted with 4 arguments
-    if (arguments.length === 4) {
+    if(arguments.length === 4) {
       return this.plot([a, b, c, d]);
     }
-    if (this._tryRetarget('plot', a)) return this;
+    if(this._tryRetarget('plot', a)) return this;
     const morpher = new Morphable(this._stepper).type(this._element.MorphArray).to(a);
-    this.queue(function () {
-      morpher.from(this._element.array());
-    }, function (pos) {
-      this._element.plot(morpher.at(pos));
-      return morpher.done();
-    });
+    this.queue(
+      function() {
+        morpher.from(this._element.array());
+      },
+      function(pos) {
+        this._element.plot(morpher.at(pos));
+        return morpher.done();
+      }
+    );
     this._rememberMorpher('plot', morpher);
     return this;
   },
@@ -5949,16 +6047,16 @@ extend(Runner, {
     return this._queueObject('viewbox', new Box(x, y, width, height));
   },
   update(o) {
-    if (typeof o !== 'object') {
+    if(typeof o !== 'object') {
       return this.update({
         offset: arguments[0],
         color: arguments[1],
         opacity: arguments[2]
       });
     }
-    if (o.opacity != null) this.attr('stop-opacity', o.opacity);
-    if (o.color != null) this.attr('stop-color', o.color);
-    if (o.offset != null) this.attr('offset', o.offset);
+    if(o.opacity != null) this.attr('stop-opacity', o.opacity);
+    if(o.color != null) this.attr('stop-color', o.color);
+    if(o.offset != null) this.attr('offset', o.offset);
     return this;
   }
 });
@@ -5978,16 +6076,16 @@ class Svg extends Container {
 
   // Creates and returns defs element
   defs() {
-    if (!this.isRoot()) return this.root().defs();
+    if(!this.isRoot()) return this.root().defs();
     return adopt(this.node.querySelector('defs')) || this.put(new Defs());
   }
   isRoot() {
-    return !this.node.parentNode || !(this.node.parentNode instanceof globals.window.SVGElement) && this.node.parentNode.nodeName !== '#document-fragment';
+    return !this.node.parentNode || (!(this.node.parentNode instanceof globals.window.SVGElement) && this.node.parentNode.nodeName !== '#document-fragment');
   }
 
   // Add namespaces
   namespace() {
-    if (!this.isRoot()) return this.root().namespace();
+    if(!this.isRoot()) return this.root().namespace();
     return this.attr({
       xmlns: svg,
       version: '1.1'
@@ -5997,13 +6095,15 @@ class Svg extends Container {
     return this.attr({
       xmlns: null,
       version: null
-    }).attr('xmlns:xlink', null, xmlns).attr('xmlns:svgjs', null, xmlns);
+    })
+      .attr('xmlns:xlink', null, xmlns)
+      .attr('xmlns:svgjs', null, xmlns);
   }
 
   // Check if this is a root svg
   // If not, call root() from this element
   root() {
-    if (this.isRoot()) return this;
+    if(this.isRoot()) return this;
     return super.root();
   }
 }
@@ -6035,7 +6135,7 @@ register(Symbol, 'Symbol');
 // Create plain text node
 function plain(text) {
   // clear if build mode is disabled
-  if (this._build === false) {
+  if(this._build === false) {
     this.clear();
   }
 
@@ -6053,7 +6153,7 @@ function length() {
 // Text is moved by its bounding box
 // text-anchor does NOT matter
 function x$1(x, box = this.bbox()) {
-  if (x == null) {
+  if(x == null) {
     return box.x;
   }
   return this.attr('x', this.attr('x') + x - box.x);
@@ -6061,7 +6161,7 @@ function x$1(x, box = this.bbox()) {
 
 // Move over y-axis
 function y$1(y, box = this.bbox()) {
-  if (y == null) {
+  if(y == null) {
     return box.y;
   }
   return this.attr('y', this.attr('y') + y - box.y);
@@ -6072,7 +6172,7 @@ function move$1(x, y, box = this.bbox()) {
 
 // Move center over x-axis
 function cx(x, box = this.bbox()) {
-  if (x == null) {
+  if(x == null) {
     return box.cx;
   }
   return this.attr('x', this.attr('x') + x - box.cx);
@@ -6080,7 +6180,7 @@ function cx(x, box = this.bbox()) {
 
 // Move center over y-axis
 function cy(y, box = this.bbox()) {
-  if (y == null) {
+  if(y == null) {
     return box.cy;
   }
   return this.attr('y', this.attr('y') + y - box.cy);
@@ -6133,7 +6233,7 @@ class Text extends Shape {
   // Set / get leading
   leading(value) {
     // act as getter
-    if (value == null) {
+    if(value == null) {
       return this.dom.leading;
     }
 
@@ -6145,22 +6245,22 @@ class Text extends Shape {
   // Rebuild appearance type
   rebuild(rebuild) {
     // store new rebuild flag if given
-    if (typeof rebuild === 'boolean') {
+    if(typeof rebuild === 'boolean') {
       this._rebuild = rebuild;
     }
 
     // define position of all lines
-    if (this._rebuild) {
+    if(this._rebuild) {
       const self = this;
       let blankLineOffset = 0;
       const leading = this.dom.leading;
       this.each(function (i) {
-        if (isDescriptive(this.node)) return;
+        if(isDescriptive(this.node)) return;
         const fontSize = globals.window.getComputedStyle(this.node).getPropertyValue('font-size');
         const dy = leading * new SVGNumber(fontSize);
-        if (this.dom.newLined) {
+        if(this.dom.newLined) {
           this.attr('x', self.attr('x'));
-          if (this.text() === '\n') {
+          if(this.text() === '\n') {
             blankLineOffset += dy;
           } else {
             this.attr('dy', i ? dy + blankLineOffset : 0);
@@ -6189,19 +6289,19 @@ class Text extends Shape {
   // Set the text content
   text(text) {
     // act as getter
-    if (text === undefined) {
+    if(text === undefined) {
       const children = this.node.childNodes;
       let firstLine = 0;
       text = '';
-      for (let i = 0, len = children.length; i < len; ++i) {
+      for(let i = 0, len = children.length; i < len; ++i) {
         // skip textPaths - they are no lines
-        if (children[i].nodeName === 'textPath' || isDescriptive(children[i])) {
-          if (i === 0) firstLine = i + 1;
+        if(children[i].nodeName === 'textPath' || isDescriptive(children[i])) {
+          if(i === 0) firstLine = i + 1;
           continue;
         }
 
         // add newline if its not the first child and newLined is set to true
-        if (i !== firstLine && children[i].nodeType !== 3 && adopt(children[i]).dom.newLined === true) {
+        if(i !== firstLine && children[i].nodeType !== 3 && adopt(children[i]).dom.newLined === true) {
           text += '\n';
         }
 
@@ -6213,7 +6313,7 @@ class Text extends Shape {
 
     // remove existing content
     this.clear().build(true);
-    if (typeof text === 'function') {
+    if(typeof text === 'function') {
       // call block
       text.call(this, this);
     } else {
@@ -6221,7 +6321,7 @@ class Text extends Shape {
       text = (text + '').split('\n');
 
       // build new lines
-      for (let j = 0, jl = text.length; j < jl; j++) {
+      for(let j = 0, jl = text.length; j < jl; j++) {
         this.newLine(text[j]);
       }
     }
@@ -6271,7 +6371,7 @@ class Tspan extends Shape {
     const text = this.parent();
 
     // early return in case we are not in a text element
-    if (!(text instanceof Text)) {
+    if(!(text instanceof Text)) {
       return this;
     }
     const i = text.index(this);
@@ -6284,8 +6384,8 @@ class Tspan extends Shape {
 
   // Set text content
   text(text) {
-    if (text == null) return this.node.textContent + (this.dom.newLined ? '\n' : '');
-    if (typeof text === 'function') {
+    if(text == null) return this.node.textContent + (this.dom.newLined ? '\n' : '');
+    if(typeof text === 'function') {
       this.clear().build(true);
       text.call(this, this);
       this.build(false);
@@ -6302,7 +6402,7 @@ registerMethods({
       const tspan = new Tspan();
 
       // clear if build mode is disabled
-      if (!this._build) {
+      if(!this._build) {
         this.clear();
       }
 
@@ -6311,7 +6411,7 @@ registerMethods({
     })
   },
   Text: {
-    newLine: function (text = '') {
+    newLine: function(text = '') {
       return this.tspan(text).newLine();
     }
   }
@@ -6426,7 +6526,7 @@ function dmove(dx, dy) {
     try {
       // Get the childs bbox
       bbox = child.bbox();
-    } catch (e) {
+    } catch(e) {
       return;
     }
 
@@ -6449,7 +6549,7 @@ function dy(dy) {
   return this.dmove(0, dy);
 }
 function height(height, box = this.bbox()) {
-  if (height == null) return box.height;
+  if(height == null) return box.height;
   return this.size(box.width, height, box);
 }
 function move(x = 0, y = 0, box = this.bbox()) {
@@ -6468,15 +6568,15 @@ function size(width, height, box = this.bbox()) {
   return this;
 }
 function width(width, box = this.bbox()) {
-  if (width == null) return box.width;
+  if(width == null) return box.width;
   return this.size(width, box.height, box);
 }
 function x(x, box = this.bbox()) {
-  if (x == null) return box.x;
+  if(x == null) return box.x;
   return this.move(x, box.y, box);
 }
 function y(y, box = this.bbox()) {
-  if (y == null) return box.y;
+  if(y == null) return box.y;
   return this.move(box.x, y, box);
 }
 
@@ -6535,9 +6635,9 @@ registerMethods({
   Element: {
     unlink() {
       const link = this.linker();
-      if (!link) return this;
+      if(!link) return this;
       const parent = link.parent();
-      if (!parent) {
+      if(!parent) {
         return this.remove();
       }
       const index = parent.index(link);
@@ -6548,11 +6648,11 @@ registerMethods({
     linkTo(url) {
       // reuse old link if possible
       let link = this.linker();
-      if (!link) {
+      if(!link) {
         link = new A();
         this.wrap(link);
       }
-      if (typeof url === 'function') {
+      if(typeof url === 'function') {
         url.call(link, link);
       } else {
         link.to(url);
@@ -6561,7 +6661,7 @@ registerMethods({
     },
     linker() {
       const link = this.parent();
-      if (link && link.node.nodeName.toLowerCase() === 'a') {
+      if(link && link.node.nodeName.toLowerCase() === 'a') {
         return link;
       }
       return null;
@@ -6623,7 +6723,7 @@ class Stop extends Element {
 
   // add color stops
   update(o) {
-    if (typeof o === 'number' || o instanceof SVGNumber) {
+    if(typeof o === 'number' || o instanceof SVGNumber) {
       o = {
         offset: arguments[0],
         color: arguments[1],
@@ -6632,16 +6732,16 @@ class Stop extends Element {
     }
 
     // set attributes
-    if (o.opacity != null) this.attr('stop-opacity', o.opacity);
-    if (o.color != null) this.attr('stop-color', o.color);
-    if (o.offset != null) this.attr('offset', new SVGNumber(o.offset));
+    if(o.opacity != null) this.attr('stop-opacity', o.opacity);
+    if(o.color != null) this.attr('stop-color', o.color);
+    if(o.offset != null) this.attr('offset', new SVGNumber(o.offset));
     return this;
   }
 }
 registerMethods({
   Gradient: {
     // Add a color stop
-    stop: function (offset, color, opacity) {
+    stop: function(offset, color, opacity) {
       return this.put(new Stop()).update(offset, color, opacity);
     }
   }
@@ -6649,10 +6749,10 @@ registerMethods({
 register(Stop, 'Stop');
 
 function cssRule(selector, rule) {
-  if (!selector) return '';
-  if (!rule) return selector;
+  if(!selector) return '';
+  if(!rule) return selector;
   let ret = selector + '{';
-  for (const i in rule) {
+  for(const i in rule) {
     ret += unCamelCase(i) + ':' + rule[i] + ';';
   }
   ret += '}';
@@ -6703,7 +6803,7 @@ class TextPath extends Text {
   plot(d) {
     const track = this.track();
     let pathArray = null;
-    if (track) {
+    if(track) {
       pathArray = track.plot(d);
     }
     return d == null ? pathArray : this;
@@ -6718,7 +6818,7 @@ registerMethods({
   Container: {
     textPath: wrapWithAttrCheck(function (text, path) {
       // Convert text to instance if needed
-      if (!(text instanceof Text)) {
+      if(!(text instanceof Text)) {
         text = this.text(text);
       }
       return text.path(path);
@@ -6730,7 +6830,7 @@ registerMethods({
       const textPath = new TextPath();
 
       // if track is a path, reuse it
-      if (!(track instanceof Path)) {
+      if(!(track instanceof Path)) {
         // create path element
         track = this.defs().path(track);
       }
@@ -6740,8 +6840,8 @@ registerMethods({
 
       // Transplant all nodes from text to textPath
       let node;
-      if (importNodes) {
-        while (node = this.node.firstChild) {
+      if(importNodes) {
+        while((node = this.node.firstChild)) {
           textPath.node.appendChild(node);
         }
       }
@@ -6758,7 +6858,7 @@ registerMethods({
     // creates a textPath from this path
     text: wrapWithAttrCheck(function (text) {
       // Convert text to instance if needed
-      if (!(text instanceof Text)) {
+      if(!(text instanceof Text)) {
         text = new Text().addTo(this.parent()).text(text);
       }
 
@@ -6820,5 +6920,92 @@ List.extend(getMethodNames());
 registerMorphableType([SVGNumber, Color, Box, Matrix, SVGArray, PointArray, PathArray, Point]);
 makeMorphable();
 
-export { A, Animator, SVGArray as Array, Box, Circle, ClipPath, Color, Container, Controller, Defs, Dom, Ease, Element, Ellipse, EventTarget, ForeignObject, Fragment, G, Gradient, Image, Line, List, Marker, Mask, Matrix, Morphable, NonMorphable, SVGNumber as Number, ObjectBag, PID, Path, PathArray, Pattern, Point, PointArray, Polygon, Polyline, Queue, Rect, Runner, SVG, Shape, Spring, Stop, Style, Svg, Symbol, Text, TextPath, Timeline, TransformBag, Tspan, Use, adopt, assignNewId, clearEvents, create, defaults, dispatch, easing, eid, extend, baseFind as find, getClass, getEventTarget, getEvents, getWindow, makeInstance, makeMorphable, mockAdopt, namespaces, nodeOrNew, off, on, parser, regex, register, registerMorphableType, registerWindow, restoreWindow, root, saveWindow, utils, windowEvents, withWindow, wrapWithAttrCheck };
+export {
+  A,
+  Animator,
+  SVGArray as Array,
+  Box,
+  Circle,
+  ClipPath,
+  Color,
+  Container,
+  Controller,
+  Defs,
+  Dom,
+  Ease,
+  Element,
+  Ellipse,
+  EventTarget,
+  ForeignObject,
+  Fragment,
+  G,
+  Gradient,
+  Image,
+  Line,
+  List,
+  Marker,
+  Mask,
+  Matrix,
+  Morphable,
+  NonMorphable,
+  SVGNumber as Number,
+  ObjectBag,
+  PID,
+  Path,
+  PathArray,
+  Pattern,
+  Point,
+  PointArray,
+  Polygon,
+  Polyline,
+  Queue,
+  Rect,
+  Runner,
+  SVG,
+  Shape,
+  Spring,
+  Stop,
+  Style,
+  Svg,
+  Symbol,
+  Text,
+  TextPath,
+  Timeline,
+  TransformBag,
+  Tspan,
+  Use,
+  adopt,
+  assignNewId,
+  clearEvents,
+  create,
+  defaults,
+  dispatch,
+  easing,
+  eid,
+  extend,
+  baseFind as find,
+  getClass,
+  getEventTarget,
+  getEvents,
+  getWindow,
+  makeInstance,
+  makeMorphable,
+  mockAdopt,
+  namespaces,
+  nodeOrNew,
+  off,
+  on,
+  parser,
+  regex,
+  register,
+  registerMorphableType,
+  registerWindow,
+  restoreWindow,
+  root,
+  saveWindow,
+  utils,
+  windowEvents,
+  withWindow,
+  wrapWithAttrCheck
+};
 //# sourceMappingURL=svg.esm.js.map
