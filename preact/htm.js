@@ -174,11 +174,7 @@ export const build = function(statics) {
     } else if(mode >= MODE_PROP_SET) {
       if(MINI) {
         if(mode === MODE_PROP_SET) {
-          (current[2] = current[2] || {})[propName] = field
-            ? buffer
-              ? buffer + fields[field]
-              : fields[field]
-            : buffer;
+          (current[2] = current[2] || {})[propName] = field ? (buffer ? buffer + fields[field] : fields[field]) : buffer;
           mode = MODE_PROP_APPEND;
         } else if(field || buffer) {
           current[2][propName] += field ? buffer + fields[field] : buffer;
@@ -291,12 +287,7 @@ const regular = function(statics) {
     tmp = new Map();
     CACHES.set(this, tmp);
   }
-  tmp = evaluate(
-    this,
-    tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp),
-    arguments,
-    []
-  );
+  tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp), arguments, []);
   return tmp.length > 1 ? tmp : tmp[0];
 };
 

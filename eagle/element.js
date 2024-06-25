@@ -96,15 +96,16 @@ export class EagleElement extends EagleNode {
     } catch(e) {}
 
     let inst = doc.raw2element(raw, owner, ref);
-
-    inst.ref = ref;
+    //inst.ref = ref;
 
     let path = ref;
 
     while(isObject(path) && 'root' in path) path = path.path;
 
     insert(inst, path);
+
     EagleElement.currentElement = inst;
+
     return inst;
   }
 
@@ -378,6 +379,11 @@ export class EagleElement extends EagleNode {
     this.initCache(EagleElement, EagleNodeList.create);
 
     if(this.tagName == 'board' || this.type == 'brd') {
+      lazyProperty(this, 'elements', () => {
+        let elements = this.lookup(this.tagName == 'board' ? 'elements' : 'eagle/drawing/board/elements');
+        if(elements) return EagleNodeMap.create(elements.children, ['name']);
+      });
+
       lazyProperties(this, {
         signals: () => {
           const signals = this.lookup(this.tagName == 'board' ? 'signals' : 'eagle/drawing/board/signals');
@@ -386,10 +392,6 @@ export class EagleElement extends EagleNode {
         plain: () => {
           const plain = this.lookup(this.tagName == 'board' ? 'plain' : 'eagle/drawing/board/plain');
           if(plain) return EagleNodeList.create(plain, plain.ref.down('children'));
-        },
-        elements: () => {
-          const elements = this.lookup(this.tagName == 'board' ? 'elements' : 'eagle/drawing/board/elements');
-          if(elements) return EagleNodeMap.create(elements.children, 'name');
         },
         libraries: () => {
           const libraries = this.lookup(this.tagName == 'board' ? 'libraries' : 'eagle/drawing/board/libraries');
@@ -412,7 +414,7 @@ export class EagleElement extends EagleNode {
       });
     }
 
-    if(this.type == 'lbr' || this.tagName == 'library') {
+    if(this.tagName == 'library' || this.type == 'lbr') {
       lazyProperties(this, {
         packages() {
           const packages = this.lookup(this.tagName == 'library' ? 'packages' : 'eagle/drawing/library/packages');
@@ -439,18 +441,20 @@ export class EagleElement extends EagleNode {
     }
     if(tagName == 'element') {
       if(this.package) {
-        for(let key of ['pad', 'wire', 'circle', 'text', 'rectangle'])
-          lazyProperty(this, key + 's', () => {
-            let list = EagleNodeList.create(
-              this,
-              this.package.ref.down('children'),
-              e => e.tagName == key,
-              (o, p, r) => TList(EagleElement.get(o, p, r), elem)
-            );
+        try {
+          for(let key of ['pad', 'wire', 'circle', 'text', 'rectangle'])
+            lazyProperty(this, key + 's', () => {
+              let list = EagleNodeList.create(
+                this,
+                this.package.ref.down('children'),
+                e => e.tagName == key,
+                (o, p, r) => TList(EagleElement.get(o, p, r), elem)
+              );
 
-            if(key != 'pad') return list;
-            return EagleNodeMap.create(list, 'name');
-          });
+              if(key != 'pad') return list;
+              return EagleNodeMap.create(list, 'name');
+            });
+        } catch(e) {}
       }
 
       trkl.bind(this, 'contacts', () =>
@@ -658,8 +662,10 @@ export class EagleElement extends EagleNode {
       let instances = [...this.getAll('instance')];
       return BBox.of(...instances);
     }
+
     if(this.tagName == 'board') {
-      const measures = [...this.plain].filter(e => e.layer.name == 'Measures');
+      const measures = [...this.owner.plain.children].filter(e => e.layer.name == 'Measures' || e.layer.name == 'Document');
+
       if(measures.length >= 4) {
         bb.update(measures);
         //console.log('bb', bb);
@@ -685,8 +691,10 @@ export class EagleElement extends EagleNode {
       const libName = raw.attributes.library;
       let library = document.getLibrary(libName);
       let pkg = library.packages[raw.attributes.package];
-      bb = pkg.getBounds();
-      bb.move(this.x, this.y);
+      if(pkg) {
+        bb = pkg.getBounds();
+        bb.move(this.x, this.y);
+      }
     } else if(this.tagName == 'instance') {
       const { part, gate, rot, x, y } = this;
       const { symbol } = gate;

@@ -396,7 +396,7 @@ export class PointList extends Array {
   }
 
   rect() {
-    return new Rect(bbox.call(this));
+    return new Rect(this.bbox(...arguments));
   }
 
   xrange() {

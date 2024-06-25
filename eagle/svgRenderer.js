@@ -1,5 +1,5 @@
 import { Point, Rect, TransformationList } from '../geom.js';
-import { define, inserter, isObject, mapWrapper } from '../misc.js';
+import { define, inserter, isObject, mapWrapper, tryCatch } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { h } from '../preact.mjs';
 import trkl from '../trkl.js';
@@ -59,31 +59,34 @@ export class EagleSVGRenderer {
       return ret;
     };
 
-    if(!doc.layers.tOrigins)
-      doc.layers.raw.push(
-        EagleElement.create('layer', {
-          name: 'tOrigins',
-          number: '23',
-          color: '15',
-          fill: '1',
-          visible: 'yes',
-          active: 'yes'
-        })
-      );
-    if(!doc.layers.bOrigins)
-      doc.layers.raw.push(
-        EagleElement.create('layer', {
-          name: 'bOrigins',
-          number: '24',
-          color: '15',
-          fill: '1',
-          visible: 'yes',
-          active: 'yes'
-        })
-      );
+    if(doc.layers) {
+      if(!doc.layers.tOrigins)
+        doc.layers.raw.push(
+          EagleElement.create('layer', {
+            name: 'tOrigins',
+            number: '23',
+            color: '15',
+            fill: '1',
+            visible: 'yes',
+            active: 'yes'
+          })
+        );
+      if(!doc.layers.bOrigins)
+        doc.layers.raw.push(
+          EagleElement.create('layer', {
+            name: 'bOrigins',
+            number: '24',
+            color: '15',
+            fill: '1',
+            visible: 'yes',
+            active: 'yes'
+          })
+        );
+    }
 
     // this.layers = Object.fromEntries([...doc.layers].map(([n, l]) => [l.name, l]));
-    this.layers = Object.getOwnPropertyNames(doc.layers).map(n => [n, doc.layers[n]]);
+    //
+    tryCatch(() => (this.layers = Object.getOwnPropertyNames(doc.layers).map(n => [n, doc.layers[n]])));
   }
 
   get maps() {
@@ -336,53 +339,52 @@ export class EagleSVGRenderer {
 
     let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList() } = props;
 
-    if(!bounds || (bounds.size && bounds.size.area() == 0)) {
-      bounds = obj.getBounds({ bbox: true });
-    }
+    try {
+      if(!bounds || (bounds.size && bounds.size.area() == 0)) bounds = obj.getBounds({ bbox: true });
 
-    let rect = new Rect(bounds.rect);
+      let rect = new Rect(bounds.rect);
 
-    rect.round(1.27);
+      rect.round(1.27);
 
-    rect.round(2.54);
-    let viewBox = rect;
-    let { index } = props;
+      rect.round(2.54);
+      let viewBox = rect;
+      let { index } = props;
 
-    this.rect = rect;
-    this.bounds = bounds;
+      this.rect = rect;
+      this.bounds = bounds;
 
-    const { width, height } = (this.size = rect.size.toCSS('mm'));
+      const { width, height } = (this.size = rect.size.toCSS('mm'));
 
-    this.debug('EagleSVGRenderer.render', { bounds, width, height });
-    this.debug('EagleSVGRenderer.render', { transform, index });
+      this.debug('EagleSVGRenderer.render', { bounds, width, height });
+      this.debug('EagleSVGRenderer.render', { transform, index });
 
-    let gridElement = doc.lookup('eagle/drawing/grid');
-    let attrs = {
-      bg: trkl({ color: '#ffffff', visible: true }),
-      grid: trkl({
-        color: '#0000aa',
-        width: 0.01,
-        visible: true
-      })
-    };
-    const { bg, grid } = attrs;
-    this.attrs = attrs;
+      let gridElement = doc.lookup('eagle/drawing/grid');
+      let attrs = {
+        bg: trkl({ color: '#ffffff', visible: true }),
+        grid: trkl({
+          color: '#0000aa',
+          width: 0.01,
+          visible: true
+        })
+      };
+      const { bg, grid } = attrs;
+      this.attrs = attrs;
 
-    trkl.bind(this, { bg, grid });
+      trkl.bind(this, { bg, grid });
 
-    let svgElem = h(
-      Drawing,
-      {
-        rect: viewBox,
+      let svgElem = h(
+        Drawing,
+        {
+          rect: viewBox,
 
-        bounds,
-        attrs,
-        grid: gridElement,
-        nodefs: index > 0,
-        width,
-        height,
-        transform: transform.slice(1)
-        /*   styles: [
+          bounds,
+          attrs,
+          grid: gridElement,
+          nodefs: index > 0,
+          width,
+          height,
+          transform: transform.slice(1)
+          /*   styles: [
           'text { font-size: 0.0875rem; }',
           'text { stroke: none; }',
           '.pad { fill: #4ba54b; }',
@@ -391,11 +393,12 @@ export class EagleSVGRenderer {
            'rect { stroke: none; }',
           'path { stroke-linejoin: round; stroke-linecap: round; }'
         ]*/
-      },
-      children
-    );
+        },
+        children
+      );
 
-    return svgElem;
+      return svgElem;
+    } catch(e) {}
   }
 }
 

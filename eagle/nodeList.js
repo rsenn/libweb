@@ -5,8 +5,13 @@ import { EagleRef } from './ref.js';
 
 export class EagleNodeList {
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
+    //console.log('EagleNodeList', { owner, tag: owner?.tagName, ref, pred });
+
+    //if(!owner?.tagName) throw new Error(`path: ${owner.path}`);
+
     if(isObject(owner) && !('raw' in owner)) throw new Error('raw owner');
     if(isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
+
     let raw = ref.dereference();
     let species = Object.getPrototypeOf(owner).constructor;
     define(this, { ref, owner, raw, getOrCreate });

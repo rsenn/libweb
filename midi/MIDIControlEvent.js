@@ -52,8 +52,7 @@ export class MIDIControlEvent {
         break;
     }
 
-    string +=
-      ' param1=' + this.param1 + ' param2=' + this.param2 + ' channel=' + this.channel + ']';
+    string += ' param1=' + this.param1 + ' param2=' + this.param2 + ' channel=' + this.channel + ']';
 
     return string;
   }

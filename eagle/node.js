@@ -131,9 +131,9 @@ export class EagleNode {
 
     switch (tagName) {
       case 'schematic':
-        return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets']];
+        return [/*['settings'], ['layers'],['libraries'],*/ ['classes'], ['parts'], ['sheets']];
       case 'board':
-        return [['classes']];
+        return [['libraries'], ['classes']];
       //return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
       case 'module':
         return [['ports'], ['variantdefs'], ['parts'], ['sheets']];

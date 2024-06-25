@@ -36,12 +36,7 @@ function _typeof(obj) {
     };
   } else {
     _typeof = function _typeof(obj) {
-      return obj &&
-        typeof Symbol === 'function' &&
-        obj.constructor === Symbol &&
-        obj !== Symbol.prototype
-        ? 'symbol'
-        : typeof obj;
+      return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
     };
   }
   return _typeof(obj);
@@ -71,10 +66,7 @@ var ZINDEX = 9000,
   AUTOSCROLL_SPEED = [40, 200, 1000],
   AUTOSCROLL_SENSITIVITY = [100, 40, 0],
   // [/AUTO-SCROLL]
-  IS_EDGE =
-    '-ms-scroll-limit' in document.documentElement.style &&
-    '-ms-ime-align' in document.documentElement.style &&
-    !window.navigator.msPointerEnabled,
+  IS_EDGE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style && !window.navigator.msPointerEnabled,
   IS_TRIDENT = !IS_EDGE && !!document.uniqueID,
   // Future Edge might support `document.uniqueID`.
   IS_GECKO = 'MozAppearance' in document.documentElement.style,
@@ -99,10 +91,7 @@ var ZINDEX = 9000,
       return (
         obj &&
         toString.call(obj) === '[object Object]' &&
-        (!(proto = Object.getPrototypeOf(obj)) ||
-          ((constr = proto.hasOwnProperty('constructor') && proto.constructor) &&
-            typeof constr === 'function' &&
-            fnToString.call(constr) === objFnString))
+        (!(proto = Object.getPrototypeOf(obj)) || ((constr = proto.hasOwnProperty('constructor') && proto.constructor) && typeof constr === 'function' && fnToString.call(constr) === objFnString))
       );
     };
   })(),
@@ -129,9 +118,7 @@ var insId = 0,
   cssPropUserSelect,
   cssOrgValueBodyUserSelect,
   // Try to set `cursor` property.
-  cssWantedValueDraggableCursor = IS_WEBKIT
-    ? ['all-scroll', 'move']
-    : ['grab', 'all-scroll', 'move'],
+  cssWantedValueDraggableCursor = IS_WEBKIT ? ['all-scroll', 'move'] : ['grab', 'all-scroll', 'move'],
   cssWantedValueDraggingCursor = IS_WEBKIT ? 'move' : ['grabbing', 'move'],
   // class
   draggableClass = 'plain-draggable',
@@ -324,17 +311,8 @@ function getScrollable(element, isWindow, dontScroll) {
         'x',
         document.documentElement.scrollWidth +
           scrollable.clientWidth + // Blink for Android bug, scroll* returns size of smaller body
-          [
-            'marginLeft',
-            'marginRight',
-            'borderLeftWidth',
-            'borderRightWidth',
-            'paddingLeft',
-            'paddingRight'
-          ].reduce(function (len, prop) {
-            return (
-              len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0)
-            );
+          ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(function (len, prop) {
+            return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
           }, 0)
       );
       maxScrollTop = scrollXYWindow(
@@ -342,17 +320,8 @@ function getScrollable(element, isWindow, dontScroll) {
         'y',
         document.documentElement.scrollHeight +
           scrollable.clientHeight +
-          [
-            'marginTop',
-            'marginBottom',
-            'borderTopWidth',
-            'borderBottomWidth',
-            'paddingTop',
-            'paddingBottom'
-          ].reduce(function (len, prop) {
-            return (
-              len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0)
-            );
+          ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(function (len, prop) {
+            return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
           }, 0)
       );
       scrollXYWindow(element, 'x', curScrollLeft);
@@ -366,14 +335,7 @@ function getScrollable(element, isWindow, dontScroll) {
         'x',
         element.scrollWidth +
           scrollable.clientWidth + // Blink for Android bug, scroll* returns size of smaller body
-          [
-            'marginLeft',
-            'marginRight',
-            'borderLeftWidth',
-            'borderRightWidth',
-            'paddingLeft',
-            'paddingRight'
-          ].reduce(function (len, prop) {
+          ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(function (len, prop) {
             return len + (parseFloat(cmpStyleElement[prop]) || 0);
           }, 0)
       );
@@ -382,14 +344,7 @@ function getScrollable(element, isWindow, dontScroll) {
         'y',
         element.scrollHeight +
           scrollable.clientHeight +
-          [
-            'marginTop',
-            'marginBottom',
-            'borderTopWidth',
-            'borderBottomWidth',
-            'paddingTop',
-            'paddingBottom'
-          ].reduce(function (len, prop) {
+          ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(function (len, prop) {
             return len + (parseFloat(cmpStyleElement[prop]) || 0);
           }, 0)
       );
@@ -437,8 +392,7 @@ function hasChanged(a, b) {
   var typeA, keysA;
   return (
     _typeof(a) !== _typeof(b) ||
-    (typeA = isObject(a) ? 'obj' : Array.isArray(a) ? 'array' : '') !==
-      (isObject(b) ? 'obj' : Array.isArray(b) ? 'array' : '') ||
+    (typeA = isObject(a) ? 'obj' : Array.isArray(a) ? 'array' : '') !== (isObject(b) ? 'obj' : Array.isArray(b) ? 'array' : '') ||
     (typeA === 'obj'
       ? hasChanged((keysA = Object.keys(a).sort()), Object.keys(b).sort()) ||
         keysA.some(function (prop) {
@@ -556,9 +510,7 @@ function ppValue2OptionValue(ppValue) {
 }
 
 function resolvePPValue(ppValue, baseOrigin, baseSize) {
-  return typeof ppValue === 'number'
-    ? ppValue
-    : baseOrigin + ppValue.value * (ppValue.isRatio ? baseSize : 1);
+  return typeof ppValue === 'number' ? ppValue : baseOrigin + ppValue.value * (ppValue.isRatio ? baseSize : 1);
 }
 
 /**
@@ -641,11 +593,7 @@ function resolvePPBBox(ppBBox, baseBBox) {
     };
   return validBBox(
     Object.keys(ppBBox).reduce(function (bBox, prop) {
-      bBox[prop] = resolvePPValue(
-        ppBBox[prop],
-        prop === 'width' || prop === 'height' ? 0 : baseOriginXY[prop2Axis[prop]],
-        baseSizeXY[prop2Axis[prop]]
-      );
+      bBox[prop] = resolvePPValue(ppBBox[prop], prop === 'width' || prop === 'height' ? 0 : baseOriginXY[prop2Axis[prop]], baseSizeXY[prop2Axis[prop]]);
       return bBox;
     }, {})
   );
@@ -765,9 +713,7 @@ function moveTranslate(props, position) {
 
   if(position.left !== elementBBox.left || position.top !== elementBBox.top) {
     var offset = props.htmlOffset;
-    props.elementStyle[cssPropTransform] = 'translate('
-      .concat(position.left + offset.left, 'px, ')
-      .concat(position.top + offset.top, 'px)');
+    props.elementStyle[cssPropTransform] = 'translate('.concat(position.left + offset.left, 'px, ').concat(position.top + offset.top, 'px)');
     return true;
   }
 
@@ -814,15 +760,8 @@ function moveSvg(props, position) {
   if(position.left !== elementBBox.left || position.top !== elementBBox.top) {
     var offset = props.svgOffset,
       originBBox = props.svgOriginBBox,
-      point = viewPoint2SvgPoint(
-        props,
-        position.left - window.pageXOffset,
-        position.top - window.pageYOffset
-      );
-    props.svgTransform.setTranslate(
-      point.x + offset.x - originBBox.x,
-      point.y + offset.y - originBBox.y
-    );
+      point = viewPoint2SvgPoint(props, position.left - window.pageXOffset, position.top - window.pageYOffset);
+    props.svgTransform.setTranslate(point.x + offset.x - originBBox.x, point.y + offset.y - originBBox.y);
     return true;
   }
 
@@ -941,9 +880,7 @@ function initTranslate(props) {
   }); // avoid `-0`
   // Restore position
 
-  elementStyle[cssPropTransform] = 'translate('
-    .concat(curPosition.left + offset.left, 'px, ')
-    .concat(curPosition.top + offset.top, 'px)'); // Restore size
+  elementStyle[cssPropTransform] = 'translate('.concat(curPosition.left + offset.left, 'px, ').concat(curPosition.top + offset.top, 'px)'); // Restore size
 
   ['width', 'height'].forEach(function (prop) {
     if(newBBox[prop] !== orgSize[prop]) {
@@ -968,9 +905,7 @@ function initTranslate(props) {
 
   if(fixPosition.left !== curPosition.left || fixPosition.top !== curPosition.top) {
     // It seems that it is moving.
-    elementStyle[cssPropTransform] = 'translate('
-      .concat(fixPosition.left + offset.left, 'px, ')
-      .concat(fixPosition.top + offset.top, 'px)');
+    elementStyle[cssPropTransform] = 'translate('.concat(fixPosition.left + offset.left, 'px, ').concat(fixPosition.top + offset.top, 'px)');
   }
 
   return fixPosition;
@@ -987,15 +922,7 @@ function initLeftTop(props) {
     elementStyle = props.elementStyle,
     curPosition = getBBox(element),
     // Get BBox before change style.
-    RESTORE_PROPS = [
-      'position',
-      'marginTop',
-      'marginRight',
-      'marginBottom',
-      'marginLeft',
-      'width',
-      'height'
-    ]; // Reset `transition-property` every time because it might be changed frequently.
+    RESTORE_PROPS = ['position', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'width', 'height']; // Reset `transition-property` every time because it might be changed frequently.
 
   var orgTransitionProperty = elementStyle[cssPropTransitionProperty];
   elementStyle[cssPropTransitionProperty] = 'none'; // Disable animation
@@ -1086,10 +1013,7 @@ function initSvg(props) {
     }),
     // Restore position
     curPoint = viewPoint2SvgPoint(props, curRect.left, curRect.top);
-  svgTransform.setTranslate(
-    curPoint.x + offset.x - originBBox.x,
-    curPoint.y + offset.y - originBBox.y
-  );
+  svgTransform.setTranslate(curPoint.x + offset.x - originBBox.x, curPoint.y + offset.y - originBBox.y);
   return fixPosition;
 } // [/SVG]
 
@@ -1105,9 +1029,7 @@ function initBBox(props, eventType) {
   var docBBox = getBBox(document.documentElement),
     elementBBox = (props.elementBBox = props.initElm(props)),
     // reset offset etc.
-    containmentBBox = (props.containmentBBox = props.containmentIsBBox
-      ? resolvePPBBox(props.options.containment, docBBox) || docBBox
-      : getBBox(props.options.containment, true));
+    containmentBBox = (props.containmentBBox = props.containmentIsBBox ? resolvePPBBox(props.options.containment, docBBox) || docBBox : getBBox(props.options.containment, true));
   props.minLeft = containmentBBox.left;
   props.maxLeft = containmentBBox.right - elementBBox.width;
   props.minTop = containmentBBox.top;
@@ -1249,19 +1171,9 @@ function initBBox(props, eventType) {
               gravitySpecEndProp = 'gravity'.concat(specAxisL, 'End'),
               gravityRangeStartProp = 'gravity'.concat(rangeAxisL, 'Start'),
               gravityRangeEndProp = 'gravity'.concat(rangeAxisL, 'End');
-            targetXY[specAxis] = resolvePPValue(
-              targetXY[specAxis],
-              baseOriginXY[specAxis],
-              baseSizeXY[specAxis]
-            );
-            targetXY[startProp] = resolvePPValue(
-              targetXY[startProp],
-              baseOriginXY[rangeAxis],
-              baseSizeXY[rangeAxis]
-            );
-            targetXY[endProp] =
-              resolvePPValue(targetXY[endProp], baseOriginXY[rangeAxis], baseSizeXY[rangeAxis]) -
-              elementSizeXY[rangeAxis]; // Reduce the end of the line.
+            targetXY[specAxis] = resolvePPValue(targetXY[specAxis], baseOriginXY[specAxis], baseSizeXY[specAxis]);
+            targetXY[startProp] = resolvePPValue(targetXY[startProp], baseOriginXY[rangeAxis], baseSizeXY[rangeAxis]);
+            targetXY[endProp] = resolvePPValue(targetXY[endProp], baseOriginXY[rangeAxis], baseSizeXY[rangeAxis]) - elementSizeXY[rangeAxis]; // Reduce the end of the line.
 
             if(
               targetXY[startProp] > targetXY[endProp] || // Smaller than element size.
@@ -1371,21 +1283,13 @@ function initBBox(props, eventType) {
           }
         } else {
           var expanded = [
-            ['x', 'y', 'xStart', 'xEnd', 'xStep', 'yStart', 'yEnd', 'yStep'].reduce(function (
-              targetXY,
-              prop
-            ) {
+            ['x', 'y', 'xStart', 'xEnd', 'xStep', 'yStart', 'yEnd', 'yStep'].reduce(function (targetXY, prop) {
               if(parsedSnapTarget[prop]) {
-                targetXY[prop] = resolvePPValue(
-                  parsedSnapTarget[prop],
-                  prop === 'xStep' || prop === 'yStep' ? 0 : baseOriginXY[prop2Axis[prop]],
-                  baseSizeXY[prop2Axis[prop]]
-                );
+                targetXY[prop] = resolvePPValue(parsedSnapTarget[prop], prop === 'xStep' || prop === 'yStep' ? 0 : baseOriginXY[prop2Axis[prop]], baseSizeXY[prop2Axis[prop]]);
               }
 
               return targetXY;
-            },
-            {})
+            }, {})
           ];
           ['x', 'y'].forEach(function (axis) {
             var startProp = ''.concat(axis, 'Start'),
@@ -1474,9 +1378,7 @@ function initBBox(props, eventType) {
         forward = axis[3],
         maxAbs = (autoScroll['scroll'.concat(wh)] || 0) - scrollable['client'.concat(wh)],
         min = autoScrollOptions['min'.concat(xy)] || 0;
-      var max = isFinite(autoScrollOptions['max'.concat(xy)])
-        ? autoScrollOptions['max'.concat(xy)]
-        : maxAbs;
+      var max = isFinite(autoScrollOptions['max'.concat(xy)]) ? autoScrollOptions['max'.concat(xy)] : maxAbs;
 
       if(min < max && min < maxAbs) {
         if(max > maxAbs) {
@@ -1676,9 +1578,7 @@ function _setOptions(props, newOptions) {
 
   function commonSnapOptions(options, newOptions) {
     function cleanString(inString) {
-      return typeof inString === 'string'
-        ? inString.replace(/[, ]+/g, ' ').trim().toLowerCase()
-        : null;
+      return typeof inString === 'string' ? inString.replace(/[, ]+/g, ' ').trim().toLowerCase() : null;
     } // gravity
 
     if(isFinite(newOptions.gravity) && newOptions.gravity > 0) {
@@ -1695,15 +1595,7 @@ function _setOptions(props, newOptions) {
 
             if(
               (corner =
-                corner === 'tl' || corner === 'lt'
-                  ? 'tl'
-                  : corner === 'tr' || corner === 'rt'
-                  ? 'tr'
-                  : corner === 'bl' || corner === 'lb'
-                  ? 'bl'
-                  : corner === 'br' || corner === 'rb'
-                  ? 'br'
-                  : null) &&
+                corner === 'tl' || corner === 'lt' ? 'tl' : corner === 'tr' || corner === 'rt' ? 'tr' : corner === 'bl' || corner === 'lb' ? 'bl' : corner === 'br' || corner === 'rb' ? 'br' : null) &&
               !added[corner]
             ) {
               corners.push(corner);
@@ -1793,9 +1685,7 @@ function _setOptions(props, newOptions) {
       snapOptions.base = SNAP_BASE;
     }
 
-    var parsedSnapTargets = (
-      Array.isArray(newSnapOptions.targets) ? newSnapOptions.targets : [newSnapOptions.targets]
-    ).reduce(function (parsedSnapTargets, target) {
+    var parsedSnapTargets = (Array.isArray(newSnapOptions.targets) ? newSnapOptions.targets : [newSnapOptions.targets]).reduce(function (parsedSnapTargets, target) {
       if(target == null) {
         return parsedSnapTargets;
       }
@@ -1928,10 +1818,7 @@ function _setOptions(props, newOptions) {
           commonOptions = {
             gravity: snapTargetOptions.gravity || snapOptions.gravity,
             base: snapTargetOptions.base || snapOptions.base,
-            center:
-              typeof snapTargetOptions.center === 'boolean'
-                ? snapTargetOptions.center
-                : snapOptions.center,
+            center: typeof snapTargetOptions.center === 'boolean' ? snapTargetOptions.center : snapOptions.center,
             corners: corner === 'all' ? SNAP_ALL_CORNERS : corner.split(' '),
             // Split
             sides: side === 'both' ? SNAP_ALL_SIDES : [side],
@@ -1983,15 +1870,10 @@ function _setOptions(props, newOptions) {
           },
       autoScrollOptions = {}; // target
 
-    autoScrollOptions.target = isElement(newAutoScrollOptions.target)
-      ? newAutoScrollOptions.target
-      : window; // speed
+    autoScrollOptions.target = isElement(newAutoScrollOptions.target) ? newAutoScrollOptions.target : window; // speed
 
     autoScrollOptions.speed = [];
-    (Array.isArray(newAutoScrollOptions.speed)
-      ? newAutoScrollOptions.speed
-      : [newAutoScrollOptions.speed]
-    ).every(function (speed, i) {
+    (Array.isArray(newAutoScrollOptions.speed) ? newAutoScrollOptions.speed : [newAutoScrollOptions.speed]).every(function (speed, i) {
       if(i <= 2 && isFinite(speed)) {
         autoScrollOptions.speed[i] = speed;
         return true;
@@ -2004,9 +1886,7 @@ function _setOptions(props, newOptions) {
       autoScrollOptions.speed = AUTOSCROLL_SPEED;
     } // sensitivity
 
-    var newSensitivity = Array.isArray(newAutoScrollOptions.sensitivity)
-      ? newAutoScrollOptions.sensitivity
-      : [newAutoScrollOptions.sensitivity];
+    var newSensitivity = Array.isArray(newAutoScrollOptions.sensitivity) ? newAutoScrollOptions.sensitivity : [newAutoScrollOptions.sensitivity];
     autoScrollOptions.sensitivity = autoScrollOptions.speed.map(function (v, i) {
       return isFinite(newSensitivity[i]) ? newSensitivity[i] : AUTOSCROLL_SENSITIVITY[i];
     }); // min*, max*
@@ -2019,12 +1899,7 @@ function _setOptions(props, newOptions) {
         autoScrollOptions[optionMin] = newAutoScrollOptions[optionMin];
       }
 
-      if(
-        isFinite(newAutoScrollOptions[optionMax]) &&
-        newAutoScrollOptions[optionMax] >= 0 &&
-        (!autoScrollOptions[optionMin] ||
-          newAutoScrollOptions[optionMax] >= autoScrollOptions[optionMin])
-      ) {
+      if(isFinite(newAutoScrollOptions[optionMax]) && newAutoScrollOptions[optionMax] >= 0 && (!autoScrollOptions[optionMin] || newAutoScrollOptions[optionMax] >= autoScrollOptions[optionMin])) {
         autoScrollOptions[optionMax] = newAutoScrollOptions[optionMax];
       }
     });
@@ -2158,9 +2033,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
       props.svgPoint = ownerSvg.createSVGPoint(); // Gecko bug, view.getScreenCTM returns CTM with root view.
 
       var svgView = element.nearestViewportElement;
-      props.svgCtmElement = !IS_GECKO
-        ? svgView
-        : svgView.appendChild(document.createElementNS(ownerSvg.namespaceURI, 'rect'));
+      props.svgCtmElement = !IS_GECKO ? svgView : svgView.appendChild(document.createElementNS(ownerSvg.namespaceURI, 'rect'));
       gpuTrigger = false;
       props.initElm = initSvg;
       props.moveElm = moveSvg;
@@ -2236,9 +2109,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
           var props = insProps[this._id];
           this.disabled = true; // To restore element and reset pointer
 
-          pointerEvent.unregStartHandler(
-            pointerEvent.removeStartHandler(props.options.handle, props.pointerEventHandlerId)
-          );
+          pointerEvent.unregStartHandler(pointerEvent.removeStartHandler(props.options.handle, props.pointerEventHandlerId));
           delete insProps[this._id];
         }
         /**
@@ -2340,9 +2211,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         key: 'containment',
         get: function get() {
           var props = insProps[this._id];
-          return props.containmentIsBBox
-            ? ppBBox2OptionObject(props.options.containment)
-            : props.options.containment;
+          return props.containmentIsBBox ? ppBBox2OptionObject(props.options.containment) : props.options.containment;
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
@@ -2655,9 +2524,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
           var min = autoScroll[axis].min,
             max = autoScroll[axis].max;
           autoScroll[axis].lines.some(function (line) {
-            if(
-              line.dir === -1 ? clientXY[axis] <= line.position : clientXY[axis] >= line.position
-            ) {
+            if(line.dir === -1 ? clientXY[axis] <= line.position : clientXY[axis] >= line.position) {
               xyMoveArgs[axis] = {
                 dir: line.dir,
                 speed: line.speed / 1000,
@@ -2674,11 +2541,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
     }
 
     if(xyMoveArgs.x || xyMoveArgs.y) {
-      scrollFrame.move(
-        autoScroll.target,
-        xyMoveArgs,
-        autoScroll.isWindow ? scrollXYWindow : scrollXYElement
-      );
+      scrollFrame.move(autoScroll.target, xyMoveArgs, autoScroll.isWindow ? scrollXYWindow : scrollXYElement);
       position.autoScroll = true;
     } else {
       scrollFrame.stop();

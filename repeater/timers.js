@@ -58,9 +58,7 @@ function delay(wait) {
         const timer = new Timer(wait);
         timers.add(timer);
         if(timers.size > MAX_QUEUE_LENGTH) {
-          throw new RepeaterOverflowError(
-            `No more than ${MAX_QUEUE_LENGTH} calls to next are allowed on a single delay repeater.`
-          );
+          throw new RepeaterOverflowError(`No more than ${MAX_QUEUE_LENGTH} calls to next are allowed on a single delay repeater.`);
         }
         timer.run(() => {
           timers.delete(timer);

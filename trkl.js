@@ -118,11 +118,7 @@ trkl.from = function(executor) {
   return self;
 };
 
-trkl.property = function(
-  object,
-  name,
-  options = { enumerable: true, configurable: true, deletable: false }
-) {
+trkl.property = function(object, name, options = { enumerable: true, configurable: true, deletable: false }) {
   const { value, ...opts } = options;
   let self = trkl(value);
   Object.defineProperty(object, name, {

@@ -4,17 +4,7 @@ const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 Path.prototype = Object.assign([], {
   constructor: Path,
   [inspectSymbol]() {
-    return (
-      [...this]
-        .map(part =>
-          typeof part == 'number'
-            ? `\x1b[0;33m${part}`
-            : typeof part == 'string'
-            ? `\x1b[38;5;241m${part}`
-            : part
-        )
-        .join(`\x1b[1;36m.`) + '\x1b[0m'
-    );
+    return [...this].map(part => (typeof part == 'number' ? `\x1b[0;33m${part}` : typeof part == 'string' ? `\x1b[38;5;241m${part}` : part)).join(`\x1b[1;36m.`) + '\x1b[0m';
   },
   toString() {
     return Array.prototype.join.call(this, Tree.PATH_SEPARATOR);
@@ -244,12 +234,7 @@ Tree.prototype.create = function(path) {
     this.root = {};
   }
 
-  let parent =
-    path.length < 1
-      ? this
-      : path.length < 2
-      ? this.root
-      : Tree.prototype.create.call(this, path.slice(0, -1));
+  let parent = path.length < 1 ? this : path.length < 2 ? this.root : Tree.prototype.create.call(this, path.slice(0, -1));
   let current = path.length < 1 ? 'root' : path[path.length - 1];
 
   if(parent[current] === undefined) {
@@ -287,8 +272,7 @@ Tree.prototype.each = function* (node, reduce = (acc, node) => [...acc, node], a
 
   yield [node, (acc = reduce(acc, node))];
   for(let key in node) {
-    if(typeof node[key] == 'object' && node[key] !== null)
-      yield* Tree.prototype.each.call(this, node[key], reduce, acc);
+    if(typeof node[key] == 'object' && node[key] !== null) yield* Tree.prototype.each.call(this, node[key], reduce, acc);
   }
 };
 Tree.prototype[Symbol.iterator] = function() {
@@ -339,19 +323,12 @@ function Path(a) {
 }
 
 function isPath(arg) {
-  return (
-    typeof arg == 'string' ||
-    (typeof arg == 'object' && arg != null && typeof arg.length == 'number')
-  );
+  return typeof arg == 'string' || (typeof arg == 'object' && arg != null && typeof arg.length == 'number');
 }
 
 Object.defineProperty(Array, Symbol.hasInstance, {
   value(instance) {
-    return (
-      typeof instance == 'object' &&
-      instance != null &&
-      (instance.constructor === Array || instance.constructor === Path)
-    );
+    return typeof instance == 'object' && instance != null && (instance.constructor === Array || instance.constructor === Path);
     return Array.isArray(instance);
   }
 });
@@ -436,14 +413,11 @@ function keyAt(obj, index) {
 
 function entries(obj) {
   //console.log('entries obj:', obj);
-  return obj instanceof Array
-    ? Array.prototype.entries.call(obj)
-    : Object.getOwnPropertyNames(obj).map(prop => [prop, obj[prop]]);
+  return obj instanceof Array ? Array.prototype.entries.call(obj) : Object.getOwnPropertyNames(obj).map(prop => [prop, obj[prop]]);
 }
 
 function keys(obj) {
-  if(typeof obj == 'object' && obj != null)
-    return obj instanceof Array ? Array.prototype.keys.call(obj) : Object.getOwnPropertyNames(obj);
+  if(typeof obj == 'object' && obj != null) return obj instanceof Array ? Array.prototype.keys.call(obj) : Object.getOwnPropertyNames(obj);
   return [];
 }
 
@@ -459,8 +433,7 @@ function indexOf(obj, prop) {
 }
 
 function splice(obj, start, deleteCount, ...addItems) {
-  if(obj instanceof Array)
-    return Array.prototype.splice.call(obj, start, deleteCount, ...addItems);
+  if(obj instanceof Array) return Array.prototype.splice.call(obj, start, deleteCount, ...addItems);
   // console.log('splice', { obj, start, deleteCount, addItems });
   let remove = [...entries(obj)].slice(start, start + deleteCount);
   //console.log('splice', { remove });
@@ -508,8 +481,7 @@ function find(iter, pred) {
 
 function mapRecurse(callback, node, ...children) {
   for(let child of children) {
-    if(typeof item == 'object' && item !== null)
-      for(let args of walk(item, node)) callback(...args);
+    if(typeof item == 'object' && item !== null) for(let args of walk(item, node)) callback(...args);
   }
   return children;
 }

@@ -107,24 +107,7 @@ export function copy(out, a) {
  * @param {Number} m33 Component in column 3, row 3 position (index 15)
  * @returns {mat4} A new mat4
  */
-export function fromValues(
-  m00,
-  m01,
-  m02,
-  m03,
-  m10,
-  m11,
-  m12,
-  m13,
-  m20,
-  m21,
-  m22,
-  m23,
-  m30,
-  m31,
-  m32,
-  m33
-) {
+export function fromValues(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
   let out = new glMatrix.ARRAY_TYPE(16);
   out[0] = m00;
   out[1] = m01;
@@ -167,25 +150,7 @@ export function fromValues(
  * @param {Number} m33 Component in column 3, row 3 position (index 15)
  * @returns {mat4} out
  */
-export function set(
-  out,
-  m00,
-  m01,
-  m02,
-  m03,
-  m10,
-  m11,
-  m12,
-  m13,
-  m20,
-  m21,
-  m22,
-  m23,
-  m30,
-  m31,
-  m32,
-  m33
-) {
+export function set(out, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
   out[0] = m00;
   out[1] = m01;
   out[2] = m02;
@@ -1747,11 +1712,7 @@ export function lookAt(out, eye, center, up) {
   let centery = center[1];
   let centerz = center[2];
 
-  if(
-    Math.abs(eyex - centerx) < glMatrix.EPSILON &&
-    Math.abs(eyey - centery) < glMatrix.EPSILON &&
-    Math.abs(eyez - centerz) < glMatrix.EPSILON
-  ) {
+  if(Math.abs(eyex - centerx) < glMatrix.EPSILON && Math.abs(eyey - centery) < glMatrix.EPSILON && Math.abs(eyez - centerz) < glMatrix.EPSILON) {
     return identity(out);
   }
 

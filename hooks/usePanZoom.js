@@ -156,10 +156,7 @@ export const usePanZoom = ({
           const { pageX, pageY, deltaY } = event;
           const pointerPosition = _.getPositionOnElement(container.current)(pageX, pageY);
 
-          let newVal = setZoom(
-            zoom => zoom * Math.pow(1 - zoomSensitivity, deltaY),
-            pointerPosition
-          );
+          let newVal = setZoom(zoom => zoom * Math.pow(1 - zoomSensitivity, deltaY), pointerPosition);
 
           onZoom(newVal);
         } else {
@@ -222,10 +219,8 @@ export const usePanZoom = ({
     }
   }, []);
 
-  const onTouchStart = ({ touches }) =>
-    startPanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
-  const onTouchMove = ({ touches }) =>
-    movePanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
+  const onTouchStart = ({ touches }) => startPanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
+  const onTouchMove = ({ touches }) => movePanZoom([...touches].map(({ pageX, pageY }) => ({ x: pageX, y: pageY })));
   const onTouchEnd = () => endPanZoom();
   const onTouchCancel = () => endPanZoom();
   const onMouseDown = ({ pageX, pageY }) => startPanZoom([{ x: pageX, y: pageY }]);

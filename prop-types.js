@@ -9,9 +9,7 @@ function shim(props, propName, componentName, location, propFullName, secret) {
     return;
   }
   let err = new Error(
-    'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
-      'Use PropTypes.checkPropTypes() to call them. ' +
-      'Read more at http://fb.me/use-check-prop-types'
+    'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types'
   );
   err.name = 'Invariant Violation';
   throw err;
@@ -74,14 +72,7 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
             err.name = 'Invariant Violation';
             throw err;
           }
-          error = typeSpecs[typeSpecName](
-            values,
-            typeSpecName,
-            componentName,
-            location,
-            null,
-            ReactPropTypesSecret
-          );
+          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
         } catch(ex) {
           error = ex;
         }
@@ -106,9 +97,7 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
 
           let stack = getStack ? getStack() : '';
 
-          printWarning(
-            'Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
-          );
+          printWarning('Failed ' + location + ' type: ' + error.message + (stack != null ? stack : ''));
         }
       }
     }

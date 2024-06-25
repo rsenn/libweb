@@ -36,8 +36,7 @@ export function useIterator(iterator) {
   var return_ = useCallback(
     function(value) {
       var _a;
-      var res =
-        (_a = iterator.return) === null || _a === void 0 ? void 0 : _a.call(iterator, value);
+      var res = (_a = iterator.return) === null || _a === void 0 ? void 0 : _a.call(iterator, value);
       if(res == null) return;
       dispatch(res);
     },

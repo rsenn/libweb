@@ -283,9 +283,7 @@ export function determinant(a) {
     a21 = a[7],
     a22 = a[8];
 
-  return (
-    a00 * (a22 * a11 - a12 * a21) + a01 * (-a22 * a10 + a12 * a20) + a02 * (a21 * a10 - a11 * a20)
-  );
+  return a00 * (a22 * a11 - a12 * a21) + a01 * (-a22 * a10 + a12 * a20) + a02 * (a21 * a10 - a11 * a20);
 }
 
 /**
@@ -660,27 +658,7 @@ export function projection(out, width, height) {
  * @returns {String} string representation of the matrix
  */
 export function str(a) {
-  return (
-    'mat3(' +
-    a[0] +
-    ', ' +
-    a[1] +
-    ', ' +
-    a[2] +
-    ', ' +
-    a[3] +
-    ', ' +
-    a[4] +
-    ', ' +
-    a[5] +
-    ', ' +
-    a[6] +
-    ', ' +
-    a[7] +
-    ', ' +
-    a[8] +
-    ')'
-  );
+  return 'mat3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ', ' + a[8] + ')';
 }
 
 /**
@@ -690,17 +668,7 @@ export function str(a) {
  * @returns {Number} Frobenius norm
  */
 export function frob(a) {
-  return Math.sqrt(
-    a[0] * a[0] +
-      a[1] * a[1] +
-      a[2] * a[2] +
-      a[3] * a[3] +
-      a[4] * a[4] +
-      a[5] * a[5] +
-      a[6] * a[6] +
-      a[7] * a[7] +
-      a[8] * a[8]
-  );
+  return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3] + a[4] * a[4] + a[5] * a[5] + a[6] * a[6] + a[7] * a[7] + a[8] * a[8]);
 }
 
 /**
@@ -796,17 +764,7 @@ export function multiplyScalarAndAdd(out, a, b, scale) {
  * @returns {Boolean} True if the matrices are equal, false otherwise.
  */
 export function exactEquals(a, b) {
-  return (
-    a[0] === b[0] &&
-    a[1] === b[1] &&
-    a[2] === b[2] &&
-    a[3] === b[3] &&
-    a[4] === b[4] &&
-    a[5] === b[5] &&
-    a[6] === b[6] &&
-    a[7] === b[7] &&
-    a[8] === b[8]
-  );
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8];
 }
 
 /**

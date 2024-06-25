@@ -148,6 +148,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
   renderNet(net, parent) {
     this.debug(`SchematicRenderer.renderNet`, { net, parent });
     let g = this.create('g', { className: `net ${net.name}` }, parent);
+
     for(let segment of net.children)
       this.renderCollection(segment.children, g, {
         labelText: net.name,
@@ -162,6 +163,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.renderSheet`, sheet);
     let netsGroup = this.create('g', { className: 'nets', transform, 'font-family': 'Fixed', 'font-size': 0.6 }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform, 'font-family': 'Fixed', 'font-size': 0.6 }, parent);
+
     instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data, opts: { transformation: transform } }));
 
     for(let net of sheet.nets ?? []) this.renderNet(net, netsGroup);
@@ -170,7 +172,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
     this.debug('SchematicRenderer.render', { doc, parent, props, sheetNo });
 
-    let sheet = doc.sheets[sheetNo];
+    let sheet = doc.getSheet(sheetNo) ?? doc.sheets[sheetNo];
 
     let bounds = doc.getBounds(sheetNo || 0);
     let rect = bounds.toRect(Rect.prototype);
