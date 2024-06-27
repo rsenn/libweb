@@ -31,9 +31,7 @@ export const proxyClone = obj => {
     getOwnPropertyDescriptor: (target, name) => {
       let desc;
       if(!deleted[name]) {
-        desc =
-          Object.getOwnPropertyDescriptor(override, name) ||
-          Object.getOwnPropertyDescriptor(obj, name);
+        desc = Object.getOwnPropertyDescriptor(override, name) || Object.getOwnPropertyDescriptor(obj, name);
       }
       if(desc) desc.configurable = true;
       debug(`getOwnPropertyDescriptor ${name} =`, desc);

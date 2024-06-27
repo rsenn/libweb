@@ -343,8 +343,7 @@ export default class LayerSwitcher extends Control {
         lastVisibleBaseLyr = lyr;
       }
     });
-    if(lastVisibleBaseLyr)
-      LayerSwitcher.setVisible_(map, lastVisibleBaseLyr, true, groupSelectStyle);
+    if(lastVisibleBaseLyr) LayerSwitcher.setVisible_(map, lastVisibleBaseLyr, true, groupSelectStyle);
   }
   /**
    * **_[static]_** - Get an Array of all layers and groups displayed by the LayerSwitcher (has a `'title'` property)
@@ -580,9 +579,7 @@ export default class LayerSwitcher extends Control {
    * @protected
    */
   static getGroupSelectStyle(groupSelectStyle) {
-    return ['none', 'children', 'group'].indexOf(groupSelectStyle) >= 0
-      ? groupSelectStyle
-      : 'children';
+    return ['none', 'children', 'group'].indexOf(groupSelectStyle) >= 0 ? groupSelectStyle : 'children';
   }
 }
 

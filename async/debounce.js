@@ -64,12 +64,7 @@ export function debounceAsync(fn, wait = 0, options = {}) {
     const currentWait = getWait(wait);
     const currentTime = new Date().getTime();
     const isCold = !lastCallAt || currentTime - lastCallAt > currentWait;
-    console.debug(`debounceAsync handler`, {
-      lastCallAt,
-      currentWait,
-      currentTime,
-      isCold
-    });
+    //console.debug(`debounceAsync handler`, { lastCallAt, currentWait, currentTime, isCold });
     lastCallAt = currentTime;
     if(isCold && options.leading) return options.accumulate ? Promise.resolve(callFn(this, [args])).then(result => result[0]) : Promise.resolve(callFn(this, args));
 

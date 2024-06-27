@@ -134,7 +134,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       layers = {},
       wireObj = {};
 
-    const { tPlace } = this.layers;
+    const { tPlace } = this.layers || {};
 
     for(let item of coll) {
       if(item.tagName === 'wire') {
@@ -322,9 +322,11 @@ export class BoardRenderer extends EagleSVGRenderer {
     //  const { bounds, rect } = this;
     rect = this.rect;
 
-    this.transform.unshift(new Translation(0, rect.height));
+    if(this?.transform?.unshift && rect) {
+      this.transform.unshift(new Translation(0, rect.height));
 
-    if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
+      if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
+    }
 
     this.debug(`BoardRenderer.render`, { bounds, rect, transform });
 
@@ -337,17 +339,21 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
 
-    for(let element of this.elements.list) {
-      //this.create(Element, element,  elementsGroup);
-      this.renderElement(element, elementsGroup);
-    }
+    try {
+      for(let element of this.elements.list) {
+        //this.create(Element, element,  elementsGroup);
+        this.renderElement(element, elementsGroup);
+      }
+    } catch(e) {}
 
-    let plain = [...doc.plain];
+    let plain = [...(doc.plain?.children ?? doc.plain)];
 
     this.renderCollection(plain, plainGroup);
 
     this.bounds = bounds;
-    this.rect = bounds.rect;
+
+    if(bounds?.rect) this.rect = bounds.rect;
+
     return parent;
   }
 }

@@ -66,9 +66,7 @@ export class WebSocketClient {
 
     if(!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
 
-    let receivePromise = new Promise((resolve, reject) =>
-      this.receiveCallbacksQueue.push({ resolve, reject })
-    );
+    let receivePromise = new Promise((resolve, reject) => this.receiveCallbacksQueue.push({ resolve, reject }));
 
     return receivePromise;
   }
@@ -126,8 +124,7 @@ export class WebSocketClient {
           //Whenever a close event fires, the socket is effectively dead.
           //It's impossible for more messages to arrive.
           //If there are any promises waiting for messages, reject them.
-          while(this.receiveCallbacksQueue.length !== 0)
-            this.receiveCallbacksQueue.shift().reject(this.closeEvent);
+          while(this.receiveCallbacksQueue.length !== 0) this.receiveCallbacksQueue.shift().reject(this.closeEvent);
         });
         resolve();
       };

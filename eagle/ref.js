@@ -56,7 +56,7 @@ export class EagleReference {
     if(path.length === 0) return root;
 
     try {
-      r = (isObject(root) && 'owner' in root && path.deref(root.owner, true)) || path.deref(root);
+      r = (isObject(root) && 'owner' in root && path.deref(root.owner, false)) || path.deref(root, false);
     } catch(err) {
       if(!noThrow) throw err;
       //console.log('err:', err.message, err.stack);

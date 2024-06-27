@@ -314,8 +314,7 @@ class DynamicArrayBufferView {
     return new DynamicArrayBufferView(this._buffer.subarray(start, end));
   }
   repeat(count) {
-    if(count < 0 || !Number.isFinite(count))
-      throw new RangeError('Count must be in range [ 0, +∞[');
+    if(count < 0 || !Number.isFinite(count)) throw new RangeError('Count must be in range [ 0, +∞[');
     const buffer = new this.type(this.length * count);
     let k = 0;
     for(let i = 0; i < count; i++) {
@@ -507,13 +506,7 @@ class DynamicArrayBufferView {
     for(let i = this._start, l = this._start + offset, o = startMargin - this._start; i < l; i++) {
       _buffer[i + o] = this._buffer[i];
     }
-    for(
-      let i = this._start + offset - Math.min(shift, 0),
-        l = this._start + oldLength,
-        o = startMargin + shift - this._start;
-      i < l;
-      i++
-    ) {
+    for(let i = this._start + offset - Math.min(shift, 0), l = this._start + oldLength, o = startMargin + shift - this._start; i < l; i++) {
       _buffer[i + o] = this._buffer[i];
     }
     if(fillWith !== null) {
@@ -654,8 +647,7 @@ class StringView extends DynamicArrayBufferView {
     return this._bytesPerChar;
   }
   set bytesPerChar(bytesPerChar) {
-    if(bytesPerChar < this._bytesPerChar)
-      throw new RangeError("bytesPerChar can't be lower than previous value.");
+    if(bytesPerChar < this._bytesPerChar) throw new RangeError("bytesPerChar can't be lower than previous value.");
     this.set(new (BytesPerCharToTypedArray(bytesPerChar))(this._buffer));
   }
   set(input, bytesPerChar) {
@@ -672,9 +664,7 @@ class StringView extends DynamicArrayBufferView {
       const char = this.charAt(index, 'number');
       return char === DynamicArrayBufferView.OOR ? '' : String.fromCodePoint(char);
     } else if(returnType === 'number') {
-      return 0 <= index && index < this.length
-        ? this._buffer[this._start + index]
-        : DynamicArrayBufferView.OOR;
+      return 0 <= index && index < this.length ? this._buffer[this._start + index] : DynamicArrayBufferView.OOR;
     } else {
       throw new TypeError('Invalid returnType value');
     }
@@ -946,9 +936,7 @@ class StringView extends DynamicArrayBufferView {
   }
 }
 StringView.trimChars = new Uint16Array([
-  0x0020, 0x000c, 0x000a, 0x000d, 0x0009, 0x000b, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003,
-  0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x2028, 0x2029, 0x202f, 0x205f, 0x3000,
-  0xfeff
+  0x0020, 0x000c, 0x000a, 0x000d, 0x0009, 0x000b, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x2028, 0x2029, 0x202f, 0x205f, 0x3000, 0xfeff
 ]);
 
 class CodePoint {
@@ -956,29 +944,19 @@ class CodePoint {
     if(typeof input === 'string') {
       input = new StringView(input);
     }
-    return (
-      input.length === 2 &&
-      CodePoint.isASCIIAlpha(input.charAt(0)) &&
-      (input.charAt(1) === 0x003a || input.charAt(1) === 0x007c)
-    );
+    return input.length === 2 && CodePoint.isASCIIAlpha(input.charAt(0)) && (input.charAt(1) === 0x003a || input.charAt(1) === 0x007c);
   }
   static isNormalizedWindowsDriveLetter(input) {
     if(typeof input === 'string') {
       input = new StringView(input);
     }
-    return (
-      input.length === 2 && CodePoint.isASCIIAlpha(input.charAt(0)) && input.charAt(1) === 0x003a
-    );
+    return input.length === 2 && CodePoint.isASCIIAlpha(input.charAt(0)) && input.charAt(1) === 0x003a;
   }
   static startsWithAWindowsDriveLetter(input) {
     if(typeof input === 'string') {
       input = new StringView(input);
     }
-    return (
-      CodePoint.isASCIIAlpha(input.charAt(0)) &&
-      (input.charAt(1) === 0x003a || input.charAt(1) === 0x007c) &&
-      (input.length === 2 || [0x002f, 0x005c, 0x003f, 0x0023].includes(input.charAt(2)))
-    );
+    return CodePoint.isASCIIAlpha(input.charAt(0)) && (input.charAt(1) === 0x003a || input.charAt(1) === 0x007c) && (input.length === 2 || [0x002f, 0x005c, 0x003f, 0x0023].includes(input.charAt(2)));
   }
   static isSingleDotPathSegment(input) {
     if(typeof input !== 'string') {
@@ -995,20 +973,14 @@ class CodePoint {
   static isURLCodePoint(char) {
     return (
       (CodePoint.isASCIIAlphanumeric(char) ||
-        [
-          0x0021, 0x0024, 0x0026, 0x0027, 0x0028, 0x0029, 0x002a, 0x002b, 0x002c, 0x002d, 0x002e,
-          0x002f, 0x003a, 0x003b, 0x003d, 0x003f, 0x0040, 0x005f, 0x007e
-        ].includes(char) ||
+        [0x0021, 0x0024, 0x0026, 0x0027, 0x0028, 0x0029, 0x002a, 0x002b, 0x002c, 0x002d, 0x002e, 0x002f, 0x003a, 0x003b, 0x003d, 0x003f, 0x0040, 0x005f, 0x007e].includes(char) ||
         (0x00a0 <= char && char <= 0x10fffd)) &&
       !CodePoint.isSurrogate(char) &&
       !CodePoint.isNonCharacter(char)
     );
   }
   static isForbiddenHostCodePoint(char) {
-    return [
-      0x0000, 0x0009, 0x000a, 0x000d, 0x0020, 0x0023, 0x0025, 0x002f, 0x003a, 0x003f, 0x0040,
-      0x005b, 0x005c, 0x005d
-    ].includes(char);
+    return [0x0000, 0x0009, 0x000a, 0x000d, 0x0020, 0x0023, 0x0025, 0x002f, 0x003a, 0x003f, 0x0040, 0x005b, 0x005c, 0x005d].includes(char);
   }
   static isSurrogate(char) {
     return 0xd800 <= char && char <= 0xdfff;
@@ -1020,10 +992,8 @@ class CodePoint {
     return (
       (0xfdd0 <= char && char <= 0xfdef) ||
       [
-        0xfffe, 0xffff, 0x1fffe, 0x1ffff, 0x2fffe, 0x2ffff, 0x3fffe, 0x3ffff, 0x4fffe, 0x4ffff,
-        0x5fffe, 0x5ffff, 0x6fffe, 0x6ffff, 0x7fffe, 0x7ffff, 0x8fffe, 0x8ffff, 0x9fffe, 0x9ffff,
-        0xafffe, 0xaffff, 0xbfffe, 0xbffff, 0xcfffe, 0xcffff, 0xdfffe, 0xdffff, 0xefffe, 0xeffff,
-        0xffffe, 0xfffff, 0x10fffe, 0x10ffff
+        0xfffe, 0xffff, 0x1fffe, 0x1ffff, 0x2fffe, 0x2ffff, 0x3fffe, 0x3ffff, 0x4fffe, 0x4ffff, 0x5fffe, 0x5ffff, 0x6fffe, 0x6ffff, 0x7fffe, 0x7ffff, 0x8fffe, 0x8ffff, 0x9fffe, 0x9ffff, 0xafffe,
+        0xaffff, 0xbfffe, 0xbffff, 0xcfffe, 0xcffff, 0xdfffe, 0xdffff, 0xefffe, 0xeffff, 0xffffe, 0xfffff, 0x10fffe, 0x10ffff
       ].includes(char)
     );
   }
@@ -1034,9 +1004,7 @@ class CodePoint {
     return char === 0x0009 || char === 0x000a || char === 0x000d;
   }
   static isASCIIWhiteSpace(char) {
-    return (
-      char === 0x0009 || char === 0x000a || char === 0x000c || char === 0x000d || char === 0x0020
-    );
+    return char === 0x0009 || char === 0x000a || char === 0x000c || char === 0x000d || char === 0x0020;
   }
   static isC0Control(char) {
     return 0x0000 <= char && char <= 0x001f;
@@ -1057,11 +1025,7 @@ class CodePoint {
     return this.isASCIIDigit(char) || (0x0061 <= char && char <= 0x0066);
   }
   static isASCIIHexDigit(char) {
-    return (
-      (0x0030 <= char && char <= 0x0039) ||
-      (0x0041 <= char && char <= 0x0046) ||
-      (0x0061 <= char && char <= 0x0066)
-    );
+    return (0x0030 <= char && char <= 0x0039) || (0x0041 <= char && char <= 0x0046) || (0x0061 <= char && char <= 0x0066);
   }
   static isASCIIUpperAlpha(char) {
     return 0x0041 <= char && char <= 0x005a;
@@ -1112,23 +1076,10 @@ class URLPercentEncoderSets {
     return CodePoint.isC0Control(char) || char > 0x007e;
   }
   static fragment(char) {
-    return (
-      URLPercentEncoderSets.C0Control(char) ||
-      char === 0x0020 ||
-      char === 0x0022 ||
-      char === 0x003c ||
-      char === 0x003e ||
-      char === 0x0060
-    );
+    return URLPercentEncoderSets.C0Control(char) || char === 0x0020 || char === 0x0022 || char === 0x003c || char === 0x003e || char === 0x0060;
   }
   static path(char) {
-    return (
-      URLPercentEncoderSets.fragment(char) ||
-      char === 0x0023 ||
-      char === 0x003f ||
-      char === 0x007b ||
-      char === 0x007d
-    );
+    return URLPercentEncoderSets.fragment(char) || char === 0x0023 || char === 0x003f || char === 0x007b || char === 0x007d;
   }
   static userInfo(char) {
     return (
@@ -1148,18 +1099,7 @@ class URLPercentEncoderSets {
   static encodeURI(char) {
     return (
       this.encodeURIComponent(char) &&
-      !(
-        char === 0x0024 ||
-        char === 0x0026 ||
-        char === 0x002b ||
-        char === 0x002c ||
-        char === 0x002f ||
-        char === 0x003a ||
-        char === 0x003b ||
-        char === 0x003d ||
-        char === 0x003f ||
-        char === 0x0040
-      )
+      !(char === 0x0024 || char === 0x0026 || char === 0x002b || char === 0x002c || char === 0x002f || char === 0x003a || char === 0x003b || char === 0x003d || char === 0x003f || char === 0x0040)
     );
   }
   static encodeURIComponent(char) {
@@ -1221,16 +1161,8 @@ class URLPercentEncoder {
     let output = new StringView();
     for(let i = 0, l = input.length; i < l; i++) {
       char = input.getAt(i);
-      if(
-        char === 0x25 &&
-        i + 2 < input.length &&
-        CodePoint.isASCIIHexDigit(input.getAt(i + 1)) &&
-        CodePoint.isASCIIHexDigit(input.getAt(i + 2))
-      ) {
-        output.push(
-          CodePoint.hexCharToNumber(input.getAt(i + 1)) * 0x10 +
-            CodePoint.hexCharToNumber(input.getAt(i + 2))
-        );
+      if(char === 0x25 && i + 2 < input.length && CodePoint.isASCIIHexDigit(input.getAt(i + 1)) && CodePoint.isASCIIHexDigit(input.getAt(i + 2))) {
+        output.push(CodePoint.hexCharToNumber(input.getAt(i + 1)) * 0x10 + CodePoint.hexCharToNumber(input.getAt(i + 2)));
         i += 2;
       } else {
         output.push(char);
@@ -1247,10 +1179,7 @@ class ApplicationXWWWFormUrlencoded {
     for(const sequence of sequences) {
       if(sequence !== '') {
         const parts = sequence.split('=');
-        output.push([
-          URLPercentEncoder.decode(parts[0].replace('+', ' ')),
-          URLPercentEncoder.decode(parts.slice(1).join('=').replace('+', ' '))
-        ]);
+        output.push([URLPercentEncoder.decode(parts[0].replace('+', ' ')), URLPercentEncoder.decode(parts.slice(1).join('=').replace('+', ' '))]);
       }
     }
     return output;
@@ -1259,10 +1188,7 @@ class ApplicationXWWWFormUrlencoded {
     let output = '';
     for(const tuple of tuples) {
       if(output !== '') output += '&';
-      output +=
-        this.serializeByteString(new TextEncoder().encode(tuple[0])) +
-        '=' +
-        this.serializeByteString(new TextEncoder().encode(tuple[1]));
+      output += this.serializeByteString(new TextEncoder().encode(tuple[0])) + '=' + this.serializeByteString(new TextEncoder().encode(tuple[1]));
     }
     return output;
   }
@@ -1273,15 +1199,7 @@ class ApplicationXWWWFormUrlencoded {
       byte = bytes[i];
       if(byte === 0x20) {
         output += '+';
-      } else if(
-        byte === 0x2a ||
-        byte === 0x2d ||
-        byte === 0x2e ||
-        (0x30 <= byte && byte <= 0x39) ||
-        (0x41 <= byte && byte <= 0x5a) ||
-        byte === 0x5f ||
-        (0x61 <= byte && byte <= 0x7a)
-      ) {
+      } else if(byte === 0x2a || byte === 0x2d || byte === 0x2e || (0x30 <= byte && byte <= 0x39) || (0x41 <= byte && byte <= 0x5a) || byte === 0x5f || (0x61 <= byte && byte <= 0x7a)) {
         output += String.fromCodePoint(byte);
       } else {
         output += URLPercentEncoder.encodeChar(byte);
@@ -1326,9 +1244,7 @@ export class URLSearchParams extends MapLike {
         this.set(key, value);
       }
     } else {
-      throw new TypeError(
-        "Failed to construct 'URLSearchParams': The value provided is neither an array, nor does it have indexed properties."
-      );
+      throw new TypeError("Failed to construct 'URLSearchParams': The value provided is neither an array, nor does it have indexed properties.");
     }
   }
   append(name, value) {
@@ -1449,10 +1365,8 @@ var IdnaMappingTableStatus;
   IdnaMappingTableStatus[(IdnaMappingTableStatus['mapped'] = 2)] = 'mapped';
   IdnaMappingTableStatus[(IdnaMappingTableStatus['deviation'] = 3)] = 'deviation';
   IdnaMappingTableStatus[(IdnaMappingTableStatus['disallowed'] = 4)] = 'disallowed';
-  IdnaMappingTableStatus[(IdnaMappingTableStatus['disallowed_STD3_valid'] = 5)] =
-    'disallowed_STD3_valid';
-  IdnaMappingTableStatus[(IdnaMappingTableStatus['disallowed_STD3_mapped'] = 6)] =
-    'disallowed_STD3_mapped';
+  IdnaMappingTableStatus[(IdnaMappingTableStatus['disallowed_STD3_valid'] = 5)] = 'disallowed_STD3_valid';
+  IdnaMappingTableStatus[(IdnaMappingTableStatus['disallowed_STD3_mapped'] = 6)] = 'disallowed_STD3_mapped';
 })(IdnaMappingTableStatus || (IdnaMappingTableStatus = {}));
 var Idna2008MappingTableStatus;
 (function (Idna2008MappingTableStatus) {
@@ -1462,8 +1376,7 @@ var Idna2008MappingTableStatus;
 var UnicodeIDNAProcessingOption;
 (function (UnicodeIDNAProcessingOption) {
   UnicodeIDNAProcessingOption[(UnicodeIDNAProcessingOption['transitional'] = 0)] = 'transitional';
-  UnicodeIDNAProcessingOption[(UnicodeIDNAProcessingOption['nonTransitional'] = 1)] =
-    'nonTransitional';
+  UnicodeIDNAProcessingOption[(UnicodeIDNAProcessingOption['nonTransitional'] = 1)] = 'nonTransitional';
 })(UnicodeIDNAProcessingOption || (UnicodeIDNAProcessingOption = {}));
 class UnicodeIDNAProcessing {
   static findIDNAMappingTableRow(codePoint) {
@@ -1490,14 +1403,7 @@ class UnicodeIDNAProcessing {
     row = IDNAMappingTable[current];
     return row;
   }
-  static processing(
-    domainName,
-    checkHyphens,
-    checkBidi,
-    checkJoiners,
-    useSTD3ASCIIRules,
-    processingOption
-  ) {
+  static processing(domainName, checkHyphens, checkBidi, checkJoiners, useSTD3ASCIIRules, processingOption) {
     if(typeof domainName === 'string') domainName = new StringView(domainName);
     let codePoint;
     let output = new StringView();
@@ -1507,14 +1413,10 @@ class UnicodeIDNAProcessing {
       let status = row[1];
       switch (status) {
         case IdnaMappingTableStatus.disallowed_STD3_valid:
-          status = useSTD3ASCIIRules
-            ? IdnaMappingTableStatus.disallowed
-            : IdnaMappingTableStatus.valid;
+          status = useSTD3ASCIIRules ? IdnaMappingTableStatus.disallowed : IdnaMappingTableStatus.valid;
           break;
         case IdnaMappingTableStatus.disallowed_STD3_mapped:
-          status = useSTD3ASCIIRules
-            ? IdnaMappingTableStatus.disallowed
-            : IdnaMappingTableStatus.mapped;
+          status = useSTD3ASCIIRules ? IdnaMappingTableStatus.disallowed : IdnaMappingTableStatus.mapped;
           break;
       }
       switch (status) {
@@ -1553,14 +1455,10 @@ class UnicodeIDNAProcessing {
   }
   static checkValidity(label, checkHyphens, processingOption) {
     if(checkHyphens && label.charAt(2) === '-' && label.charAt(3) === '-') {
-      throw new TypeError(
-        'The label must not contain a U+002D HYPHEN-MINUS character in both the third and fourth positions'
-      );
+      throw new TypeError('The label must not contain a U+002D HYPHEN-MINUS character in both the third and fourth positions');
     }
     if(checkHyphens && (label.startsWith('-') || label.endsWith('-'))) {
-      throw new TypeError(
-        'The label must neither begin nor end with a U+002D HYPHEN-MINUS character'
-      );
+      throw new TypeError('The label must neither begin nor end with a U+002D HYPHEN-MINUS character');
     }
     if(label.includes('.')) {
       throw new TypeError('The label must not contain a U+002E ( . ) FULL STOP');
@@ -1582,17 +1480,7 @@ class UnicodeIDNAProcessing {
           }
           break;
         default:
-          throw new TypeError(
-            'Invalid  : ' +
-              IdnaMappingTableStatus[row[1]] +
-              ' for U+' +
-              codePoint.toString(16) +
-              ' (' +
-              String.fromCodePoint(codePoint) +
-              ' => ' +
-              codePoint +
-              ')'
-          );
+          throw new TypeError('Invalid  : ' + IdnaMappingTableStatus[row[1]] + ' for U+' + codePoint.toString(16) + ' (' + String.fromCodePoint(codePoint) + ' => ' + codePoint + ')');
       }
     }
   }
@@ -1605,23 +1493,8 @@ class UnicodeIDNAProcessing {
       (0xfe20 <= codePoint && codePoint <= 0xfe2f)
     );
   }
-  static unicodeToASCII(
-    domainName,
-    checkHyphens,
-    checkBidi,
-    checkJoiners,
-    useSTD3ASCIIRules,
-    processingOption,
-    verifyDnsLength
-  ) {
-    const domainNameProcessed = this.processing(
-      domainName,
-      checkHyphens,
-      checkBidi,
-      checkJoiners,
-      useSTD3ASCIIRules,
-      processingOption
-    );
+  static unicodeToASCII(domainName, checkHyphens, checkBidi, checkJoiners, useSTD3ASCIIRules, processingOption, verifyDnsLength) {
+    const domainNameProcessed = this.processing(domainName, checkHyphens, checkBidi, checkJoiners, useSTD3ASCIIRules, processingOption);
     const labels = domainNameProcessed.split('.');
     for(let i = 0, l = labels.length; i < l; i++) {
       if(/[^\0-\x7E]/.test(labels[i])) {
@@ -1772,8 +1645,7 @@ class IPv6 {
                 throw new TypeError('Unexpected U+002E (.), expect number');
               }
             }
-            if(!CodePoint.isASCIIDigit(inputCodePoints.charAt(pointer)))
-              throw new TypeError('Expected number');
+            if(!CodePoint.isASCIIDigit(inputCodePoints.charAt(pointer))) throw new TypeError('Expected number');
             while(CodePoint.isASCIIDigit(inputCodePoints.charAt(pointer))) {
               const number = CodePoint.decimalCharToNumber(inputCodePoints.charAt(pointer));
               if(ipv4Piece === null) {
@@ -1796,8 +1668,7 @@ class IPv6 {
           break;
         } else if(inputCodePoints.charAt(pointer) === 0x003a) {
           pointer++;
-          if(inputCodePoints.charAt(pointer) === StringView.OOR)
-            throw new TypeError('Unexpected end after U+003A (:)');
+          if(inputCodePoints.charAt(pointer) === StringView.OOR) throw new TypeError('Unexpected end after U+003A (:)');
         } else if(inputCodePoints.charAt(pointer) !== StringView.OOR) {
           throw new TypeError('Expected end');
         }
@@ -1870,15 +1741,7 @@ class IPv6 {
 
 class Host {
   static domainToASCII(domain, beStrict = false) {
-    return UnicodeIDNAProcessing.unicodeToASCII(
-      domain,
-      false,
-      true,
-      true,
-      beStrict,
-      UnicodeIDNAProcessingOption.nonTransitional,
-      beStrict
-    );
+    return UnicodeIDNAProcessing.unicodeToASCII(domain, false, true, true, beStrict, UnicodeIDNAProcessingOption.nonTransitional, beStrict);
   }
   constructor(input = '', isSpecial = true) {
     if(typeof input === 'string') {
@@ -1895,14 +1758,10 @@ class Host {
           const codePoints = new StringView(input);
           let codePoint;
           let output = '';
-          const forbiddenHostCodePoints = [
-            0x0000, 0x0009, 0x000a, 0x000d, 0x0020, 0x0023, 0x002f, 0x003a, 0x003f, 0x0040, 0x005b,
-            0x005c, 0x005d
-          ];
+          const forbiddenHostCodePoints = [0x0000, 0x0009, 0x000a, 0x000d, 0x0020, 0x0023, 0x002f, 0x003a, 0x003f, 0x0040, 0x005b, 0x005c, 0x005d];
           for(let i = 0, l = codePoints.length; i < l; i++) {
             codePoint = codePoints.getAt(i);
-            if(forbiddenHostCodePoints.includes(codePoint))
-              throw new TypeError('Invalid host character detected');
+            if(forbiddenHostCodePoints.includes(codePoint)) throw new TypeError('Invalid host character detected');
             output += URLPercentEncoder.encodeChar(codePoint, URLPercentEncoderSets.C0Control);
           }
           this._value = output;
@@ -1910,13 +1769,9 @@ class Host {
         } else {
           const asciiDomain = Host.domainToASCII(URLPercentEncoder.decode(input));
           const asciiDomainCodePoints = new StringView(asciiDomain);
-          const forbiddenHostCodePoints = [
-            0x0000, 0x0009, 0x000a, 0x000d, 0x0020, 0x0023, 0x0025, 0x002f, 0x003a, 0x003f, 0x0040,
-            0x005b, 0x005c, 0x005d
-          ];
+          const forbiddenHostCodePoints = [0x0000, 0x0009, 0x000a, 0x000d, 0x0020, 0x0023, 0x0025, 0x002f, 0x003a, 0x003f, 0x0040, 0x005b, 0x005c, 0x005d];
           for(let i = 0, l = asciiDomainCodePoints.length; i < l; i++) {
-            if(forbiddenHostCodePoints.includes(asciiDomainCodePoints.getAt(i)))
-              throw new TypeError('Invalid domain character detected');
+            if(forbiddenHostCodePoints.includes(asciiDomainCodePoints.getAt(i))) throw new TypeError('Invalid domain character detected');
           }
           try {
             this._value = new IPv4(asciiDomain);
@@ -2175,12 +2030,7 @@ class _URL {
   }
   shortenPath() {
     if(this.path.length === 0) return;
-    if(
-      this.scheme === 'file' &&
-      this.path.length === 1 &&
-      CodePoint.isNormalizedWindowsDriveLetter(this.path[0])
-    )
-      return;
+    if(this.scheme === 'file' && this.path.length === 1 && CodePoint.isNormalizedWindowsDriveLetter(this.path[0])) return;
     this.path.pop();
   }
   toString(excludeFragment = false) {
@@ -2221,14 +2071,12 @@ var URLParserState;
   URLParserState[(URLParserState['SCHEME_START'] = 0)] = 'SCHEME_START';
   URLParserState[(URLParserState['SCHEME'] = 1)] = 'SCHEME';
   URLParserState[(URLParserState['NO_SCHEME'] = 2)] = 'NO_SCHEME';
-  URLParserState[(URLParserState['SPECIAL_RELATIVE_OR_AUTHORITY'] = 3)] =
-    'SPECIAL_RELATIVE_OR_AUTHORITY';
+  URLParserState[(URLParserState['SPECIAL_RELATIVE_OR_AUTHORITY'] = 3)] = 'SPECIAL_RELATIVE_OR_AUTHORITY';
   URLParserState[(URLParserState['PATH_OR_AUTHORITY'] = 4)] = 'PATH_OR_AUTHORITY';
   URLParserState[(URLParserState['RELATIVE'] = 5)] = 'RELATIVE';
   URLParserState[(URLParserState['RELATIVE_SLASH'] = 6)] = 'RELATIVE_SLASH';
   URLParserState[(URLParserState['SPECIAL_AUTHORITY_SLASHES'] = 7)] = 'SPECIAL_AUTHORITY_SLASHES';
-  URLParserState[(URLParserState['SPECIAL_AUTHORITY_IGNORE_SLASHES'] = 8)] =
-    'SPECIAL_AUTHORITY_IGNORE_SLASHES';
+  URLParserState[(URLParserState['SPECIAL_AUTHORITY_IGNORE_SLASHES'] = 8)] = 'SPECIAL_AUTHORITY_IGNORE_SLASHES';
   URLParserState[(URLParserState['AUTHORITY'] = 9)] = 'AUTHORITY';
   URLParserState[(URLParserState['HOST'] = 10)] = 'HOST';
   URLParserState[(URLParserState['HOSTNAME'] = 11)] = 'HOSTNAME';
@@ -2251,14 +2099,7 @@ class URLParser {
     }
     return url;
   }
-  static basicURLParser(
-    input,
-    base = null,
-    encoding = 'utf-8',
-    url,
-    stateOverride,
-    validationError = this.defaultValidationError
-  ) {
+  static basicURLParser(input, base = null, encoding = 'utf-8', url, stateOverride, validationError = this.defaultValidationError) {
     if(url === void 0) {
       url = new _URL();
       let foundInvalidCharactersError = false;
@@ -2279,11 +2120,7 @@ class URLParser {
     };
     const inputCodePoints = new StringView(input);
     let inputCodePoint;
-    for(
-      let pointer = 0, inputCodePointsLength = inputCodePoints.length;
-      pointer <= inputCodePointsLength;
-      pointer++
-    ) {
+    for(let pointer = 0, inputCodePointsLength = inputCodePoints.length; pointer <= inputCodePointsLength; pointer++) {
       inputCodePoint = inputCodePoints.charAt(pointer);
       switch (state) {
         case URLParserState.SCHEME_START:
@@ -2299,12 +2136,7 @@ class URLParser {
           }
           break;
         case URLParserState.SCHEME:
-          if(
-            CodePoint.isASCIIAlphanumeric(inputCodePoint) ||
-            inputCodePoint === 0x002b ||
-            inputCodePoint === 0x002d ||
-            inputCodePoint === 0x002e
-          ) {
+          if(CodePoint.isASCIIAlphanumeric(inputCodePoint) || inputCodePoint === 0x002b || inputCodePoint === 0x002d || inputCodePoint === 0x002e) {
             buffer.push(StringView.lowerCase(inputCodePoint));
           } else if(inputCodePoint === 0x003a) {
             if(stateOverride !== void 0) {
@@ -2312,10 +2144,8 @@ class URLParser {
               const isBufferSpecialScheme = this.isSpecialScheme(buffer.toString());
               if(isURLSpecialScheme && !isBufferSpecialScheme) return null;
               if(!isURLSpecialScheme && isBufferSpecialScheme) return null;
-              if((url.includesCredentials() || url.port !== null) && buffer.equals('file'))
-                return null;
-              if(url.scheme === 'file' && (url.host === null || url.host.value === ''))
-                return null;
+              if((url.includesCredentials() || url.port !== null) && buffer.equals('file')) return null;
+              if(url.scheme === 'file' && (url.host === null || url.host.value === '')) return null;
             }
             url.scheme = buffer.toString();
             if(stateOverride !== void 0) {
@@ -2477,20 +2307,13 @@ class URLParser {
             if(flags['@']) buffer.prepend('%40');
             flags['@'] = true;
             let bufferCodePoint;
-            for(
-              let bufferPointer = 0, bufferPointerLength = buffer.length;
-              bufferPointer < bufferPointerLength;
-              bufferPointer++
-            ) {
+            for(let bufferPointer = 0, bufferPointerLength = buffer.length; bufferPointer < bufferPointerLength; bufferPointer++) {
               bufferCodePoint = buffer.charAt(bufferPointer);
               if(bufferCodePoint === 0x003a && !flags['passwordTokenSeenFlag']) {
                 flags['passwordTokenSeenFlag'] = true;
                 continue;
               }
-              const encodedCodePoints = URLPercentEncoder.encodeChar(
-                bufferCodePoint,
-                URLPercentEncoderSets.userInfo
-              );
+              const encodedCodePoints = URLPercentEncoder.encodeChar(bufferCodePoint, URLPercentEncoderSets.userInfo);
               if(flags['passwordTokenSeenFlag']) {
                 url.password += encodedCodePoints;
               } else {
@@ -2498,13 +2321,7 @@ class URLParser {
               }
             }
             buffer.empty();
-          } else if(
-            inputCodePoint === StringView.OOR ||
-            inputCodePoint === 0x002f ||
-            inputCodePoint === 0x003f ||
-            inputCodePoint === 0x0023 ||
-            (url.isSpecial() && inputCodePoint === 0x005c)
-          ) {
+          } else if(inputCodePoint === StringView.OOR || inputCodePoint === 0x002f || inputCodePoint === 0x003f || inputCodePoint === 0x0023 || (url.isSpecial() && inputCodePoint === 0x005c)) {
             if(flags['@'] && buffer.isEmpty()) {
               validationError('Expected credentials');
               throw new TypeError('Expected credentials');
@@ -2530,22 +2347,12 @@ class URLParser {
             buffer.empty();
             state = URLParserState.PORT;
             if(stateOverride === URLParserState.HOSTNAME) return null;
-          } else if(
-            inputCodePoint === StringView.OOR ||
-            inputCodePoint === 0x002f ||
-            inputCodePoint === 0x003f ||
-            inputCodePoint === 0x0023 ||
-            (url.isSpecial() && inputCodePoint === 0x005c)
-          ) {
+          } else if(inputCodePoint === StringView.OOR || inputCodePoint === 0x002f || inputCodePoint === 0x003f || inputCodePoint === 0x0023 || (url.isSpecial() && inputCodePoint === 0x005c)) {
             pointer--;
             if(url.isSpecial() && buffer.isEmpty()) {
               validationError('Host must not be empty');
               throw new TypeError('Host must not be empty');
-            } else if(
-              stateOverride !== void 0 &&
-              buffer.isEmpty() &&
-              (url.includesCredentials() || url.port !== null)
-            ) {
+            } else if(stateOverride !== void 0 && buffer.isEmpty() && (url.includesCredentials() || url.port !== null)) {
               validationError('Host must not be empty');
               return null;
             }
@@ -2641,11 +2448,7 @@ class URLParser {
             }
             state = URLParserState.FILE_HOST;
           } else {
-            if(
-              base !== null &&
-              base.scheme === 'file' &&
-              !CodePoint.startsWithAWindowsDriveLetter(inputCodePoints.substr(pointer, 3))
-            ) {
+            if(base !== null && base.scheme === 'file' && !CodePoint.startsWithAWindowsDriveLetter(inputCodePoints.substr(pointer, 3))) {
               if(CodePoint.isNormalizedWindowsDriveLetter(base.path[0])) {
                 url.path.push(base.path[0]);
               } else {
@@ -2718,18 +2521,10 @@ class URLParser {
               if(inputCodePoint !== 0x002f && !(url.isSpecial() && inputCodePoint === 0x005c)) {
                 url.path.push('');
               }
-            } else if(
-              isSingleDotPathSegment &&
-              inputCodePoint !== 0x002f &&
-              !(url.isSpecial() && inputCodePoint === 0x005c)
-            ) {
+            } else if(isSingleDotPathSegment && inputCodePoint !== 0x002f && !(url.isSpecial() && inputCodePoint === 0x005c)) {
               url.path.push('');
             } else if(!isSingleDotPathSegment) {
-              if(
-                url.scheme === 'file' &&
-                url.path.length === 0 &&
-                CodePoint.isWindowDriveLetter(buffer)
-              ) {
+              if(url.scheme === 'file' && url.path.length === 0 && CodePoint.isWindowDriveLetter(buffer)) {
                 if(url.host !== null && url.host.value !== '') {
                   validationError('Host should be null for files');
                   url.host = new Host();
@@ -2739,10 +2534,7 @@ class URLParser {
               url.path.push(buffer.toString());
             }
             buffer.empty();
-            if(
-              url.scheme === 'file' &&
-              [StringView.OOR, 0x003f, 0x0023].includes(inputCodePoint)
-            ) {
+            if(url.scheme === 'file' && [StringView.OOR, 0x003f, 0x0023].includes(inputCodePoint)) {
               while(url.path.length > 1 && url.path[0] === '') {
                 validationError('Empty path part found at beginning');
                 url.path.shift();
@@ -2770,18 +2562,12 @@ class URLParser {
           } else {
             if(inputCodePoint !== StringView.OOR) {
               this.validatePercentEncoded(inputCodePoints, pointer, validationError);
-              url.path[0] += URLPercentEncoder.encodeChar(
-                inputCodePoint,
-                URLPercentEncoderSets.C0Control
-              );
+              url.path[0] += URLPercentEncoder.encodeChar(inputCodePoint, URLPercentEncoderSets.C0Control);
             }
           }
           break;
         case URLParserState.QUERY:
-          if(
-            inputCodePoint === StringView.OOR ||
-            (stateOverride === void 0 && inputCodePoint === 0x0023)
-          ) {
+          if(inputCodePoint === StringView.OOR || (stateOverride === void 0 && inputCodePoint === 0x0023)) {
             if(!url.isSpecial() || url.scheme === 'ws' || url.scheme === 'wss') {
               encoding = 'utf-8';
             }
@@ -2814,10 +2600,7 @@ class URLParser {
               break;
             default:
               this.validatePercentEncoded(inputCodePoints, pointer, validationError);
-              url.fragment += URLPercentEncoder.encodeChar(
-                inputCodePoint,
-                URLPercentEncoderSets.fragment
-              );
+              url.fragment += URLPercentEncoder.encodeChar(inputCodePoint, URLPercentEncoderSets.fragment);
               break;
           }
           break;
@@ -2837,17 +2620,9 @@ class URLParser {
   static validatePercentEncoded(input, pointer, validationError) {
     const inputCodePoint = input.getAt(0);
     if(!CodePoint.isURLCodePoint(inputCodePoint) && inputCodePoint !== 0x0025) {
-      validationError(
-        `Unexpected character : ${String.fromCodePoint(inputCodePoint)} => ${inputCodePoint}`
-      );
+      validationError(`Unexpected character : ${String.fromCodePoint(inputCodePoint)} => ${inputCodePoint}`);
     }
-    if(
-      inputCodePoint === 0x0025 &&
-      !(
-        CodePoint.isASCIIHexDigit(input.getAt(pointer + 1)) &&
-        CodePoint.isASCIIHexDigit(input.getAt(pointer + 2))
-      )
-    ) {
+    if(inputCodePoint === 0x0025 && !(CodePoint.isASCIIHexDigit(input.getAt(pointer + 1)) && CodePoint.isASCIIHexDigit(input.getAt(pointer + 2)))) {
       validationError('Expected 2 hex digits after percent sign (%)');
     }
   }
@@ -2908,40 +2683,22 @@ export class URL {
     return this.#url.username;
   }
   set username(value) {
-    if(
-      this.#url.host === null ||
-      this.#url.host.value === '' ||
-      this.#url.cannotBeABaseURL ||
-      this.#url.scheme === 'file'
-    )
-      return;
+    if(this.#url.host === null || this.#url.host.value === '' || this.#url.cannotBeABaseURL || this.#url.scheme === 'file') return;
     this.#url.username = '';
     const inputCodePoints = new StringView(value);
     for(let i = 0, l = inputCodePoints.length; i < l; i++) {
-      this.#url.username += URLPercentEncoder.encodeChar(
-        inputCodePoints.charAt(i),
-        URLPercentEncoderSets.userInfo
-      );
+      this.#url.username += URLPercentEncoder.encodeChar(inputCodePoints.charAt(i), URLPercentEncoderSets.userInfo);
     }
   }
   get password() {
     return this.#url.password;
   }
   set password(value) {
-    if(
-      this.#url.host === null ||
-      this.#url.host.value === '' ||
-      this.#url.cannotBeABaseURL ||
-      this.#url.scheme === 'file'
-    )
-      return;
+    if(this.#url.host === null || this.#url.host.value === '' || this.#url.cannotBeABaseURL || this.#url.scheme === 'file') return;
     this.#url.password = '';
     const inputCodePoints = new StringView(value);
     for(let i = 0, l = inputCodePoints.length; i < l; i++) {
-      this.#url.password += URLPercentEncoder.encodeChar(
-        inputCodePoints.charAt(i),
-        URLPercentEncoderSets.userInfo
-      );
+      this.#url.password += URLPercentEncoder.encodeChar(inputCodePoints.charAt(i), URLPercentEncoderSets.userInfo);
     }
   }
   get host() {
@@ -2966,13 +2723,7 @@ export class URL {
     return this.#url.port.toString();
   }
   set port(value) {
-    if(
-      this.#url.host === null ||
-      this.#url.host.value === '' ||
-      this.#url.cannotBeABaseURL ||
-      this.#url.scheme === 'file'
-    )
-      return;
+    if(this.#url.host === null || this.#url.host.value === '' || this.#url.cannotBeABaseURL || this.#url.scheme === 'file') return;
     if(this.#url.port === null) {
       this.#url.port = null;
     } else {

@@ -1,8 +1,6 @@
 export function isJpeg(buf) {
   let dv = new DataView(buf);
-  return typeof buf == 'object' && buf !== null && buf.byteLength >= 10
-    ? dv.getUint32(6, true) == 0x4649464a
-    : false;
+  return typeof buf == 'object' && buf !== null && buf.byteLength >= 10 ? dv.getUint32(6, true) == 0x4649464a : false;
 }
 
 export const jpegProps = data => {

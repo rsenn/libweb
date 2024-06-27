@@ -79,13 +79,7 @@ export class TreeObserver extends ObservableMembrane {
         value = obj ? obj[key] : target[key];
         if(isObject(value)) {
           for(let prop in value)
-            if(isObject(value[prop]))
-              pathMapper.set(
-                value[prop],
-                isNumeric(prop) && !ImmutablePath.isChildren(path.last)
-                  ? path.concat(['children', +prop])
-                  : path.concat([prop])
-              );
+            if(isObject(value[prop])) pathMapper.set(value[prop], isNumeric(prop) && !ImmutablePath.isChildren(path.last) ? path.concat(['children', +prop]) : path.concat([prop]));
         }
 
         //path = path.concat(key ? [key] : []);
@@ -94,9 +88,7 @@ export class TreeObserver extends ObservableMembrane {
     }
 
     let treeObserver = this;
-    ['valueDistortion', 'valueMutated', 'valueObserved'].forEach(
-      name => (treeObserver[name] = treeObserver[name].bind(treeObserver))
-    );
+    ['valueDistortion', 'valueMutated', 'valueObserved'].forEach(name => (treeObserver[name] = treeObserver[name].bind(treeObserver)));
 
     this.mapper = pathMapper;
     this.readOnly = !!readOnly;

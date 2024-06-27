@@ -10,12 +10,7 @@ export function DereferenceError(object, member, pos, prev, locator) {
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${className(object)} @ ${Pointer.prototype.toString.call(
-          locator,
-          '/',
-          Pointer.partToString,
-          'children'
-        )}
+        `Error dereferencing ${className(object)} @ ${Pointer.prototype.toString.call(locator, '/', Pointer.partToString, 'children')}
 xml: ${abbreviate(inspect(locator.root || object))}
 no member '${inspect(member, { colors: false })}' in ${inspect(prev, {
           depth: 2,
@@ -30,14 +25,10 @@ no member '${inspect(member, { colors: false })}' in ${inspect(prev, {
 
 DereferenceError.prototype.toString = function() {
   const { message, object, member, pos, locator, stack } = this;
-  return `${message}\n${inspect(
-    { object, member, pos, locator, stack },
-    { depth: 2, colors: false }
-  )}`;
+  return `${message}\n${inspect({ object, member, pos, locator, stack }, { depth: 2, colors: false })}`;
 };
 
-export const IsChildren = a =>
-  a === Pointer.CHILDREN_GLYPH || a === Pointer.CHILDREN_STR || a === Pointer.CHILDREN_SYM;
+export const IsChildren = a => a === Pointer.CHILDREN_GLYPH || a === Pointer.CHILDREN_STR || a === Pointer.CHILDREN_SYM;
 
 const CHILDREN_SPACE = '';
 
@@ -90,12 +81,7 @@ export class Pointer extends Array {
     return a.o;
   }
 
-  static partToString(
-    a,
-    sep = '/',
-    childrenStr,
-    c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`
-  ) {
+  static partToString(a, sep = '/', childrenStr, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     if(a.length == 0) return null;
     let s = '';
     let part = a.shift();
@@ -122,9 +108,7 @@ export class Pointer extends Array {
         }
       case 'object': {
         s += `[@`;
-        let attrs = Object.entries(part.attributes || {}).map(
-          ([name, value]) => `${name}='${value}'`
-        );
+        let attrs = Object.entries(part.attributes || {}).map(([name, value]) => `${name}='${value}'`);
         s += attrs.join(',');
         s += ']';
         break;
@@ -141,9 +125,7 @@ export class Pointer extends Array {
     const { sep = ',', filterChildren = false } = opts;
     let r = this.toArray();
     if(filterChildren) r = r.filter(item => !IsChildren(item));
-    return `[${r
-      .map(p => (typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p))
-      .join(sep)}]`;
+    return `[${r.map(p => (typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p)).join(sep)}]`;
   }
   toCode(name) {
     return this.reduce((acc, part) => acc + (!isNaN(part) ? `[${part}]` : `.${part}`), name || '');
@@ -185,15 +167,9 @@ export class Pointer extends Array {
     );
   }
 
-  toString(
-    sep = ' ',
-    partToStr = Pointer.partToString,
-    childrenStr = Pointer.CHILDREN_GLYPH + CHILDREN_SPACE
-  ) {
+  toString(sep = ' ', partToStr = Pointer.partToString, childrenStr = Pointer.CHILDREN_GLYPH + CHILDREN_SPACE) {
     // console.log("Pointer.toString",{sep,partToStr, childrenStr});
-    const color = globalThis.navigator
-      ? text => text
-      : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+    const color = globalThis.navigator ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
     //   if(this[0] == 'children') sep = ' ';
     while(a.length > 0 && a[0] === '') a.shift();
@@ -240,8 +216,7 @@ export class Pointer extends Array {
   }
 
   relativeTo(other = []) {
-    if([...other].every((part, i) => this[i] == part))
-      return this.slice(other.length, this.length);
+    if([...other].every((part, i) => this[i] == part)) return this.slice(other.length, this.length);
     return null;
   }
 

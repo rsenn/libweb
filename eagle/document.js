@@ -4,7 +4,7 @@ import * as deep from '../deep.js';
 import { BBox, Rect } from '../geom.js';
 import { ImmutablePath } from '../json.js';
 import { PathMapper } from '../json/pathMapper.js';
-import { define, lazyProperties, lazyProperty, mapAdapter, mapFunction, weakMapper } from '../misc.js';
+import { define, properties, lazyProperties, lazyProperty, mapAdapter, mapFunction, weakMapper, tryCatch } from '../misc.js';
 import { read as fromXML, write as toXML } from '../xml.js';
 import { Palette } from './common.js';
 import { EagleElement } from './element.js';
@@ -113,7 +113,6 @@ export class EagleDocument extends EagleNode {
 
     if(this.type == 'sch') {
       const schematic = this.lookup('eagle/drawing/schematic');
-
       lazyProperties(this, {
         sheets: () => schematic.sheets,
         parts: () => schematic.parts,
@@ -130,32 +129,37 @@ export class EagleDocument extends EagleNode {
           {
             sheets: () => EagleNodeList.create(sheets, sheets.path.concat(['children'])),
             parts: () => EagleNodeMap.create(parts.children, 'name'), // EagleNodeList.create(parts, parts.path.concat(['children'])),
-            libraries: () => EagleNodeMap.create(libraries.children, 'name')
+              libraries: () => EagleNodeMap.create(libraries.children, 'name')
           },
           { memoize: true }
         )
       );*/
     }
 
+    lazyProperty(this, 'layers', () => EagleNodeMap.create(this.lookup('eagle/drawing').lookup('layers').children, ['name', 'number']));
+
     if(this.type == 'brd') {
-      const board = this.lookup('eagle/drawing/board');
+      let board = this.lookup('eagle/drawing/board');
+
+      define(this, {
+        get plain() {
+          return board.lookup('plain') || this.lookup('eagle/drawing/board/plain');
+        },
+        get board() {
+          return board;
+        },
+        get elements() {
+          return board.elements;
+        }
+      });
 
       lazyProperties(this, {
-        signals: () => board.signals,
-        plain: () => board.plain,
-        elements: () => board.elements,
-        libraries: () => board.libraries
+        libraries: () => board.libraries,
+        signals: () => board.signals
       });
     }
 
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
-
-    let layers = this.lookup('eagle/drawing/layers');
-
-    lazyProperties(this, {
-      drawing: () => this.lookup('eagle/drawing'),
-      layers: () => EagleNodeMap.create(layers.children, ['name', 'number'])
-    });
   }
 
   get raw() {
@@ -183,7 +187,7 @@ export class EagleDocument extends EagleNode {
       case 'sch':
         return [
           ['eagle', 'drawing', 'settings'],
-          ['eagle', 'drawing', 'layers'],
+          // ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'schematic'],
           ['eagle', 'drawing', 'schematic', 'libraries'],
           ['eagle', 'drawing', 'schematic', 'classes'],
@@ -193,7 +197,7 @@ export class EagleDocument extends EagleNode {
       case 'brd':
         return [
           ['eagle', 'drawing', 'settings'],
-          ['eagle', 'drawing', 'layers'],
+          // ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'board'],
           ['eagle', 'drawing', 'board', 'libraries'],
           ['eagle', 'drawing', 'board', 'classes'],
@@ -205,7 +209,7 @@ export class EagleDocument extends EagleNode {
       case 'lbr':
         return [
           ['eagle', 'drawing', 'settings'],
-          ['eagle', 'drawing', 'layers'],
+          //  ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'library'],
           ['eagle', 'drawing', 'library', 'packages'],
           ['eagle', 'drawing', 'library', 'symbols'],
@@ -250,6 +254,7 @@ export class EagleDocument extends EagleNode {
 
   lookup(xpath) {
     let doc = this;
+
     return super.lookup(xpath, (o, p, v) => {
       //console.log('EagleDocument.lookup', console.config({ depth: 4 }), { o, p, v });
       return EagleElement.get(o, p, v);
@@ -258,9 +263,13 @@ export class EagleDocument extends EagleNode {
 
   getBounds(sheetNo = 0) {
     let bb = new BBox();
-    let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
-    if(this.type == 'sch') return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
+    if(this.type == 'sch') {
+      let sheet = this.getSheet(sheetNo);
+      return sheet.getBounds(v => /(instance|net)/.test(v.tagName));
+    }
+    
+    if(this.type == 'brd') return this.board.getBounds();
 
     if(this.elements)
       for(let element of this.elements.list) {
@@ -284,27 +293,31 @@ export class EagleDocument extends EagleNode {
   }
 
   getMeasures(options = {}) {
-    const { sheet = 0 } = options;
-    let ret;
-    let plain = (this.type == 'sch' ? this.sheets[sheet] : this).plain;
+    try {
+      const { sheet = 0 } = options;
+      let ret;
+      let plain = (this.type == 'sch' ? this.sheets[sheet] : this).plain;
 
-    //console.log('plain', plain);
+      //console.log('plain', plain);
 
-    for(let layer of ['Dimension', 'Measures']) {
-      let layerId = this.layers[layer].number;
+      for(let layer of ['Dimension', 'Measures']) {
+        if(!this.layers[layer]) continue;
 
-      ret = [...plain].filter(e => e.attributes.layer == layerId && e.tagName == 'wire');
+        let layerId = this.layers[layer].number;
 
-      if(ret.length >= 1) break;
-    }
+        ret = [...plain].filter(e => e.attributes.layer == layerId && e.tagName == 'wire');
 
-    if(options.bbox) if (ret) ret = BBox.from(ret);
+        if(ret.length >= 1) break;
+      }
 
-    return ret;
+      if(options.bbox) if (ret) ret = BBox.from(ret);
+
+      return ret;
+    } catch(e) {}
   }
 
   get measures() {
-    return this.getMeasures({ points: true, bbox: true });
+    return tryCatch(() => this.getMeasures({ points: true, bbox: true }));
   }
 
   get dimensions() {
@@ -340,7 +353,7 @@ export class EagleDocument extends EagleNode {
   }
 
   getSheet(id) {
-    let sheets = this.get('sheets');
+    let sheets = this.lookup('eagle/drawing/schematic/sheets');
 
     if(!sheets) return null;
 

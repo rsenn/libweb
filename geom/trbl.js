@@ -114,36 +114,10 @@ TRBL.union = (trbl, other) => ({
 TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
 TRBL.prototype.toString = function(unit = 'px') {
-  return (
-    '' +
-    this.top +
-    '' +
-    unit +
-    ' ' +
-    this.right +
-    '' +
-    unit +
-    ' ' +
-    this.bottom +
-    '' +
-    unit +
-    ' ' +
-    this.left +
-    unit
-  );
+  return '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit;
 };
 TRBL.prototype.toSource = function() {
-  return (
-    '{top:' +
-    this.top +
-    ',right:' +
-    this.right +
-    ',bottom:' +
-    this.bottom +
-    ',left:' +
-    this.left +
-    '}'
-  );
+  return '{top:' + this.top + ',right:' + this.right + ',bottom:' + this.bottom + ',left:' + this.left + '}';
 };
 
 for(let name of ['null', 'isNaN', 'outset', 'toRect', 'toSource']) {

@@ -180,20 +180,7 @@ function cp() {
 
 var english = {
   days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  months: [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ],
+  months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   today: 'Today',
   clear: 'Clear',
   close: 'Close'
@@ -358,9 +345,7 @@ function render(dp) {
     '<div class="dp-days">' +
     dayNames
       .map(function (name, i) {
-        return (
-          '<span class="dp-col-header">' + dayNames[(i + dayOffset) % dayNames.length] + '</span>'
-        );
+        return '<span class="dp-col-header">' + dayNames[(i + dayOffset) % dayNames.length] + '</span>';
       })
       .join('') +
     mapDays(hilightedDate, dayOffset, function(date) {
@@ -375,15 +360,7 @@ function render(dp) {
       className += isToday ? ' dp-day-today' : '';
       className += ' ' + opts.dateClass(date, dp);
 
-      return (
-        '<button tabindex="-1" type="button" class="' +
-        className +
-        '" data-date="' +
-        date.getTime() +
-        '">' +
-        date.getDate() +
-        '</button>'
-      );
+      return '<button tabindex="-1" type="button" class="' + className + '" data-date="' + date.getTime() + '">' + date.getDate() + '</button>';
     }) +
     '</div>' +
     '<footer class="dp-cal-footer">' +
@@ -409,8 +386,7 @@ function render(dp) {
  */
 function keyDown(e, dp) {
   var key = e.keyCode;
-  var shiftBy =
-    key === Key.left ? -1 : key === Key.right ? 1 : key === Key.up ? -7 : key === Key.down ? 7 : 0;
+  var shiftBy = key === Key.left ? -1 : key === Key.right ? 1 : key === Key.up ? -7 : key === Key.down ? 7 : 0;
 
   if(key === Key.esc) {
     dp.close();
@@ -532,15 +508,7 @@ function render$1(dp) {
         var className = 'dp-month';
         className += currentMonth === i ? ' dp-current' : '';
 
-        return (
-          '<button tabindex="-1" type="button" class="' +
-          className +
-          '" data-month="' +
-          i +
-          '">' +
-          month +
-          '</button>'
-        );
+        return '<button tabindex="-1" type="button" class="' + className + '" data-month="' + i + '">' + month + '</button>';
       })
       .join('') +
     '</div>'
@@ -555,8 +523,7 @@ function render$1(dp) {
  */
 function keyDown$1(e, dp) {
   var key = e.keyCode;
-  var shiftBy =
-    key === Key.left ? -1 : key === Key.right ? 1 : key === Key.up ? -3 : key === Key.down ? 3 : 0;
+  var shiftBy = key === Key.left ? -1 : key === Key.right ? 1 : key === Key.up ? -3 : key === Key.down ? 3 : 0;
 
   if(key === Key.esc) {
     dp.setState({
@@ -600,15 +567,7 @@ function render$2(dp) {
       className += year === currentYear ? ' dp-current' : '';
       className += year === selectedYear ? ' dp-selected' : '';
 
-      return (
-        '<button tabindex="-1" type="button" class="' +
-        className +
-        '" data-year="' +
-        year +
-        '">' +
-        year +
-        '</button>'
-      );
+      return '<button tabindex="-1" type="button" class="' + className + '" data-year="' + year + '">' + year + '</button>';
     }) +
     '</div>'
   );
@@ -624,8 +583,7 @@ function onChooseYear(e, dp) {
 function keyDown$2(e, dp) {
   var key = e.keyCode;
   var opts = dp.opts;
-  var shiftBy =
-    key === Key.left || key === Key.up ? 1 : key === Key.right || key === Key.down ? -1 : 0;
+  var shiftBy = key === Key.left || key === Key.up ? 1 : key === Key.right || key === Key.down ? -1 : 0;
 
   if(key === Key.esc) {
     dp.setState({
