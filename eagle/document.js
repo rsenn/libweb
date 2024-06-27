@@ -263,9 +263,12 @@ export class EagleDocument extends EagleNode {
 
   getBounds(sheetNo = 0) {
     let bb = new BBox();
-    let sheet = this.getSheet(sheetNo);
 
-    if(this.type == 'sch') return sheet.getBounds(v => /(instance|net)/.test(v.tagName));
+    if(this.type == 'sch') {
+      let sheet = this.getSheet(sheetNo);
+      return sheet.getBounds(v => /(instance|net)/.test(v.tagName));
+    }
+    
     if(this.type == 'brd') return this.board.getBounds();
 
     if(this.elements)
