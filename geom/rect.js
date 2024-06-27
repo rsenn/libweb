@@ -147,7 +147,7 @@ Object.defineProperty(Rect.prototype, 'x1', {
   set(value) {
     const extend = this.x - value;
     this.width += extend;
-    this.x -= extend;
+    this.x = value;
   },
   enumerable: true
 });
