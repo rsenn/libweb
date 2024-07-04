@@ -21,14 +21,14 @@ export class Printer {
     this.indent = indent || 2;
     this.comments = comments || [];
 
-    let color = Util.coloring(colors);
+    //let color = Util.coloring(colors);
 
     define(this, {
-      color,
+      //color,
       colorText: Object.entries(Printer.colors).reduce(
         (acc, [key, codes]) => ({
           ...acc,
-          [key]: text => color.text(text, ...codes)
+          [key]: text => `\x1b[${codes.join(';')}m${text}\x1b[0m`
         }),
         {}
       ),
@@ -36,10 +36,10 @@ export class Printer {
         (acc, [key, codes]) => ({
           ...acc,
           [key]: output => {
-            if(typeof output == 'string') {
+            /*if(typeof output == 'string') {
               if(Util.equals(Util.decodeAnsi(output).slice(0, -1), codes)) return '';
-            }
-            return color.code(...codes);
+            }*/
+            return `\x1b[${codes.join(';')}m`;
           }
         }),
         {}
@@ -86,9 +86,9 @@ export class Printer {
     //if(ret.length) console.log('code:', escape(code));
     ret += code;
 
-    if(ret.indexOf('\x1b[') != -1) {
-      let ansi = Util.decodeAnsi(ret);
-      if(!Util.equals(ansi, [0, 'm'])) ret += '\x1b[0m';
+   /* if(ret.indexOf('\x1b[') != -1)*/ {
+      /*let ansi = Util.decodeAnsi(ret);
+     if(!Util.equals(ansi, [0, 'm']))*/ ret += '\x1b[0m';
     }
     return ret;
   }
