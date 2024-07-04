@@ -1,3 +1,5 @@
+import { weakMapper } from './misc.js'
+
 /*!
  * @svgdotjs/svg.js - A lightweight library for manipulating and animating SVG.
  * @version 3.2.0
@@ -2681,6 +2683,10 @@ class Element extends Dom {
       // pull svgjs data from the dom (getAttributeNS doesn't work in html5)
       this.setData((_ref = (_JSON$parse = JSON.parse(node.getAttribute('data-svgjs'))) != null ? _JSON$parse : JSON.parse(node.getAttribute('svgjs:data'))) != null ? _ref : {});
     }
+  }
+
+  doc() {
+    return makeInstance(this.node.ownerSVGElement)
   }
 
   // Move element by its center
@@ -6893,119 +6899,4 @@ class Use extends Shape {
 registerMethods({
   Container: {
     // Create a use element
-    use: wrapWithAttrCheck(function (element, file) {
-      return this.put(new Use()).use(element, file);
-    })
-  }
-});
-register(Use, 'Use');
-
-/* Optional Modules */
-const SVG = makeInstance;
-extend([Svg, Symbol, Image, Pattern, Marker], getMethodsFor('viewbox'));
-extend([Line, Polyline, Polygon, Path], getMethodsFor('marker'));
-extend(Text, getMethodsFor('Text'));
-extend(Path, getMethodsFor('Path'));
-extend(Defs, getMethodsFor('Defs'));
-extend([Text, Tspan], getMethodsFor('Tspan'));
-extend([Rect, Ellipse, Gradient, Runner], getMethodsFor('radius'));
-extend(EventTarget, getMethodsFor('EventTarget'));
-extend(Dom, getMethodsFor('Dom'));
-extend(Element, getMethodsFor('Element'));
-extend(Shape, getMethodsFor('Shape'));
-extend([Container, Fragment], getMethodsFor('Container'));
-extend(Gradient, getMethodsFor('Gradient'));
-extend(Runner, getMethodsFor('Runner'));
-List.extend(getMethodNames());
-registerMorphableType([SVGNumber, Color, Box, Matrix, SVGArray, PointArray, PathArray, Point]);
-makeMorphable();
-
-export {
-  A,
-  Animator,
-  SVGArray as Array,
-  Box,
-  Circle,
-  ClipPath,
-  Color,
-  Container,
-  Controller,
-  Defs,
-  Dom,
-  Ease,
-  Element,
-  Ellipse,
-  EventTarget,
-  ForeignObject,
-  Fragment,
-  G,
-  Gradient,
-  Image,
-  Line,
-  List,
-  Marker,
-  Mask,
-  Matrix,
-  Morphable,
-  NonMorphable,
-  SVGNumber as Number,
-  ObjectBag,
-  PID,
-  Path,
-  PathArray,
-  Pattern,
-  Point,
-  PointArray,
-  Polygon,
-  Polyline,
-  Queue,
-  Rect,
-  Runner,
-  SVG,
-  Shape,
-  Spring,
-  Stop,
-  Style,
-  Svg,
-  Symbol,
-  Text,
-  TextPath,
-  Timeline,
-  TransformBag,
-  Tspan,
-  Use,
-  adopt,
-  assignNewId,
-  clearEvents,
-  create,
-  defaults,
-  dispatch,
-  easing,
-  eid,
-  extend,
-  baseFind as find,
-  getClass,
-  getEventTarget,
-  getEvents,
-  getWindow,
-  makeInstance,
-  makeMorphable,
-  mockAdopt,
-  namespaces,
-  nodeOrNew,
-  off,
-  on,
-  parser,
-  regex,
-  register,
-  registerMorphableType,
-  registerWindow,
-  restoreWindow,
-  root,
-  saveWindow,
-  utils,
-  windowEvents,
-  withWindow,
-  wrapWithAttrCheck
-};
-//# sourceMappingURL=svg.esm.js.map
+    use: wrapWithAttrC
