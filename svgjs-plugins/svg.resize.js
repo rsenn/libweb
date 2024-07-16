@@ -1,4 +1,4 @@
-import { extend,Element} from '../svg.js';
+import { extend, Element } from '../svg.js';
 
 export function ResizeHandler(el) {
   el.remember('_resizeHandler', this);
@@ -482,22 +482,20 @@ ResizeHandler.prototype.checkAspectRatio = function(snap, isReverse) {
 };
 
 export default function() {
+  extend(Element, {
+    // Resize element with mouse
+    resize(options) {
+      (this.remember('_resizeHandler') || new ResizeHandler(this)).init(options || {});
 
-extend(Element, {
-  // Resize element with mouse
-  resize(options) {
-    (this.remember('_resizeHandler') || new ResizeHandler(this)).init(options || {});
+      return this;
+    }
+  });
 
-    return this;
-  }
-});
-
-Element.prototype.resize.defaults = {
-  snapToAngle: 0.1, // Specifies the speed the rotation is happening when moving the mouse
-  snapToGrid: 1, // Snaps to a grid of `snapToGrid` Pixels
-  constraint: {}, // keep element within constrained box
-  resizeLimits: { width: 0, height: 0 }, // rect limit size on resize
-  saveAspectRatio: false // Save aspect ratio when resizing using lt, rt, rb or lb points
-};
-
+  Element.prototype.resize.defaults = {
+    snapToAngle: 0.1, // Specifies the speed the rotation is happening when moving the mouse
+    snapToGrid: 1, // Snaps to a grid of `snapToGrid` Pixels
+    constraint: {}, // keep element within constrained box
+    resizeLimits: { width: 0, height: 0 }, // rect limit size on resize
+    saveAspectRatio: false // Save aspect ratio when resizing using lt, rt, rb or lb points
+  };
 }
