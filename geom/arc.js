@@ -160,7 +160,9 @@ export function ArcTo(x, y, curve = 0, round = a => a) {
 
   if(cabs <= Number.EPSILON) return `l ${x} ${y}`;
 
-  const radius = round(Math.sqrt(x * x + y * y) * Math.cos((cabs * Math.PI) / 360));
+  const f = Math.PI / 360;
+  const distance = Math.sqrt(x * x + y * y);
+  const radius = round((distance * Math.cos((cabs * Math.PI) / 360)) / 0.7071067811865476);
 
   return ['a', radius, radius, 0, cabs > 90 ? 1 : 0, Math.sign(curve) < 0 ? 1 : 0, x, y].join(' ');
 

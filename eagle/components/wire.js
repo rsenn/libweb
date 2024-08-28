@@ -2,6 +2,7 @@ import { ArcTo, TransformationList } from '../../geom.js';
 import { h } from '../../preact.mjs';
 import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass, log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
+import { Pointer } from '../../pointer.js';
 
 const RoundToMil = n => Math.round(n * 1000) / 1000;
 
@@ -34,6 +35,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
     ...(curve ? { 'data-curve': curve } : {}),
     'data-layer': `${layer.number} ${layer.name}`,
+    'data-path': data.path.join(' '),
     style: visible ? { ...extraStyle } : { ...extraStyle, display: 'none' },
     transform,
     ...props

@@ -168,20 +168,21 @@ export class Pointer extends Array {
   }
 
   toString(sep = ' ', partToStr = Pointer.partToString, childrenStr = Pointer.CHILDREN_GLYPH + CHILDREN_SPACE) {
-    // console.log("Pointer.toString",{sep,partToStr, childrenStr});
     const color = globalThis.navigator ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
-    //   if(this[0] == 'children') sep = ' ';
+
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
     let r = [];
-    for(let i = 0; ; i++) {
+
+    for(let i = 0; i < n; i++) {
       let p = partToStr(a, '/', childrenStr, color);
       if(!p) break;
       r = r.concat(p);
     }
+
     const pad = (s, n = 1) => ' '.repeat(n) + s + ' '.repeat(n);
-    r = r.join(color(sep, 1, 36) + color('', 1, 30)); //.replace(/[/\.]\[/g, '[');
+    r = r.join(color(sep, 1, 36) + color('', 1, 30));
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
     return r.replace(/\//g, sep);
   }
@@ -366,6 +367,10 @@ export class Pointer extends Array {
 
   [Symbol.iterator]() {
     return Array.prototype[Symbol.iterator].call(this);
+  }
+
+  static fromString(str, re = /[\W\s]+/g) {
+    return new Pointer((str + '').split(re).map(p => (isNaN(+p) ? p : +p)));
   }
 }
 
