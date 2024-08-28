@@ -8,6 +8,7 @@ import { Palette } from './common.js';
 import { ElementToComponent, Origin, WirePath } from './components.js';
 import { ElementToClass, EscapeClassName, HORIZONTAL, LinesToPath, MakeRotation, RenderShape, RotateTransformation, VERTICAL } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
+import { Element } from './components/element.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
@@ -223,31 +224,21 @@ export class BoardRenderer extends EagleSVGRenderer {
     }
   }
 
-  renderElement(element, parent) {
-    let { name, library, value, x, y, rot = '0' } = element;
+  /*renderElement(element, parent) {
+    let { name, library, value, x, y, rot = '0', package:pkg } = element;
     if(typeof value != 'string') value = value + '';
-
-    //throw new Error(`renderElement deprecated`);
 
     this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
-    let pkg = library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
-
-    let transform = new TransformationList();
     let rotation = MakeRotation(rot);
-
-    transform = transform.translate(x, y);
-    transform = transform.concat(rotation);
+    let transform = new TransformationList().translate(x, y).concat(rotation);
     let elementName = EscapeClassName(name);
 
     if(typeof value != 'string' || value.length == 0) value = ' ';
 
-    //console.debug(`BoardRenderer.renderElement(2)`, { name, transform });
-
     const g = this.create(
       'g',
       {
-        //&id: `element.${elementName}`,
         class: ElementToClass(element),
         'data-type': element.tagName,
         'data-name': name,
@@ -260,14 +251,13 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    // this.debug('BoardRenderer.renderElement', { name, value });
+
 
     if(/^[RLC][0-9]/.test(name)) {
       let re;
-      this.debug('BoardRenderer.renderElement', {
-        name,
-        value
-      });
+
+      this.debug('BoardRenderer.renderElement', { name, value });
+
       switch (name[0]) {
         case 'R':
           value = value.replace(/㏀$/, 'kΩ').replace(/㏁$/, 'MΩ');
@@ -288,7 +278,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       } catch(e) {}
     }
 
-    if(element?.package?.children)
+    if(pkg.children)
       this.renderCollection(pkg.children, g, {
         name,
         value,
@@ -299,15 +289,15 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.create(
       Origin,
       {
-        /* x, y,*/ element,
+         element,
         layer: this.layers['tOrigins'],
         style: { display: 'none' }
       },
       g
     );
-  }
+  }*/
 
-  render(doc = this.doc /*, parent, props = {}*/) {
+  render(doc = this.doc) {
     let parent, props;
     let transform = this.transform;
 
@@ -318,7 +308,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     measures.forEach(e => bounds.update(e.getBounds()));
 
-    let rect = new Rect(bounds); /*.round(2.54)*/
+    let rect = new Rect(bounds);
     let viewBox = new Rect(0, 0, rect.width, rect.height);
 
     this.debug(`BoardRenderer.render`, { bounds, rect, transform, viewBox });
@@ -330,7 +320,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     });
 
     bounds = this.bounds;
-    //  const { bounds, rect } = this;
+
     rect = this.rect;
 
     if(this?.transform?.unshift && rect) {
@@ -339,7 +329,6 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
     }
 
-    //this.renderLayers(parent);
     const plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
     const signalsElement = doc.lookup('eagle/drawing/board/signals');
 
@@ -348,15 +337,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
 
-    for(let element of [...doc.elements.list]) {
-      //this.create(Element, element,  elementsGroup);
-      try {
-        this.renderElement(element, elementsGroup);
-      } catch(e) {
-        console.error(`Error rendering element ${element.name}:`, e.message);
-        console.error(e.stack);
-      }
-    }
+    for(let element of [...doc.elements.list]) this.create(Element, { data: element }, elementsGroup);
 
     let plain = [...(doc.plain?.children ?? doc.plain)];
 

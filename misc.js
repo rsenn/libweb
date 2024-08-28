@@ -683,10 +683,12 @@ export function extend(dst, src, options = { enumerable: false }) {
       Object.setPrototypeOf(obj, props[prop]);
       continue;
     }
+
     let desc = Object.getOwnPropertyDescriptor(src, prop);
     options(desc, prop);
     Object.defineProperty(dst, prop, desc);
   }
+
   return dst;
 }
 
@@ -712,6 +714,7 @@ export function defineGetter(obj, key, fn, enumerable = false) {
       configurable: true,
       get: fn
     });
+
   return obj;
 }
 

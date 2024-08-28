@@ -242,7 +242,7 @@ export class EagleElement extends EagleNode {
               return color;
             }
           });
-        } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
+        } else if(EagleElement.isRelation(key) || ['package', 'library' /*, 'layer'*/].indexOf(key) != -1) {
           let hfn;
 
           if(key == 'package') {
@@ -314,34 +314,18 @@ export class EagleElement extends EagleNode {
             };
             if(this[key] == undefined) this.initRelation(key, this.handlers[key], hfn);
           }
-          //    console.log('hfn', {hfn:hfn+'',tagName,key});
-          /*  let nfn = (...args) => {
-            let ret;
-            try {
-              ret = hfn(...args);
-            } catch(e) {
-              ret = e;
-            }
-            return ret;
-          };
-*/
-          /*if(this[key] == undefined) */ trkl.bind(this, key, hfn);
+          trkl.bind(this, key, hfn);
         } else {
           trkl.bind(this, key, handler);
         }
-        // prop.subscribe(value => value !== undefined && this.event(key, value));
-
-        //console.log("prop:",key,prop.subscribe);
       }
     }
+
     let childList = null;
 
     if(tagName == 'element') {
-      lazyProperty(this, 'children', () => {
-        const pkg = this.library.get(e => e.tagName == 'package' && e.attributes.name == this.attributes.package);
-
-        return EagleNodeList.create(pkg, pkg.path.concat(['children']), null);
-      });
+      lazyProperty(this, 'children', () => EagleNodeList.create(this.package, this.package.path.concat(['children']), null));
+      lazyProperty(this, 'package', () => this.library.get(e => e.tagName == 'package' && e.attributes.name == this.attributes.package));
     } else if('children' in raw) lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
 
     if(tagName == 'drawing' /*|| tagName == 'schematic' || tagName == 'board'*/) {
@@ -354,7 +338,10 @@ export class EagleElement extends EagleNode {
       trkl.bind(this, 'layer', () => doc.layers['Vias']);
     } else if(tagName == 'hole') {
       trkl.bind(this, 'layer', () => doc.layers['Holes']);
+    } else if(this.attributes.layer) {
+      trkl.bind(this, 'layer', () => doc.layers[this.attributes.layer]);
     }
+
     if(tagName == 'part') lazyProperty(this, 'package', () => this.device.package);
 
     if(tagName == 'instance') lazyProperty(this, 'package', () => this.part.device.package);
@@ -411,7 +398,7 @@ export class EagleElement extends EagleNode {
       lazyProperties(this, {
         sheets: () => {
           const sheets = this.lookup(this.tagName == 'schematic' ? 'sheets' : 'eagle/drawing/schematic/sheets');
-          if(sheets) return EagleNodeList.create(this, sheets.path.down('children'));
+          if(sheets) return EagleNodeList.create(this, sheets.path.concat(['children']));
         },
         parts: () => EagleNodeMap.create(this.lookup(this.tagName == 'schematic' ? 'parts' : 'eagle/drawing/schematic/parts').children, 'name'),
         libraries: () => {
@@ -426,7 +413,7 @@ export class EagleElement extends EagleNode {
         packages() {
           const packages = this.lookup(this.tagName == 'library' ? 'packages' : 'eagle/drawing/library/packages');
           if(packages) {
-            let list = EagleNodeList.create(this, packages.path.down('children'));
+            let list = EagleNodeList.create(this, packages.path.concat(['children']));
 
             return EagleNodeMap.create(list, 'name');
           }
@@ -442,7 +429,7 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'symbol') {
       lazyProperty(this, 'pins', () => {
-        let list = EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pin');
+        let list = EagleNodeList.create(this, this.path.concat(['children']), e => e.tagName == 'pin');
         return EagleNodeMap.create(list, 'name');
       });
     }
@@ -467,7 +454,7 @@ export class EagleElement extends EagleNode {
       trkl.bind(this, 'contacts', () =>
         Object.fromEntries(
           [
-            ...doc.board.signals.owner.getAll({
+            ...doc.get('signals').owner.getAll({
               tagName: 'contactref',
               element: attributes.name
             })
@@ -477,7 +464,7 @@ export class EagleElement extends EagleNode {
       trkl.bind(this, 'contactrefs', () =>
         Object.fromEntries(
           [
-            ...doc.board.signals.owner.getAll({
+            ...doc.get('signals').owner.getAll({
               tagName: 'contactref',
               element: attributes.name
             })
@@ -487,16 +474,16 @@ export class EagleElement extends EagleNode {
     }
     if(tagName == 'signal') {
       for(let prop of ['via', 'wire', 'contactref']) {
-        lazyProperty(this, prop + 's', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == prop));
+        lazyProperty(this, prop + 's', () => EagleNodeList.create(this, this.path.concat(['children']), e => e.tagName == prop));
       }
     }
     if(tagName == 'package') {
-      lazyProperty(this, 'vias', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'via'));
+      lazyProperty(this, 'vias', () => EagleNodeList.create(this, this.path.concat(['children']), e => e.tagName == 'via'));
       lazyProperty(this, 'pads', () => {
-        let list = EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pad');
+        let list = EagleNodeList.create(this, this.path.concat(['children']), e => e.tagName == 'pad');
         return EagleNodeMap.create(list, 'name');
       });
-      lazyProperty(this, 'wires', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'wire'));
+      lazyProperty(this, 'wires', () => EagleNodeList.create(this, this.path.concat(['children']), e => e.tagName == 'wire'));
     }
 
     if(tagName == 'layer') {
@@ -671,9 +658,9 @@ export class EagleElement extends EagleNode {
     }
 
     if(this.tagName == 'board') {
-const layerNumbers= ['Dimension','Measures','Document'].map(n=> this.document.layers[n]).map(l => l.number);
+      const layerNumbers = ['Dimension', 'Measures', 'Document'].map(n => this.document.layers[n]).map(l => l.number);
 
-      const measures = [...this.document.plain.children].filter(e =>  e.tagName == 'wire' &&  layerNumbers.indexOf(+e.attributes.layer) != -1);
+      const measures = [...this.document.plain.children].filter(e => e.tagName == 'wire' && layerNumbers.indexOf(+e.attributes.layer) != -1);
 
       if(measures.length >= 4) {
         bb.update(measures);

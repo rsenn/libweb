@@ -6,44 +6,37 @@ import { log, MakeRotation } from '../renderUtils.js';
 import { Package } from './package.js';
 
 export const Element = ({ data, opts = {}, ...props }) => {
-  let { transformation = new TransformationList() } = opts;
+  const { transformation = new TransformationList() } = opts;
 
-  //log('Element.render', { transformation, data });
-
-  let element =
+  const element =
     useValue(async function* () {
-      for await(let change of data.repeater) {
-        log('Element.change:', change);
-        yield change;
-      }
+      for await(let change of data.repeater) yield change;
     }) || data;
 
-  let { x, y, rot, library, name, value } = element;
+  const { x, y, rot, library, name, value, package: pkg } = element;
+
+  log('Element.render', { x,y,rot,library,name,value,package:pkg });
 
   let transform = new TransformationList();
 
   transform.translate(x, y);
 
-  if(rot) {
-    rot = MakeRotation(rot);
-    transform = transform.concat(rot);
-  }
+  if(rot) 
+    transform = transform.concat(MakeRotation(rot));
 
   if(/^R[0-9]/.test(name)) {
-    let number = ValueToNumber(value);
+    const number = ValueToNumber(value);
 
     log('name:', name, ' number:', number, ' value:', value);
   }
 
-  let d = library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
+  if(!value && pkg) value = pkg.name;
 
-  if(!value && d) value = element.attributes.package;
+  log('Element.render', { transformation, transform });
 
-  log('Element.render', { transformation, data, package: d });
-
-  const pkg = h(Package, {
-    data: d,
-    opts: {
+  const child = h(Package, {
+    data: pkg,
+     opts: {
       ...opts,
       ...{ name, value },
       transformation: transformation.concat(transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/)
@@ -53,10 +46,11 @@ export const Element = ({ data, opts = {}, ...props }) => {
   return h(
     'g',
     {
-      class: `element.${element.name}`,
+      id: `element-${element.name}`,
+      class: `element-${element.name}`,
       'data-path': element.path.toString(' '),
       transform
     },
-    [pkg]
+    [child]
   );
 };

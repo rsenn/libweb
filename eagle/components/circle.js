@@ -16,10 +16,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
 
   let circle =
     useValue(async function* () {
-      for await(let change of data.repeater) {
-        log('Circle.change:', change);
-        yield change;
-      }
+      for await(let change of data.repeater) yield change;
     }) || data;
 
   let { transform = new TransformationList() } = opts;

@@ -7,33 +7,37 @@ import { Polygon } from './polygon.js';
 import { Rectangle } from './rectangle.js';
 import { SMD } from './smd.js';
 import { Text } from './text.js';
+import { TextElement } from './textElement.js';
 import { Wire } from './wire.js';
 
-const componentIndex = {
+const components = {
+  pad: Pad,
   circle: Circle,
   hole: Hole,
-  pad: Pad,
   polygon: Polygon,
   rectangle: Rectangle,
   smd: SMD,
-  text: Text,
-  wire: Wire
+  wire: Wire,
+  text: TextElement
 };
 
 export const Package = ({ data, component = Fragment, id, class: className, ...props }) => {
-  const { name } = data;
+  log('Package.render', { data });
 
-  log('Package.render', { data, name });
-  
-  const children = data.children.filter(e => e.tagName != 'description');
-  const [description] = data.children.filter(e => e.tagName == 'description');
+  const children = [...data.children].filter(e => e.tagName != 'description'),
+    names = Object.keys(components);
 
-  //children.map(data => log('data:', data.tagName));
-  //
-  let i = 0;
+  let a = [],
+    i = 0,
+    obj = {};
 
-  return h(component, { id, class: className }, [
-    ...children.filter(({ tagName }) => tagName != 'text').map(data => h(componentIndex[data.tagName], { data, key: `package-${name}-${i++}`, ...props })),
-    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(componentIndex[data.tagName], { data, key: `package-${name}-${i++}`, ...props }))
-  ]);
+  for(let child of children) (obj[child.tagName] ??= []).push(child);
+
+  for(let name of names) if(obj[name]) for(let elem of obj[name]) a.push(elem);
+
+  return h(
+    component,
+    { id, class: className },
+    a.map(data => h(components[data.tagName], { data, key: `package-${data.name}-${i++}`, ...props }))
+  );
 };

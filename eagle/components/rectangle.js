@@ -7,13 +7,11 @@ import { ElementToClass, log, MakeCoordTransformer, MakeRotation, useTrkl } from
 export const Rectangle = ({ data, opts = {}, ...props }) => {
   let rectangle =
     useValue(async function* () {
-      for await(let change of data.repeater) {
-        log('Rectangle.change:', change);
-        yield change;
-      }
+      for await(let change of data.repeater) yield change;
     }) || data;
 
   log('Rectangle.render ', { rectangle, opts });
+
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
