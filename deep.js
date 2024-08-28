@@ -111,25 +111,27 @@ export const select = (root, filter, flags = 0) => {
   return SelectFunction(root, filter);
 };
 
-export const find = (node, filter, flags = 0, root) => {
+export const find = (node, filter, flags = 0, root, path = []) => {
   let k,
     ret,
     result = null;
-  let path = /*(typeof path == 'string' ? path.split(/[\.\/]/) : path) ||*/ [];
+
   if(!root) {
     root = node;
     result = ReturnValuePath(null, null, flags);
   }
+
   ret = filter(node, path, root);
 
   if(ret === -1) return -1;
   else if(ret) result = ReturnValuePath(node, path, flags);
   else if(typeof node == 'object' && node != null) {
     for(k in node) {
-      result = find(node[k], filter, [...path, k], root);
+      result = find(node[k], filter, flags, root, [...path, k]);
       if(result) break;
     }
   }
+
   return result;
 };
 

@@ -8,7 +8,7 @@ import { Package } from './package.js';
 export const Element = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
 
-  log('Element.render', { transformation, data });
+  //log('Element.render', { transformation, data });
 
   let element =
     useValue(async function* () {
@@ -29,16 +29,20 @@ export const Element = ({ data, opts = {}, ...props }) => {
     transform = transform.concat(rot);
   }
 
-  if(!value && element.package) value = element.package.name;
-
   if(/^R[0-9]/.test(name)) {
     let number = ValueToNumber(value);
 
     log('name:', name, ' number:', number, ' value:', value);
   }
 
+  let d = library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
+
+  if(!value && d) value = element.attributes.package;
+
+  log('Element.render', { transformation, data, package: d });
+
   const pkg = h(Package, {
-    data: element.package,
+    data: d,
     opts: {
       ...opts,
       ...{ name, value },

@@ -24,6 +24,7 @@ export const Package = ({ data, component = Fragment, id, class: className, ...p
   const { name } = data;
 
   log('Package.render', { data, name });
+  
   const children = data.children.filter(e => e.tagName != 'description');
   const [description] = data.children.filter(e => e.tagName == 'description');
 

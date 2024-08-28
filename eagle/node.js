@@ -10,7 +10,8 @@ import { EagleNodeMap } from './nodeMap.js';
 import { EagleRef, EagleReference } from './ref.js';
 //import { Attr, CSSStyleDeclaration, Comment, Document, Element, Entities, Factory, GetType, Interface, NamedNodeMap, Node, NodeList, Parser, Prototypes, Serializer, Text, TokenList, nodeTypes } from 'dom';
 
-const rawNode = new WeakMap();
+const node2raw = new WeakMap();
+const raw2node = new WeakMap();
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -119,7 +120,8 @@ export class EagleNode {
         }
 
     /*if(!ret) ret = this.getRaw();
-    else*/ rawNode.set(this, ret);
+    else*/ node2raw.set(this, ret);
+raw2node.set(ret,this);
 
     //if(!ret) throw error;
 
@@ -490,8 +492,8 @@ define(EagleNode.prototype, {
         if(!r) r = mapper.at(ref.path);
       } catch(e) {}
 
-    if(!r) r = rawNode.get(this);
-    else rawNode.set(this, r);
+    if(!r) r = node2raw.get(this);
+    else node2raw.set(this, r);
 
     return r;
   })*/
@@ -499,6 +501,10 @@ define(EagleNode.prototype, {
 
 define(EagleNode, {
   raw(node) {
-    return rawNode.get(node);
+    return node2raw.get(node);
+  },
+  get(raw) {
+    return raw2node.get(raw);
   }
 });
+

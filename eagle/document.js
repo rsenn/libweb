@@ -268,7 +268,7 @@ export class EagleDocument extends EagleNode {
       let sheet = this.getSheet(sheetNo);
       return sheet.getBounds(v => /(instance|net)/.test(v.tagName));
     }
-    
+
     if(this.type == 'brd') return this.board.getBounds();
 
     if(this.elements)
@@ -300,12 +300,12 @@ export class EagleDocument extends EagleNode {
 
       //console.log('plain', plain);
 
-      for(let layer of ['Dimension', 'Measures']) {
+      for(let layer of ['Dimension', 'Measures', 'Document']) {
         if(!this.layers[layer]) continue;
 
         let layerId = this.layers[layer].number;
 
-        ret = [...plain].filter(e => e.attributes.layer == layerId && e.tagName == 'wire');
+        ret = [...plain.children].filter(e => +e.attributes.layer == layerId && e.tagName == 'wire');
 
         if(ret.length >= 1) break;
       }
@@ -313,7 +313,10 @@ export class EagleDocument extends EagleNode {
       if(options.bbox) if (ret) ret = BBox.from(ret);
 
       return ret;
-    } catch(e) {}
+    } catch(e) {
+      console.error('EagleDocument.getMeasures', e.message);
+      console.error(e.stack);
+    }
   }
 
   get measures() {
@@ -370,6 +373,8 @@ export class EagleDocument extends EagleNode {
   }
 
   getLibrary(name) {
+    return this.get(e => e.tagName == 'library' && e.attributes.name == 'c');
+
     try {
       return this.get(e => e.tagName == 'library' && e.attributes.name == name);
     } catch(e) {}

@@ -337,17 +337,18 @@ export class EagleSVGRenderer {
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', { doc });
 
-    let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList() } = props;
+    let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList(),viewBox } = props;
 
     try {
       if(!bounds || (bounds.size && bounds.size.area() == 0)) bounds = obj.getBounds({ bbox: true });
 
-      let rect = new Rect(bounds.rect);
+      let rect = new Rect(viewBox);
 
-      rect.round(1.27);
-
+   /*   rect.round(1.27);
       rect.round(2.54);
-      let viewBox = rect;
+*/
+      viewBox = new BBox(rect);
+
       let { index } = props;
 
       this.rect = rect;
@@ -355,8 +356,7 @@ export class EagleSVGRenderer {
 
       const { width, height } = (this.size = rect.size.toCSS('mm'));
 
-      this.debug('EagleSVGRenderer.render', { bounds, width, height });
-      this.debug('EagleSVGRenderer.render', { transform, index });
+      this.debug('EagleSVGRenderer.render', { bounds, width, height, transform, index, viewBox });
 
       let gridElement = doc.lookup('eagle/drawing/grid');
       let attrs = {
@@ -375,14 +375,13 @@ export class EagleSVGRenderer {
       let svgElem = h(
         Drawing,
         {
-          rect: viewBox,
-
+          rect: new Rect(viewBox),
           bounds,
           attrs,
           grid: gridElement,
           nodefs: index > 0,
-          width,
-          height,
+     /*     width,
+          height,*/
           transform: transform.slice(1)
           /*   styles: [
           'text { font-size: 0.0875rem; }',

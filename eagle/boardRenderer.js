@@ -231,6 +231,8 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
+    let pkg = library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
+
     let transform = new TransformationList();
     let rotation = MakeRotation(rot);
 
@@ -251,7 +253,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
-        'data-package': element.package.name,
+        'data-package': pkg.name,
         'data-path': element.path.toString(' '),
         'data-rot': rot,
         transform
@@ -287,7 +289,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     }
 
     if(element?.package?.children)
-      this.renderCollection(element.package.children, g, {
+      this.renderCollection(pkg.children, g, {
         name,
         value,
         transformation: this.transform.concat(transform),
@@ -308,9 +310,18 @@ export class BoardRenderer extends EagleSVGRenderer {
   render(doc = this.doc /*, parent, props = {}*/) {
     let parent, props;
     let transform = this.transform;
-    let bounds = doc.measures;
-    let rect = new Rect(bounds).round(2.54);
+
+    let measures = project.doc.getMeasures();
+    let bounds = new BBox();
+
+    if(measures.length == 0) measures = [...doc.plain.children].filter(e => e.layer && ['Dimension', 'Measures'].indexOf(e.layer.name) != -1);
+
+    measures.forEach(e => bounds.update(e.getBounds()));
+
+    let rect = new Rect(bounds); /*.round(2.54)*/
     let viewBox = new Rect(0, 0, rect.width, rect.height);
+
+    this.debug(`BoardRenderer.render`, { bounds, rect, transform, viewBox });
 
     parent = super.render(doc, {
       transform,
@@ -328,8 +339,6 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
     }
 
-    this.debug(`BoardRenderer.render`, { bounds, rect, transform });
-
     //this.renderLayers(parent);
     const plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
     const signalsElement = doc.lookup('eagle/drawing/board/signals');
@@ -339,12 +348,15 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
 
-    try {
-      for(let element of this.elements.list) {
-        //this.create(Element, element,  elementsGroup);
+    for(let element of [...doc.elements.list]) {
+      //this.create(Element, element,  elementsGroup);
+      try {
         this.renderElement(element, elementsGroup);
+      } catch(e) {
+        console.error(`Error rendering element ${element.name}:`, e.message);
+        console.error(e.stack);
       }
-    } catch(e) {}
+    }
 
     let plain = [...(doc.plain?.children ?? doc.plain)];
 
