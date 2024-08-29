@@ -1,8 +1,7 @@
-import { arrayFacade } from '../misc.js'
-
+import { arrayFacade } from '../misc.js';
 
 export class ArrayFacade {
-  #nodelist = null;
+  #parent = null;
   #to_node = null;
   #from_node = null;
   #element = '';
@@ -19,23 +18,25 @@ export class ArrayFacade {
 
     let result = [],
       next,
-      node = this.#parent['first' + this.#element + 'Child'];
+      m = this.#parent['first' + this.#element + 'Child'];
 
     for(let i = 0; i < length; i++) {
-      next = node['next' + this.#element + 'Sibling'];
-
       if(i == start + count) break;
 
+      next = m['next' + this.#element + 'Sibling'];
+
       if(i >= start) {
-        this.#parent.removeChild(node);
-        result.push(this.#from_node(node));
+        this.#parent.removeChild(m);
+        result.push(this.#from_node(m));
       }
 
-      node = next;
+      m = next;
     }
 
     for(let n of insert) {
-      this.#parent.insertBefore(this.#to_node(n), next);
+      if(next) this.#parent.insertBefore(this.#to_node(n), next);
+      else this.#parent.appendChild(this.#to_node(n));
+
       next = n;
     }
 
@@ -46,13 +47,13 @@ export class ArrayFacade {
     const { length } = this.#parent.children;
 
     let result = [],
-      node = this.#parent['first' + this.#element + 'Child'];
+      m = this.#parent['first' + this.#element + 'Child'];
 
     for(let i = 0; i < length; i++) {
       if(i >= end) break;
-      if(i >= start) result.push(this.#from_node(node));
+      if(i >= start) result.push(this.#from_node(m));
 
-      node = node['next' + this.#element + 'Sibling'];
+      m = m['next' + this.#element + 'Sibling'];
     }
 
     return result;
@@ -65,7 +66,7 @@ export class ArrayFacade {
   unshift(...args) {
     const before = this.#parent['first' + this.#element + 'Child'];
 
-    for(let n of args) this.#parent.insertBefore(before);
+    for(let n of args) this.#parent.insertBefore(this.#to_node(n), before);
   }
 
   pop() {
@@ -85,33 +86,82 @@ export class ArrayFacade {
   }
 
   at(i) {
-    return this.#from_node(this.#parent.children[i]);
+    const n = this.#parent.children[i];
+    return n ? this.#from_node(n) : null;
   }
 
-  indexOf(obj) {
+  indexOf(obj, fromIndex = 0) {
     const n = this.#to_node(obj);
     const { length } = this.#parent.children;
 
-    let node = this.#parent['first' + this.#element + 'Child'];
+    let m = this.#parent['first' + this.#element + 'Child'];
+
+    for(let i = fromIndex; i < length; i++) {
+      if(m == n) return i;
+      if(typeof m.isSameNode == 'function' && m.isSameNode(n)) return i;
+
+      m = m['next' + this.#element + 'Sibling'];
+    }
+
+    return -1;
+  }
+
+  lastIndexOf(obj, fromIndex) {
+    const n = this.#to_node(obj);
+    const { length } = this.#parent.children;
+
+    fromIndex ??= length - 1;
+
+    let m = this.#parent['last' + this.#element + 'Child'];
+
+    for(let i = fromIndex; i >= 0; i--) {
+      if(m == n) return i;
+      if(typeof m.isSameNode == 'function' && m.isSameNode(n)) return i;
+
+      m = m['previous' + this.#element + 'Sibling'];
+    }
+
+    return -1;
+  }
+
+  findIndex(pred) {
+    const { length } = this.#parent.children;
+
+    let m = this.#parent['first' + this.#element + 'Child'];
 
     for(let i = 0; i < length; i++) {
-      if(this.#parent.children[i] == n) return i;
+      if(pred(this.#from_node(m), i, this)) return i;
+
+      m = m['next' + this.#element + 'Sibling'];
     }
 
     return -1;
   }
 
-  lastIndexOf(obj) {
-    const n = this.#to_node(obj);
+  findLastIndex(pred) {
     const { length } = this.#parent.children;
 
-    let node = this.#parent['last' + this.#element + 'Child'];
+    let m = this.#parent['last' + this.#element + 'Child'];
 
-    for(let i = length-1; i >=0; i--) {
-      if(this.#parent.children[i] == n) return i;
+    for(let i = length - 1; i >= 0; i--) {
+      if(pred(this.#from_node(m), i, this)) return i;
+
+      m = m['previous' + this.#element + 'Sibling'];
     }
 
     return -1;
+  }
+
+  find(...args) {
+    return itemFn(this, this.findIndex(...args));
+  }
+
+  findLast(...args) {
+    return itemFn(this, this.findLastIndex(...args));
+  }
+
+  includes(obj, fromIndex = 0) {
+    return this.indexOf(obj, fromIndex) != -1;
   }
 }
 

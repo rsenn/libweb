@@ -2087,6 +2087,26 @@ export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
       const { length } = this;
       for(let i = 0; i < length; i++) accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
       return accu;
+    },
+    *map(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield callback.call(thisArg, itemFn(this, i), i, this);
+    },
+    every(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) if(!callback.call(thisArg, itemFn(this, i), i, this)) return false;
+      return true;
+    },
+    some(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) if(callback.call(thisArg, itemFn(this, i), i, this)) return true;
+      return false;
+    },
+    find(...args) {
+      return itemFn(this, this.findIndex(...args));
+    },
+    findLast(...args) {
+      return itemFn(this, this.findLastIndex(...args));
     }
   });
 }
