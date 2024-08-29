@@ -166,3 +166,7 @@ export class ArrayFacade {
 }
 
 arrayFacade(ArrayFacade.prototype);
+
+export class ObjectFacade {
+  constructor(element) {}
+}
