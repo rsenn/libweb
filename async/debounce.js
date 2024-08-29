@@ -44,19 +44,13 @@ export const debounceIterator = function* (stream, interval) {
 
 /* global setTimeout, clearTimeout */
 export function debounceAsync(fn, wait = 0, options = {}) {
-  console.debug(`debounceAsync invoked`, { fn, wait, options });
+  //console.debug(`debounceAsync invoked`, { fn, wait, options });
   let lastCallAt;
   let deferred;
   let timer;
   let pendingArgs = [];
   const callFn = (thisObj, args) => {
-    console.debug(`debounceAsync calling`, {
-      lastCallAt,
-      deferred,
-      timer,
-      pendingArgs,
-      fn
-    });
+    //console.debug(`debounceAsync calling`, { lastCallAt, deferred, timer, pendingArgs, fn });
     return fn.call(thisObj, ...args);
   };
 
