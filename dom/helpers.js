@@ -1,6 +1,33 @@
-import { arrayFacade } from '../misc.js';
+import { isString, isSymbol, isObject, arrayFacade } from '../misc.js';
 
-export class ArrayFacade {
+const inspectSymbol = Symbol.for('quickjs.inspect.custom');
+
+export function parseXML(str, mime = 'text/xml') {
+  const p = new DOMParser();
+
+  return p.parseFromString(str, 'text/xml');
+}
+
+export function* walkNodes(node, prop = 'parentNode', t = a => a) {
+  do {
+    yield t(node);
+
+    node = node[prop];
+  } while(node);
+}
+
+export function getAttributes(node) {
+  const obj = {},
+    names = node.getAttributeNames();
+
+  if(!isObject(names) || names.length == 0) return null;
+
+  for(let name of names) obj[name] = node.getAttribute(name);
+
+  return obj;
+}
+
+export class ArrayInterface {
   #parent = null;
   #to_node = null;
   #from_node = null;
@@ -165,8 +192,36 @@ export class ArrayFacade {
   }
 }
 
-arrayFacade(ArrayFacade.prototype);
+arrayFacade(ArrayInterface.prototype);
 
-export class ObjectFacade {
-  constructor(element) {}
+export class ObjectInterface {
+  constructor(element, desc = {}) {
+    this[Symbol.for('element')] = element;
+    this[Symbol.for('descriptor')] = desc;
+
+    let obj = new Proxy(this, {
+      get: (target, prop, receiver) => (prop in this ? Reflect.get(target, prop, receiver) : isString(prop) && (prop in desc ? desc[prop].get.call(this, element) : element.getAttribute(prop))),
+      set: (target, prop, value) =>
+        prop in this ? Reflect.set(target, prop, value) : isString(prop) && (prop in desc ? desc[prop].set.call(this, element, value) : element.setAttribute(prop, value)),
+      has: (target, prop) => (prop in this ? Reflect.has(target, prop) : isString(prop) && (prop in desc ? true : element.hasAttribute(prop))),
+      getPrototypeOf: target => ObjectInterface.prototype,
+      ownKeys: target => [...element.getAttributeNames(), ...Object.keys(desc).filter(k => desc[k].enumerable == true)]
+    });
+
+    return obj;
+  }
+
+  [inspectSymbol](depth, opts) {
+    const el = this[Symbol.for('element')];
+
+    const name = this[Symbol.toStringTag] ?? 'ObjectInterface';
+
+    return `\x1b[1;31m${name}\x1b[1;36m {\x1b[0m ${el.getAttributeNames().reduce((acc, k, i) => (acc ? acc + ' ' : acc) + `${k}="${el.getAttribute(k)}"`, '')} \x1b[1;36m}\x1b[0m`;
+  }
+
+  static element(obj) {
+    return obj[Symbol.for('element')];
+  }
 }
+
+ObjectInterface.prototype[Symbol.toStringTag] = 'ObjectInterface';
