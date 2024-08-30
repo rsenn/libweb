@@ -1,10 +1,9 @@
 import { define, isObject, mapFunction } from './misc.js';
-//import Util from './util.js';
 
 export async function NormalizeResponse(resp) {
   resp = await resp;
 
-  if(Util.isObject(resp)) {
+  if(isObject(resp)) {
     let { cached, status, ok, redirected, url, headers } = resp;
     let disp = headers.get('Content-Disposition');
     let type = headers.get('Content-Type');
