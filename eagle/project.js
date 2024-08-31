@@ -54,14 +54,22 @@ export class EagleProject {
   }
 
   lazyOpen(file) {
-    let index = this.filenames.length;
-    this.filenames.push(file);
+    let index;
+
+    if((index = this.filenames.indexOf(file)) == -1) {
+      index = this.filenames.length;
+      this.filenames.push(file);
+    }
+
     weakDefine(
       this.documents,
       properties(
         {
           [path.basename(file)]: () => {
-            let doc = EagleDocument.open(file);
+            const doc = EagleDocument.open(file);
+
+            //console.log('EagleProject.lazyOpen', console.config({ depth: 1 }), { file,  index });
+
             this.list[index] = doc;
 
             if(doc.libraries) this.addLibraries([...doc.libraries.list].map(l => l.name));
@@ -69,7 +77,7 @@ export class EagleProject {
             return doc;
           }
         },
-        { memoize: true, configurable: true }
+        { memoize: true, configurable: true, enumerable: true }
       )
     );
   }
@@ -114,7 +122,7 @@ export class EagleProject {
     }
     if(doc) {
       console.log('Opened document', file);
-      this.filenames.push(file);
+      if(this.filenames.indexOf(file) == -1) this.filenames.push(file);
       this.list[path.basename(file)] = doc;
     } else throw new Error(`EagleProject: error opening '${file}': ${err}`);
     if(doc.type == 'lbr') {
@@ -168,20 +176,30 @@ export class EagleProject {
   }
 
   get schematic() {
-    return this.findDocument(name => /\.sch$/i.test(name));
+    const { documents, filenames } = this;
+    const name = filenames.find(f => /\.brd$/i.test(f));
+    if(name) return documents[name.replace(/.*[\/\\]/g, '')];
   }
+
   get board() {
-    return this.findDocument(name => /\.brd$/i.test(name));
+    const { documents, filenames } = this;
+    const name = filenames.find(f => /\.brd$/i.test(f));
+    if(name) return documents[name.replace(/.*[\/\\]/g, '')];
   }
+
   get libraries() {
-    return this.list.filter(doc => doc.type == 'lbr');
+    const { documents, filenames } = this;
+    const names = filenames.filter(f => /\.lbr$/i.test(f)).map(f => f.replace(/.*[\/\\]/g, ''));
+    return names.map(n => documents[n]);
   }
+
   get root() {
-    let children = this.list;
+    const { list: children } = this;
     return { children };
   }
+
   get children() {
-    let children = this.list;
+    const { list: children } = this;
     return children;
   }
 

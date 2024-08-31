@@ -121,7 +121,7 @@ export class EagleNode {
 
     /*if(!ret) ret = this.getRaw();
     else*/ node2raw.set(this, ret);
-raw2node.set(ret,this);
+    if(isObject(ret)) raw2node.set(ret, this);
 
     //if(!ret) throw error;
 
@@ -507,4 +507,3 @@ define(EagleNode, {
     return raw2node.get(raw);
   }
 });
-
