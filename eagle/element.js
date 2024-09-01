@@ -273,7 +273,7 @@ export class EagleElement extends EagleNode {
                 hfn = () => attributes.name;
                 break;
               case 'library':
-                hfn = () => doc.getLibrary(attributes.library);
+                hfn = () => this.document.get(e => e.tagName == 'library' && e.attributes.name == attributes.library);
                 break;
               case 'deviceset':
                 hfn = () => this.library.get(e => e.tagName == 'deviceset' && e.attributes.name == attributes.deviceset);
@@ -347,13 +347,13 @@ export class EagleElement extends EagleNode {
     }
 
     if(tagName == 'pad') {
-      trkl.bind(this, 'layer', () => doc.layers['Pads']);
+      lazyProperty(this, 'layer', () => doc.layers['Pads']);
     } else if(tagName == 'via') {
-      trkl.bind(this, 'layer', () => doc.layers['Vias']);
+      lazyProperty(this, 'layer', () => doc.layers['Vias']);
     } else if(tagName == 'hole') {
-      trkl.bind(this, 'layer', () => doc.layers['Holes']);
+      lazyProperty(this, 'layer', () => doc.layers['Holes']);
     } else if(this.attributes.layer) {
-      trkl.bind(this, 'layer', () => doc.layers[this.attributes.layer]);
+      lazyProperty(this, 'layer', () => doc.layers[this.attributes.layer]);
     }
 
     if(tagName == 'part') lazyProperty(this, 'package', () => this.device.package);
@@ -366,11 +366,11 @@ export class EagleElement extends EagleNode {
         return library.symbols[attributes.symbol];
       });
 
-      trkl.bind(this, 'pins', () => this.symbol.pins);
+      trkl.bind(this, 'pins', () => this.symbol?.pins);
     } else if(tagName == 'instance') {
-      trkl.bind(this, 'pins', () => this.symbol.pins);
+      trkl.bind(this, 'pins', () => this.symbol?.pins);
 
-      trkl.bind(this, 'symbol', () => this.gate.symbol);
+      trkl.bind(this, 'symbol', () => this.gate?.symbol);
     } else if(tagName == 'device') {
       lazyProperty(this, 'package', () => {
         const library = this.chain.library;
@@ -422,7 +422,11 @@ export class EagleElement extends EagleNode {
               const sheets = this.lookup(this.tagName == 'schematic' ? 'sheets' : 'eagle/drawing/schematic/sheets') ?? this.get('sheets');
               if(sheets) return EagleNodeList.create(this, sheets.path.concat(['children']));
             },
-            parts: () => EagleNodeMap.create((this.tagName == 'schematic' ? this.get('parts') : this.lookup('eagle/drawing/schematic/parts')).children, 'name') /*,
+            parts: () => EagleNodeMap.create((this.tagName == 'schematic' ? this.get('parts') : this.lookup('eagle/drawing/schematic/parts')).children, 'name'),
+            plain: () => {
+              const plain = this.lookup(this.tagName == 'schematic' ? 'plain' : 'eagle/drawing/schematic/plain') ?? this.get('plain');
+              if(plain) return EagleNodeList.create(plain, plain.ref.down('children'));
+            } /*,
             libraries: () => {
               const libraries = this.lookup(this.tagName == 'schematic'  ? 'libraries' : 'eagle/drawing/schematic/libraries') ?? this.get('libraries');
               if(libraries) return EagleNodeMap.create(libraries.children, 'name');

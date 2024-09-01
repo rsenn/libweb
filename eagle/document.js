@@ -118,6 +118,7 @@ export class EagleDocument extends EagleNode {
         this,
         properties(
           {
+            plain: () => this.lookup('eagle/drawing/board/plain') ?? this.get('plain'),
             sheets: () => schematic.sheets,
             parts: () => schematic.parts,
             libraries: () => schematic.libraries
@@ -297,7 +298,7 @@ export class EagleDocument extends EagleNode {
 
         const layerId = this.layers[layer].number;
 
-        ret = [...plain.children].filter(e => +e.attributes.layer == layerId && e.tagName == 'wire');
+        ret = [...(plain?.children ?? plain)].filter(e => +e.attributes.layer == layerId && e.tagName == 'wire');
 
         if(ret.length >= 1) break;
       }
