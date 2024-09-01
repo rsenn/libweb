@@ -1,6 +1,6 @@
 import { RGBA } from '../color/rgba.js';
 import { BBox, Circle, isLine, Line, MakePolygon, Point, PointList, Rect, Transformation, TransformationList } from '../geom.js';
-import { className, define, getOrCreate, inserter, isNumeric, isObject, lazyProperties, lazyProperty, properties, roundTo, tryFunction, ucfirst } from '../misc.js';
+import { className, define, weakDefine, getOrCreate, inserter, isNumeric, isObject, isFunction, lazyProperties, lazyProperty, properties, nonenumerable, roundTo, tryFunction, ucfirst } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { Repeater } from '../repeater/repeater.js';
 import trkl from '../trkl.js';
@@ -36,6 +36,7 @@ const TList = (child, elem) => {
   let transformation = elem.transformation();
   let instance = { child, elem };
   let round = n => roundTo(n, 0.0001, 4);
+
   return new Proxy(instance.child, {
     get(target, prop) {
       let v = Reflect.get(instance.child, prop);
@@ -62,20 +63,16 @@ export class EagleElement extends EagleNode {
   static makeTransparent = new RGBA(255, 255, 255).toAlpha();
 
   static get(owner, ref, raw) {
-    if(ref.length === 0 || raw === undefined) {
-      let root = 'root' in ref ? ref.root : null;
-      let path = 'path' in ref ? ref.path : ref;
-      globalThis.tmp = { owner, root, path, raw, ref };
-      //if(owner instanceof EagleDocument && root == null && path.length === 0) throw new Error('EagleElement.get');
-    }
-    let root = ref.root || owner.raw ? owner.raw : owner;
-    let doc = owner.document || owner;
+    let root = ref.root || (owner && owner.raw ? owner.raw : owner);
+    let doc = owner && owner.document ? owner.document : owner;
+
     const { pathMapper, raw2element } = doc;
+
     let insert = inserter(pathMapper);
 
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
 
-    if(isObject(ref) && /*Array.isArray(ref) &&*/ !(ref instanceof EagleReference)) {
+    /*if(isObject(ref) && !(ref instanceof EagleReference)) {
       try {
         ref = EagleRef(owner.raw, ref, true);
       } catch(e) {
@@ -85,19 +82,19 @@ export class EagleElement extends EagleNode {
           ref = EagleRef(root, ref, true);
         }
       }
-    }
-    if(!isObject(ref) || !('dereference' in ref) || !(ref instanceof EagleReference)) {
-      ref = EagleRef(root, ref.path || ref, false);
-    }
+    }*/
+
+    //if(!isObject(ref) || !('dereference' in ref) || !(ref instanceof EagleReference)) ref = EagleRef(root, ref.path || ref, false);
 
     if(!raw) raw = ref.dereference();
+
     try {
       if(!raw && isObject(ref.path)) raw = ref.path.deref(root, true);
     } catch(e) {}
 
-    let inst = doc.raw2element(raw, owner, ref);
-    //inst.ref = ref;
+    //console.log('EagleElement.get',console.config({depth: 4}),{owner,ref});
 
+    let inst = doc.raw2element(raw, owner, ref);
     let path = ref;
 
     while(isObject(path) && 'root' in path) path = path.path;
@@ -110,38 +107,40 @@ export class EagleElement extends EagleNode {
   }
 
   static create(tagName, attributes = {}, children = []) {
-    for(let name in attributes) {
-      attributes[name] = attributes[name] + '';
-    }
+    for(let name in attributes) attributes[name] = attributes[name] + '';
+
     return { tagName, attributes, children };
   }
+
   static get [Symbol.species]() {
     return EagleElement;
   }
 
   constructor(owner, ref, raw) {
-    if(className(owner) == 'Object') {
-      throw new Error(`${inspect(owner, 0)} ${inspect(ref, 1)}`);
-    }
+    if(className(owner) == 'Object') throw new Error(`${inspect(owner, 0)} ${inspect(ref, 1)}`);
+
     super(owner, ref, raw);
     //console.log('EagleElement.constructor(2)', {owner: this.owner, ref: this.ref,raw: this.raw});
 
     EagleElement.list.push(this);
-    define(this, { handlers: {} });
+
+    define(this, nonenumerable({ handlers: {}, attrMap: {} }));
+
     let path = this.ref.path;
 
     //console.log('new EagleElement', console.config({ depth:1, compact: 2 }),  {owner,ref,raw, path});
 
     if(owner === null) throw new Error('owner == null');
+
     if(raw === undefined || (raw.tagName === undefined && raw.attributes === undefined && raw.children === undefined)) {
       try {
         raw = this.ref.dereference();
       } catch(error) {}
     }
+
     if(raw === null || typeof raw != 'object') throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
+
     let { tagName, attributes, children = [] } = raw;
-    //this.tagName = tagName;
-    define(this, { attrMap: {} });
 
     Object.defineProperty(this, 'tagName', {
       get() {
@@ -151,19 +150,27 @@ export class EagleElement extends EagleNode {
       configurable: false
     });
 
-    let doc = this.getDocument();
-    let elem = this;
+    const elem = this,
+      doc = this.getDocument();
 
     const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
 
     if(tagName == 'deviceset') {
       define(
         this,
-        properties({
-          gates: () => EagleNodeMap.create(this.get(e => e.tagName == 'gates').children, 'name'),
-          devices: () => EagleNodeMap.create(this.get(e => e.tagName == 'devices').children, 'name'),
-          name: () => this.raw.attributes.name
-        })
+        properties(
+          {
+            gates: () => EagleNodeMap.create(this.get(e => e.tagName == 'gates').children, 'name'),
+            devices: () => EagleNodeMap.create(this.get(e => e.tagName == 'devices').children, 'name')
+          },
+          { enumerable: false }
+        ),
+        properties(
+          {
+            name: () => this.raw.attributes.name
+          },
+          { enumerable: true }
+        )
       );
     } else if(tagName == 'contactref') {
       define(
@@ -183,8 +190,9 @@ export class EagleElement extends EagleNode {
       const names = this.names();
 
       for(let key of attributeList) {
-        let prop = trkl.property(this.attrMap, key);
-        let handler;
+        let handler,
+          prop = trkl.property(this.attrMap, key);
+
         if(['visible', 'active'].indexOf(key) != -1)
           handler = v =>
             v !== undefined
@@ -209,18 +217,21 @@ export class EagleElement extends EagleNode {
                 })();
 
         prop(attributes[key]);
+
         prop.subscribe(value => (value !== undefined ? (raw.attributes[key] = '' + value) : delete raw.attributes[key]));
         prop.subscribe(value => (elem.pushEvent ? elem.pushEvent(elem, key, value) : void 0));
 
         this.handlers[key] = prop;
 
         if(Object.keys(names).indexOf(key) != -1 && !(['instance', 'part', 'element'].indexOf(tagName) != -1 && ['name', 'value'].indexOf(key) != -1)) {
-          msg`key=${key} names=${names}`;
+          //msg`key=${key} names=${names}`;
+
           trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
         } else if(key == 'device') {
           trkl.bind(this, key, v => {
             if(v) {
               const { names } = v;
+
               if(names !== undefined) {
                 this.handlers.library(names.library);
                 this.handlers.deviceset(names.deviceset);
@@ -230,15 +241,16 @@ export class EagleElement extends EagleNode {
               const library = doc.getLibrary(attributes.library);
               const deviceset = library.devicesets[attributes.deviceset];
               const device = deviceset.devices[attributes.device];
+
               return device;
             }
           });
         } else if(tagName == 'layer' && key == 'color') {
           define(this, {
             get color() {
-              let colorIndex = attributes.color == undefined ? 15 : attributes.color;
-              let color = doc.palette[colorIndex] || doc.palette[0b0110];
-              //console.log('colorIndex', colorIndex, color);
+              const colorIndex = attributes.color == undefined ? 15 : attributes.color;
+              const color = doc.palette[colorIndex] || doc.palette[0b0110];
+
               return color;
             }
           });
@@ -276,10 +288,10 @@ export class EagleElement extends EagleNode {
           } else if(tagName == 'instance' || tagName == 'pinref') {
             const module = elem.chain.module || doc;
 
-            /*        if(this.library === undefined) trkl.bind(this, 'library', () => this.part.library || this.document.getLibrary(this.part.attributes.library));
+            /*if(this.library === undefined) trkl.bind(this, 'library', () => this.part.library || this.document.getLibrary(this.part.attributes.library));
               if(this.deviceset === undefined) trkl.bind(this, 'deviceset', () => this.part.deviceset || this.library.devicesets[this.part.attributes.deviceset]);
-              if(this.value === undefined) trkl.bind(this, 'value', () => this.part.value || this.deviceset.name);
-*/
+              if(this.value === undefined) trkl.bind(this, 'value', () => this.part.value || this.deviceset.name);*/
+
             switch (key) {
               case 'part':
                 hfn = () => this.document.get(e => e.tagName == 'part' && e.attributes.name == attributes.part);
@@ -295,28 +307,30 @@ export class EagleElement extends EagleNode {
                 break;
             }
           } else if(key == 'layer') {
-            define(this, {
-              get layer() {
-                return this.getLayer();
-              }
-            });
+            define(
+              this,
+              properties({
+                layer: () => this.getLayer()
+              })
+            );
           } else if(key + 's' in doc) {
             hfn = () => doc[key + 's'][elem.attrMap[key] + ''];
           } else {
             let id = key == 'layer' ? 'number' : 'name';
+
             hfn = () => {
               let r,
                 value = elem.attrMap[key];
-              let list = key == 'library' ? 'libraries' : key + 's';
+              const list = key == 'library' ? 'libraries' : key + 's';
               r = list in doc ? doc[list][value] : doc.get({ tagName: key, [id]: value });
-              //console.log(`relation get(${key}, ${attributes[id]}) = `, r);
+
               return r;
             };
             if(this[key] == undefined) this.initRelation(key, this.handlers[key], hfn);
           }
-          trkl.bind(this, key, hfn);
+          define(this, properties({ [key]: hfn }, { configurable: true, enumerable: true }));
         } else {
-          trkl.bind(this, key, handler);
+          define(this, properties({ [key]: handler }, { configurable: true, enumerable: true }));
         }
       }
     }
@@ -373,70 +387,78 @@ export class EagleElement extends EagleNode {
     this.initCache(EagleElement, EagleNodeList.create);
 
     if(this.tagName == 'board' || this.type == 'brd') {
-      define(
+      weakDefine(
         this,
         properties(
           {
             elements: () => {
-              const elements = /*this.lookup('eagle/drawing/board/elements') ??*/ this.get('elements');
+              const elements = this.lookup(this.tagName == 'board' ? 'elements' : 'eagle/drawing/board/elements') ?? this.get('elements');
               if(elements) return EagleNodeMap.create(elements.children, 'name');
             },
             signals: () => {
-              const signals = /*this.lookup('eagle/drawing/board/signals') ??*/ this.get('signals');
+              const signals = this.lookup(this.tagName == 'board' ? 'signals' : 'eagle/drawing/board/signals') ?? this.get('signals');
               if(signals) return EagleNodeMap.create(signals.children, 'name');
             },
             plain: () => {
-              const plain = /*this.lookup('eagle/drawing/board/plain') ??*/ this.get('plain');
+              const plain = this.lookup(this.tagName == 'board' ? 'plain' : 'eagle/drawing/board/plain') ?? this.get('plain');
               if(plain) return EagleNodeList.create(plain, plain.ref.down('children'));
-            },
+            } /*,
             libraries: () => {
-              const libraries = /*this.lookup('eagle/drawing/board/libraries') ?? */ this.get('libraries');
+              const libraries = this.lookup(this.tagName == 'board' ? 'libraries' : 'eagle/drawing/board/libraries') ?? this.get('libraries');
               if(libraries) return EagleNodeMap.create(libraries.children, 'name');
-            }
+            }*/
           },
-          { enumerable: false }
+          { configurable: true, enumerable: false }
         )
       );
     }
 
     if(this.tagName == 'schematic' || this.type == 'sch') {
-      define(
+      weakDefine(
         this,
         properties(
           {
             sheets: () => {
-              const sheets = this.lookup('eagle/drawing/schematic/sheets') ?? this.get('sheets');
+              const sheets = this.lookup(this.tagName == 'schematic' ? 'sheets' : 'eagle/drawing/schematic/sheets') ?? this.get('sheets');
               if(sheets) return EagleNodeList.create(this, sheets.path.concat(['children']));
             },
-            parts: () => EagleNodeMap.create((this.lookup('eagle/drawing/schematic/parts') ?? this.get('parts')).children, 'name'),
+            parts: () => EagleNodeMap.create((this.tagName == 'schematic' ? this.get('parts') : this.lookup('eagle/drawing/schematic/parts')).children, 'name') /*,
             libraries: () => {
-              const libraries = /*this.lookup('eagle/drawing/schematic/libraries') ??*/ this.get('libraries');
+              const libraries = this.lookup(this.tagName == 'schematic'  ? 'libraries' : 'eagle/drawing/schematic/libraries') ?? this.get('libraries');
               if(libraries) return EagleNodeMap.create(libraries.children, 'name');
-            }
+            }*/
           },
-          { enumerable: false }
+          { configurable: true, enumerable: false }
         )
       );
     }
 
     if(this.tagName == 'library' || this.type == 'lbr') {
-      lazyProperties(this, {
-        packages() {
-          const packages = this.lookup('eagle/drawing/library/packages');
+      //console.log('EagleElement.constructor', {package_desc: Object.getOwnPropertyDescriptors(this).packages, packages: this.packages });
 
-          if(packages) {
-            let list = EagleNodeList.create(this, packages.path.concat(['children']));
+      weakDefine(
+        this,
+        properties(
+          {
+            packages() {
+              const packages = this.lookup(this.tagName == 'library' ? 'packages' : 'eagle/drawing/library/packages');
 
-            return EagleNodeMap.create(list, 'name');
-          }
-        },
-        devicesets() {
-          return EagleNodeMap.create(this.get(e => e.tagName == 'devicesets').children, 'name');
-        },
-        symbols() {
-          return EagleNodeMap.create(this.get(e => e.tagName == 'symbols').children, 'name');
-        }
-      });
+              if(packages) {
+                let list = EagleNodeList.create(this, packages.path.concat(['children']));
+
+                return EagleNodeMap.create(list, 'name');
+              }
+            },
+            devicesets() {
+              return EagleNodeMap.create(this.get(e => e.tagName == 'devicesets').children, 'name');
+            },
+            symbols() {
+              return EagleNodeMap.create(this.get(e => e.tagName == 'symbols').children, 'name');
+            }
+          },
+          { configurable: true, enumerable: false }
+        )
+      );
     }
 
     if(tagName == 'symbol') {
@@ -563,23 +585,34 @@ export class EagleElement extends EagleNode {
   get repeater() {
     let pushFn;
     if(!this.r) {
-      this.r = new Repeater(async (push, stop) => {
-        push(this);
-        pushFn = push;
-        push(this);
-        await stop;
-      });
-      this.r.next().then(({ value, done }) => {
-        value.push = pushFn;
-        value.pushEvent = function(...args) {
-          const [e = this, k] = args;
-          const v = e[k];
+      define(
+        this,
+        nonenumerable({
+          r: new Repeater(async (push, stop) => {
+            push(this);
+            pushFn = push;
+            push(this);
+            await stop;
+          })
+        })
+      );
 
-          // console.log(`pushEvent`, e);
-          //console.log(`pushEvent`, {e,k,v});
-          if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
-          pushFn(this);
-        };
+      this.r.next().then(({ value, done }) => {
+        define(
+          this,
+          nonenumerable({
+            push: pushFn,
+            pushEvent(...args) {
+              const [e = this, k] = args;
+              const v = e[k];
+
+              // console.log(`pushEvent`, e);
+              //console.log(`pushEvent`, {e,k,v});
+              if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
+              pushFn(this);
+            }
+          })
+        );
       });
     }
 
@@ -590,10 +623,9 @@ export class EagleElement extends EagleNode {
     const value = this[name];
     //console.log('event:', this, { name, value });
 
-    /*    for(let subscriber of this.subscribers) {
+    /*for(let subscriber of this.subscribers) {
       subscriber.call(this, name, value);
-    }
-*/
+    }*/
   }
 
   subscribe(handler) {
@@ -609,9 +641,8 @@ export class EagleElement extends EagleNode {
   get text() {
     const { children } = this;
     let text = '';
-    for(let child of children.raw) {
-      if(typeof child == 'string') text += child;
-    }
+
+    for(let child of children.raw) if(typeof child == 'string') text += child;
 
     return decodeHTMLEntities(text);
   }
@@ -630,9 +661,10 @@ export class EagleElement extends EagleNode {
   }
 
   lookup(xpath, create) {
-    let r = super.lookup(xpath, (o, p, v) => {
+    return super.lookup(xpath, (o, p, v) => {
       if(create && !v) {
         const { tagName } = p.last;
+
         o.raw.children.push({
           tagName,
           attributes: {},
@@ -642,14 +674,13 @@ export class EagleElement extends EagleNode {
 
       if(!v) v = p.deref(o.raw || o, true);
 
-      const owner = this.document;
+      const owner = this.document ?? this.owner;
       const ref = this.ref.down(...p);
-      const value = v;
 
-      return EagleElement.get(owner, ref, value);
+      //console.log('EagleElement.lookup', console.config({ depth: 2 }), { owner, ref });
+
+      return EagleElement.get(owner, ref, v);
     });
-
-    return r;
   }
 
   getBounds(pred, opts = {}) {
@@ -659,14 +690,15 @@ export class EagleElement extends EagleNode {
 
     if(pred) {
       let ok = 0;
-      for(let element of this.getAll(pred)) {
-        ok |= bb.update(element) || true;
-      }
+
+      for(let element of this.getAll(pred)) ok |= bb.update(element) || true;
+
       if(ok) return bb;
     }
 
     if(this.tagName == 'schematic') {
       let instances = [...this.getAll('instance')];
+
       return BBox.of(...instances);
     }
 
@@ -956,7 +988,7 @@ export class EagleElement extends EagleNode {
       () => undefined
     );
 
-    if(typeof pred != 'function') pred = EagleNode.makePredicate(pred);
+    if(!isFunction(pred)) pred = EagleNode.makePredicate(pred);
 
     yield* super.getAll((v, p, o) => typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o), call);
   }
@@ -1047,7 +1079,8 @@ export class EagleElement extends EagleNode {
   };
 }
 
-Object.assign(EagleElement, { subscribers: [], r: null, class: undefined });
-Object.assign(EagleElement.prototype, { [Symbol.toStringTag]: 'EagleElement' });
+define(EagleElement, nonenumerable({ subscribers: [], r: null, class: undefined }));
+weakDefine(EagleElement.prototype, { [Symbol.toStringTag]: 'EagleElement' });
+EagleElement.prototype[Symbol.toStringTag] = 'EagleElement';
 
 export const makeEagleElement = (owner, ref, raw) => EagleElement.get(owner, ref, raw);

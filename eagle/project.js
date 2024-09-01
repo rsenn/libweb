@@ -177,7 +177,7 @@ export class EagleProject {
 
   get schematic() {
     const { documents, filenames } = this;
-    const name = filenames.find(f => /\.brd$/i.test(f));
+    const name = filenames.find(f => /\.sch$/i.test(f));
     if(name) return documents[name.replace(/.*[\/\\]/g, '')];
   }
 

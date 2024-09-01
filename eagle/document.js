@@ -61,8 +61,8 @@ export class EagleDocument extends EagleNode {
   }
 
   static open(filename, readFn = fn => std.loadFile(fn)) {
-    let xml = readFn(filename);
-    //console.log('EagleDocument.open', { filename, xml });
+    const xml = readFn(filename);
+
     return new EagleDocument(xml, null, filename);
   }
 
@@ -71,7 +71,7 @@ export class EagleDocument extends EagleNode {
 
     let xmlObj = deep.clone(xml[0]);
 
-    //console.log('EagleDocument.constructor', console.config({ compact: 0, depth: 4 }), { xmlObj });
+    //console.log('EagleDocument.constructor', console.config({ compact: 0, depth: 2 }), { xmlObj });
 
     super(project, EagleRef(xmlObj, []), xmlObj);
 
@@ -93,7 +93,7 @@ export class EagleDocument extends EagleNode {
       mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
     ];
 
-    this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
+    define(this, nonenumerable({ maps: { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj } }));
 
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
 
@@ -103,19 +103,17 @@ export class EagleDocument extends EagleNode {
     }
 
     this.type = type;
+
     if(project) this.owner = project;
-    if(fs) define(this, { fs });
-    define(this, { xml });
+
     const orig = xml[0];
-    define(this, { orig });
-    define(this, {
-      palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
-    });
+
+    define(this, nonenumerable({ xml, orig, fs, palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b)) }));
 
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 
     if(this.type == 'sch') {
-      const schematic = this.get('schematic');
+      const schematic = this.lookup('eagle/drawing/schematic') ?? this.get('schematic');
       define(
         this,
         properties(
@@ -129,7 +127,8 @@ export class EagleDocument extends EagleNode {
       );
     }
 
-    lazyProperty(this, 'layers', () => EagleNodeMap.create(this.lookup('eagle/drawing').lookup('layers').children, ['name', 'number']));
+    lazyProperty(this, 'layers', () => EagleNodeMap.create(this./*lookup('eagle/drawing').lookup*/ get('layers').children, ['name', 'number']));
+    //lazyProperties({ layers: () => EagleNodeMap.create(this.get('layers').children, ['name', 'number']) });
 
     if(this.type == 'brd') {
       let board = this.get('board');
@@ -154,7 +153,9 @@ export class EagleDocument extends EagleNode {
 
   get raw() {
     if(Array.isArray(this.xml)) return this.xml[0];
-    console.log('EagleDocument.get raw', { this: this.orig, xml: this.xml });
+
+    //console.log('EagleDocument.get raw', { this: this.orig, xml: this.xml });
+
     return this.xml;
   }
 
@@ -179,7 +180,6 @@ export class EagleDocument extends EagleNode {
       case 'sch':
         return [
           ['eagle', 'drawing', 'settings'],
-          // ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'schematic'],
           ['eagle', 'drawing', 'schematic', 'libraries'],
           ['eagle', 'drawing', 'schematic', 'classes'],
@@ -189,7 +189,6 @@ export class EagleDocument extends EagleNode {
       case 'brd':
         return [
           ['eagle', 'drawing', 'settings'],
-          // ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'board'],
           ['eagle', 'drawing', 'board', 'libraries'],
           ['eagle', 'drawing', 'board', 'classes'],
@@ -201,7 +200,6 @@ export class EagleDocument extends EagleNode {
       case 'lbr':
         return [
           ['eagle', 'drawing', 'settings'],
-          //  ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'library'],
           ['eagle', 'drawing', 'library', 'packages'],
           ['eagle', 'drawing', 'library', 'symbols'],
@@ -220,15 +218,16 @@ export class EagleDocument extends EagleNode {
     fs.writeFileSync(file + '.json', JSON.stringify(this.raw, null, 2), true);
 
     //console.log('Saving', file, 'data: ',abbreviate(data));
-    let ret = fs.writeFileSync(file, data, overwrite);
-    //  console.log('ret',ret);
+    const ret = fs.writeFileSync(file, data, overwrite);
 
     if(ret < 0) throw new Error(`Writing file '${file}' failed: ${fs.errstr}`);
+
     return ret;
   }
 
   index(path, transform = arg => arg) {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+
     return transform(path.apply(this));
   }
 
@@ -245,11 +244,11 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    let doc = this;
+    return super.lookup(xpath, (owner, ref, value) => {
+      ref = EagleRef(this.raw, ref, true);
+      //console.log('EagleDocument.lookup',console.config({depth: 4}),{owner,ref});
 
-    return super.lookup(xpath, (o, p, v) => {
-      //console.log('EagleDocument.lookup', console.config({ depth: 4 }), { o, p, v });
-      return EagleElement.get(o, p, v);
+      return EagleElement.get(owner ?? this, ref, value);
     });
   }
 
@@ -257,7 +256,8 @@ export class EagleDocument extends EagleNode {
     let bb = new BBox();
 
     if(this.type == 'sch') {
-      let sheet = this.getSheet(sheetNo);
+      const sheet = this.getSheet(sheetNo);
+
       return sheet.getBounds(v => /(instance|net)/.test(v.tagName));
     }
 
@@ -265,7 +265,8 @@ export class EagleDocument extends EagleNode {
 
     if(this.elements)
       for(let element of this.elements.list) {
-        let bbrect = element.getBounds();
+        const bbrect = element.getBounds();
+
         bb.update(bbrect);
       }
 
@@ -276,26 +277,25 @@ export class EagleDocument extends EagleNode {
           .flat()
           .filter(c => !!c.geometry)
       );
+
       bb.update([...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())));
     }
-    /*if(this.plain) {
-      bb.update(this.plain.map(child => child.getBounds()));
-    }*/
+
+    /*if(this.plain)
+      bb.update(this.plain.map(child => child.getBounds()));*/
     return bb;
   }
 
   getMeasures(options = {}) {
     try {
       const { sheet = 0 } = options;
-      let ret;
-      let plain = (this.type == 'sch' ? this.sheets[sheet] : this).plain;
-
-      //console.log('plain', plain);
+      let ret,
+        plain = (this.type == 'sch' ? this.sheets[sheet] : this).plain;
 
       for(let layer of ['Dimension', 'Measures', 'Document']) {
         if(!this.layers[layer]) continue;
 
-        let layerId = this.layers[layer].number;
+        const layerId = this.layers[layer].number;
 
         ret = [...plain.children].filter(e => +e.attributes.layer == layerId && e.tagName == 'wire');
 
@@ -317,7 +317,9 @@ export class EagleDocument extends EagleNode {
 
   get dimensions() {
     let size = new Rect(this.measures).size;
+
     size.units.width = size.units.height = 'mm';
+
     return size;
   }
 
@@ -335,20 +337,22 @@ export class EagleDocument extends EagleNode {
   }
 
   getLayer(id) {
-    let layers = this.get('layers');
-    let i = 0;
+    let layers = this.get('layers'),
+      i = 0;
 
     for(let layer of layers.raw.children) {
-      let { number, name } = layer.attributes;
-      // console.log('layer', { number, name });
+      const { number, name } = layer.attributes;
+
       if(number == id || name == id) return layers.children[i];
+
       i++;
     }
+
     return null;
   }
 
   getSheet(id) {
-    let sheets = this.get('sheets');
+    const sheets = this.get('sheets');
 
     if(!sheets) return null;
 
@@ -358,6 +362,7 @@ export class EagleDocument extends EagleNode {
 
     for(let sheet of sheets.children) {
       if(i == id) return sheet;
+
       i++;
     }
 
@@ -371,21 +376,6 @@ export class EagleDocument extends EagleNode {
       return this.get(e => e.tagName == 'library' && e.attributes.name == name);
     } catch(e) {}
   }
-
-  /*getMainElement = memoize(function () {
-    switch (this.type) {
-      case 'brd':
-        return this.lookup('eagle/drawing/board');
-      case 'sch':
-        return this.lookup('eagle/drawing/schematic');
-      case 'lbr':
-        return this.lookup('eagle/drawing/library');
-    }
-  });
-
-  get mainElement() {
-    return this.getMainElement();
-  }*/
 }
 
 define(EagleDocument.prototype, { [Symbol.toStringTag]: 'EagleDocument' });

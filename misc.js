@@ -702,9 +702,20 @@ export function define(obj, ...args) {
         Object.defineProperty(obj, prop, desc[prop]);
       } catch(e) {}
   }
-  // obj = extend(obj, props, desc => (delete desc.configurable, delete desc.enumerable));
 
   return obj;
+}
+
+export function nonenumerable(props, obj = {}) {
+  const desc = Object.getOwnPropertyDescriptors(props);
+
+  return Object.defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => (delete v.enumerable, [k, v]))));
+}
+
+export function enumerable(props, obj = {}) {
+  const desc = Object.getOwnPropertyDescriptors(props);
+
+  return Object.defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => ((v.enumerable = true), [k, v]))));
 }
 
 export function defineGetter(obj, key, fn, enumerable = false) {
