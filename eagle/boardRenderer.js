@@ -1,7 +1,7 @@
 import { classNames } from '../classNames.js';
 import { RGBA } from '../color/rgba.js';
 import { ValueToNumber } from '../eda/colorCoding.js';
-import { Line, LineList, Rect } from '../geom.js';
+import { Line, LineList, Rect, BBox } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { partition } from '../misc.js';
 import { Palette } from './common.js';
@@ -301,10 +301,10 @@ export class BoardRenderer extends EagleSVGRenderer {
     let parent, props;
     let transform = this.transform;
 
-    let measures = project.doc.getMeasures();
+    let measures = doc.getMeasures();
     let bounds = new BBox();
 
-    if(measures.length == 0) measures = [...doc.plain.children].filter(e => e.layer && ['Dimension', 'Measures'].indexOf(e.layer.name) != -1);
+    if(!measures || measures.length == 0) measures = [...doc.plain.children].filter(e => e.layer && ['Dimension', 'Measures'].indexOf(e.layer.name) != -1);
 
     measures.forEach(e => bounds.update(e.getBounds()));
 
