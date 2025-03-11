@@ -92,7 +92,7 @@ export class ReconnectingWebSocket {
   constructor(url = '/ws', protocols = [], handlers = {}) {
     this.url = WebSocketURL(url) + '';
     this.protocols = protocols;
-this.handlers = handlers;
+    this.handlers = handlers;
 
     this.connect();
   }
@@ -102,8 +102,7 @@ this.handlers = handlers;
 
     let ev = await oncePromise(this.socket, ['open', 'error']);
 
-    if(ev.type == 'open') 
-      if(handlers.onOpen) handlers.onOpen(ev);
+    if(ev.type == 'open') if (handlers.onOpen) handlers.onOpen(ev);
 
     return ev;
   }
@@ -134,7 +133,7 @@ this.handlers = handlers;
       }
 
       const { type, reason, code } = ev;
-      console.log('closed/error', { type, reason, code }, globalThis.ev=ev);
+      console.log('closed/error', { type, reason, code }, (globalThis.ev = ev));
 
       await waitFor(type == 'error' ? 10000 : 250);
 
