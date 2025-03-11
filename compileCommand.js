@@ -7,11 +7,12 @@ export class Command {
   constructor(a, workDir = '.') {
     this.workDir = absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
+    else a = [...a];
 
-    define(this, nonenumerable({ argv: [] }));
+    define(this, nonenumerable({ argv: a }));
 
     //this.splice(0, this.length);
-    for(let i = 0; i < a.length; i++) this.argv[i] = a[i];
+    //for(let i = 0; i < a.length; i++) this.argv[i] = a[i];
   }
 
   /* prettier-ignore */ get program() { return this.argv[0]; }
@@ -24,14 +25,14 @@ export class Command {
 
   argumentsOfType(type) {
     const pred = ArgumentIs(type);
-    return [...this].filter((arg, i) => i > 0 && pred(arg, i));
+    return this.argv.filter((arg, i) => i > 0 && pred(arg, i));
   }
 
   /* prettier-ignore */ get warnFlags() { return this.argumentsOfType('warning'); }
   /* prettier-ignore */ get debugFlags() { return this.argumentsOfType('debug'); }
   /* prettier-ignore */ get optFlags() { return this.argumentsOfType(/^opt/); }
   /* prettier-ignore */ get depFlags() { return this.argumentsOfType(/^dep/); }
-  /* prettier-ignore */ get modeFlag() { return [...this].find(ArgumentIs('mode')); }
+  /* prettier-ignore */ get modeFlag() { return this.argv.find(ArgumentIs('mode')); }
 
   /* prettier-ignore */ isCompile() { return this.modeFlag == '-S'; }
   /* prettier-ignore */ isPreprocess() { return this.modeFlag == '-E'; }
@@ -60,11 +61,13 @@ export class Command {
   get dependencies() {
     const { sources = [], objects = [] } = this;
     let ret = new Set();
+
     for(let file of sources.concat(objects)) {
       let tmp = this.absolutePath(file);
       /*if(tmp != file)*/ ret.add(tmp);
       file = tmp;
     }
+
     return [...ret];
   }
 
@@ -73,22 +76,49 @@ export class Command {
   }
 
   absolute() {
-    let pred = ArgumentIs(undefined);
-    return new this.constructor([...this].map((arg, i) => (i > 0 && pred(arg, i) ? this.absolutePath(arg) : arg)));
+    const pred = ArgumentIs(/^(include|search|libpath|file)$/);
+    return new this.constructor(
+      this.argv.map((arg, i) => {
+        let opt = '';
+        if(i > 0 && pred(arg, i)) {
+          if(!ArgumentIs('file')(arg)) {
+            opt = arg.slice(0, 2);
+            arg = arg.slice(2);
+          }
+          if(!isAbsolute(arg)) arg = this.absolutePath(arg);
+        }
+        return opt + arg;
+      })
+    );
   }
 
   relative(to) {
-    let pred = ArgumentIs(undefined);
+    const pred = ArgumentIs(/^(include|search|libpath|file)$/);
     to ??= this.workDir;
-    return new this.constructor([...this].map((arg, i) => (i > 0 && pred(arg, i) && isAbsolute(arg) ? relative(to, arg) : arg)));
+    return new this.constructor(
+      this.argv.map((arg, i) => {
+        let opt = '';
+        if(i > 0 && pred(arg, i)) {
+          if(!ArgumentIs('file')(arg)) {
+            opt = arg.slice(0, 2);
+            arg = arg.slice(2);
+          }
+          if(isAbsolute(arg)) {
+            const newarg = relative(to, arg);
+            if(!newarg.endsWith(arg)) arg = newarg;
+          }
+        }
+        return opt + arg;
+      })
+    );
   }
 
   /* [Symbol.inspect](depth, options = {}) {
-    return '\x1b[1;31m' + this[Symbol.toStringTag] + '\x1b[0m ' + inspect([...this], options);
+    return '\x1b[1;31m' + this[Symbol.toStringTag] + '\x1b[0m ' + inspect(this.argv, options);
   }*/
 
   run() {
-    const [program, ...args] = this;
+    const [program, ...args] = this.argv;
     return spawn(program, args, { cwd: this.workDir, stdio: ['ignore', 'inherit', 'inherit'] });
   }
 }
@@ -226,17 +256,17 @@ export class LinkCommand extends Command {
   /* prettier-ignore */ get libpaths() { return  this.argumentsOfType('libpath'); }
   /* prettier-ignore */ get linkflags() { return  this.argumentsOfType('linker'); }
 
-  /* prettier-ignore */ get args() { const pred=ArgumentIs(undefined); return this.argv.filter((arg,i) => i > 0 && pred(arg));  }
+  /* prettier-ignore */ get args() { const pred=ArgumentIs('file'); return this.argv.filter((arg,i) => i > 0 && pred(arg));  }
 
   get objects() {
-    let objs = this.argv.filter((arg, i) => i > 0 && !(i == 1 && /^[a-z]+$/.test(arg))).filter(ArgumentIs(undefined));
+    let objs = this.argv.filter((arg, i) => i > 0 && !(i == 1 && /^[a-z]+$/.test(arg))).filter(ArgumentIs('file'));
 
     return objs /*.map(obj => this.absolutePath(obj))*/
       .filter(arg => arg != this.output);
   }
 
   get flags() {
-    return this.argv.filter(ArgumentIs(t => ['program', 'output', undefined].indexOf(t) == -1));
+    return this.argv.filter(ArgumentIs(t => ['program', 'output', 'file'].indexOf(t) == -1));
   }
 }
 
@@ -302,10 +332,13 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
     if(/^-print/.test(arg)) return 'print';
     return 'default(' + c + ')';
   } else if(i === 0) return 'program';
+  return 'file';
 }
 
 export function ArgumentIs(pred) {
-  return types.isRegExp(pred) ? arg => pred.test(ArgumentType(arg)) : typeof pred == 'function' ? arg => pred(ArgumentType(arg)) : arg => ArgumentType(arg) == pred;
+  if(types.isRegExp(pred)) return arg => pred.test(ArgumentType(arg));
+  if(typeof pred == 'function') return arg => pred(ArgumentType(arg));
+  return arg => ArgumentType(arg) == pred;
 }
 
 export function CommandType(command) {
@@ -322,14 +355,14 @@ export function CommandType(command) {
   }
 }
 
-export function CommandOutput(command, ...args) {
+/*export function CommandOutput(command, ...args) {
   const i = command.findIndex(ArgumentIs('output'));
   const j = command[cmdIndex] == '-o' ? 1 : 0;
 
   if(args.length > 0) command[i + j] = (j ? '' : '-o') + args[0];
 
   return command[i + j]?.slice(0, j ? 0 : 2);
-}
+}*/
 
 export function MakeCommands(text, workDir = '.') {
   console.log('text', text);
