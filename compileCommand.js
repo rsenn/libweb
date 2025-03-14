@@ -5,11 +5,10 @@ import { assert, define, nonenumerable, types } from 'util';
 
 export class Command {
   constructor(a, workDir = '.') {
-    this.workDir = absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
     else a = [...a];
 
-    define(this, nonenumerable({ argv: a }));
+    define(this, nonenumerable({ workDir: absolute(typeof workDir == 'string' ? workDir : '.'), argv: a }));
 
     //this.splice(0, this.length);
     //for(let i = 0; i < a.length; i++) this.argv[i] = a[i];
@@ -227,15 +226,12 @@ export class CompileCommand extends Command {
 define(
   CompileCommand.prototype,
   nonenumerable({
-    type: 'compile',
     [Symbol.toStringTag]: 'CompileCommand',
+    type: 'compile',
     [Symbol.species]: CompileCommand,
     get output() {
-      let output,
-        i = this.argv.findIndex(a => /^-o($|)/.test(a));
-
-      output = this.argv[i] == '-o' ? this.argv[++i] : this.argv[i].slice(2);
-      return /*this.absolutePath*/ output;
+      let i = this.argv.findIndex(a => /^-o($|)/.test(a));
+      return this.argv[i] == '-o' ? this.argv[++i] : this.argv[i].slice(2);
     },
     set output(arg) {
       let i = this.argv.findIndex(a => /^-o($|)/.test(a));
@@ -245,7 +241,7 @@ define(
   })
 );
 
-CompileCommand.prototype[Symbol.toStringTag] = 'CompileCommand';
+//CompileCommand.prototype[Symbol.toStringTag] = 'CompileCommand';
 
 export class LinkCommand extends Command {
   constructor(a, workDir = '.') {
@@ -270,12 +266,14 @@ export class LinkCommand extends Command {
   }
 }
 
+//LinkCommand.prototype[Symbol.toStringTag] = 'LinkCommand';
+
 define(
   LinkCommand.prototype,
   nonenumerable({
+    [Symbol.toStringTag]: 'LinkCommand',
     __proto__: Command.prototype,
     type: 'link',
-    [Symbol.toStringTag]: 'LinkCommand',
     [Symbol.species]: LinkCommand
   })
 );
