@@ -371,8 +371,6 @@ export class EagleDocument extends EagleNode {
   }
 
   getLibrary(name) {
-    return this.get(e => e.tagName == 'library' && e.attributes.name == 'c');
-
     try {
       return this.get(e => e.tagName == 'library' && e.attributes.name == name);
     } catch(e) {}
