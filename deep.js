@@ -35,12 +35,11 @@ function ReturnValuePathFunction(flags) {
   }
 }
 
-export const isPlainObject = obj => {
-  if((obj != null ? obj.constructor : void 0) == null) return false;
+export function isPlainObject(obj) {  if((obj != null ? obj.constructor : void 0) == null) return false;
   return obj.constructor.name === 'Object';
 };
 
-export const clone = obj => {
+export function clone(obj) {
   let out, v, key;
   out = Array.isArray(obj) ? [] : {};
   for(key in obj) {
@@ -50,7 +49,7 @@ export const clone = obj => {
   return out;
 };
 
-export const equals = (a, b) => {
+export function equals(a, b) {
   let i, k, size_a, j, ref;
   if(a === b) {
     return true;
@@ -79,7 +78,7 @@ export const equals = (a, b) => {
   return false;
 };
 
-export const extend = (...args) => {
+export function extend(...args) {
   let destination, k, source, sources, j, len;
   (destination = args[0]), (sources = 2 <= args.length ? Array.prototype.slice.call(args, 1) : []);
   for(j = 0, len = sources.length; j < len; j++) {
@@ -95,7 +94,7 @@ export const extend = (...args) => {
   return destination;
 };
 
-export const select = (root, filter, flags = 0) => {
+export function select(root, filter, flags = 0) {
   let fn = ReturnValuePathFunction(flags);
 
   function SelectFunction(root, filter, path = []) {
@@ -111,7 +110,7 @@ export const select = (root, filter, flags = 0) => {
   return SelectFunction(root, filter);
 };
 
-export const find = (node, filter, flags = 0, root, path = []) => {
+export function find(node, filter, flags = 0, root, path = []) {
   let k,
     ret,
     result = null;
@@ -160,7 +159,7 @@ export const iterate = function* (...args) {
     }
 };
 
-export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
+export function flatten(iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
@@ -173,7 +172,7 @@ export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' 
   return dst;
 };
 
-export const get = (root, path) => {
+export function get(root, path) {
   //console.log("deep.get", /*console.config({ depth:1}),*/{ root,path });
   let j, len;
   path = typeof path == 'string' ? path.split(/[\.\/]/) : [...path];
@@ -184,7 +183,7 @@ export const get = (root, path) => {
   return root;
 };
 
-export const set = (root, path, value) => {
+export function set(root, path, value) {
   //console.log("deep.set", { root,path,value });
   path = typeof path == 'string' ? path.split(/[\.\/]/) : [...path];
 
@@ -202,7 +201,7 @@ export const set = (root, path, value) => {
   return (root[lastPath] = value);
 };
 
-export const delegate = (root, path) => {
+export function delegate(root, path) {
   if(path) {
     const last = path.pop();
     const obj = get(root, path);
@@ -215,7 +214,7 @@ export const delegate = (root, path) => {
   };
 };
 
-export const transform = (obj, filter, t) => {
+export function transform(obj, filter, t) {
   let k,
     transformed,
     v,
@@ -243,7 +242,7 @@ export const transform = (obj, filter, t) => {
   return obj;
 };
 
-export const unset = (object, path) => {
+export function unset(object, path) {
   if(object && typeof object === 'object') {
     let parts = typeof path == 'string' ? path.split('.') : path;
 
@@ -257,7 +256,7 @@ export const unset = (object, path) => {
   return object;
 };
 
-export const unflatten = (map, obj = {}) => {
+export function unflatten(map, obj = {}) {
   for(let [path, value] of map) {
     set(obj, path, value);
   }
