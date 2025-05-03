@@ -35,9 +35,10 @@ function ReturnValuePathFunction(flags) {
   }
 }
 
-export function isPlainObject(obj) {  if((obj != null ? obj.constructor : void 0) == null) return false;
+export function isPlainObject(obj) {
+  if((obj != null ? obj.constructor : void 0) == null) return false;
   return obj.constructor.name === 'Object';
-};
+}
 
 export function clone(obj) {
   let out, v, key;
@@ -47,7 +48,7 @@ export function clone(obj) {
     out[key] = typeof v === 'object' && v !== null ? clone(v) : v;
   }
   return out;
-};
+}
 
 export function equals(a, b) {
   let i, k, size_a, j, ref;
@@ -76,7 +77,7 @@ export function equals(a, b) {
     return true;
   }
   return false;
-};
+}
 
 export function extend(...args) {
   let destination, k, source, sources, j, len;
@@ -92,7 +93,7 @@ export function extend(...args) {
     }
   }
   return destination;
-};
+}
 
 export function select(root, filter, flags = 0) {
   let fn = ReturnValuePathFunction(flags);
@@ -103,12 +104,13 @@ export function select(root, filter, flags = 0) {
     try {
       if(filter(root, path)) selected.push(fn(root, path));
     } catch(e) {}
-    if(root !== null && { object: true }[typeof root]) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
+    if(root !== null && { object: true }[typeof root])
+      for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
     return selected;
   }
   //console.log('deep.select', [filter + '', flags]);
   return SelectFunction(root, filter);
-};
+}
 
 export function find(node, filter, flags = 0, root, path = []) {
   let k,
@@ -132,7 +134,7 @@ export function find(node, filter, flags = 0, root, path = []) {
   }
 
   return result;
-};
+}
 
 export const forEach = function(...args) {
   const [value, fn, path = []] = args;
@@ -140,7 +142,8 @@ export const forEach = function(...args) {
 
   fn(value, path, root);
 
-  if(typeof value == 'object' && value != null) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+  if(typeof value == 'object' && value != null)
+    for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -159,7 +162,12 @@ export const iterate = function* (...args) {
     }
 };
 
-export function flatten(iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) {
+export function flatten(
+  iter,
+  dst = {},
+  filter = (v, p) => typeof v != 'object' && v != null,
+  map = (p, v) => [p.join('.'), v],
+) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
@@ -170,7 +178,7 @@ export function flatten(iter, dst = {}, filter = (v, p) => typeof v != 'object' 
   for(let [value, path] of iter) insert(...map(path, value));
 
   return dst;
-};
+}
 
 export function get(root, path) {
   //console.log("deep.get", /*console.config({ depth:1}),*/{ root,path });
@@ -181,7 +189,7 @@ export function get(root, path) {
     root = root[k];
   }
   return root;
-};
+}
 
 export function set(root, path, value) {
   //console.log("deep.set", { root,path,value });
@@ -199,7 +207,7 @@ export function set(root, path, value) {
   root[lastPath] = value;
   return root;
   return (root[lastPath] = value);
-};
+}
 
 export function delegate(root, path) {
   if(path) {
@@ -212,7 +220,7 @@ export function delegate(root, path) {
   return function(path, value) {
     return value !== undefined ? obj.set(root, path, value) : obj.get(root, path);
   };
-};
+}
 
 export function transform(obj, filter, t) {
   let k,
@@ -240,7 +248,7 @@ export function transform(obj, filter, t) {
     return transformed;
   }
   return obj;
-};
+}
 
 export function unset(object, path) {
   if(object && typeof object === 'object') {
@@ -254,14 +262,14 @@ export function unset(object, path) {
     }
   }
   return object;
-};
+}
 
 export function unflatten(map, obj = {}) {
   for(let [path, value] of map) {
     set(obj, path, value);
   }
   return obj;
-};
+}
 
 export default {
   isPlainObject,
@@ -281,5 +289,5 @@ export default {
   RETURN_PATH,
   RETURN_VALUE,
   RETURN_PATH_VALUE,
-  RETURN_VALUE_PATH
+  RETURN_VALUE_PATH,
 };

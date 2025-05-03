@@ -153,7 +153,7 @@ class CompileCommand {
       colors: true,
       compact: false,
       maxStringLength: Infinity,
-      maxArrayLength: Infinity
+      maxArrayLength: Infinity,
     });
   }
 }

@@ -87,7 +87,7 @@ export class Command {
           if(!isAbsolute(arg)) arg = this.absolutePath(arg);
         }
         return opt + arg;
-      })
+      }),
     );
   }
 
@@ -108,7 +108,7 @@ export class Command {
           }
         }
         return opt + arg;
-      })
+      }),
     );
   }
 
@@ -133,21 +133,23 @@ define(
         directory: workDir,
         command: this.argv.join(' '),
         file: source,
-        output
+        output,
       };
     },
-    [Symbol.toStringTag]: 'Command' /*, [Symbol.species]: Command*/
-  })
+    [Symbol.toStringTag]: 'Command' /*, [Symbol.species]: Command*/,
+  }),
 );
 
 define(
   Command,
   nonenumerable({
     fromString(str, workDir = '.') {
-      const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
+      const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) =>
+        /^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m,
+      );
       return new this(args, workDir);
-    }
-  })
+    },
+  }),
 );
 
 //extendArray(Command.prototype);
@@ -237,8 +239,8 @@ define(
       let i = this.argv.findIndex(a => /^-o($|)/.test(a));
       if(this.argv[i] == '-o') this.argv[++i] = arg;
       else this.argv[i] = '-o' + arg;
-    }
-  })
+    },
+  }),
 );
 
 //CompileCommand.prototype[Symbol.toStringTag] = 'CompileCommand';
@@ -274,8 +276,8 @@ define(
     [Symbol.toStringTag]: 'LinkCommand',
     __proto__: Command.prototype,
     type: 'link',
-    [Symbol.species]: LinkCommand
-  })
+    [Symbol.species]: LinkCommand,
+  }),
 );
 
 export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
@@ -369,7 +371,10 @@ export function MakeCommands(text, workDir = '.') {
 }
 
 export function MakeCommand(arrayOrString, workDir = '.') {
-  if(typeof arrayOrString == 'string') arrayOrString = [...arrayOrString.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
+  if(typeof arrayOrString == 'string')
+    arrayOrString = [...arrayOrString.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) =>
+      /^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m,
+    );
 
   return new ({ link: LinkCommand }[CommandType(arrayOrString)] ?? CompileCommand)(arrayOrString, workDir);
 }
@@ -379,7 +384,12 @@ define(
   nonenumerable({
     get output() {
       let i = this.argv.findIndex(a => /^-o($|)/.test(a));
-      let output = this.argv[i] == '-o' ? this.argv[++i] : i != -1 ? this.argv[i].slice(2) : this.argv.find((a, i) => i > 0 && /\./.test(a));
+      let output =
+        this.argv[i] == '-o'
+          ? this.argv[++i]
+          : i != -1
+            ? this.argv[i].slice(2)
+            : this.argv.find((a, i) => i > 0 && /\./.test(a));
       return /*this.absolutePath*/ output;
     },
 
@@ -387,8 +397,8 @@ define(
       let i = this.argv.findIndex(a => /^-o($|)/.test(a));
       if(this.argv[i] == '-o') this.argv[++i] = arg;
       else this.argv[i] = '-o' + arg;
-    }
-  })
+    },
+  }),
 );
 
 export function NinjaRule(command) {
