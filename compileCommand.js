@@ -116,9 +116,9 @@ export class Command {
     return '\x1b[1;31m' + this[Symbol.toStringTag] + '\x1b[0m ' + inspect(this.argv, options);
   }*/
 
-  run() {
+  run(opts={}) {
     const [program, ...args] = this.argv;
-    return spawn(program, args, { cwd: this.workDir, stdio: ['ignore', 'inherit', 'inherit'] });
+    return spawn(program, args, { cwd: this.workDir, stdio: ['ignore', 'inherit', 'inherit'], ...opts });
   }
 }
 
