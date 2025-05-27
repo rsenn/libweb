@@ -1,103 +1,87 @@
-'use strict';
-exports.__esModule = true;
-exports.DroppingBuffer = exports.SlidingBuffer = exports.FixedBuffer = void 0;
-var FixedBuffer = /** @class */ (function () {
-  function FixedBuffer(capacity) {
-    this.capacity = capacity;
-    this.arr = [];
-    if(capacity < 0) {
-      throw new RangeError('FixedBuffer capacity cannot be less than zero');
+export class FixedBuffer {
+    capacity;
+    arr;
+    get empty() {
+        return this.arr.length === 0;
     }
-  }
-  Object.defineProperty(FixedBuffer.prototype, 'empty', {
-    get: function() {
-      return this.arr.length === 0;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  Object.defineProperty(FixedBuffer.prototype, 'full', {
-    get: function() {
-      return this.arr.length >= this.capacity;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  FixedBuffer.prototype.add = function(value) {
-    if(this.full) {
-      throw new Error('Buffer full');
-    } else {
-      this.arr.push(value);
+    get full() {
+        return this.arr.length >= this.capacity;
     }
-  };
-  FixedBuffer.prototype.remove = function() {
-    if(this.empty) {
-      throw new Error('Buffer empty');
+    constructor(capacity){
+        this.capacity = capacity;
+        this.arr = [];
+        if (capacity < 0) {
+            throw new RangeError('FixedBuffer capacity cannot be less than zero');
+        }
     }
-    return this.arr.shift();
-  };
-  return FixedBuffer;
-})();
-exports.FixedBuffer = FixedBuffer;
+    add(value) {
+        if (this.full) {
+            throw new Error('Buffer full');
+        } else {
+            this.arr.push(value);
+        }
+    }
+    remove() {
+        if (this.empty) {
+            throw new Error('Buffer empty');
+        }
+        return this.arr.shift();
+    }
+}
 // TODO: use a circular buffer here
-var SlidingBuffer = /** @class */ (function () {
-  function SlidingBuffer(capacity) {
-    this.capacity = capacity;
-    this.arr = [];
-    this.full = false;
-    if(capacity <= 0) {
-      throw new RangeError('SlidingBuffer capacity cannot be less than or equal to zero');
+export class SlidingBuffer {
+    capacity;
+    arr;
+    get empty() {
+        return this.arr.length === 0;
     }
-  }
-  Object.defineProperty(SlidingBuffer.prototype, 'empty', {
-    get: function() {
-      return this.arr.length === 0;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  SlidingBuffer.prototype.add = function(value) {
-    while(this.arr.length >= this.capacity) {
-      this.arr.shift();
+    full;
+    constructor(capacity){
+        this.capacity = capacity;
+        this.arr = [];
+        this.full = false;
+        if (capacity <= 0) {
+            throw new RangeError('SlidingBuffer capacity cannot be less than or equal to zero');
+        }
     }
-    this.arr.push(value);
-  };
-  SlidingBuffer.prototype.remove = function() {
-    if(this.empty) {
-      throw new Error('Buffer empty');
+    add(value) {
+        while(this.arr.length >= this.capacity){
+            this.arr.shift();
+        }
+        this.arr.push(value);
     }
-    return this.arr.shift();
-  };
-  return SlidingBuffer;
-})();
-exports.SlidingBuffer = SlidingBuffer;
-var DroppingBuffer = /** @class */ (function () {
-  function DroppingBuffer(capacity) {
-    this.capacity = capacity;
-    this.arr = [];
-    this.full = false;
-    if(capacity <= 0) {
-      throw new RangeError('DroppingBuffer capacity cannot be less than or equal to zero');
+    remove() {
+        if (this.empty) {
+            throw new Error('Buffer empty');
+        }
+        return this.arr.shift();
     }
-  }
-  Object.defineProperty(DroppingBuffer.prototype, 'empty', {
-    get: function() {
-      return this.arr.length === 0;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  DroppingBuffer.prototype.add = function(value) {
-    if(this.arr.length < this.capacity) {
-      this.arr.push(value);
+}
+export class DroppingBuffer {
+    capacity;
+    arr;
+    get empty() {
+        return this.arr.length === 0;
     }
-  };
-  DroppingBuffer.prototype.remove = function() {
-    if(this.empty) {
-      throw new Error('Buffer empty');
+    full;
+    constructor(capacity){
+        this.capacity = capacity;
+        this.arr = [];
+        this.full = false;
+        if (capacity <= 0) {
+            throw new RangeError('DroppingBuffer capacity cannot be less than or equal to zero');
+        }
     }
-    return this.arr.shift();
-  };
-  return DroppingBuffer;
-})();
-exports.DroppingBuffer = DroppingBuffer;
+    add(value) {
+        if (this.arr.length < this.capacity) {
+            this.arr.push(value);
+        }
+    }
+    remove() {
+        if (this.empty) {
+            throw new Error('Buffer empty');
+        }
+        return this.arr.shift();
+    }
+}
+
