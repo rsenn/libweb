@@ -227,6 +227,8 @@ export class BoardRenderer extends EagleSVGRenderer {
     let { name, library, value, x, y, rot = '0' } = element;
     if(typeof value != 'string') value = value + '';
 
+    let pkg = library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
+
     //throw new Error(`renderElement deprecated`);
 
     this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
@@ -251,7 +253,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
-        'data-package': element.package.name,
+        'data-package': pkg.name,
         'data-path': element.path.toString(' '),
         'data-rot': rot,
         transform
@@ -287,7 +289,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     }
 
     if(element?.package?.children)
-      this.renderCollection(element.package.children, g, {
+      this.renderCollection(pkg.children, g, {
         name,
         value,
         transformation: this.transform.concat(transform),

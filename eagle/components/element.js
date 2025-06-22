@@ -29,7 +29,9 @@ export const Element = ({ data, opts = {}, ...props }) => {
     transform = transform.concat(rot);
   }
 
-  if(!value && element.package) value = element.package.name;
+  let pkg = element.library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
+
+  if(!value && pkg) value = pkg.name;
 
   if(/^R[0-9]/.test(name)) {
     let number = ValueToNumber(value);
@@ -37,8 +39,8 @@ export const Element = ({ data, opts = {}, ...props }) => {
     log('name:', name, ' number:', number, ' value:', value);
   }
 
-  const pkg = h(Package, {
-    data: element.package,
+  const child = h(Package, {
+    data: pkg,
     opts: {
       ...opts,
       ...{ name, value },
@@ -53,6 +55,6 @@ export const Element = ({ data, opts = {}, ...props }) => {
       'data-path': element.path.toString(' '),
       transform
     },
-    [pkg]
+    [child]
   );
 };
