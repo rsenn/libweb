@@ -35,12 +35,12 @@ function ReturnValuePathFunction(flags) {
   }
 }
 
-export const isPlainObject = obj => {
+export function isPlainObject(obj) {
   if((obj != null ? obj.constructor : void 0) == null) return false;
   return obj.constructor.name === 'Object';
-};
+}
 
-export const clone = obj => {
+export function clone(obj) {
   let out, v, key;
   out = Array.isArray(obj) ? [] : {};
   for(key in obj) {
@@ -48,9 +48,9 @@ export const clone = obj => {
     out[key] = typeof v === 'object' && v !== null ? clone(v) : v;
   }
   return out;
-};
+}
 
-export const equals = (a, b) => {
+export function equals(a, b) {
   let i, k, size_a, j, ref;
   if(a === b) {
     return true;
@@ -77,9 +77,9 @@ export const equals = (a, b) => {
     return true;
   }
   return false;
-};
+}
 
-export const extend = (...args) => {
+export function extend(...args) {
   let destination, k, source, sources, j, len;
   (destination = args[0]), (sources = 2 <= args.length ? Array.prototype.slice.call(args, 1) : []);
   for(j = 0, len = sources.length; j < len; j++) {
@@ -93,9 +93,9 @@ export const extend = (...args) => {
     }
   }
   return destination;
-};
+}
 
-export const select = (root, filter, flags = 0) => {
+export function select(root, filter, flags = 0) {
   let fn = ReturnValuePathFunction(flags);
 
   function SelectFunction(root, filter, path = []) {
@@ -104,34 +104,37 @@ export const select = (root, filter, flags = 0) => {
     try {
       if(filter(root, path)) selected.push(fn(root, path));
     } catch(e) {}
-    if(root !== null && { object: true }[typeof root]) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
+    if(root !== null && { object: true }[typeof root])
+      for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
     return selected;
   }
   //console.log('deep.select', [filter + '', flags]);
   return SelectFunction(root, filter);
-};
+}
 
-export const find = (node, filter, flags = 0, root) => {
+export function find(node, filter, flags = 0, root, path = []) {
   let k,
     ret,
     result = null;
-  let path = /*(typeof path == 'string' ? path.split(/[\.\/]/) : path) ||*/ [];
+
   if(!root) {
     root = node;
     result = ReturnValuePath(null, null, flags);
   }
+
   ret = filter(node, path, root);
 
   if(ret === -1) return -1;
   else if(ret) result = ReturnValuePath(node, path, flags);
   else if(typeof node == 'object' && node != null) {
     for(k in node) {
-      result = find(node[k], filter, [...path, k], root);
+      result = find(node[k], filter, flags, root, [...path, k]);
       if(result) break;
     }
   }
+
   return result;
-};
+}
 
 export const forEach = function(...args) {
   const [value, fn, path = []] = args;
@@ -139,7 +142,8 @@ export const forEach = function(...args) {
 
   fn(value, path, root);
 
-  if(typeof value == 'object' && value != null) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+  if(typeof value == 'object' && value != null)
+    for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -158,7 +162,12 @@ export const iterate = function* (...args) {
     }
 };
 
-export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
+export function flatten(
+  iter,
+  dst = {},
+  filter = (v, p) => typeof v != 'object' && v != null,
+  map = (p, v) => [p.join('.'), v],
+) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
@@ -169,9 +178,9 @@ export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' 
   for(let [value, path] of iter) insert(...map(path, value));
 
   return dst;
-};
+}
 
-export const get = (root, path) => {
+export function get(root, path) {
   //console.log("deep.get", /*console.config({ depth:1}),*/{ root,path });
   let j, len;
   path = typeof path == 'string' ? path.split(/[\.\/]/) : [...path];
@@ -180,9 +189,9 @@ export const get = (root, path) => {
     root = root[k];
   }
   return root;
-};
+}
 
-export const set = (root, path, value) => {
+export function set(root, path, value) {
   //console.log("deep.set", { root,path,value });
   path = typeof path == 'string' ? path.split(/[\.\/]/) : [...path];
 
@@ -198,9 +207,9 @@ export const set = (root, path, value) => {
   root[lastPath] = value;
   return root;
   return (root[lastPath] = value);
-};
+}
 
-export const delegate = (root, path) => {
+export function delegate(root, path) {
   if(path) {
     const last = path.pop();
     const obj = get(root, path);
@@ -211,9 +220,9 @@ export const delegate = (root, path) => {
   return function(path, value) {
     return value !== undefined ? obj.set(root, path, value) : obj.get(root, path);
   };
-};
+}
 
-export const transform = (obj, filter, t) => {
+export function transform(obj, filter, t) {
   let k,
     transformed,
     v,
@@ -239,9 +248,9 @@ export const transform = (obj, filter, t) => {
     return transformed;
   }
   return obj;
-};
+}
 
-export const unset = (object, path) => {
+export function unset(object, path) {
   if(object && typeof object === 'object') {
     let parts = typeof path == 'string' ? path.split('.') : path;
 
@@ -253,14 +262,14 @@ export const unset = (object, path) => {
     }
   }
   return object;
-};
+}
 
-export const unflatten = (map, obj = {}) => {
+export function unflatten(map, obj = {}) {
   for(let [path, value] of map) {
     set(obj, path, value);
   }
   return obj;
-};
+}
 
 export default {
   isPlainObject,
@@ -280,5 +289,5 @@ export default {
   RETURN_PATH,
   RETURN_VALUE,
   RETURN_PATH_VALUE,
-  RETURN_VALUE_PATH
+  RETURN_VALUE_PATH,
 };

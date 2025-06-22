@@ -1,6 +1,6 @@
 import * as deep from '../deep.js';
 import { BBox } from '../geom/bbox.js';
-import { className, define, defineGettersSetters, functionName, getPrototypeChain, isArray, isObject, memoize, tryCatch, types } from '../misc.js';
+import { className, define, defineGettersSetters, functionName, getPrototypeChain, isArray, isObject, isFunction, memoize, tryCatch, types, nonenumerable } from '../misc.js';
 import { Pointer } from '../pointer.js';
 import { trkl } from '../trkl.js';
 import { write as toXML } from '../xml.js';
@@ -10,7 +10,8 @@ import { EagleNodeMap } from './nodeMap.js';
 import { EagleRef, EagleReference } from './ref.js';
 //import { Attr, CSSStyleDeclaration, Comment, Document, Element, Entities, Factory, GetType, Interface, NamedNodeMap, Node, NodeList, Parser, Prototypes, Serializer, Text, TokenList, nodeTypes } from 'dom';
 
-const rawNode = new WeakMap();
+const node2raw = new WeakMap();
+const raw2node = new WeakMap();
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -36,25 +37,24 @@ function* walkPath(p, t = p => p.up(1)) {
 }
 
 export class EagleNode {
-  ref = null;
-
   get [Symbol.species]() {
     return EagleNode;
   }
 
   constructor(owner, ref, raw) {
-    //console.log('EagleNode.constructor', console.config({ compact: false }), { owner, ref, raw });
-    if(!(ref instanceof EagleReference))
-      ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, (ref && isObject(ref) && ((types.isIterable(ref) && [...ref]) || (types.isIterable(ref.path) && [...ref.path]))) || ref);
+    //console.log('EagleNode.constructor(1)', console.config({ compact: false, depth: 4 }), { owner, ref });
+
+    let o = owner && 'ref' in owner && 'root' in owner.ref ? owner.ref.root : owner;
+
+    if(!(ref instanceof EagleReference)) {
+      ref = new EagleRef((isObject(owner) && owner.raw) || o, /*(ref && isObject(ref) && ('path' in ref)) ?  [...ref.path] : */ ref);
+    }
+
     if(!raw) raw = ref.dereference();
 
-    Object.defineProperty(this, 'owner', {
-      value: owner,
-      enumerable: false,
-      writable: true
-    });
+    //console.log('EagleNode.constructor(2)',console.config({ compact: false, depth: 4 }), { owner, ref });
 
-    define(this, { ref });
+    define(this, nonenumerable({ ref, owner }));
   }
 
   get path() {
@@ -119,7 +119,8 @@ export class EagleNode {
         }
 
     /*if(!ret) ret = this.getRaw();
-    else*/ rawNode.set(this, ret);
+    else*/ node2raw.set(this, ret);
+    if(isObject(ret)) raw2node.set(ret, this);
 
     //if(!ret) throw error;
 
@@ -161,7 +162,7 @@ export class EagleNode {
     let node = this;
 
     if(fields && fields.length) {
-      define(this, { cache: {}, lists: {} });
+      define(this, nonenumerable({ cache: {}, lists: {} }));
 
       let lazy = {},
         lists = {},
@@ -229,7 +230,7 @@ export class EagleNode {
     } else if(typeof pred == 'string') {
       let name = pred;
       pred = (v, p, o) => v.tagName === name;
-    } else if(isObject(pred) && typeof pred != 'function') {
+    } else if(isObject(pred) && !isFunction(pred)) {
       let keys = Array.isArray(pred) ? pred : Object.keys(pred);
       let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
 
@@ -239,25 +240,18 @@ export class EagleNode {
     return pred;
   }
 
-  *getAll(predicate, transform) {
-    let name;
-    let pred = EagleNode.makePredicate(predicate);
-    let ctor = this[Symbol.species];
-    transform = transform || ((...args) => args);
-    let cond = pred;
+  *getAll(predicate, transform = (...args) => args) {
+    let pred = EagleNode.makePredicate(predicate),
+      ctor = this[Symbol.species];
 
-    for(let [v, p] of deep.iterate(this.raw, cond)) yield transform(v, [...this.path, ...p], this.document ?? this.root);
+    for(let [v, p] of deep.iterate(this.raw, pred)) yield transform(v, [...this.path, ...p], this.document ?? this.root);
   }
 
-  get(pred, transform) {
-    pred = EagleNode.makePredicate(pred);
-    let ctor = this[Symbol.species];
-    transform = transform || ((...args) => args);
-    let cond = pred;
-    let found = deep.find(this.raw, cond);
+  get(pred, transform = (...args) => args) {
+    const found = deep.find(this.raw, EagleNode.makePredicate(pred));
 
     if(found) {
-      let [v, p] = found;
+      const [v, p] = found;
       return transform(v, [...this.path, ...p], this.document ?? this.root);
     }
 
@@ -265,8 +259,7 @@ export class EagleNode {
   }
 
   find(name, transform = a => a) {
-    let pred = EagleNode.makePredicate(name);
-    let result = deep.find(this.raw, pred, [...this.path]);
+    const result = deep.find(this.raw, EagleNode.makePredicate(name), [...this.path]);
 
     if(result) {
       const { path, value } = result;
@@ -276,7 +269,9 @@ export class EagleNode {
 
   getMap(entity) {
     let a = this.cache[entity + 's'];
+
     if(a && a.children) return new Map([...a.children].map(e => [e.name, e]));
+
     return null;
   }
 
@@ -334,7 +329,7 @@ export class EagleNode {
 
   [Symbol.inspect](depth, options) {
     let attrs = [''];
-    if(depth > 100) throw new Error(`EagleNode.inspect()`);
+
     const { raw } = this;
     const { children, tagName, attributes = {} } = raw;
     const { attributeLists = {} } = this.constructor;
@@ -342,6 +337,7 @@ export class EagleNode {
     const getAttr = name => {
       for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];
     };
+
     if(true) {
       attrs = attributeList
         .filter(name => getAttr(name) !== undefined)
@@ -359,11 +355,15 @@ export class EagleNode {
           attrs
         );
     }
+
     let numChildren = children ? children.length : 0;
     let ret = [''];
     let tag = this.tagName || raw.tagName;
+
     if(tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
+
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
+
     if(numChildren > 0) {
       /*if(depth < 1) {
         ret += ('\n' + toXML(children, options.depth - depth)).replace(/\n/g, '\n  ');
@@ -373,6 +373,7 @@ export class EagleNode {
       }
       ret += `</${tag}>`;
     }
+
     const name = this[Symbol.toStringTag];
 
     return (ret = concat(text(name + ' ', 0), ret));
@@ -381,9 +382,9 @@ export class EagleNode {
   lookup(xpath, t = (o, p, v) => [o, p]) {
     if(typeof xpath == 'string') xpath = new ImmutableXPath(xpath);
 
-    let path = xpath.toPointer(this.raw);
-    let value = xpath.deref(this.raw, true);
-    let ret = t(this, path, value);
+    const path = xpath.toPointer(this.raw);
+    const value = xpath.deref(this.raw, true);
+    const ret = t(this, path, value);
 
     return ret;
   }
@@ -394,14 +395,17 @@ export class EagleNode {
     if(this.children && this.children.length)
       for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
         let g = element?.geometry;
+
         if(g) {
-          let bound = typeof g.bbox == 'function' ? g.bbox() : g;
+          let bound = isFunction(g.bbox) ? g.bbox() : g;
           bb.update(bound, 0, element);
         }
       }
 
     let g = this.geometry;
+
     if(g) bb.update(g);
+
     return bb;
   }
 
@@ -414,7 +418,9 @@ export class EagleNode {
 
     if(['x', 'y'].every(prop => keys.includes(prop))) {
       const { x, y } = Point(this);
+
       if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
+
       if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
 
       return Point.bind(this, null, makeGetterSetter);
@@ -449,9 +455,9 @@ export class EagleNode {
   }
 
   *iterator(...args) {
-    let predicate = typeof args[0] == 'function' ? args.shift() : arg => true;
+    const predicate = isFunction(args[0]) ? args.shift() : arg => true;
     let path = (Array.isArray(args[0]) && args.shift()) || [];
-    let t = typeof args[0] == 'function' ? args.shift() : ([v, l, d]) => [typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l) : v, l, d];
+    let t = isFunction(args[0]) ? args.shift() : ([v, l, d]) => [typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l) : v, l, d];
     let owner = isObject(this) && 'owner' in this ? this.owner : this;
     let root = this.root || (owner.xml && owner.xml[0]);
     let node = root;
@@ -469,36 +475,18 @@ export class EagleNode {
   }
 }
 
-define(EagleNode.prototype, {
-  [Symbol.toStringTag]: 'EagleNode' /*,
-  getRaw: memoize(function () {
-    const { owner, ref, document } = this;
-    let { path } = ref;
-    const { mapper } = document;
-    let r;
+define(
+  EagleNode.prototype,
+  nonenumerable({
+    [Symbol.toStringTag]: 'EagleNode',
+    ref: null
+  })
+);
 
-    while(isObject(path) && 'path' in path) path = path.path;
-
-    if(!r)
-      try {
-        if(isObject(path) && 'deref' in path) r = path.deref(owner.raw, true);
-      } catch(e) {}
-
-    if(!r)
-      try {
-        r = path.deref(ref.root) || path.deref(owner);
-        if(!r) r = mapper.at(ref.path);
-      } catch(e) {}
-
-    if(!r) r = rawNode.get(this);
-    else rawNode.set(this, r);
-
-    return r;
-  })*/
-});
-
-define(EagleNode, {
-  raw(node) {
-    return rawNode.get(node);
-  }
-});
+define(
+  EagleNode,
+  nonenumerable({
+    raw: node => node2raw.get(node),
+    get: raw => raw2node.get(raw)
+  })
+);

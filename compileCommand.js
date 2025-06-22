@@ -1,20 +1,34 @@
 import { spawn } from 'child_process';
-import { absolute, isAbsolute, join, normalize, relative } from 'path';
-import { assert, define, types } from 'util';
-import inspect from 'inspect';
+import { absolute, relative, isAbsolute, isRelative, join, normalize, basename, basepos } from 'path';
+import { assert, define, nonenumerable, types, abbreviate, escape, unescape } from 'util';
+//import inspect from 'inspect';
 
-export class Command extends Array {
+export function PathTransformer(dir) {
+  if(!isAbsolute(dir)) dir = absolute(dir);
+
+  assert(isAbsolute(dir), `dir must be absolute (${dir})`);
+
+  return {
+    relative: p => (isAbsolute(p) ? relative(dir, p) : p),
+    absolute: p => (isRelative(p) ? join(dir, p) : p),
+  };
+}
+
+export class Command {
   constructor(a, workDir = '.') {
-    super();
-    this.workDir = absolute(typeof workDir == 'string' ? workDir : '.');
     if(typeof a == 'string') a = a.split(/\s+/g);
+    else a = [...a];
+
+    a = a.map(s => unescape(s, '"'));
+
+    define(this, nonenumerable({ workDir: absolute(typeof workDir == 'string' ? workDir : '.'), argv: a }));
 
     //this.splice(0, this.length);
-    for(let i = 0; i < a.length; i++) this[i] = a[i];
+    //for(let i = 0; i < a.length; i++) this.argv[i] = a[i];
   }
 
-  /* prettier-ignore */ get program() { return this[0]; }
-  /* prettier-ignore */ set program(arg) { this[0] = arg; }
+  /* prettier-ignore */ get program() { return this.argv[0]; }
+  /* prettier-ignore */ set program(arg) { this.argv[0] = arg; }
 
   absolutePath(path) {
     if(!isAbsolute(path)) path = join(this.workDir, path);
@@ -23,14 +37,14 @@ export class Command extends Array {
 
   argumentsOfType(type) {
     const pred = ArgumentIs(type);
-    return [...this].filter((arg, i) => i > 0 && pred(arg, i));
+    return this.argv.filter((arg, i) => i > 0 && pred(arg, i));
   }
 
   /* prettier-ignore */ get warnFlags() { return this.argumentsOfType('warning'); }
   /* prettier-ignore */ get debugFlags() { return this.argumentsOfType('debug'); }
   /* prettier-ignore */ get optFlags() { return this.argumentsOfType(/^opt/); }
   /* prettier-ignore */ get depFlags() { return this.argumentsOfType(/^dep/); }
-  /* prettier-ignore */ get modeFlag() { return [...this].find(ArgumentIs('mode')); }
+  /* prettier-ignore */ get modeFlag() { return this.argv.find(ArgumentIs('mode')); }
 
   /* prettier-ignore */ isCompile() { return this.modeFlag == '-S'; }
   /* prettier-ignore */ isPreprocess() { return this.modeFlag == '-E'; }
@@ -38,33 +52,34 @@ export class Command extends Array {
   /* prettier-ignore */ isLink() { return !this.modeFlag; }
 
   toString(delim) {
-    return this.join(delim ? delim : ' ');
+    return this.argv.join(delim ? delim : ' ');
   }
 
   toArray() {
-    return Array.from(this);
+    return Array.from(this.argv);
   }
 
   remove(...args) {
     let r = [];
     for(let a of args) {
       let i;
-      while((i = this.indexOf(a)) != -1) {
-        let a = this.splice(i, 1);
+      while((i = this.argv.indexOf(a)) != -1) {
+        let a = this.argv.splice(i, 1);
         r = r.concat(a);
       }
     }
     return r;
   }
-
   get dependencies() {
     const { sources = [], objects = [] } = this;
     let ret = new Set();
+
     for(let file of sources.concat(objects)) {
       let tmp = this.absolutePath(file);
       /*if(tmp != file)*/ ret.add(tmp);
       file = tmp;
     }
+
     return [...ret];
   }
 
@@ -72,47 +87,138 @@ export class Command extends Array {
     return this.absolutePath(this.output);
   }
 
-  absolute() {
-    let pred = ArgumentIs(undefined);
-    return new this.constructor([...this].map((arg, i) => (i > 0 && pred(arg, i) ? this.absolutePath(arg) : arg)));
-  }
+  //absolute() {const pred = ArgumentIs(/^(include|systemInclude|search|libpath|file)$/); return new this.constructor(this.argv.map((arg, i) => {let opt = ''; if(i == 1 && /^[A-Z0-9a-z]+$/.test(arg)) {} else if(i > 0 && pred(arg, i)) {if(!ArgumentIs('file')(arg)) {let [, opt] = [.../^-?(isystem\b|[A-Za-z]).*/g.exec(arg)]; opt = arg.slice(0, opt.length + 1); arg = arg.slice(opt.length + 1); } if(!isAbsolute(arg)) arg = this.absolutePath(arg); } return opt + arg; }), ); }
 
-  relative(to) {
-    let pred = ArgumentIs(undefined);
-    to ??= this.workDir;
-    return new this.constructor([...this].map((arg, i) => (i > 0 && pred(arg, i) && isAbsolute(arg) ? relative(to, arg) : arg)));
+  transformPath(t) {
+    const { argv } = this;
+    const pred = ArgumentIs(/^(include|search|libpath|file)$/);
+    return new this.constructor({
+      *[Symbol.iterator]() {
+        let i = 0,
+          len = argv.length;
+
+        for(; i < len; i++) {
+          let arg = argv[i];
+          let opt = ArgumentOpt(arg, i);
+          let alen = ArgumentLen(arg, i);
+
+          let rest = opt ? arg.slice(opt.length + 1) : arg;
+
+          console.log('transformPath', { opt, rest, i });
+
+          if(i > 0 && pred(arg, i)) rest = t(rest, i, this);
+
+          /*if(isAbsolute(arg)) {
+            const newarg = relative(to, arg);
+            if(!newarg.endsWith(arg)) arg = newarg;
+          }*/
+
+          if(opt.length) yield '-' + opt;
+          if(rest.length) yield rest;
+        }
+      },
+    });
   }
 
   [Symbol.inspect](depth, options = {}) {
-    return '\x1b[1;31m' + this[Symbol.toStringTag] + '\x1b[0m ' + inspect([...this], options);
+    const name = this[Symbol.toStringTag ?? this.construtor?.name];
+    const bpos = basepos(this.argv[0]);
+    let maxLen = os.ttyGetWinSize?.()?.[1] ?? options.maxArrayLength ?? 1024;
+
+    const str = this.argv.reduce((s, arg, i) => {
+      if(i == 0) arg = basename(arg);
+
+      if(s.length + arg.length + 1 + 3 < maxLen) {
+        s += ' ';
+        s += arg;
+      } else if(s[0] == ' ') {
+        s = s.slice(1) + ' ...';
+      }
+
+      return s;
+    }, '');
+
+    const args = str.padEnd(maxLen, ' ');
+    //console.log('inspect',{name, args});
+
+    const obj = '{}';
+
+    return '\x1b[1;31m' + name + '\x1b[0m \x1b[0;32m' + args + '\x1b[0m ' + obj;
   }
 
-  run() {
-    const [program, ...args] = this;
-    return spawn(program, args, { cwd: this.workDir, stdio: ['ignore', 'inherit', 'inherit'] });
+  run(opts = {}) {
+    const [program, ...args] = this.argv;
+    return spawn(program, args, { cwd: this.workDir, stdio: ['ignore', 'inherit', 'inherit'], ...opts });
   }
 }
 
-define(Command.prototype, {
-  argumentType: ArgumentType,
-  toJSON() {
-    const { workDir, source, output } = this;
-    return {
-      directory: workDir,
-      command: [...this].join(' '),
-      file: source,
-      output
-    };
-  },
-  [Symbol.toStringTag]: 'Command' /*, [Symbol.species]: Command*/
-});
+Object.setPrototypeOf(Command.prototype, null);
 
-define(Command, {
-  fromString(str, workDir = '.') {
-    const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
-    return new this(args, workDir);
-  }
-});
+function wrapTransformer(mtf = dir => a => a) {
+  return function(dir) {
+    let t = mtf(dir);
+    const pred = ArgumentIs(/^(include|systemInclude|search|libpath|file)$/);
+    return new this.constructor(
+      this.argv.map((arg, i) => {
+        let opt = '';
+        if(i == 1 && /^[A-Z0-9a-z]+$/.test(arg)) {
+        } else if(i > 0 && pred(arg, i)) {
+          if(!ArgumentIs('file')(arg)) {
+            let [, opt] = [.../^-?(isystem\b|[A-Za-z]).*/g.exec(arg)];
+
+            opt = arg.slice(0, opt.length + 1);
+            arg = arg.slice(opt.length + 1);
+          }
+
+          arg = t(arg, i, this.argv);
+        }
+        return opt + arg;
+      }),
+    );
+  };
+}
+
+function wrapNumericArgument(fn) {
+  return function(v, i) {
+    if(typeof v == 'number') {
+      i = v;
+      v = this.argv[i];
+    }
+    return fn.call(this, v, i, this.argv);
+  };
+}
+
+define(
+  Command.prototype,
+  nonenumerable({
+    argv: null,
+    argumentType: wrapNumericArgument(ArgumentType),
+    argumentLen: wrapNumericArgument(ArgumentLen),
+    argumentOpt: wrapNumericArgument(ArgumentOpt),
+    absolute: wrapTransformer(dir => PathTransformer(dir).absolute),
+    relative: wrapTransformer(dir => PathTransformer(dir).relative),
+    toJSON() {
+      const { workDir, source, output } = this;
+      return {
+        directory: workDir,
+        command: this.argv.join(' '),
+        file: source,
+        output,
+      };
+    },
+    [Symbol.toStringTag]: 'Command' /*, [Symbol.species]: Command*/,
+  }),
+);
+
+define(
+  Command,
+  nonenumerable({
+    fromString(str, workDir = '.') {
+      const args = [...str.matchAll(/"(\\.|[^"])*"|'(\\.|[^'])'|([^\s]+)/g)].map(([m]) => (/^('.*'|".*")$/.test(m) ? m.slice(1, -1) : m));
+      return new this(args, workDir);
+    },
+  }),
+);
 
 //extendArray(Command.prototype);
 
@@ -132,17 +238,20 @@ export class CompileCommand extends Command {
 
   set sources(arg) {
     let { sources } = this;
-    let idx = this.indexOf(sources[0]);
+    let idx = this.argv.indexOf(sources[0]);
 
     if(!Array.isArray(arg)) arg = [arg];
-    this.remove(...sources);
+    this.argv.remove(...sources);
 
-    this.splice(idx, 0, ...arg);
+    this.argv.splice(idx, 0, ...arg);
   }
 
   get source() {
     let { sources } = this;
-    if(sources.length > 1) throw new Error(`CompileCommand has more than 1 source: ${sources}`);
+    if(sources.length > 1) {
+      console.log(`CompileCommand has more than 1 source:`, sources);
+      //throw new Error(`CompileCommand has more than 1 source: ${sources}`);
+    }
     return sources[0];
   }
   set source(arg) {
@@ -154,14 +263,20 @@ export class CompileCommand extends Command {
       program,
       p,
       includes = [],
+      systemIncludes = [],
       defines = [],
       flags = [],
       i = 0,
       output,
       args = [];
-    for(let s of this) {
+
+    for(let s of this.argv) {
+      console.log('p', p);
       if(i == 0) program = s;
-      else if(p == '-I') includes.push(s);
+      else if(p == '-isystem') {
+        flags.shift();
+        systemIncludes.push(s);
+      } else if(p == '-I') includes.push(s);
       else if(s.startsWith('-I') && s.length > 2) includes.push(s.slice(2));
       else if(p == '-D') defines.push(s);
       else if(s.startsWith('-D') && s.length > 2) defines.push(s.slice(2));
@@ -174,34 +289,38 @@ export class CompileCommand extends Command {
       p = s;
       i++;
     }
+
     if(program) r.program = program;
     if(output) r.output = output;
     if(includes && includes.length) r.includes = includes /*.map(inc => relative(inc, this.workDir))*/;
+    if(systemIncludes && systemIncludes.length) r.systemIncludes = systemIncludes;
     if(defines && defines.length) r.defines = defines;
     if(flags && flags.length) r.flags = flags;
     if(args && args.length) r.args = args;
+
     return r;
   }
 }
 
-define(CompileCommand.prototype, {
-  type: 'compile',
-  [Symbol.toStringTag]: 'CompileCommand',
-  [Symbol.species]: CompileCommand,
-  get output() {
-    let output,
-      i = this.findIndex(a => /^-o($|)/.test(a));
+define(
+  CompileCommand.prototype,
+  nonenumerable({
+    [Symbol.toStringTag]: 'CompileCommand',
+    type: 'compile',
+    [Symbol.species]: CompileCommand,
+    get output() {
+      let i = this.argv.findIndex(a => /^-o($|)/.test(a));
+      return this.argv[i] == '-o' ? this.argv[++i] : this.argv[i].slice(2);
+    },
+    set output(arg) {
+      let i = this.argv.findIndex(a => /^-o($|)/.test(a));
+      if(this.argv[i] == '-o') this.argv[++i] = arg;
+      else this.argv[i] = '-o' + arg;
+    },
+  }),
+);
 
-    output = this[i] == '-o' ? this[++i] : this[i].slice(2);
-    return /*this.absolutePath*/ output;
-  },
-
-  set output(arg) {
-    let i = this.findIndex(a => /^-o($|)/.test(a));
-    if(this[i] == '-o') this[++i] = arg;
-    else this[i] = '-o' + arg;
-  }
-});
+//CompileCommand.prototype[Symbol.toStringTag] = 'CompileCommand';
 
 export class LinkCommand extends Command {
   constructor(a, workDir = '.') {
@@ -212,41 +331,69 @@ export class LinkCommand extends Command {
   /* prettier-ignore */ get libpaths() { return  this.argumentsOfType('libpath'); }
   /* prettier-ignore */ get linkflags() { return  this.argumentsOfType('linker'); }
 
-  /* prettier-ignore */ get args() { const pred=ArgumentIs(undefined); return this.filter((arg,i) => i > 0 && pred(arg));  }
+  /* prettier-ignore */ get args() { const pred=ArgumentIs('file'); return this.argv.filter((arg,i) => i > 0 && pred(arg));  }
 
   get objects() {
-    let objs = [...this].filter((arg, i) => i > 0 && !(i == 1 && /^[a-z]+$/.test(arg))).filter(ArgumentIs(undefined));
+    let objs = this.argv.filter((arg, i) => i > 0 && !(i == 1 && /^[a-z]+$/.test(arg))).filter(ArgumentIs('file'));
 
     return objs /*.map(obj => this.absolutePath(obj))*/
       .filter(arg => arg != this.output);
   }
 
   get flags() {
-    return [...this].filter(ArgumentIs(t => ['program', 'output', undefined].indexOf(t) == -1));
+    return this.argv.filter(ArgumentIs(t => ['program', 'output', 'file'].indexOf(t) == -1));
   }
 }
 
-define(LinkCommand.prototype, {
-  __proto__: Command.prototype,
-  type: 'link',
-  [Symbol.toStringTag]: 'LinkCommand',
-  [Symbol.species]: LinkCommand
-});
+//LinkCommand.prototype[Symbol.toStringTag] = 'LinkCommand';
+
+define(
+  LinkCommand.prototype,
+  nonenumerable({
+    [Symbol.toStringTag]: 'LinkCommand',
+    __proto__: Command.prototype,
+    type: 'link',
+    [Symbol.species]: LinkCommand,
+  }),
+);
+
+export function ArgumentOpt(arg) {
+  let m;
+  if((m = /^-(i[a-z]*\b|shared|pie|Xlinker|Xassembler|Xpreprocessor|[DIULl]|[\w=]+)/g.exec(arg))) {
+    const [, opt] = [...m];
+    return opt;
+  }
+  return '';
+}
+
+export function ArgumentLen(arg, i) {
+  let opt = ArgumentOpt(arg);
+  let rest = opt ? arg.slice(opt.length + 1) : arg;
+  let needsArg = new Set(['x', 'Xlinker', 'Xassembler', 'Xpreprocessor', 'I', 'isystem', 'idirafter', 'B', 'D', 'U', 'l', 'L', 'w', 'W', 'o']);
+  if(rest.length > 1) return 1;
+
+  if(needsArg.has(opt)) return 2;
+  return 1;
+}
 
 export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   if(arg[0] == '-') {
-    let c = arg[1];
+    let c = ArgumentOpt(arg); // arg.slice(1);
+    //iconsole.log('ArgumentType',{c});
     switch (c) {
       case 'v':
         return 'verbose';
       case 'x':
         return 'language';
-      case 'X': {
-        if(/^-X(linker|assembler|preprocessor)/.test(arg)) return arg.substring(2);
-        break;
-      }
+      case 'Xlinker':
+      case 'Xassembler':
+      case 'Xpreprocessor':
+        return 'x';
       case 'I':
         return 'include';
+      case 'isystem':
+      case 'idirafter':
+        return 'systemInclude';
       case 'B':
         return 'search';
       case 'D':
@@ -285,10 +432,13 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
     if(/^-print/.test(arg)) return 'print';
     return 'default(' + c + ')';
   } else if(i === 0) return 'program';
+  return 'file';
 }
 
 export function ArgumentIs(pred) {
-  return types.isRegExp(pred) ? arg => pred.test(ArgumentType(arg)) : typeof pred == 'function' ? arg => pred(ArgumentType(arg)) : arg => ArgumentType(arg) == pred;
+  if(types.isRegExp(pred)) return arg => pred.test(ArgumentType(arg));
+  if(typeof pred == 'function') return arg => pred(ArgumentType(arg));
+  return arg => ArgumentType(arg) == pred;
 }
 
 export function CommandType(command) {
@@ -305,14 +455,14 @@ export function CommandType(command) {
   }
 }
 
-export function CommandOutput(command, ...args) {
+/*export function CommandOutput(command, ...args) {
   const i = command.findIndex(ArgumentIs('output'));
   const j = command[cmdIndex] == '-o' ? 1 : 0;
 
   if(args.length > 0) command[i + j] = (j ? '' : '-o') + args[0];
 
   return command[i + j]?.slice(0, j ? 0 : 2);
-}
+}*/
 
 export function MakeCommands(text, workDir = '.') {
   console.log('text', text);
@@ -326,20 +476,19 @@ export function MakeCommand(arrayOrString, workDir = '.') {
   return new ({ link: LinkCommand }[CommandType(arrayOrString)] ?? CompileCommand)(arrayOrString, workDir);
 }
 
-define(LinkCommand.prototype, {
-  get output() {
-    let i = this.findIndex(a => /^-o($|)/.test(a));
-    let output = this[i] == '-o' ? this[++i] : i != -1 ? this[i].slice(2) : this.find((a, i) => i > 0 && /\./.test(a));
-    return /*this.absolutePath*/ output;
-  },
+define(
+  LinkCommand.prototype,
+  nonenumerable({
+    get output() {
+      let i = this.argv.findIndex(a => /^-o($|)/.test(a));
+      let output = this.argv[i] == '-o' ? this.argv[++i] : i != -1 ? this.argv[i].slice(2) : this.argv.find((a, i) => i > 0 && /\./.test(a));
+      return /*this.absolutePath*/ output;
+    },
 
-  set output(arg) {
-    let i = this.findIndex(a => /^-o($|)/.test(a));
-    if(this[i] == '-o') this[++i] = arg;
-    else this[i] = '-o' + arg;
-  }
-});
-
-export function NinjaRule(command) {
-  /* if(!new.target) return new NinjaRule(command);*/
-}
+    set output(arg) {
+      let i = this.argv.findIndex(a => /^-o($|)/.test(a));
+      if(this.argv[i] == '-o') this.argv[++i] = arg;
+      else this.argv[i] = '-o' + arg;
+    },
+  }),
+);

@@ -36,31 +36,35 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-export function cpp_js(settings) {
-  function trim(str) {
+function cpp_js(settings) {
+  'use strict';
+
+  let trim = function(str) {
     // http://blog.stevenlevithan.com/archives/faster-trim-javascript
     str = str.replace(/^\s+/, '');
-    for(var i = str.length - 1; i >= 0; i--) {
+    for(let i = str.length - 1; i >= 0; i--) {
       if(/\S/.test(str.charAt(i))) {
         str = str.substring(0, i + 1);
         break;
       }
     }
     return str;
-  }
+  };
 
-  function strip_cpp_comments(str) {
+  let strip_cpp_comments = function(str) {
     // very loosely based on http://james.padolsey.com/javascript/removing-comments-in-javascript/,
     // but removed JS-specific stuff and added handling of line continuations. Also, newlines
     // are generally preserved to keep line numbers intact.
     str = ('__' + str.replace(/\r\n/g, '\n') + '__').split('');
-    var block_comment = false,
+    let block_comment = false,
       line_comment = false,
       quote = false,
       lines_lost = 0;
-    for(var i = 0, l = str.length; i < l; i++) {
+    for(let i = 0, l = str.length; i < l; i++) {
       if(quote) {
-        if((str[i] === "'" || str[i] === '"') && str[i - 1] !== '\\') quote = false;
+        if((str[i] === "'" || str[i] === '"') && str[i - 1] !== '\\') {
+          quote = false;
+        }
         continue;
       }
 
@@ -71,13 +75,16 @@ export function cpp_js(settings) {
         }
         str[i] = '';
 
-        if(str[i] === '\n') ++lines_lost;
-
+        if(str[i] === '\n') {
+          ++lines_lost;
+        }
         continue;
       }
 
       if(line_comment) {
-        if(str[i + 1] === '\n') line_comment = false;
+        if(str[i + 1] === '\n') {
+          line_comment = false;
+        }
         str[i] = '';
         continue;
       }
@@ -111,14 +118,16 @@ export function cpp_js(settings) {
       }
     }
     return str.join('').slice(2, -2);
-  }
+  };
 
-  function is_string_boundary(text, idx) {
-    return (text[idx] == '"' || text[idx] == "'") && (!idx || text[idx - 1] != '\\' || (idx > 1 && text[idx - 2] == '\\'));
-  }
+  let is_string_boundary = function(text, idx) {
+    return (
+      (text[idx] == '"' || text[idx] == "'") && (!idx || text[idx - 1] != '\\' || (idx > 1 && text[idx - 2] == '\\'))
+    );
+  };
 
   // dictionary of default settings, including default error handlers
-  var default_settings = {
+  let default_settings = {
     signal_char: '#',
 
     warn_func(s) {
@@ -137,84 +146,90 @@ export function cpp_js(settings) {
 
     pragma_func(pragma) {
       return null;
-    }
+    },
   };
 
   // apply default settings
   if(settings) {
-    for(var k in default_settings) {
-      if(!(k in settings)) settings[k] = default_settings[k];
+    for(let k in default_settings) {
+      if(!(k in settings)) {
+        settings[k] = default_settings[k];
+      }
     }
   } else {
     settings = default_settings;
   }
 
-  if(settings.include_func && !settings.completion_func) settings.error_func('include_func but not completion_func specified');
+  //console.log('settings',settings);
+
+  if(settings.include_func && !settings.completion_func) {
+    settings.error_func('include_func but not completion_func specified');
+  }
 
   // make sure that execution never continues when an error occurs.
-  var user_err = settings.error_func;
+  let user_err = settings.error_func;
   settings.error_func = function(e) {
     user_err(e);
     throw e;
   };
 
   // generate a 3 tuple (command, arguments, code_block)
-  var block_re = new RegExp('^' + settings.signal_char + '[ \t]*(\\w+)[ \t]*(.*?)[ \t]*$', 'm');
-  console.log('block_re:', block_re);
+  let block_re = new RegExp('^' + settings.signal_char + '(\\w+)[ \t]*(.*?)[ \t]*$', 'm');
+
   // match identifiers according to 6.4.2.1, do not match 'defined',
   // do not match quote strings either
-  var is_identifier_re = /\b(d(?!efined)|[a-ce-zA-Z_])\w*(?![\w"])/g;
+  let is_identifier_re = /\b(d(?!efined)|[a-ce-zA-Z_])\w*(?![\w"])/g;
 
   // same, but checks if the entire string is an identifier
-  var is_identifier_only_re = /^(d(?!efined)|[a-ce-zA-Z_])\w*$/g;
+  let is_identifier_only_re = /^(d(?!efined)|[a-ce-zA-Z_])\w*$/g;
 
   // same, but checks if the entire string is a macro
-  var is_macro_only_re = /^((?:d(?!efined)|[a-ce-zA-Z_])\w*)\s*\((.*)\)$/g;
+  let is_macro_only_re = /^((?:d(?!efined)|[a-ce-zA-Z_])\w*)\s*\((.*)\)$/g;
 
   // defined <identifier>
-  var defined_no_parens_re = /defined\s+([a-zA-Z_]\w*)/g;
+  let defined_no_parens_re = /defined\s+([a-zA-Z_]\w*)/g;
 
   // defined (<identifier>)
-  var defined_re = /defined\s*\((\s*[a-zA-Z_]\w*\s*)\)/g;
+  let defined_re = /defined\s*\((\s*[a-zA-Z_]\w*\s*)\)/g;
 
   // __defined_magic_<identifier>_ (a special sentinel value used to
   // temporarily exclude operands to defined from macro substitution.
-  var defined_magic_sentinel_re = /__defined_magic_([a-zA-Z_]\w*)_/;
+  let defined_magic_sentinel_re = /__defined_magic_([a-zA-Z_]\w*)_/;
 
   // Match hexadecimal, octal and decimal integer literals with or
   // without L,l,U,u suffix and separate all components.
-  var is_integer_re = /\b(\+|-|)(0|0x|)([1-9a-f][0-9a-f]*|0)([ul]*)\b/gi;
+  let is_integer_re = /\b(\+|-|)(0|0x|)([1-9a-f][0-9a-f]*|0)([ul]*)\b/gi;
 
   // Grab doubly quoted strings
-  var is_string_re = /"(.*?)"/g;
+  let is_string_re = /"(.*?)"/g;
 
   // Grab compound assignments. Extra fix for !=, ==, <=, >= needed
-  var is_assignment_re = /[+\-*%\/&^|]?=/g;
+  let is_assignment_re = /[+\-*%\/&^|]?=/g;
 
   // Grab instances of the increment/decrement operators
-  var is_increment_re = /--|\+\+/g;
+  let is_increment_re = /--|\+\+/g;
 
   // Grav <included_file> or "included_file"
-  var include_re = /(?:(<)(.*)>|"(.*)")(.*)/;
+  let include_re = /(?:(<)(.*)>|"(.*)")(.*)/;
 
   // Magic token to signify the '##' token (to keep it from being
   // treated as the operator of the same signature).
-  var pseudo_token_doublesharp = '__doublesharp_magic__';
-  var is_pseudo_token_doublesharp = new RegExp(pseudo_token_doublesharp, 'g');
+  let pseudo_token_doublesharp = '__doublesharp_magic__';
+  let is_pseudo_token_doublesharp = new RegExp(pseudo_token_doublesharp, 'g');
 
   // Magic token to signify the ' ' token (to keep it from being
   // treated as token boundary).
-  var pseudo_token_space = '__whitespace_magic__';
-  var is_pseudo_token_space = new RegExp(pseudo_token_space, 'g');
+  let pseudo_token_space = '__whitespace_magic__';
+  let is_pseudo_token_space = new RegExp(pseudo_token_space, 'g');
 
-  var pseudo_token_empty = '__empty_magic__';
-  var is_pseudo_token_empty = new RegExp(pseudo_token_empty, 'g');
+  let pseudo_token_empty = '__empty_magic__';
+  let is_pseudo_token_empty = new RegExp(pseudo_token_empty, 'g');
 
-  var pseudo_token_nosubs = '__nosubs__';
-  var is_pseudo_token_nosubs = new RegExp(pseudo_token_nosubs, 'g');
+  let pseudo_token_nosubs = '__nosubs__';
+  let is_pseudo_token_nosubs = new RegExp(pseudo_token_nosubs, 'g');
 
   // List of preprocessing tokens.
-  var pp_special_token_list = {
+  let pp_special_token_list = {
     '==': 1,
     '!=': 1,
     '+': 1,
@@ -235,16 +250,16 @@ export function cpp_js(settings) {
     '^=': 1,
     '#': 1,
     '##': 1,
-    '->': 1
+    '->': 1,
   };
 
-  var state = Object.create(null);
-  var macro_cache = Object.create(null);
+  let state = {};
+  let macro_cache = {};
 
-  var eval_mask = null;
+  let eval_mask = null;
 
-  var max_macro_length = 0;
-  var macro_counts_by_length = {};
+  let max_macro_length = 0;
+  let macro_counts_by_length = {};
 
   return {
     // ----------------------
@@ -268,7 +283,7 @@ export function cpp_js(settings) {
     // k <= "foo(a,b)", v <= "a ## b". The function invokes the error
     // callback if the macro contains syntax errors.
     define(k, v) {
-      var macro = this._get_macro_info(k);
+      let macro = this._get_macro_info(k);
       if(!this._is_identifier(k) && !macro) {
         settings.error_func("not a valid preprocessor identifier: '" + k + "'");
       }
@@ -304,10 +319,10 @@ export function cpp_js(settings) {
         delete state[k];
 
         // update macro length table
-        var nl = macro_counts_by_length[k.length] - 1;
+        let nl = macro_counts_by_length[k.length] - 1;
         if(k.length === max_macro_length && !nl) {
           max_macro_length = 0;
-          for(var i = k.length - 1; i >= 0; --i) {
+          for(let i = k.length - 1; i >= 0; --i) {
             if(macro_counts_by_length[i]) {
               max_macro_length = i;
               break;
@@ -321,7 +336,7 @@ export function cpp_js(settings) {
         // this happens if the user includes the parameter list
         // in the name. This is not part of the specification,
         // but implemented for reasons of API symmetry.
-        var macro = this._get_macro_info(k);
+        let macro = this._get_macro_info(k);
         if(macro) {
           this.undefine(macro.name);
         }
@@ -332,7 +347,7 @@ export function cpp_js(settings) {
     // (public) Given a dictionary of macro_name, replacement pairs, invoke
     // `define` on all of them.
     define_multiple(dict) {
-      for(var k in dict) {
+      for(let k in dict) {
         this.define(k, dict[k]);
       }
     },
@@ -344,63 +359,75 @@ export function cpp_js(settings) {
     run(text, name) {
       name = name || '<unnamed>';
 
-      if(!text) error('input empty or null');
+      if(!text) {
+        error('input empty or null');
+      }
 
       text = settings.comment_stripper(text);
-      var blocks = text.split(block_re);
+      let blocks = text.split(block_re);
 
-      var out = new Array(Math.floor(blocks.length / 3) + 2),
+      let out = new Array(Math.floor(blocks.length / 3) + 2),
         outi = 0;
-      for(var i = 0; i < out.length; ++i) out[i] = '';
+      for(let i = 0; i < out.length; ++i) {
+        out[i] = '';
+      }
 
-      var ifs_nested = 0,
+      let ifs_nested = 0,
         ifs_failed = 0,
         if_done = false,
         line = 1,
         command;
-      var if_stack = [];
+      let if_stack = [];
 
       // wrapped error function, augments line number and file
-      function error(text) {
+      let error = function(text) {
         settings.error_func('(cpp) error # ' + name + ':' + line + ': ' + text);
-      }
+      };
 
       // wrapped warning function, augments line number and file
-      function warn(text) {
+      let warn = function(text) {
         settings.warn_func('(cpp) warning # ' + name + ':' + line + ': ' + text);
-      }
+      };
 
-      var skip = false;
-      var self = this;
+      let skip = false;
+      let self = this;
 
-      function process_directive(command, elem, i) {
-        console.log('process_directive', { command, elem, i });
+      let process_directive = function(command, elem, i) {
         switch (command) {
           case 'define':
-            var head, tail;
+            let head, tail;
 
             elem = trim(elem);
 
-            var par_count = undefined;
-            for(var j = 0; j < elem.length; ++j) {
+            let par_count = undefined;
+            for(let j = 0; j < elem.length; ++j) {
               if(elem[j] == '(') {
                 par_count = (par_count || 0) + 1;
               } else if((elem[j] == ')' && --par_count === 0) || (elem[j].match(/\s/) && par_count === undefined)) {
-                if(elem[j] == ')') ++j;
-
+                if(elem[j] == ')') {
+                  ++j;
+                }
                 head = elem.slice(0, j);
                 tail = trim(elem.slice(j));
                 break;
               }
             }
 
-            if(par_count) error('unbalanced parentheses in define: ' + elem);
+            if(par_count) {
+              error('unbalanced parentheses in define: ' + elem);
+            }
 
-            if(head === undefined) head = elem;
+            if(head === undefined) {
+              head = elem;
+            }
 
-            if(self.defined(head)) warn(head + ' redefined');
+            if(self.defined(head)) {
+              warn(head + ' redefined');
+            }
 
-            if(!self._is_identifier(head) && !self._is_macro(head)) error("not a valid preprocessor identifier: '" + head + "'");
+            if(!self._is_identifier(head) && !self._is_macro(head)) {
+              error("not a valid preprocessor identifier: '" + head + "'");
+            }
 
             self.define(head, tail);
             break;
@@ -411,20 +438,26 @@ export function cpp_js(settings) {
 
           case 'include':
             elem = self.subs(elem, {}, error, warn);
-            var parts = elem.match(include_re);
-            if(parts[4]) error('unrecognized characters in include: ' + elem);
+            let parts = elem.match(include_re);
+            if(parts[4]) {
+              error('unrecognized characters in include: ' + elem);
+            }
+            let file = (parts[2] || '') + (parts[3] || '');
 
-            var file = (parts[2] || '') + (parts[3] || '');
-
-            if(!settings.include_func) error('include directive not supported, ' + 'no handler specified');
+            if(!settings.include_func) {
+              error('include directive not supported, ' + 'no handler specified');
+            }
 
             settings.include_func(file, parts[1] === '<', function(contents) {
-              if(contents === null) error('failed to access include file: ' + file);
+              if(contents === null) {
+                error('failed to access include file: ' + file);
+              }
+              let s = {};
+              for(let k in settings) {
+                s[k] = settings[k];
+              }
 
-              var s = {};
-              for(var k in settings) s[k] = settings[k];
-
-              var processor;
+              let processor;
 
               s.completion_func = function(data, lines, new_state) {
                 out.length = outi;
@@ -436,7 +469,9 @@ export function cpp_js(settings) {
                 self._set_state(processor);
 
                 for(++i; i < blocks.length; ++i) {
-                  if(!process_block(i, blocks[i])) return false;
+                  if(!process_block(i, blocks[i])) {
+                    return false;
+                  }
                 }
                 self._result(out, state);
               };
@@ -454,7 +489,9 @@ export function cpp_js(settings) {
             break;
 
           case 'pragma':
-            if(!settings.pragma_func(elem)) warn('ignoring unrecognized #pragma: ' + elem);
+            if(!settings.pragma_func(elem)) {
+              warn('ignoring unrecognized #pragma: ' + elem);
+            }
             break;
 
           default:
@@ -462,15 +499,17 @@ export function cpp_js(settings) {
             break;
         }
         return true;
-      }
+      };
 
-      function process_block(i, elem) {
-        var elem = blocks[i];
+      let process_block = function(i, elem) {
+        //let elem = blocks[i];
         switch (i % 3) {
           // code line, apply macro substitutions and copy to output.
           case 0:
             line += elem.split('\n').length - 1;
-            if(!ifs_failed && trim(elem).length) out[outi++] = self.subs(elem, error, warn);
+            if(!ifs_failed && trim(elem).length) {
+              out[outi++] = self.subs(elem, error, warn);
+            }
             break;
           // preprocessor statement, such as ifdef, endif, ..
           case 1:
@@ -480,30 +519,39 @@ export function cpp_js(settings) {
           // the rest of the preprocessor line, this is where expression
           // evaluation happens
           case 2:
-            var done = true;
+            let done = true;
             switch (command) {
               case 'ifdef':
               case 'ifndef':
-                if(!elem) error('expected identifier after ' + command);
-
+                if(!elem) {
+                  error('expected identifier after ' + command);
+                }
                 // translate ifdef/ifndef to regular if by using defined()
                 elem = '(defined ' + elem + ')';
-                if(command == 'ifndef') elem = '!' + elem;
+                if(command == 'ifndef') {
+                  elem = '!' + elem;
+                }
               // fallthrough
 
               case 'if':
                 if_stack.push(false);
-                if(!elem.length) error('expected identifier after if');
+                if(!elem.length) {
+                  error('expected identifier after if');
+                }
               // fallthrough
 
               case 'else':
               case 'elif':
-                var not_reached = false;
+                let not_reached = false;
                 if(command == 'elif' || command == 'else') {
                   not_reached = if_stack[if_stack.length - 1];
-                  if(ifs_failed > 0) --ifs_failed;
+                  if(ifs_failed > 0) {
+                    --ifs_failed;
+                  }
 
-                  if(command == 'else' && elem.length) warn('ignoring tokens after else');
+                  if(command == 'else' && elem.length) {
+                    warn('ignoring tokens after else');
+                  }
                 }
 
                 if(ifs_failed > 0 || not_reached || (command != 'else' && !self._eval(elem, error, warn))) {
@@ -516,10 +564,12 @@ export function cpp_js(settings) {
                 break;
 
               case 'endif':
-                if(!if_stack.length) error('endif with no matching if');
-
-                if(ifs_failed > 0) --ifs_failed;
-
+                if(!if_stack.length) {
+                  error('endif with no matching if');
+                }
+                if(ifs_failed > 0) {
+                  --ifs_failed;
+                }
                 if_stack.pop();
                 // ignore trailing junk on endifs
                 break;
@@ -529,15 +579,25 @@ export function cpp_js(settings) {
             }
 
             // not done yet, so this is a plain directive (i.e. include)
-            if(!done) if (!process_directive(command, elem, i)) return false;
+            if(!done) {
+              if(!process_directive(command, elem, i)) {
+                return false;
+              }
+            }
             break;
         }
         return true;
+      };
+
+      for(let i = 0; i < blocks.length; ++i) {
+        if(!process_block(i, blocks[i])) {
+          return null;
+        }
       }
 
-      for(var i = 0; i < blocks.length; ++i) if(!process_block(i, blocks[i])) return null;
-
-      if(if_stack.length > 0) error('unexpected EOF, expected endif');
+      if(if_stack.length > 0) {
+        error('unexpected EOF, expected endif');
+      }
 
       return this._result(out, state);
     },
@@ -553,37 +613,44 @@ export function cpp_js(settings) {
       error = error || settings.error_func;
       warn = warn || settings.warn_func;
 
-      var TOTALLY_BLACK = 1e10;
+      let TOTALLY_BLACK = 1e10;
 
       // create a copy of the blacklist and make sure that all incoming
       // macros are totally blacked out.
-      var blacklist = {};
+      let blacklist = {};
       if(blacklist_in) {
-        for(var k in blacklist_in) blacklist[k] = TOTALLY_BLACK;
+        for(let k in blacklist_in) {
+          blacklist[k] = TOTALLY_BLACK;
+        }
       }
 
       nest_sub = nest_sub || 0;
 
-      var new_text = text;
-      var rex = /\b.|["']/g,
+      let new_text = text;
+      let rex = /\b.|["']/g,
         m_boundary;
 
       // XXX This scales terribly. Possible optimization:
       //   use KMP for substring searches
-      var pieces = [],
+      let pieces = [],
         last = 0,
         in_string = false;
 
       while((m_boundary = rex.exec(new_text))) {
-        var idx = m_boundary.index;
-        if(is_string_boundary(new_text, idx)) in_string = !in_string;
+        let idx = m_boundary.index;
+        if(is_string_boundary(new_text, idx)) {
+          in_string = !in_string;
+        }
 
-        if(in_string) continue;
+        if(in_string) {
+          continue;
+        }
 
-        for(var i = Math.min(new_text.length - idx, max_macro_length); i >= 1; --i) {
-          if(!macro_counts_by_length[i]) continue;
-
-          var k = new_text.slice(idx, idx + i);
+        for(let i = Math.min(new_text.length - idx, max_macro_length); i >= 1; --i) {
+          if(!macro_counts_by_length[i]) {
+            continue;
+          }
+          let k = new_text.slice(idx, idx + i);
           if(k in state) {
             // if this would be a match, but the macro is blacklisted,
             // we need to skip it alltogether or parts of it might be
@@ -595,10 +662,11 @@ export function cpp_js(settings) {
               rex.lastIndex = 0;
 
               // adjust blacklist indices
-              for(var kk in blacklist) {
+              for(let kk in blacklist) {
                 if(blacklist[kk] != TOTALLY_BLACK) {
-                  if(blacklist[kk] > idx) blacklist[kk] -= idx + k.length;
-                  else delete blacklist[kk];
+                  if(blacklist[kk] > idx) {
+                    blacklist[kk] -= idx + k.length;
+                  } else delete blacklist[kk];
                 }
               }
               break;
@@ -606,11 +674,15 @@ export function cpp_js(settings) {
               delete blacklist[k];
             }
 
-            var sub;
-            if(this._is_macro(k)) sub = this._subs_macro(new_text, k, {}, error, warn, nest_sub, idx);
-            else sub = this._subs_simple(new_text, k, {}, error, warn, nest_sub, idx);
-
-            if(sub === null) continue;
+            let sub;
+            if(this._is_macro(k)) {
+              sub = this._subs_macro(new_text, k, {}, error, warn, nest_sub, idx);
+            } else {
+              sub = this._subs_simple(new_text, k, {}, error, warn, nest_sub, idx);
+            }
+            if(sub === null) {
+              continue;
+            }
 
             // handle # and ## operator
             sub[0] = this._handle_ops(sub[0], error, warn);
@@ -624,10 +696,11 @@ export function cpp_js(settings) {
             rex.lastIndex = 0;
 
             // adjust blacklist indices
-            for(var kk in blacklist) {
+            for(let kk in blacklist) {
               if(blacklist[kk] != TOTALLY_BLACK) {
-                if(blacklist[kk] > idx) blacklist[kk] = sub[0].length - sub[1] + (blacklist[kk] - idx);
-                else delete blacklist[kk];
+                if(blacklist[kk] > idx) {
+                  blacklist[kk] = sub[0].length - sub[1] + (blacklist[kk] - idx);
+                } else delete blacklist[kk];
               }
             }
 
@@ -649,7 +722,9 @@ export function cpp_js(settings) {
       // '##' tokens previously substituted in order to keep them
       // from being treated as operators. Same for spaces and empty
       // tokens.
-      if(!nest_sub) new_text = this._remove_sentinels(new_text);
+      if(!nest_sub) {
+        new_text = this._remove_sentinels(new_text);
+      }
 
       return new_text;
     },
@@ -672,7 +747,7 @@ export function cpp_js(settings) {
         state: state,
         macro_counts_by_length: macro_counts_by_length,
         macro_cache: macro_cache,
-        max_macro_length: max_macro_length
+        max_macro_length: max_macro_length,
       };
     },
 
@@ -681,15 +756,19 @@ export function cpp_js(settings) {
     // and trimming the result. The function also invokes the user-defined
     // completion callback, but it also returns the preprocessed text to the caller.
     _result(arr, state) {
-      //console.log('_result', { arr, state });
       // drop empty lines at the end
-      for(var i = arr.length - 1; i >= 0; --i) {
-        if(!arr[i]) arr.pop();
-        else break;
+      for(let i = arr.length - 1; i >= 0; --i) {
+        if(!arr[i]) {
+          arr.pop();
+        } else {
+          break;
+        }
       }
 
-      var text = arr.join('\n');
-      if(settings.completion_func) settings.completion_func(text, arr, state);
+      let text = arr.join('\n');
+      if(settings.completion_func) {
+        settings.completion_func(text, arr, state);
+      }
 
       return text;
     },
@@ -721,34 +800,38 @@ export function cpp_js(settings) {
     // is malformed (i.e. syntax wrong). Does not add new macros to the macro
     // cache but uses the cache to speed-up looking up known macros.
     _get_macro_info(k) {
-      //console.log('_get_macro_info', {k});
-      if(macro_cache[k]) return macro_cache[k];
+      if(macro_cache[k]) {
+        return macro_cache[k];
+      }
 
-      var m = is_macro_only_re.exec(k);
-      if(!m) return null;
-
+      let m = is_macro_only_re.exec(k);
+      if(!m) {
+        return null;
+      }
       is_macro_only_re.lastIndex = 0;
 
-      var params = m[2].split(',');
+      let params = m[2].split(',');
       if(params.length === 1 && !trim(params[0])) {
         // parameterless macro (i.e. #define p () )
         params = [];
       } else {
-        for(var i = 0; i < params.length; ++i) {
-          var t = (params[i] = trim(params[i]));
-          if(!this._is_identifier(t) && !this._is_macro(t)) return null;
+        for(let i = 0; i < params.length; ++i) {
+          let t = (params[i] = trim(params[i]));
+          if(!this._is_identifier(t) && !this._is_macro(t)) {
+            return null;
+          }
         }
       }
 
       // ES 1.8's sticky flag would be useful, but sadly it is not
       // universally supported yet.
-      var pat = new RegExp(m[1] + '\\s*\\(', 'g');
+      let pat = new RegExp(m[1] + '\\s*\\(', 'g');
 
       return {
         params: params,
         pat: pat,
         name: m[1],
-        full: k
+        full: k,
       };
     },
 
@@ -768,7 +851,7 @@ export function cpp_js(settings) {
     // Evaluate the _Pragma(string) preprocessor operator in the given
     // (partially substituted) sequence of preprocessor tokens.
     _handle_pragma(text, error, warn) {
-      var self = this;
+      let self = this;
       // XXX obviously RE aren't sufficient here either, do proper parse.
       return text.replace(/_Pragma\s*\(\s*"(.*?([^\\]|\\\\))"\s*\)/g, function(match, pragma) {
         // destringize
@@ -776,7 +859,9 @@ export function cpp_js(settings) {
         pragma = self._remove_sentinels(pragma);
         pragma = self._concatenate_strings(pragma);
 
-        if(!settings.pragma_func(pragma)) warn('unrecognized _Pragma(): ' + pragma);
+        if(!settings.pragma_func(pragma)) {
+          warn('unrecognized _Pragma(): ' + pragma);
+        }
 
         // always substitute an empty string so processing
         // can continue.
@@ -788,11 +873,11 @@ export function cpp_js(settings) {
     // Concatenate neighbouring string literals such as " hello "
     // "world " and return the result.
     _concatenate_strings(text) {
-      var in_string = false,
+      let in_string = false,
         last = null,
         last_taken = 0;
-      var text_out = [];
-      for(var i = 0; i < text.length; ++i) {
+      let text_out = [];
+      for(let i = 0; i < text.length; ++i) {
         if(is_string_boundary(text, i)) {
           if(in_string) {
             last = i;
@@ -822,36 +907,42 @@ export function cpp_js(settings) {
 
       // 6.10.3.2: "The order of evaluation of # and ## operators
       // is unspecified.". We pick '##' first.
-      var op,
+      let op,
         pieces = [],
         in_string = false;
-      for(var op = 0; op < text.length - 1; ++op) {
+      for(let op = 0; op < text.length - 1; ++op) {
         if(is_string_boundary(text, op)) {
           in_string = !in_string;
           continue;
         }
 
-        if(text[op] !== '#' || in_string) continue;
+        if(text[op] !== '#' || in_string) {
+          continue;
+        }
 
-        var is_concat = text[op + 1] === '#';
-        var left = null,
+        let is_concat = text[op + 1] === '#';
+        let left = null,
           right = null;
 
         // identify the tokens on either side of the ## operator or
         // only on the right side of the # operator.
-        var in_inner_string = false,
+        let in_inner_string = false,
           nest = 0;
         if(is_concat) {
-          for(var i = op - 1; i >= 0; --i) {
+          for(let i = op - 1; i >= 0; --i) {
             if(!text[i].match(/\s/)) {
-              if(is_string_boundary(text, i)) in_inner_string = !in_inner_string;
-              else if(text[i] === '(') ++nest;
-              else if(text[i] === ')') --nest;
-
+              if(is_string_boundary(text, i)) {
+                in_inner_string = !in_inner_string;
+              } else if(text[i] === '(') {
+                ++nest;
+              } else if(text[i] === ')') {
+                --nest;
+              }
               left = text[i] + (left || '');
             } else if(left !== null) {
-              if(!in_inner_string && !nest) break;
-
+              if(!in_inner_string && !nest) {
+                break;
+              }
               left = ' ' + left;
             }
           }
@@ -863,14 +954,17 @@ export function cpp_js(settings) {
         in_inner_string = false;
         nest = 0;
 
-        var first_space = true;
-        for(var j = op + (is_concat ? 2 : 1); j < text.length; ++j) {
+        let first_space = true;
+        for(let j = op + (is_concat ? 2 : 1); j < text.length; ++j) {
           if(!text[j].match(/\s/)) {
             first_space = true;
-            if(is_string_boundary(text, j)) in_inner_string = !in_inner_string;
-            else if(text[j] === '(') ++nest;
-            else if(text[j] === ')') --nest;
-
+            if(is_string_boundary(text, j)) {
+              in_inner_string = !in_inner_string;
+            } else if(text[j] === '(') {
+              ++nest;
+            } else if(text[j] === ')') {
+              --nest;
+            }
             right = (right || '') + text[j];
           } else if(right !== null && !in_inner_string && !nest) {
             break;
@@ -887,29 +981,40 @@ export function cpp_js(settings) {
 
         right = trim(right || '');
 
-        var concat;
+        let concat;
         if(is_concat) {
           left = trim(left || '');
-          if(!right || !left) error('## cannot appear at either end of a macro expansion');
+          if(!right || !left) {
+            error('## cannot appear at either end of a macro expansion');
+          }
 
           // To my reading of the standard, it works like this:
           // if both sides are *not* preprocessing special tokens,
           // the concatenation is always ok. Otherwise the result
           // must be a valid preprocessing special token as well.
-          if((this._is_pp_special_token(left) || this._is_pp_special_token(right)) && !this._is_pp_special_token(left + right))
+          if(
+            (this._is_pp_special_token(left) || this._is_pp_special_token(right)) &&
+            !this._is_pp_special_token(left + right)
+          ) {
             error('pasting "' + left + '" and "' + right + '" does not give a valid preprocessing token');
+          }
 
           // the result of the concatenation is another token, but
           // we must take care that the '##' token is not treated
           // as concatenation operator in further replacements.
           concat = left + right;
-          if(concat == '##') concat = pseudo_token_doublesharp;
-          // tokens that we marked as no longer available for
-          // substitution become available again when they're
-          // concatenated with other tokens.
-          else concat = concat.replace(is_pseudo_token_nosubs, '');
+          if(concat == '##') {
+            concat = pseudo_token_doublesharp;
+          } else {
+            // tokens that we marked as no longer available for
+            // substitution become available again when they're
+            // concatenated with other tokens.
+            concat = concat.replace(is_pseudo_token_nosubs, '');
+          }
         } else {
-          if(!right) error('# cannot appear at the end of a macro expansion');
+          if(!right) {
+            error('# cannot appear at the end of a macro expansion');
+          }
 
           concat = '"' + right.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
         }
@@ -917,7 +1022,9 @@ export function cpp_js(settings) {
         pieces.push(text.slice(0, i));
         pieces.push(concat);
 
-        if(j < text.length) pieces.push(text.slice(j));
+        if(j < text.length) {
+          pieces.push(text.slice(j));
+        }
 
         text = pieces.join('');
         pieces.length = 0;
@@ -935,11 +1042,13 @@ export function cpp_js(settings) {
     // in the original string.
     _subs_simple(text, macro_name, blacklist_in, error, warn, nest_sub, start_idx) {
       // no macro but just a parameterless substitution
-      var rex = new RegExp(macro_name + '(\\b|' + pseudo_token_space + '|' + pseudo_token_empty + ')', 'g');
+      let rex = new RegExp(macro_name + '(\\b|' + pseudo_token_space + '|' + pseudo_token_empty + ')', 'g');
 
       rex.lastIndex = start_idx || 0;
-      var m_found = rex.exec(text);
-      if(!m_found || m_found.index != start_idx) return null;
+      let m_found = rex.exec(text);
+      if(!m_found || m_found.index != start_idx) {
+        return null;
+      }
 
       return [state[macro_name], m_found[0].length];
     },
@@ -950,34 +1059,38 @@ export function cpp_js(settings) {
     // Return a 2-tuple with the substitution string and the substituted length
     // in the original string.
     _subs_macro(text, macro_name, blacklist, error, warn, nest_sub, start_idx) {
-      //console.log('_subs_macro', { /*text,*/ macro_name, blacklist, error, warn, nest_sub, start_idx})
-      var info = this._get_macro_info(macro_name);
-      //console.log('_subs_macro', {  info})
-      var old_text = text;
+      let info = this._get_macro_info(macro_name);
+      let old_text = text;
 
       info.pat.lastIndex = start_idx || 0;
-      var m_found = info.pat.exec(text);
-      if(!m_found || m_found.index != start_idx) return null;
+      let m_found = info.pat.exec(text);
+      if(!m_found || m_found.index != start_idx) {
+        return null;
+      }
 
-      var params_found = [],
+      let params_found = [],
         last,
         nest = -1,
         in_string = false;
 
       // here macro invocations may be nested, so a regex is not
       // sufficient to "parse" this.
-      for(var i = m_found.index; i < text.length; ++i) {
+      for(let i = m_found.index; i < text.length; ++i) {
         if(text[i] == ',' && !nest) {
           params_found.push(trim(text.slice(last, i)));
           last = i + 1;
         }
 
         if(text[i] == '(') {
-          if(++nest === 0) last = i + 1;
+          if(++nest === 0) {
+            last = i + 1;
+          }
         } else if((text[i] == '"' || text[i] == "'") && (!i || text[i - 1] != '\\')) {
-          if(in_string) --nest;
-          else ++nest;
-
+          if(in_string) {
+            --nest;
+          } else {
+            ++nest;
+          }
           in_string = !in_string;
         } else if(text[i] == ')') {
           if(--nest === -1) {
@@ -988,13 +1101,22 @@ export function cpp_js(settings) {
         }
       }
 
-      if(nest !== -1) error('unbalanced parentheses, expected )');
+      if(nest !== -1) {
+        error('unbalanced parentheses, expected )');
+      }
 
       if(params_found.length != info.params.length) {
         // special case: if no arguments are expected and none passed either,
         // we will still get one empty argument from the previous logic.
         if(info.params.length || params_found.length > 1 || params_found[0]) {
-          error('illegal invocation of macro ' + macro_name + ', expected ' + info.params.length + ' parameters but got ' + params_found.length);
+          error(
+            'illegal invocation of macro ' +
+              macro_name +
+              ', expected ' +
+              info.params.length +
+              ' parameters but got ' +
+              params_found.length,
+          );
         } else {
           params_found = [];
         }
@@ -1003,37 +1125,39 @@ export function cpp_js(settings) {
       // macro parameters may potentially be empty, but this would lead
       // to trouble in subsequent substitutions. So substitute a sentinel
       // string.
-      for(var i = 0; i < params_found.length; ++i) {
-        if(!params_found[i]) params_found[i] = pseudo_token_empty;
+      for(let i = 0; i < params_found.length; ++i) {
+        if(!params_found[i]) {
+          params_found[i] = pseudo_token_empty;
+        }
       }
 
       // insert arguments into replacement list, but evaluate them
       // PRIOR to doing this (6.10.3.1). We need, however, to
       // exclude all arguments directly preceeded or succeeded by
       // either the stringization or the token concatenation operator
-      var repl = state[macro_name];
+      let repl = state[macro_name];
 
-      for(var i = 0; i < info.params.length; ++i) {
+      for(let i = 0; i < info.params.length; ++i) {
         // what applies to empty parameter applies to whitespace in the
         // parameter text as well (only whitespace that concates two
         // otherwise distinct tokens). Substitute by a magic sentinel.
         // This must be done PRIOR to evaluating the parameters -
         // a parameter might evaluate to something like '2, 4'
         // which should obviously not be escaped.
-        var param_subs = params_found[i].replace(/(\w)\s+(\w)/g, '$1' + pseudo_token_space + '$2');
+        let param_subs = params_found[i].replace(/(\w)\s+(\w)/g, '$1' + pseudo_token_space + '$2');
         param_subs = this.subs(param_subs, blacklist, error, warn, nest_sub + 1);
 
-        var rex = new RegExp('^' + info.params[i] + '\\b');
-        var ignore = false,
+        let rex = new RegExp('^' + info.params[i] + '\\b');
+        let ignore = false,
           pieces = [],
           m,
           bound = true;
-        for(var j = 0; j < repl.length; ++j) {
+        for(let j = 0; j < repl.length; ++j) {
           if(repl[j] == '#') {
             ignore = true;
           } else if(bound && (m = rex.exec(repl.slice(j)))) {
             if(!ignore) {
-              for(var k = j + m[0].length; k < repl.length; ++k) {
+              for(let k = j + m[0].length; k < repl.length; ++k) {
                 if(repl[k] == '#') {
                   ignore = true;
                 } else if(!repl[k].match(/\s/)) {
@@ -1074,14 +1198,14 @@ export function cpp_js(settings) {
         eval_mask = {};
 
         // mask global properties
-        var glob = [];
+        let glob = [];
         try {
           // browser environment, window object present
           glob = [
             window,
             {
-              window: 1
-            }
+              window: 1,
+            },
           ];
         } catch(e) {
           try {
@@ -1093,15 +1217,17 @@ export function cpp_js(settings) {
                 process: 1,
                 require: 1,
                 module: 1,
-                [__scriptArgs[0]]: 1,
-                __dirname: 1
-              }
+                __filename: 1,
+                __dirname: 1,
+              },
             ];
           } catch(e) {}
         }
 
-        for(var i = 0; i < glob.length; ++i) {
-          for(var p in glob[i]) eval_mask[p] = undefined;
+        for(let i = 0; i < glob.length; ++i) {
+          for(let p in glob[i]) {
+            eval_mask[p] = undefined;
+          }
         }
 
         // bring defined() function into scope
@@ -1109,8 +1235,6 @@ export function cpp_js(settings) {
       }
 
       eval_mask.__result__ = false;
-
-      //console.log("_masked_eval", {scr})
 
       // execute script in private context
       new Function('with(this) { __result__ = (' + scr + '); }').call(eval_mask);
@@ -1121,18 +1245,24 @@ export function cpp_js(settings) {
     // Evaluate a raw and not yet preprocessed expression from a
     // #if/#ifdef clause and return the result.
     _eval(val, error, warn) {
-      var old_val = val;
+      let old_val = val;
       // see 6.10.1.2-3
 
       // string literals are not allowed
-      if(val.match(is_string_re)) error('string literal not allowed in if expression');
+      if(val.match(is_string_re)) {
+        error('string literal not allowed in if expression');
+      }
 
       // neither are assignment or compound assignment ops
-      if(val.replace(/[=!<>]=/g, '').match(is_assignment_re)) error('assignment operator not allowed in if expression');
+      if(val.replace(/[=!<>]=/g, '').match(is_assignment_re)) {
+        error('assignment operator not allowed in if expression');
+      }
 
       // same for increment/decrement - we need to catch these
       // cases because they might be used to exploit eval().
-      if(val.match(is_increment_re)) error('--/++ operators not allowed in if expression');
+      if(val.match(is_increment_re)) {
+        error('--/++ operators not allowed in if expression');
+      }
 
       // XXX handle character constants
 
@@ -1153,9 +1283,6 @@ export function cpp_js(settings) {
       // replace all remaining identifiers with '0'
       val = val.replace(is_identifier_re, ' 0 ');
 
-      val = val.replace(/([0-9]+)ll?/g, '$1');
-      //      console.log("val:", val);
-
       // what remains _should_ be safe to use with eval() since
       // it doesn't contain any identifiers and is thus not able
       // to invoke global functions. This version of eval is
@@ -1165,11 +1292,11 @@ export function cpp_js(settings) {
       try {
         var res = !!this._masked_eval(val);
       } catch(e) {
-        error('error in expression: ' + old_val + ' (' + e + `) val = ${val}`);
+        error('error in expression: ' + old_val + ' (' + e + ')');
       }
 
       return res;
-    }
+    },
   };
 }
 

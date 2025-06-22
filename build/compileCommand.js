@@ -2,14 +2,23 @@ import inspect from './objectInspect.js';
 import * as util from './misc.js';
 import * as path from './path.js';
 
-export class CompileCommand extends Array {
+util.extendArray(Array.prototype);
+
+class CompileCommand {
+  argv;
+
   constructor(a, workDir = '.') {
-    super();
+    //super();
     this.workDir = path.absolute(typeof workDir == 'string' ? workDir : '.');
+
     if(typeof a == 'string') a = a.split(/\s+/g);
+
+    this.argv = [];
+
     if(Array.isArray(a)) {
-      this.splice(0, this.length);
-      for(let item of a) this.pushUnique(item);
+      this.argv = [];
+      //this.splice(0, this.length);
+      for(let item of a) this.argv.pushUnique(item);
     }
   }
 
@@ -18,12 +27,12 @@ export class CompileCommand extends Array {
   static [Symbol.species] = Array;
 
   /* prettier-ignore */ get program() { return this.toObject().program; }
-  /* prettier-ignore */ set program(arg) { this[0] = arg; }
+  /* prettier-ignore */ set program(arg) { this.argv[0] = arg; }
   /* prettier-ignore */ get output() { return this.toObject().output; }
   set output(arg) {
-    let i = this.findIndex(a => /^-o($|)/.test(a));
-    if(this[i] == '-o') i++;
-    this[i] = arg;
+    let i = this.argv.findIndex(a => /^-o($|)/.test(a));
+    if(this.argv[i] == '-o') i++;
+    this.argv[i] = arg;
   }
   /* prettier-ignore */ get includes() { return  this.toObject().includes; }
   /* prettier-ignore */ get defines() { return this.toObject().defines; }
@@ -33,12 +42,12 @@ export class CompileCommand extends Array {
   /* prettier-ignore */ get sources() { return (this.toObject().args ?? []).filter(arg => arg != this.output); }
   set sources(arg) {
     let { sources } = this;
-    let idx = this.indexOf(sources[0]);
+    let idx = this.argv.indexOf(sources[0]);
 
     if(!Array.isArray(arg)) arg = [arg];
-    this.remove(...sources);
+    this.argv.remove(...sources);
 
-    this.splice(idx, 0, ...arg);
+    this.argv.splice(idx, 0, ...arg);
   }
 
   get source() {
@@ -84,7 +93,7 @@ export class CompileCommand extends Array {
   }
 
   toString(delim) {
-    return this.join(delim ? delim : ' ');
+    return this.argv.join(delim ? delim : ' ');
   }
 
   toObject() {
@@ -97,6 +106,7 @@ export class CompileCommand extends Array {
       i = 0,
       output,
       args = [];
+
     for(let s of this) {
       if(i == 0) program = s;
       else if(p == '-I') includes.push(s);
@@ -112,6 +122,7 @@ export class CompileCommand extends Array {
       p = s;
       i++;
     }
+
     if(program) r.program = program;
     if(output) r.output = output;
     if(includes && includes.length) r.includes = includes /*.map(inc => path.relative(inc, this.workDir))*/;
@@ -129,8 +140,8 @@ export class CompileCommand extends Array {
     let r = [];
     for(let a of args) {
       let i;
-      while((i = this.indexOf(a)) != -1) {
-        let a = this.splice(i, 1);
+      while((i = this.argv.indexOf(a)) != -1) {
+        let a = this.argv.splice(i, 1);
         r = r.concat(a);
       }
     }
@@ -142,7 +153,7 @@ export class CompileCommand extends Array {
       colors: true,
       compact: false,
       maxStringLength: Infinity,
-      maxArrayLength: Infinity
+      maxArrayLength: Infinity,
     });
   }
 }
@@ -201,10 +212,13 @@ export function ArgumentType(arg, i = Number.MAX_SAFE_INTEGER) {
   } else if(i === 0) return 'program';
 }
 
-util.extendArray(CompileCommand.prototype);
+CompileCommand.prototype[Symbol.toStringTag] = 'CompileCommand';
+
+//util.extendArray(CompileCommand.prototype);
 
 export function NinjaRule(command) {
   /* if(!new.target) return new NinjaRule(command);*/
 }
 
+export { CompileCommand };
 export default CompileCommand;

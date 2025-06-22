@@ -478,8 +478,6 @@ Rect.inside = (rect, point) => point.x >= rect.x && point.x <= rect.x + rect.wid
 Rect.from = function(obj) {
   if(isObject(obj) && 'getBoundingClientRect' in obj) return new Rect(obj.getBoundingClientRect());
 
-  console.log('Rect.from', obj);
-
   const fn = (v1, v2) => [Math.min(v1, v2), Math.max(v1, v2)];
 
   const h = fn(obj.x1, obj.x2);

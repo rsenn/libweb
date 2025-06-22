@@ -44,21 +44,24 @@ export const debounceIterator = function* (stream, interval) {
 
 /* global setTimeout, clearTimeout */
 export function debounceAsync(fn, wait = 0, options = {}) {
-  console.debug(`debounceAsync invoked`, { fn, wait, options });
+  //console.debug(`debounceAsync invoked`, { fn, wait, options });
   let lastCallAt;
   let deferred;
   let timer;
   let pendingArgs = [];
   const callFn = (thisObj, args) => {
-    console.debug(`debounceAsync calling`, {
-      lastCallAt,
-      deferred,
-      timer,
-      pendingArgs,
-      fn
-    });
+    //console.debug(`debounceAsync calling`, { lastCallAt, deferred, timer, pendingArgs, fn });
     return fn.call(thisObj, ...args);
   };
+
+  function defer() {
+    const deferred = {};
+    deferred.promise = new Promise((resolve, reject) => {
+      deferred.resolve = resolve;
+      deferred.reject = reject;
+    });
+    return deferred;
+  }
 
   return function debounced(...args) {
     const currentWait = getWait(wait);
@@ -79,6 +82,11 @@ export function debounceAsync(fn, wait = 0, options = {}) {
     }
     return deferred.promise;
   };
+
+  function getWait(wait) {
+    return typeof wait === 'function' ? wait() : wait;
+  }
+
   function flush() {
     const thisDeferred = deferred;
     clearTimeout(timer);
@@ -86,19 +94,6 @@ export function debounceAsync(fn, wait = 0, options = {}) {
     pendingArgs = [];
     deferred = null;
   }
-}
-
-function getWait(wait) {
-  return typeof wait === 'function' ? wait() : wait;
-}
-
-function defer() {
-  const deferred = {};
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-  return deferred;
 }
 
 export default debounceAsync;

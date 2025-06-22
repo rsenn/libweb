@@ -128,7 +128,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
               x: vec.x + 2.54,
               y: vec.y + 0,
               'font-size': 0.6,
-              //  'font-family': 'Fixed Medium',
+              //'font-family': 'Fixed Medium',
               'text-anchor': 'left',
               'alignment-baseline': 'central',
               children: name
@@ -145,9 +145,11 @@ export class SchematicRenderer extends EagleSVGRenderer {
     }
   }
 
-  renderNet(net, parent) {
+  renderNet([name, net], parent) {
     this.debug(`SchematicRenderer.renderNet`, { net, parent });
     let g = this.create('g', { className: `net ${net.name}` }, parent);
+
+    //console.log('SchematicRenderer.renderNet', { net, name , children:  net.children});
 
     for(let segment of net.children)
       this.renderCollection(segment.children, g, {
@@ -158,9 +160,13 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
   renderSheet(sheet, parent) {
     const { transform } = this;
+
     this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, transform });
+
     let instances = sheet.instances;
+
     this.debug(`SchematicRenderer.renderSheet`, sheet);
+
     let netsGroup = this.create('g', { className: 'nets', transform, 'font-family': 'Fixed', 'font-size': 0.6 }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform, 'font-family': 'Fixed', 'font-size': 0.6 }, parent);
 

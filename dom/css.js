@@ -12,6 +12,7 @@ function size(...args) {
   if(args.length == 0) return size;
   return size(args[0]);
 }
+
 function adapter(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
   const adapter = obj && {
     /* prettier-ignore */ get length() {

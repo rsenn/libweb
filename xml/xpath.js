@@ -234,7 +234,6 @@ export class MutableXPath extends MutablePath {
       a = [...this];
     while(a.length > 0) {
       let ret = MutableXPath.partToString(a, sep, childrenSym, tfn);
-      console.log('ret', { ret, a });
       a.splice(0, ret.length);
 
       if(MutableXPath.isChildren(ret[0])) {
@@ -307,12 +306,14 @@ export class MutableXPath extends MutablePath {
 
   toPointer(obj) {
     let ret = [];
+
     for(let part of this) {
       if(typeof part == 'function') part = obj.findIndex(part);
 
       ret.push(part);
       obj = obj[part];
     }
+
     return new MutablePath(ret);
   }
 

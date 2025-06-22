@@ -92,32 +92,18 @@ export class ReconnectingWebSocket {
   constructor(url = '/ws', protocols = [], handlers = {}) {
     this.url = WebSocketURL(url) + '';
     this.protocols = protocols;
+    this.handlers = handlers;
 
-    this.connect(handlers);
+    this.connect();
   }
 
-  async connect(handlers = {}) {
+  async connect(handlers = this.handlers) {
     this.socket = CreateWebSocket(this.url, this.protocols);
 
     let ev = await oncePromise(this.socket, ['open', 'error']);
 
-    if(ev.type == 'open') {
-      if(handlers.onOpen) handlers.onOpen(ev);
-      /*  lazyProperties(this, {
-        writable: () =>
-          new WritableStream({
-            write: chunk => this.socket.send(chunk),
-            close: () => this.socket.close(),
-            abort: err => this.socket.close(err)
-          }),
-        readable: () =>
-          new ReadableStream({
-            start: async controller => {
-              for await(let chunk of this) controller.enqueue(chunk);
-            }
-          })
-      });*/
-    }
+    if(ev.type == 'open') if (handlers.onOpen) handlers.onOpen(ev);
+
     return ev;
   }
 
@@ -147,7 +133,7 @@ export class ReconnectingWebSocket {
       }
 
       const { type, reason, code } = ev;
-      console.log('closed/error', { type, reason, code });
+      console.log('closed/error', { type, reason, code }, (globalThis.ev = ev));
 
       await waitFor(type == 'error' ? 10000 : 250);
 

@@ -6,24 +6,22 @@ import { log, MakeRotation } from '../renderUtils.js';
 import { Package } from './package.js';
 
 export const Element = ({ data, opts = {}, ...props }) => {
-  let { transformation = new TransformationList() } = opts;
+  const { transformation = new TransformationList() } = opts;
 
-  log('Element.render', { transformation, data });
-
-  let element =
+  const element =
     useValue(async function* () {
-      for await(let change of data.repeater) {
-        log('Element.change:', change);
-        yield change;
-      }
+      for await(let change of data.repeater) yield change;
     }) || data;
 
-  let { x, y, rot, library, name, value } = element;
+  let { x, y, rot, library, name, value, package: pkg } = element;
+
+  log('Element.render', { x, y, rot, library, name, value, package:pkg });
 
   let transform = new TransformationList();
 
   transform.translate(x, y);
 
+<<<<<<< HEAD
   if(rot) {
     rot = MakeRotation(rot);
     transform = transform.concat(rot);
@@ -32,16 +30,28 @@ export const Element = ({ data, opts = {}, ...props }) => {
   let pkg = element.library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
 
   if(!value && pkg) value = pkg.name;
+=======
+  if(rot) 
+    transform = transform.concat(MakeRotation(rot));
+>>>>>>> d28162443cf9258c2c6a336327dd1454ef068614
 
-  if(/^R[0-9]/.test(name)) {
-    let number = ValueToNumber(value);
+/*  if(/^R[0-9]/.test(name)) {
+    const number = ValueToNumber(value);
 
     log('name:', name, ' number:', number, ' value:', value);
-  }
+  }*/
+
+  if(!value && pkg) value = pkg.name;
+
+  log('Element.render', { transformation, transform });
 
   const child = h(Package, {
     data: pkg,
+<<<<<<< HEAD
     opts: {
+=======
+     opts: {
+>>>>>>> d28162443cf9258c2c6a336327dd1454ef068614
       ...opts,
       ...{ name, value },
       transformation: transformation.concat(transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/)
@@ -51,7 +61,8 @@ export const Element = ({ data, opts = {}, ...props }) => {
   return h(
     'g',
     {
-      class: `element.${element.name}`,
+      id: `element-${element.name}`,
+      class: `element-${element.name}`,
       'data-path': element.path.toString(' '),
       transform
     },

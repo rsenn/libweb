@@ -4,7 +4,7 @@ import * as deep from '../deep.js';
 import { BBox, Rect } from '../geom.js';
 import { ImmutablePath } from '../json.js';
 import { PathMapper } from '../json/pathMapper.js';
-import { define, properties, lazyProperties, lazyProperty, mapAdapter, mapFunction, weakMapper, tryCatch } from '../misc.js';
+import { define, nonenumerable, properties, lazyProperties, lazyProperty, mapAdapter, mapFunction, weakMapper, tryCatch, } from '../misc.js';
 import { read as fromXML, write as toXML } from '../xml.js';
 import { Palette } from './common.js';
 import { EagleElement } from './element.js';
@@ -21,8 +21,8 @@ function GetProxy(fn = (prop, target) => null, handlers = {}) {
         let ret = fn(prop, target);
         return ret;
       },
-      ...handlers
-    }
+      ...handlers,
+    },
   );
 }
 
@@ -36,7 +36,7 @@ export class EagleDocument extends EagleNode {
     return {
       brd: 'board',
       sch: 'schematic',
-      lbr: 'library'
+      lbr: 'library',
     }[this.type];
   }
 
@@ -44,7 +44,7 @@ export class EagleDocument extends EagleNode {
     return {
       brd: 'board',
       sch: 'schematic',
-      lbr: 'library'
+      lbr: 'library',
     }[fileExtension];
   }
 
@@ -61,8 +61,8 @@ export class EagleDocument extends EagleNode {
   }
 
   static open(filename, readFn = fn => std.loadFile(fn)) {
-    let xml = readFn(filename);
-    //console.log('EagleDocument.open', { filename, xml });
+    const xml = readFn(filename);
+
     return new EagleDocument(xml, null, filename);
   }
 
@@ -71,28 +71,41 @@ export class EagleDocument extends EagleNode {
 
     let xmlObj = deep.clone(xml[0]);
 
-    //console.log('EagleDocument.constructor', console.config({ compact: 0, depth: 4 }), { xmlObj });
+    //console.log('EagleDocument.constructor', console.config({ compact: 0, depth: 2 }), { xmlObj });
 
     super(project, EagleRef(xmlObj, []), xmlObj);
 
-    define(this, {
-      pathMapper: new PathMapper(xmlObj, ImmutablePath),
-      data: xmlStr,
-      raw2element: weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
-    });
+    define(
+      this,
+      nonenumerable({
+        pathMapper: new PathMapper(xmlObj, ImmutablePath),
+        data: xmlStr,
+        raw2element: weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw)),
+      }),
+    );
 
     const { pathMapper, raw2element } = this;
 
     const [obj2path, path2obj] = pathMapper.maps.map(mapFunction);
-    const [obj2eagle, path2eagle] = [mapFunction(raw2element), mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))];
+    const [obj2eagle, path2eagle] = [
+      mapFunction(raw2element),
+      mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined)),
+    ];
     const [eagle2path, eagle2obj] = [
       mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
-      mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
+      mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined)),
     ];
 
-    this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
+    define(this, nonenumerable({ maps: { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj } }));
 
-    type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
+    type =
+      type || /<library>/.test(xmlStr)
+        ? 'lbr'
+        : /(<element\ |<board)/.test(xmlStr)
+          ? 'brd'
+          : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr)
+            ? 'sch'
+            : null;
 
     if(filename) {
       this.file = filename;
@@ -100,63 +113,60 @@ export class EagleDocument extends EagleNode {
     }
 
     this.type = type;
+
     if(project) this.owner = project;
-    if(fs) define(this, { fs });
-    define(this, { xml });
+
     const orig = xml[0];
-    define(this, { orig });
-    define(this, {
-      palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
-    });
+
+    define(
+      this,
+      nonenumerable({
+        xml,
+        orig,
+        fs,
+        palette: Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b)),
+      }),
+    );
 
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
 
     if(this.type == 'sch') {
-      const schematic = this.lookup('eagle/drawing/schematic');
-      lazyProperties(this, {
-        sheets: () => schematic.sheets,
-        parts: () => schematic.parts,
-        libraries: () => schematic.libraries
-      });
+      const schematic = this.lookup('eagle/drawing/schematic') ?? this.get('schematic');
+      define(
+        this,
+        properties(
+          {
+            plain: () => this.lookup('eagle/drawing/board/plain') ?? this.get('plain'),
+            sheets: () => schematic.sheets,
+            parts: () => schematic.parts,
+            libraries: () => schematic.libraries,
+          },
+          { enumerable: false },
+        ),
+      );
+    }
 
-      /*      let sheets = this.lookup('eagle/drawing/schematic/sheets');
-      let parts = this.lookup('eagle/drawing/schematic/parts');
-      let libraries = this.lookup('eagle/drawing/schematic/libraries');
+    lazyProperty(this, 'layers', () =>
+      EagleNodeMap.create(this./*lookup('eagle/drawing').lookup*/ get('layers').children, ['name', 'number']),
+    );
+    //lazyProperties({ layers: () => EagleNodeMap.create(this.get('layers').children, ['name', 'number']) });
+
+    if(this.type == 'brd') {
+      let board = this.get('board');
 
       define(
         this,
         properties(
           {
-            sheets: () => EagleNodeList.create(sheets, sheets.path.concat(['children'])),
-            parts: () => EagleNodeMap.create(parts.children, 'name'), // EagleNodeList.create(parts, parts.path.concat(['children'])),
-              libraries: () => EagleNodeMap.create(libraries.children, 'name')
+            plain: () => this.lookup('eagle/drawing/board/plain') ?? this.get('plain'),
+            board: () => board,
+            elements: () => board.elements,
+            libraries: () => board.libraries,
+            signals: () => board.signals,
           },
-          { memoize: true }
-        )
-      );*/
-    }
-
-    lazyProperty(this, 'layers', () => EagleNodeMap.create(this.lookup('eagle/drawing').lookup('layers').children, ['name', 'number']));
-
-    if(this.type == 'brd') {
-      let board = this.lookup('eagle/drawing/board');
-
-      define(this, {
-        get plain() {
-          return board.lookup('plain') || this.lookup('eagle/drawing/board/plain');
-        },
-        get board() {
-          return board;
-        },
-        get elements() {
-          return board.elements;
-        }
-      });
-
-      lazyProperties(this, {
-        libraries: () => board.libraries,
-        signals: () => board.signals
-      });
+          { enumerable: false },
+        ),
+      );
     }
 
     //lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.concat(['children']), null));
@@ -164,12 +174,16 @@ export class EagleDocument extends EagleNode {
 
   get raw() {
     if(Array.isArray(this.xml)) return this.xml[0];
-    console.log('EagleDocument.get raw', { this: this.orig, xml: this.xml });
+
+    //console.log('EagleDocument.get raw', { this: this.orig, xml: this.xml });
+
     return this.xml;
   }
+
   get filename() {
     return this.file && this.file.replace(/.*\//g, '');
   }
+
   get dirname() {
     return this.file && (/\//.test(this.file) ? this.file.replace(/\/[^\/]*\/?$/g, '') : '.');
   }
@@ -187,33 +201,30 @@ export class EagleDocument extends EagleNode {
       case 'sch':
         return [
           ['eagle', 'drawing', 'settings'],
-          // ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'schematic'],
           ['eagle', 'drawing', 'schematic', 'libraries'],
           ['eagle', 'drawing', 'schematic', 'classes'],
-          ['eagle', 'drawing', 'schematic', 'parts']
+          ['eagle', 'drawing', 'schematic', 'parts'],
           //['eagle', 'drawing', 'schematic', 'sheets']
         ];
       case 'brd':
         return [
           ['eagle', 'drawing', 'settings'],
-          // ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'board'],
           ['eagle', 'drawing', 'board', 'libraries'],
           ['eagle', 'drawing', 'board', 'classes'],
           ['eagle', 'drawing', 'board', 'designrules'],
           ['eagle', 'drawing', 'board', 'elements'],
           ['eagle', 'drawing', 'board', 'signals'],
-          ['eagle', 'drawing', 'board', 'plain']
+          ['eagle', 'drawing', 'board', 'plain'],
         ];
       case 'lbr':
         return [
           ['eagle', 'drawing', 'settings'],
-          //  ['eagle', 'drawing', 'layers'],
           ['eagle', 'drawing', 'library'],
           ['eagle', 'drawing', 'library', 'packages'],
           ['eagle', 'drawing', 'library', 'symbols'],
-          ['eagle', 'drawing', 'library', 'devicesets']
+          ['eagle', 'drawing', 'library', 'devicesets'],
         ];
     }
     return super.cacheFields();
@@ -228,15 +239,16 @@ export class EagleDocument extends EagleNode {
     fs.writeFileSync(file + '.json', JSON.stringify(this.raw, null, 2), true);
 
     //console.log('Saving', file, 'data: ',abbreviate(data));
-    let ret = fs.writeFileSync(file, data, overwrite);
-    //  console.log('ret',ret);
+    const ret = fs.writeFileSync(file, data, overwrite);
 
     if(ret < 0) throw new Error(`Writing file '${file}' failed: ${fs.errstr}`);
+
     return ret;
   }
 
   index(path, transform = arg => arg) {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+
     return transform(path.apply(this));
   }
 
@@ -253,11 +265,11 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    let doc = this;
+    return super.lookup(xpath, (owner, ref, value) => {
+      ref = EagleRef(this.raw, ref, true);
+      //console.log('EagleDocument.lookup',console.config({depth: 4}),{owner,ref});
 
-    return super.lookup(xpath, (o, p, v) => {
-      //console.log('EagleDocument.lookup', console.config({ depth: 4 }), { o, p, v });
-      return EagleElement.get(o, p, v);
+      return EagleElement.get(owner ?? this, ref, value);
     });
   }
 
@@ -265,15 +277,17 @@ export class EagleDocument extends EagleNode {
     let bb = new BBox();
 
     if(this.type == 'sch') {
-      let sheet = this.getSheet(sheetNo);
+      const sheet = this.getSheet(sheetNo);
+
       return sheet.getBounds(v => /(instance|net)/.test(v.tagName));
     }
-    
+
     if(this.type == 'brd') return this.board.getBounds();
 
     if(this.elements)
       for(let element of this.elements.list) {
-        let bbrect = element.getBounds();
+        const bbrect = element.getBounds();
+
         bb.update(bbrect);
       }
 
@@ -282,30 +296,31 @@ export class EagleDocument extends EagleNode {
         [...this.signals.list]
           .map(sig => [...sig.children])
           .flat()
-          .filter(c => !!c.geometry)
+          .filter(c => !!c.geometry),
       );
-      bb.update([...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())));
+
+      bb.update(
+        [...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())),
+      );
     }
-    /*if(this.plain) {
-      bb.update(this.plain.map(child => child.getBounds()));
-    }*/
+
+    /*if(this.plain)
+      bb.update(this.plain.map(child => child.getBounds()));*/
     return bb;
   }
 
   getMeasures(options = {}) {
     try {
       const { sheet = 0 } = options;
-      let ret;
-      let plain = (this.type == 'sch' ? this.sheets[sheet] : this).plain;
+      let ret,
+        plain = (this.type == 'sch' ? this.sheets[sheet] : this).plain;
 
-      //console.log('plain', plain);
-
-      for(let layer of ['Dimension', 'Measures']) {
+      for(let layer of ['Dimension', 'Measures', 'Document']) {
         if(!this.layers[layer]) continue;
 
-        let layerId = this.layers[layer].number;
+        const layerId = this.layers[layer].number;
 
-        ret = [...plain].filter(e => e.attributes.layer == layerId && e.tagName == 'wire');
+        ret = [...(plain?.children ?? plain)].filter(e => +e.attributes.layer == layerId && e.tagName == 'wire');
 
         if(ret.length >= 1) break;
       }
@@ -313,7 +328,10 @@ export class EagleDocument extends EagleNode {
       if(options.bbox) if (ret) ret = BBox.from(ret);
 
       return ret;
-    } catch(e) {}
+    } catch(e) {
+      console.error('EagleDocument.getMeasures', e.message);
+      console.error(e.stack);
+    }
   }
 
   get measures() {
@@ -322,7 +340,9 @@ export class EagleDocument extends EagleNode {
 
   get dimensions() {
     let size = new Rect(this.measures).size;
+
     size.units.width = size.units.height = 'mm';
+
     return size;
   }
 
@@ -335,25 +355,27 @@ export class EagleDocument extends EagleNode {
           .map(([child, geometry]) => child);
 
         return [name, objects];
-      })
+      }),
     );
   }
 
   getLayer(id) {
-    let layers = this.lookup('eagle/drawing/layers');
-    let i = 0;
+    let layers = this.get('layers'),
+      i = 0;
 
     for(let layer of layers.raw.children) {
-      let { number, name } = layer.attributes;
-      // console.log('layer', { number, name });
+      const { number, name } = layer.attributes;
+
       if(number == id || name == id) return layers.children[i];
+
       i++;
     }
+
     return null;
   }
 
   getSheet(id) {
-    let sheets = this.lookup('eagle/drawing/schematic/sheets');
+    const sheets = this.get('sheets');
 
     if(!sheets) return null;
 
@@ -363,6 +385,7 @@ export class EagleDocument extends EagleNode {
 
     for(let sheet of sheets.children) {
       if(i == id) return sheet;
+
       i++;
     }
 
@@ -374,21 +397,6 @@ export class EagleDocument extends EagleNode {
       return this.get(e => e.tagName == 'library' && e.attributes.name == name);
     } catch(e) {}
   }
-
-  /*getMainElement = memoize(function () {
-    switch (this.type) {
-      case 'brd':
-        return this.lookup('eagle/drawing/board');
-      case 'sch':
-        return this.lookup('eagle/drawing/schematic');
-      case 'lbr':
-        return this.lookup('eagle/drawing/library');
-    }
-  });
-
-  get mainElement() {
-    return this.getMainElement();
-  }*/
 }
 
 define(EagleDocument.prototype, { [Symbol.toStringTag]: 'EagleDocument' });

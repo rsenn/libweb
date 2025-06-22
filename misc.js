@@ -683,10 +683,12 @@ export function extend(dst, src, options = { enumerable: false }) {
       Object.setPrototypeOf(obj, props[prop]);
       continue;
     }
+
     let desc = Object.getOwnPropertyDescriptor(src, prop);
     options(desc, prop);
     Object.defineProperty(dst, prop, desc);
   }
+
   return dst;
 }
 
@@ -700,9 +702,20 @@ export function define(obj, ...args) {
         Object.defineProperty(obj, prop, desc[prop]);
       } catch(e) {}
   }
-  // obj = extend(obj, props, desc => (delete desc.configurable, delete desc.enumerable));
 
   return obj;
+}
+
+export function nonenumerable(props, obj = {}) {
+  const desc = Object.getOwnPropertyDescriptors(props);
+
+  return Object.defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => (delete v.enumerable, [k, v]))));
+}
+
+export function enumerable(props, obj = {}) {
+  const desc = Object.getOwnPropertyDescriptors(props);
+
+  return Object.defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => ((v.enumerable = true), [k, v]))));
 }
 
 export function defineGetter(obj, key, fn, enumerable = false) {
@@ -712,6 +725,7 @@ export function defineGetter(obj, key, fn, enumerable = false) {
       configurable: true,
       get: fn
     });
+
   return obj;
 }
 
@@ -864,36 +878,41 @@ export function merge(...args) {
 }
 
 export function weakAssoc(fn = (value, ...args) => Object.assign(value, ...args)) {
-  let mapper = tryCatch(
+  const mapper = tryCatch(
     () => new WeakMap(),
     map => weakMapper((obj, ...args) => merge(...args), map),
     () =>
       (obj, ...args) =>
         define(obj, ...args)
   );
-  let self = (obj, ...args) => {
-    let value = mapper(obj, ...args);
-    return fn(value, ...args);
-  };
+
+  const self = (obj, ...args) => fn(mapper(obj, ...args), ...args);
+
   self.mapper = mapper;
 
   return self;
 }
+
 export function getPrototypeChain(obj, limit = -1, start = 0) {
   let i = -1,
     ret = [];
+
   do {
     if(i >= start && (limit == -1 || i < start + limit)) ret.push(obj);
     if(obj === Object.prototype || obj.constructor === Object) break;
     ++i;
   } while((obj = obj.__proto__ || Object.getPrototypeOf(obj)));
+
   return ret;
 }
 
 export function getConstructorChain(obj, ...range) {
   let ret = [];
+
   pushUnique(ret, obj.constructor);
+
   for(let proto of getPrototypeChain(obj, ...range)) pushUnique(ret, proto.constructor);
+
   return ret;
 }
 
@@ -906,32 +925,36 @@ export function filter(seq, pred, thisArg) {
     let re = pred;
     pred = (el, i) => re.test(el);
   }
+
   if(types.isIterable(seq)) {
     let r = [],
       i = 0;
+
     for(let el of seq) if(pred.call(thisArg, el, i++, seq)) r.push(el);
+
     return r;
   } else if(isObject(seq)) {
     let r = {};
+
     for(let key in seq) if(pred.call(thisArg, seq[key], key, seq)) r[key] = seq[key];
+
     return r;
   }
 }
 
 export function filterKeys(r, needles, keep = true) {
   let pred;
+
   if(isFunction(needles)) {
     pred = needles;
   } else {
     if(!Array.isArray(needles)) needles = [...needles];
     pred = key => (needles.indexOf(key) != -1) === keep;
   }
+
   return Object.keys(r)
     .filter(pred)
-    .reduce((obj, key) => {
-      obj[key] = r[key];
-      return obj;
-    }, {});
+    .reduce((obj, key) => ((obj[key] = r[key]), obj), {});
 }
 
 export const curry = (f, arr = [], length = f.length) =>
@@ -1188,24 +1211,20 @@ export function propertyLookupHandlers(getter = key => null, setter, thisObj) {
       return getter.call(thisObj ?? target, key);
     }
   };
+
   let tmp;
+
   try {
     tmp = getter();
   } catch(e) {}
 
-  if(setter)
-    handlers.set = function(target, key, value) {
-      setter.call(thisObj ?? target, key, value);
-      return true;
-    };
+  if(setter) handlers.set = (target, key, value) => (setter.call(thisObj ?? target, key, value), true);
 
   if(!isString(tmp))
     try {
       let a = Array.isArray(tmp) ? tmp : [...tmp];
-      if(a)
-        handlers.ownKeys = function(target) {
-          return getter.call(thisObj ?? target);
-        };
+
+      if(a) handlers.ownKeys = target => getter.call(thisObj ?? target);
     } catch(e) {}
 
   return handlers;
@@ -2084,6 +2103,26 @@ export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
       const { length } = this;
       for(let i = 0; i < length; i++) accu = callback.call(thisArg, accu, itemFn(this, i), i, this);
       return accu;
+    },
+    *map(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) yield callback.call(thisArg, itemFn(this, i), i, this);
+    },
+    every(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) if(!callback.call(thisArg, itemFn(this, i), i, this)) return false;
+      return true;
+    },
+    some(callback, thisArg) {
+      const { length } = this;
+      for(let i = 0; i < length; i++) if(callback.call(thisArg, itemFn(this, i), i, this)) return true;
+      return false;
+    },
+    find(...args) {
+      return itemFn(this, this.findIndex(...args));
+    },
+    findLast(...args) {
+      return itemFn(this, this.findLastIndex(...args));
     }
   });
 }
@@ -2506,4 +2545,25 @@ export function toArrayBuffer(value) {
 
 export function error() {
   return { errno: 0 };
+}
+
+export function Membrane(instance, obj, proto, wrapProp, wrapElement) {
+  //throw new Error('Membrane');
+
+  return new Proxy(instance, {
+    get: (target, prop, receiver) => (wrapProp(prop) ? wrapElement(obj[prop], prop) : Reflect.get(target, prop, receiver)),
+    has: (target, prop) => wrapProp(prop) || Reflect.has(target, prop),
+    getOwnPropertyDescriptor: (target, prop) =>
+      wrapProp(prop)
+        ? {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value: wrapElement(obj[prop], prop)
+          }
+        : Reflect.getOwnPropertyDescriptor(target, prop),
+    getPrototypeOf: target => proto ?? Object.getPrototypeOf(instance),
+    setPrototypeOf: (target, p) => (proto = p),
+    ownKeys: target => [...Reflect.ownKeys(target)]
+  });
 }

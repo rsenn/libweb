@@ -1,13 +1,14 @@
 import { classNames } from '../classNames.js';
 import { RGBA } from '../color/rgba.js';
 import { ValueToNumber } from '../eda/colorCoding.js';
-import { Line, LineList, Rect } from '../geom.js';
+import { Line, LineList, Rect, BBox } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { partition } from '../misc.js';
 import { Palette } from './common.js';
 import { ElementToComponent, Origin, WirePath } from './components.js';
 import { ElementToClass, EscapeClassName, HORIZONTAL, LinesToPath, MakeRotation, RenderShape, RotateTransformation, VERTICAL } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
+import { Element } from './components/element.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
@@ -223,31 +224,28 @@ export class BoardRenderer extends EagleSVGRenderer {
     }
   }
 
-  renderElement(element, parent) {
-    let { name, library, value, x, y, rot = '0' } = element;
+  /*renderElement(element, parent) {
+    let { name, library, value, x, y, rot = '0', package:pkg } = element;
     if(typeof value != 'string') value = value + '';
 
+<<<<<<< HEAD
     let pkg = library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
 
     //throw new Error(`renderElement deprecated`);
 
+=======
+>>>>>>> d28162443cf9258c2c6a336327dd1454ef068614
     this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
-    let transform = new TransformationList();
     let rotation = MakeRotation(rot);
-
-    transform = transform.translate(x, y);
-    transform = transform.concat(rotation);
+    let transform = new TransformationList().translate(x, y).concat(rotation);
     let elementName = EscapeClassName(name);
 
     if(typeof value != 'string' || value.length == 0) value = ' ';
 
-    //console.debug(`BoardRenderer.renderElement(2)`, { name, transform });
-
     const g = this.create(
       'g',
       {
-        //&id: `element.${elementName}`,
         class: ElementToClass(element),
         'data-type': element.tagName,
         'data-name': name,
@@ -260,14 +258,13 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    // this.debug('BoardRenderer.renderElement', { name, value });
+
 
     if(/^[RLC][0-9]/.test(name)) {
       let re;
-      this.debug('BoardRenderer.renderElement', {
-        name,
-        value
-      });
+
+      this.debug('BoardRenderer.renderElement', { name, value });
+
       switch (name[0]) {
         case 'R':
           value = value.replace(/㏀$/, 'kΩ').replace(/㏁$/, 'MΩ');
@@ -288,7 +285,11 @@ export class BoardRenderer extends EagleSVGRenderer {
       } catch(e) {}
     }
 
+<<<<<<< HEAD
     if(element?.package?.children)
+=======
+    if(pkg.children)
+>>>>>>> d28162443cf9258c2c6a336327dd1454ef068614
       this.renderCollection(pkg.children, g, {
         name,
         value,
@@ -299,20 +300,29 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.create(
       Origin,
       {
-        /* x, y,*/ element,
+         element,
         layer: this.layers['tOrigins'],
         style: { display: 'none' }
       },
       g
     );
-  }
+  }*/
 
-  render(doc = this.doc /*, parent, props = {}*/) {
+  render(doc = this.doc) {
     let parent, props;
     let transform = this.transform;
-    let bounds = doc.measures;
-    let rect = new Rect(bounds).round(2.54);
+
+    let measures = doc.getMeasures();
+    let bounds = new BBox();
+
+    if(!measures || measures.length == 0) measures = [...doc.plain.children].filter(e => e.layer && ['Dimension', 'Measures'].indexOf(e.layer.name) != -1);
+
+    measures.forEach(e => bounds.update(e.getBounds()));
+
+    let rect = new Rect(bounds);
     let viewBox = new Rect(0, 0, rect.width, rect.height);
+
+    this.debug(`BoardRenderer.render`, { bounds, rect, transform, viewBox });
 
     parent = super.render(doc, {
       transform,
@@ -321,7 +331,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     });
 
     bounds = this.bounds;
-    //  const { bounds, rect } = this;
+
     rect = this.rect;
 
     if(this?.transform?.unshift && rect) {
@@ -330,9 +340,6 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
     }
 
-    this.debug(`BoardRenderer.render`, { bounds, rect, transform });
-
-    //this.renderLayers(parent);
     const plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
     const signalsElement = doc.lookup('eagle/drawing/board/signals');
 
@@ -341,12 +348,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
 
-    try {
-      for(let element of this.elements.list) {
-        //this.create(Element, element,  elementsGroup);
-        this.renderElement(element, elementsGroup);
-      }
-    } catch(e) {}
+    for(let element of [...doc.elements.list]) this.create(Element, { data: element }, elementsGroup);
 
     let plain = [...(doc.plain?.children ?? doc.plain)];
 

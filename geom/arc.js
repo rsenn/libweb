@@ -1,4 +1,5 @@
 import { Point } from './point.js';
+import { extend, define, properties } from '../misc.js';
 
 export class Arc {
   constructor() {}
@@ -20,21 +21,19 @@ export class Arc {
       if(chord.length > 1) chord = Point.diff(...chord);
       /* if(isPoint(chord))*/ chord = Math.sqrt(chord.x * chord.x + chord.y * chord.y);
     }
+
     return chord / (2 * Math.sin(angle / 2));
   }
 
   static length(angle, ...chord) {
-    const radius = Arc.radius(angle, ...chord);
-    const fraction = angle / (Math.PI * 2);
-    const whole = radius * Math.PI;
-    return whole * fraction;
+    return (Arc.radius(angle, ...chord) * angle) / 2;
   }
 
   static center(x1, y1, x2, y2, radius) {
-    let radsq = radius * radius;
-    let p3 = { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
-    let chord = Point.distance([x1, y1], [x2, y2]);
-    return new Point(p3.x + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((y1 - y2) / chord), p3.y + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((x2 - x1) / chord));
+    const radsq = radius * radius;
+    const chord = Point.distance([x1, y1], [x2, y2]);
+
+    return new Point((x1 + x2) / 2 + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((y1 - y2) / chord), (y1 + y2) / 2 + Math.sqrt(radsq - (chord / 2) * (chord / 2)) * ((x2 - x1) / chord));
   }
 
   static chordFromAngle(radius, angle) {
@@ -70,11 +69,12 @@ export class Arc {
   }
 
   static angleFromSegment(radius, arcLength) {
-    let $2pi = 2 * Math.PI;
+    const $2pi = 2 * Math.PI;
+
     return (arcLength * $2pi) / ($2pi * radius);
   }
-  /*
-  static distanceFromAngle(radius, angle) {
+
+  /*static distanceFromAngle(radius, angle) {
     return Math.sqrt(radius ** 2 - (0.5 * Arc.chordFromAngle(radius, angle)) ** 2);
   }*/
 
@@ -95,8 +95,7 @@ export class Arc {
   }
 
   static radiusFromChordAngle(chord, angle) {
-    let alpha = (Math.PI - angle) / 2;
-    return chord * Math.cos(alpha);
+    return chord * Math.cos((Math.PI - angle) / 2);
   }
 
   static distanceFromChordAngle(chord, angle) {
@@ -104,8 +103,7 @@ export class Arc {
   }
 
   static radiusFromSegment(arcLength, angle) {
-    let circumference = arcLength / (angle / (Math.PI * 2));
-    return circumference / (Math.PI * 2);
+    return arcLength / (angle / (Math.PI * 2)) / (Math.PI * 2);
   }
 
   static chordFromSegmentAngle(arcLength, angle) {
@@ -145,39 +143,28 @@ export class Arc {
   }
 
   static arcFromPoints(x0, y0, x1, y1, x2, y2) {
-    let r = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
-    let x = x0 - r;
-    let y = y0 - r;
-    let width = 2 * r;
-    let height = 2 * r;
-    let start = (180 / Math.PI) * Math.atan2(y1 - y0, x1 - x0);
-    let end = (180 / Math.PI) * Math.atan2(y2 - y0, x2 - x0);
+    const r = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    const x = x0 - r;
+    const y = y0 - r;
+    const width = 2 * r;
+    const height = 2 * r;
+    const start = (180 / Math.PI) * Math.atan2(y1 - y0, x1 - x0);
+    const end = (180 / Math.PI) * Math.atan2(y2 - y0, x2 - x0);
+
     return { x, y, width, height, start, end };
   }
 }
 
-export function ArcTo(x, y, curve = 0) {
-  if(Math.abs(curve) <= Number.EPSILON) return `l ${x} ${y}`;
+export function ArcTo(x, y, curve = 0, round = a => a) {
+  const cabs = Math.abs(curve);
 
-  let radius,
-    largeArc = 0,
-    sweep = 0;
+  if(cabs <= Number.EPSILON) return `l ${x} ${y}`;
 
-  let chordLen = Math.sqrt(x * x + y * y);
+  const f = Math.PI / 360;
+  const distance = Math.sqrt(x * x + y * y);
+  const radius = round((distance * Math.cos((cabs * Math.PI) / 360)) / 0.7071067811865476);
 
-  let c = Math.abs(curve);
-  let s = Math.sign(curve) < 0 ? 1 : 0;
+  return ['a', radius, radius, 0, cabs > 90 ? 1 : 0, Math.sign(curve) < 0 ? 1 : 0, x, y].join(' ');
 
-  let remain = 360 - c;
-  let angle = (c * Math.PI) / 180;
-
-  let alpha = angle / 2;
-  radius = chordLen * Math.cos(alpha);
-
-  //console.log('ArcTo', { chordLen, angle, radius });
-
-  largeArc = c > 90;
-  sweep ^= s;
-
-  return `a ${radius} ${radius} 0 ${largeArc | 0} ${sweep | 0} ${x} ${y}`;
+  //return extend(['a', radius, radius, 0, (cabs > 90) | 0, (Math.sign(curve) < 0) | 0, x, y], properties({toString() {return Array.prototype.join.call(this, ' '); } }, {enumerable: false}));
 }
