@@ -139,7 +139,7 @@ function tXml(S, options) {
             return {
               tagName,
               attributes,
-              children
+              children,
             };
           }
         } else {
@@ -172,7 +172,7 @@ function tXml(S, options) {
     return {
       tagName,
       attributes,
-      children
+      children,
     };
   }
 
@@ -360,7 +360,7 @@ tXml.toContentString = function(tDom) {
 
 tXml.getElementById = function(S, id, simplified) {
   let out = tXml(S, {
-    attrValue: id
+    attrValue: id,
   });
   return simplified ? tXml.simplify(out) : out[0];
 };
@@ -373,7 +373,7 @@ tXml.getElementById = function(S, id, simplified) {
 tXml.getElementsByClassName = function(S, classname, simplified) {
   const out = tXml(S, {
     attrName: 'class',
-    attrValue: '[a-zA-Z0-9-s ]*' + classname + '[a-zA-Z0-9-s ]*'
+    attrValue: '[a-zA-Z0-9-s ]*' + classname + '[a-zA-Z0-9-s ]*',
   });
   return simplified ? tXml.simplify(out) : out;
 };
@@ -407,7 +407,7 @@ tXml.parseStream = function(stream, offset) {
       let res = tXml(data, {
         pos: position - 1,
         parseNode: true,
-        setPos: true
+        setPos: true,
       });
       position = res.pos;
       if(position > data.length - 1 || position < lastPos) {
@@ -453,7 +453,7 @@ tXml.transformStream = function(offset) {
       let res = tXml(data, {
         pos: position - 1,
         parseNode: true,
-        setPos: true
+        setPos: true,
       });
       position = res.pos;
       if(position > data.length - 1 || position < lastPos) {

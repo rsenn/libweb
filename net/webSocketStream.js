@@ -12,94 +12,98 @@ class WebSocketStreamImpl {
   constructor(url, options = {}) {
     try {
       this.url = url;
-      if (options?.protocols) {
+      if(options?.protocols) {
         this.protocols = options.protocols;
       }
-      if (options?.signal) {
+      if(options?.signal) {
         this.signal = signal;
-        this.signal.addEventListener("abort", async (e) => {
+        this.signal.addEventListener('abort', async e => {
           try {
-            this.#closedPromise.reject(
-              new DOMException("WebSocket handshake was aborted", "ABORT_ERR"),
-            );
-            this.#openedPromise.reject(
-              new DOMException("WebSocket handshake was aborted", "ABORT_ERR"),
-            );
-          } catch {
-          }
+            this.#closedPromise.reject(new DOMException('WebSocket handshake was aborted', 'ABORT_ERR'));
+            this.#openedPromise.reject(new DOMException('WebSocket handshake was aborted', 'ABORT_ERR'));
+          } catch {}
         });
       }
       this.#openedPromise.promise.catch(() => {});
       this.closed = this.#closedPromise.promise;
       this.opened = new Promise(async (resolve, reject) => {
         try {
-          await new Promise((r) => {
+          await new Promise(r => {
             setTimeout(r, 1);
           });
           const aborted = this.signal?.aborted;
-          if (aborted) {
+          if(aborted) {
             throw null;
           }
         } catch {
-          this.#openedPromise.promise.catch((e) => reject(e));
+          this.#openedPromise.promise.catch(e => reject(e));
           return;
         }
         this.#ws = new WebSocket(url, {
-          protocols: this.protocols
+          protocols: this.protocols,
         });
-        this.#ws.binaryType = "arraybuffer";
-        this.#ws.addEventListener("open", (e) => {
-          this.readable = new ReadableStream({
-            start: (c) => {
-              this.#readableController = c;
+        this.#ws.binaryType = 'arraybuffer';
+        this.#ws.addEventListener('open', e => {
+          this.readable = new ReadableStream(
+            {
+              start: c => {
+                this.#readableController = c;
+              },
+              cancel: async reason => {
+                await this.writer.close();
+              },
             },
-            cancel: async (reason) => {
-              await this.writer.close();
-            },
-          }, { once: true });
+            { once: true },
+          );
           this.writable = new WritableStream({
-            start: (c) => {
+            start: c => {
               this.#writableController = c;
             },
-            write: (value) => {
+            write: value => {
               this.#ws.send(value);
             },
-            close({ code = 1000, reason = "" } = {}) {
-              new Promise((r) => {
+            close({ code = 1000, reason = '' } = {}) {
+              new Promise(r => {
                 setTimeout(r, 50);
               }).then(() => this.#ws.close(code, reason));
             },
             close: () => {
-              if (this.readable.locked) {
+              if(this.readable.locked) {
                 this.#readableController.close();
                 this.#ws.close();
               }
             },
-            abort: (reason) => {
-            },
+            abort: reason => {},
           });
-          this.#ws.addEventListener("close", ({ code, reason }) => {
-            try {
+          this.#ws.addEventListener(
+            'close',
+            ({ code, reason }) => {
               try {
-                if (this.readable.locked) {
-                  this.#readableController.close();
-                }
-                if (this.writable.locked) {
-                  this.writable.close();
-                }
-              } catch {}
-              this.#openedPromise.resolve({
-                readable: this.readable,
-                writable: this.writable,
-              });
-              this.#closedPromise.resolve({ closeCode: code, reason });
-            } catch (e) {
-            }
-          }, { once: true });
-          this.#ws.addEventListener("error", (e) => {
-            this.#closedPromise.reject(e);
-          }, { once: true });
-          this.#ws.addEventListener("message", (e) => {
+                try {
+                  if(this.readable.locked) {
+                    this.#readableController.close();
+                  }
+                  if(this.writable.locked) {
+                    this.writable.close();
+                  }
+                } catch {}
+                this.#openedPromise.resolve({
+                  readable: this.readable,
+                  writable: this.writable,
+                });
+                this.#closedPromise.resolve({ closeCode: code, reason });
+              } catch(e) {}
+            },
+            { once: true },
+          );
+          this.#ws.addEventListener(
+            'error',
+            e => {
+              this.#closedPromise.reject(e);
+            },
+            { once: true },
+          );
+          this.#ws.addEventListener('message', e => {
             this.#readableController.enqueue(e.data);
           });
           resolve({
@@ -107,16 +111,16 @@ class WebSocketStreamImpl {
             writable: this.writable,
           });
         });
-      }).catch((e) => {
+      }).catch(e => {
         throw e;
       });
     } catch {}
   }
-  close({ code = 1000, reason = "" } = {}) {
-    new Promise((r) => {
+  close({ code = 1000, reason = '' } = {}) {
+    new Promise(r => {
       setTimeout(r, 50);
     }).then(() => this.#ws.close(code, reason));
   }
 }
 
-export { WebSocketStreamImpl }
+export { WebSocketStreamImpl };

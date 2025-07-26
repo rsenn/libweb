@@ -161,7 +161,7 @@ export const types = {
   },
   isArrayLike(v) {
     return isObject(v) && typeof v.length == 'number' && Number.isInteger(v.length);
-  }
+  },
 };
 
 export function isObject(arg) {
@@ -203,7 +203,7 @@ define(SyscallError.prototype, {
   get message() {
     return `SyscallError: '${this.syscall}' errno = ${this.code} (${this.errno})`;
   },
-  [Symbol.toStringTag]: 'SyscallError'
+  [Symbol.toStringTag]: 'SyscallError',
 });
 
 globalThis.SyscallError = SyscallError;
@@ -386,7 +386,7 @@ export function escape(str, chars = []) {
     ['\r']: 'r',
     ['\t']: 't',
     ['\v']: 'v',
-    ['\b']: 'b'
+    ['\b']: 'b',
   };
   for(let ch of chars) table[ch] = ch;
   let s = '';
@@ -415,7 +415,7 @@ export function chain(first, ...fns) {
       function(...args) {
         return fn.call(this, acc.call(this, ...args), args);
       },
-    first
+    first,
   );
 }
 
@@ -425,7 +425,7 @@ export function chainRight(first, ...fns) {
       function(...args) {
         return acc.call(this, fn.call(this, ...args), args);
       },
-    first
+    first,
   );
 }
 
@@ -464,7 +464,7 @@ export function getset(target, ...args) {
         } else {
           target.push([key, value]);
         }
-      }
+      },
     ];
   } else if(isObject(target)) {
     ret = [key => target[key], (key, value) => (target[key] = value)];
@@ -483,7 +483,7 @@ Object.setPrototypeOf(
     bind(...args) {
       return Object.setPrototypeOf(
         this.map(fn => fn.bind(null, ...args)),
-        getset.prototype
+        getset.prototype,
       );
     },
     transform(read, write) {
@@ -497,9 +497,9 @@ Object.setPrototypeOf(
     get object() {
       const [get, set] = this;
       return { get, set };
-    }
+    },
   }),
-  Array.prototype
+  Array.prototype,
 );
 
 export function modifier(...args) {
@@ -612,7 +612,7 @@ export function mapObject(target) {
   else if(isObject(target))
     obj = {
       set: (key, value) => (target[key] = value),
-      get: key => target[key]
+      get: key => target[key],
     };
   if(obj !== target) define(obj, { receiver: target });
   return obj;
@@ -723,7 +723,7 @@ export function defineGetter(obj, key, fn, enumerable = false) {
     Object.defineProperty(obj, key, {
       enumerable,
       configurable: true,
-      get: fn
+      get: fn,
     });
 
   return obj;
@@ -734,7 +734,7 @@ export function defineGetterSetter(obj, key, g, s, enumerable = false) {
     Object.defineProperty(obj, key, {
       get: g,
       set: s,
-      enumerable
+      enumerable,
     });
   return obj;
 }
@@ -883,7 +883,7 @@ export function weakAssoc(fn = (value, ...args) => Object.assign(value, ...args)
     map => weakMapper((obj, ...args) => merge(...args), map),
     () =>
       (obj, ...args) =>
-        define(obj, ...args)
+        define(obj, ...args),
   );
 
   const self = (obj, ...args) => fn(mapper(obj, ...args), ...args);
@@ -1000,9 +1000,9 @@ export function bindProperties(obj, target, props, gen) {
     .reduce(
       (a, [k, v]) => ({
         ...a,
-        [k]: isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k]))
+        [k]: isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k])),
       }),
-      {}
+      {},
     );
   Object.defineProperties(
     obj,
@@ -1015,15 +1015,15 @@ export function bindProperties(obj, target, props, gen) {
           [k]: {
             get: get_set,
             set: get_set,
-            enumerable: true
-          }
+            enumerable: true,
+          },
         };
       },
       {
         __getter_setter__: { value: gen, enumerable: false },
-        __bound_target__: { value: target, enumerable: false }
-      }
-    )
+        __bound_target__: { value: target, enumerable: false },
+      },
+    ),
   );
   return obj;
 }
@@ -1037,7 +1037,7 @@ export function immutableClass(orig, ...proto) {
       ? p
       : ctor => {
           for(let n in p) ctor.prototype[n] = p[n];
-        }
+        },
   );
   let body = `class ${imName} extends ${name} {\n  constructor(...args) {\n    super(...args);\n    if(new.target === ${imName})\n      return Object.freeze(this);\n  }\n};\n\n${imName}.prototype.constructor = ${imName};\n\nreturn ${imName};`;
   for(let p of initialProto) p(orig);
@@ -1050,7 +1050,7 @@ export function immutableClass(orig, ...proto) {
           super(...args);
           if(new.target === obj[imName]) return Object.freeze(this);
         }
-      }
+      },
     };
     return obj[imName];
   };
@@ -1063,7 +1063,7 @@ export function immutableClass(orig, ...proto) {
 export function instrument(
   fn,
   log = (duration, name, args, ret) => console.log(`function '${name}'` + (ret !== undefined ? ` {= ${escape(ret + '').substring(0, 100) + '...'}}` : '') + ` timing: ${duration.toFixed(3)}ms`),
-  logInterval = 0 //1000
+  logInterval = 0, //1000
 ) {
   // const { now, hrtime, functionName } = Util;
   let last = Date.now();
@@ -1140,7 +1140,7 @@ export const hash = (newMap = () => new Map()) => {
         console.log('cachefn', { obj });
       }
       return obj(key, value);
-    }
+    },
   };
 };
 
@@ -1178,8 +1178,8 @@ Object.assign(catchable, {
         }
         return result;
       });
-    }
-  })
+    },
+  }),
 });
 
 export function isNumeric(value) {
@@ -1209,7 +1209,7 @@ export function propertyLookupHandlers(getter = key => null, setter, thisObj) {
   let handlers = {
     get(target, key, receiver) {
       return getter.call(thisObj ?? target, key);
-    }
+    },
   };
 
   let tmp;
@@ -1245,8 +1245,8 @@ export function lookupObject(getset, instance = {}, handlers = {}) {
       },
       set(target, prop, value) {
         return getset(numericIndex(prop), value);
-      }
-    })
+      },
+    }),
   );
 }
 
@@ -1329,7 +1329,7 @@ export function mapAdapter(fn) {
     set(key, value) {
       fn(key, value);
       return this;
-    }
+    },
   };
   let tmp = fn();
   if(types.isIterable(tmp) || types.isPromise(tmp)) r.keys = () => fn();
@@ -1442,8 +1442,8 @@ export function mapFunction(map) {
           (function* () {
             let i = 0;
             for(let [key, value] of fn.entries()) if(pred([key, value], i++)) yield [key, value];
-          })()
-        )
+          })(),
+        ),
       );
     };
     fn.map = function(t) {
@@ -1453,8 +1453,8 @@ export function mapFunction(map) {
             let i = 0;
 
             for(let [key, value] of fn.entries()) yield t([key, value], i++);
-          })()
-        )
+          })(),
+        ),
       );
     };
     fn.forEach = function(fn) {
@@ -1565,7 +1565,7 @@ function getAnsiStyles() {
       overline: [53, 55],
       inverse: [7, 27],
       hidden: [8, 28],
-      strikethrough: [9, 29]
+      strikethrough: [9, 29],
     },
     color: {
       black: [30, 39],
@@ -1585,7 +1585,7 @@ function getAnsiStyles() {
       blueBright: ['1;34', 39],
       magentaBright: ['1;35', 39],
       cyanBright: ['1;36', 39],
-      whiteBright: ['1;37', 39]
+      whiteBright: ['1;37', 39],
     },
     bgColor: {
       bgBlack: [40, 49],
@@ -1605,8 +1605,8 @@ function getAnsiStyles() {
       bgBlueBright: [104, 49],
       bgMagentaBright: [105, 49],
       bgCyanBright: [106, 49],
-      bgWhiteBright: [107, 49]
-    }
+      bgWhiteBright: [107, 49],
+    },
   };
 
   // Alias bright black as gray (and grey)
@@ -1619,7 +1619,7 @@ function getAnsiStyles() {
     for(const [styleName, style] of Object.entries(group)) {
       styles[styleName] = {
         open: `\u001B[${style[0]}m`,
-        close: `\u001B[${style[1]}m`
+        close: `\u001B[${style[1]}m`,
       };
 
       group[styleName] = styles[styleName];
@@ -1629,13 +1629,13 @@ function getAnsiStyles() {
 
     Object.defineProperty(styles, groupName, {
       value: group,
-      enumerable: false
+      enumerable: false,
     });
   }
 
   Object.defineProperty(styles, 'codes', {
     value: codes,
-    enumerable: false
+    enumerable: false,
   });
 
   styles.color.close = '\u001B[39m';
@@ -1668,7 +1668,7 @@ function getAnsiStyles() {
         const c = [red, green, blue].map(c => (c / 255) * 5);
         return 16 + 36 * c[0] + 6 * c[1] + c[2];
       },
-      enumerable: false
+      enumerable: false,
     },
     hexToRgb: {
       value: hex => {
@@ -1690,11 +1690,11 @@ function getAnsiStyles() {
 
         return [(integer >> 16) & 0xff, (integer >> 8) & 0xff, integer & 0xff];
       },
-      enumerable: false
+      enumerable: false,
     },
     hexToAnsi256: {
       value: hex => styles.rgbToAnsi256(...styles.hexToRgb(hex)),
-      enumerable: false
+      enumerable: false,
     },
     ansi256ToAnsi: {
       value: code => {
@@ -1738,16 +1738,16 @@ function getAnsiStyles() {
 
         return result;
       },
-      enumerable: false
+      enumerable: false,
     },
     rgbToAnsi: {
       value: (red, green, blue) => styles.ansi256ToAnsi(styles.rgbToAnsi256(red, green, blue)),
-      enumerable: false
+      enumerable: false,
     },
     hexToAnsi: {
       value: hex => styles.ansi256ToAnsi(styles.hexToAnsi256(hex)),
-      enumerable: false
-    }
+      enumerable: false,
+    },
   });
 
   return styles;
@@ -1841,7 +1841,7 @@ export function lazyProperty(obj, name, getter, opts = {}) {
             return (replaceProperty && replaceProperty(value)) || value;
           },
     ...opts,
-    configurable: true
+    configurable: true,
   });
   return obj;
 }
@@ -1941,7 +1941,7 @@ export function showHelp(opts, exitCode = 0) {
   let s = entries.reduce(
     (acc, [name, [hasArg, fn, shortOpt]]) =>
       acc + (`    ${(shortOpt ? '-' + shortOpt + ',' : '').padStart(4, ' ')} --${name.padEnd(maxlen, ' ')} ` + (hasArg ? (typeof hasArg == 'boolean' ? 'ARG' : hasArg) : '')).padEnd(40, ' ') + '\n',
-    'Usage: ' + scriptArgs[0].replace(/.*[\x5c\x2f]/g, '') + ' [OPTIONS] <FILES...>\n\n'
+    'Usage: ' + scriptArgs[0].replace(/.*[\x5c\x2f]/g, '') + ' [OPTIONS] <FILES...>\n\n',
   );
 
   process.stdout.write(s + '\n');
@@ -2123,7 +2123,7 @@ export function arrayFacade(proto, itemFn = (container, i) => container.at(i)) {
     },
     findLast(...args) {
       return itemFn(this, this.findLastIndex(...args));
-    }
+    },
   });
 }
 
@@ -2270,7 +2270,7 @@ function formatWithOptionsInternal(o, v) {
                 showHidden: true,
                 showProxy: true,
                 depth: 1,
-                protoChain: false
+                protoChain: false,
               });
               break;
             case 105: // %i
@@ -2559,11 +2559,11 @@ export function Membrane(instance, obj, proto, wrapProp, wrapElement) {
             configurable: true,
             enumerable: true,
             writable: true,
-            value: wrapElement(obj[prop], prop)
+            value: wrapElement(obj[prop], prop),
           }
         : Reflect.getOwnPropertyDescriptor(target, prop),
     getPrototypeOf: target => proto ?? Object.getPrototypeOf(instance),
     setPrototypeOf: (target, p) => (proto = p),
-    ownKeys: target => [...Reflect.ownKeys(target)]
+    ownKeys: target => [...Reflect.ownKeys(target)],
   });
 }

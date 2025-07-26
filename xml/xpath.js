@@ -38,7 +38,7 @@ export class MutableXPath extends MutablePath {
       define(fn, {
         toString() {
           return fnStr;
-        }
+        },
       });
       part = fn;
     }
@@ -360,7 +360,7 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
 define(MutableXPath, {
   get [Symbol.species]() {
     return MutableXPath;
-  }
+  },
 });
 //defineGetter(MutableXPath, Symbol.species, () => MutableXPath);
 
@@ -374,5 +374,5 @@ export const ImmutableXPath = XPath;
 define(XPath, {
   get [Symbol.species]() {
     return ImmutableXPath;
-  }
+  },
 });
