@@ -63,4 +63,4 @@ export class TreeWalker {
   }
 }
 
-Object.assign(TreeWalker, { FILTER_ACCEPT,FILTER_REJECT,FILTER_SKIP, TYPE_ALL: SHOW_ALL});
+Object.assign(TreeWalker, { FILTER_ACCEPT, FILTER_REJECT, FILTER_SKIP, TYPE_ALL: SHOW_ALL });

@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { extend, arrayFacade, assert, camelize, decamelize, define, getset, gettersetter, isBool, isObject, isFunction, isNumber, isString, lazyProperties, memoize, modifier, quote, range, properties, } from 'util';
+import { extend, arrayFacade, assert, camelize, decamelize, define, getset, gettersetter, isBool, isObject, isFunction, isNumber, isString, lazyProperties, memoize, modifier, quote, range, properties, } from './misc.js';
 import { parseSelectors } from './css3-selectors.js';
 import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from './deep.js';
 import { TreeWalker } from './tree_walker.js';

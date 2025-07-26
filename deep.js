@@ -7,6 +7,29 @@ export const PATH_AS_STRING = 1 << 28;
 export const NO_THROW = 1 << 29;
 export const MAXDEPTH_MASK = 0xffffff;
 
+export const TYPE_ALL = 0x3fff;
+export const TYPE_ARRAY = 0x2000;
+export const TYPE_BIG_DECIMAL = 0x200;
+export const TYPE_BIG_FLOAT = 0x80;
+export const TYPE_BIG_INT = 0x100;
+export const TYPE_BOOL = 0x4;
+export const TYPE_CATCH_OFFSET = 0x20000;
+export const TYPE_EXCEPTION = 0x40000;
+export const TYPE_FLOAT64 = 0x400;
+export const TYPE_FUNCTION = 0x1000;
+export const TYPE_FUNCTION_BYTECODE = 0x8000;
+export const TYPE_INT = 0x8;
+export const TYPE_MODULE = 0x4000;
+export const TYPE_NAN = 0x800;
+export const TYPE_NULL = 0x2;
+export const TYPE_NUMBER = 0xf88;
+export const TYPE_OBJECT = 0x10;
+export const TYPE_PRIMITIVE = 0xfef;
+export const TYPE_STRING = 0x20;
+export const TYPE_SYMBOL = 0x40;
+export const TYPE_UNDEFINED = 0x1;
+export const TYPE_UNINITIALIZED = 0x10000;
+
 function ReturnValuePath(value, path, flags) {
   if(flags & PATH_AS_STRING) path = path.join('.');
 
@@ -104,8 +127,7 @@ export function select(root, filter, flags = 0) {
     try {
       if(filter(root, path)) selected.push(fn(root, path));
     } catch(e) {}
-    if(root !== null && { object: true }[typeof root])
-      for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
+    if(root !== null && { object: true }[typeof root]) for(k in root) selected = selected.concat(SelectFunction(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
     return selected;
   }
   //console.log('deep.select', [filter + '', flags]);
@@ -142,8 +164,7 @@ export const forEach = function(...args) {
 
   fn(value, path, root);
 
-  if(typeof value == 'object' && value != null)
-    for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+  if(typeof value == 'object' && value != null) for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
 };
 
 export const iterate = function* (...args) {
@@ -162,12 +183,7 @@ export const iterate = function* (...args) {
     }
 };
 
-export function flatten(
-  iter,
-  dst = {},
-  filter = (v, p) => typeof v != 'object' && v != null,
-  map = (p, v) => [p.join('.'), v],
-) {
+export function flatten(iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 

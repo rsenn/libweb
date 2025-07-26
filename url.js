@@ -1,4 +1,4 @@
-import { define } from 'util';
+import { define } from './util.js';
 import { normalize, join, isAbsolute } from 'path';
 
 export class URLSearchParams {
