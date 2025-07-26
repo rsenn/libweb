@@ -1,10 +1,15 @@
+const isKeyword = s =>
+  /\b(instanceof|debugger|function|continue|finally|extends|default|static|export|switch|import|typeof|return|delete|async|yield|await|throw|super|const|class|catch|while|break|from|enum|case|with|void|this|else|let|try|var|new|for|as|of|do|in|if)\b/.test(
+    s,
+  );
+
 function returnPredicate(fn, tostr, tosrc) {
   if(typeof fn == 'string') fn = new Function('arg', 'return ' + fn);
   return Object.defineProperties(Object.setPrototypeOf(fn, Predicate.prototype), {
     toString: {
       value: () => tostr,
     },
-    toSource: { value: arg => tosrc(arg) },
+    toSource: { value: tosrc /*arg => tosrc(arg)*/ },
   });
 }
 
@@ -14,8 +19,8 @@ export class Predicate extends Function {
       arg => {
         if(typeof arg == 'object' && arg != null && name in arg) return pred(arg[name]);
       },
-      `.${name}`,
-      (a = 'arg') => pred.toSource(`${a}.${name}`),
+      isKeyword(name) ? `['${name}']` : `.${name}`,
+      isKeyword(name) ? (a = 'arg') => pred.toSource(`${a}['${name}']`) : (a = 'arg') => pred.toSource(`${a}.${name}`),
     );
   }
 

@@ -6219,13 +6219,17 @@ export const GLOB_QUOTE = 1024;
 export const GLOB_TILDE = 2048;
 
 export function glob(pattern, flags, errfunc = (path, errno) => {}, arr) {
-  let result = globSync(pattern);
-  let ok = false;
+  if(flags & GLOB_TILDE) {
+    pattern = pattern.replace(/^\~/, process.env.HOME);
+    flags &= ~GLOB_TILDE;
+  }
+
+  let ok = false,
+    result = globSync(pattern);
 
   if(Array.isArray(result)) {
     if(Array.isArray(arr)) arr.splice(0, arr.length, ...result);
     ok = true;
-    // result = 0;
   }
 
   if(!ok) errfunc(process.cwd(), 0);

@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { extend, arrayFacade, assert, camelize, decamelize, define, getset, gettersetter, isBool, isObject, isFunction, isNumber, isString, lazyProperties, memoize, modifier, quote, range, properties, } from './misc.js';
+import { className, extend, arrayFacade, assert, camelize, decamelize, define, getset, gettersetter, isBool, isObject, isFunction, isNumber, isString, lazyProperties, memoize, modifier, quote, range, properties, } from './misc.js';
 import { parseSelectors } from './css3-selectors.js';
 import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from './deep.js';
 import { TreeWalker } from './tree_walker.js';
@@ -7,6 +7,7 @@ import { read as readXML, write as writeXML } from './xml.js';
 import { inspect } from './inspect.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
+const inspectOptions = { colors: true, showProxy: true, getters: true, compact: true, breakLength: Infinity };
 
 const rawNode = gettersetter(new WeakMap());
 const parentNodes = gettersetter(new WeakMap());
@@ -54,13 +55,16 @@ const keyOf = (obj, value) => {
 
 class DereferenceError extends Error {
   constructor(obj, i, path, error) {
-    const objStr = inspect(obj, { colors: true, showProxy: true, getters: true, compact: true });
+    const objStr = inspect(obj, inspectOptions);
+    const pathStr = inspect(path.slice(), inspectOptions);
 
-    super(`dereference error of <${objStr}> at ${i} '${path.slice(0, i)}': ${error.message}`);
+    super(`dereference error of <${objStr}> at ${i} '${pathStr}': ${error.message}`);
   }
 }
 
 function applyPath(path, obj) {
+  //console.log('applyPath', inspect({ path: path.join('.'), obj }, { compact: true, breakLength: Infinity, colors: true }));
+
   const { length } = path;
   let raw = rawNode(obj);
 
@@ -87,12 +91,18 @@ function applyPath(path, obj) {
 }
 
 function query(root, selectors, t = (path, root) => path) {
-  let path;
-  for(let selector of selectors) if((path = find(root, selector, RETURN_PATH, TYPE_OBJECT, ['children']))) return t(path, root);
+  for(const selector of selectors) {
+    //const path = find(root, selector, FILTER_HAS_KEY|RETURN_PATH, TYPE_OBJECT, ['children']);
+    const path = find(root, selector, RETURN_PATH, TYPE_OBJECT);
+
+    //console.log('query', { /*root,*/ selector, path });
+
+    if(path) return t(path, root);
+  }
 }
 
 function* queryAll(root, selectors, t = (path, root) => path) {
-  for(let selector of selectors) for (let path of iterate(root, selector, RETURN_PATH, TYPE_OBJECT, ['children'])) yield t(path, root);
+  for(const selector of selectors) for (let path of iterate(root, selector, RETURN_PATH, TYPE_OBJECT, ['children'])) yield t(path, root);
 }
 
 export const nodeTypes = [
@@ -229,7 +239,7 @@ export class Parser {
   }
 
   parseFromFile(file) {
-    const xml = readFileSync(file);
+    const xml = readFileSync(file, 'utf-8');
     const { factory } = this;
 
     return this.parseFromString(xml, file, factory);
@@ -414,9 +424,16 @@ export class Interface {
   querySelector(...selectors) {
     if(isString(selectors[0])) selectors = [...parseSelectors(...selectors)];
 
+    const raw = Node.raw(this);
+    //console.log(className(this) + '.querySelector', { selectors: selectors.map(f => f.toSource()) });
+
     let path;
 
-    if((path = query(Node.raw(this), selectors))) return applyPath(path, this);
+    if((path = query(raw, selectors))) {
+      //console.log(className(this) + '.querySelector', { path });
+
+      return applyPath(path, this);
+    }
   }
 
   querySelectorAll(...selectors) {
@@ -956,7 +973,11 @@ export class Element extends Node {
   get innerText() {
     const texts = [];
 
-    for(let value of iterate(Node.raw(this), undefined, RETURN_VALUE, TYPE_STRING, ['children'])) texts.push(value.replace(/<s+/g, ' '));
+    for(let value of iterate(Node.raw(this), undefined, RETURN_VALUE, TYPE_STRING /*, ['children']*/)) {
+      if(typeof value == 'string') value = value.replace(/<s+/g, ' ');
+
+      texts.push(value);
+    }
 
     return texts.join(' ');
   }
