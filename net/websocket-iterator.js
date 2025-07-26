@@ -11,7 +11,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   const ctor = tryCatch(
     () => window.WebSocket,
     ws => ws,
-    () => websocket.constructor
+    () => websocket.constructor,
   );
 
   //console.log("ctor:", ctor);
@@ -22,7 +22,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
     while(resolvers.length > 0)
       resolvers.shift()({
         value: undefined,
-        done: true
+        done: true,
       });
   };
 
@@ -44,7 +44,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   const pushEvent = event =>
     push({
       value: event,
-      done: false
+      done: false,
     });
 
   const next = () => {
@@ -52,7 +52,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
     if(done)
       return Promise.resolve({
         value: undefined,
-        done: true
+        done: true,
       });
     return new Promise(resolve => resolvers.push(resolve));
   };
@@ -84,7 +84,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
       close();
       if(websocket.readyState === ctor.OPEN) websocket.close();
       return next();
-    }
+    },
   };
   return iterator;
 }

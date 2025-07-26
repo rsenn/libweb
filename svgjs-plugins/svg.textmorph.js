@@ -129,10 +129,10 @@ SVG.SVGFont = SVG.invent({
       return {
         x: x,
         uPerEm: uPerEm,
-        scale: scale
+        scale: scale,
       };
-    }
-  }
+    },
+  },
 });
 
 function getPathAttributes(a) {
@@ -190,21 +190,21 @@ SVG.MorphText = SVG.invent({
 
           this.glyphs.push(p);
           p.glyph = glyphs[index];
-        }.bind(this)
+        }.bind(this),
       );
 
       this.remember('font', font);
 
       return this;
-    }
+    },
   },
 
   construct: {
     // Create a group element
     morphText(text) {
       return this.put(new SVG.MorphText()).text(text);
-    }
-  }
+    },
+  },
 });
 
 function fixTextLength(glyphs) {
@@ -261,9 +261,9 @@ SVG.extend(SVG.FX, {
 
         // animate glyph
         this.glyphs[index].animate().plot(pathArray);
-      }.bind(this.target)
+      }.bind(this.target),
     );
 
     return this;
-  }
+  },
 });

@@ -52,7 +52,7 @@ else */ if(text) svg.innerHTML = innerHTML;
       setcss(elem, css) {
         delegate.setattr(elem, 'style', css);
       },
-      ...delegate
+      ...delegate,
     };
 
     const { width, height } = size || {};
@@ -63,7 +63,7 @@ else */ if(text) svg.innerHTML = innerHTML;
         ...delegate,
         get root() {
           return getRoot();
-        }
+        },
       };
     } else if(parent && parent.tagName && parent.tagName.toLowerCase() == 'svg') {
       delegate.root = parent;
@@ -120,9 +120,9 @@ else */ if(text) svg.innerHTML = innerHTML;
         {
           append_to(elem) {
             parent.appendChild(elem);
-          }
+          },
         },
-        parent
+        parent,
       );
     };
     factory.clear = function() {
@@ -229,7 +229,7 @@ else */ if(text) svg.innerHTML = innerHTML;
 
       const value = {
         item,
-        props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }), {})
+        props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }), {}),
       };
       yield value;
       //console.log(value);
@@ -247,7 +247,7 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     let list = [...map.keys()].map(color => ({
       color,
-      elements: map.get(color)
+      elements: map.get(color),
     }));
     return {
       list,
@@ -320,7 +320,7 @@ else */ if(text) svg.innerHTML = innerHTML;
         }
         for(let i = 0; i < colors.length; i++) this.replace(i, fn);
         return this;
-      }
+      },
     };
   }
 
@@ -407,14 +407,14 @@ else */ if(text) svg.innerHTML = innerHTML;
         fill: e.isPointInFill(point),
         toString() {
           return `${this.stroke},${this.fill}`;
-        }
+        },
       };
       p = new Point(point);
       Object.assign(p, {
         slope: prev ? Point.diff(prev, p) : null,
         prev,
         i,
-        isin
+        isin,
       });
       y = do_point(p);
       if(prev) prev.next = y;
@@ -427,7 +427,7 @@ else */ if(text) svg.innerHTML = innerHTML;
       slope: Point.diff(prev, p),
       next: null,
       prev,
-      isin: { stroke: true, fill: true }
+      isin: { stroke: true, fill: true },
     });
 
     y = do_point(p);
@@ -436,7 +436,7 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
   static pathCmd = {
     length: { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 },
-    segment: /([astvzqmhlc])([^astvzqmhlc]*)/gi
+    segment: /([astvzqmhlc])([^astvzqmhlc]*)/gi,
   };
 
   /**

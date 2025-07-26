@@ -5,9 +5,9 @@ export function useFocus() {
   const bind = useMemo(
     () => ({
       onFocus: e => void setFocused(true),
-      onBlur: e => void setFocused(false)
+      onBlur: e => void setFocused(false),
     }),
-    []
+    [],
   );
   return [isFocused, bind];
 }

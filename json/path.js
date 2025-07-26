@@ -24,10 +24,10 @@ no member '${inspect(member, { colors: false })}' in ${inspect(prev, {
           depth: 2,
           multiline: true,
           indent: '  ',
-          colors: false
+          colors: false,
         })} \n` + stack.join('\n'),
-      stack
-    }
+      stack,
+    },
   );
 }
 
@@ -347,7 +347,7 @@ export class MutablePath extends Array {
         }
         return a;
       },
-      { o, n: 0 }
+      { o, n: 0 },
     );
     if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, a.p, this);
     return a.o;

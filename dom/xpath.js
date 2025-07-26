@@ -29,12 +29,12 @@ export class XPath {
           next() {
             let value = result.iterateNext();
             return { value, done: value === null };
-          }
+          },
         };
         ret = {
           [Symbol.iterator]() {
             return it;
-          }
+          },
         };
         break;
 

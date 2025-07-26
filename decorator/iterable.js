@@ -32,7 +32,7 @@ export const IterableDecorator = {
     let i = -1;
     for(let item of this) if(cb.call(thisArg, item, ++i, this)) return i;
     return -1;
-  }
+  },
 };
 
 export default IterableDecorator;

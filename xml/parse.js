@@ -24,7 +24,7 @@ const CharacterClasses = {
   '>': END | CLOSE,
   '?': SPECIAL | QUESTION,
   '\\': BACKSLASH,
-  '-': HYPHEN
+  '-': HYPHEN,
 };
 const CharCodeClasses = {
   0x20: WS,
@@ -39,7 +39,7 @@ const CharCodeClasses = {
   0x3e: END | CLOSE,
   0x3f: SPECIAL | QUESTION,
   0x5c: BACKSLASH,
-  0x2d: HYPHEN
+  0x2d: HYPHEN,
 };
 
 export let parse = function parse(s) {

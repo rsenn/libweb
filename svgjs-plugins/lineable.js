@@ -10,7 +10,7 @@ export const lineable = {
     var p = this.startPoint;
     var arr = [
       [p.x, p.y],
-      [p.x, p.y]
+      [p.x, p.y],
     ];
 
     this.el.plot(arr);
@@ -96,5 +96,5 @@ export const lineable = {
       this.el.plot(this.el.array());
       this.el.fire('undopoint');
     }
-  }
+  },
 };

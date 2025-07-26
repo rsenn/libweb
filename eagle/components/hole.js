@@ -33,10 +33,10 @@ export const Hole = ({ data, opts = {}, ...props }) => {
 
     stroke: layer.color,
     'stroke-width': 0.05,
-    fill: 'none'
+    fill: 'none',
   };
   const dataProps = {
-    'data-drill': hole.drill
+    'data-drill': hole.drill,
   };
   const visibleProps = visible ? {} : { style: { display: 'none' } };
 
@@ -44,6 +44,6 @@ export const Hole = ({ data, opts = {}, ...props }) => {
     ...baseProps,
     ...dataProps,
     ...visibleProps,
-    ...layerProps
+    ...layerProps,
   });
 };

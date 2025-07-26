@@ -28,7 +28,7 @@ export class DropArea extends React.Component {
     this.onDragLeave = this.onDragLeave.bind(this);
     this.state = {
       isDrag: false,
-      rejected: false
+      rejected: false,
     };
     this.dragCounter = 0;
   }
@@ -40,7 +40,7 @@ export class DropArea extends React.Component {
     event.stopPropagation();
     const files = [...getEventFiles(event)];
     this.setState({
-      isDrag: false
+      isDrag: false,
     });
     uploadFiles(files);
     onDrop(event);
@@ -55,7 +55,7 @@ export class DropArea extends React.Component {
   onDragEnter(event) {
     const items = [...event.dataTransfer.items];
     this.setState({
-      isDrag: items.length > 0
+      isDrag: items.length > 0,
     });
     this.dragCounter++;
     this.props.onDragEnter(event);
@@ -68,7 +68,7 @@ export class DropArea extends React.Component {
 
     if(this.dragCounter === 0) {
       this.setState({
-        isDrag: false
+        isDrag: false,
       });
     }
 
@@ -84,9 +84,9 @@ export class DropArea extends React.Component {
         onDrop: this.onDrop,
         onDragOver: this.onDragOver,
         onDragEnter: this.onDragEnter,
-        onDragLeave: this.onDragLeave
+        onDragLeave: this.onDragLeave,
       },
-      children(isDrag)
+      children(isDrag),
     );
   }
 }
@@ -97,13 +97,13 @@ DropArea.defaultProps = {
   onDrop: func,
   onDragOver: func,
   onDragEnter: func,
-  onDragLeave: func
+  onDragLeave: func,
 };
 DropArea.propTypes = {
   onDrop: PropTypes.func,
   onDragOver: PropTypes.func,
   onDragEnter: PropTypes.func,
-  onDragLeave: PropTypes.func
+  onDragLeave: PropTypes.func,
 };
 
 export default props => h(Context.Consumer, null, values => h(DropArea, _extends({}, props, values)));

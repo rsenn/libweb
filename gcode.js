@@ -16,5 +16,5 @@ export const GcodeParser = {
   parseFileSync,
   parseString,
   parseStringSync,
-  noop
+  noop,
 };

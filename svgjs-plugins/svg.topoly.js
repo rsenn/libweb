@@ -159,7 +159,7 @@ extend(PathArray, {
 
     // send out as point array
     return new PointArray(points);
-  }
+  },
 });
 
 extend(Path, {
@@ -179,5 +179,5 @@ extend(Path, {
     }
 
     return poly;
-  }
+  },
 });

@@ -9,14 +9,14 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
 
   const extraStyle = {
     'stroke-linecap': 'round',
-    'stroke-linejoin': 'round'
+    'stroke-linejoin': 'round',
   };
   let attrs = {
     stroke: color + '',
     'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
     'data-layer': `${layer.number} ${layer.name}`,
     fill: 'none',
-    style: visible ? { ...extraStyle } : { ...extraStyle, display: 'none' }
+    style: visible ? { ...extraStyle } : { ...extraStyle, display: 'none' },
   };
 
   log('WirePath', layer.toString(), 'path:', path);
@@ -35,13 +35,13 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
       className,
       ...(isArray ? {} : { d: cmds.join(' ') }),
       ...attrs,
-      ...props
+      ...props,
     },
     isArray
       ? cmds.map(cmd => {
           //  log('cmd:', cmd);
           return h('path', { d: cmd.join(' ') });
         })
-      : []
+      : [],
   );
 };

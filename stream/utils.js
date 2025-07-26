@@ -42,7 +42,7 @@ export const AcquireReader =
     stream,
     fn = async reader => {
       console.log('reader.read()', reader.read());
-    }
+    },
   ) => {
     return (async () => {
       let ret = await fn({
@@ -60,7 +60,7 @@ export const AcquireReader =
               close() {
                 removeListeners();
                 resolve({ value: null, done: true });
-              }
+              },
             };
 
             function addListeners() {
@@ -72,7 +72,7 @@ export const AcquireReader =
 
             addListeners();
           });
-        }
+        },
       });
       return ret;
     })();
@@ -84,7 +84,7 @@ export const AcquireWriter =
       stream,
       fn = async writer => {
         await writer.write('TEST');
-      }
+      },
     ) => {
       return (async writer => {
         writer = await writer;
@@ -97,14 +97,14 @@ export const AcquireWriter =
     stream,
     fn = async writer => {
       await writer.write('TEST');
-    }
+    },
   ) => {
     return (async () => {
       let ret = await fn({
         write(chunk) {
           return stream.write(chunk);
           return new Promise((resolve, reject) => stream.write(chunk, 'utf-8', err => (err ? reject(err) : resolve(chunk.length))));
-        }
+        },
       });
       return ret;
     })();
@@ -117,7 +117,7 @@ export function ArrayWriter(arr) {
     },
     abort(err) {
       //console.log('ArrayWriter error:', err);
-    }
+    },
   });
 }
 
@@ -236,7 +236,7 @@ export async function WriteToRepeater() {
       },
       abort(err) {
         stop(new Error('WriteRepeater error:' + err));
-      }
+      },
     });
   });
   const stream = new WritableStream((await repeater.next()).value);
@@ -253,7 +253,7 @@ export function LogSink(fn = (...args) => console.log('LogSink.fn', ...args)) {
     },
     abort(err) {
       throw new Error('LogSink error:' + err);
-    }
+    },
   });
 }
 
@@ -265,13 +265,13 @@ export function StringReader(str, chunk = (pos, str) => [pos, str.length]) {
       size(chunk) {
         console.log('size(chunk)', chunk);
         return 16;
-      }
+      },
     }),
     start(controller) {
       for(;;) {
         if(read(controller)) break;
       }
-    }
+    },
   });
 
   function read(controller) {
@@ -305,7 +305,7 @@ export function LineReader(str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', p
           break;
         }
       }
-    }
+    },
   });
 }
 
@@ -325,7 +325,7 @@ export class DebugTransformStream {
         if(typeof controller.flush == 'function') controller.flush();
         if(typeof controller.close == 'function') controller.close();
         this.callback(className(this) + '.end');
-      }
+      },
     };
 
     let transformer = new TransformStream(handler);
@@ -396,7 +396,7 @@ export async function CreateTransformStream(handler, options = { decodeStrings: 
       error(err) {
         const { instance } = this;
         return instance.destroy(err);
-      }
+      },
     };
     ctor = class extends ctor {
       _transform(chunk, encoding, done) {
@@ -437,7 +437,7 @@ export function RepeaterSource(stream) {
       end() {
         removeListeners();
         stop();
-      }
+      },
     };
     function addListeners() {
       for(let eventName in listeners) stream.addListener(eventName, listeners[eventName]);
@@ -463,7 +463,7 @@ export async function RepeaterSink(start /*= async sink => {}*/) {
       abort(err) {
         //SS{ position }console.debug('RepeaterSink.abort', err);
         return stop(new Error('WriteRepeater error:' + err));
-      }
+      },
     });
     if(typeof start == 'function') await start(wr);
     else await push(wr);
@@ -496,9 +496,9 @@ export async function LineBufferStream(options = {}) {
       },
       flush(controller) {
         while(lines.length > 0) controller.enqueue(lines.shift());
-      }
+      },
     },
-    { ...options, decodeStrings: true }
+    { ...options, decodeStrings: true },
   );
   stream.lines = lines;
   return stream;
@@ -516,7 +516,7 @@ export function TextTransformStream(tfn) {
     flush(controller) {
       if(typeof controller.flush == 'function') controller.flush();
       else if(typeof controller.close == 'function') controller.close();
-    }
+    },
   });
 }
 
@@ -564,7 +564,7 @@ export default {
   DebugTransformStream,
   ChunkReader,
   ByteReader,
-  PipeToRepeater
+  PipeToRepeater,
 };
 
 const blah =

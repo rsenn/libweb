@@ -50,7 +50,7 @@ export const JSDefines = {
   LineTerminators: /[\r\n\u2028\u2029]/,
   TemplateElement: /({EscapeSequence}|\\.|[^\`\\\n\r\$]|[\r\n])/,
   SingleLineComment: '//[^\\n]*\\n',
-  MultiLineComment: /\/\*([^\*]|[\r\n]|(\*+([^/\*]|[\n\r])))*\*+\//
+  MultiLineComment: /\/\*([^\*]|[\r\n]|(\*+([^/\*]|[\n\r])))*\*+\//,
 };
 
 export const JSRules = [
@@ -65,14 +65,14 @@ export const JSRules = [
     (lex, skip) => {
       lex.pushState('TEMPLATE');
       lex.pushState('NESTED');
-    }
+    },
   ],
   [
     'templateLiteral',
     /<TEMPLATE>{TemplateElement}*\${/,
     lex => {
       if(lex.topState() != 'NESTED') lex.pushState('NESTED');
-    }
+    },
   ],
   [
     'templateLiteral',
@@ -82,7 +82,7 @@ export const JSRules = [
       try {
         lex.popState();
       } catch(e) {}
-    }
+    },
   ],
   //['templateLiteral', /<TEMPLATE>(\${)/, (lex, skip) => {lex.pushState('NESTED'); } ],
   // ['templateLiteral', /<TEMPLATE>{TemplateElement}+/],
@@ -94,7 +94,7 @@ export const JSRules = [
         lex.popState();
         lex.index += lexeme.length;
       }
-    }
+    },
   ],
   ['numericLiteral', '<INITIAL,NOREGEX,NESTED>({OctalIntegerLiteral}|{HexIntegerLiteral}|{DecimalLiteral})[lmn]?'],
   ['stringLiteral', '<INITIAL,NOREGEX,NESTED>{StringLiteral}'],
@@ -103,11 +103,11 @@ export const JSRules = [
   ['nullLiteral', '<INITIAL,NOREGEX,NESTED>{NullValue}'],
   [
     'keyword',
-    '<INITIAL,NOREGEX,NESTED>(instanceof|debugger|function|continue|finally|extends|default|static|export|switch|import|typeof|return|delete|async|yield|await|throw|super|const|class|catch|while|break|from|enum|case|with|void|this|else|let|try|var|new|for|as|of|do|in|if)\\b'
+    '<INITIAL,NOREGEX,NESTED>(instanceof|debugger|function|continue|finally|extends|default|static|export|switch|import|typeof|return|delete|async|yield|await|throw|super|const|class|catch|while|break|from|enum|case|with|void|this|else|let|try|var|new|for|as|of|do|in|if)\\b',
   ],
   ['identifier', '<INITIAL,NOREGEX,NESTED>{Identifier}'],
   ['privateIdentifier', '<INITIAL,NOREGEX,NESTED>#{Identifier}'],
-  ['whitespace', '<INITIAL,NOREGEX,NESTED>({LineTerminators}|[ \\t\\v\\f]+|\\\\\\n)', 0x8000]
+  ['whitespace', '<INITIAL,NOREGEX,NESTED>({LineTerminators}|[ \\t\\v\\f]+|\\\\\\n)', 0x8000],
 ];
 
 export class JSLexer extends Lexer {

@@ -51,7 +51,7 @@ TRBL.neg = (trbl = this) => ({
   top: -trbl.top,
   right: -trbl.right,
   bottom: -trbl.bottom,
-  left: -trbl.left
+  left: -trbl.left,
 });
 
 TRBL.prototype.isNaN = function() {
@@ -60,13 +60,13 @@ TRBL.prototype.isNaN = function() {
 Object.defineProperty(TRBL.prototype, 'inset', {
   get() {
     return rect => Rect.inset(rect, this);
-  }
+  },
 });
 
 Object.defineProperty(TRBL.prototype, 'outset', {
   get() {
     return rect => Rect.outset(rect, this);
-  }
+  },
 });
 
 /*TRBL.prototype.outset = function() {
@@ -92,7 +92,7 @@ TRBL.prototype.toRect = function() {
     x: this.left,
     y: this.top,
     width: this.right - this.left,
-    height: this.bottom - this.top
+    height: this.bottom - this.top,
   });
 };
 TRBL.prototype.toRect = function() {
@@ -100,7 +100,7 @@ TRBL.prototype.toRect = function() {
     x: this.left,
     y: this.top,
     width: this.right - this.left,
-    height: this.bottom - this.top
+    height: this.bottom - this.top,
   });
 };
 
@@ -108,7 +108,7 @@ TRBL.union = (trbl, other) => ({
   top: other.top < trbl.top ? other.top : trbl.top,
   right: other.right > trbl.right ? other.right : trbl.right,
   bottom: other.bottom > trbl.bottom ? other.bottom : trbl.bottom,
-  left: other.left < trbl.left ? other.left : trbl.left
+  left: other.left < trbl.left ? other.left : trbl.left,
 });
 
 TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);

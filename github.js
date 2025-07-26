@@ -81,7 +81,7 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${dir}`;
   console.log('GithubListContents', { host, owner, repo, dir, filter, url });
   const headers = {
-    Authorization: 'Basic ' + window.btoa(`${username}:${password}`)
+    Authorization: 'Basic ' + window.btoa(`${username}:${password}`),
   };
   let response = await fetch(url, { headers });
   let result = JSON.parse(await response.text());
@@ -102,7 +102,7 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
     type,
     size,
     path,
-    sha
+    sha,
   }));
   const at = i => {
     let url = files[i].url;
@@ -127,7 +127,7 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
         Object.defineProperty(file, 'text', {
           get: text,
           enumerable: true,
-          configurable: true
+          configurable: true,
         });
       }
       return file;
@@ -145,8 +145,8 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
       },
       get dirs() {
         return files.filter(item => item.type == 'dir');
-      }
-    }
+      },
+    },
   );
 };
 
@@ -157,13 +157,13 @@ export async function ListGithubRepoServer(owner, repo, dir, filter, f = fetch) 
     response = await f('/github', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request)
+      body: JSON.stringify(request),
     });
   } catch(err) {}
   let ret = Util.tryCatch(
     () => JSON.parse(response),
     response => response,
-    error => ({ error, response })
+    error => ({ error, response }),
   );
 
   ret.at = function(i) {
@@ -181,5 +181,5 @@ export default {
   Repositories: GithubRepositories,
   ListContents: GithubListContents,
   ListRepoServer: ListGithubRepoServer,
-  ListFiles: GithubListFiles
+  ListFiles: GithubListFiles,
 };

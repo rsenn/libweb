@@ -37,20 +37,20 @@ export const Via = ({ data, opts = {}, ...props }) => {
     d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
     stroke: 'none',
     fill: viaColor.toRGB(),
-    'fill-opacity': viaColor.a / 255
+    'fill-opacity': viaColor.a / 255,
   };
   if(viaColor.a < 255) pathProps['fill-opacity'] = roundTo(viaColor.a / 255, 0.001);
   const baseProps = {
     //  class: ElementToClass(via),
     //fill: viaColor,
-    transform
+    transform,
   };
   const dataProps = {
     'data-type': via.tagName,
     'data-shape': via.shape,
     'data-drill': via.drill,
     'data-diameter': via.diameter,
-    'data-layer': `${layer.number} ${layer.name}`
+    'data-layer': `${layer.number} ${layer.name}`,
   };
   const visibleProps = visible ? {} : { style: { display: 'none' } };
   const alignment = Alignment('center');
@@ -63,9 +63,9 @@ export const Via = ({ data, opts = {}, ...props }) => {
         fill: '#f0f',
         'font-size': '0.8px',
         ...AlignmentAttrs(alignment, VERTICAL),
-        transform: transformation.concat(rotation).invert().scaling
+        transform: transformation.concat(rotation).invert().scaling,
       },
-      /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
+      /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name),
     );
     return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
   }
@@ -73,6 +73,6 @@ export const Via = ({ data, opts = {}, ...props }) => {
     ...baseProps,
     ...dataProps,
     ...pathProps,
-    ...visibleProps
+    ...visibleProps,
   });
 };

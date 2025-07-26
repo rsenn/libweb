@@ -200,7 +200,7 @@ function xml2json_translator() {
       let xml = require('libxml');
       dom = xml.parseFromString(xmlString);
       return dom;
-    }
+    },
   };
 
   return X;

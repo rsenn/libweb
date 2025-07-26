@@ -129,7 +129,7 @@ function GpmClient(options) {
         minMod: 0,
         maxMod: 0xffff,
         pid: pid,
-        vc: vc
+        vc: vc,
       };
 
       var gpm = net.createConnection(GPM_SOCKET);

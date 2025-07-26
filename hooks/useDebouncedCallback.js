@@ -65,7 +65,7 @@ export function useDebouncedCallback(callback, delay, options) {
         }, maxWait);
       }
     },
-    [maxWait, delay, cancelDebouncedCallback, leading, trailing]
+    [maxWait, delay, cancelDebouncedCallback, leading, trailing],
   );
   var callPending = useCallback(
     function() {
@@ -76,7 +76,7 @@ export function useDebouncedCallback(callback, delay, options) {
       debouncedFunction.current.apply(null, maxWaitArgs.current);
       cancelDebouncedCallback();
     },
-    [cancelDebouncedCallback]
+    [cancelDebouncedCallback],
   );
   // At the moment, we use 3 args array so that we save backward compatibility
   return [debouncedCallback, cancelDebouncedCallback, callPending];

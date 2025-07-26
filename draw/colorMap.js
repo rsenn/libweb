@@ -47,9 +47,9 @@ export class ColorMap extends Map {
     return channels.reduce(
       (acc, chan) => ({
         ...acc,
-        [chan]: minmax(this.getChannel(chan, e => e).map(([k, c]) => c))
+        [chan]: minmax(this.getChannel(chan, e => e).map(([k, c]) => c)),
       }),
-      {}
+      {},
     );
   }
 

@@ -24,6 +24,6 @@ export function useToggleButtonGroupState(arg) {
   return {
     currentSelectedId,
     handleSelect: useCallback(handleSelect, [currentSelectedId]),
-    reset: useCallback(() => setCurrentSelectedId(undefined), [])
+    reset: useCallback(() => setCurrentSelectedId(undefined), []),
   };
 }

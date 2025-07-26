@@ -72,7 +72,7 @@ export class Observable {
         },
         complete() {
           resolve();
-        }
+        },
       });
     });
 
@@ -102,7 +102,7 @@ export class Observable {
         },
         complete() {
           subscriber.complete();
-        }
+        },
       });
 
       return () => ac.abort();
@@ -132,7 +132,7 @@ export class Observable {
         },
         complete() {
           subscriber.complete();
-        }
+        },
       });
 
       return () => ac.abort();
@@ -148,7 +148,7 @@ export class Observable {
         error(err) {
           subscriber.error(err);
         },
-        complete() {}
+        complete() {},
       });
 
       const ac2 = this.subscribe({
@@ -160,7 +160,7 @@ export class Observable {
         },
         complete() {
           subscriber.complete();
-        }
+        },
       });
 
       return () => {

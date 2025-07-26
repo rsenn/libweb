@@ -49,7 +49,7 @@ export class EagleElementProxy {
       },
       getPrototypeOf(target) {
         return EagleElementProxy.prototype;
-      }
+      },
     });
   }
 }

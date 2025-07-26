@@ -12,7 +12,7 @@ const handler = {
       return boundFunc;
     }
     return val;
-  }
+  },
 };
 
 export const autoBind = (() => {

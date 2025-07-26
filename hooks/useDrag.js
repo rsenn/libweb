@@ -8,7 +8,7 @@ export function useDrag() {
   // const [a, b] = [{left:0, top: 0}, () => {}]
   const [state, setState] = useState({
     left: 0,
-    top: 0
+    top: 0,
   });
 
   var handleDown = e => {
@@ -27,7 +27,7 @@ export function useDrag() {
     // const diffY = newY;
     setState({
       left: e.clientX,
-      top: e.clientY
+      top: e.clientY,
     });
   };
 
@@ -39,7 +39,7 @@ export function useDrag() {
   return {
     left: state.left,
     top: state.top,
-    handleDown
+    handleDown,
   };
 }
 
@@ -50,12 +50,12 @@ function Drag() {
     {
       style: {
         left,
-        top
+        top,
       },
       className: 'dragable',
-      onMouseDown: handleDown
+      onMouseDown: handleDown,
     },
-    'drag1'
+    'drag1',
   );
 }
 

@@ -59,7 +59,7 @@ function v(l, u, i, t, o) {
     __c: null,
     __h: null,
     constructor: void 0,
-    __v: o
+    __v: o,
   };
   return null == o && (r.__v = r), null != n.vnode && n.vnode(r), r;
 }
@@ -144,10 +144,10 @@ function m(n, l, u, i, t, o, r, c, s, h) {
           ? v(
               p,
               {
-                children: k
+                children: k,
               },
               null,
-              null
+              null,
             )
           : null != k.__e || null != k.__c
           ? v(k.type, k.props, k.key, null, k.__v)
@@ -410,8 +410,8 @@ function H(n, l, u, i, t, o, r, c) {
       : document.createElement(
           l.type,
           d.is && {
-            is: d.is
-          }
+            is: d.is,
+          },
         )),
       (o = null),
       (c = !1);
@@ -516,7 +516,7 @@ function B(n, l) {
           })),
         n.children
       );
-    }
+    },
   };
   return (u.Provider.__ = u.Consumer.contextType = u);
 }
@@ -540,7 +540,7 @@ n = {
     }
 
     throw n;
-  }
+  },
 };
 
 (d.prototype.setState = function(n, l) {
@@ -576,7 +576,7 @@ function v$1(t, r) {
     u$1.__H ||
     (u$1.__H = {
       __: [],
-      __h: []
+      __h: [],
     });
   return t >= i.__.length && i.__.push({}), i.__[t];
 }
@@ -595,7 +595,7 @@ function p$1(n$$1, r, o) {
         function(n$$1) {
           var t = i.t(i.__[0], n$$1);
           i.__[0] !== t && ((i.__ = [t, i.__[1]]), i.__c.setState({}));
-        }
+        },
       ]),
       (i.__c = u$1)),
     i.__
@@ -617,7 +617,7 @@ function h$1(n$$1) {
     (o$1 = 5),
     _$1(function () {
       return {
-        current: n$$1
+        current: n$$1,
       };
     }, [])
   );
@@ -630,7 +630,7 @@ function s$1(n$$1, t, u) {
         'function' == typeof n$$1 ? n$$1(t()) : n$$1 && (n$$1.current = t());
         console.log('Ruler ref:', n$$1);
       },
-      null == u ? u : u.concat(n$$1)
+      null == u ? u : u.concat(n$$1),
     );
 }
 
@@ -999,5 +999,5 @@ export {
   _$1 as useMemo,
   A$1 as useCallback,
   F as useContext,
-  T$1 as useDebugValue
+  T$1 as useDebugValue,
 };

@@ -158,7 +158,7 @@ function ParseState(rule, buffer, offset, lineNumber) {
       ' lineNumber=' +
       this.lineNumber +
       ' text=' +
-      buffer.substring(this.offset, this.offset + 20).replace(/(?:\r\n|\r|\n)/g, '\\n')
+      buffer.substring(this.offset, this.offset + 20).replace(/(?:\r\n|\r|\n)/g, '\\n'),
   );
 }
 
@@ -432,7 +432,7 @@ Parser.prototype.parseRhs = function() {
     [this, this.parseAlternation],
     [this, this.parseConcatenation],
     [this, this.parseIdentifier],
-    [this, this.parseTerminal]
+    [this, this.parseTerminal],
   ].forEach(parseRule => {
     child = parseRule[1].call(parseRule[0]);
     if(child != null) {

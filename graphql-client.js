@@ -36,7 +36,7 @@ const client = (options = {}) => {
       const call = ({ token: innerToken = undefined } = {}) => {
         const callHeaders = {
           'content-type': 'application/json',
-          ...innerHeaders
+          ...innerHeaders,
         };
 
         if(innerToken) callHeaders.authorization = `Bearer ${innerToken}`;
@@ -44,7 +44,7 @@ const client = (options = {}) => {
         return fetch(url, {
           body,
           method: 'POST',
-          headers: callHeaders
+          headers: callHeaders,
         })
           .then(res => res.json())
           .then(res => {

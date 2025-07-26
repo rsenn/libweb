@@ -18,7 +18,7 @@ const components = {
   rectangle: Rectangle,
   smd: SMD,
   wire: Wire,
-  text: TextElement
+  text: TextElement,
 };
 
 export const Package = ({ data, component = Fragment, id, class: className, ...props }) => {
@@ -33,11 +33,11 @@ export const Package = ({ data, component = Fragment, id, class: className, ...p
 
   for(let child of children) (obj[child.tagName] ??= []).push(child);
 
-  for(let name of names) if(obj[name]) for(let elem of obj[name]) a.push(elem);
+  for(let name of names) if(obj[name]) for (let elem of obj[name]) a.push(elem);
 
   return h(
     component,
     { id, class: className },
-    a.map(data => h(components[data.tagName], { data, key: `package-${data.name}-${i++}`, ...props }))
+    a.map(data => h(components[data.tagName], { data, key: `package-${data.name}-${i++}`, ...props })),
   );
 };

@@ -63,7 +63,7 @@ export class TreeObserver extends ObservableMembrane {
           }
         }
         return value;
-      }
+      },
     });
 
     function getPath(target, key) {
@@ -96,7 +96,7 @@ export class TreeObserver extends ObservableMembrane {
 
   types = weakMapper((obj, key) =>
     //console.log('types:', key, obj);
-    this.getType(obj, key)
+    this.getType(obj, key),
   );
 
   /*

@@ -9,7 +9,7 @@ export class JsonPointer {
     this[$path] = Array.isArray(ptr) ? ptr : pickDecoder(ptr)(ptr);
     Object.defineProperty(this, 'get', {
       enumerable: true,
-      value: compilePointerDereference(this.path)
+      value: compilePointerDereference(this.path),
     });
   }
 
@@ -270,7 +270,7 @@ function compilePointerDereference(path) {
   body = path.reduce(
     (body, p, i) => `${body} &&
     typeof((obj = obj['${replace(path[i], '\\', '\\\\')}'])) !== 'undefined'`,
-    `if (typeof(obj) !== 'undefined'`
+    `if (typeof(obj) !== 'undefined'`,
   );
   body = `${body}) {
   return obj;
@@ -361,7 +361,7 @@ function visit(target, visitor, cycle) {
   let qcursor = 0;
   q.push({
     obj: target,
-    path: []
+    path: [],
   });
   if(cycle) {
     distinctObjects = new Map();
@@ -384,7 +384,7 @@ function visit(target, visitor, cycle) {
             }
             q.push({
               obj: it,
-              path
+              path,
             });
             if(cycle) {
               distinctObjects.set(it, new JsonPointer(encodeUriFragmentIdentifier(path)));
@@ -406,7 +406,7 @@ function visit(target, visitor, cycle) {
             }
             q.push({
               obj: it,
-              path
+              path,
             });
             if(cycle) {
               distinctObjects.set(it, new JsonPointer(encodeUriFragmentIdentifier(path)));
@@ -449,13 +449,13 @@ JsonPointer.list = function(target, fragmentId) {
     ? function(ptr, val) {
         res.push({
           fragmentId: encodeUriFragmentIdentifier(decodePointer(ptr)),
-          value: val
+          value: val,
         });
       }
     : function(ptr, val) {
         res.push({
           pointer: ptr,
-          value: val
+          value: val,
         });
       };
   visit(target, visitor);

@@ -4,7 +4,7 @@ export function polarToCartesian(x, y, r, deg) {
   const rad = ((deg - 90) * Math.PI) / 180.0;
   return {
     x: x + r * Math.cos(rad),
-    y: y + r * Math.sin(rad)
+    y: y + r * Math.sin(rad),
   };
 }
 
@@ -40,6 +40,6 @@ export const Arc = ({ x, y, radius = 1, width = 0.127 / 2, startAngle, endAngle,
     'stroke-width': width,
     fill: 'none',
     style: visible ? {} : { display: 'none' },
-    ...props
+    ...props,
   });
 };

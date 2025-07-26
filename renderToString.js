@@ -50,7 +50,7 @@ function getChildren(accumulator, children) {
 }
 
 let SHALLOW = {
-  shallow: true
+  shallow: true,
 };
 let UNNAMED = [];
 let VOID_ELEMENTS = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/;
@@ -96,7 +96,7 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
         props: vnode.props,
         setState: noop,
         forceUpdate: noop,
-        __h: []
+        __h: [],
       });
       if(options.__r) {
         options.__r(vnode);

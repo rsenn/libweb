@@ -46,7 +46,7 @@ if(typeof global != 'undefined') {
         ids[id] = new JavaAdapter(java.util.TimerTask, {
           run() {
             fn.apply(null, args);
-          }
+          },
         });
         interval ? timer.schedule(ids[id], delay, delay) : timer.schedule(ids[id], delay);
         return id;
@@ -284,7 +284,7 @@ export const wru = (function (window) {
           // timeout can be specified
           // this procedure ensure that it's
           // a number and it's greater than 0
-          Math.abs(delay) || wru.timeout
+          Math.abs(delay) || wru.timeout,
         );
 
         // the async function is a wrap of the passed callback
@@ -364,7 +364,7 @@ export const wru = (function (window) {
         // we can procede with next test
         // invoking isGonnaBeLegen()
         waitForIt || isGonnaBeLegen();
-      }
+      },
     },
     // common private variables / constants / shortcuts
     TRUE = true,
@@ -430,7 +430,7 @@ export const wru = (function (window) {
     Object.defineProperty(window, 'status', {
       get() {
         return wru.status;
-      }
+      },
     });
     Object.defineProperty(window, 'timeout', {
       get() {
@@ -438,7 +438,7 @@ export const wru = (function (window) {
       },
       set(value) {
         wru.timeout = parseInt(value, 10) || wru.timeout;
-      }
+      },
     });
 
     // re-assign window to make it global

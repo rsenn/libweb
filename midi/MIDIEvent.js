@@ -43,7 +43,7 @@ export const MIDIEvent = {
     //console.log('MIDIEvent.read', result);
 
     return result;
-  }
+  },
 };
 
 export default MIDIEvent;

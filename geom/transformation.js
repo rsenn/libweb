@@ -150,7 +150,7 @@ export class Transformation {
 Object.defineProperty(Transformation, Symbol.hasInstance, {
   value(inst) {
     return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype);
-  }
+  },
 });
 
 export const ImmutableTransformation = immutableClass(Transformation);
@@ -228,7 +228,7 @@ export class Rotation extends Transformation {
 
 Object.defineProperty(Rotation.prototype, Symbol.toStringTag, {
   value: 'Rotation',
-  enumerable: false
+  enumerable: false,
 });
 
 export const ImmutableRotation = immutableClass(Rotation);
@@ -290,7 +290,7 @@ export class Translation extends Transformation {
 
 Object.defineProperty(Translation.prototype, Symbol.toStringTag, {
   value: 'Translation',
-  enumerable: false
+  enumerable: false,
 });
 
 export const ImmutableTranslation = immutableClass(Translation);
@@ -357,7 +357,7 @@ export class Scaling extends Transformation {
 
 Object.defineProperty(Scaling.prototype, Symbol.toStringTag, {
   value: 'Scaling',
-  enumerable: false
+  enumerable: false,
 });
 
 export const ImmutableScaling = immutableClass(Scaling);
@@ -402,7 +402,7 @@ export class MatrixTransformation extends Transformation {
 
 Object.defineProperty(MatrixTransformation.prototype, Symbol.toStringTag, {
   value: 'MatrixTransformation',
-  enumerable: false
+  enumerable: false,
 });
 
 export const ImmutableMatrixTransformation = immutableClass(MatrixTransformation);
@@ -508,12 +508,12 @@ export class TransformationList extends Array {
     define(transformations.scale, {
       toArray() {
         return [this.x, this.y];
-      }
+      },
     });
     define(transformations.translate, {
       toArray() {
         return [this.x, this.y];
-      }
+      },
     });
 
     let ret = new TransformationList();
@@ -793,7 +793,7 @@ export class TransformationList extends Array {
 
 Object.defineProperty(TransformationList.prototype, Symbol.toStringTag, {
   value: 'TransformationList',
-  enumerable: false
+  enumerable: false,
 });
 
 const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
@@ -813,7 +813,7 @@ define(
     every,
     some,
     reduce,
-    reduceRight
+    reduceRight,
   },
   {
     [Symbol.iterator]() {
@@ -821,8 +821,8 @@ define(
     },
     [Symbol.isConcatSpreadable]() {
       return true;
-    }
-  }
+    },
+  },
 );
 
 //Object.setPrototypeOf(TransformationList.prototype, Transformation.prototype);

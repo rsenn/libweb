@@ -7,7 +7,7 @@ function Stack() {
   stack = stack.filter(({ typeName }) => typeName == 'Parser');
   stack = stack.map(({ functionName, methodName, position }) => ({
     method: functionName || methodName,
-    position /*, type: s.typeName*/
+    position /*, type: s.typeName*/,
   }));
   return stack;
 }
@@ -93,7 +93,7 @@ class AST {
       body,
       elseif,
       else: _else,
-      type: 'IfStatement'
+      type: 'IfStatement',
     });
   }
   fornum_stat(id, begin, end, step, body) {
@@ -103,7 +103,7 @@ class AST {
       end,
       step,
       body,
-      type: 'FornumStatement'
+      type: 'FornumStatement',
     });
   }
   forlist_stat(id, left, right, body) {
@@ -389,7 +389,7 @@ for(;;) {
         .map(
           ({ cond, body }) => `else if(${js(cond)}) {
                 ${js(body)}
-            }`
+            }`,
         )
         .join('\n');
 
@@ -531,7 +531,7 @@ class MoonScriptGenerator {
     function moonscript_local_statement({ variables, init }) {
       let vars = variables.map(({ name }, i) => ({
         name,
-        init: moonscript(init[i])
+        init: moonscript(init[i]),
       }));
 
       vars = vars.filter(({ init }) => init != '');
@@ -680,7 +680,7 @@ until ${moonscript(cond)}`;
       const elseif = node.elseif
         .map(
           ({ cond, body }) => `elseif ${moonscript(cond)}
-  ${moonscript_body(body)}`
+  ${moonscript_body(body)}`,
         )
         .join('\n');
 
@@ -818,7 +818,7 @@ class Token {
       column,
       toString() {
         return `${this.line}:${this.column}`;
-      }
+      },
     };
   }
   toString() {
@@ -893,7 +893,7 @@ class Lexer {
       then: 1,
       true: 1,
       until: 1,
-      while: 1
+      while: 1,
     };
   }
 
@@ -1285,7 +1285,7 @@ class Parser {
     stack = stack.map(({ methodName, functionName, position }) => ({
       method: methodName || functionName,
       position,
-      toString: () => `${this.method} ${this.position}`
+      toString: () => `${this.method} ${this.position}`,
     }));
 
     let name = stack[0].method;
@@ -1363,7 +1363,7 @@ class Parser {
   anchor() {
     this.location.push({
       line: this.cur_token.line,
-      column: this.cur_token.column
+      column: this.cur_token.column,
     });
   }
 
@@ -2171,8 +2171,8 @@ Object.assign(Parser, {
     not: { prec: 7, left: 1, binary: 0 },
     '#': { prec: 7, left: 1, binary: 0 },
     'u-': { prec: 7, left: 1, binary: 0 },
-    '^': { prec: 8, left: 0, binary: 1 }
-  }
+    '^': { prec: 8, left: 0, binary: 1 },
+  },
 });
 
 class Interpreter {
@@ -2502,8 +2502,8 @@ Object.assign(Interpreter, {
       }
 
       return right.length;
-    }
-  }
+    },
+  },
 });
 
 export default {
@@ -2515,5 +2515,5 @@ export default {
   Token,
   Lexer,
   Parser,
-  Interpreter
+  Interpreter,
 };

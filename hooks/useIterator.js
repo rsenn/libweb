@@ -31,7 +31,7 @@ export function useIterator(iterator) {
       var res = iterator.next(next);
       dispatch(res);
     },
-    [iterator, dispatch]
+    [iterator, dispatch],
   );
   var return_ = useCallback(
     function(value) {
@@ -40,7 +40,7 @@ export function useIterator(iterator) {
       if(res == null) return;
       dispatch(res);
     },
-    [iterator, dispatch]
+    [iterator, dispatch],
   );
   var throw_ = useCallback(
     function(error) {
@@ -49,7 +49,7 @@ export function useIterator(iterator) {
       if(res == null) return;
       dispatch(res);
     },
-    [iterator, dispatch]
+    [iterator, dispatch],
   );
   return useMemo(
     function() {
@@ -58,10 +58,10 @@ export function useIterator(iterator) {
         value: result.value,
         next: next,
         return: return_,
-        throw: throw_
+        throw: throw_,
       };
     },
-    [result, next, return_, throw_]
+    [result, next, return_, throw_],
   );
 }
 

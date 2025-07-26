@@ -121,9 +121,7 @@ function cpp_js(settings) {
   };
 
   let is_string_boundary = function(text, idx) {
-    return (
-      (text[idx] == '"' || text[idx] == "'") && (!idx || text[idx - 1] != '\\' || (idx > 1 && text[idx - 2] == '\\'))
-    );
+    return (text[idx] == '"' || text[idx] == "'") && (!idx || text[idx - 1] != '\\' || (idx > 1 && text[idx - 2] == '\\'));
   };
 
   // dictionary of default settings, including default error handlers
@@ -992,10 +990,7 @@ function cpp_js(settings) {
           // if both sides are *not* preprocessing special tokens,
           // the concatenation is always ok. Otherwise the result
           // must be a valid preprocessing special token as well.
-          if(
-            (this._is_pp_special_token(left) || this._is_pp_special_token(right)) &&
-            !this._is_pp_special_token(left + right)
-          ) {
+          if((this._is_pp_special_token(left) || this._is_pp_special_token(right)) && !this._is_pp_special_token(left + right)) {
             error('pasting "' + left + '" and "' + right + '" does not give a valid preprocessing token');
           }
 
@@ -1109,14 +1104,7 @@ function cpp_js(settings) {
         // special case: if no arguments are expected and none passed either,
         // we will still get one empty argument from the previous logic.
         if(info.params.length || params_found.length > 1 || params_found[0]) {
-          error(
-            'illegal invocation of macro ' +
-              macro_name +
-              ', expected ' +
-              info.params.length +
-              ' parameters but got ' +
-              params_found.length,
-          );
+          error('illegal invocation of macro ' + macro_name + ', expected ' + info.params.length + ' parameters but got ' + params_found.length);
         } else {
           params_found = [];
         }

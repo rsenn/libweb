@@ -74,7 +74,7 @@ const TinyTest = {
     if(expected !== actual) {
       throw new Error('assertStrictEquals() "' + expected + '" !== "' + actual + '"');
     }
-  }
+  },
 };
 
 export const fail = TinyTest.fail,

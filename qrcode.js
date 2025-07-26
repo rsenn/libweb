@@ -70,7 +70,7 @@ let QRCode;
       for(let i = 0, l = this.parsedData.length; i < l; i++) {
         buffer.put(this.parsedData[i], 8);
       }
-    }
+    },
   };
 
   function QRCodeModel(typeNumber, errorCorrectLevel) {
@@ -275,7 +275,7 @@ let QRCode;
           }
         }
       }
-    }
+    },
   };
   QRCodeModel.PAD0 = 0xec;
   QRCodeModel.PAD1 = 0x11;
@@ -364,7 +364,7 @@ let QRCode;
     MODE_NUMBER: 1 << 0,
     MODE_ALPHA_NUM: 1 << 1,
     MODE_8BIT_BYTE: 1 << 2,
-    MODE_KANJI: 1 << 3
+    MODE_KANJI: 1 << 3,
   };
   let QRErrorCorrectLevel = { L: 1, M: 0, Q: 3, H: 2 };
   let QRMaskPattern = {
@@ -375,7 +375,7 @@ let QRCode;
     PATTERN100: 4,
     PATTERN101: 5,
     PATTERN110: 6,
-    PATTERN111: 7
+    PATTERN111: 7,
   };
   var QRUtil = {
     PATTERN_POSITION_TABLE: [
@@ -418,7 +418,7 @@ let QRCode;
       [6, 28, 54, 80, 106, 132, 158],
       [6, 32, 58, 84, 110, 136, 162],
       [6, 26, 54, 82, 110, 138, 166],
-      [6, 30, 58, 86, 114, 142, 170]
+      [6, 30, 58, 86, 114, 142, 170],
     ],
     G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
     G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
@@ -602,7 +602,7 @@ let QRCode;
       let ratio = Math.abs((100 * darkCount) / moduleCount / moduleCount - 50) / 5;
       lostPoint += ratio * 10;
       return lostPoint;
-    }
+    },
   };
   var QRMath = {
     glog(n) {
@@ -621,7 +621,7 @@ let QRCode;
       return QRMath.EXP_TABLE[n];
     },
     EXP_TABLE: new Array(256),
-    LOG_TABLE: new Array(256)
+    LOG_TABLE: new Array(256),
   };
   for(var i = 0; i < 8; i++) {
     QRMath.EXP_TABLE[i] = 1 << i;
@@ -674,7 +674,7 @@ let QRCode;
         num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
       }
       return new QRPolynomial(num, 0).mod(e);
-    }
+    },
   };
   function QRRSBlock(totalCount, dataCount) {
     this.totalCount = totalCount;
@@ -840,7 +840,7 @@ let QRCode;
     [19, 148, 118, 6, 149, 119],
     [18, 75, 47, 31, 76, 48],
     [34, 54, 24, 34, 55, 25],
-    [20, 45, 15, 61, 46, 16]
+    [20, 45, 15, 61, 46, 16],
   ];
   QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
     let rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
@@ -899,7 +899,7 @@ let QRCode;
         this.buffer[bufIndex] |= 0x80 >>> this.length % 8;
       }
       this.length++;
-    }
+    },
   };
   let QRCodeLimitLength = [
     [17, 14, 11, 7],
@@ -941,7 +941,7 @@ let QRCode;
     [2563, 1989, 1423, 1093],
     [2699, 2099, 1499, 1139],
     [2809, 2213, 1579, 1219],
-    [2953, 2331, 1663, 1273]
+    [2953, 2331, 1663, 1273],
   ];
 
   function _isSupportCanvas() {
@@ -991,7 +991,7 @@ let QRCode;
         viewBox: '0 0 ' + String(nCount) + ' ' + String(nCount),
         width: '100%',
         height: '100%',
-        fill: _htOption.colorLight
+        fill: _htOption.colorLight,
       });
       svg.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', 'http://www.w3.org/1999/xlink');
       _el.appendChild(svg);
@@ -1000,16 +1000,16 @@ let QRCode;
         makeSVG('rect', {
           fill: _htOption.colorLight,
           width: '100%',
-          height: '100%'
-        })
+          height: '100%',
+        }),
       );
       svg.appendChild(
         makeSVG('rect', {
           fill: _htOption.colorDark,
           width: '1',
           height: '1',
-          id: 'template'
-        })
+          id: 'template',
+        }),
       );
 
       for(let row = 0; row < nCount; row++) {
@@ -1064,7 +1064,7 @@ let QRCode;
                   nHeight +
                   'px;background-color:' +
                   (oQRCode.isDark(row, col) ? _htOption.colorDark : _htOption.colorLight) +
-                  ';"></td>'
+                  ';"></td>',
               );
             }
 
@@ -1354,12 +1354,12 @@ let QRCode;
       typeNumber: 4,
       colorDark: '#000000',
       colorLight: '#ffffff',
-      correctLevel: QRErrorCorrectLevel.H
+      correctLevel: QRErrorCorrectLevel.H,
     };
 
     if(typeof vOption === 'string') {
       vOption = {
-        text: vOption
+        text: vOption,
       };
     }
 

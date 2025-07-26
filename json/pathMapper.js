@@ -69,7 +69,7 @@ export class PathMapper {
     return {
       get: path => this.at(path),
       has: path => this.has(path),
-      set: (path, obj) => this.set(obj, path)
+      set: (path, obj) => this.set(obj, path),
     };
   }
 
@@ -88,7 +88,7 @@ export class PathMapper {
         const { map } = this;
         map.set(obj, path);
         return this;
-      }
+      },
     };
   }
 

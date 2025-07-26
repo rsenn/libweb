@@ -10,7 +10,7 @@ export const RectDecorator = {
   },
   get y2() {
     return this.y + this.height;
-  }
+  },
 };
 
 export default RectDecorator;

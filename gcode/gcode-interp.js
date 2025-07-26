@@ -174,5 +174,5 @@ export default {
   T3: T0,
   T4: T0,
   T5: T0,
-  T6: T0
+  T6: T0,
 };

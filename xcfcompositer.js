@@ -47,7 +47,7 @@ class Hsv {
       red: floatToXcf(this._rgb.red),
       green: floatToXcf(this._rgb.green),
       blue: floatToXcf(this._rgb.blue),
-      alpha: this._rgb.alpha
+      alpha: this._rgb.alpha,
     };
   }
 
@@ -56,7 +56,7 @@ class Hsv {
       red: xcfToFloat(_rgb.red),
       green: xcfToFloat(rgb.green),
       blue: xcfToFloat(rgb.blue),
-      alpha: rgb.alpha
+      alpha: rgb.alpha,
     };
     this._hsv = null;
   }
@@ -123,42 +123,42 @@ class Hsv {
             this._rgb = {
               red: this._hsv.value,
               green: t,
-              blue: w
+              blue: w,
             };
             break;
           case 1:
             this._rgb = {
               red: q,
               green: this._hsv.value,
-              blue: w
+              blue: w,
             };
             break;
           case 2:
             this._rgb = {
               red: w,
               green: this._hsv.value,
-              blue: t
+              blue: t,
             };
             break;
           case 3:
             this._rgb = {
               red: w,
               green: q,
-              blue: this._hsv.value
+              blue: this._hsv.value,
             };
             break;
           case 4:
             this._rgb = {
               red: t,
               green: w,
-              blue: this._hsv.value
+              blue: this._hsv.value,
             };
             break;
           case 5:
             this._rgb = {
               red: this._hsv.value,
               green: w,
-              blue: q
+              blue: q,
             };
             break;
         }
@@ -174,7 +174,7 @@ class Hsv {
       value: floatToXcf(this._hsv.value),
       hue: floatToXcf(this._hsv.hue),
       saturation: floatToXcf(this._hsv.saturation),
-      alpha: this._hsv.alpha
+      alpha: this._hsv.alpha,
     };
   }
 
@@ -183,7 +183,7 @@ class Hsv {
       value: xcfToFloat(hsv.value),
       hue: xcfToFloat(hsv.hue),
       saturation: xcfToFloat(hsv.saturation),
-      alpha: hsv.alpha
+      alpha: hsv.alpha,
     };
 
     this._rgb = null;
@@ -317,7 +317,7 @@ class XCFCompositer {
       green: green,
       blue: blue,
 
-      alpha: floatToXcf(1 - (1 - a1) * (1 - a2))
+      alpha: floatToXcf(1 - (1 - a1) * (1 - a2)),
     };
   }
 
@@ -355,7 +355,7 @@ class DissolveCompositer extends XCFCompositer {
       red: random < a2 ? layerColour.red : backColour.red,
       green: random < a2 ? layerColour.green : backColour.green,
       blue: random < a2 ? layerColour.blue : backColour.blue,
-      alpha: random < a2 ? 1 : backColour.alpha
+      alpha: random < a2 ? 1 : backColour.alpha,
     };
   }
 }
@@ -372,7 +372,7 @@ class GeneralCompositer extends XCFCompositer {
       green: green,
       blue: blue,
 
-      alpha: floatToXcf(a1)
+      alpha: floatToXcf(a1),
     };
   }
 
@@ -452,7 +452,7 @@ class HsvCompositor {
         red: newRgb.red * ratio + (1 - ratio) * backColour.red,
         green: newRgb.green * ratio + (1 - ratio) * backColour.green,
         blue: newRgb.blue * ratio + (1 - ratio) * backColour.blue,
-        alpha: newRgb.alpa
+        alpha: newRgb.alpa,
       };
     }
 

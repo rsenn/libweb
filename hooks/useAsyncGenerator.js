@@ -9,7 +9,7 @@ export function useAsyncGenerator(fn, deps) {
     function() {
       return asyncGeneratorFn();
     },
-    [asyncGeneratorFn]
+    [asyncGeneratorFn],
   );
   return useAsyncIterator(asyncGenerator);
 }

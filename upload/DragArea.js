@@ -31,26 +31,26 @@ export const DragArea = props => {
         helperClass: 'upload-dragging-item',
         onSortEnd: ({ oldIndex, newIndex }) => {
           setSort(arrayMove(images, oldIndex, newIndex));
-        }
+        },
       }),
       h(
         'div',
         {
           className: className,
-          style: style
+          style: style,
         },
         images.map((image, key) =>
           h(
             DragItem,
             {
               key: key,
-              index: key
+              index: key,
             },
-            children(image)
-          )
-        )
-      )
-    )
+            children(image),
+          ),
+        ),
+      ),
+    ),
   );
 };
 
@@ -59,7 +59,7 @@ DragArea.defaultProps = {
   useWindowAsScrollContainer: true,
   pressDelay: 200,
   axis: 'xy',
-  style: {}
+  style: {},
 };
 
 export default DragArea;

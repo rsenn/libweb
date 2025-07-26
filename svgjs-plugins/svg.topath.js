@@ -41,7 +41,7 @@ extend(Shape, {
             ['a', rx, ry, 0, 0, 1, -rx, -ry],
             ['v', -h + 2 * ry],
             ['a', rx, ry, 0, 0, 1, rx, -ry],
-            ['z']
+            ['z'],
           ];
         } else {
           // no round corners, no need to draw arcs
@@ -88,5 +88,5 @@ extend(Shape, {
     }
 
     return path;
-  }
+  },
 });

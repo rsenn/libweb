@@ -15,7 +15,7 @@ export function SelectHandler(el) {
     t: ['width', 0],
     r: ['width', 'height'],
     b: ['width', 'height'],
-    l: [0, 'height']
+    l: [0, 'height'],
   };
 
   // helper function to get point coordinates based on settings above and an object (bbox in our case)
@@ -30,7 +30,7 @@ export function SelectHandler(el) {
 
     return {
       x: this.pointCoord(settings[0], object, point === 't' || point === 'b'),
-      y: this.pointCoord(settings[1], object, point === 'r' || point === 'l')
+      y: this.pointCoord(settings[1], object, point === 'r' || point === 'l'),
     };
   };
 }
@@ -205,7 +205,7 @@ SelectHandler.prototype.updateRectSelection = function() {
 
   this.rectSelection.set.get(0).attr({
     width: bbox.width,
-    height: bbox.height
+    height: bbox.height,
   });
 
   // set.get(1) is always in the upper left corner. no need to move it
@@ -376,7 +376,7 @@ SVG.extend(SVG.Element, {
     selectHandler.init(value === undefined ? true : value, options || {});
 
     return this;
-  }
+  },
 });
 
 SVG.Element.prototype.selectize.defaults = {
@@ -389,5 +389,5 @@ SVG.Element.prototype.selectize.defaults = {
   deepSelect: false, // If true, moving of single points is possible (only line, polyline, polyon)
   pointType: 'circle', // Point type: circle or rect, default circle
   pointFill: '#000', // Point fill color
-  pointStroke: { width: 1, color: '#000' } // Point stroke properties
+  pointStroke: { width: 1, color: '#000' }, // Point stroke properties
 };

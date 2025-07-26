@@ -119,7 +119,7 @@ export class MIDIStream {
 
 Object.defineProperty(MIDIStream.prototype, Symbol.toStringTag, {
   value: 'MIDIStream',
-  enumerable: false
+  enumerable: false,
 });
 
 export default MIDIStream;

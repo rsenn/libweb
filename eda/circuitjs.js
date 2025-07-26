@@ -4,7 +4,7 @@ const props = {
   x1: 1,
   y1: 2,
   x2: 3,
-  y2: 4
+  y2: 4,
 };
 
 export const DOTS = 1;
@@ -22,7 +22,7 @@ export function Element(el) {
     line: () => Line.bind(el, null, k => makeGetterSetter(props[k])),
     a: () => Point.bind(el, [1, 2]),
     b: () => Point.bind(el, [3, 4]),
-    type: () => CircuitJS.types[el[0]] ?? toNumber(el[0])
+    type: () => CircuitJS.types[el[0]] ?? toNumber(el[0]),
   });
 
   Object.setPrototypeOf(el, Element.prototype);
@@ -50,7 +50,7 @@ export function Element(el) {
       } else {
         Reflect.set(target, prop, value);
       }
-    }
+    },
   });
 }
 
@@ -90,7 +90,7 @@ export class CircuitJS {
       },
       getPrototypeOf(target) {
         return CircuitJS.prototype;
-      }
+      },
     });
   }
 
@@ -231,7 +231,7 @@ export class CircuitJS {
     v: 'Voltage',
     w: 'Wire',
     x: 'Text',
-    z: 'Zener'
+    z: 'Zener',
   };
   static bases = {
     ACRail: 'Rail',
@@ -315,7 +315,7 @@ export class CircuitJS {
     VCO: 'Chip',
     VCVS: 'VCCS',
     XorGate: 'OrGate',
-    Zener: 'Diode'
+    Zener: 'Diode',
   };
 
   static params = {
@@ -357,7 +357,7 @@ export class CircuitJS {
     Triode: ['mu', 'kg1'],
     VarRail: ['sliderText', 'sliderText'],
     Voltage: ['waveform', 'frequency', 'maxVoltage', 'bias', 'phaseShift', 'dutyCycle'],
-    Zener: ['zvoltage']
+    Zener: ['zvoltage'],
   };
 }
 

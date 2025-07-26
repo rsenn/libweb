@@ -110,7 +110,7 @@ export class BBox {
   get center() {
     return new Point({
       x: this.x + this.width / 2,
-      y: this.y + this.height / 2
+      y: this.y + this.height / 2,
     });
   }
 
@@ -160,7 +160,7 @@ export class BBox {
       x: x1,
       y: y1,
       width: x2 - x1,
-      height: y2 - y1
+      height: y2 - y1,
     };
   }
 

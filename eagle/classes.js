@@ -20,7 +20,7 @@ export class Element extends ObjectInterface {
   constructor(element) {
     super(element, {
       library: {
-        get: e => new Library(e.ownerDocument.querySelector(`library[name="${e.getAttribute('library')}"]`))
+        get: e => new Library(e.ownerDocument.querySelector(`library[name="${e.getAttribute('library')}"]`)),
       },
       package: {
         get: e => new Package(e.ownerDocument.querySelector(`library[name="${e.getAttribute('library')}"]`).querySelector(`package[name="${e.getAttribute('package')}"]`)),
@@ -32,8 +32,8 @@ export class Element extends ObjectInterface {
 
           e.setAttribute('library', n.library);
           e.setAttribute('package', n.package);
-        }
-      }
+        },
+      },
     });
   }
 }

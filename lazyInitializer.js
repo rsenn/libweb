@@ -55,7 +55,7 @@ export function lazyMembers(obj, members) {
         initializers[name](value);
         return initializers[name]();
       },
-      enumerable: true
+      enumerable: true,
     });
   }
 }
@@ -89,7 +89,7 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
       ret = proxify(ret, {});
       //console.log("filter ret:",Util.className(ret));
       return ret; //lazyMap(ret, lookup, ctor, proto);
-    }
+    },
   });
 
   //console.log("",{proto,prototyp},proto.filter);
@@ -145,7 +145,7 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
           keys.push(lookup(Reflect.get(target, ''+i)));
         }
         return keys;
-      }*/
+      }*/,
     });
   }
 
@@ -164,7 +164,7 @@ export function lazyArray(elements) {
       get() {
         return lazy();
       }, //set: function(value) {lazy(value); },
-      enumerable: true
+      enumerable: true,
     };
     i++;
   }

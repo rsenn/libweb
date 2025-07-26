@@ -75,7 +75,7 @@ Matrix.prototype.constructor = Matrix;
 Object.defineProperty(Matrix, Symbol.species, {
   get() {
     return Matrix;
-  }
+  },
 });
 
 defineGetter(Matrix.prototype, Symbol.toStringTag, function() {
@@ -87,7 +87,7 @@ Object.defineProperty(Matrix.prototype, 'length', {
   value: 6,
   enumerable: false,
   writable: true,
-  configurable: false
+  configurable: false,
 });
 
 Matrix.prototype.keys = ['xx', 'xy', 'x0', 'yx', 'yy', 'y0'];
@@ -107,7 +107,7 @@ const keyIndexes = {
   d: 4,
   y0: 5,
   ty: 5,
-  f: 5
+  f: 5,
 };
 Matrix.keyIndexes = keyIndexes;
 Matrix.valueNames = ['a', 'c', 'e', 'b', 'd', 'f'];
@@ -166,7 +166,7 @@ define(Matrix.prototype, {
     m.init(
       ...this.toArray()
         .slice(0, 9)
-        .map(n => roundTo(n, prec, digits))
+        .map(n => roundTo(n, prec, digits)),
     );
     return m;
   },
@@ -216,7 +216,7 @@ define(Matrix.prototype, {
       c: c / -den,
       d: a / den,
       e: (d * e - c * f) / -den,
-      f: (b * e - a * f) / den
+      f: (b * e - a * f) / den,
     });
   },
 
@@ -227,7 +227,7 @@ define(Matrix.prototype, {
       x0: this[2] * f,
       yx: this[3] * f,
       yy: this[4] * f,
-      y0: this[5] * f
+      y0: this[5] * f,
     });
   },
 
@@ -355,7 +355,7 @@ define(Matrix.prototype, {
       wh: (w, h) => matrix.transformWH(w, h),
       rect: rect => matrix.transformRect(rect),
       points: list => matrix.transformPoints(list),
-      distance: d => matrix.transformDistance(d)
+      distance: d => matrix.transformDistance(d),
     };
   },
 
@@ -419,7 +419,7 @@ define(Matrix.prototype, {
     sin = Math.sin(rotation);
     scale = {
       x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
-      y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin)
+      y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin),
     };
 
     /*if(c || d) {
@@ -454,16 +454,16 @@ define(Matrix.prototype, {
         degrees == true
           ? {
               x: roundTo((skew.x * 180) / Math.PI, 0.1),
-              y: roundTo((skew.y * 180) / Math.PI, 0.1)
+              y: roundTo((skew.y * 180) / Math.PI, 0.1),
             }
-          : skew
+          : skew,
     };
   },
 
   initIdentity() {
     return Matrix.prototype.init.call(this, [
       [1, 0, 0],
-      [0, 1, 0]
+      [0, 1, 0],
     ]);
   },
   isIdentity() {
@@ -472,8 +472,8 @@ define(Matrix.prototype, {
       [
         [1, 0, 0],
         [0, 1, 0],
-        [0, 0, 1]
-      ].flat()
+        [0, 0, 1],
+      ].flat(),
     );
   },
   initTranslate(tx, ty) {
@@ -496,7 +496,7 @@ define(Matrix.prototype, {
     const ax = Math.tan(deg ? DEG2RAD * x : x);
     const ay = Math.tan(deg ? DEG2RAD * y : y);
     return Matrix.prototype.init.call(this, 1, ay, ax, 1, 0, 0);
-  }
+  },
 });
 
 Matrix.prototype[Symbol.iterator] = function* () {
@@ -539,10 +539,10 @@ const MatrixProps = (obj = {}) =>
         set(v) {
           this[i] = v;
         },
-        enumerable: true
-      }
+        enumerable: true,
+      },
     }),
-    obj
+    obj,
   );
 
 define(Matrix, {
@@ -563,7 +563,7 @@ define(Matrix, {
     let matrix = new Matrix();
     matrix.affineTransform(a, b);
     return matrix;
-  }
+  },
 });
 
 Object.defineProperties(Matrix.prototype, MatrixProps());
@@ -606,7 +606,7 @@ for(let name of [
   'initRotate',
   'scaleSign',
   'decompose',
-  'transformer'
+  'transformer',
 ]) {
   Matrix[name] = (matrix, ...args) => Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
 }

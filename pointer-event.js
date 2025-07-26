@@ -45,8 +45,8 @@ try {
     Object.defineProperty({}, 'passive', {
       get: function get() {
         passiveSupported = true;
-      }
-    })
+      },
+    }),
   );
 } catch(error) {
   /* ignore */
@@ -115,14 +115,14 @@ var PointerEvent = /*#__PURE__*/ (function () {
     this.curTouchId = null;
     this.lastPointerXY = {
       clientX: 0,
-      clientY: 0
+      clientY: 0,
     };
     this.lastTouchTime = 0; // Options
 
     this.options = {
       // Default
       preventDefault: true,
-      stopPropagation: true
+      stopPropagation: true,
     };
 
     if(options) {
@@ -190,7 +190,7 @@ var PointerEvent = /*#__PURE__*/ (function () {
           };
 
           return that.lastHandlerId;
-        }
+        },
         /**
          * @param {number} handlerId - An ID which was returned by regStartHandler.
          * @returns {void}
@@ -200,7 +200,7 @@ var PointerEvent = /*#__PURE__*/ (function () {
         key: 'unregStartHandler',
         value: function unregStartHandler(handlerId) {
           delete this.startHandlers[handlerId];
-        }
+        },
         /**
          * @param {Element} element - A target element.
          * @param {number} handlerId - An ID which was returned by regStartHandler.
@@ -216,18 +216,18 @@ var PointerEvent = /*#__PURE__*/ (function () {
 
           addEventListenerWithOptions(element, 'mousedown', this.startHandlers[handlerId], {
             capture: false,
-            passive: false
+            passive: false,
           });
           addEventListenerWithOptions(element, 'touchstart', this.startHandlers[handlerId], {
             capture: false,
-            passive: false
+            passive: false,
           });
           addEventListenerWithOptions(element, 'dragstart', dragstart, {
             capture: false,
-            passive: false
+            passive: false,
           });
           return handlerId;
-        }
+        },
         /**
          * @param {Element} element - A target element.
          * @param {number} handlerId - An ID which was returned by regStartHandler.
@@ -245,7 +245,7 @@ var PointerEvent = /*#__PURE__*/ (function () {
           element.removeEventListener('touchstart', this.startHandlers[handlerId], false);
           element.removeEventListener('dragstart', dragstart, false);
           return handlerId;
-        }
+        },
         /**
          * @param {Element} element - A target element.
          * @param {function} moveHandler - This is called with pointerXY when it moves.
@@ -287,14 +287,14 @@ var PointerEvent = /*#__PURE__*/ (function () {
           var wrappedHandler = rawEvent ? handler : AnimEvent.add(handler);
           addEventListenerWithOptions(element, 'mousemove', wrappedHandler, {
             capture: false,
-            passive: false
+            passive: false,
           });
           addEventListenerWithOptions(element, 'touchmove', wrappedHandler, {
             capture: false,
-            passive: false
+            passive: false,
           });
           that.curMoveHandler = moveHandler;
-        }
+        },
         /**
          * @param {{clientX, clientY}} [pointerXY] - This might be MouseEvent, Touch of TouchEvent or Object.
          * @returns {void}
@@ -311,7 +311,7 @@ var PointerEvent = /*#__PURE__*/ (function () {
           if(this.curMoveHandler) {
             this.curMoveHandler(this.lastPointerXY);
           }
-        }
+        },
         /**
          * @param {Element} element - A target element.
          * @param {function} endHandler - This is called with pointerXY when it ends.
@@ -353,14 +353,14 @@ var PointerEvent = /*#__PURE__*/ (function () {
 
           addEventListenerWithOptions(element, 'mouseup', wrappedHandler, {
             capture: false,
-            passive: false
+            passive: false,
           });
           addEventListenerWithOptions(element, 'touchend', wrappedHandler, {
             capture: false,
-            passive: false
+            passive: false,
           });
           that.curEndHandler = endHandler;
-        }
+        },
         /**
          * @param {{clientX, clientY}} [pointerXY] - This might be MouseEvent, Touch of TouchEvent or Object.
          * @returns {void}
@@ -379,7 +379,7 @@ var PointerEvent = /*#__PURE__*/ (function () {
           }
 
           this.curPointerClass = this.curTouchId = null;
-        }
+        },
         /**
          * @param {Element} element - A target element.
          * @param {function} cancelHandler - This is called when it cancels.
@@ -411,10 +411,10 @@ var PointerEvent = /*#__PURE__*/ (function () {
 
           addEventListenerWithOptions(element, 'touchcancel', wrappedHandler, {
             capture: false,
-            passive: false
+            passive: false,
           });
           that.curCancelHandler = cancelHandler;
-        }
+        },
         /**
          * @returns {void}
          */
@@ -427,15 +427,15 @@ var PointerEvent = /*#__PURE__*/ (function () {
           }
 
           this.curPointerClass = this.curTouchId = null;
-        }
-      }
+        },
+      },
     ],
     [
       {
         key: 'addEventListenerWithOptions',
         get: function get() {
           return addEventListenerWithOptions;
-        }
+        },
         /**
          * Emulate `click` event via `touchend` event.
          * @param {Element} element - Target element, listeners that call `event.preventDefault()` are attached later.
@@ -505,12 +505,12 @@ var PointerEvent = /*#__PURE__*/ (function () {
               getPointsLength(
                 {
                   x: startX,
-                  y: startY
+                  y: startY,
                 },
                 {
                   x: touch.clientX,
-                  y: touch.clientY
-                }
+                  y: touch.clientY,
+                },
               ) <= moveTolerance &&
               performance.now() - startMs <= timeTolerance
             ) {
@@ -519,8 +519,8 @@ var PointerEvent = /*#__PURE__*/ (function () {
                 element.dispatchEvent(
                   new MouseEvent('click', {
                     clientX: touch.clientX,
-                    clientY: touch.clientY
-                  })
+                    clientY: touch.clientY,
+                  }),
                 );
               }, 0);
             }
@@ -531,9 +531,9 @@ var PointerEvent = /*#__PURE__*/ (function () {
             startX = startY = touchId = startMs = null;
           });
           return element;
-        }
-      }
-    ]
+        },
+      },
+    ],
   );
 
   return PointerEvent;

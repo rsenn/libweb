@@ -147,7 +147,7 @@ export class MIDIControlEvent {
 
 Object.defineProperty(MIDIControlEvent.prototype, Symbol.toStringTag, {
   value: 'MIDIControlEvent',
-  enumerable: false
+  enumerable: false,
 });
 
 export default MIDIControlEvent;

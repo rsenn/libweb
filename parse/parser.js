@@ -107,8 +107,8 @@ export class Parser {
       throw new Error(
         `Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${inspect(s, {
           multiline: false,
-          colors: false
-        })})  ${Lexer.tokenName(token.tok)}, ${inspect(token.str)}`
+          colors: false,
+        })})  ${Lexer.tokenName(token.tok)}, ${inspect(token.str)}`,
       );
     return this.getTok();
   }

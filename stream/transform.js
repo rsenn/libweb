@@ -54,7 +54,7 @@ function zipWith(stream) {
         return;
       }
       controller.enqueue([data, value.value]);
-    }
+    },
   });
 }
 
@@ -86,7 +86,7 @@ function enumerate() {
   return new TransformStream({
     transform(data, controller) {
       controller.enqueue([index++, data]);
-    }
+    },
   });
 }
 
@@ -104,7 +104,7 @@ function iota(n = Infinity) {
           resolve();
         }, 0);
       });
-    }
+    },
   });
 }
 
@@ -125,7 +125,7 @@ function debounce(ms) {
         clearTimeout(timer);
         timer = void 0;
       }
-    }
+    },
   });
 }
 
@@ -145,7 +145,7 @@ function throttle(ms) {
         clearTimeout(timer);
         timer = void 0;
       }
-    }
+    },
   });
 }
 

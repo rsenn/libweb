@@ -131,7 +131,7 @@ export function Range(...args) {
 
 Range.prototype = {
   ...Location.prototype,
-  constructor: Range
+  constructor: Range,
 };
 //new Location(0, 0, 0, undefined, false);
 //Range.prototype.constructor = Range;
@@ -155,7 +155,7 @@ Range.prototype.toString = function() {
 Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
   return inspect(this, {
     ...opts,
-    toString: Symbol.toStringTag
+    toString: Symbol.toStringTag,
   });
 };
 
@@ -175,14 +175,14 @@ Object.defineProperties(Range.prototype, {
       const { file, line, column, pos } = this;
       //console.log("start:", this);
       return new Location(line, column, pos, file);
-    }
+    },
   },
   end: {
     get() {
       const { file, line, column, pos, length } = this;
       return new Location(line, column, pos + length, file);
-    }
-  }
+    },
+  },
 });
 
 Range.prototype.valueOf = function() {

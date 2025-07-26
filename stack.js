@@ -53,20 +53,20 @@ Object.assign(Stack.prototype, {
 
     stack.splice(0, stack.length - common, ...newFrames);
     return stack;
-  }
+  },
 });
 
 Object.defineProperties(Stack, {
   [Symbol.species]: {
     get() {
       return Stack;
-    }
+    },
   },
   fromString: {
     value(str) {
       return new Stack((str + '').split(/\n/g));
     },
-    enumerable: false
+    enumerable: false,
   },
   common: {
     value(a, b) {
@@ -75,15 +75,15 @@ Object.defineProperties(Stack, {
       for(i = 0; i < len; i++) if(!StackFrame.equal(a[a.length - (i + 1)], b[b.length - (i + 1)])) break;
       return i;
     },
-    enumerable: false
+    enumerable: false,
   },
   update: {
     value(stack, newStack = new Stack()) {
       if(!stack) return newStack;
       return Stack.prototype.update.call(stack, newStack);
     },
-    enumerable: false
-  }
+    enumerable: false,
+  },
 });
 
 for(let method of ['slice', 'splice', 'indexOf', 'lastIndexOf', 'find', 'findIndex', 'findLastIndex', 'entries', 'values', 'filter', 'reverse', 'shift', 'unshift', 'push', 'pop'])
@@ -198,7 +198,7 @@ export class StackFrame {
       value: str,
       enumerable: false,
       configurable: true,
-      writable: true
+      writable: true,
     });
     return frame;
   }
@@ -231,13 +231,13 @@ function AddMethods(
   MakeGetter = p =>
     function() {
       return this[p];
-    }
+    },
 ) {
   for(let i = 0; i < props.length; i++) {
     Object.defineProperties(proto, {
       ['get' + Capitalize(props[i])]: { value: MakeGetter(props[i]), enumerable: false },
 
-      ['set' + Capitalize(props[i])]: { value: MakeSetter(props[i]), enumerable: false }
+      ['set' + Capitalize(props[i])]: { value: MakeSetter(props[i]), enumerable: false },
     });
     /*   proto['get' + Capitalize(props[i])] = MakeGetter(props[i]);
     proto['set' + Capitalize(props[i])] = MakeSetter(props[i]);*/

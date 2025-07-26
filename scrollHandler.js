@@ -29,7 +29,7 @@ export const ScrollEvents = listener => ({
   onWheel: listener,
   DOMMouseScroll: listener,
   onKeyDown: listener,
-  onTouchMove: listener
+  onTouchMove: listener,
 });
 
 export const addScrollListeners = (listener, element, passive = false) => {

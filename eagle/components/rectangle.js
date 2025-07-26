@@ -34,6 +34,6 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
     style: visible ? {} : { display: 'none' },
     ...rect.toObject(),
     transform: `translate(${center}) ${rot} translate(${center.prod(-1)})`,
-    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {})
+    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
   });
 };

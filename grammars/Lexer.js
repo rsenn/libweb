@@ -198,7 +198,7 @@ Lexer.prototype.addStateRule = function(states, expression, action) {
       }
       return acc;
     }.bind(this),
-    []
+    [],
   );
   if(notRegisteredStates.length) {
     throw new Error('Unable to register rule within unregistered state(s): ' + notRegisteredStates.join(', '));
@@ -250,7 +250,7 @@ Lexer.prototype.addStateRule = function(states, expression, action) {
     hasEOL: hasEOL,
     isEOF: isEOF,
     action: action,
-    fixedWidth: fixedWidth // used for weighted match optmization
+    fixedWidth: fixedWidth, // used for weighted match optmization
   };
 
   for(var index in states) {

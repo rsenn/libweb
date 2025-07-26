@@ -96,7 +96,7 @@ class SimpleQueue {
     // _front and _back are always defined.
     this._front = {
       _elements: [],
-      _next: undefined
+      _next: undefined,
     };
     this._back = this._front;
     // The cursor is used to avoid calling Array.shift().
@@ -119,7 +119,7 @@ class SimpleQueue {
     if(oldBack._elements.length === QUEUE_MAX_ARRAY_SIZE - 1) {
       newBack = {
         _elements: [],
-        _next: undefined
+        _next: undefined,
       };
     }
     // push() is the mutation most likely to throw an exception, so it
@@ -438,7 +438,7 @@ class ReadableStreamDefaultReader {
     const readRequest = {
       _chunkSteps: chunk => resolvePromise({ value: chunk, done: false }),
       _closeSteps: () => resolvePromise({ value: undefined, done: true }),
-      _errorSteps: e => rejectPromise(e)
+      _errorSteps: e => rejectPromise(e),
     };
     ReadableStreamDefaultReaderRead(this, readRequest);
     return promise;
@@ -469,12 +469,12 @@ Object.defineProperties(ReadableStreamDefaultReader.prototype, {
   cancel: { enumerable: true },
   read: { enumerable: true },
   releaseLock: { enumerable: true },
-  closed: { enumerable: true }
+  closed: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(ReadableStreamDefaultReader.prototype, SymbolPolyfill.toStringTag, {
     value: 'ReadableStreamDefaultReader',
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations for the readers.
@@ -513,10 +513,10 @@ if(typeof SymbolPolyfill.asyncIterator === 'symbol') {
     // https://tc39.github.io/ecma262/#sec-asynciteratorprototype-asynciterator
     [SymbolPolyfill.asyncIterator]() {
       return this;
-    }
+    },
   };
   Object.defineProperty(AsyncIteratorPrototype, SymbolPolyfill.asyncIterator, {
-    enumerable: false
+    enumerable: false,
   });
 }
 
@@ -569,7 +569,7 @@ class ReadableStreamAsyncIteratorImpl {
         this._isFinished = true;
         ReadableStreamReaderGenericRelease(reader);
         rejectPromise(reason);
-      }
+      },
     };
     ReadableStreamDefaultReaderRead(reader, readRequest);
     return promise;
@@ -604,7 +604,7 @@ const ReadableStreamAsyncIteratorPrototype = {
       return promiseRejectedWith(streamAsyncIteratorBrandCheckException('return'));
     }
     return this._asyncIteratorImpl.return(value);
-  }
+  },
 };
 if(AsyncIteratorPrototype !== undefined) {
   Object.setPrototypeOf(ReadableStreamAsyncIteratorPrototype, AsyncIteratorPrototype);
@@ -763,12 +763,12 @@ class ReadableStreamBYOBRequest {
 Object.defineProperties(ReadableStreamBYOBRequest.prototype, {
   respond: { enumerable: true },
   respondWithNewView: { enumerable: true },
-  view: { enumerable: true }
+  view: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(ReadableStreamBYOBRequest.prototype, SymbolPolyfill.toStringTag, {
     value: 'ReadableStreamBYOBRequest',
-    configurable: true
+    configurable: true,
   });
 }
 /**
@@ -884,7 +884,7 @@ class ReadableByteStreamController {
         bytesFilled: 0,
         elementSize: 1,
         viewConstructor: Uint8Array,
-        readerType: 'default'
+        readerType: 'default',
       };
       this._pendingPullIntos.push(pullIntoDescriptor);
     }
@@ -897,12 +897,12 @@ Object.defineProperties(ReadableByteStreamController.prototype, {
   enqueue: { enumerable: true },
   error: { enumerable: true },
   byobRequest: { enumerable: true },
-  desiredSize: { enumerable: true }
+  desiredSize: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(ReadableByteStreamController.prototype, SymbolPolyfill.toStringTag, {
     value: 'ReadableByteStreamController',
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations for the ReadableByteStreamController.
@@ -947,7 +947,7 @@ function ReadableByteStreamControllerCallPullIfNeeded(controller) {
     },
     e => {
       ReadableByteStreamControllerError(controller, e);
-    }
+    },
   );
 }
 function ReadableByteStreamControllerClearPendingPullIntos(controller) {
@@ -1057,7 +1057,7 @@ function ReadableByteStreamControllerPullInto(controller, view, readIntoRequest)
     bytesFilled: 0,
     elementSize,
     viewConstructor: ctor,
-    readerType: 'byob'
+    readerType: 'byob',
   };
   if(controller._pendingPullIntos.length > 0) {
     controller._pendingPullIntos.push(pullIntoDescriptor);
@@ -1310,7 +1310,7 @@ function SetUpReadableByteStreamController(stream, controller, startAlgorithm, p
     },
     r => {
       ReadableByteStreamControllerError(controller, r);
-    }
+    },
   );
 }
 function SetUpReadableByteStreamControllerFromUnderlyingSource(stream, underlyingByteSource, highWaterMark) {
@@ -1447,7 +1447,7 @@ class ReadableStreamBYOBReader {
     const readIntoRequest = {
       _chunkSteps: chunk => resolvePromise({ value: chunk, done: false }),
       _closeSteps: chunk => resolvePromise({ value: chunk, done: true }),
-      _errorSteps: e => rejectPromise(e)
+      _errorSteps: e => rejectPromise(e),
     };
     ReadableStreamBYOBReaderRead(this, view, readIntoRequest);
     return promise;
@@ -1478,12 +1478,12 @@ Object.defineProperties(ReadableStreamBYOBReader.prototype, {
   cancel: { enumerable: true },
   read: { enumerable: true },
   releaseLock: { enumerable: true },
-  closed: { enumerable: true }
+  closed: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(ReadableStreamBYOBReader.prototype, SymbolPolyfill.toStringTag, {
     value: 'ReadableStreamBYOBReader',
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations for the readers.
@@ -1534,7 +1534,7 @@ function convertQueuingStrategy(init, context) {
   const size = init === null || init === void 0 ? void 0 : init.size;
   return {
     highWaterMark: highWaterMark === undefined ? undefined : convertUnrestrictedDouble(highWaterMark),
-    size: size === undefined ? undefined : convertQueuingStrategySize(size, `${context} has member 'size' that`)
+    size: size === undefined ? undefined : convertQueuingStrategySize(size, `${context} has member 'size' that`),
   };
 }
 function convertQueuingStrategySize(fn, context) {
@@ -1554,7 +1554,7 @@ function convertUnderlyingSink(original, context) {
     close: close === undefined ? undefined : convertUnderlyingSinkCloseCallback(close, original, `${context} has member 'close' that`),
     start: start === undefined ? undefined : convertUnderlyingSinkStartCallback(start, original, `${context} has member 'start' that`),
     write: write === undefined ? undefined : convertUnderlyingSinkWriteCallback(write, original, `${context} has member 'write' that`),
-    type
+    type,
   };
 }
 function convertUnderlyingSinkAbortCallback(fn, original, context) {
@@ -1693,12 +1693,12 @@ Object.defineProperties(WritableStream.prototype, {
   abort: { enumerable: true },
   close: { enumerable: true },
   getWriter: { enumerable: true },
-  locked: { enumerable: true }
+  locked: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(WritableStream.prototype, SymbolPolyfill.toStringTag, {
     value: 'WritableStream',
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations for the WritableStream.
@@ -1783,7 +1783,7 @@ function WritableStreamAbort(stream, reason) {
       _resolve: resolve,
       _reject: reject,
       _reason: reason,
-      _wasAlreadyErroring: wasAlreadyErroring
+      _wasAlreadyErroring: wasAlreadyErroring,
     };
   });
   stream._pendingAbortRequest._promise = promise;
@@ -1800,7 +1800,7 @@ function WritableStreamClose(stream) {
   const promise = newPromise((resolve, reject) => {
     const closeRequest = {
       _resolve: resolve,
-      _reject: reject
+      _reject: reject,
     };
     stream._closeRequest = closeRequest;
   });
@@ -1816,7 +1816,7 @@ function WritableStreamAddWriteRequest(stream) {
   const promise = newPromise((resolve, reject) => {
     const writeRequest = {
       _resolve: resolve,
-      _reject: reject
+      _reject: reject,
     };
     stream._writeRequests.push(writeRequest);
   });
@@ -1871,7 +1871,7 @@ function WritableStreamFinishErroring(stream) {
     reason => {
       abortRequest._reject(reason);
       WritableStreamRejectCloseAndClosedPromiseIfNeeded(stream);
-    }
+    },
   );
 }
 function WritableStreamFinishInFlightWrite(stream) {
@@ -2092,12 +2092,12 @@ Object.defineProperties(WritableStreamDefaultWriter.prototype, {
   write: { enumerable: true },
   closed: { enumerable: true },
   desiredSize: { enumerable: true },
-  ready: { enumerable: true }
+  ready: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(WritableStreamDefaultWriter.prototype, SymbolPolyfill.toStringTag, {
     value: 'WritableStreamDefaultWriter',
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations for the WritableStreamDefaultWriter.
@@ -2257,12 +2257,12 @@ class WritableStreamDefaultController {
 Object.defineProperties(WritableStreamDefaultController.prototype, {
   abortReason: { enumerable: true },
   signal: { enumerable: true },
-  error: { enumerable: true }
+  error: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(WritableStreamDefaultController.prototype, SymbolPolyfill.toStringTag, {
     value: 'WritableStreamDefaultController',
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations implementing interface required by the WritableStream.
@@ -2303,7 +2303,7 @@ function SetUpWritableStreamDefaultController(stream, controller, startAlgorithm
     r => {
       controller._started = true;
       WritableStreamDealWithRejection(stream, r);
-    }
+    },
   );
 }
 function SetUpWritableStreamDefaultControllerFromUnderlyingSink(stream, underlyingSink, highWaterMark, sizeAlgorithm) {
@@ -2404,7 +2404,7 @@ function WritableStreamDefaultControllerProcessClose(controller) {
     },
     reason => {
       WritableStreamFinishInFlightCloseWithError(stream, reason);
-    }
+    },
   );
 }
 function WritableStreamDefaultControllerProcessWrite(controller, chunk) {
@@ -2428,7 +2428,7 @@ function WritableStreamDefaultControllerProcessWrite(controller, chunk) {
         WritableStreamDefaultControllerClearAlgorithms(controller);
       }
       WritableStreamFinishInFlightWriteWithError(stream, reason);
-    }
+    },
   );
 }
 function WritableStreamDefaultControllerGetBackpressure(controller) {
@@ -2562,7 +2562,7 @@ function createDOMExceptionPolyfill() {
   Object.defineProperty(ctor.prototype, 'constructor', {
     value: ctor,
     writable: true,
-    configurable: true
+    configurable: true,
   });
   return ctor;
 }
@@ -2635,7 +2635,7 @@ function ReadableStreamPipeTo(source, dest, preventClose, preventAbort, preventC
               resolveRead(false);
             },
             _closeSteps: () => resolveRead(true),
-            _errorSteps: rejectRead
+            _errorSteps: rejectRead,
           });
         });
       });
@@ -2708,7 +2708,7 @@ function ReadableStreamPipeTo(source, dest, preventClose, preventAbort, preventC
         uponPromise(
           action(),
           () => finalize(originalIsError, originalError),
-          newError => finalize(true, newError)
+          newError => finalize(true, newError),
         );
       }
     }
@@ -2817,12 +2817,12 @@ Object.defineProperties(ReadableStreamDefaultController.prototype, {
   close: { enumerable: true },
   enqueue: { enumerable: true },
   error: { enumerable: true },
-  desiredSize: { enumerable: true }
+  desiredSize: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(ReadableStreamDefaultController.prototype, SymbolPolyfill.toStringTag, {
     value: 'ReadableStreamDefaultController',
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations for the ReadableStreamDefaultController.
@@ -2857,7 +2857,7 @@ function ReadableStreamDefaultControllerCallPullIfNeeded(controller) {
     },
     e => {
       ReadableStreamDefaultControllerError(controller, e);
-    }
+    },
   );
 }
 function ReadableStreamDefaultControllerShouldCallPull(controller) {
@@ -2974,7 +2974,7 @@ function SetUpReadableStreamDefaultController(stream, controller, startAlgorithm
     },
     r => {
       ReadableStreamDefaultControllerError(controller, r);
-    }
+    },
   );
 }
 function SetUpReadableStreamDefaultControllerFromUnderlyingSource(stream, underlyingSource, highWaterMark, sizeAlgorithm) {
@@ -3064,7 +3064,7 @@ function ReadableStreamDefaultTee(stream, cloneForBranch2) {
       },
       _errorSteps: () => {
         reading = false;
-      }
+      },
     };
     ReadableStreamDefaultReaderRead(reader, readRequest);
     return promiseResolvedWith(undefined);
@@ -3190,7 +3190,7 @@ function ReadableByteStreamTee(stream) {
       },
       _errorSteps: () => {
         reading = false;
-      }
+      },
     };
     ReadableStreamDefaultReaderRead(reader, readRequest);
   }
@@ -3261,7 +3261,7 @@ function ReadableByteStreamTee(stream) {
       },
       _errorSteps: () => {
         reading = false;
-      }
+      },
     };
     ReadableStreamBYOBReaderRead(reader, view, readIntoRequest);
   }
@@ -3335,7 +3335,7 @@ function convertUnderlyingDefaultOrByteSource(source, context) {
     cancel: cancel === undefined ? undefined : convertUnderlyingSourceCancelCallback(cancel, original, `${context} has member 'cancel' that`),
     pull: pull === undefined ? undefined : convertUnderlyingSourcePullCallback(pull, original, `${context} has member 'pull' that`),
     start: start === undefined ? undefined : convertUnderlyingSourceStartCallback(start, original, `${context} has member 'start' that`),
-    type: type === undefined ? undefined : convertReadableStreamType(type, `${context} has member 'type' that`)
+    type: type === undefined ? undefined : convertReadableStreamType(type, `${context} has member 'type' that`),
   };
 }
 function convertUnderlyingSourceCancelCallback(fn, original, context) {
@@ -3362,7 +3362,7 @@ function convertReaderOptions(options, context) {
   assertDictionary(options, context);
   const mode = options === null || options === void 0 ? void 0 : options.mode;
   return {
-    mode: mode === undefined ? undefined : convertReadableStreamReaderMode(mode, `${context} has member 'mode' that`)
+    mode: mode === undefined ? undefined : convertReadableStreamReaderMode(mode, `${context} has member 'mode' that`),
   };
 }
 function convertReadableStreamReaderMode(mode, context) {
@@ -3392,7 +3392,7 @@ function convertPipeOptions(options, context) {
     preventAbort: Boolean(preventAbort),
     preventCancel: Boolean(preventCancel),
     preventClose: Boolean(preventClose),
-    signal
+    signal,
   };
 }
 function assertAbortSignal(signal, context) {
@@ -3547,19 +3547,19 @@ Object.defineProperties(ReadableStream.prototype, {
   pipeTo: { enumerable: true },
   tee: { enumerable: true },
   values: { enumerable: true },
-  locked: { enumerable: true }
+  locked: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(ReadableStream.prototype, SymbolPolyfill.toStringTag, {
     value: 'ReadableStream',
-    configurable: true
+    configurable: true,
   });
 }
 if(typeof SymbolPolyfill.asyncIterator === 'symbol') {
   Object.defineProperty(ReadableStream.prototype, SymbolPolyfill.asyncIterator, {
     value: ReadableStream.prototype.values,
     writable: true,
-    configurable: true
+    configurable: true,
   });
 }
 // Abstract operations for the ReadableStream.
@@ -3664,7 +3664,7 @@ function convertQueuingStrategyInit(init, context) {
   const highWaterMark = init === null || init === void 0 ? void 0 : init.highWaterMark;
   assertRequiredField(highWaterMark, 'highWaterMark', 'QueuingStrategyInit');
   return {
-    highWaterMark: convertUnrestrictedDouble(highWaterMark)
+    highWaterMark: convertUnrestrictedDouble(highWaterMark),
   };
 }
 
@@ -3675,7 +3675,7 @@ const byteLengthSizeFunction = chunk => {
 try {
   Object.defineProperty(byteLengthSizeFunction, 'name', {
     value: 'size',
-    configurable: true
+    configurable: true,
   });
 } catch(_a) {
   // This property is non-configurable in older browsers, so ignore if this throws.
@@ -3713,12 +3713,12 @@ class ByteLengthQueuingStrategy {
 }
 Object.defineProperties(ByteLengthQueuingStrategy.prototype, {
   highWaterMark: { enumerable: true },
-  size: { enumerable: true }
+  size: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(ByteLengthQueuingStrategy.prototype, SymbolPolyfill.toStringTag, {
     value: 'ByteLengthQueuingStrategy',
-    configurable: true
+    configurable: true,
   });
 }
 // Helper functions for the ByteLengthQueuingStrategy.
@@ -3742,7 +3742,7 @@ const countSizeFunction = () => {
 try {
   Object.defineProperty(countSizeFunction, 'name', {
     value: 'size',
-    configurable: true
+    configurable: true,
   });
 } catch(_a) {
   // This property is non-configurable in older browsers, so ignore if this throws.
@@ -3781,12 +3781,12 @@ class CountQueuingStrategy {
 }
 Object.defineProperties(CountQueuingStrategy.prototype, {
   highWaterMark: { enumerable: true },
-  size: { enumerable: true }
+  size: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(CountQueuingStrategy.prototype, SymbolPolyfill.toStringTag, {
     value: 'CountQueuingStrategy',
-    configurable: true
+    configurable: true,
   });
 }
 // Helper functions for the CountQueuingStrategy.
@@ -3815,7 +3815,7 @@ function convertTransformer(original, context) {
     readableType,
     start: start === undefined ? undefined : convertTransformerStartCallback(start, original, `${context} has member 'start' that`),
     transform: transform === undefined ? undefined : convertTransformerTransformCallback(transform, original, `${context} has member 'transform' that`),
-    writableType
+    writableType,
   };
 }
 function convertTransformerFlushCallback(fn, original, context) {
@@ -3891,12 +3891,12 @@ class TransformStream {
 }
 Object.defineProperties(TransformStream.prototype, {
   readable: { enumerable: true },
-  writable: { enumerable: true }
+  writable: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(TransformStream.prototype, SymbolPolyfill.toStringTag, {
     value: 'TransformStream',
-    configurable: true
+    configurable: true,
   });
 }
 function InitializeTransformStream(stream, startPromise, writableHighWaterMark, writableSizeAlgorithm, readableHighWaterMark, readableSizeAlgorithm) {
@@ -4013,12 +4013,12 @@ Object.defineProperties(TransformStreamDefaultController.prototype, {
   enqueue: { enumerable: true },
   error: { enumerable: true },
   terminate: { enumerable: true },
-  desiredSize: { enumerable: true }
+  desiredSize: { enumerable: true },
 });
 if(typeof SymbolPolyfill.toStringTag === 'symbol') {
   Object.defineProperty(TransformStreamDefaultController.prototype, SymbolPolyfill.toStringTag, {
     value: 'TransformStreamDefaultController',
-    configurable: true
+    configurable: true,
   });
 }
 // Transform Stream Default Controller Abstract Operations
@@ -4137,7 +4137,7 @@ function TransformStreamDefaultSinkCloseAlgorithm(stream) {
     r => {
       TransformStreamError(stream, r);
       throw readable._storedError;
-    }
+    },
   );
 }
 // TransformStreamDefaultSource Algorithms
@@ -4169,7 +4169,7 @@ const exports = {
   ByteLengthQueuingStrategy,
   CountQueuingStrategy,
   TransformStream,
-  TransformStreamDefaultController
+  TransformStreamDefaultController,
 };
 // Add classes to global scope
 if(typeof globals !== 'undefined') {
@@ -4178,7 +4178,7 @@ if(typeof globals !== 'undefined') {
       Object.defineProperty(globals, prop, {
         value: exports[prop],
         writable: true,
-        configurable: true
+        configurable: true,
       });
     }
   }
@@ -4197,6 +4197,6 @@ export {
   TransformStreamDefaultController,
   WritableStream,
   WritableStreamDefaultController,
-  WritableStreamDefaultWriter
+  WritableStreamDefaultWriter,
 };
 //# sourceMappingURL=polyfill.es6.mjs.map

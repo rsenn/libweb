@@ -13,12 +13,12 @@ export class LibraryRenderer extends EagleSVGRenderer {
     long: 3,
     middle: 2,
     short: 1,
-    point: 0
+    point: 0,
   };
 
   static palette = {
     board: Palette.board((r, g, b) => new RGBA(r, g, b)),
-    schematic: Palette.schematic((r, g, b) => new RGBA(r, g, b))
+    schematic: Palette.schematic((r, g, b) => new RGBA(r, g, b)),
   };
 
   constructor(obj, factory) {
@@ -56,9 +56,9 @@ export class LibraryRenderer extends EagleSVGRenderer {
           class: item.tagName,
           'data-path': item.path.toString(' '),
           'data-xpath': item.xpath() + '',
-          ...attr
+          ...attr,
         },
-        children
+        children,
       );
 
     let devicesets = [...this.doc.getAll(e => e && e.attributes && e.attributes[item.tagName] == item.name)]
@@ -91,14 +91,14 @@ export class LibraryRenderer extends EagleSVGRenderer {
     component = h(comp, {
       data: item,
       transform,
-      opts: { ...opts, transformation }
+      opts: { ...opts, transformation },
     });
     let origin = h(Origin, {
       layer: this.doc.layers['tOrigins'],
       radius: 1.27,
       width: 0.008,
       color: '#555',
-      'stroke-dasharray': `${1.6 / 11} ${1.6 / 11}`
+      'stroke-dasharray': `${1.6 / 11} ${1.6 / 11}`,
     });
     if(svgElement) {
       let bounds = viewRect ? new BBox(viewRect) : item.getBounds();
@@ -107,13 +107,13 @@ export class LibraryRenderer extends EagleSVGRenderer {
       if(viewSize) {
         let add = {
           h: viewSize.width - bounds.width,
-          v: viewSize.height - bounds.height
+          v: viewSize.height - bounds.height,
         };
         Rect.outset(bounds, {
           top: add.v / 2,
           bottom: add.v / 2,
           left: add.h / 2,
-          right: add.h / 2
+          right: add.h / 2,
         });
       } else {
         Rect.outset(bounds, 1.27);
@@ -162,10 +162,10 @@ if(translation) {
         ...a,
         ...this.renderCollection(collection, {
           ...opts,
-          viewSize: size
-        })
+          viewSize: size,
+        }),
       ],
-      []
+      [],
     );
 
     this.entries = items.map(([title, component]) => [title.join(' '), component]);
@@ -178,8 +178,8 @@ if(translation) {
         flexFlow: 'row wrap',
         justifyContent: 'flex-start',
         alignItems: 'flex-start' /*,
-        transform: `translate(-50vw, -50vh)`*/
-      }
+        transform: `translate(-50vw, -50vh)`*/,
+      },
     };
     item.component = Frame;
     item.props = {};
@@ -193,11 +193,11 @@ if(translation) {
             class: title[0].toLowerCase(),
             title,
             key: title.join('-'),
-            ...item.props
+            ...item.props,
           },
-          [component]
-        )
-      )
+          [component],
+        ),
+      ),
     );
   }
 }

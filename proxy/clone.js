@@ -77,7 +77,7 @@ export const proxyClone = obj => {
     },
     enumerate: () => {
       throw new Error('Not yet implemented: enumerate');
-    }
+    },
   });
 };
 

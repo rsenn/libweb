@@ -140,7 +140,7 @@ export function QuickJSChildProcess(fs, std, os) {
     return {
       ...obj,
       exitCode,
-      pid
+      pid,
     };
   };
 
@@ -148,13 +148,13 @@ export function QuickJSChildProcess(fs, std, os) {
     errstr: {
       get() {
         return std.strerror(this.errno);
-      }
+      },
     },
     strerror: {
       value(err) {
         return std.strerror(err);
-      }
-    }
+      },
+    },
   });
 
   return self;

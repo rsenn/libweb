@@ -6,7 +6,7 @@ export function useIterable(iterable) {
     function() {
       return iterable[Symbol.iterator]();
     },
-    [iterable]
+    [iterable],
   );
   return useIterator(iterator);
 }

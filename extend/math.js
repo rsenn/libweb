@@ -4,7 +4,7 @@ export const MathExtensions = {
   },
   mantissa(n) {
     return n / 10 ** this.exp10(n);
-  }
+  },
 };
 
 export const MathConstructor = Math;

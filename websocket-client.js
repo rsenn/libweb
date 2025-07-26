@@ -98,7 +98,7 @@ export class WebSocketClient {
           this.receiveCallbacksQueue.push(callbacks);
         },
 
-        reject: resolve
+        reject: resolve,
       };
 
       this.receiveCallbacksQueue.push(callbacks);

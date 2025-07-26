@@ -22,7 +22,7 @@ export const usePanZoom = ({
   onPanStart = _.noop,
   onPan = _.noop,
   onPanEnd = _.noop,
-  onZoom = _.noop
+  onZoom = _.noop,
 }) => {
   const container = useRef(null);
   const forceUpdate = useForceUpdate();
@@ -34,7 +34,7 @@ export const usePanZoom = ({
   const [isPanning, setPanning] = useGetSet(false);
   const [getTransform, _setTransform] = useGetSet({
     ...initialPan,
-    zoom: initialZoom
+    zoom: initialZoom,
   });
 
   const clampX = useCallback(_.clamp(minX, maxX), [minX, maxX]);
@@ -46,7 +46,7 @@ export const usePanZoom = ({
     const { x, y, zoom } = getTransform();
     setCenter({
       top: (container.current.offsetHeight / 2 - y) / zoom,
-      left: (container.current.offsetWidth / 2 - x) / zoom
+      left: (container.current.offsetWidth / 2 - x) / zoom,
     });
     forceUpdate();
     return r;
@@ -60,10 +60,10 @@ export const usePanZoom = ({
         return {
           x: clampX(newPan.x),
           y: clampY(newPan.y),
-          zoom
+          zoom,
         };
       }),
-    [minX, maxX, minY, maxY]
+    [minX, maxX, minY, maxY],
   );
 
   const setZoom = useCallback(
@@ -74,18 +74,18 @@ export const usePanZoom = ({
         const center = _.maybe(
           () => ({
             x: container.current.offsetWidth / 2,
-            y: container.current.offsetHeight / 2
+            y: container.current.offsetHeight / 2,
           }),
-          _.identity
+          _.identity,
         )(maybeCenter);
 
         return {
           x: clampX(x + ((center.x - x) * (zoom - newZoom)) / zoom),
           y: clampY(y + ((center.y - y) * (zoom - newZoom)) / zoom),
-          zoom: newZoom
+          zoom: newZoom,
         };
       }),
-    [minX, maxX, minY, maxY, minZoom, maxZoom]
+    [minX, maxX, minY, maxY, minZoom, maxZoom],
   );
 
   const startPanZoom = useCallback(
@@ -98,7 +98,7 @@ export const usePanZoom = ({
         onPanStart(pointers);
       }
     },
-    [enablePan, onPanStart]
+    [enablePan, onPanStart],
   );
 
   const movePanZoom = useCallback(
@@ -121,14 +121,14 @@ export const usePanZoom = ({
 
           return {
             x: x + dx / l,
-            y: y + dy / l
+            y: y + dy / l,
           };
         });
 
         onPan({ ...newVal, pointers });
       }
     },
-    [isPanning, onPan, minX, maxX, minY, maxY]
+    [isPanning, onPan, minX, maxX, minY, maxY],
   );
 
   const endPanZoom = useCallback(() => {
@@ -145,7 +145,7 @@ export const usePanZoom = ({
         event.stopPropagation();
       }
     },
-    [preventClickOnPan]
+    [preventClickOnPan],
   );
 
   const onWheel = useCallback(
@@ -163,12 +163,12 @@ export const usePanZoom = ({
           const { deltaX, deltaY } = event;
           setPan(({ x, y }) => ({
             x: x - deltaX,
-            y: y - deltaY
+            y: y - deltaY,
           }));
         }
       }
     },
-    [enableZoom, onZoom, minX, maxX, minY, maxY, minZoom, maxZoom, scrollPanSensitivity, setPan]
+    [enableZoom, onZoom, minX, maxX, minY, maxY, minZoom, maxZoom, scrollPanSensitivity, setPan],
   );
 
   const onGestureStart = useCallback(event => {
@@ -248,9 +248,9 @@ export const usePanZoom = ({
           onMouseMove,
           onMouseUp,
           onMouseLeave,
-          onClickCapture
+          onClickCapture,
         }
-      : {}
+      : {},
   };
 };
 

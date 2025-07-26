@@ -1,5 +1,5 @@
 import { className, functionName } from '../misc.js';
-import { Component, createContext, h, html, options, render, useCallback, useContext, useDebugValue, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from '../preact.mjs';
+import { Component, createContext, h, html, options, render, useCallback, useContext, useDebugValue, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState, } from '../preact.mjs';
 import { forwardRef } from '../preact/forwardRef.js';
 import { Element } from './element.js';
 
@@ -23,7 +23,7 @@ export {
   useCallback,
   useContext,
   useDebugValue,
-  cloneElement
+  cloneElement,
 } from '../preact.mjs';
 
 export const Fragment = props => props.children;
@@ -46,7 +46,7 @@ export const React = {
   useCallback,
   useContext,
   useDebugValue,
-  forwardRef
+  forwardRef,
 };
 export default React;
 
@@ -91,7 +91,7 @@ export class ReactComponent {
     const insert = {
       Array: (p, v) => dest.push([p, v]),
       Map: (p, v) => dest.set(pathFn(p), v),
-      Object: (p, v) => (dest[pathFn(p)] = v)
+      Object: (p, v) => (dest[pathFn(p)] = v),
     }[className(dest)];
 
     flatten(obj, path);
@@ -154,7 +154,7 @@ export class ReactComponent {
     let component = h(
       tagName,
       attributes,
-      children.map(child => (typeof child == 'object' ? ReactComponent.fromObject(child) : child + ''))
+      children.map(child => (typeof child == 'object' ? ReactComponent.fromObject(child) : child + '')),
     );
 
     return component;
@@ -202,7 +202,7 @@ export class ReactComponent {
   static formats = {
     HTML: 0,
     JSX: 1,
-    H: 2
+    H: 2,
   };
 
   static toChildArray(a) {

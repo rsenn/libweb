@@ -69,7 +69,7 @@ return [...n];
     const { repeat = '', length, invert } = this;
     if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
     return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(
-      Util.colorText(' ⏵ ', 1, 30)
+      Util.colorText(' ⏵ ', 1, 30),
     )} ]${repeat}`;
   }
 
@@ -253,7 +253,7 @@ return [...n];
       '+': 'many',
       '*': 'any',
       '?': 'option',
-      '~': 'invert'
+      '~': 'invert',
     };
     if(f == 'choice' /*|| f == null*/) sep = ',\n  ';
     let cls = Util.className(a);

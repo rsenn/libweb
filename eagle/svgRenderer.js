@@ -31,7 +31,7 @@ export class EagleSVGRenderer {
     this.path2component = mapWrapper(
       new Map(),
       path => (isObject(path) && path.path !== undefined ? path.path : path) + '',
-      key => new ImmutablePath(key)
+      key => new ImmutablePath(key),
     );
 
     const insertCtoP = inserter(this.component2path);
@@ -68,8 +68,8 @@ export class EagleSVGRenderer {
             color: '15',
             fill: '1',
             visible: 'yes',
-            active: 'yes'
-          })
+            active: 'yes',
+          }),
         );
       if(!doc.layers.bOrigins)
         doc.layers.raw.push(
@@ -79,8 +79,8 @@ export class EagleSVGRenderer {
             color: '15',
             fill: '1',
             visible: 'yes',
-            active: 'yes'
-          })
+            active: 'yes',
+          }),
         );
     }
 
@@ -114,7 +114,7 @@ export class EagleSVGRenderer {
     palette = palette.map((color, i) => trkl(((color.valueOf = () => i), color)));
     let ncolors = palette.length;
     palette = palette.reduce((acc, color, i) => ({ ...acc, [i + '']: color }), {
-      length: trkl(ncolors)
+      length: trkl(ncolors),
     });
 
     palette = trkl.bind(define({}, { handlers: palette }), palette);
@@ -124,28 +124,28 @@ export class EagleSVGRenderer {
         {
           *[Symbol.iterator]() {
             for(let i = 0; i < this.length; i++) yield this[i];
-          }
+          },
         },
         {
           constructor: {
             value: class Palette {},
             enumerable: false,
             writable: false,
-            configurable: false
+            configurable: false,
           },
           handlers: {
             value: null,
             enumerable: false,
-            writable: true
+            writable: true,
           },
           length: {
             value: 0,
             enumerable: false,
             configurable: true,
-            writable: true
-          }
-        }
-      )
+            writable: true,
+          },
+        },
+      ),
     );
     //this.debug("setPalette 3",palette)
     //this.debug("setPalette 4",palette)
@@ -153,7 +153,7 @@ export class EagleSVGRenderer {
     Object.defineProperty(this, 'palette', {
       value: palette || (this.doc.type == 'brd' ? BoardRenderer.palette : SchematicRenderer.palette),
       writable: true,
-      configurable: true
+      configurable: true,
     });
   }
 
@@ -201,9 +201,9 @@ export class EagleSVGRenderer {
           'data-name': l.name,
           'data-path': l.path /*.toString(' ')*/,
           ...(active == 'yes' ? { 'data-active': 'yes' } : {}),
-          ...(visible == 'yes' ? { 'data-visible': 'yes' } : {})
+          ...(visible == 'yes' ? { 'data-visible': 'yes' } : {}),
         },
-        layerGroup
+        layerGroup,
       );
 
       this.layerElements[l.number] = layer;
@@ -224,9 +224,9 @@ export class EagleSVGRenderer {
         elem,
         {
           className: item.tagName,
-          ...attr
+          ...attr,
         },
-        parent
+        parent,
       );
 
     let coordFn = i => i;
@@ -241,10 +241,10 @@ export class EagleSVGRenderer {
           data: item,
           opts: {
             ...opts,
-            transformation
-          }
+            transformation,
+          },
         },
-        parent
+        parent,
       );
 
       return elem;
@@ -266,9 +266,9 @@ export class EagleSVGRenderer {
             ...EagleSVGRenderer.alignmentAttrs(align),
             children: labelText,
             'font-size': '0.1px',
-            'font-family': 'Fixed Medium'
+            'font-family': 'Fixed Medium',
           },
-          parent
+          parent,
         );
         break;
       }
@@ -281,7 +281,7 @@ export class EagleSVGRenderer {
         this.debug('EagleSVGRenderer.renderItem', {
           item,
           parent,
-          opts
+          opts,
         });
         throw new Error(`No renderer for element '${item.tagName}'`);
         break;
@@ -337,14 +337,14 @@ export class EagleSVGRenderer {
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', { doc });
 
-    let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList(),viewBox } = props;
+    let { bounds = obj.getMeasures && obj.getMeasures({ bbox: true }), transform = new TransformationList(), viewBox } = props;
 
     try {
       if(!bounds || (bounds.size && bounds.size.area() == 0)) bounds = obj.getBounds({ bbox: true });
 
       let rect = new Rect(viewBox);
 
-   /*   rect.round(1.27);
+      /*   rect.round(1.27);
       rect.round(2.54);
 */
       viewBox = new BBox(rect);
@@ -364,8 +364,8 @@ export class EagleSVGRenderer {
         grid: trkl({
           color: '#0000aa',
           width: 0.01,
-          visible: true
-        })
+          visible: true,
+        }),
       };
       const { bg, grid } = attrs;
       this.attrs = attrs;
@@ -380,9 +380,9 @@ export class EagleSVGRenderer {
           attrs,
           grid: gridElement,
           nodefs: index > 0,
-     /*     width,
+          /*     width,
           height,*/
-          transform: transform.slice(1)
+          transform: transform.slice(1),
           /*   styles: [
           'text { font-size: 0.0875rem; }',
           'text { stroke: none; }',
@@ -393,7 +393,7 @@ export class EagleSVGRenderer {
           'path { stroke-linejoin: round; stroke-linecap: round; }'
         ]*/
         },
-        children
+        children,
       );
 
       return svgElem;

@@ -581,7 +581,7 @@ function StringToTypedArray(input, bytesPerChar = 4) {
         const codePoint = char.codePointAt(0);
         CheckInvalidCharRange(codePoint, bytesPerChar, i);
         return codePoint;
-      })
+      }),
     );
   } else {
     const length = input.length;
@@ -617,7 +617,7 @@ function ThrowInvalidCharRange(codePoint, bytesPerChar, index) {
       ' requires more than ' +
       bytesPerChar +
       ' bytes to be stored' +
-      (index === void 0 ? '' : ' at ' + index)
+      (index === void 0 ? '' : ' at ' + index),
   );
 }
 class StringView extends DynamicArrayBufferView {
@@ -936,7 +936,8 @@ class StringView extends DynamicArrayBufferView {
   }
 }
 StringView.trimChars = new Uint16Array([
-  0x0020, 0x000c, 0x000a, 0x000d, 0x0009, 0x000b, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x2028, 0x2029, 0x202f, 0x205f, 0x3000, 0xfeff
+  0x0020, 0x000c, 0x000a, 0x000d, 0x0009, 0x000b, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x2028, 0x2029, 0x202f, 0x205f, 0x3000,
+  0xfeff,
 ]);
 
 class CodePoint {
@@ -993,7 +994,7 @@ class CodePoint {
       (0xfdd0 <= char && char <= 0xfdef) ||
       [
         0xfffe, 0xffff, 0x1fffe, 0x1ffff, 0x2fffe, 0x2ffff, 0x3fffe, 0x3ffff, 0x4fffe, 0x4ffff, 0x5fffe, 0x5ffff, 0x6fffe, 0x6ffff, 0x7fffe, 0x7ffff, 0x8fffe, 0x8ffff, 0x9fffe, 0x9ffff, 0xafffe,
-        0xaffff, 0xbfffe, 0xbffff, 0xcfffe, 0xcffff, 0xdfffe, 0xdffff, 0xefffe, 0xeffff, 0xffffe, 0xfffff, 0x10fffe, 0x10ffff
+        0xaffff, 0xbfffe, 0xbffff, 0xcfffe, 0xcffff, 0xdfffe, 0xdffff, 0xefffe, 0xeffff, 0xffffe, 0xfffff, 0x10fffe, 0x10ffff,
       ].includes(char)
     );
   }
@@ -1856,7 +1857,7 @@ function GetOrigin() {
   return new Origin({
     scheme: 'http',
     host: new Host('localhost'),
-    port: 1234
+    port: 1234,
   });
 }
 
@@ -1905,7 +1906,7 @@ class BlobURLStore {
         if(this._map.has(blobUrlString)) {
           const blob = this._map.get(blobUrlString);
           response.writeHead(200, {
-            'Content-Type': blob.type || 'application/octet-stream'
+            'Content-Type': blob.type || 'application/octet-stream',
           });
           const data = blob._buffer;
           const buffer = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
@@ -1958,7 +1959,7 @@ class Origin {
       scheme: this.scheme,
       host: this.host,
       port: this.port,
-      domain: this.domain
+      domain: this.domain,
     });
   }
   toString() {
@@ -2003,7 +2004,7 @@ class _URL {
         return new Origin({
           scheme: this.scheme,
           host: this.host,
-          port: this.port
+          port: this.port,
         });
       case 'file':
         return new Origin({ scheme: 'file' });
@@ -2116,7 +2117,7 @@ class URLParser {
     let flags = {
       '@': false,
       '[]': false,
-      passwordTokenSeenFlag: false
+      passwordTokenSeenFlag: false,
     };
     const inputCodePoints = new StringView(input);
     let inputCodePoint;
@@ -2633,7 +2634,7 @@ URLParser.SCHEME_DEFAULT_PORTS = {
   http: 80,
   https: 443,
   ws: 80,
-  wss: 443
+  wss: 443,
 };
 
 export class URL {

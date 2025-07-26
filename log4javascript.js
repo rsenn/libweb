@@ -140,7 +140,7 @@
       } else {
         handleError('log4javascript.EventSupport [' + this + "]: dispatchEvent: no event called '" + eventType + "'");
       }
-    }
+    },
   };
 
   /* -------------------------------------------------------------------------- */
@@ -360,7 +360,7 @@
           alert(alertMessage);
         }
       }
-    }
+    },
   };
   log4javascript.logLog = logLog;
 
@@ -424,7 +424,7 @@
     },
     isGreaterOrEqual(level) {
       return this.level >= level.level;
-    }
+    },
   };
 
   Level.ALL = new Level(Number.MIN_VALUE, 'ALL');
@@ -711,7 +711,7 @@
 
     isFatalEnabled() {
       return this.isEnabledFor(Level.FATAL);
-    }
+    },
   };
 
   Logger.prototype.trace.isEntryPoint = true;
@@ -814,7 +814,7 @@
     },
     toString() {
       return 'LoggingEvent[' + this.level + ']';
-    }
+    },
   };
 
   log4javascript.LoggingEvent = LoggingEvent;
@@ -832,7 +832,7 @@
       levelKey: 'level',
       messageKey: 'message',
       exceptionKey: 'exception',
-      urlKey: 'url'
+      urlKey: 'url',
     },
     loggerKey: 'logger',
     timeStampKey: 'timestamp',
@@ -883,7 +883,7 @@
         [this.timeStampKey, this.getTimeStampValue(loggingEvent)],
         [this.levelKey, loggingEvent.level.name],
         [this.urlKey, window.location.href],
-        [this.messageKey, combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages]
+        [this.messageKey, combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages],
       ];
       if(!this.isTimeStampsInMilliseconds()) {
         dataValues.push([this.millisecondsKey, loggingEvent.milliseconds]);
@@ -943,7 +943,7 @@
 
     toString() {
       handleError('Layout.toString: all layouts must override this method');
-    }
+    },
   };
 
   log4javascript.Layout = Layout;
@@ -1362,7 +1362,7 @@
       m: NUMBER,
       s: NUMBER,
       S: NUMBER,
-      Z: TIMEZONE
+      Z: TIMEZONE,
     };
     let ONE_DAY = 24 * 60 * 60 * 1000;
     let ONE_WEEK = 7 * ONE_DAY;
@@ -1880,7 +1880,7 @@
     },
     function() {
       return new ActiveXObject('Microsoft.XMLHTTP');
-    }
+    },
   ];
 
   let withCredentialsSupported = false;
@@ -2252,7 +2252,7 @@
     requestSuccessCallback: null,
     failCallback: null,
     postVarName: 'data',
-    contentType: 'application/x-www-form-urlencoded'
+    contentType: 'application/x-www-form-urlencoded',
   };
 
   AjaxAppender.prototype.layout = new HttpPostDataLayout();
@@ -4603,7 +4603,7 @@
         '		</div>',
         '	</body>',
         '</html>',
-        ''
+        '',
       ];
     };
 
@@ -5457,7 +5457,7 @@
       commandLineObjectExpansionDepth: 1,
       showHideButton: false,
       showCloseButton: true,
-      useDocumentWrite: true
+      useDocumentWrite: true,
     };
 
     PopUpAppender.prototype.toString = function() {
@@ -5488,7 +5488,7 @@
       showHideButton: false,
       showCloseButton: false,
       showLogEntryDeleteButtons: true,
-      useDocumentWrite: true
+      useDocumentWrite: true,
     };
 
     InPageAppender.prototype.toString = function() {
@@ -5550,7 +5550,7 @@
       DOCUMENT_NODE: 9,
       DOCUMENT_TYPE_NODE: 10,
       DOCUMENT_FRAGMENT_NODE: 11,
-      NOTATION_NODE: 12
+      NOTATION_NODE: 12,
     };
 
     let preFormattedElements = ['script', 'pre'];

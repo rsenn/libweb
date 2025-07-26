@@ -100,7 +100,7 @@ function json2xml_translator() {
       //console.log('parseJSON:', jsonString);
       let obj = typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
       return obj;
-    }
+    },
   };
   return X;
 }

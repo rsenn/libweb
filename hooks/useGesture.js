@@ -71,7 +71,7 @@ function calculateAllKinematics(movement, delta, delta_t) {
     velocities: calculateVelocities(delta, delta_t),
     velocity: calculateVelocity(delta, delta_t, len),
     distance: calculateDistance(movement),
-    direction: calculateDirection(delta, len)
+    direction: calculateDirection(delta, len),
   };
 }
 
@@ -195,11 +195,11 @@ function createForOfIteratorHelperLoose(o) {
       return function() {
         if(i >= o.length)
           return {
-            done: true
+            done: true,
           };
         return {
           done: false,
-          value: o[i++]
+          value: o[i++],
         };
       };
     throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
@@ -227,7 +227,7 @@ let def = {
   },
   withDefault: function withDefault(value, defaultIfUndefined) {
     return value !== void 0 ? value : defaultIfUndefined;
-  }
+  },
 };
 function matchKeysFromObject(obj, matchingObject) {
   let o = {};
@@ -273,7 +273,7 @@ function getInitialState() {
     cancel: noop,
     canceled: false,
     memo: undefined,
-    args: undefined
+    args: undefined,
   }; // initial state for coordinates-based gestures
 
   let initialCoordinates = {
@@ -281,14 +281,14 @@ function getInitialState() {
     xy: [0, 0],
     vxvy: [0, 0],
     velocity: 0,
-    distance: 0
+    distance: 0,
   }; // initial state for distance and angle-based gestures (pinch)
 
   let initialDistanceAngle = {
     da: [0, 0],
     vdva: [0, 0],
     origin: undefined,
-    turns: 0
+    turns: 0,
   }; // initial state object (used by the gesture controller)
 
   return {
@@ -305,18 +305,18 @@ function getInitialState() {
       shiftKey: false,
       altKey: false,
       metaKey: false,
-      ctrlKey: false
+      ctrlKey: false,
     },
     drag: _extends({}, initialCommon, {}, initialCoordinates, {
       _isTap: true,
       _delayedEvent: false,
       tap: false,
-      swipe: [0, 0]
+      swipe: [0, 0],
     }),
     pinch: _extends({}, initialCommon, {}, initialDistanceAngle),
     wheel: _extends({}, initialCommon, {}, initialCoordinates),
     move: _extends({}, initialCommon, {}, initialCoordinates),
-    scroll: _extends({}, initialCommon, {}, initialCoordinates)
+    scroll: _extends({}, initialCommon, {}, initialCoordinates),
   };
 }
 
@@ -363,7 +363,7 @@ function getModifierKeys(event) {
     shiftKey,
     altKey,
     metaKey,
-    ctrlKey
+    ctrlKey,
   };
 }
 
@@ -386,9 +386,9 @@ function getGenericEventData(event) {
     {
       touches,
       down,
-      buttons
+      buttons,
     },
-    getModifierKeys(event)
+    getModifierKeys(event),
   );
 }
 
@@ -407,7 +407,7 @@ function getScrollEventValues(event) {
     scrollLeft = _event$currentTarget.scrollLeft,
     scrollTop = _event$currentTarget.scrollTop;
   return {
-    values: [scrollX || scrollLeft || 0, scrollY || scrollTop || 0]
+    values: [scrollX || scrollLeft || 0, scrollY || scrollTop || 0],
   };
 }
 
@@ -423,7 +423,7 @@ function getWheelEventValues(event) {
   // https://developer.mozilla.org/en-US/docs/Web/Events/wheel#Polyfill
 
   return {
-    values: [deltaX, deltaY]
+    values: [deltaX, deltaY],
   };
 }
 
@@ -441,7 +441,7 @@ function getPointerEventValues(event) {
     clientY = _ref2.clientY;
 
   return {
-    values: [clientX, clientY]
+    values: [clientX, clientY],
   };
 }
 
@@ -455,7 +455,7 @@ let WEBKIT_DISTANCE_SCALE_FACTOR = 260;
 
 function getWebkitGestureEventValues(event) {
   return {
-    values: [event.scale * WEBKIT_DISTANCE_SCALE_FACTOR, event.rotation]
+    values: [event.scale * WEBKIT_DISTANCE_SCALE_FACTOR, event.rotation],
   };
 }
 
@@ -473,7 +473,7 @@ function getTwoTouchesEventData(event) {
   let origin = [(touches[1].clientX + touches[0].clientX) / 2, (touches[1].clientY + touches[0].clientY) / 2];
   return {
     values,
-    origin
+    origin,
   };
 }
 
@@ -657,7 +657,7 @@ export function useRecognizers(handlers, classes, config, nativeHandlers) {
         for(let eventName in controller.nativeRefs) {
           current.addBindings(
             eventName, // @ts-ignore we're cheating when it comes to event type :(
-            controller.nativeRefs[eventName]
+            controller.nativeRefs[eventName],
           );
         }
       }
@@ -668,7 +668,7 @@ export function useRecognizers(handlers, classes, config, nativeHandlers) {
     return {
       nativeRefs: nativeHandlers,
       current,
-      bind
+      bind,
     };
   }, []); // We reassign the config and handlers to the controller on every render.
 
@@ -745,7 +745,7 @@ let Recognizer = /*#__PURE__*/ (function () {
         initial: values,
         offset: _this.state.offset,
         lastOffset: _this.state.offset,
-        startTime: event.timeStamp
+        startTime: event.timeStamp,
       });
     }; // Runs rubberband on a vector
 
@@ -835,7 +835,7 @@ let Recognizer = /*#__PURE__*/ (function () {
       timeStamp,
       elapsedTime: isStartEvent ? 0 : timeStamp - startTime,
       args: this.args,
-      previous: values
+      previous: values,
     };
   };
 
@@ -849,7 +849,7 @@ let Recognizer = /*#__PURE__*/ (function () {
   _proto.checkIntentionality = function checkIntentionality(_intentional, _movement, _state) {
     return {
       _intentional,
-      _blocked: false
+      _blocked: false,
     };
   };
 
@@ -905,7 +905,7 @@ let Recognizer = /*#__PURE__*/ (function () {
     if(_blocked)
       return _extends({}, intentionalityCheck, {
         _movement,
-        delta: [0, 0]
+        delta: [0, 0],
       });
 
     /**
@@ -930,7 +930,7 @@ let Recognizer = /*#__PURE__*/ (function () {
       _movement,
       movement,
       offset: this.rubberband(offset, _rubberband),
-      delta: subV(movement, prevMovement)
+      delta: subV(movement, prevMovement),
     });
   }; // Cleans the gesture. Can be overriden by gestures.
 
@@ -944,26 +944,26 @@ let Recognizer = /*#__PURE__*/ (function () {
       key: 'config',
       get() {
         return this.controller.config[this.stateKey];
-      } // Is the gesture enabled
+      }, // Is the gesture enabled
     },
     {
       key: 'enabled',
       get() {
         return this.controller.config.enabled && this.config.enabled;
-      } // Returns the controller state for a given gesture
+      }, // Returns the controller state for a given gesture
     },
     {
       key: 'state',
       get() {
         return this.controller.state[this.stateKey];
-      } // Returns the gesture handler
+      }, // Returns the gesture handler
     },
     {
       key: 'handler',
       get() {
         return this.controller.handlers[this.stateKey];
-      }
-    }
+      },
+    },
   ]);
 
   return Recognizer;
@@ -1042,7 +1042,7 @@ let CoordinatesRecognizer = /*#__PURE__*/ (function (_Recognizer) {
     return {
       _intentional,
       _blocked,
-      axis
+      axis,
     };
   };
 
@@ -1058,18 +1058,18 @@ let CoordinatesRecognizer = /*#__PURE__*/ (function (_Recognizer) {
     return _extends(
       {
         values,
-        delta
+        delta,
       },
       movementDetection,
       {},
-      kinematics
+      kinematics,
     );
   };
 
   _proto.mapStateValues = function mapStateValues(state) {
     return {
       xy: state.values,
-      vxvy: state.velocities
+      vxvy: state.velocities,
     };
   };
 
@@ -1122,7 +1122,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
 
       thisObj.updateGestureState({
         currentTarget,
-        pointerId
+        pointerId,
       });
     };
 
@@ -1140,11 +1140,11 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         ? [
             ['touchmove', thisObj.onDragChange],
             ['touchend', thisObj.onDragEnd],
-            ['touchcancel', thisObj.onDragEnd]
+            ['touchcancel', thisObj.onDragEnd],
           ]
         : [
             ['mousemove', thisObj.onDragChange],
-            ['mouseup', thisObj.onDragEnd]
+            ['mouseup', thisObj.onDragEnd],
           ];
 
       thisObj.addWindowListeners(dragListeners);
@@ -1192,8 +1192,8 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
           _isTap,
           cancel: function cancel() {
             return thisObj.onCancel();
-          }
-        })
+          },
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -1203,7 +1203,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       thisObj.updateSharedState({
         down: false,
         buttons: 0,
-        touches: 0
+        touches: 0,
       });
       let _this$state2 = thisObj.state,
         _isTap = _this$state2._isTap,
@@ -1234,14 +1234,14 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       thisObj.updateGestureState(
         _extends(
           {
-            event
+            event,
           },
           endState,
           {
             tap: _isTap,
-            swipe
-          }
-        )
+            swipe,
+          },
+        ),
       );
 
       thisObj.fireGestureHandler(thisObj.config.filterTaps && thisObj.state._isTap);
@@ -1257,7 +1257,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
     thisObj.onCancel = function() {
       thisObj.updateGestureState({
         canceled: true,
-        cancel: noop
+        cancel: noop,
       });
 
       thisObj.state._active = false;
@@ -1265,7 +1265,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       thisObj.updateSharedState({
         down: false,
         buttons: 0,
-        touches: 0
+        touches: 0,
       });
 
       requestAnimationFrame(() => thisObj.fireGestureHandler());
@@ -1290,8 +1290,8 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       _extends({}, startState, {}, this.getMovement(values, startState), {
         cancel: function cancel() {
           return _this2.onCancel();
-        }
-      })
+        },
+      }),
     );
     this.fireGestureHandler();
   };
@@ -1317,7 +1317,7 @@ let defaultWindow = typeof window !== 'undefined' ? window : undefined;
 let defaultCoordinatesOptions = {
   lockDirection: false,
   axis: undefined,
-  bounds: undefined
+  bounds: undefined,
 };
 
 /**
@@ -1359,10 +1359,10 @@ function getInternalGenericOptions(config) {
     // passive is always true if there's no domTarget
     eventOptions: {
       passive: !domTarget || !!passive,
-      capture: !!capture
+      capture: !!capture,
     },
     captureString: capture ? 'Capture' : '',
-    pointer: !!pointer
+    pointer: !!pointer,
   });
 }
 
@@ -1381,7 +1381,7 @@ function getInternalGestureOptions(gestureConfig) {
     enabled,
     initial,
     threshold: def.array(threshold),
-    rubberband: def.array(rubberband)
+    rubberband: def.array(rubberband),
   };
 }
 
@@ -1399,7 +1399,7 @@ function getInternalCoordinatesOptions(coordinatesConfig) {
 
   let boundsArray = [
     [def.withDefault(bounds.left, -Infinity), def.withDefault(bounds.right, Infinity)],
-    [def.withDefault(bounds.top, -Infinity), def.withDefault(bounds.bottom, Infinity)]
+    [def.withDefault(bounds.top, -Infinity), def.withDefault(bounds.bottom, Infinity)],
   ];
   return _extends(
     {},
@@ -1410,13 +1410,13 @@ function getInternalCoordinatesOptions(coordinatesConfig) {
     matchKeysFromObject(
       {
         axis,
-        lockDirection
+        lockDirection,
       },
-      coordinatesConfig
+      coordinatesConfig,
     ),
     {
-      bounds: boundsArray
-    }
+      bounds: boundsArray,
+    },
   );
 }
 
@@ -1434,10 +1434,10 @@ function getInternalDistanceAngleOptions(distanceAngleConfig) {
 
   let boundsArray = [
     [def.withDefault(distanceBounds.min, -Infinity), def.withDefault(distanceBounds.max, Infinity)],
-    [def.withDefault(angleBounds.min, -Infinity), def.withDefault(angleBounds.max, Infinity)]
+    [def.withDefault(angleBounds.min, -Infinity), def.withDefault(angleBounds.max, Infinity)],
   ];
   return _extends({}, getInternalGestureOptions(internalOptions), {
-    bounds: boundsArray
+    bounds: boundsArray,
   });
 }
 
@@ -1477,16 +1477,16 @@ function getInternalDragOptions(dragConfig) {
         rubberband,
         axis,
         lockDirection,
-        initial
+        initial,
       },
-      dragConfig
-    )
+      dragConfig,
+    ),
   );
   return _extends({}, internalCoordinatesOptions, {
     filterTaps: filterTaps || internalCoordinatesOptions.threshold[0] + internalCoordinatesOptions.threshold[1] > 0,
     swipeVelocity: def.array(swipeVelocity),
     swipeDistance: def.array(swipeDistance),
-    delay: typeof delay === 'number' ? delay : delay ? DEFAULT_DRAG_DELAY : 0
+    delay: typeof delay === 'number' ? delay : delay ? DEFAULT_DRAG_DELAY : 0,
   });
 }
 
@@ -1519,19 +1519,19 @@ export function useDrag(handler, config) {
     getInternalGenericOptions({
       domTarget,
       eventOptions,
-      window
+      window,
     }),
     {
-      drag: getInternalDragOptions(drag)
-    }
+      drag: getInternalDragOptions(drag),
+    },
   );
 
   return useRecognizers(
     {
-      drag: handler
+      drag: handler,
     },
     [DragRecognizer],
-    mergedConfig
+    mergedConfig,
   );
 }
 
@@ -1594,18 +1594,18 @@ let DistanceAngleRecognizer = /*#__PURE__*/ (function (_Recognizer) {
       {
         values,
         delta,
-        turns
+        turns,
       },
       movementDetection,
       {},
-      kinematics
+      kinematics,
     );
   };
 
   _proto.mapStateValues = function mapStateValues(state) {
     return {
       da: state.values,
-      vdva: state.velocities
+      vdva: state.velocities,
     };
   };
 
@@ -1637,8 +1637,8 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
           origin,
           cancel: function cancel() {
             return thisObj.onCancel();
-          }
-        })
+          },
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -1661,8 +1661,8 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
           origin,
           cancel: function cancel() {
             return thisObj.onCancel();
-          }
-        })
+          },
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -1672,17 +1672,17 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       thisObj.state._active = false;
       thisObj.updateSharedState({
         down: false,
-        touches: 0
+        touches: 0,
       });
       thisObj.updateGestureState(
         _extends(
           {
-            event
+            event,
           },
           thisObj.getGenericPayload(event),
           {},
-          thisObj.getMovement(thisObj.state.values)
-        )
+          thisObj.getMovement(thisObj.state.values),
+        ),
       );
       thisObj.fireGestureHandler();
     };
@@ -1691,11 +1691,11 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       thisObj.state._active = false;
       thisObj.updateGestureState({
         canceled: true,
-        cancel: noop
+        cancel: noop,
       });
       thisObj.updateSharedState({
         down: false,
-        touches: 0
+        touches: 0,
       });
       requestAnimationFrame(() => thisObj.fireGestureHandler());
     };
@@ -1715,8 +1715,8 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
         _extends({}, startState, {}, thisObj.getMovement(values, startState), {
           cancel: function cancel() {
             return thisObj.onCancel();
-          }
-        })
+          },
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -1736,8 +1736,8 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
         _extends({}, thisObj.getGenericPayload(event), {}, kinematics, {
           cancel: function cancel() {
             return thisObj.onCancel();
-          }
-        })
+          },
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -1748,17 +1748,17 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       thisObj.state._active = false;
       thisObj.updateSharedState({
         down: false,
-        touches: 0
+        touches: 0,
       });
       thisObj.updateGestureState(
         _extends(
           {
-            event
+            event,
           },
           thisObj.getGenericPayload(event),
           {},
-          thisObj.getMovement(thisObj.state.values)
-        )
+          thisObj.getMovement(thisObj.state.values),
+        ),
       );
       thisObj.fireGestureHandler();
     };
@@ -1790,7 +1790,7 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       return {
         values: [d, a],
         origin: [event.clientX, event.clientY],
-        delta: [0, delta_d]
+        delta: [0, delta_d],
       };
     };
 
@@ -1815,15 +1815,15 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       thisObj.updateSharedState(getGenericEventData(event));
 
       let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
-        initial: thisObj.state.values
+        initial: thisObj.state.values,
       });
 
       thisObj.updateGestureState(
         _extends({}, startState, {}, thisObj.getMovement(values, startState), {
           offset: values,
           delta,
-          origin
-        })
+          origin,
+        }),
       );
 
       thisObj.fireGestureHandler();
@@ -1844,8 +1844,8 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       thisObj.updateGestureState(
         _extends({}, thisObj.getGenericPayload(event), {}, kinematics, {
           origin,
-          delta
-        })
+          delta,
+        }),
       );
 
       thisObj.fireGestureHandler();
@@ -1914,19 +1914,19 @@ export function usePinch(handler, config) {
     getInternalGenericOptions({
       domTarget,
       eventOptions,
-      window
+      window,
     }),
     {
-      pinch: getInternalDistanceAngleOptions(pinch)
-    }
+      pinch: getInternalDistanceAngleOptions(pinch),
+    },
   );
 
   return useRecognizers(
     {
-      pinch: handler
+      pinch: handler,
     },
     [PinchRecognizer],
-    mergedConfig
+    mergedConfig,
   );
 }
 
@@ -1948,7 +1948,7 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _getWheelEventValues = getWheelEventValues(event),
         values = _getWheelEventValues.values;
       return {
-        values: addV(values, prevValues)
+        values: addV(values, prevValues),
       };
     };
 
@@ -1965,15 +1965,15 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         values = _this$getValuesFromEv.values;
       thisObj.updateSharedState(getGenericEventData(event));
       let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
-        initial: thisObj.state.values
+        initial: thisObj.state.values,
       });
       let movementDetection = thisObj.getMovement(values, startState);
       let delta = movementDetection.delta;
       thisObj.updateGestureState(
         _extends({}, startState, {}, movementDetection, {
           distance: calculateDistance(delta),
-          direction: calculateDirection(delta)
-        })
+          direction: calculateDirection(delta),
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -1993,8 +1993,8 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       thisObj.updateGestureState(
         _extends({}, thisObj.getMovement(thisObj.state.values), {
           velocities: [0, 0],
-          velocity: 0
-        })
+          velocity: 0,
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -2042,19 +2042,19 @@ export function useWheel(handler, config) {
     getInternalGenericOptions({
       domTarget,
       eventOptions,
-      window
+      window,
     }),
     {
-      wheel: getInternalCoordinatesOptions(wheel)
-    }
+      wheel: getInternalCoordinatesOptions(wheel),
+    },
   );
 
   return useRecognizers(
     {
-      wheel: handler
+      wheel: handler,
     },
     [WheelRecognizer],
-    mergedConfig
+    mergedConfig,
   );
 }
 
@@ -2102,8 +2102,8 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       thisObj.updateGestureState(
         _extends({}, thisObj.getMovement(thisObj.state.values), {
           velocities: [0, 0],
-          velocity: 0
-        })
+          velocity: 0,
+        }),
       );
 
       thisObj.fireGestureHandler();
@@ -2118,7 +2118,7 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         let state = _extends({}, thisObj.controller.state.shared, {}, thisObj.state, {}, thisObj.getGenericPayload(event, true), {
           values,
           active: true,
-          hovering: true
+          hovering: true,
         });
         thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
@@ -2133,7 +2133,7 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
           values = _getPointerEventValue4.values;
         let state = _extends({}, thisObj.controller.state.shared, {}, thisObj.state, {}, thisObj.getGenericPayload(event), {
           values,
-          active: false
+          active: false,
         });
         thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
@@ -2200,19 +2200,19 @@ export function useMove(handler, config) {
     getInternalGenericOptions({
       domTarget,
       eventOptions,
-      window
+      window,
     }),
     {
-      move: getInternalCoordinatesOptions(move)
-    }
+      move: getInternalCoordinatesOptions(move),
+    },
   );
 
   return useRecognizers(
     {
-      move: handler
+      move: handler,
     },
     [MoveRecognizer],
-    mergedConfig
+    mergedConfig,
   );
 }
 
@@ -2247,24 +2247,24 @@ export function useHover(handler, config) {
     getInternalGenericOptions({
       domTarget,
       eventOptions,
-      window
+      window,
     }),
     {
       hover: _extends(
         {
-          enabled: true
+          enabled: true,
         },
-        hover
-      )
-    }
+        hover,
+      ),
+    },
   );
 
   return useRecognizers(
     {
-      hover: handler
+      hover: handler,
     },
     [MoveRecognizer],
-    mergedConfig
+    mergedConfig,
   );
 }
 
@@ -2295,15 +2295,15 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         values = _getScrollEventValues.values;
       thisObj.updateSharedState(getGenericEventData(event));
       let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
-        initial: thisObj.state.values
+        initial: thisObj.state.values,
       });
       let movementDetection = thisObj.getMovement(values, startState);
       let delta = movementDetection.delta;
       thisObj.updateGestureState(
         _extends({}, startState, {}, movementDetection, {
           distance: calculateDistance(delta),
-          direction: calculateDirection(delta)
-        })
+          direction: calculateDirection(delta),
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -2323,8 +2323,8 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       thisObj.updateGestureState(
         _extends({}, thisObj.getMovement(thisObj.state.values), {
           velocities: [0, 0],
-          velocity: 0
-        })
+          velocity: 0,
+        }),
       );
       thisObj.fireGestureHandler();
     };
@@ -2370,19 +2370,19 @@ export function useScroll(handler, config) {
     getInternalGenericOptions({
       domTarget,
       eventOptions,
-      window
+      window,
     }),
     {
-      scroll: getInternalCoordinatesOptions(scroll)
-    }
+      scroll: getInternalCoordinatesOptions(scroll),
+    },
   );
 
   return useRecognizers(
     {
-      scroll: handler
+      scroll: handler,
     },
     [ScrollRecognizer],
-    mergedConfig
+    mergedConfig,
   );
 }
 
@@ -2464,9 +2464,9 @@ export function useGesture(handlers, config) {
     internalHandlers.hover = handlers.onHover;
     mergedConfig.hover = _extends(
       {
-        enabled: true
+        enabled: true,
       },
-      hover
+      hover,
     );
     delete _nativeHandlers.onHover;
   }
@@ -2510,5 +2510,5 @@ export default {
   useMove,
   usePinch,
   useScroll,
-  useWheel
+  useWheel,
 };

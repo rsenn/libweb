@@ -168,7 +168,7 @@ class AnsiKit {
   static get extras() {
     return {
       colors,
-      styles: ['reset', 'bold', 'dim', 'italic', 'underline', 'invert', 'strikethrough', ...colors, ...bgColors]
+      styles: ['reset', 'bold', 'dim', 'italic', 'underline', 'invert', 'strikethrough', ...colors, ...bgColors],
     };
   }
 
@@ -210,7 +210,7 @@ class AnsiKit {
       '{bright-yellow}': '\x1b[93m',
       '{bright-blue}': '\x1b[94m',
       '{bright-magenta}': '\x1b[95m',
-      '{bright-cyan}': '\x1b[96m'
+      '{bright-cyan}': '\x1b[96m',
     };
 
     for(const key in _colors) text = text.replace(new RegExp(key, 'g'), _colors[key]);

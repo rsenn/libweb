@@ -51,12 +51,12 @@ export function Line(...args) {
   if(!('a' in obj) || obj.a === undefined)
     Object.defineProperty(obj, 'a', {
       value: new Point(obj.x1, obj.y1),
-      enumerable: false
+      enumerable: false,
     });
   if(!('b' in obj) || obj.b === undefined)
     Object.defineProperty(obj, 'b', {
       value: new Point(obj.x2, obj.y2),
-      enumerable: false
+      enumerable: false,
     });
 
   if(!isLine(obj)) {
@@ -81,7 +81,7 @@ Line.prototype.intersect = function(other) {
   if(ma - mb < Number.EPSILON) return undefined;
   return new Point({
     x: (ma * this[0].x - mb * other[0].x + other[0].y - this[0].y) / (ma - mb),
-    y: (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) / (mb - ma)
+    y: (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) / (mb - ma),
   });
 };
 
@@ -94,7 +94,7 @@ Object.defineProperty(Line.prototype, 'a', {
     this.x1 = value.x;
     this.y1 = value.y;
   },
-  enumerable: false
+  enumerable: false,
 });
 Object.defineProperty(Line.prototype, 'b', {
   get() {
@@ -105,7 +105,7 @@ Object.defineProperty(Line.prototype, 'b', {
     this.x2 = value.x;
     this.y2 = value.y;
   },
-  enumerable: false
+  enumerable: false,
 });
 
 Object.defineProperty(Line.prototype, 0, {
@@ -115,7 +115,7 @@ Object.defineProperty(Line.prototype, 0, {
   set(v) {
     this.a = v;
   },
-  enumerable: false
+  enumerable: false,
 });
 Object.defineProperty(Line.prototype, 1, {
   get() {
@@ -124,7 +124,7 @@ Object.defineProperty(Line.prototype, 1, {
   set(v) {
     this.b = v;
   },
-  enumerable: false
+  enumerable: false,
 });
 /*Object.defineProperty(Line.prototype, 'x1', {get() {return this.a && this.a.x; }, set(v) {if(!this.a) Object.defineProperty(this, 'a', { value: new Point(), enumerable: false }); this.a.x = v; }, enumerable: true });
 Object.defineProperty(Line.prototype, 'y1', {get() {return this.a && this.a.y; }, set(v) {if(!this.a) Object.defineProperty(this, 'a', {value: new Point(), enumerable: false }); this.a.y = v; }, enumerable: true });
@@ -139,7 +139,7 @@ Line.prototype.getVector = function() {
   return { x: this.x2 - this.x1, y: this.y2 - this.y1 };
 };
 Object.defineProperty(Line.prototype, 'vector', {
-  get: Line.prototype.getVector
+  get: Line.prototype.getVector,
 });
 Line.prototype.getSlope = function() {
   return (this.y2 - this.y1) / (this.x2 - this.x1);
@@ -147,7 +147,7 @@ Line.prototype.getSlope = function() {
 Object.defineProperty(Line.prototype, 'slope', {
   get() {
     return new Point(this.x2 - this.x1, this.y2 - this.y1);
-  }
+  },
 });
 Line.prototype.yIntercept = function() {
   let v = Line.prototype.getVector.call(this);
@@ -176,7 +176,7 @@ Line.prototype.isNull = function() {
 Line.prototype.equations = function() {
   let intercept = {
     y: Line.prototype.yIntercept.call(this),
-    x: Line.prototype.xIntercept.call(this)
+    x: Line.prototype.xIntercept.call(this),
   };
   let equations = [];
   for(let axis in intercept) {
@@ -227,7 +227,7 @@ Line.prototype.matchEndpoints = function(arr) {
   return [...arr.entries()].filter(
     ([i, otherLine]) =>
       !Line.prototype.equals.call(this, otherLine) &&
-      (Point.prototype.equals.call(a, otherLine.a) || Point.prototype.equals.call(b, otherLine.b) || Point.prototype.equals.call(b, otherLine.a) || Point.prototype.equals.call(a, otherLine.b))
+      (Point.prototype.equals.call(a, otherLine.a) || Point.prototype.equals.call(b, otherLine.b) || Point.prototype.equals.call(b, otherLine.a) || Point.prototype.equals.call(a, otherLine.b)),
   );
 };
 
@@ -244,19 +244,19 @@ Line.prototype.distanceToPoint = function(p) {
 };
 
 Object.defineProperty(Line.prototype, 'len', {
-  get: Line.prototype.getLength
+  get: Line.prototype.getLength,
 });
 Object.defineProperty(Line.prototype, 'cross', {
   get() {
     const { x1, x2, y1, y2 } = this;
     return x1 * y2 - y1 * x2;
-  }
+  },
 });
 Object.defineProperty(Line.prototype, 'dot', {
   get() {
     const { x1, x2, y1, y2 } = this;
     return x1 * x2 + y1 * y2;
-  }
+  },
 });
 
 Line.prototype.pointAt = function(pos) {
@@ -292,15 +292,15 @@ Line.prototype.toString = function(opts = {}) {
     brackets(
       Point.toString(this.a || Point(x1, y1), {
         ...options,
-        /*separator,*/ pad: 0
-      })
+        /*separator,*/ pad: 0,
+      }),
     ) +
     separator +
     brackets(
       Point.toString(this.b || Point(x2, y2), {
         ...options,
-        /*separator,*/ pad: 0
-      })
+        /*separator,*/ pad: 0,
+      }),
     )
   );
 };

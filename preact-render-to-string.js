@@ -100,7 +100,7 @@ function getChildren(accumulator, children) {
 }
 
 var SHALLOW = {
-  shallow: true
+  shallow: true,
 }; // components without names, kept as a hash for later comparison to return consistent UnnamedComponentXX names.
 
 var UNNAMED = [];
@@ -191,7 +191,7 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
         setState: noop,
         forceUpdate: noop,
         // hooks
-        __h: []
+        __h: [],
       }); // options._diff
 
       if(options.__b) options.__b(vnode); // options._render

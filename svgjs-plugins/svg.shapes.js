@@ -11,7 +11,7 @@ SVG.extend(SVG.Polyline, SVG.Polygon, SVG.FX, {
   ngon(settings) {
     var box = (this.target ? this.target() : this).bbox();
     return this.plot(SVG.shapes.ngon(settings).move(box.x, box.y));
-  }
+  },
 });
 
 // Shape generator
@@ -22,7 +22,7 @@ SVG.shapes = {
     inner: 50,
     outer: 100,
     edges: 7,
-    radius: 100
+    radius: 100,
   },
   // Star generator
   star(settings) {
@@ -78,5 +78,5 @@ SVG.shapes = {
     }
 
     return new SVG.PointArray(points);
-  }
+  },
 };

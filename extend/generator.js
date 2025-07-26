@@ -88,7 +88,7 @@ export const GeneratorExtensions = {
       if(i >= start) yield value;
       ++i;
     }
-  }
+  },
 };
 
 export const GeneratorPrototype = Object.getPrototypeOf((function* () {})()).constructor.prototype;

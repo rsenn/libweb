@@ -83,7 +83,7 @@ Indexed.Renderer = function(canvas_id, width, height, scale, forcecanvas) {
 
     //2 triangles
     this.bufferInfo = twgl.createBufferInfoFromArrays(this.gl, {
-      position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0]
+      position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
     });
 
     //find power-2 texture sizes for this canvas size
@@ -99,7 +99,7 @@ Indexed.Renderer = function(canvas_id, width, height, scale, forcecanvas) {
         format: this.gl.RGBA,
         //src: this.palette.data,
         type: this.gl.UNSIGNED_BYTE,
-        auto: false
+        auto: false,
       },
       fb: {
         min: this.gl.NEAREST,
@@ -109,14 +109,14 @@ Indexed.Renderer = function(canvas_id, width, height, scale, forcecanvas) {
         height: theight,
         //src: this.fb.data,
         type: this.gl.UNSIGNED_BYTE,
-        auto: false
-      }
+        auto: false,
+      },
     });
     this.uniforms = {
       resolution: [this.gl.canvas.width, this.gl.canvas.height],
       canvasratio: [this.width / twidth, this.height / theight],
       fb: this.textures.fb,
-      pal: this.textures.pal
+      pal: this.textures.pal,
     };
 
     twgl.resizeCanvasToDisplaySize(this.gl.canvas);
@@ -169,7 +169,7 @@ Indexed.Renderer.prototype = {
         this.context.drawImage(this.backcanvas, 0, 0, this.canvas.width, this.canvas.height);
       } else this.context.putImageData(this.imagedata, 0, 0);
     }
-  }
+  },
 };
 
 Indexed.Palette = function(a) {
@@ -274,7 +274,7 @@ Indexed.Palette.prototype = {
     this.data[i * 3 + 0] = (this.data[i * 3 + 0] + r) | 0;
     this.data[i * 3 + 1] = (this.data[i * 3 + 1] + g) | 0;
     this.data[i * 3 + 2] = (this.data[i * 3 + 2] + b) | 0;
-  }
+  },
 };
 
 Indexed.Buffer = function(a, b) {
@@ -451,7 +451,7 @@ Indexed.Buffer.prototype = {
         y0 += sy;
       }
     }
-  }
+  },
 };
 
 //fast and incomplete pcx reader. It assumes a lot of things by default.
@@ -511,7 +511,7 @@ if(window.PLAYGROUND) {
     },
     postrender: function() {
       this.app.layer.flip();
-    }
+    },
   };
 
   PLAYGROUND.Application.prototype.loadPCX = function() {

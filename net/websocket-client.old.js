@@ -85,7 +85,7 @@ export class WebSocketClient {
         //Make sure this object always stays in the queue
         //until callbacks.reject() (which is resolve) is called.
         resolve: dummy => this.receiveCallbacksQueue.push(callbacks),
-        reject: resolve
+        reject: resolve,
       };
 
       this.receiveCallbacksQueue.push(callbacks);

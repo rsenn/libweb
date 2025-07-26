@@ -660,7 +660,7 @@
             },
             writeBooleanField: function(t, n) {
               this.writeVarintField(t, Boolean(n));
-            }
+            },
           };
         },
         72: function(t) {
@@ -743,7 +743,7 @@
                 minX: 1 / 0,
                 minY: 1 / 0,
                 maxX: -1 / 0,
-                maxY: -1 / 0
+                maxY: -1 / 0,
               };
             }
             function p(n, i, r, e, o) {
@@ -957,7 +957,7 @@
                   value: i,
                   enumerable: !0,
                   configurable: !0,
-                  writable: !0
+                  writable: !0,
                 }),
                 t[n]
               );
@@ -1053,7 +1053,7 @@
                         },
                         function(t) {
                           i('throw', t, s, u);
-                        }
+                        },
                       )
                     : n.resolve(c).then(
                         function(t) {
@@ -1061,7 +1061,7 @@
                         },
                         function(t) {
                           return i('throw', t, s, u);
-                        }
+                        },
                       );
                 }
                 u(a.arg);
@@ -1260,7 +1260,7 @@
                 },
                 delegateYield: function(t, i, r) {
                   return (this.delegate = { iterator: A(t), resultName: i, nextLoc: r }), 'next' === this.method && (this.arg = n), p;
-                }
+                },
               }),
               t
             );
@@ -1503,7 +1503,7 @@
           i.d(n, {
             default: function() {
               return TI;
-            }
+            },
           });
           var e = 0;
           function o(t) {
@@ -2165,7 +2165,7 @@
                   ((i =
                     t.call(this, n.tileCoord, r, {
                       transition: n.transition,
-                      interpolate: n.interpolate
+                      interpolate: n.interpolate,
                     }) || this).U = n.loader),
                   (i.B = null),
                   (i.V = null),
@@ -2304,14 +2304,14 @@
               METERS: 'm',
               PIXELS: 'pixels',
               TILE_PIXELS: 'tile-pixels',
-              USFEET: 'us-ft'
+              USFEET: 'us-ft',
             },
             It = {
               9001: kt.METERS,
               9002: kt.FEET,
               9003: kt.USFEET,
               9101: kt.RADIANS,
-              9102: kt.DEGREES
+              9102: kt.DEGREES,
             };
           function Nt(t) {
             return It[t];
@@ -2335,7 +2335,7 @@
                 var n = Object.defineProperty({}, 'passive', {
                   get: function() {
                     t = !0;
-                  }
+                  },
                 });
                 window.addEventListener('_', null, n), window.removeEventListener('_', null, n);
               } catch(t) {}
@@ -2631,12 +2631,12 @@
               if(t[0] < i[0])
                 return [
                   [t[0] + r, t[1], i[2], t[3]],
-                  [i[0], t[1], t[2], t[3]]
+                  [i[0], t[1], t[2], t[3]],
                 ];
               if(t[2] > i[2])
                 return [
                   [t[0], t[1], i[2], t[3]],
-                  [i[0], t[1], t[2] - r, t[3]]
+                  [i[0], t[1], t[2] - r, t[3]],
                 ];
             }
             return [t];
@@ -2812,7 +2812,7 @@
                     worldExtent: _i,
                     getPointResolution: function(t, n) {
                       return t / si(n[1] / bi);
-                    }
+                    },
                   }) || this
                 );
               }
@@ -2824,7 +2824,7 @@
               new Oi('EPSG:102113'),
               new Oi('EPSG:900913'),
               new Oi('http://www.opengis.net/def/crs/EPSG/0/3857'),
-              new Oi('http://www.opengis.net/gml/srs/epsg.xml#3857')
+              new Oi('http://www.opengis.net/gml/srs/epsg.xml#3857'),
             ];
           function Ei(t, n, i) {
             var r = t.length,
@@ -2879,7 +2879,7 @@
                     axisOrientation: i,
                     global: !0,
                     metersPerUnit: ki,
-                    worldExtent: Ci
+                    worldExtent: Ci,
                   }) || this
                 );
               }
@@ -2892,7 +2892,7 @@
               new Ii('urn:ogc:def:crs:OGC:2:84'),
               new Ii('http://www.opengis.net/def/crs/OGC/1.3/CRS84'),
               new Ii('http://www.opengis.net/gml/srs/epsg.xml#4326', 'neu'),
-              new Ii('http://www.opengis.net/def/crs/EPSG/0/4326', 'neu')
+              new Ii('http://www.opengis.net/def/crs/EPSG/0/4326', 'neu'),
             ],
             Li = {};
           function zi() {
@@ -4324,7 +4324,7 @@
               u = [
                 K(r, V, function() {
                   (s = !0), o || n();
-                })
+                }),
               ];
             return (
               r.src && Wt
@@ -4896,11 +4896,11 @@
                             !n.some(function (t) {
                               return t.layer === i.layer;
                             }),
-                            67
+                            67,
                           ),
                             n.push(i);
                         },
-                        this
+                        this,
                       )),
                       (this.sn = $(this, L, t.render, t)),
                       this.changed());
@@ -5065,9 +5065,9 @@
                 '(?:(?:normal|\\1|\\2|\\3)\\s*){0,3}((?:xx?-)?',
                 '(?:small|large)|medium|smaller|larger|[\\.\\d]+(?:\\%|in|[cem]m|ex|p[ctx]))',
                 '(?:\\s*\\/\\s*(normal|[\\.\\d]+(?:\\%|in|[cem]m|ex|p[ctx])?))',
-                '?\\s*([-,\\"\\\'\\sa-z]+?)\\s*$'
+                '?\\s*([-,\\"\\\'\\sa-z]+?)\\s*$',
               ].join(''),
-              'i'
+              'i',
             ),
             Os = ['style', 'variant', 'weight', 'size', 'lineHeight', 'family'],
             js = function(t) {
@@ -5079,7 +5079,7 @@
                     size: '1.2em',
                     style: 'normal',
                     weight: 'normal',
-                    variant: 'normal'
+                    variant: 'normal',
                   },
                   r = 0,
                   e = Os.length;
@@ -5480,7 +5480,7 @@
                     this.En = t;
                   },
                   enumerable: !1,
-                  configurable: !0
+                  configurable: !0,
                 }),
                 Object.defineProperty(n.prototype, 'coordinate', {
                   get: function() {
@@ -5490,7 +5490,7 @@
                     this.Tn = t;
                   },
                   enumerable: !1,
-                  configurable: !0
+                  configurable: !0,
                 }),
                 (n.prototype.preventDefault = function() {
                   t.prototype.preventDefault.call(this), 'preventDefault' in this.originalEvent && this.originalEvent.preventDefault();
@@ -5513,7 +5513,7 @@
               POINTEROUT: 'pointerout',
               POINTERENTER: 'pointerenter',
               POINTERLEAVE: 'pointerleave',
-              POINTERCANCEL: 'pointercancel'
+              POINTERCANCEL: 'pointercancel',
             },
             uu = 'pointermove',
             au = 'pointerdown',
@@ -5561,7 +5561,7 @@
                             var n = new ou(su.SINGLECLICK, this.vn, t);
                             this.dispatchEvent(n);
                           }.bind(this),
-                          250
+                          250,
                         ));
                 }),
                 (n.prototype.Vn = function(t) {
@@ -5748,7 +5748,7 @@
                     },
                     function(t) {
                       return t[0].getKey();
-                    }
+                    },
                   ) || this;
                 return (r.ui = r.handleTileChange.bind(r)), (r.ai = i), (r.hi = 0), (r.fi = {}), r;
               }
@@ -6021,7 +6021,7 @@
                   }
                 },
                 enumerable: !1,
-                configurable: !0
+                configurable: !0,
               }),
               (n.prototype.ki = function(t) {
                 var n = this.getProperties();
@@ -6056,7 +6056,7 @@
                         anchor: f.anchor,
                         duration: void 0 !== f.duration ? f.duration : 1e3,
                         easing: f.easing || wt,
-                        callback: n
+                        callback: n,
                       };
                     if(
                       (f.center && ((c.sourceCenter = s), (c.targetCenter = f.center.slice()), (s = c.targetCenter)),
@@ -6280,7 +6280,7 @@
                   nextResolution: this.xi,
                   nextRotation: this.Mi,
                   rotation: i,
-                  zoom: this.getZoom()
+                  zoom: this.getZoom(),
                 };
               }),
               (n.prototype.getZoom = function() {
@@ -6449,7 +6449,7 @@
                       resolution: u,
                       duration: r,
                       easing: mt,
-                      anchor: h
+                      anchor: h,
                     }));
               }),
               (n.prototype.beginInteraction = function() {
@@ -6540,7 +6540,7 @@
                     interactions: r,
                     keyboardEventTarget: n,
                     overlays: e,
-                    values: o
+                    values: o,
                   };
                 })(n);
                 i.Ri,
@@ -6610,48 +6610,48 @@
                     ot,
                     function(t) {
                       t.element.setMap(this);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.controls.addEventListener(
                     st,
                     function(t) {
                       t.element.setMap(null);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.interactions.addEventListener(
                     ot,
                     function(t) {
                       t.element.setMap(this);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.interactions.addEventListener(
                     st,
                     function(t) {
                       t.element.setMap(null);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.sr.addEventListener(
                     ot,
                     function(t) {
                       this.yr(t.element);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.sr.addEventListener(
                     st,
                     function(t) {
                       var n = t.element.getId();
                       void 0 !== n && delete this.ur[n.toString()], t.element.setMap(null);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.controls.forEach(
                     function(t) {
                       t.setMap(this);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.interactions.forEach(
                     function(t) {
                       t.setMap(this);
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   i.sr.forEach(i.yr.bind(i)),
                   i
@@ -6701,7 +6701,7 @@
                       function(t) {
                         i.push(t);
                       },
-                      n
+                      n,
                     ),
                     i
                   );
@@ -6972,7 +6972,7 @@
                         viewHints: u,
                         wantedTiles: {},
                         mapId: o(this),
-                        renderTargets: {}
+                        renderTargets: {},
                       }),
                       a.nextCenter && a.nextResolution)
                     ) {
@@ -7120,7 +7120,7 @@
                   t.call(this, {
                     element: document.createElement('div'),
                     render: r.render,
-                    target: r.target
+                    target: r.target,
                   }) || this)._r = document.createElement('ul')),
                   (i.Sr = void 0 === r.collapsed || r.collapsed),
                   (i.jr = i.Sr),
@@ -7232,7 +7232,7 @@
                   t.call(this, {
                     element: document.createElement('div'),
                     render: r.render,
-                    target: r.target
+                    target: r.target,
                   }) || this;
                 var e = void 0 !== r.className ? r.className : 'ol-rotate',
                   o = void 0 !== r.label ? r.label : '⇧',
@@ -7381,7 +7381,7 @@
               t.animateInternal({
                 duration: void 0 !== i ? i : 250,
                 easing: gt,
-                center: t.getConstrainedCenter(e)
+                center: t.getConstrainedCenter(e),
               });
             }
           }
@@ -7395,7 +7395,7 @@
                   resolution: s,
                   anchor: i,
                   duration: void 0 !== r ? r : 250,
-                  easing: mt
+                  easing: mt,
                 });
             }
           }
@@ -7652,7 +7652,7 @@
                       i.animateInternal({
                         center: i.getConstrainedCenter(u),
                         duration: 500,
-                        easing: mt
+                        easing: mt,
                       });
                     }
                     return this.Yr && ((this.Yr = !1), i.endInteraction()), !1;
@@ -7893,7 +7893,7 @@
                     t.call(this, {
                       condition: e,
                       className: r.className || 'ol-dragzoom',
-                      minArea: r.minArea
+                      minArea: r.minArea,
                     }) || this).Fr = void 0 !== r.duration ? r.duration : 200),
                   (i.ee = void 0 !== r.out && r.out),
                   i
@@ -8429,7 +8429,7 @@
                         n.getView().animateInternal({
                           center: n.getCoordinateFromPixelInternal(d),
                           duration: p.duration,
-                          easing: p.easing
+                          easing: p.easing,
                         });
                       }
                     }
@@ -8638,7 +8638,7 @@
                     this.forEach(
                       function(n) {
                         n.tileCoord[0] !== t && (this.remove(Eh(n.tileCoord)), n.release());
-                      }.bind(this)
+                      }.bind(this),
                     );
                   }
                 }),
@@ -8746,7 +8746,7 @@
                         renderedRevision: -1,
                         renderedTileResolution: NaN,
                         renderedTileRevision: -1,
-                        renderedTileZ: -1
+                        renderedTileZ: -1,
                       }),
                     this.Le[n]
                   );
@@ -8851,7 +8851,7 @@
                 function(t, n) {
                   u.addFeatures(t), void 0 !== o && o(t);
                 },
-                s || j
+                s || j,
               );
             };
           }
@@ -9247,7 +9247,7 @@
                         lineJoin: t.lineJoin,
                         lineWidth: t.lineWidth,
                         miterLimit: t.miterLimit,
-                        strokeStyle: t.strokeStyle
+                        strokeStyle: t.strokeStyle,
                       }));
                 }),
                 (n.prototype.bo = function(t) {
@@ -9287,7 +9287,7 @@
                       lineJoin: void 0 !== a ? a : Cs,
                       lineWidth: (void 0 !== h ? h : 1) * this.kt,
                       miterLimit: void 0 !== f ? f : ks,
-                      strokeStyle: Uh(e || Is)
+                      strokeStyle: Uh(e || Is),
                     };
                   } else this.We = null;
                 }),
@@ -9332,7 +9332,7 @@
                         lineJoin: void 0 !== a ? a : Cs,
                         lineWidth: void 0 !== h ? h : 1,
                         miterLimit: void 0 !== f ? f : ks,
-                        strokeStyle: Uh(e || Is)
+                        strokeStyle: Uh(e || Is),
                       };
                     } else this.co = null;
                     var c = t.getFont(),
@@ -9347,7 +9347,7 @@
                     (this.lo = {
                       font: void 0 !== c ? c : Es,
                       textAlign: void 0 !== w ? w : Ns,
-                      textBaseline: void 0 !== g ? g : Ls
+                      textBaseline: void 0 !== g ? g : Ls,
                     }),
                       (this.eo =
                         void 0 !== m
@@ -9488,7 +9488,7 @@
                   var h = (e || t).getBuilder(i.getZIndex(), 'Text');
                   h.setTextStyle(a), h.drawText(n, r);
                 }
-              }
+              },
             };
           function of(t, n) {
             return parseInt(o(t), 10) - parseInt(o(n), 10);
@@ -9616,7 +9616,7 @@
                   [(f -= j), (p -= E), 0, 0, M - b],
                   [(y -= j), (w -= E), 0, 0, S - b],
                   [0, 0, f, p, _ - x],
-                  [0, 0, y, w, O - x]
+                  [0, 0, y, w, O - x],
                 ]);
                 if(T) {
                   if(
@@ -9671,9 +9671,9 @@
                       function(t, n) {
                         return n - t;
                       },
-                      !0
+                      !0,
                     ),
-                    17
+                    17,
                   ),
                   !t.origins)
                 )
@@ -9870,7 +9870,7 @@
                 extent: i,
                 minZoom: n.minZoom,
                 tileSize: n.tileSize,
-                resolutions: jf(i, n.maxZoom, n.tileSize, n.maxResolution)
+                resolutions: jf(i, n.maxZoom, n.tileSize, n.maxResolution),
               };
             return new xf(r);
           }
@@ -10138,14 +10138,14 @@
                 n.shaderSource(
                   i,
                   t.vertexShader ||
-                    '\n  precision mediump float;\n  \n  attribute vec2 a_position;\n  varying vec2 v_texCoord;\n  varying vec2 v_screenCoord;\n  \n  uniform vec2 u_screenSize;\n   \n  void main() {\n    v_texCoord = a_position * 0.5 + 0.5;\n    v_screenCoord = v_texCoord * u_screenSize;\n    gl_Position = vec4(a_position, 0.0, 1.0);\n  }\n'
+                    '\n  precision mediump float;\n  \n  attribute vec2 a_position;\n  varying vec2 v_texCoord;\n  varying vec2 v_screenCoord;\n  \n  uniform vec2 u_screenSize;\n   \n  void main() {\n    v_texCoord = a_position * 0.5 + 0.5;\n    v_screenCoord = v_texCoord * u_screenSize;\n    gl_Position = vec4(a_position, 0.0, 1.0);\n  }\n',
                 ),
                   n.compileShader(i);
                 var r = n.createShader(n.FRAGMENT_SHADER);
                 n.shaderSource(
                   r,
                   t.fragmentShader ||
-                    '\n  precision mediump float;\n   \n  uniform sampler2D u_image;\n  uniform float u_opacity;\n   \n  varying vec2 v_texCoord;\n   \n  void main() {\n    gl_FragColor = texture2D(u_image, v_texCoord) * u_opacity;\n  }\n'
+                    '\n  precision mediump float;\n   \n  uniform sampler2D u_image;\n  uniform float u_opacity;\n   \n  varying vec2 v_texCoord;\n   \n  void main() {\n    gl_FragColor = texture2D(u_image, v_texCoord) * u_opacity;\n  }\n',
                 ),
                   n.compileShader(r),
                   (this.Fo = n.createProgram()),
@@ -10165,9 +10165,9 @@
                       function(i) {
                         this.Xo.push({
                           value: t.uniforms[i],
-                          location: n.getUniformLocation(this.Fo, i)
+                          location: n.getUniformLocation(this.Fo, i),
                         });
-                      }.bind(this)
+                      }.bind(this),
                     );
               }
               return (
@@ -10344,7 +10344,7 @@
                           scaleRatio: t.scaleRatio,
                           vertexShader: t.vertexShader,
                           fragmentShader: t.fragmentShader,
-                          uniforms: t.uniforms
+                          uniforms: t.uniforms,
                         });
                       })
                     : [new bc({ webGlContext: o })]),
@@ -10485,7 +10485,7 @@
                             return;
                         }
                       else 'number' == typeof n && i.uniform1f(this.getUniformLocation(e.name), n);
-                    }.bind(this)
+                    }.bind(this),
                   );
                 }),
                 (n.prototype.useProgram = function(t) {
@@ -10676,13 +10676,13 @@
                           var n = [
                             [t.source[0][0], t.source[0][1]],
                             [t.source[1][0], t.source[1][1]],
-                            [t.source[2][0], t.source[2][1]]
+                            [t.source[2][0], t.source[2][1]],
                           ];
                           n[0][0] - m > this.xs / 2 && (n[0][0] -= this.xs), n[1][0] - m > this.xs / 2 && (n[1][0] -= this.xs), n[2][0] - m > this.xs / 2 && (n[2][0] -= this.xs);
                           var i = Math.min(n[0][0], n[1][0], n[2][0]);
                           Math.max(n[0][0], n[1][0], n[2][0]) - i < this.xs / 2 && (t.source = n);
                         }
-                      }.bind(this)
+                      }.bind(this),
                     );
                 }
                 s = {};
@@ -10831,9 +10831,9 @@
                           n.getState() == vt &&
                           t.push({
                             extent: this.Es.getTileCoordExtent(n.tileCoord),
-                            image: n.getImage()
+                            image: n.getImage(),
                           });
-                      }.bind(this)
+                      }.bind(this),
                     ),
                     (this.Ps.length = 0),
                     0 === t.length)
@@ -10868,11 +10868,11 @@
                                 var r = n.getState();
                                 (r != vt && r != dt && r != pt) || (H(o), 0 === --t && (this.Ls(), this.Ns()));
                               },
-                              this
+                              this,
                             );
                             this.Cs.push(o);
                           }
-                        }.bind(this)
+                        }.bind(this),
                       ),
                       0 === t
                         ? setTimeout(this.Ns.bind(this), 0)
@@ -11213,7 +11213,7 @@
                       (this.helper = new zc({
                         postProcesses: this.Bs,
                         uniforms: this.Xo,
-                        canvasCacheKey: f
+                        canvasCacheKey: f,
                       })),
                       e && (this.helper.getCanvas().className = e),
                       this.afterHelperCreated());
@@ -11318,7 +11318,7 @@
               TEXTURE_ORIGIN_Y: 'u_textureOriginY',
               RENDER_EXTENT: 'u_renderExtent',
               RESOLUTION: 'u_resolution',
-              ZOOM: 'u_zoom'
+              ZOOM: 'u_zoom',
             },
             al = { TEXTURE_COORD: 'a_textureCoord' },
             hl = [{ name: al.TEXTURE_COORD, size: 2, type: Pc.FLOAT }],
@@ -11624,7 +11624,7 @@
               El(
                 n.map(function (t, n) {
                   return n < 3 ? t / 255 : t;
-                })
+                }),
               )
             );
           }
@@ -11686,7 +11686,7 @@
               zl(n, 1), Nl(n[0]);
               var i = n[0].toString();
               return -1 === t.attributes.indexOf(i) && t.attributes.push(i), (t.inFragmentShader ? 'v_' : 'a_') + i;
-            }
+            },
           }),
             (_l.var = {
               getReturnType: function(t) {
@@ -11696,7 +11696,7 @@
                 zl(n, 1), Nl(n[0]);
                 var i = n[0].toString();
                 return -1 === t.variables.indexOf(i) && t.variables.push(i), ql(i);
-              }
+              },
             });
           var Ul = 'u_paletteTextures';
           _l.palette = {
@@ -11728,7 +11728,7 @@
               var c = ''.concat(Ul, '[').concat(t.paletteTextures.length, ']'),
                 l = new Rc(c, o);
               return t.paletteTextures.push(l), 'texture2D('.concat(c, ', vec2((').concat(i, ' + 0.5) / ').concat(e, '.0, 0.5))');
-            }
+            },
           };
           var Bl = 'getBandValue';
           function Xl(t) {
@@ -11741,7 +11741,7 @@
                 for(var r = xl, e = 0; e < i.length; e++) r &= Sl(i[e]);
                 if(r === Ml) throw new Error('All arguments should be of compatible type, got '.concat(JSON.stringify(i), ' instead'));
                 return (r &= ~wl), '('.concat(Cl(n, i[0], r), ' ').concat(t, ' ').concat(Cl(n, i[1], r), ')');
-              }
+              },
             };
           }
           function Vl(t) {
@@ -11761,7 +11761,7 @@
                     .join(' '.concat(t, ' '))),
                   (e = '('.concat(e, ')'))
                 );
-              }
+              },
             };
           }
           (_l.band = {
@@ -11791,7 +11791,7 @@
                 f = Cl(t, n[1] || 0),
                 c = Cl(t, n[2] || 0);
               return ''.concat(Bl, '(').concat(h, ', ').concat(f, ', ').concat(c, ')');
-            }
+            },
           }),
             (_l.time = {
               getReturnType: function(t) {
@@ -11799,7 +11799,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 0), 'u_time';
-              }
+              },
             }),
             (_l.zoom = {
               getReturnType: function(t) {
@@ -11807,7 +11807,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 0), 'u_zoom';
-              }
+              },
             }),
             (_l.resolution = {
               getReturnType: function(t) {
@@ -11815,7 +11815,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 0), 'u_resolution';
-              }
+              },
             }),
             (_l['*'] = {
               getReturnType: function(t) {
@@ -11823,7 +11823,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' * ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['/'] = {
               getReturnType: function(t) {
@@ -11831,7 +11831,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' / ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['+'] = {
               getReturnType: function(t) {
@@ -11839,7 +11839,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' + ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['-'] = {
               getReturnType: function(t) {
@@ -11847,7 +11847,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' - ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l.clamp = {
               getReturnType: function(t) {
@@ -11858,7 +11858,7 @@
                 var i = Cl(t, n[1]),
                   r = Cl(t, n[2]);
                 return 'clamp('.concat(Cl(t, n[0]), ', ').concat(i, ', ').concat(r, ')');
-              }
+              },
             }),
             (_l['%'] = {
               getReturnType: function(t) {
@@ -11866,7 +11866,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), 'mod('.concat(Cl(t, n[0]), ', ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['^'] = {
               getReturnType: function(t) {
@@ -11874,7 +11874,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), 'pow('.concat(Cl(t, n[0]), ', ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l.abs = {
               getReturnType: function(t) {
@@ -11882,7 +11882,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 1), Il(n), 'abs('.concat(Cl(t, n[0]), ')');
-              }
+              },
             }),
             (_l.floor = {
               getReturnType: function(t) {
@@ -11890,7 +11890,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 1), Il(n), 'floor('.concat(Cl(t, n[0]), ')');
-              }
+              },
             }),
             (_l.round = {
               getReturnType: function(t) {
@@ -11898,7 +11898,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 1), Il(n), 'floor('.concat(Cl(t, n[0]), ' + 0.5)');
-              }
+              },
             }),
             (_l.ceil = {
               getReturnType: function(t) {
@@ -11906,7 +11906,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 1), Il(n), 'ceil('.concat(Cl(t, n[0]), ')');
-              }
+              },
             }),
             (_l.sin = {
               getReturnType: function(t) {
@@ -11914,7 +11914,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 1), Il(n), 'sin('.concat(Cl(t, n[0]), ')');
-              }
+              },
             }),
             (_l.cos = {
               getReturnType: function(t) {
@@ -11922,7 +11922,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 1), Il(n), 'cos('.concat(Cl(t, n[0]), ')');
-              }
+              },
             }),
             (_l.atan = {
               getReturnType: function(t) {
@@ -11930,7 +11930,7 @@
               },
               toGlsl: function(t, n) {
                 return Rl(n, 1), Fl(n, 2), Il(n), 2 === n.length ? 'atan('.concat(Cl(t, n[0]), ', ').concat(Cl(t, n[1]), ')') : 'atan('.concat(Cl(t, n[0]), ')');
-              }
+              },
             }),
             (_l['>'] = {
               getReturnType: function(t) {
@@ -11938,7 +11938,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' > ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['>='] = {
               getReturnType: function(t) {
@@ -11946,7 +11946,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' >= ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['<'] = {
               getReturnType: function(t) {
@@ -11954,7 +11954,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' < ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['<='] = {
               getReturnType: function(t) {
@@ -11962,7 +11962,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 2), Il(n), '('.concat(Cl(t, n[0]), ' <= ').concat(Cl(t, n[1]), ')');
-              }
+              },
             }),
             (_l['=='] = Xl('==')),
             (_l['!='] = Xl('!=')),
@@ -11972,7 +11972,7 @@
               },
               toGlsl: function(t, n) {
                 return zl(n, 1), Ll(n[0]), '(!'.concat(Cl(t, n[0]), ')');
-              }
+              },
             }),
             (_l.all = Vl('&&')),
             (_l.any = Vl('||')),
@@ -11986,7 +11986,7 @@
                   r = Cl(t, n[2]),
                   e = Cl(t, n[0]);
                 return '('.concat(e, ' >= ').concat(i, ' && ').concat(e, ' <= ').concat(r, ')');
-              }
+              },
             }),
             (_l.array = {
               getReturnType: function(t) {
@@ -11998,7 +11998,7 @@
                   return Cl(t, n, yl);
                 });
                 return 'vec'.concat(n.length, '(').concat(i.join(', '), ')');
-              }
+              },
             }),
             (_l.color = {
               getReturnType: function(t) {
@@ -12012,7 +12012,7 @@
                   return Cl(t, n, yl) + (i < 3 ? ' / 255.0' : '');
                 });
                 return 'vec'.concat(n.length, '(').concat(r.join(', '), ')');
-              }
+              },
             }),
             (_l.interpolate = {
               getReturnType: function(t) {
@@ -12045,7 +12045,7 @@
                   h = 'mix('.concat(l, ', ').concat(d, ', pow(clamp((').concat(u, ' - ').concat(c, ') / (').concat(v, ' - ').concat(c, '), 0.0, 1.0), ').concat(a, '))');
                 }
                 return h;
-              }
+              },
             }),
             (_l.match = {
               getReturnType: function(t) {
@@ -12067,7 +12067,7 @@
                     .concat(u || s, ')');
                 }
                 return u;
-              }
+              },
             }),
             (_l.case = {
               getReturnType: function(t) {
@@ -12094,7 +12094,7 @@
                     .concat(u || s, ')');
                 }
                 return u;
-              }
+              },
             });
           var Wl = (function () {
             function t() {
@@ -12168,7 +12168,7 @@
                           return 'uniform ' + t + ';';
                         })
                         .join('\n'),
-                      '\nattribute vec2 a_position;\nattribute float a_index;\n'
+                      '\nattribute vec2 a_position;\nattribute float a_index;\n',
                     )
                     .concat(
                       i
@@ -12176,7 +12176,7 @@
                           return 'attribute ' + t + ';';
                         })
                         .join('\n'),
-                      '\nvarying vec2 v_texCoord;\nvarying vec2 v_quadCoord;\n'
+                      '\nvarying vec2 v_texCoord;\nvarying vec2 v_quadCoord;\n',
                     )
                     .concat(
                       r
@@ -12184,18 +12184,18 @@
                           return 'varying ' + t.type + ' ' + t.name + ';';
                         })
                         .join('\n'),
-                      '\nvoid main(void) {\n  mat4 offsetMatrix = '
+                      '\nvoid main(void) {\n  mat4 offsetMatrix = ',
                     )
                     .concat(n, ';\n  vec2 halfSize = ')
                     .concat(this.sizeExpression, ' * 0.5;\n  vec2 offset = ')
                     .concat(this.offsetExpression, ';\n  float angle = ')
                     .concat(
                       this.rotationExpression,
-                      ';\n  float offsetX;\n  float offsetY;\n  if(a_index == 0.0) {\n    offsetX = (offset.x - halfSize.x) * cos(angle) + (offset.y - halfSize.y) * sin(angle);\n    offsetY = (offset.y - halfSize.y) * cos(angle) - (offset.x - halfSize.x) * sin(angle);\n  } else if (a_index == 1.0) {\n    offsetX = (offset.x + halfSize.x) * cos(angle) + (offset.y - halfSize.y) * sin(angle);\n    offsetY = (offset.y - halfSize.y) * cos(angle) - (offset.x + halfSize.x) * sin(angle);\n  } else if (a_index == 2.0) {\n    offsetX = (offset.x + halfSize.x) * cos(angle) + (offset.y + halfSize.y) * sin(angle);\n    offsetY = (offset.y + halfSize.y) * cos(angle) - (offset.x + halfSize.x) * sin(angle);\n  } else {\n    offsetX = (offset.x - halfSize.x) * cos(angle) + (offset.y + halfSize.y) * sin(angle);\n    offsetY = (offset.y + halfSize.y) * cos(angle) - (offset.x - halfSize.x) * sin(angle);\n  }\n  vec4 offsets = offsetMatrix * vec4(offsetX, offsetY, 0.0, 0.0);\n  gl_Position = u_projectionMatrix * vec4(a_position, 0.0, 1.0) + offsets;\n  vec4 texCoord = '
+                      ';\n  float offsetX;\n  float offsetY;\n  if(a_index == 0.0) {\n    offsetX = (offset.x - halfSize.x) * cos(angle) + (offset.y - halfSize.y) * sin(angle);\n    offsetY = (offset.y - halfSize.y) * cos(angle) - (offset.x - halfSize.x) * sin(angle);\n  } else if (a_index == 1.0) {\n    offsetX = (offset.x + halfSize.x) * cos(angle) + (offset.y - halfSize.y) * sin(angle);\n    offsetY = (offset.y - halfSize.y) * cos(angle) - (offset.x + halfSize.x) * sin(angle);\n  } else if (a_index == 2.0) {\n    offsetX = (offset.x + halfSize.x) * cos(angle) + (offset.y + halfSize.y) * sin(angle);\n    offsetY = (offset.y + halfSize.y) * cos(angle) - (offset.x + halfSize.x) * sin(angle);\n  } else {\n    offsetX = (offset.x - halfSize.x) * cos(angle) + (offset.y + halfSize.y) * sin(angle);\n    offsetY = (offset.y + halfSize.y) * cos(angle) - (offset.x - halfSize.x) * sin(angle);\n  }\n  vec4 offsets = offsetMatrix * vec4(offsetX, offsetY, 0.0, 0.0);\n  gl_Position = u_projectionMatrix * vec4(a_position, 0.0, 1.0) + offsets;\n  vec4 texCoord = ',
                     )
                     .concat(
                       this.texCoordExpression,
-                      ';\n  float u = a_index == 0.0 || a_index == 3.0 ? texCoord.s : texCoord.p;\n  float v = a_index == 2.0 || a_index == 3.0 ? texCoord.t : texCoord.q;\n  v_texCoord = vec2(u, v);\n  u = a_index == 0.0 || a_index == 3.0 ? 0.0 : 1.0;\n  v = a_index == 2.0 || a_index == 3.0 ? 0.0 : 1.0;\n  v_quadCoord = vec2(u, v);\n'
+                      ';\n  float u = a_index == 0.0 || a_index == 3.0 ? texCoord.s : texCoord.p;\n  float v = a_index == 2.0 || a_index == 3.0 ? texCoord.t : texCoord.q;\n  v_texCoord = vec2(u, v);\n  u = a_index == 0.0 || a_index == 3.0 ? 0.0 : 1.0;\n  v = a_index == 2.0 || a_index == 3.0 ? 0.0 : 1.0;\n  v_quadCoord = vec2(u, v);\n',
                     )
                     .concat(
                       r
@@ -12203,7 +12203,7 @@
                           return '  ' + t.name + ' = ' + t.expression + ';';
                         })
                         .join('\n'),
-                      '\n}'
+                      '\n}',
                     )
                 );
               }),
@@ -12219,7 +12219,7 @@
                           return 'uniform ' + t + ';';
                         })
                         .join('\n'),
-                      '\nvarying vec2 v_texCoord;\nvarying vec2 v_quadCoord;\n'
+                      '\nvarying vec2 v_texCoord;\nvarying vec2 v_quadCoord;\n',
                     )
                     .concat(
                       i
@@ -12227,7 +12227,7 @@
                           return 'varying ' + t.type + ' ' + t.name + ';';
                         })
                         .join('\n'),
-                      '\nvoid main(void) {\n  if('
+                      '\nvoid main(void) {\n  if(',
                     )
                     .concat(this.discardExpression, ') { discard; }\n  gl_FragColor = ')
                     .concat(this.colorExpression, ';\n  gl_FragColor.rgb *= gl_FragColor.a;\n')
@@ -12250,7 +12250,7 @@
                 variables: [],
                 attributes: [],
                 stringLiteralsMap: {},
-                functions: {}
+                functions: {},
               },
               h = Cl(a, i, bl | yl),
               f = Cl(a, o, bl),
@@ -12261,7 +12261,7 @@
                 variables: a.variables,
                 attributes: [],
                 stringLiteralsMap: a.stringLiteralsMap,
-                functions: {}
+                functions: {},
               },
               d = Cl(v, r, wl),
               p = Cl(v, s, yl),
@@ -12327,10 +12327,10 @@
                     callback: function(n, i) {
                       var r = i[t];
                       return 'string' == typeof r && (r = Al(a, r)), void 0 !== r ? r : -9999999;
-                    }
+                    },
                   };
                 }),
-                uniforms: M
+                uniforms: M,
               }
             );
           }
@@ -12364,7 +12364,7 @@
                     resolutions: n.resolutions,
                     tileSize: n.tileSize,
                     tileSizes: n.tileSizes,
-                    sizes: n.sizes
+                    sizes: n.sizes,
                   }) || this;
                 return (i.eu = n.matrixIds), i;
               }
@@ -12414,7 +12414,7 @@
                 resolutions: r,
                 matrixIds: e,
                 tileSizes: s,
-                sizes: u
+                sizes: u,
               })
             );
           }
@@ -12431,7 +12431,7 @@
                     rotation: this.getRotation(),
                     rotateWithView: this.getRotateWithView(),
                     displacement: this.getDisplacement().slice(),
-                    declutterMode: this.getDeclutterMode()
+                    declutterMode: this.getDeclutterMode(),
                   });
                 }),
                 (t.prototype.getOpacity = function() {
@@ -12538,7 +12538,7 @@
                       rotation: void 0 !== n.rotation ? n.rotation : 0,
                       scale: void 0 !== n.scale ? n.scale : 1,
                       displacement: void 0 !== n.displacement ? n.displacement : [0, 0],
-                      declutterMode: n.declutterMode
+                      declutterMode: n.declutterMode,
                     }) || this).qt = void 0),
                   (i.cu = null),
                   (i.lu = void 0 !== n.fill ? n.fill : null),
@@ -12569,7 +12569,7 @@
                       rotateWithView: this.getRotateWithView(),
                       scale: Array.isArray(t) ? t.slice() : t,
                       displacement: this.getDisplacement().slice(),
-                      declutterMode: this.getDeclutterMode()
+                      declutterMode: this.getDeclutterMode(),
                     });
                   return i.setOpacity(this.getOpacity()), i;
                 }),
@@ -12685,7 +12685,7 @@
                     lineDash: r,
                     lineDashOffset: e,
                     lineJoin: n,
-                    miterLimit: i
+                    miterLimit: i,
                   };
                 }),
                 (n.prototype.render = function() {
@@ -12781,7 +12781,7 @@
                     rotation: void 0 !== i.rotation ? i.rotation : 0,
                     rotateWithView: void 0 !== i.rotateWithView && i.rotateWithView,
                     displacement: void 0 !== i.displacement ? i.displacement : [0, 0],
-                    declutterMode: i.declutterMode
+                    declutterMode: i.declutterMode,
                   }) || this
                 );
               }
@@ -12797,7 +12797,7 @@
                       rotation: this.getRotation(),
                       rotateWithView: this.getRotateWithView(),
                       displacement: this.getDisplacement().slice(),
-                      declutterMode: this.getDeclutterMode()
+                      declutterMode: this.getDeclutterMode(),
                     });
                   return i.setOpacity(this.getOpacity()), i;
                 }),
@@ -12980,7 +12980,7 @@
                     scale: u,
                     displacement: void 0 !== r.displacement ? r.displacement : [0, 0],
                     rotateWithView: a,
-                    declutterMode: r.declutterMode
+                    declutterMode: r.declutterMode,
                   }) || this).xe = void 0 !== r.anchor ? r.anchor : [0.5, 0.5]),
                   (i.Au = null),
                   (i.Pu = void 0 !== r.anchorOrigin ? r.anchorOrigin : av),
@@ -13023,7 +13023,7 @@
                     size: null !== this.W ? this.W.slice() : void 0,
                     src: this.getSrc(),
                     displacement: this.getDisplacement().slice(),
-                    declutterMode: this.getDeclutterMode()
+                    declutterMode: this.getDeclutterMode(),
                   });
                 }),
                 (n.prototype.getAnchor = function() {
@@ -13115,7 +13115,7 @@
                     lineDashOffset: this.getLineDashOffset(),
                     lineJoin: this.getLineJoin(),
                     miterLimit: this.getMiterLimit(),
-                    width: this.getWidth()
+                    width: this.getWidth(),
                   });
                 }),
                 (t.prototype.getColor = function() {
@@ -13189,7 +13189,7 @@
                       renderer: this.getRenderer(),
                       stroke: this.getStroke() ? this.getStroke().clone() : void 0,
                       text: this.getText() ? this.getText().clone() : void 0,
-                      zIndex: this.getZIndex()
+                      zIndex: this.getZIndex(),
                     })
                   );
                 }),
@@ -13296,10 +13296,10 @@
                   image: new iv({
                     radius: 6,
                     fill: new rv({ color: i }),
-                    stroke: new mv({ color: n, width: 1.5 })
+                    stroke: new mv({ color: n, width: 1.5 }),
                   }),
-                  zIndex: 1 / 0
-                })
+                  zIndex: 1 / 0,
+                }),
               ]),
               (t.MultiPoint = t.Point),
               (t.GeometryCollection = t.Polygon.concat(t.LineString, t.Point)),
@@ -13356,7 +13356,7 @@
                     offsetY: this.getOffsetY(),
                     backgroundFill: this.getBackgroundFill() ? this.getBackgroundFill().clone() : void 0,
                     backgroundStroke: this.getBackgroundStroke() ? this.getBackgroundStroke().clone() : void 0,
-                    padding: this.getPadding() || void 0
+                    padding: this.getPadding() || void 0,
                   });
                 }),
                 (t.prototype.getOverflow = function() {
@@ -13730,7 +13730,7 @@
                     projection: n.projection,
                     state: n.state,
                     wrapX: n.wrapX,
-                    interpolate: n.interpolate
+                    interpolate: n.interpolate,
                   }) || this;
                 i.on, i.once, i.un, (i.ya = void 0 !== n.opaque && n.opaque), (i.ma = void 0 !== n.tilePixelRatio ? n.tilePixelRatio : 1), (i.tileGrid = void 0 !== n.tileGrid ? n.tileGrid : null);
                 return (
@@ -13859,7 +13859,7 @@
                     interpolate: i.interpolate,
                     key: i.key,
                     attributionsCollapsible: i.attributionsCollapsible,
-                    zDirection: i.zDirection
+                    zDirection: i.zDirection,
                   }) || this;
                 return (
                   (r.wa = r.tileUrlFunction === n.prototype.tileUrlFunction),
@@ -13959,7 +13959,7 @@
                       interpolate: r,
                       key: n.key,
                       attributionsCollapsible: n.attributionsCollapsible,
-                      zDirection: n.zDirection
+                      zDirection: n.zDirection,
                     }) || this).crossOrigin = void 0 !== n.crossOrigin ? n.crossOrigin : null),
                   (i.tileClass = void 0 !== n.tileClass ? n.tileClass : ko),
                   (i.tileCacheForProjection = {}),
@@ -14044,7 +14044,7 @@
                         }.bind(this),
                         this.ba,
                         this.xa,
-                        this.getInterpolate()
+                        this.getInterpolate(),
                       );
                     return (d.key = f), a ? ((d.interimTile = a), d.refreshInterimChain(), s.replace(h, d)) : s.set(h, d), d;
                   }
@@ -14127,7 +14127,7 @@
                       tilePixelRatio: r ? 2 : 1,
                       wrapX: void 0 === n.wrapX || n.wrapX,
                       transition: n.transition,
-                      zDirection: n.zDirection
+                      zDirection: n.zDirection,
                     }) || this)._a = r),
                   (i.Sa = void 0 !== n.culture ? n.culture : 'en-us'),
                   (i.Oa = void 0 !== n.maxZoom ? n.maxZoom : -1),
@@ -14137,7 +14137,7 @@
                     'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/' + i.Ea + '?uriScheme=https&include=ImageryProviders&key=' + i.ja + '&c=' + i.Sa,
                     i.handleImageryMetadataResponse.bind(i),
                     void 0,
-                    'jsonp'
+                    'jsonp',
                   ),
                   i
                 );
@@ -14173,7 +14173,7 @@
                               return a && (o += '&dpi=d1&device=mobile'), o.replace('{quadkey}', Yv(i));
                             }
                           };
-                        })
+                        }),
                       )),
                       n.imageryProviders)
                     ) {
@@ -14202,7 +14202,7 @@
                             i.push('<a class="ol-attribution-bing-tos" href="https://www.microsoft.com/maps/product/terms.html" target="_blank">Terms of Use</a>'),
                             i
                           );
-                        }.bind(this)
+                        }.bind(this),
                       );
                     }
                     this.setState('ready');
@@ -14246,7 +14246,7 @@
                           maxResolution: r.maxResolution,
                           maxZoom: r.maxZoom,
                           minZoom: r.minZoom,
-                          tileSize: r.tileSize
+                          tileSize: r.tileSize,
                         });
                 return (
                   ((i =
@@ -14267,7 +14267,7 @@
                       wrapX: void 0 === r.wrapX || r.wrapX,
                       transition: r.transition,
                       attributionsCollapsible: r.attributionsCollapsible,
-                      zDirection: r.zDirection
+                      zDirection: r.zDirection,
                     }) || this).js = void 0 !== r.gutter ? r.gutter : 0),
                   i
                 );
@@ -14312,7 +14312,7 @@
                     projection: n.projection,
                     transition: n.transition,
                     wrapX: n.wrapX,
-                    zDirection: n.zDirection
+                    zDirection: n.zDirection,
                   }) || this;
                 return (i.Ta = n.account), (i.Aa = n.map || ''), (i.Pa = n.config || {}), (i.Ca = {}), i.ka(), i;
               }
@@ -14407,7 +14407,7 @@
                     interpolate: !0,
                     projection: void 0,
                     state: 'ready',
-                    wrapX: void 0 === r.wrapX || r.wrapX
+                    wrapX: void 0 === r.wrapX || r.wrapX,
                   }) || this).on,
                   i.once,
                   i.un,
@@ -14497,13 +14497,13 @@
                       ot,
                       function(t) {
                         n || ((n = !0), this.addFeature(t.element), (n = !1));
-                      }.bind(this)
+                      }.bind(this),
                     ),
                     t.addEventListener(
                       st,
                       function(t) {
                         n || ((n = !0), this.removeFeature(t.element), (n = !1));
-                      }.bind(this)
+                      }.bind(this),
                     ),
                     (this.Va = t);
                 }),
@@ -14570,7 +14570,7 @@
                       [],
                       r.map(function (t) {
                         return i.Fa.getInExtent(t);
-                      })
+                      }),
                     );
                   }
                   return this.Va ? this.Va.getArray().slice(0) : [];
@@ -14661,7 +14661,7 @@
                             }.bind(s),
                             function() {
                               --this.Da, this.dispatchEvent(new ud(od));
-                            }.bind(s)
+                            }.bind(s),
                           ),
                           r.insert(u, { extent: u.slice() }));
                       },
@@ -14859,7 +14859,7 @@
                       maxResolution: n.maxResolution,
                       maxZoom: n.maxZoom,
                       minZoom: n.minZoom,
-                      tileSize: n.tileSize
+                      tileSize: n.tileSize,
                     })),
                   ((i =
                     t.call(this, {
@@ -14873,7 +14873,7 @@
                       tilePixelRatio: n.tilePixelRatio,
                       wrapX: n.wrapX,
                       transition: n.transition,
-                      interpolate: n.interpolate
+                      interpolate: n.interpolate,
                     }) || this).js = void 0 !== n.gutter ? n.gutter : 0),
                   (i.jo = n.tileSize ? Qu(n.tileSize) : null),
                   !i.jo && n.tilePixelRatio && e)
@@ -14913,9 +14913,9 @@
                             return u(t, n, i);
                           });
                         },
-                        size: o
+                        size: o,
                       },
-                      this.tileOptions
+                      this.tileOptions,
                     ),
                     h = new _t(a);
                   return (h.key = this.getKey()), h.addEventListener(L, this.cr), this.tileCache.set(s, h), h;
@@ -15115,13 +15115,13 @@
             i
               .e(226)
               .then(i.bind(i, 966))
-              .then(t => t.default)
+              .then(t => t.default),
           ),
             kd(5, () =>
               i
                 .e(611)
                 .then(i.bind(i, 611))
-                .then(t => t.default)
+                .then(t => t.default),
             ),
             kd(6, () => {
               throw new Error('old style JPEG compression is not supported.');
@@ -15130,29 +15130,29 @@
               i
                 .e(382)
                 .then(i.bind(i, 382))
-                .then(t => t.default)
+                .then(t => t.default),
             ),
             kd([8, 32946], () =>
               Promise.all([i.e(247), i.e(356)])
                 .then(i.bind(i, 356))
-                .then(t => t.default)
+                .then(t => t.default),
             ),
             kd(32773, () =>
               i
                 .e(395)
                 .then(i.bind(i, 395))
-                .then(t => t.default)
+                .then(t => t.default),
             ),
             kd(34887, () =>
               Promise.all([i.e(247), i.e(54)])
                 .then(i.bind(i, 54))
-                .then(t => t.default)
+                .then(t => t.default),
             ),
             kd(50001, () =>
               i
                 .e(629)
                 .then(i.bind(i, 629))
-                .then(t => t.default)
+                .then(t => t.default),
             );
           var Ud = class {
             constructor(t, n, i, r, e, o) {
@@ -15386,7 +15386,7 @@
                 height: o,
                 resampleMethod: s,
                 fillValue: u,
-                signal: a
+                signal: a,
               } = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
               const h = t || [0, 0, this.getWidth(), this.getHeight()];
               if(h[0] > h[2] || h[1] > h[3]) throw new Error('Invalid subsets');
@@ -15418,7 +15418,7 @@
                 height: e,
                 resampleMethod: o,
                 enableAlpha: s = !1,
-                signal: u
+                signal: u,
               } = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
               const a = t || [0, 0, this.getWidth(), this.getHeight()];
               if(a[0] > a[2] || a[1] > a[3]) throw new Error('Invalid subsets');
@@ -15437,7 +15437,7 @@
                   width: r,
                   height: e,
                   resampleMethod: o,
-                  signal: u
+                  signal: u,
                 });
               }
               let f;
@@ -15465,7 +15465,7 @@
                   width: r,
                   height: e,
                   resampleMethod: o,
-                  signal: u
+                  signal: u,
                 },
                 { fileDirectory: l } = this,
                 v = await this.readRasters(c),
@@ -15579,7 +15579,7 @@
                   k: this.fileDirectory.ModelTiepoint[n + 2],
                   x: this.fileDirectory.ModelTiepoint[n + 3],
                   y: this.fileDirectory.ModelTiepoint[n + 4],
-                  z: this.fileDirectory.ModelTiepoint[n + 5]
+                  z: this.fileDirectory.ModelTiepoint[n + 5],
                 });
               return t;
             }
@@ -15776,7 +15776,7 @@
               t.split('\r\n').map(t => {
                 const n = t.split(':').map(t => t.trim());
                 return (n[0] = n[0].toLowerCase()), n;
-              })
+              }),
             );
           }
           function Zd(t) {
@@ -15886,7 +15886,7 @@
                 if(n && n.aborted) throw new Jd('Request was aborted');
                 throw new tp(
                   o.filter(t => 'rejected' === t.status).map(t => t.reason),
-                  'Request failed'
+                  'Request failed',
                 );
               }
               const s = o.map(t => t.value),
@@ -16096,9 +16096,9 @@
                       let { offset: n, length: i } = t;
                       return `${n}-${n + i}`;
                     })
-                    .join(',')}`
+                    .join(',')}`,
                 },
-                signal: n
+                signal: n,
               });
               if(i.ok) {
                 if(206 === i.status) {
@@ -16131,7 +16131,7 @@
                           data: t.slice(v, v + d),
                           offset: f,
                           length: d,
-                          fileSize: l
+                          fileSize: l,
                         }),
                           (i = v + d + 4);
                       }
@@ -16161,7 +16161,7 @@
               const { offset: i, length: r } = t,
                 e = await this.client.request({
                   headers: { ...this.headers, Range: `bytes=${i}-${i + r}` },
-                  signal: n
+                  signal: n,
                 });
               if(e.ok) {
                 if(206 === e.status) {
@@ -16713,7 +16713,7 @@
                   opaque: n.opaque,
                   transition: n.transition,
                   interpolate: !1 !== n.interpolate,
-                  wrapX: n.wrapX
+                  wrapX: n.wrapX,
                 }) || this;
               i.Qa = n.sources;
               var r = i.Qa.length;
@@ -16730,7 +16730,7 @@
                 i.setKey(
                   i.Qa.map(function (t) {
                     return t.url;
-                  }).join(',')
+                  }).join(','),
                 );
               for(var e = i, o = new Array(r), s = 0; s < r; ++s) o[s] = qp(i.Qa[s], i.th);
               return (
@@ -16856,7 +16856,7 @@
                     resolutions: o,
                     center: kr(qn(n), this.projection),
                     extent: Nr(n, this.projection),
-                    zoom: 0
+                    zoom: 0,
                   });
               }),
               (n.prototype.fh = function(t, n, i) {
@@ -16895,7 +16895,7 @@
                           samples: v,
                           fillValue: d,
                           pool: (Cp || (Cp = new kp()), Cp),
-                          interleave: !1
+                          interleave: !1,
                         }));
                     },
                     l = this,
@@ -17041,14 +17041,14 @@
                               x: o,
                               y: s,
                               tileIndex: u,
-                              TileGroup: 'TileGroup' + (((u + y[e]) / M) | 0)
+                              TileGroup: 'TileGroup' + (((u + y[e]) / M) | 0),
                             };
                           return t.replace(/\{(\w+?)\}/g, function(t, n) {
                             return a[n];
                           });
                         }
                       };
-                    })
+                    }),
                   ),
                   S = Kp.bind(null, Qu(c * u));
                 (i =
@@ -17063,7 +17063,7 @@
                     tileClass: S,
                     tileGrid: g,
                     tileUrlFunction: _,
-                    transition: r.transition
+                    transition: r.transition,
                   }) || this).zDirection = r.zDirection;
                 var O = _(g.getTileCoordForCoordAndResolution(qn(g.getExtent()), p[p.length - 1]), 1, null),
                   j = new Image();
@@ -17072,7 +17072,7 @@
                     'error',
                     function() {
                       (M = c), this.changed();
-                    }.bind(i)
+                    }.bind(i),
                   ),
                   (j.src = O),
                   i
@@ -17093,39 +17093,39 @@
             level1: {
               supports: ['regionByPx', 'sizeByW', 'sizeByH', 'sizeByPct'],
               formats: ['jpg'],
-              qualities: ['native']
+              qualities: ['native'],
             },
             level2: {
               supports: ['regionByPx', 'regionByPct', 'sizeByW', 'sizeByH', 'sizeByPct', 'sizeByConfinedWh', 'sizeByWh'],
               formats: ['jpg', 'png'],
-              qualities: ['native', 'color', 'grey', 'bitonal']
-            }
+              qualities: ['native', 'color', 'grey', 'bitonal'],
+            },
           }),
             (iy[ty] = {
               level0: { supports: [], formats: ['jpg'], qualities: ['default'] },
               level1: {
                 supports: ['regionByPx', 'sizeByW', 'sizeByH', 'sizeByPct'],
                 formats: ['jpg'],
-                qualities: ['default']
+                qualities: ['default'],
               },
               level2: {
                 supports: ['regionByPx', 'regionByPct', 'sizeByW', 'sizeByH', 'sizeByPct', 'sizeByConfinedWh', 'sizeByDistortedWh', 'sizeByWh'],
                 formats: ['jpg', 'png'],
-                qualities: ['default', 'bitonal']
-              }
+                qualities: ['default', 'bitonal'],
+              },
             }),
             (iy[ny] = {
               level0: { supports: [], formats: ['jpg'], qualities: ['default'] },
               level1: {
                 supports: ['regionByPx', 'regionSquare', 'sizeByW', 'sizeByH', 'sizeByWh'],
                 formats: ['jpg'],
-                qualities: ['default']
+                qualities: ['default'],
               },
               level2: {
                 supports: ['regionByPx', 'regionSquare', 'regionByPct', 'sizeByW', 'sizeByH', 'sizeByPct', 'sizeByConfinedWh', 'sizeByWh'],
                 formats: ['jpg', 'png'],
-                qualities: ['default']
-              }
+                qualities: ['default'],
+              },
             }),
             (iy.none = { none: { supports: [], formats: [], qualities: [] } });
           var ry = /^https?:\/\/library\.stanford\.edu\/iiif\/image-api\/(?:1\.1\/)?compliance\.html#level[0-2]$/,
@@ -17149,7 +17149,7 @@
                       : [t.imageInfo.tile_width, t.imageInfo.tile_width]
                     : null != t.imageInfo.tile_height
                     ? [t.imageInfo.tile_height, t.imageInfo.tile_height]
-                    : void 0
+                    : void 0,
               }
             );
           }),
@@ -17176,7 +17176,7 @@
                         })[0],
                         t.imageInfo.tiles.map(function (t) {
                           return void 0 === t.height ? t.width : t.height;
-                        })[0]
+                        })[0],
                       ],
                 resolutions:
                   void 0 === t.imageInfo.tiles
@@ -17186,7 +17186,7 @@
                       })[0],
                 supports: Jp(Jp([], n.supports, !0), r, !0),
                 formats: Jp(Jp([], n.formats, !0), e, !0),
-                qualities: Jp(Jp([], n.qualities, !0), o, !0)
+                qualities: Jp(Jp([], n.qualities, !0), o, !0),
               };
             }),
             (sy[ny] = function(t) {
@@ -17219,7 +17219,7 @@
                         })[0],
                         t.imageInfo.tiles.map(function (t) {
                           return t.height;
-                        })[0]
+                        })[0],
                       ],
                 resolutions:
                   void 0 === t.imageInfo.tiles
@@ -17230,7 +17230,7 @@
                 supports: void 0 === t.imageInfo.extraFeatures ? n.supports : Jp(Jp([], n.supports, !0), t.imageInfo.extraFeatures, !0),
                 formats: i,
                 qualities: void 0 === t.imageInfo.extraQualities ? n.qualities : Jp(Jp([], n.qualities, !0), t.imageInfo.extraQualities, !0),
-                preferredFormat: r
+                preferredFormat: r,
               };
             });
           var uy = (function () {
@@ -17308,7 +17308,7 @@
                               return n - t;
                             })
                           : void 0,
-                        tileSize: r.tileSize
+                        tileSize: r.tileSize,
                       };
                   }
                 }),
@@ -17404,7 +17404,7 @@
                     null,
                     Qu(d || 256).map(function (t) {
                       return t * p;
-                    })
+                    }),
                   );
                 return (
                   ((i =
@@ -17466,7 +17466,7 @@
                           }
                         }
                       },
-                      transition: r.transition
+                      transition: r.transition,
                     }) || this).zDirection = r.zDirection),
                   i
                 );
@@ -17539,7 +17539,7 @@
                             var n = this.ph.getState();
                             (n != po && n != yo) || (this.wh(), this.Ns());
                           },
-                          this
+                          this,
                         )),
                         this.ph.load());
                   }
@@ -17594,7 +17594,7 @@
                       attributions: n.attributions,
                       projection: n.projection,
                       state: n.state,
-                      interpolate: r
+                      interpolate: r,
                     }) || this).on,
                   i.once,
                   i.un,
@@ -17633,7 +17633,7 @@
                         function(t, n, i) {
                           return this.getImageInternal(t, n, i, e);
                         }.bind(this),
-                        this.getInterpolate()
+                        this.getInterpolate(),
                       )),
                       (this.bh = this.getRevision()),
                       this.gh
@@ -17697,7 +17697,7 @@
                       attributions: r.attributions,
                       interpolate: e,
                       projection: r.projection,
-                      resolutions: r.resolutions
+                      resolutions: r.resolutions,
                     }) || this).Bt = void 0 !== r.crossOrigin ? r.crossOrigin : null),
                   (i._a = void 0 === r.hidpi || r.hidpi),
                   (i.Fe = r.url),
@@ -17797,7 +17797,7 @@
                       interpolate: e,
                       projection: r.projection,
                       resolutions: r.resolutions,
-                      state: r.state
+                      state: r.state,
                     }) || this).jh = r.canvasFunction),
                   (i.qt = null),
                   (i._h = 0),
@@ -17849,7 +17849,7 @@
                     t.call(this, {
                       interpolate: r,
                       projection: n.projection,
-                      resolutions: n.resolutions
+                      resolutions: n.resolutions,
                     }) || this).Bt = void 0 !== n.crossOrigin ? n.crossOrigin : null),
                   (i.Eh = void 0 !== n.displayDpi ? n.displayDpi : 96),
                   (i.xh = n.params || {}),
@@ -17908,7 +17908,7 @@
                       SETDISPLAYHEIGHT: Math.round(r[1]),
                       SETVIEWSCALE: o,
                       SETVIEWCENTERX: s[0],
-                      SETVIEWCENTERY: s[1]
+                      SETVIEWCENTERY: s[1],
                     };
                   return A(u, n), Nf(t, u);
                 }),
@@ -17950,7 +17950,7 @@
                     t.call(this, {
                       attributions: n.attributions,
                       interpolate: o,
-                      projection: yr(n.projection)
+                      projection: yr(n.projection),
                     }) || this).Fe = n.url),
                   (i.Ah = n.imageExtent),
                   (i.Lt = new bo(i.Ah, void 0, 1, i.Fe, r, e)),
@@ -18029,7 +18029,7 @@
                       attributions: r.attributions,
                       interpolate: e,
                       projection: r.projection,
-                      resolutions: r.resolutions
+                      resolutions: r.resolutions,
                     }) || this).Bt = void 0 !== r.crossOrigin ? r.crossOrigin : null),
                   (i.Fe = r.url),
                   (i.Rt = void 0 !== r.imageLoadFunction ? r.imageLoadFunction : wy),
@@ -18059,7 +18059,7 @@
                         REQUEST: 'GetFeatureInfo',
                         FORMAT: 'image/png',
                         TRANSPARENT: !0,
-                        QUERY_LAYERS: this.xh.LAYERS
+                        QUERY_LAYERS: this.xh.LAYERS,
                       };
                     A(u, this.xh, r);
                     var a = mi((t[0] - s[0]) / n, 4),
@@ -18073,7 +18073,7 @@
                       SERVICE: 'WMS',
                       VERSION: Ty,
                       REQUEST: 'GetLegendGraphic',
-                      FORMAT: 'image/png'
+                      FORMAT: 'image/png',
                     };
                     if(void 0 === n || void 0 === n.LAYER) {
                       var r = this.xh.LAYERS;
@@ -18104,7 +18104,7 @@
                     VERSION: Ty,
                     REQUEST: 'GetMap',
                     FORMAT: 'image/png',
-                    TRANSPARENT: !0
+                    TRANSPARENT: !0,
                   };
                   A(h, this.xh), (this.Mh[0] = yi($n(u) / e, 4)), (this.Mh[1] = yi(Vn(u) / e, 4));
                   var f = this.Oh(u, this.Mh, i, r, h);
@@ -18245,7 +18245,7 @@
                 resolutions: p,
                 sizes: y,
                 tileSizes: m,
-                extent: r ? w : void 0
+                extent: r ? w : void 0,
               }),
               T = t.context,
               P = t.url;
@@ -18268,7 +18268,7 @@
                   });
                   return Qh(P, v);
                 }
-              }
+              },
             };
           }
           function Ry(t) {
@@ -18330,13 +18330,13 @@
                       state: 'loading',
                       tileLoadFunction: n.tileLoadFunction,
                       wrapX: void 0 === n.wrapX || n.wrapX,
-                      transition: n.transition
+                      transition: n.transition,
                     }) || this),
                   Ry({
                     url: n.url,
                     projection: i.getProjection(),
                     mediaType: n.mediaType,
-                    context: n.context || null
+                    context: n.context || null,
                   })
                     .then(i.Ih.bind(i))
                     .catch(i.Nh.bind(i)),
@@ -18386,7 +18386,7 @@
                       maxResolution: n.maxResolution,
                       maxZoom: void 0 !== n.maxZoom ? n.maxZoom : 22,
                       minZoom: n.minZoom,
-                      tileSize: n.tileSize || 512
+                      tileSize: n.tileSize || 512,
                     });
                 return (
                   ((i =
@@ -18405,7 +18405,7 @@
                       urls: n.urls,
                       wrapX: void 0 === n.wrapX || n.wrapX,
                       transition: n.transition,
-                      zDirection: void 0 === n.zDirection ? 1 : n.zDirection
+                      zDirection: void 0 === n.zDirection ? 1 : n.zDirection,
                     }) || this).ze = n.format ? n.format : null),
                   (i.sourceTileCache = new Ih(i.tileCache.highWaterMark)),
                   (i.za = null == n.overlaps || n.overlaps),
@@ -18498,7 +18498,7 @@
                             return t.getState() === dt;
                           })
                             ? dt
-                            : vt
+                            : vt,
                         );
                   }
                   return i.sourceTiles;
@@ -18528,7 +18528,7 @@
                         y,
                         function(t) {
                           v = v && !this.tileUrlFunction(t, r, e);
-                        }.bind(this)
+                        }.bind(this),
                       );
                   }
                   var w = new Gh(a, v ? pt : ct, h, this.getSourceTiles.bind(this, r, e));
@@ -18556,7 +18556,7 @@
                       extent: r.getExtent(),
                       origins: o,
                       resolutions: e,
-                      tileSizes: s
+                      tileSizes: s,
                     })),
                       (this.Lh[n] = i);
                   }
@@ -18614,7 +18614,7 @@
                     transition: n.transition,
                     wrapX: n.wrapX,
                     zDirection: n.zDirection,
-                    state: 'loading'
+                    state: 'loading',
                   }) || this;
                 return (
                   Ry({
@@ -18622,7 +18622,7 @@
                     projection: i.getProjection(),
                     mediaType: n.mediaType,
                     supportedMediaTypes: n.format.supportedMediaTypes,
-                    context: n.context || null
+                    context: n.context || null,
                   })
                     .then(i.Ih.bind(i))
                     .catch(i.Nh.bind(i)),
@@ -18683,7 +18683,7 @@
                     transition: r.transition,
                     url: s,
                     wrapX: r.wrapX,
-                    zDirection: r.zDirection
+                    zDirection: r.zDirection,
                   }) || this
                 );
               }
@@ -19455,10 +19455,10 @@
                   'self.addEventListener("message", function(event) {',
                   '  var buffer = __minion__(event.data);',
                   '  self.postMessage({buffer: buffer, meta: event.data.meta}, [buffer]);',
-                  '});'
+                  '});',
                 ]),
               r = new Worker(
-                'undefined' == typeof Blob ? 'data:text/javascript;base64,' + Buffer.from(i.join('\n'), 'binary').toString('base64') : URL.createObjectURL(new Blob(i, { type: 'text/javascript' }))
+                'undefined' == typeof Blob ? 'data:text/javascript;base64,' + Buffer.from(i.join('\n'), 'binary').toString('base64') : URL.createObjectURL(new Blob(i, { type: 'text/javascript' })),
               );
             return r.addEventListener('message', n), r;
           }
@@ -19481,7 +19481,7 @@
                       },
                       terminate: function() {
                         r = !0;
-                      }
+                      },
                     };
                   })(n, r._onWorkerMessage.bind(r, 0));
                 return (r._workers = e), (r._queue = []), (r._maxQueueLength = n.queue || 1 / 0), (r._running = 0), (r._dataLookup = {}), (r._job = null), r;
@@ -19513,9 +19513,9 @@
                             meta: t.meta,
                             imageOps: this._imageOps,
                             width: n,
-                            height: i
+                            height: i,
                           },
-                          h
+                          h,
                         );
                       }
                     else this._workers[0].postMessage({ buffers: r, meta: t.meta, imageOps: this._imageOps, width: n, height: i }, r);
@@ -19603,7 +19603,7 @@
                     viewHints: [],
                     wantedTiles: {},
                     mapId: o(i),
-                    renderTargets: {}
+                    renderTargets: {},
                   }),
                   i.setAttributions(function (t) {
                     for(var i = [], r = 0, e = n.sources.length; r < e; ++r) {
@@ -19629,7 +19629,7 @@
                       imageOps: this.Dh === Mm,
                       queue: 1,
                       lib: n,
-                      threads: this.qh
+                      threads: this.qh,
                     })),
                     this.changed();
                 }),
@@ -19746,12 +19746,12 @@
               'toner-labels': { extension: 'png', opaque: !1 },
               'toner-lines': { extension: 'png', opaque: !1 },
               'toner-lite': { extension: 'png', opaque: !0 },
-              watercolor: { extension: 'jpg', opaque: !0 }
+              watercolor: { extension: 'jpg', opaque: !0 },
             },
             km = {
               terrain: { minZoom: 0, maxZoom: 18 },
               toner: { minZoom: 0, maxZoom: 20 },
-              watercolor: { minZoom: 0, maxZoom: 18 }
+              watercolor: { minZoom: 0, maxZoom: 18 },
             },
             Im = (function (t) {
               function n(n) {
@@ -19776,7 +19776,7 @@
                     transition: n.transition,
                     url: u,
                     wrapX: n.wrapX,
-                    zDirection: n.zDirection
+                    zDirection: n.zDirection,
                   }) || this
                 );
               }
@@ -19823,7 +19823,7 @@
                       urls: r.urls,
                       wrapX: void 0 === r.wrapX || r.wrapX,
                       transition: r.transition,
-                      zDirection: r.zDirection
+                      zDirection: r.zDirection,
                     }) || this).xh = r.params || {}),
                   (i._a = void 0 === r.hidpi || r.hidpi),
                   (i.Ao = [1 / 0, 1 / 0, -1 / 0, -1 / 0]),
@@ -19922,7 +19922,7 @@
                         o.strokeText(n, e[0] / 2, e[1] / 2, e[0]),
                         o.fillText(n, e[0] / 2, e[1] / 2, e[0]),
                         t.setImage(o.canvas);
-                    }
+                    },
                   }) || this);
               }
               return zm(n, t), n;
@@ -19965,7 +19965,7 @@
                       tileLoadFunction: n.tileLoadFunction,
                       wrapX: void 0 === n.wrapX || n.wrapX,
                       transition: n.transition,
-                      zDirection: n.zDirection
+                      zDirection: n.zDirection,
                     }) || this).Kh = null),
                   (i.jo = n.tileSize),
                   n.url)
@@ -20069,7 +20069,7 @@
                       urls: r.urls,
                       wrapX: void 0 === r.wrapX || r.wrapX,
                       transition: r.transition,
-                      zDirection: r.zDirection
+                      zDirection: r.zDirection,
                     }) || this).js = void 0 !== r.gutter ? r.gutter : 0),
                   (i.xh = o),
                   (i.Ph = !0),
@@ -20102,7 +20102,7 @@
                       REQUEST: 'GetFeatureInfo',
                       FORMAT: 'image/png',
                       TRANSPARENT: !0,
-                      QUERY_LAYERS: this.xh.LAYERS
+                      QUERY_LAYERS: this.xh.LAYERS,
                     };
                     A(v, this.xh, r);
                     var d = Math.floor((t[0] - f[0]) / h),
@@ -20116,7 +20116,7 @@
                       SERVICE: 'WMS',
                       VERSION: Ty,
                       REQUEST: 'GetLegendGraphic',
-                      FORMAT: 'image/png'
+                      FORMAT: 'image/png',
                     };
                     if(void 0 === n || void 0 === n.LAYER) {
                       var r = this.xh.LAYERS;
@@ -20197,7 +20197,7 @@
                       VERSION: Ty,
                       REQUEST: 'GetMap',
                       FORMAT: 'image/png',
-                      TRANSPARENT: !0
+                      TRANSPARENT: !0,
                     };
                     return A(a, this.xh), this.Oh(t, s, o, n, i, a);
                   }
@@ -20259,7 +20259,7 @@
                         function(i) {
                           n(this.getData(t));
                         },
-                        this
+                        this,
                       ),
                       this.rf())
                     : !0 === i
@@ -20267,7 +20267,7 @@
                         function() {
                           n(this.getData(t));
                         }.bind(this),
-                        0
+                        0,
                       )
                     : n(this.getData(t));
                 }),
@@ -20315,7 +20315,7 @@
                   t.call(this, {
                     projection: yr('EPSG:3857'),
                     state: 'loading',
-                    zDirection: n.zDirection
+                    zDirection: n.zDirection,
                   }) || this;
                 if(((i.Qh = void 0 === n.preemptive || n.preemptive), (i.ef = kf), (i.uf = void 0), (i.if = n.jsonp || !1), n.url))
                   if(i.if) Zh(n.url, i.handleTileJSONResponse.bind(i), i.handleTileJSONError.bind(i));
@@ -20446,7 +20446,7 @@
                       urls: s,
                       wrapX: void 0 !== n.wrapX && n.wrapX,
                       transition: n.transition,
-                      zDirection: n.zDirection
+                      zDirection: n.zDirection,
                     }) || this).af = void 0 !== n.version ? n.version : '1.0.0'),
                   (i.ze = void 0 !== n.format ? n.format : 'image/jpeg'),
                   (i.hf = void 0 !== n.dimensions ? n.dimensions : {}),
@@ -20504,7 +20504,7 @@
                       Service: 'WMTS',
                       Request: 'GetTile',
                       Version: this.af,
-                      Format: this.ze
+                      Format: this.ze,
                     }),
                     (t =
                       'KVP' == n
@@ -20655,13 +20655,13 @@
                   : [];
                 (r.attributes = [
                   { name: 'a_position', size: 2, type: Pc.FLOAT },
-                  { name: 'a_index', size: 1, type: Pc.FLOAT }
+                  { name: 'a_index', size: 1, type: Pc.FLOAT },
                 ].concat(u)),
                   (r.hitDetectionAttributes = [
                     { name: 'a_position', size: 2, type: Pc.FLOAT },
                     { name: 'a_index', size: 1, type: Pc.FLOAT },
                     { name: 'a_hitColor', size: 4, type: Pc.FLOAT },
-                    { name: 'a_featureUid', size: 1, type: Pc.FLOAT }
+                    { name: 'a_featureUid', size: 1, type: Pc.FLOAT },
                   ].concat(u)),
                   (r.customAttributes = i.attributes ? i.attributes : []),
                   (r.$i = [1 / 0, 1 / 0, -1 / 0, -1 / 0]),
@@ -20678,7 +20678,7 @@
                     return new Worker(
                       'undefined' == typeof Blob
                         ? 'data:application/javascript;base64,' + Buffer.from(t, 'binary').toString('base64')
-                        : URL.createObjectURL(new Blob([t], { type: 'application/javascript' }))
+                        : URL.createObjectURL(new Blob([t], { type: 'application/javascript' })),
                     );
                   })()),
                   r.kf.addEventListener(
@@ -20699,7 +20699,7 @@
                             : ((this.Tf = new Float32Array(t.data.renderInstructions)), n.generateBuffersRun === this.Cf && (this.ready = !0)),
                           this.getLayer().changed();
                       }
-                    }.bind(r)
+                    }.bind(r),
                   ),
                   (r.If = {}),
                   (r.Nf = 0);
@@ -20711,10 +20711,10 @@
                       (this.If[o(t)] = {
                         feature: t,
                         properties: t.getProperties(),
-                        geometry: t.getGeometry()
+                        geometry: t.getGeometry(),
                       }),
                         this.Nf++;
-                    }.bind(r)
+                    }.bind(r),
                   ),
                   r
                 );
@@ -20729,7 +20729,7 @@
                   (this.If[o(n)] = {
                     feature: n,
                     properties: n.getProperties(),
-                    geometry: n.getGeometry()
+                    geometry: n.getGeometry(),
                   }),
                     this.Nf++;
                 }),
@@ -20738,7 +20738,7 @@
                   this.If[o(n)] = {
                     feature: n,
                     properties: n.getProperties(),
-                    geometry: n.getGeometry()
+                    geometry: n.getGeometry(),
                   };
                 }),
                 (n.prototype.Ff = function(t) {
@@ -20816,13 +20816,13 @@
                   var d = {
                     type: Jc,
                     renderInstructions: this.Tf.buffer,
-                    customAttributesCount: this.customAttributes.length
+                    customAttributesCount: this.customAttributes.length,
                   };
                   if(((d.projectionTransform = n), (d.generateBuffersRun = ++this.Cf), (this.ready = !1), this.kf.postMessage(d, [this.Tf.buffer]), (this.Tf = null), this.xf)) {
                     var p = {
                       type: Jc,
                       renderInstructions: this.Af.buffer,
-                      customAttributesCount: 5 + this.customAttributes.length
+                      customAttributesCount: 5 + this.customAttributes.length,
                     };
                     (p.projectionTransform = n), (p.hitDetection = !0), this.kf.postMessage(p, [this.Af.buffer]), (this.Af = null);
                   }
@@ -20879,7 +20879,7 @@
               MOVE_TO_LINE_TO: 9,
               SET_FILL_STYLE: 10,
               SET_STROKE_STYLE: 11,
-              STROKE: 12
+              STROKE: 12,
             },
             Qm = [Jm.FILL],
             tw = [Jm.STROKE],
@@ -21026,7 +21026,7 @@
                   return {
                     instructions: this.instructions,
                     hitDetectionInstructions: this.hitDetectionInstructions,
-                    coordinates: this.coordinates
+                    coordinates: this.coordinates,
                   };
                 }),
                 (n.prototype.reverseHitDetectionInstructions = function() {
@@ -21183,7 +21183,7 @@
                       [(this.uu[0] * this.pixelRatio) / this.Wf, (this.uu[1] * this.pixelRatio) / this.Wf],
                       Math.ceil(this.Uu * this.Wf),
                       this.fu,
-                      this.Jf
+                      this.Jf,
                     ]),
                       this.hitDetectionInstructions.push([rw.DRAW_IMAGE, e, o, this._u, this.Yf, this.Zf, this.$f, this.ou, this.Kf, this.Hf, this.su, this.Dr, this.uu, this.Uu, this.fu, this.Jf]),
                       this.endGeometry(n);
@@ -21212,7 +21212,7 @@
                       [(this.uu[0] * this.pixelRatio) / this.Wf, (this.uu[1] * this.pixelRatio) / this.Wf],
                       Math.ceil(this.Uu * this.Wf),
                       this.fu,
-                      this.Jf
+                      this.Jf,
                     ]),
                       this.hitDetectionInstructions.push([rw.DRAW_IMAGE, e, o, this._u, this.Yf, this.Zf, this.$f, this.ou, this.Kf, this.Hf, this.su, this.Dr, this.uu, this.Uu, this.fu, this.Jf]),
                       this.endGeometry(n);
@@ -21503,7 +21503,7 @@
               hanging: 0.2,
               alphabetic: 0.8,
               ideographic: 0.8,
-              bottom: 1
+              bottom: 1,
             },
             pw = (function (t) {
               function n(n, i, r, e) {
@@ -21620,7 +21620,7 @@
                         this.oc,
                         this.oo,
                         this.so,
-                        f
+                        f,
                       ]);
                       var g = 1 / w;
                       this.hitDetectionInstructions.push([
@@ -21646,7 +21646,7 @@
                         this.oc,
                         this.oo,
                         this.so,
-                        f
+                        f,
                       ]),
                         this.endGeometry(n);
                     } else {
@@ -21688,7 +21688,7 @@
                         lineWidth: t.lineWidth,
                         lineJoin: t.lineJoin,
                         miterLimit: t.miterLimit,
-                        lineDash: t.lineDash
+                        lineDash: t.lineDash,
                       }));
                   var e = this.ec;
                   e in this.textStates ||
@@ -21697,7 +21697,7 @@
                       textAlign: n.textAlign || Ns,
                       justify: n.justify,
                       textBaseline: n.textBaseline || Ls,
-                      scale: n.scale
+                      scale: n.scale,
                     });
                   var o = this.oc;
                   i && (o in this.fillStates || (this.fillStates[o] = { fillStyle: i.fillStyle }));
@@ -21895,7 +21895,7 @@
               String.fromCharCode(124928) +
               '-' +
               String.fromCharCode(126975) +
-              ']'
+              ']',
           );
           function Ew(t, n) {
             return ('start' !== n && 'end' !== n) || jw.test(t) || (n = 'start' === n ? 'left' : 'right'), dw[n];
@@ -21948,7 +21948,7 @@
                     S = {
                       width: M < 0 ? Math.floor(M) : Math.ceil(M),
                       height: _ < 0 ? Math.floor(_) : Math.ceil(_),
-                      contextInstructions: x
+                      contextInstructions: x,
                     };
                   ((1 == h[0] && 1 == h[1]) || x.push('scale', h), r) &&
                     (x.push('strokeStyle', o.strokeStyle),
@@ -22011,10 +22011,10 @@
                         minY: bw[1],
                         maxX: bw[2],
                         maxY: bw[3],
-                        value: p
+                        value: p,
                       },
                       canvasTransform: y,
-                      scale: c
+                      scale: c,
                     }
                   );
                 }),
@@ -22054,7 +22054,7 @@
                   return {
                     label: o,
                     anchorX: a * (o.width / u - 2 * e.scale[0]) + 2 * (0.5 - a) * f,
-                    anchorY: (h * o.height) / u + 2 * (0.5 - h) * f
+                    anchorY: (h * o.height) / u + 2 * (0.5 - h) * f,
                   };
                 }),
                 (t.prototype._c = function(t, n, i, r, e, o, s, u) {
@@ -22091,7 +22091,7 @@
                         context: t,
                         pixelRatio: this.pixelRatio,
                         resolution: this.resolution,
-                        rotation: N
+                        rotation: N,
                       },
                       R = this.instructions != r || this.overlaps ? 0 : 200;
                     j < E;
@@ -22419,8 +22419,8 @@
                               size: j.getSize(),
                               scale: j.getScale(),
                               rotation: j.getRotation(),
-                              rotateWithView: j.getRotateWithView()
-                            })
+                              rotateWithView: j.getRotateWithView(),
+                            }),
                           );
                       }
                       var P = _.getZIndex() || 0;
@@ -22593,7 +22593,7 @@
                         this.Cc = zw(i, h, this.kc, a.getStyleFunction(), u, e, o);
                       }
                       n(Rw(t, this.kc, this.Cc));
-                    }.bind(this)
+                    }.bind(this),
                   );
                 }),
                 (n.prototype.forEachFeatureAtCoordinate = function(t, n, i, r, e) {
@@ -22620,8 +22620,8 @@
                               layer: f,
                               geometry: n,
                               distanceSq: i,
-                              callback: r
-                            })
+                              callback: r,
+                            }),
                           );
                         }
                       },
@@ -22639,7 +22639,7 @@
                             ? n.declutterTree.all().map(function (t) {
                                 return t.value;
                               })
-                            : null
+                            : null,
                         ));
                       }),
                       u
@@ -22804,7 +22804,7 @@
                         size: [u, a],
                         viewState: A({}, t.viewState, { rotation: 0 }),
                         layerStatesArray: [c],
-                        layerIndex: 0
+                        layerIndex: 0,
                       }),
                       v = !0,
                       d = new Mo(s, r, n, h.canvas, function(t) {
@@ -22820,7 +22820,7 @@
                             e = (t * n) / r;
                           (this.renderedResolution = e), (this.Vc = sn(this.Vc, u / 2, a / 2, 1 / e, -1 / e, 0, -i.center[0], -i.center[1]));
                         }
-                      }.bind(this)
+                      }.bind(this),
                     ),
                       d.load();
                   }
@@ -22861,11 +22861,11 @@
             Ww = {
               image: ['Polygon', 'Circle', 'LineString', 'Image', 'Text'],
               hybrid: ['Polygon', 'LineString'],
-              vector: []
+              vector: [],
             },
             Yw = {
               hybrid: ['Image', 'Text', 'Default'],
-              vector: ['Polygon', 'Circle', 'LineString', 'Image', 'Text', 'Default']
+              vector: ['Polygon', 'Circle', 'LineString', 'Image', 'Text', 'Default'],
             },
             Zw = (function (t) {
               function n(n) {
@@ -22991,8 +22991,8 @@
                               layer: a,
                               geometry: n,
                               distanceSq: i,
-                              callback: r
-                            })
+                              callback: r,
+                            }),
                           );
                         }
                       },
@@ -23075,13 +23075,13 @@
                             e.getStyleFunction(),
                             c.getTileCoordExtent(r.wrappedTileCoord),
                             r.getReplayState(e).renderedResolution,
-                            M
+                            M,
                           )),
                             (r.hitDetectionImageData[s] = b);
                         }
                         n(Rw(w, g, b));
                       }
-                    }.bind(this)
+                    }.bind(this),
                   );
                 }),
                 (n.prototype.handleFontsChanged = function() {
@@ -23827,7 +23827,7 @@
                 return [t, n + (i - n) * r];
               },
               jr(yr('EPSG:4326'), r),
-              e
+              e,
             );
           }
           function pg(t, n, i, r, e) {
@@ -23836,7 +23836,7 @@
                 return [n + (i - n) * r, t];
               },
               jr(yr('EPSG:4326'), r),
-              e
+              e,
             );
           }
           var yg = (function () {
@@ -23914,8 +23914,8 @@
                               font: '12px Calibri,sans-serif',
                               textBaseline: 'bottom',
                               fill: new rv({ color: 'rgba(0,0,0,1)' }),
-                              stroke: new mv({ color: 'rgba(255,255,255,1)', width: 3 })
-                            })
+                              stroke: new mv({ color: 'rgba(255,255,255,1)', width: 3 }),
+                            }),
                     })),
                     (i.Ll = function(t) {
                       var n = t.get('graticule_label');
@@ -23929,8 +23929,8 @@
                               font: '12px Calibri,sans-serif',
                               textAlign: 'right',
                               fill: new rv({ color: 'rgba(0,0,0,1)' }),
-                              stroke: new mv({ color: 'rgba(255,255,255,1)', width: 3 })
-                            })
+                              stroke: new mv({ color: 'rgba(255,255,255,1)', width: 3 }),
+                            }),
                     })),
                     (i.Rl = function(t) {
                       var n = t.get('graticule_label');
@@ -23947,8 +23947,8 @@
                       features: new ft(),
                       overlaps: !1,
                       useSpatialIndex: !1,
-                      wrapX: r.wrapX
-                    })
+                      wrapX: r.wrapX,
+                    }),
                   ),
                   (i.Dl = []),
                   (i.ql = new Sv({ stroke: i.bl })),
@@ -24261,8 +24261,8 @@
                         callback: function(t) {
                           var n = this.tv(t);
                           return void 0 !== n ? oi(n, 0, 1) : 1;
-                        }.bind(this)
-                      }
+                        }.bind(this),
+                      },
                     ],
                     vertexShader:
                       '\n        precision mediump float;\n        uniform mat4 u_projectionMatrix;\n        uniform mat4 u_offsetScaleMatrix;\n        uniform float u_size;\n        attribute vec2 a_position;\n        attribute float a_index;\n        attribute float a_weight;\n\n        varying vec2 v_texCoord;\n        varying float v_weight;\n\n        void main(void) {\n          mat4 offsetMatrix = u_offsetScaleMatrix;\n          float offsetX = a_index == 0.0 || a_index == 3.0 ? -u_size / 2.0 : u_size / 2.0;\n          float offsetY = a_index == 0.0 || a_index == 1.0 ? -u_size / 2.0 : u_size / 2.0;\n          vec4 offsets = offsetMatrix * vec4(offsetX, offsetY, 0.0, 0.0);\n          gl_Position = u_projectionMatrix * vec4(a_position, 0.0, 1.0) + offsets;\n          float u = a_index == 0.0 || a_index == 3.0 ? 0.0 : 1.0;\n          float v = a_index == 0.0 || a_index == 1.0 ? 0.0 : 1.0;\n          v_texCoord = vec2(u, v);\n          v_weight = a_weight;\n        }',
@@ -24278,7 +24278,7 @@
                       }.bind(this),
                       u_blurSlope: function() {
                         return this.get(_g) / Math.max(1, this.get(xg));
-                      }.bind(this)
+                      }.bind(this),
                     },
                     postProcesses: [
                       {
@@ -24290,10 +24290,10 @@
                           }.bind(this),
                           u_opacity: function() {
                             return this.getOpacity();
-                          }.bind(this)
-                        }
-                      }
-                    ]
+                          }.bind(this),
+                        },
+                      },
+                    ],
                   });
                 }),
                 (n.prototype.renderDeclutter = function() {}),
@@ -24317,9 +24317,9 @@
                   return A(
                     {
                       dataProjection: this.dataProjection,
-                      featureProjection: this.defaultFeatureProjection
+                      featureProjection: this.defaultFeatureProjection,
                     },
-                    t
+                    t,
                   );
                 }),
                 (t.prototype.getType = function() {
@@ -24916,7 +24916,7 @@
                     geometries: t.getGeometriesArray().map(function (t) {
                       var i = A({}, n);
                       return delete i.featureProjection, Wg(t, i);
-                    })
+                    }),
                   };
                 })(t, n);
                 break;
@@ -25141,7 +25141,7 @@
               white: [255, 255, 255, 1],
               whitesmoke: [245, 245, 245, 1],
               yellow: [255, 255, 0, 1],
-              yellowgreen: [154, 205, 50, 1]
+              yellowgreen: [154, 205, 50, 1],
             };
           function Kg(t) {
             return (t = Math.round(t)) < 0 ? 0 : t > 255 ? 255 : t;
@@ -25234,7 +25234,7 @@
                           zoom: a,
                           type: t.type,
                           property: t.property,
-                          default: t.default
+                          default: t.default,
                         }),
                         (e[a] = []),
                         o.push(a)),
@@ -25447,7 +25447,7 @@
               (this.locale = i),
               (this.collator = new Intl.Collator(this.locale ? this.locale : [], {
                 sensitivity: this.sensitivity,
-                usage: 'search'
+                usage: 'search',
               }));
           };
           (Ab.prototype.compare = function(t, n) {
@@ -25659,7 +25659,7 @@
               return n.concat(
                 this.args.map(function (t) {
                   return t.serialize();
-                })
+                }),
               );
             });
           var qb = function(t) {
@@ -25698,7 +25698,7 @@
                   return Lb(i) === Mb
                     ? new Pb('', i, null, null, null)
                     : new Pb(zb(i), null, n.scale ? n.scale.evaluate(t) : null, n.font ? n.font.evaluate(t).join(',') : null, n.textColor ? n.textColor.evaluate(t) : null);
-                })
+                }),
               );
             }),
             (qb.prototype.eachChild = function(t) {
@@ -25865,7 +25865,7 @@
               return [this.name].concat(
                 this.args.map(function (t) {
                   return t.serialize();
-                })
+                }),
               );
             }),
             (Yb.parse = function(t, n) {
@@ -26444,7 +26444,7 @@
                 return t.map(function (t, r) {
                   return _x(t, n[r], i);
                 });
-              }
+              },
             }),
             Ox = 0.95047,
             jx = 1.08883,
@@ -26475,7 +26475,7 @@
               l: 116 * o - 16,
               a: 500 * (e - o),
               b: 200 * (o - kx((0.0193339 * n + 0.119192 * i + 0.9503041 * r) / jx)),
-              alpha: t.a
+              alpha: t.a,
             };
           }
           function Rx(t) {
@@ -26501,9 +26501,9 @@
                   l: _x(t.l, n.l, i),
                   a: _x(t.a, n.a, i),
                   b: _x(t.b, n.b, i),
-                  alpha: _x(t.alpha, n.alpha, i)
+                  alpha: _x(t.alpha, n.alpha, i),
                 };
-              }
+              },
             },
             Dx = {
               forward: function(t) {
@@ -26524,9 +26524,9 @@
                   h: Fx(t.h, n.h, i),
                   c: _x(t.c, n.c, i),
                   l: _x(t.l, n.l, i),
-                  alpha: _x(t.alpha, n.alpha, i)
+                  alpha: _x(t.alpha, n.alpha, i),
                 };
-              }
+              },
             },
             qx = function(t, n, i, r, e) {
               (this.type = t), (this.operator = n), (this.interpolation = i), (this.input = r), (this.labels = []), (this.outputs = []);
@@ -27052,7 +27052,7 @@
               function(t, n, i) {
                 return n === i;
               },
-              Jx
+              Jx,
             ),
             nM = Qx(
               '!=',
@@ -27061,7 +27061,7 @@
               },
               function(t, n, i, r) {
                 return !Jx(0, n, i, r);
-              }
+              },
             ),
             iM = Qx(
               '<',
@@ -27070,7 +27070,7 @@
               },
               function(t, n, i, r) {
                 return r.compare(n, i) < 0;
-              }
+              },
             ),
             rM = Qx(
               '>',
@@ -27079,7 +27079,7 @@
               },
               function(t, n, i, r) {
                 return r.compare(n, i) > 0;
-              }
+              },
             ),
             eM = Qx(
               '<=',
@@ -27088,7 +27088,7 @@
               },
               function(t, n, i, r) {
                 return r.compare(n, i) <= 0;
-              }
+              },
             ),
             oM = Qx(
               '>=',
@@ -27097,7 +27097,7 @@
               },
               function(t, n, i, r) {
                 return r.compare(n, i) >= 0;
-              }
+              },
             ),
             sM = function(t, n, i, r, e) {
               (this.type = pb), (this.number = t), (this.locale = n), (this.currency = i), (this.minFractionDigits = r), (this.maxFractionDigits = e);
@@ -27122,7 +27122,7 @@
                 style: this.currency ? 'currency' : 'decimal',
                 currency: this.currency ? this.currency.evaluate(t) : void 0,
                 minimumFractionDigits: this.minFractionDigits ? this.minFractionDigits.evaluate(t) : void 0,
-                maximumFractionDigits: this.maxFractionDigits ? this.maxFractionDigits.evaluate(t) : void 0
+                maximumFractionDigits: this.maxFractionDigits ? this.maxFractionDigits.evaluate(t) : void 0,
               }).format(this.number.evaluate(t));
             }),
             (sM.prototype.eachChild = function(t) {
@@ -27213,7 +27213,7 @@
             'to-number': Xb,
             'to-string': Xb,
             var: yx,
-            within: lx
+            within: lx,
           };
           function hM(t, n) {
             var i = n[0],
@@ -27252,21 +27252,21 @@
               function(t, n) {
                 var i = n[0];
                 throw new Fb(i.evaluate(t));
-              }
+              },
             ],
             typeof: [
               pb,
               [gb],
               function(t, n) {
                 return Sb(Lb(n[0].evaluate(t)));
-              }
+              },
             ],
             'to-rgba': [
               _b(db, 4),
               [mb],
               function(t, n) {
                 return n[0].evaluate(t).toArray();
-              }
+              },
             ],
             rgb: [mb, [db, db, db], hM],
             rgba: [mb, [db, db, db, db], hM],
@@ -27277,7 +27277,7 @@
                   [pb],
                   function(t, n) {
                     return fM(n[0].evaluate(t), t.properties());
-                  }
+                  },
                 ],
                 [
                   [pb, wb],
@@ -27285,9 +27285,9 @@
                     var i = n[0],
                       r = n[1];
                     return fM(i.evaluate(t), r.evaluate(t));
-                  }
-                ]
-              ]
+                  },
+                ],
+              ],
             },
             get: {
               type: gb,
@@ -27296,7 +27296,7 @@
                   [pb],
                   function(t, n) {
                     return cM(n[0].evaluate(t), t.properties());
-                  }
+                  },
                 ],
                 [
                   [pb, wb],
@@ -27304,86 +27304,86 @@
                     var i = n[0],
                       r = n[1];
                     return cM(i.evaluate(t), r.evaluate(t));
-                  }
-                ]
-              ]
+                  },
+                ],
+              ],
             },
             'feature-state': [
               gb,
               [pb],
               function(t, n) {
                 return cM(n[0].evaluate(t), t.featureState || {});
-              }
+              },
             ],
             properties: [
               wb,
               [],
               function(t) {
                 return t.properties();
-              }
+              },
             ],
             'geometry-type': [
               pb,
               [],
               function(t) {
                 return t.geometryType();
-              }
+              },
             ],
             id: [
               gb,
               [],
               function(t) {
                 return t.id();
-              }
+              },
             ],
             zoom: [
               db,
               [],
               function(t) {
                 return t.globals.zoom;
-              }
+              },
             ],
             pitch: [
               db,
               [],
               function(t) {
                 return t.globals.pitch || 0;
-              }
+              },
             ],
             'distance-from-center': [
               db,
               [],
               function(t) {
                 return t.distanceFromCenter();
-              }
+              },
             ],
             'heatmap-density': [
               db,
               [],
               function(t) {
                 return t.globals.heatmapDensity || 0;
-              }
+              },
             ],
             'line-progress': [
               db,
               [],
               function(t) {
                 return t.globals.lineProgress || 0;
-              }
+              },
             ],
             'sky-radial-progress': [
               db,
               [],
               function(t) {
                 return t.globals.skyRadialProgress || 0;
-              }
+              },
             ],
             accumulated: [
               gb,
               [],
               function(t) {
                 return void 0 === t.globals.accumulated ? null : t.globals.accumulated;
-              }
+              },
             ],
             '+': [
               db,
@@ -27393,7 +27393,7 @@
                   i += e[r].evaluate(t);
                 }
                 return i;
-              }
+              },
             ],
             '*': [
               db,
@@ -27403,7 +27403,7 @@
                   i *= e[r].evaluate(t);
                 }
                 return i;
-              }
+              },
             ],
             '-': {
               type: db,
@@ -27414,15 +27414,15 @@
                     var i = n[0],
                       r = n[1];
                     return i.evaluate(t) - r.evaluate(t);
-                  }
+                  },
                 ],
                 [
                   [db],
                   function(t, n) {
                     return -n[0].evaluate(t);
-                  }
-                ]
-              ]
+                  },
+                ],
+              ],
             },
             '/': [
               db,
@@ -27431,7 +27431,7 @@
                 var i = n[0],
                   r = n[1];
                 return i.evaluate(t) / r.evaluate(t);
-              }
+              },
             ],
             '%': [
               db,
@@ -27440,28 +27440,28 @@
                 var i = n[0],
                   r = n[1];
                 return i.evaluate(t) % r.evaluate(t);
-              }
+              },
             ],
             ln2: [
               db,
               [],
               function() {
                 return Math.LN2;
-              }
+              },
             ],
             pi: [
               db,
               [],
               function() {
                 return Math.PI;
-              }
+              },
             ],
             e: [
               db,
               [],
               function() {
                 return Math.E;
-              }
+              },
             ],
             '^': [
               db,
@@ -27470,7 +27470,7 @@
                 var i = n[0],
                   r = n[1];
                 return Math.pow(i.evaluate(t), r.evaluate(t));
-              }
+              },
             ],
             sqrt: [
               db,
@@ -27478,7 +27478,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.sqrt(i.evaluate(t));
-              }
+              },
             ],
             log10: [
               db,
@@ -27486,7 +27486,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.log(i.evaluate(t)) / Math.LN10;
-              }
+              },
             ],
             ln: [
               db,
@@ -27494,7 +27494,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.log(i.evaluate(t));
-              }
+              },
             ],
             log2: [
               db,
@@ -27502,7 +27502,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.log(i.evaluate(t)) / Math.LN2;
-              }
+              },
             ],
             sin: [
               db,
@@ -27510,7 +27510,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.sin(i.evaluate(t));
-              }
+              },
             ],
             cos: [
               db,
@@ -27518,7 +27518,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.cos(i.evaluate(t));
-              }
+              },
             ],
             tan: [
               db,
@@ -27526,7 +27526,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.tan(i.evaluate(t));
-              }
+              },
             ],
             asin: [
               db,
@@ -27534,7 +27534,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.asin(i.evaluate(t));
-              }
+              },
             ],
             acos: [
               db,
@@ -27542,7 +27542,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.acos(i.evaluate(t));
-              }
+              },
             ],
             atan: [
               db,
@@ -27550,7 +27550,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.atan(i.evaluate(t));
-              }
+              },
             ],
             min: [
               db,
@@ -27560,9 +27560,9 @@
                   Math,
                   n.map(function (n) {
                     return n.evaluate(t);
-                  })
+                  }),
                 );
-              }
+              },
             ],
             max: [
               db,
@@ -27572,9 +27572,9 @@
                   Math,
                   n.map(function (n) {
                     return n.evaluate(t);
-                  })
+                  }),
                 );
-              }
+              },
             ],
             abs: [
               db,
@@ -27582,7 +27582,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.abs(i.evaluate(t));
-              }
+              },
             ],
             round: [
               db,
@@ -27590,7 +27590,7 @@
               function(t, n) {
                 var i = n[0].evaluate(t);
                 return i < 0 ? -Math.round(-i) : Math.round(i);
-              }
+              },
             ],
             floor: [
               db,
@@ -27598,7 +27598,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.floor(i.evaluate(t));
-              }
+              },
             ],
             ceil: [
               db,
@@ -27606,7 +27606,7 @@
               function(t, n) {
                 var i = n[0];
                 return Math.ceil(i.evaluate(t));
-              }
+              },
             ],
             'filter-==': [
               yb,
@@ -27615,7 +27615,7 @@
                 var i = n[0],
                   r = n[1];
                 return t.properties()[i.value] === r.value;
-              }
+              },
             ],
             'filter-id-==': [
               yb,
@@ -27623,7 +27623,7 @@
               function(t, n) {
                 var i = n[0];
                 return t.id() === i.value;
-              }
+              },
             ],
             'filter-type-==': [
               yb,
@@ -27631,7 +27631,7 @@
               function(t, n) {
                 var i = n[0];
                 return t.geometryType() === i.value;
-              }
+              },
             ],
             'filter-<': [
               yb,
@@ -27642,7 +27642,7 @@
                   e = t.properties()[i.value],
                   o = r.value;
                 return typeof e == typeof o && e < o;
-              }
+              },
             ],
             'filter-id-<': [
               yb,
@@ -27652,7 +27652,7 @@
                   r = t.id(),
                   e = i.value;
                 return typeof r == typeof e && r < e;
-              }
+              },
             ],
             'filter->': [
               yb,
@@ -27663,7 +27663,7 @@
                   e = t.properties()[i.value],
                   o = r.value;
                 return typeof e == typeof o && e > o;
-              }
+              },
             ],
             'filter-id->': [
               yb,
@@ -27673,7 +27673,7 @@
                   r = t.id(),
                   e = i.value;
                 return typeof r == typeof e && r > e;
-              }
+              },
             ],
             'filter-<=': [
               yb,
@@ -27684,7 +27684,7 @@
                   e = t.properties()[i.value],
                   o = r.value;
                 return typeof e == typeof o && e <= o;
-              }
+              },
             ],
             'filter-id-<=': [
               yb,
@@ -27694,7 +27694,7 @@
                   r = t.id(),
                   e = i.value;
                 return typeof r == typeof e && r <= e;
-              }
+              },
             ],
             'filter->=': [
               yb,
@@ -27705,7 +27705,7 @@
                   e = t.properties()[i.value],
                   o = r.value;
                 return typeof e == typeof o && e >= o;
-              }
+              },
             ],
             'filter-id->=': [
               yb,
@@ -27715,35 +27715,35 @@
                   r = t.id(),
                   e = i.value;
                 return typeof r == typeof e && r >= e;
-              }
+              },
             ],
             'filter-has': [
               yb,
               [gb],
               function(t, n) {
                 return n[0].value in t.properties();
-              }
+              },
             ],
             'filter-has-id': [
               yb,
               [],
               function(t) {
                 return null !== t.id() && void 0 !== t.id();
-              }
+              },
             ],
             'filter-type-in': [
               yb,
               [_b(pb)],
               function(t, n) {
                 return n[0].value.indexOf(t.geometryType()) >= 0;
-              }
+              },
             ],
             'filter-id-in': [
               yb,
               [_b(gb)],
               function(t, n) {
                 return n[0].value.indexOf(t.id()) >= 0;
-              }
+              },
             ],
             'filter-in-small': [
               yb,
@@ -27751,7 +27751,7 @@
               function(t, n) {
                 var i = n[0];
                 return n[1].value.indexOf(t.properties()[i.value]) >= 0;
-              }
+              },
             ],
             'filter-in-large': [
               yb,
@@ -27767,7 +27767,7 @@
                   }
                   return !1;
                 })(t.properties()[i.value], r.value, 0, r.value.length - 1);
-              }
+              },
             ],
             all: {
               type: yb,
@@ -27778,7 +27778,7 @@
                     var i = n[0],
                       r = n[1];
                     return i.evaluate(t) && r.evaluate(t);
-                  }
+                  },
                 ],
                 [
                   lM(yb),
@@ -27787,9 +27787,9 @@
                       if(!r[i].evaluate(t)) return !1;
                     }
                     return !0;
-                  }
-                ]
-              ]
+                  },
+                ],
+              ],
             },
             any: {
               type: yb,
@@ -27800,7 +27800,7 @@
                     var i = n[0],
                       r = n[1];
                     return i.evaluate(t) || r.evaluate(t);
-                  }
+                  },
                 ],
                 [
                   lM(yb),
@@ -27809,16 +27809,16 @@
                       if(r[i].evaluate(t)) return !0;
                     }
                     return !1;
-                  }
-                ]
-              ]
+                  },
+                ],
+              ],
             },
             '!': [
               yb,
               [yb],
               function(t, n) {
                 return !n[0].evaluate(t);
-              }
+              },
             ],
             'is-supported-script': [
               yb,
@@ -27827,21 +27827,21 @@
                 var i = n[0],
                   r = t.globals && t.globals.isSupportedScript;
                 return !r || r(i.evaluate(t));
-              }
+              },
             ],
             upcase: [
               pb,
               [pb],
               function(t, n) {
                 return n[0].evaluate(t).toUpperCase();
-              }
+              },
             ],
             downcase: [
               pb,
               [pb],
               function(t, n) {
                 return n[0].evaluate(t).toLowerCase();
-              }
+              },
             ],
             concat: [
               pb,
@@ -27852,15 +27852,15 @@
                     return zb(n.evaluate(t));
                   })
                   .join('');
-              }
+              },
             ],
             'resolved-locale': [
               pb,
               [bb],
               function(t, n) {
                 return n[0].evaluate(t).resolvedLocale();
-              }
-            ]
+              },
+            ],
           });
           var yM = function(t, n) {
             (this.expression = t),
@@ -27886,12 +27886,12 @@
                         enum: pb,
                         boolean: yb,
                         formatted: xb,
-                        resolvedImage: Mb
+                        resolvedImage: Mb,
                       };
                       if('array' === t.type) return _b(n[t.value] || gb, t.length);
                       return n[t.type];
                     })(n)
-                  : void 0
+                  : void 0,
               ),
               r = i.parse(t, void 0, void 0, void 0, n && 'string' === n.type ? { typeAnnotation: 'coerce' } : void 0);
             return r ? vM(new yM(r, n)) : dM(i.errors);
@@ -27931,7 +27931,7 @@
                         .join(', ') +
                       ', but found ' +
                       JSON.stringify(a) +
-                      ' instead.'
+                      ' instead.',
                   );
                 return a;
               } catch(t) {
@@ -28043,7 +28043,7 @@
               glyphs: { type: 'string' },
               transition: { type: 'transition' },
               projection: { type: 'projection' },
-              layers: { required: !0, type: 'array', value: 'layer' }
+              layers: { required: !0, type: 'array', value: 'layer' },
             },
             sources: { '*': { type: 'source' } },
             source: ['source_vector', 'source_raster', 'source_raster_dem', 'source_geojson', 'source_video', 'source_image'],
@@ -28055,7 +28055,7 @@
                 type: 'array',
                 value: 'number',
                 length: 4,
-                default: [-180, -85.051129, 180, 85.051129]
+                default: [-180, -85.051129, 180, 85.051129],
               },
               scheme: { type: 'enum', values: { xyz: {}, tms: {} }, default: 'xyz' },
               minzoom: { type: 'number', default: 0 },
@@ -28063,7 +28063,7 @@
               attribution: { type: 'string' },
               promoteId: { type: 'promoteId' },
               volatile: { type: 'boolean', default: !1 },
-              '*': { type: '*' }
+              '*': { type: '*' },
             },
             source_raster: {
               type: { required: !0, type: 'enum', values: { raster: {} } },
@@ -28073,7 +28073,7 @@
                 type: 'array',
                 value: 'number',
                 length: 4,
-                default: [-180, -85.051129, 180, 85.051129]
+                default: [-180, -85.051129, 180, 85.051129],
               },
               minzoom: { type: 'number', default: 0 },
               maxzoom: { type: 'number', default: 22 },
@@ -28081,7 +28081,7 @@
               scheme: { type: 'enum', values: { xyz: {}, tms: {} }, default: 'xyz' },
               attribution: { type: 'string' },
               volatile: { type: 'boolean', default: !1 },
-              '*': { type: '*' }
+              '*': { type: '*' },
             },
             source_raster_dem: {
               type: { required: !0, type: 'enum', values: { 'raster-dem': {} } },
@@ -28091,7 +28091,7 @@
                 type: 'array',
                 value: 'number',
                 length: 4,
-                default: [-180, -85.051129, 180, 85.051129]
+                default: [-180, -85.051129, 180, 85.051129],
               },
               minzoom: { type: 'number', default: 0 },
               maxzoom: { type: 'number', default: 22 },
@@ -28099,7 +28099,7 @@
               attribution: { type: 'string' },
               encoding: { type: 'enum', values: { terrarium: {}, mapbox: {} }, default: 'mapbox' },
               volatile: { type: 'boolean', default: !1 },
-              '*': { type: '*' }
+              '*': { type: '*' },
             },
             source_geojson: {
               type: { required: !0, type: 'enum', values: { geojson: {} } },
@@ -28116,7 +28116,7 @@
               clusterProperties: { type: '*' },
               lineMetrics: { type: 'boolean', default: !1 },
               generateId: { type: 'boolean', default: !1 },
-              promoteId: { type: 'promoteId' }
+              promoteId: { type: 'promoteId' },
             },
             source_video: {
               type: { required: !0, type: 'enum', values: { video: {} } },
@@ -28125,8 +28125,8 @@
                 required: !0,
                 type: 'array',
                 length: 4,
-                value: { type: 'array', length: 2, value: 'number' }
-              }
+                value: { type: 'array', length: 2, value: 'number' },
+              },
             },
             source_image: {
               type: { required: !0, type: 'enum', values: { image: {} } },
@@ -28135,8 +28135,8 @@
                 required: !0,
                 type: 'array',
                 length: 4,
-                value: { type: 'array', length: 2, value: 'number' }
-              }
+                value: { type: 'array', length: 2, value: 'number' },
+              },
             },
             layer: {
               id: { type: 'string', required: !0 },
@@ -28152,9 +28152,9 @@
                   raster: {},
                   hillshade: {},
                   background: {},
-                  sky: {}
+                  sky: {},
                 },
-                required: !0
+                required: !0,
               },
               metadata: { type: '*' },
               source: { type: 'string' },
@@ -28163,7 +28163,7 @@
               maxzoom: { type: 'number', minimum: 0, maximum: 24 },
               filter: { type: 'filter' },
               layout: { type: 'layout' },
-              paint: { type: 'paint' }
+              paint: { type: 'paint' },
             },
             layout: ['layout_fill', 'layout_line', 'layout_circle', 'layout_heatmap', 'layout_fill-extrusion', 'layout_symbol', 'layout_raster', 'layout_hillshade', 'layout_background', 'layout_sky'],
             layout_background: {
@@ -28171,58 +28171,58 @@
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_sky: {
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_fill: {
               'fill-sort-key': {
                 type: 'number',
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_circle: {
               'circle-sort-key': {
                 type: 'number',
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_heatmap: {
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             'layout_fill-extrusion': {
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_line: {
               'line-cap': {
@@ -28230,40 +28230,40 @@
                 values: { butt: {}, round: {}, square: {} },
                 default: 'butt',
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-join': {
                 type: 'enum',
                 values: { bevel: {}, round: {}, miter: {} },
                 default: 'miter',
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-miter-limit': {
                 type: 'number',
                 default: 2,
                 requires: [{ 'line-join': 'miter' }],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'line-round-limit': {
                 type: 'number',
                 default: 1.05,
                 requires: [{ 'line-join': 'round' }],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'line-sort-key': {
                 type: 'number',
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_symbol: {
               'symbol-placement': {
@@ -28271,7 +28271,7 @@
                 values: { point: {}, line: {}, 'line-center': {} },
                 default: 'point',
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'symbol-spacing': {
                 type: 'number',
@@ -28280,46 +28280,46 @@
                 units: 'pixels',
                 requires: [{ 'symbol-placement': 'line' }],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'symbol-avoid-edges': {
                 type: 'boolean',
                 default: !1,
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'symbol-sort-key': {
                 type: 'number',
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'symbol-z-order': {
                 type: 'enum',
                 values: { auto: {}, 'viewport-y': {}, source: {} },
                 default: 'auto',
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-allow-overlap': {
                 type: 'boolean',
                 default: !1,
                 requires: ['icon-image'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-ignore-placement': {
                 type: 'boolean',
                 default: !1,
                 requires: ['icon-image'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-optional': {
                 type: 'boolean',
                 default: !1,
                 requires: ['icon-image', 'text-field'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-rotation-alignment': {
                 type: 'enum',
@@ -28327,7 +28327,7 @@
                 default: 'auto',
                 requires: ['icon-image'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-size': {
                 type: 'number',
@@ -28336,7 +28336,7 @@
                 units: 'factor of the original icon size',
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-text-fit': {
                 type: 'enum',
@@ -28344,7 +28344,7 @@
                 default: 'none',
                 requires: ['icon-image', 'text-field'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-text-fit-padding': {
                 type: 'array',
@@ -28354,13 +28354,13 @@
                 units: 'pixels',
                 requires: ['icon-image', 'text-field', { 'icon-text-fit': ['both', 'width', 'height'] }],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-image': {
                 type: 'resolvedImage',
                 tokens: !0,
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-rotate': {
                 type: 'number',
@@ -28369,7 +28369,7 @@
                 units: 'degrees',
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-padding': {
                 type: 'number',
@@ -28378,14 +28378,14 @@
                 units: 'pixels',
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-keep-upright': {
                 type: 'boolean',
                 default: !1,
                 requires: ['icon-image', { 'icon-rotation-alignment': 'map' }, { 'symbol-placement': ['line', 'line-center'] }],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-offset': {
                 type: 'array',
@@ -28394,7 +28394,7 @@
                 default: [0, 0],
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-anchor': {
                 type: 'enum',
@@ -28407,12 +28407,12 @@
                   'top-left': {},
                   'top-right': {},
                   'bottom-left': {},
-                  'bottom-right': {}
+                  'bottom-right': {},
                 },
                 default: 'center',
                 requires: ['icon-image'],
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-pitch-alignment': {
                 type: 'enum',
@@ -28420,7 +28420,7 @@
                 default: 'auto',
                 requires: ['icon-image'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-pitch-alignment': {
                 type: 'enum',
@@ -28428,7 +28428,7 @@
                 default: 'auto',
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-rotation-alignment': {
                 type: 'enum',
@@ -28436,14 +28436,14 @@
                 default: 'auto',
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-field': {
                 type: 'formatted',
                 default: '',
                 tokens: !0,
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-font': {
                 type: 'array',
@@ -28451,7 +28451,7 @@
                 default: ['Open Sans Regular', 'Arial Unicode MS Regular'],
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-size': {
                 type: 'number',
@@ -28460,7 +28460,7 @@
                 units: 'pixels',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-max-width': {
                 type: 'number',
@@ -28469,7 +28469,7 @@
                 units: 'ems',
                 requires: ['text-field', { 'symbol-placement': ['point'] }],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-line-height': {
                 type: 'number',
@@ -28477,7 +28477,7 @@
                 units: 'ems',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-letter-spacing': {
                 type: 'number',
@@ -28485,7 +28485,7 @@
                 units: 'ems',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-justify': {
                 type: 'enum',
@@ -28493,7 +28493,7 @@
                 default: 'center',
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-radial-offset': {
                 type: 'number',
@@ -28501,7 +28501,7 @@
                 default: 0,
                 requires: ['text-field'],
                 'property-type': 'data-driven',
-                expression: { interpolated: !0, parameters: ['zoom', 'feature'] }
+                expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
               },
               'text-variable-anchor': {
                 type: 'array',
@@ -28515,11 +28515,11 @@
                   'top-left': {},
                   'top-right': {},
                   'bottom-left': {},
-                  'bottom-right': {}
+                  'bottom-right': {},
                 },
                 requires: ['text-field', { 'symbol-placement': ['point'] }],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-anchor': {
                 type: 'enum',
@@ -28532,12 +28532,12 @@
                   'top-left': {},
                   'top-right': {},
                   'bottom-left': {},
-                  'bottom-right': {}
+                  'bottom-right': {},
                 },
                 default: 'center',
                 requires: ['text-field', { '!': 'text-variable-anchor' }],
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-max-angle': {
                 type: 'number',
@@ -28545,7 +28545,7 @@
                 units: 'degrees',
                 requires: ['text-field', { 'symbol-placement': ['line', 'line-center'] }],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-writing-mode': {
                 type: 'array',
@@ -28553,7 +28553,7 @@
                 values: { horizontal: {}, vertical: {} },
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-rotate': {
                 type: 'number',
@@ -28562,7 +28562,7 @@
                 units: 'degrees',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-padding': {
                 type: 'number',
@@ -28571,14 +28571,14 @@
                 units: 'pixels',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-keep-upright': {
                 type: 'boolean',
                 default: !0,
                 requires: ['text-field', { 'text-rotation-alignment': 'map' }, { 'symbol-placement': ['line', 'line-center'] }],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-transform': {
                 type: 'enum',
@@ -28586,7 +28586,7 @@
                 default: 'none',
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-offset': {
                 type: 'array',
@@ -28596,51 +28596,51 @@
                 default: [0, 0],
                 requires: ['text-field', { '!': 'text-radial-offset' }],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-allow-overlap': {
                 type: 'boolean',
                 default: !1,
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-ignore-placement': {
                 type: 'boolean',
                 default: !1,
                 requires: ['text-field'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-optional': {
                 type: 'boolean',
                 default: !1,
                 requires: ['text-field', 'icon-image'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_raster: {
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             layout_hillshade: {
               visibility: {
                 type: 'enum',
                 values: { visible: {}, none: {} },
                 default: 'visible',
-                'property-type': 'constant'
-              }
+                'property-type': 'constant',
+              },
             },
             filter: { type: 'array', value: '*' },
             filter_symbol: {
@@ -28650,43 +28650,43 @@
               'property-type': 'data-driven',
               expression: {
                 interpolated: !1,
-                parameters: ['zoom', 'feature', 'pitch', 'distance-from-center']
-              }
+                parameters: ['zoom', 'feature', 'pitch', 'distance-from-center'],
+              },
             },
             filter_fill: {
               type: 'boolean',
               default: !1,
               transition: !1,
               'property-type': 'data-driven',
-              expression: { interpolated: !1, parameters: ['zoom', 'feature'] }
+              expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
             },
             filter_line: {
               type: 'boolean',
               default: !1,
               transition: !1,
               'property-type': 'data-driven',
-              expression: { interpolated: !1, parameters: ['zoom', 'feature'] }
+              expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
             },
             filter_circle: {
               type: 'boolean',
               default: !1,
               transition: !1,
               'property-type': 'data-driven',
-              expression: { interpolated: !1, parameters: ['zoom', 'feature'] }
+              expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
             },
             'filter_fill-extrusion': {
               type: 'boolean',
               default: !1,
               transition: !1,
               'property-type': 'data-driven',
-              expression: { interpolated: !1, parameters: ['zoom', 'feature'] }
+              expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
             },
             filter_heatmap: {
               type: 'boolean',
               default: !1,
               transition: !1,
               'property-type': 'data-driven',
-              expression: { interpolated: !1, parameters: ['zoom', 'feature'] }
+              expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
             },
             filter_operator: {
               type: 'enum',
@@ -28704,8 +28704,8 @@
                 none: {},
                 has: {},
                 '!has': {},
-                within: {}
-              }
+                within: {},
+              },
             },
             geometry_type: { type: 'enum', values: { Point: {}, LineString: {}, Polygon: {} } },
             function: {
@@ -28716,17 +28716,17 @@
               type: {
                 type: 'enum',
                 values: { identity: {}, exponential: {}, interval: {}, categorical: {} },
-                default: 'exponential'
+                default: 'exponential',
               },
               colorSpace: { type: 'enum', values: { rgb: {}, lab: {}, hcl: {} }, default: 'rgb' },
-              default: { type: '*', required: !1 }
+              default: { type: '*', required: !1 },
             },
             function_stop: {
               type: 'array',
               minimum: 0,
               maximum: 24,
               value: ['number', 'color'],
-              length: 2
+              length: 2,
             },
             expression: { type: 'array', value: '*', minimum: 1 },
             expression_name: {
@@ -28817,8 +28817,8 @@
                 upcase: { group: 'String' },
                 downcase: { group: 'String' },
                 concat: { group: 'String' },
-                'resolved-locale': { group: 'String' }
-              }
+                'resolved-locale': { group: 'String' },
+              },
             },
             fog: {
               range: {
@@ -28830,14 +28830,14 @@
                 value: 'number',
                 'property-type': 'data-constant',
                 transition: !0,
-                expression: { interpolated: !0, parameters: ['zoom'] }
+                expression: { interpolated: !0, parameters: ['zoom'] },
               },
               color: {
                 type: 'color',
                 'property-type': 'data-constant',
                 default: '#ffffff',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                transition: !0
+                transition: !0,
               },
               'horizon-blend': {
                 type: 'number',
@@ -28846,8 +28846,8 @@
                 minimum: 0,
                 maximum: 1,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                transition: !0
-              }
+                transition: !0,
+              },
             },
             light: {
               anchor: {
@@ -28856,7 +28856,7 @@
                 values: { map: {}, viewport: {} },
                 'property-type': 'data-constant',
                 transition: !1,
-                expression: { interpolated: !1, parameters: ['zoom'] }
+                expression: { interpolated: !1, parameters: ['zoom'] },
               },
               position: {
                 type: 'array',
@@ -28865,14 +28865,14 @@
                 value: 'number',
                 'property-type': 'data-constant',
                 transition: !0,
-                expression: { interpolated: !0, parameters: ['zoom'] }
+                expression: { interpolated: !0, parameters: ['zoom'] },
               },
               color: {
                 type: 'color',
                 'property-type': 'data-constant',
                 default: '#ffffff',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                transition: !0
+                transition: !0,
               },
               intensity: {
                 type: 'number',
@@ -28881,8 +28881,8 @@
                 minimum: 0,
                 maximum: 1,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                transition: !0
-              }
+                transition: !0,
+              },
             },
             projection: {
               name: {
@@ -28894,10 +28894,10 @@
                   lambertConformalConic: {},
                   mercator: {},
                   naturalEarth: {},
-                  winkelTripel: {}
+                  winkelTripel: {},
                 },
                 default: 'mercator',
-                required: !0
+                required: !0,
               },
               center: {
                 type: 'array',
@@ -28905,7 +28905,7 @@
                 value: 'number',
                 'property-type': 'data-constant',
                 transition: !1,
-                requires: [{ name: ['albers', 'lambertConformalConic'] }]
+                requires: [{ name: ['albers', 'lambertConformalConic'] }],
               },
               parallels: {
                 type: 'array',
@@ -28913,8 +28913,8 @@
                 value: 'number',
                 'property-type': 'data-constant',
                 transition: !1,
-                requires: [{ name: ['albers', 'lambertConformalConic'] }]
-              }
+                requires: [{ name: ['albers', 'lambertConformalConic'] }],
+              },
             },
             terrain: {
               source: { type: 'string', required: !0 },
@@ -28925,8 +28925,8 @@
                 minimum: 0,
                 maximum: 1e3,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                transition: !0
-              }
+                transition: !0,
+              },
             },
             paint: ['paint_fill', 'paint_line', 'paint_circle', 'paint_heatmap', 'paint_fill-extrusion', 'paint_symbol', 'paint_raster', 'paint_hillshade', 'paint_background', 'paint_sky'],
             paint_fill: {
@@ -28934,7 +28934,7 @@
                 type: 'boolean',
                 default: !0,
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'fill-opacity': {
                 type: 'number',
@@ -28943,7 +28943,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'fill-color': {
                 type: 'color',
@@ -28951,14 +28951,14 @@
                 transition: !0,
                 requires: [{ '!': 'fill-pattern' }],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'fill-outline-color': {
                 type: 'color',
                 transition: !0,
                 requires: [{ '!': 'fill-pattern' }, { 'fill-antialias': !0 }],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'fill-translate': {
                 type: 'array',
@@ -28968,7 +28968,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'fill-translate-anchor': {
                 type: 'enum',
@@ -28976,14 +28976,14 @@
                 default: 'map',
                 requires: ['fill-translate'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'fill-pattern': {
                 type: 'resolvedImage',
                 transition: !0,
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'cross-faded-data-driven'
-              }
+                'property-type': 'cross-faded-data-driven',
+              },
             },
             'paint_fill-extrusion': {
               'fill-extrusion-opacity': {
@@ -28993,7 +28993,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'fill-extrusion-color': {
                 type: 'color',
@@ -29001,7 +29001,7 @@
                 transition: !0,
                 requires: [{ '!': 'fill-extrusion-pattern' }],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'fill-extrusion-translate': {
                 type: 'array',
@@ -29011,7 +29011,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'fill-extrusion-translate-anchor': {
                 type: 'enum',
@@ -29019,13 +29019,13 @@
                 default: 'map',
                 requires: ['fill-extrusion-translate'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'fill-extrusion-pattern': {
                 type: 'resolvedImage',
                 transition: !0,
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'cross-faded-data-driven'
+                'property-type': 'cross-faded-data-driven',
               },
               'fill-extrusion-height': {
                 type: 'number',
@@ -29034,7 +29034,7 @@
                 units: 'meters',
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'fill-extrusion-base': {
                 type: 'number',
@@ -29044,15 +29044,15 @@
                 transition: !0,
                 requires: ['fill-extrusion-height'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'fill-extrusion-vertical-gradient': {
                 type: 'boolean',
                 default: !0,
                 transition: !1,
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
-              }
+                'property-type': 'data-constant',
+              },
             },
             paint_line: {
               'line-opacity': {
@@ -29062,7 +29062,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-color': {
                 type: 'color',
@@ -29070,7 +29070,7 @@
                 transition: !0,
                 requires: [{ '!': 'line-pattern' }],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-translate': {
                 type: 'array',
@@ -29080,7 +29080,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'line-translate-anchor': {
                 type: 'enum',
@@ -29088,7 +29088,7 @@
                 default: 'map',
                 requires: ['line-translate'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'line-width': {
                 type: 'number',
@@ -29097,7 +29097,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-gap-width': {
                 type: 'number',
@@ -29106,7 +29106,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-offset': {
                 type: 'number',
@@ -29114,7 +29114,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-blur': {
                 type: 'number',
@@ -29123,7 +29123,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'line-dasharray': {
                 type: 'array',
@@ -29133,21 +29133,21 @@
                 units: 'line widths',
                 requires: [{ '!': 'line-pattern' }],
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'cross-faded-data-driven'
+                'property-type': 'cross-faded-data-driven',
               },
               'line-pattern': {
                 type: 'resolvedImage',
                 transition: !0,
                 expression: { interpolated: !1, parameters: ['zoom', 'feature'] },
-                'property-type': 'cross-faded-data-driven'
+                'property-type': 'cross-faded-data-driven',
               },
               'line-gradient': {
                 type: 'color',
                 transition: !1,
                 requires: [{ '!': 'line-pattern' }, { source: 'geojson', has: { lineMetrics: !0 } }],
                 expression: { interpolated: !0, parameters: ['line-progress'] },
-                'property-type': 'color-ramp'
-              }
+                'property-type': 'color-ramp',
+              },
             },
             paint_circle: {
               'circle-radius': {
@@ -29157,21 +29157,21 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'circle-color': {
                 type: 'color',
                 default: '#000000',
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'circle-blur': {
                 type: 'number',
                 default: 0,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'circle-opacity': {
                 type: 'number',
@@ -29180,7 +29180,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'circle-translate': {
                 type: 'array',
@@ -29190,7 +29190,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'circle-translate-anchor': {
                 type: 'enum',
@@ -29198,21 +29198,21 @@
                 default: 'map',
                 requires: ['circle-translate'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'circle-pitch-scale': {
                 type: 'enum',
                 values: { map: {}, viewport: {} },
                 default: 'map',
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'circle-pitch-alignment': {
                 type: 'enum',
                 values: { map: {}, viewport: {} },
                 default: 'viewport',
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'circle-stroke-width': {
                 type: 'number',
@@ -29221,14 +29221,14 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'circle-stroke-color': {
                 type: 'color',
                 default: '#000000',
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'circle-stroke-opacity': {
                 type: 'number',
@@ -29237,8 +29237,8 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
-              }
+                'property-type': 'data-driven',
+              },
             },
             paint_heatmap: {
               'heatmap-radius': {
@@ -29248,7 +29248,7 @@
                 transition: !0,
                 units: 'pixels',
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'heatmap-weight': {
                 type: 'number',
@@ -29256,7 +29256,7 @@
                 minimum: 0,
                 transition: !1,
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'heatmap-intensity': {
                 type: 'number',
@@ -29264,14 +29264,14 @@
                 minimum: 0,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'heatmap-color': {
                 type: 'color',
                 default: ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0, 0, 255, 0)', 0.1, 'royalblue', 0.3, 'cyan', 0.5, 'lime', 0.7, 'yellow', 1, 'red'],
                 transition: !1,
                 expression: { interpolated: !0, parameters: ['heatmap-density'] },
-                'property-type': 'color-ramp'
+                'property-type': 'color-ramp',
               },
               'heatmap-opacity': {
                 type: 'number',
@@ -29280,8 +29280,8 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
-              }
+                'property-type': 'data-constant',
+              },
             },
             paint_symbol: {
               'icon-opacity': {
@@ -29292,7 +29292,7 @@
                 transition: !0,
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-color': {
                 type: 'color',
@@ -29300,7 +29300,7 @@
                 transition: !0,
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-halo-color': {
                 type: 'color',
@@ -29308,7 +29308,7 @@
                 transition: !0,
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-halo-width': {
                 type: 'number',
@@ -29318,7 +29318,7 @@
                 units: 'pixels',
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-halo-blur': {
                 type: 'number',
@@ -29328,7 +29328,7 @@
                 units: 'pixels',
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'icon-translate': {
                 type: 'array',
@@ -29339,7 +29339,7 @@
                 units: 'pixels',
                 requires: ['icon-image'],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'icon-translate-anchor': {
                 type: 'enum',
@@ -29347,7 +29347,7 @@
                 default: 'map',
                 requires: ['icon-image', 'icon-translate'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-opacity': {
                 type: 'number',
@@ -29357,7 +29357,7 @@
                 transition: !0,
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-color': {
                 type: 'color',
@@ -29366,7 +29366,7 @@
                 overridable: !0,
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-halo-color': {
                 type: 'color',
@@ -29374,7 +29374,7 @@
                 transition: !0,
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-halo-width': {
                 type: 'number',
@@ -29384,7 +29384,7 @@
                 units: 'pixels',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-halo-blur': {
                 type: 'number',
@@ -29394,7 +29394,7 @@
                 units: 'pixels',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom', 'feature', 'feature-state'] },
-                'property-type': 'data-driven'
+                'property-type': 'data-driven',
               },
               'text-translate': {
                 type: 'array',
@@ -29405,7 +29405,7 @@
                 units: 'pixels',
                 requires: ['text-field'],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'text-translate-anchor': {
                 type: 'enum',
@@ -29413,8 +29413,8 @@
                 default: 'map',
                 requires: ['text-field', 'text-translate'],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
-              }
+                'property-type': 'data-constant',
+              },
             },
             paint_raster: {
               'raster-opacity': {
@@ -29424,7 +29424,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'raster-hue-rotate': {
                 type: 'number',
@@ -29433,7 +29433,7 @@
                 transition: !0,
                 units: 'degrees',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'raster-brightness-min': {
                 type: 'number',
@@ -29442,7 +29442,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'raster-brightness-max': {
                 type: 'number',
@@ -29451,7 +29451,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'raster-saturation': {
                 type: 'number',
@@ -29460,7 +29460,7 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'raster-contrast': {
                 type: 'number',
@@ -29469,14 +29469,14 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'raster-resampling': {
                 type: 'enum',
                 values: { linear: {}, nearest: {} },
                 default: 'linear',
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'raster-fade-duration': {
                 type: 'number',
@@ -29485,8 +29485,8 @@
                 transition: !1,
                 units: 'milliseconds',
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
-              }
+                'property-type': 'data-constant',
+              },
             },
             paint_hillshade: {
               'hillshade-illumination-direction': {
@@ -29496,14 +29496,14 @@
                 maximum: 359,
                 transition: !1,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'hillshade-illumination-anchor': {
                 type: 'enum',
                 values: { map: {}, viewport: {} },
                 default: 'viewport',
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'hillshade-exaggeration': {
                 type: 'number',
@@ -29512,29 +29512,29 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'hillshade-shadow-color': {
                 type: 'color',
                 default: '#000000',
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'hillshade-highlight-color': {
                 type: 'color',
                 default: '#FFFFFF',
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'hillshade-accent-color': {
                 type: 'color',
                 default: '#000000',
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
-              }
+                'property-type': 'data-constant',
+              },
             },
             paint_background: {
               'background-color': {
@@ -29543,13 +29543,13 @@
                 transition: !0,
                 requires: [{ '!': 'background-pattern' }],
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'background-pattern': {
                 type: 'resolvedImage',
                 transition: !0,
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'cross-faded'
+                'property-type': 'cross-faded',
               },
               'background-opacity': {
                 type: 'number',
@@ -29558,8 +29558,8 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
-              }
+                'property-type': 'data-constant',
+              },
             },
             paint_sky: {
               'sky-type': {
@@ -29567,7 +29567,7 @@
                 values: { gradient: {}, atmosphere: {} },
                 default: 'atmosphere',
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'sky-atmosphere-sun': {
                 type: 'array',
@@ -29579,7 +29579,7 @@
                 transition: !1,
                 requires: [{ 'sky-type': 'atmosphere' }],
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'sky-atmosphere-sun-intensity': {
                 type: 'number',
@@ -29588,7 +29588,7 @@
                 minimum: 0,
                 maximum: 100,
                 transition: !1,
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'sky-gradient-center': {
                 type: 'array',
@@ -29601,7 +29601,7 @@
                 maximum: [360, 180],
                 transition: !1,
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'sky-gradient-radius': {
                 type: 'number',
@@ -29611,7 +29611,7 @@
                 maximum: 180,
                 transition: !1,
                 expression: { interpolated: !1, parameters: ['zoom'] },
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'sky-gradient': {
                 type: 'color',
@@ -29619,21 +29619,21 @@
                 transition: !1,
                 requires: [{ 'sky-type': 'gradient' }],
                 expression: { interpolated: !0, parameters: ['sky-radial-progress'] },
-                'property-type': 'color-ramp'
+                'property-type': 'color-ramp',
               },
               'sky-atmosphere-halo-color': {
                 type: 'color',
                 default: 'white',
                 transition: !1,
                 requires: [{ 'sky-type': 'atmosphere' }],
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'sky-atmosphere-color': {
                 type: 'color',
                 default: 'white',
                 transition: !1,
                 requires: [{ 'sky-type': 'atmosphere' }],
-                'property-type': 'data-constant'
+                'property-type': 'data-constant',
               },
               'sky-opacity': {
                 type: 'number',
@@ -29642,12 +29642,12 @@
                 maximum: 1,
                 transition: !0,
                 expression: { interpolated: !0, parameters: ['zoom'] },
-                'property-type': 'data-constant'
-              }
+                'property-type': 'data-constant',
+              },
             },
             transition: {
               duration: { type: 'number', default: 300, minimum: 0, units: 'milliseconds' },
-              delay: { type: 'number', default: 0, minimum: 0, units: 'milliseconds' }
+              delay: { type: 'number', default: 0, minimum: 0, units: 'milliseconds' },
             },
             'property-type': {
               'data-driven': { type: 'property-type' },
@@ -29655,9 +29655,9 @@
               'cross-faded-data-driven': { type: 'property-type' },
               'color-ramp': { type: 'property-type' },
               'data-constant': { type: 'property-type' },
-              constant: { type: 'property-type' }
+              constant: { type: 'property-type' },
             },
-            promoteId: { '*': { type: 'string' } }
+            promoteId: { '*': { type: 'string' } },
           };
           function SM(t) {
             if(!0 === t || !1 === t) return !0;
@@ -29696,7 +29696,7 @@
                   return !0;
                 },
                 needGeometry: !1,
-                needFeature: !1
+                needFeature: !1,
               };
             SM(t) || (t = kM(t));
             var i = t,
@@ -29711,7 +29711,7 @@
               console.warn(
                 'Failed to extract static filter. Filter will continue working, but at higher memory usage and slower framerate.\nThis is most likely a bug, please report this via https://github.com/mapbox/mapbox-gl-js/issues/new?assignees=&labels=&template=Bug_report.md\nand paste the contents of this message in the report.\nThank you!\nFilter Expression:\n' +
                   JSON.stringify(i, null, 2) +
-                  '\n        '
+                  '\n        ',
               );
             }
             var e = _M['filter_' + n],
@@ -29723,7 +29723,7 @@
                   .map(function (t) {
                     return t.key + ': ' + t.message;
                   })
-                  .join(', ')
+                  .join(', '),
               );
             s = function(t, n, i) {
               return o.value.evaluate(t, n, {}, i);
@@ -29738,7 +29738,7 @@
                     .map(function (t) {
                       return t.key + ': ' + t.message;
                     })
-                    .join(', ')
+                    .join(', '),
                 );
               (u = function(t, n, i, r, e) {
                 return h.value.evaluate(t, n, {}, i, void 0, void 0, r, e);
@@ -29749,7 +29749,7 @@
               filter: (s = s),
               dynamicFilter: u || void 0,
               needGeometry: CM(r),
-              needFeature: !!a
+              needFeature: !!a,
             };
           }
           function jM(t) {
@@ -29904,7 +29904,7 @@
               'ultra-bold': 900,
               'heavy-black': 900,
               fat: 900,
-              poster: 900
+              poster: 900,
             },
             DM = ' ',
             qM = /(italic|oblique)$/i,
@@ -30019,7 +30019,7 @@
                 (t = A({}, t, {
                   tiles: t.tiles.map(function (t) {
                     return YM(t, i.accessToken, i.accessTokenParam || 'access_token', n || location.href);
-                  })
+                  }),
                 })),
                   (e = Promise.resolve(A({}, t)));
               t_[r] = e;
@@ -30139,7 +30139,7 @@
               LineString: 2,
               MultiLineString: 2,
               Polygon: 3,
-              MultiPolygon: 3
+              MultiPolygon: 3,
             },
             w_ = {
               center: [0.5, 0.5],
@@ -30150,7 +30150,7 @@
               'top-left': [0, 0],
               'top-right': [1, 0],
               'bottom-left': [0, 1],
-              'bottom-right': [1, 1]
+              'bottom-right': [1, 1],
             },
             g_ = {},
             b_ = { zoom: 0 };
@@ -30173,7 +30173,7 @@
                         .map(function (t) {
                           return t.key + ': ' + t.message;
                         })
-                        .join(', ')
+                        .join(', '),
                     );
                   return i.value;
                 })(f, c);
@@ -30331,7 +30331,7 @@
                                 (!(R = A[b]) || (k && !R.getFill()) || (!k && R.getFill()) || (z && !R.getStroke()) || (!z && R.getStroke()) || R.getText()) &&
                                   ((R = new Sv({
                                     fill: k ? new rv() : void 0,
-                                    stroke: z ? new mv() : void 0
+                                    stroke: z ? new mv() : void 0,
                                   })),
                                   (A[b] = R)),
                                 k && (N = R.getFill()).setColor(k),
@@ -30354,7 +30354,7 @@
                                 ? x_(S, 'paint', 'line-dasharray', f, d, m, g).map(function (t) {
                                     return t * W;
                                   })
-                                : null
+                                : null,
                             ),
                             R.setZIndex(F));
                         }
@@ -30423,7 +30423,7 @@
                                               return -t * bt.pixelRatio;
                                             })
                                           : void 0,
-                                      declutterMode: xt
+                                      declutterMode: xt,
                                     })),
                                       (p[gt] = H);
                                   }
@@ -30457,7 +30457,7 @@
                               radius: Mt,
                               stroke: _t && Ot > 0 ? new mv({ width: Ot, color: _t }) : void 0,
                               fill: St ? new rv({ color: St }) : void 0,
-                              declutterMode: 'none'
+                              declutterMode: 'none',
                             })),
                             (p[jt] = H)),
                             R.setImage(H),
@@ -30639,7 +30639,7 @@
                             if(0 !== r.indexOf(e)) throw new Error('unexpected sprites url: ' + t);
                             var o = r.slice(e.length);
                             return XM + '/styles/v1/' + o + '/sprite?access_token=' + n;
-                          })(n.sprite, u.accessToken, o || location.href)
+                          })(n.sprite, u.accessToken, o || location.href),
                         ),
                         y = 0.5 == (window.devicePixelRatio >= 1.5 ? 0.5 : 1) ? '@2x' : '',
                         m = p.origin + p.pathname + y + '.json' + p.search;
@@ -30721,8 +30721,8 @@
                         extent: o || e.getExtent(),
                         minZoom: s,
                         resolutions: $M.slice(0, u + 1),
-                        tileSize: 512
-                      })
+                        tileSize: 512,
+                      }),
                     };
                   Array.isArray(i.tiles) ? (a.urls = i.tiles) : (a.url = i.tiles), t.olSourceOptions && Object.assign(a, t.olSourceOptions), r(new qy(a));
                 })
@@ -30797,7 +30797,7 @@
                     updateWhileInteracting: n.updateWhileInteracting,
                     preload: n.preload,
                     useInterimTilesOnError: n.useInterimTilesOnError,
-                    properties: n.properties
+                    properties: n.properties,
                   }) || this),
                   n.accessToken && (i.accessToken = n.accessToken);
                 var o = n.styleUrl;
@@ -30896,7 +30896,7 @@
                     hitVertexShader: !this.pv && this.vv.builder.getSymbolVertexShader(!0),
                     hitFragmentShader: !this.pv && this.vv.builder.getSymbolFragmentShader(!0),
                     uniforms: this.vv.uniforms,
-                    attributes: this.vv.attributes
+                    attributes: this.vv.attributes,
                   });
                 }),
                 (n.prototype.updateStyleVariables = function(t) {
@@ -30951,7 +30951,7 @@
                 attributes: [],
                 stringLiteralsMap: {},
                 functions: {},
-                bandCount: n
+                bandCount: n,
               },
               e = [];
             if(void 0 !== t.color) {
@@ -30971,8 +30971,8 @@
               e.push(
                 '\n      float saturation = '.concat(
                   a,
-                  ' + 1.0;\n      float sr = (1.0 - saturation) * 0.2126;\n      float sg = (1.0 - saturation) * 0.7152;\n      float sb = (1.0 - saturation) * 0.0722;\n      mat3 saturationMatrix = mat3(\n        sr + saturation, sr, sr,\n        sg, sg + saturation, sg,\n        sb, sb, sb + saturation\n      );\n      color.rgb = clamp(saturationMatrix * color.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));\n    '
-                )
+                  ' + 1.0;\n      float sr = (1.0 - saturation) * 0.2126;\n      float sg = (1.0 - saturation) * 0.7152;\n      float sb = (1.0 - saturation) * 0.0722;\n      mat3 saturationMatrix = mat3(\n        sr + saturation, sr, sr,\n        sg, sg + saturation, sg,\n        sb, sb, sb + saturation\n      );\n      color.rgb = clamp(saturationMatrix * color.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));\n    ',
+                ),
               );
             }
             if(void 0 !== t.gamma) {
@@ -31029,7 +31029,7 @@
                   .concat(e.join('\n'), '\n\n      if(color.a == 0.0) {\n        discard;\n      }\n\n      gl_FragColor = color;\n      gl_FragColor.rgb *= gl_FragColor.a;\n      gl_FragColor *= ')
                   .concat(ul.TRANSITION_ALPHA, ';\n    }'),
               uniforms: c,
-              paletteTextures: r.paletteTextures
+              paletteTextures: r.paletteTextures,
             };
           }
           var Z_ = (function (t) {
@@ -31071,7 +31071,7 @@
                   fragmentShader: t.fragmentShader,
                   uniforms: t.uniforms,
                   cacheSize: this.Jt,
-                  paletteTextures: t.paletteTextures
+                  paletteTextures: t.paletteTextures,
                 });
               }),
               (n.prototype.renderSources = function(t, n) {
@@ -31119,7 +31119,7 @@
                   vertexShader: n.vertexShader,
                   fragmentShader: n.fragmentShader,
                   uniforms: n.uniforms,
-                  paletteTextures: n.paletteTextures
+                  paletteTextures: n.paletteTextures,
                 }),
                   this.changed();
               }),
@@ -31519,7 +31519,7 @@
                         function(t, n) {
                           return e[t.getGeometry().getType()];
                         }),
-                    updateWhileInteracting: !0
+                    updateWhileInteracting: !0,
                   })),
                   (i.K = n.geometryName),
                   (i.Zr = n.condition ? n.condition : ka),
@@ -31570,7 +31570,7 @@
                           function() {
                             this.Zn(new ou(su.POINTERMOVE, t.map, t.originalEvent, !1, t.frameState));
                           }.bind(this),
-                          this.Uv
+                          this.Uv,
                         )),
                         (this.Cv = t.pixel),
                         !0)
@@ -31831,13 +31831,13 @@
                           return i.Polygon;
                         }),
                     updateWhileAnimating: !0,
-                    updateWhileInteracting: !0
+                    updateWhileInteracting: !0,
                   })),
                   (r.md = new lg({
                     source: new ad({ useSpatialIndex: !1, wrapX: !!n.wrapX }),
                     style: n.pointerStyle ? n.pointerStyle : wS(),
                     updateWhileAnimating: !0,
-                    updateWhileInteracting: !0
+                    updateWhileInteracting: !0,
                   })),
                   n.extent && r.setExtent(n.extent),
                   r
@@ -31853,20 +31853,20 @@
                       return [
                         [
                           [t[0], t[1]],
-                          [t[0], t[3]]
+                          [t[0], t[3]],
                         ],
                         [
                           [t[0], t[3]],
-                          [t[2], t[3]]
+                          [t[2], t[3]],
                         ],
                         [
                           [t[2], t[3]],
-                          [t[2], t[1]]
+                          [t[2], t[1]],
                         ],
                         [
                           [t[2], t[1]],
-                          [t[0], t[1]]
-                        ]
+                          [t[0], t[1]],
+                        ],
                       ];
                     })(r);
                     e.sort(function (t, n) {
@@ -32167,7 +32167,7 @@
                           return i.Point;
                         }),
                     updateWhileAnimating: !0,
-                    updateWhileInteracting: !0
+                    updateWhileInteracting: !0,
                   })),
                   (e.Ud = {
                     Point: e.Bd.bind(e),
@@ -32178,7 +32178,7 @@
                     MultiLineString: e.Yd.bind(e),
                     MultiPolygon: e.Zd.bind(e),
                     Circle: e.$d.bind(e),
-                    GeometryCollection: e.Kd.bind(e)
+                    GeometryCollection: e.Kd.bind(e),
                   }),
                   (e._v = null),
                   (e.Hd = null),
@@ -32477,7 +32477,7 @@
                         }
                         return !0;
                       },
-                      { layerFilter: h }
+                      { layerFilter: h },
                     );
                   }
                   if(!r) {
@@ -32593,7 +32593,7 @@
                           feature: f.feature,
                           geometry: f.geometry,
                           index: a,
-                          segment: p
+                          segment: p,
                         };
                         this.Gd.insert(yn(y.segment), y);
                       }
@@ -32754,7 +32754,7 @@
                         function(t, n) {
                           if(this.bp(t, n)) return this.Sp(t, n), a.push(t), !this.gp;
                         }.bind(this),
-                        { layerFilter: this.Mp, hitTolerance: this.xp }
+                        { layerFilter: this.Mp, hitTolerance: this.xp },
                       );
                     for(var h = s.getLength() - 1; h >= 0; --h) {
                       var f = s.item(h),
@@ -32768,7 +32768,7 @@
                       function(t, e) {
                         if(this.bp(t, e)) return (!n && !r) || y(s.getArray(), t) ? (i || r) && y(s.getArray(), t) && (u.push(t), this.Ep(t)) : (this.Sp(t, e), a.push(t)), !this.gp;
                       }.bind(this),
-                      { layerFilter: this.Mp, hitTolerance: this.xp }
+                      { layerFilter: this.Mp, hitTolerance: this.xp },
                     );
                     for(var l = u.length - 1; l >= 0; --l) s.remove(u[l]);
                     s.extend(a);
@@ -32829,7 +32829,7 @@
                     MultiLineString: i.Gp.bind(i),
                     MultiPolygon: i.Dp.bind(i),
                     GeometryCollection: i.qp.bind(i),
-                    Circle: i.Up.bind(i)
+                    Circle: i.Up.bind(i),
                   }),
                   i
                 );
@@ -33109,7 +33109,7 @@
                     function(t, n) {
                       if(this.bp(t, n) && (!this.Re || y(this.Re.getArray(), t))) return t;
                     }.bind(this),
-                    { layerFilter: this.Mp, hitTolerance: this.xp }
+                    { layerFilter: this.Mp, hitTolerance: this.xp },
                   );
                 }),
                 (n.prototype.getHitTolerance = function() {
@@ -33195,7 +33195,7 @@
               MultiPolygon: function(t) {
                 var n = rO(t);
                 return new sg(t.rings, n);
-              }
+              },
             },
             nO = {
               Point: function(t, n) {
@@ -33232,7 +33232,7 @@
               MultiPolygon: function(t, n) {
                 for(var i = eO(t), r = t.getCoordinates(!1), e = [], o = 0; o < r.length; o++) for (var s = r[o].length - 1; s >= 0; s--) e.push(r[o][s]);
                 return { hasZ: i.hasZ, hasM: i.hasM, rings: e };
-              }
+              },
             };
           function iO(t, n) {
             var i, r, e;
@@ -33329,7 +33329,7 @@
                     var o = n && (n.dataProjection || n.featureProjection);
                     o &&
                       (i.geometry.spatialReference = {
-                        wkid: Number(yr(o).getCode().split(':').pop())
+                        wkid: Number(yr(o).getCode().split(':').pop()),
                       }),
                       delete r[t.getGeometryName()];
                   }
@@ -33497,7 +33497,7 @@
                   (i.FEATURE_COLLECTION_PARSERS = {}),
                   (i.FEATURE_COLLECTION_PARSERS[i.namespace] = {
                     featureMember: Hf(i.readFeaturesInternal),
-                    featureMembers: Jf(i.readFeaturesInternal)
+                    featureMembers: Jf(i.readFeaturesInternal),
                   }),
                   (i.supportedMediaTypes = ['application/gml+xml']),
                   i
@@ -33668,32 +33668,32 @@
             (lO.prototype.MULTIPOINT_PARSERS = {
               'http://www.opengis.net/gml': {
                 pointMember: Hf(lO.prototype.pointMemberParser),
-                pointMembers: Hf(lO.prototype.pointMemberParser)
-              }
+                pointMembers: Hf(lO.prototype.pointMemberParser),
+              },
             }),
             (lO.prototype.MULTILINESTRING_PARSERS = {
               'http://www.opengis.net/gml': {
                 lineStringMember: Hf(lO.prototype.lineStringMemberParser),
-                lineStringMembers: Hf(lO.prototype.lineStringMemberParser)
-              }
+                lineStringMembers: Hf(lO.prototype.lineStringMemberParser),
+              },
             }),
             (lO.prototype.MULTIPOLYGON_PARSERS = {
               'http://www.opengis.net/gml': {
                 polygonMember: Hf(lO.prototype.polygonMemberParser),
-                polygonMembers: Hf(lO.prototype.polygonMemberParser)
-              }
+                polygonMembers: Hf(lO.prototype.polygonMemberParser),
+              },
             }),
             (lO.prototype.POINTMEMBER_PARSERS = {
-              'http://www.opengis.net/gml': { Point: Hf(lO.prototype.readFlatCoordinatesFromNode) }
+              'http://www.opengis.net/gml': { Point: Hf(lO.prototype.readFlatCoordinatesFromNode) },
             }),
             (lO.prototype.LINESTRINGMEMBER_PARSERS = {
-              'http://www.opengis.net/gml': { LineString: Hf(lO.prototype.readLineString) }
+              'http://www.opengis.net/gml': { LineString: Hf(lO.prototype.readLineString) },
             }),
             (lO.prototype.POLYGONMEMBER_PARSERS = {
-              'http://www.opengis.net/gml': { Polygon: Hf(lO.prototype.readPolygon) }
+              'http://www.opengis.net/gml': { Polygon: Hf(lO.prototype.readPolygon) },
             }),
             (lO.prototype.RING_PARSERS = {
-              'http://www.opengis.net/gml': { LinearRing: Jf(lO.prototype.readFlatLinearRing) }
+              'http://www.opengis.net/gml': { LinearRing: Jf(lO.prototype.readFlatLinearRing) },
             });
           var vO = lO;
           function dO(t) {
@@ -33783,7 +33783,7 @@
               MultiLineString: 'lineStringMember',
               MultiCurve: 'curveMember',
               MultiPolygon: 'polygonMember',
-              MultiSurface: 'surfaceMember'
+              MultiSurface: 'surfaceMember',
             },
             PO = (function (t) {
               function n(n) {
@@ -33999,16 +33999,16 @@
               );
             })(vO);
           (PO.prototype.GEOMETRY_FLAT_COORDINATES_PARSERS = {
-            'http://www.opengis.net/gml': { coordinates: Jf(PO.prototype.readFlatCoordinates) }
+            'http://www.opengis.net/gml': { coordinates: Jf(PO.prototype.readFlatCoordinates) },
           }),
             (PO.prototype.FLAT_LINEAR_RINGS_PARSERS = {
               'http://www.opengis.net/gml': {
                 innerBoundaryIs: PO.prototype.innerBoundaryIsParser,
-                outerBoundaryIs: PO.prototype.outerBoundaryIsParser
-              }
+                outerBoundaryIs: PO.prototype.outerBoundaryIsParser,
+              },
             }),
             (PO.prototype.ty = {
-              'http://www.opengis.net/gml': { coordinates: Hf(PO.prototype.readFlatCoordinates) }
+              'http://www.opengis.net/gml': { coordinates: Hf(PO.prototype.readFlatCoordinates) },
             }),
             (PO.prototype.GEOMETRY_PARSERS = {
               'http://www.opengis.net/gml': {
@@ -34019,8 +34019,8 @@
                 LinearRing: Jf(vO.prototype.readLinearRing),
                 Polygon: Jf(vO.prototype.readPolygon),
                 MultiPolygon: Jf(vO.prototype.readMultiPolygon),
-                Box: Jf(PO.prototype.readBox)
-              }
+                Box: Jf(PO.prototype.readBox),
+              },
             }),
             (PO.prototype.GEOMETRY_SERIALIZERS = {
               'http://www.opengis.net/gml': {
@@ -34035,32 +34035,32 @@
                 MultiPolygon: nc(PO.prototype.writeMultiSurfaceOrPolygon),
                 Surface: nc(PO.prototype.writeSurfaceOrPolygon),
                 MultiSurface: nc(PO.prototype.writeMultiSurfaceOrPolygon),
-                Envelope: nc(PO.prototype.writeEnvelope)
-              }
+                Envelope: nc(PO.prototype.writeEnvelope),
+              },
             }),
             (PO.prototype.LINESTRINGORCURVEMEMBER_SERIALIZERS = {
               'http://www.opengis.net/gml': {
                 lineStringMember: nc(PO.prototype.writeLineStringOrCurveMember),
-                curveMember: nc(PO.prototype.writeLineStringOrCurveMember)
-              }
+                curveMember: nc(PO.prototype.writeLineStringOrCurveMember),
+              },
             }),
             (PO.prototype.RING_SERIALIZERS = {
               'http://www.opengis.net/gml': {
                 outerBoundaryIs: nc(PO.prototype.writeRing),
-                innerBoundaryIs: nc(PO.prototype.writeRing)
-              }
+                innerBoundaryIs: nc(PO.prototype.writeRing),
+              },
             }),
             (PO.prototype.POINTMEMBER_SERIALIZERS = {
-              'http://www.opengis.net/gml': { pointMember: nc(PO.prototype.writePointMember) }
+              'http://www.opengis.net/gml': { pointMember: nc(PO.prototype.writePointMember) },
             }),
             (PO.prototype.SURFACEORPOLYGONMEMBER_SERIALIZERS = {
               'http://www.opengis.net/gml': {
                 surfaceMember: nc(PO.prototype.writeSurfaceOrPolygonMember),
-                polygonMember: nc(PO.prototype.writeSurfaceOrPolygonMember)
-              }
+                polygonMember: nc(PO.prototype.writeSurfaceOrPolygonMember),
+              },
             }),
             (PO.prototype.ENVELOPE_SERIALIZERS = {
-              'http://www.opengis.net/gml': { lowerCorner: nc(EO), upperCorner: nc(EO) }
+              'http://www.opengis.net/gml': { lowerCorner: nc(EO), upperCorner: nc(EO) },
             });
           var CO = PO,
             kO = (function () {
@@ -34087,7 +34087,7 @@
               MultiLineString: 'lineStringMember',
               MultiCurve: 'curveMember',
               MultiPolygon: 'polygonMember',
-              MultiSurface: 'surfaceMember'
+              MultiSurface: 'surfaceMember',
             },
             NO = (function (t) {
               function n(n) {
@@ -34401,7 +34401,7 @@
                       curve: this.py,
                       surface: this.vy,
                       multiSurface: this.my,
-                      multiCurve: this.yy
+                      multiCurve: this.yy,
                     };
                   return n && A(r, n), this.writeGeometryElement(i, t, [r]), i;
                 }),
@@ -34417,7 +34417,7 @@
                     multiSurface: this.my,
                     multiCurve: this.yy,
                     featureNS: this.featureNS,
-                    featureType: this.featureType
+                    featureType: this.featureType,
                   };
                   return n && A(r, n), this.xy(i, t, [r]), i;
                 }),
@@ -34428,14 +34428,14 @@
             'http://www.opengis.net/gml': {
               pos: Jf(NO.prototype.readFlatPos),
               posList: Jf(NO.prototype.readFlatPosList),
-              coordinates: Jf(CO.prototype.readFlatCoordinates)
-            }
+              coordinates: Jf(CO.prototype.readFlatCoordinates),
+            },
           }),
             (NO.prototype.FLAT_LINEAR_RINGS_PARSERS = {
               'http://www.opengis.net/gml': {
                 interior: NO.prototype.interiorParser,
-                exterior: NO.prototype.exteriorParser
-              }
+                exterior: NO.prototype.exteriorParser,
+              },
             }),
             (NO.prototype.GEOMETRY_PARSERS = {
               'http://www.opengis.net/gml': {
@@ -34450,83 +34450,83 @@
                 MultiSurface: Jf(NO.prototype.readMultiSurface),
                 Curve: Jf(NO.prototype.readCurve),
                 MultiCurve: Jf(NO.prototype.readMultiCurve),
-                Envelope: Jf(NO.prototype.readEnvelope)
-              }
+                Envelope: Jf(NO.prototype.readEnvelope),
+              },
             }),
             (NO.prototype.MULTICURVE_PARSERS = {
               'http://www.opengis.net/gml': {
                 curveMember: Hf(NO.prototype.curveMemberParser),
-                curveMembers: Hf(NO.prototype.curveMemberParser)
-              }
+                curveMembers: Hf(NO.prototype.curveMemberParser),
+              },
             }),
             (NO.prototype.MULTISURFACE_PARSERS = {
               'http://www.opengis.net/gml': {
                 surfaceMember: Hf(NO.prototype.surfaceMemberParser),
-                surfaceMembers: Hf(NO.prototype.surfaceMemberParser)
-              }
+                surfaceMembers: Hf(NO.prototype.surfaceMemberParser),
+              },
             }),
             (NO.prototype.CURVEMEMBER_PARSERS = {
               'http://www.opengis.net/gml': {
                 LineString: Hf(vO.prototype.readLineString),
-                Curve: Hf(NO.prototype.readCurve)
-              }
+                Curve: Hf(NO.prototype.readCurve),
+              },
             }),
             (NO.prototype.SURFACEMEMBER_PARSERS = {
               'http://www.opengis.net/gml': {
                 Polygon: Hf(vO.prototype.readPolygon),
-                Surface: Hf(NO.prototype.readSurface)
-              }
+                Surface: Hf(NO.prototype.readSurface),
+              },
             }),
             (NO.prototype.SURFACE_PARSERS = {
-              'http://www.opengis.net/gml': { patches: Jf(NO.prototype.readPatch) }
+              'http://www.opengis.net/gml': { patches: Jf(NO.prototype.readPatch) },
             }),
             (NO.prototype.CURVE_PARSERS = {
-              'http://www.opengis.net/gml': { segments: Jf(NO.prototype.readSegment) }
+              'http://www.opengis.net/gml': { segments: Jf(NO.prototype.readSegment) },
             }),
             (NO.prototype.ENVELOPE_PARSERS = {
               'http://www.opengis.net/gml': {
                 lowerCorner: Hf(NO.prototype.readFlatPosList),
-                upperCorner: Hf(NO.prototype.readFlatPosList)
-              }
+                upperCorner: Hf(NO.prototype.readFlatPosList),
+              },
             }),
             (NO.prototype.PATCHES_PARSERS = {
-              'http://www.opengis.net/gml': { PolygonPatch: Jf(NO.prototype.readPolygonPatch) }
+              'http://www.opengis.net/gml': { PolygonPatch: Jf(NO.prototype.readPolygonPatch) },
             }),
             (NO.prototype.SEGMENTS_PARSERS = {
               'http://www.opengis.net/gml': {
-                LineStringSegment: Kf(NO.prototype.readLineStringSegment)
-              }
+                LineStringSegment: Kf(NO.prototype.readLineStringSegment),
+              },
             }),
             (vO.prototype.RING_PARSERS = {
               'http://www.opengis.net/gml': {
                 LinearRing: Jf(vO.prototype.readFlatLinearRing),
-                Ring: Jf(NO.prototype.readFlatCurveRing)
-              }
+                Ring: Jf(NO.prototype.readFlatCurveRing),
+              },
             }),
             NO.prototype.writeFeatures,
             (NO.prototype.RING_SERIALIZERS = {
               'http://www.opengis.net/gml': {
                 exterior: nc(NO.prototype.writeRing),
-                interior: nc(NO.prototype.writeRing)
-              }
+                interior: nc(NO.prototype.writeRing),
+              },
             }),
             (NO.prototype.ENVELOPE_SERIALIZERS = {
-              'http://www.opengis.net/gml': { lowerCorner: nc(EO), upperCorner: nc(EO) }
+              'http://www.opengis.net/gml': { lowerCorner: nc(EO), upperCorner: nc(EO) },
             }),
             (NO.prototype.SURFACEORPOLYGONMEMBER_SERIALIZERS = {
               'http://www.opengis.net/gml': {
                 surfaceMember: nc(NO.prototype.writeSurfaceOrPolygonMember),
-                polygonMember: nc(NO.prototype.writeSurfaceOrPolygonMember)
-              }
+                polygonMember: nc(NO.prototype.writeSurfaceOrPolygonMember),
+              },
             }),
             (NO.prototype.POINTMEMBER_SERIALIZERS = {
-              'http://www.opengis.net/gml': { pointMember: nc(NO.prototype.writePointMember) }
+              'http://www.opengis.net/gml': { pointMember: nc(NO.prototype.writePointMember) },
             }),
             (NO.prototype.LINESTRINGORCURVEMEMBER_SERIALIZERS = {
               'http://www.opengis.net/gml': {
                 lineStringMember: nc(NO.prototype.writeLineStringOrCurveMember),
-                curveMember: nc(NO.prototype.writeLineStringOrCurveMember)
-              }
+                curveMember: nc(NO.prototype.writeLineStringOrCurveMember),
+              },
             }),
             (NO.prototype.GEOMETRY_SERIALIZERS = {
               'http://www.opengis.net/gml': {
@@ -34541,8 +34541,8 @@
                 MultiPolygon: nc(NO.prototype.writeMultiSurfaceOrPolygon),
                 Surface: nc(NO.prototype.writeSurfaceOrPolygon),
                 MultiSurface: nc(NO.prototype.writeMultiSurfaceOrPolygon),
-                Envelope: nc(NO.prototype.writeEnvelope)
-              }
+                Envelope: nc(NO.prototype.writeEnvelope),
+              },
             });
           var LO = NO,
             zO = LO;
@@ -34581,14 +34581,14 @@
               'http://www.opengis.net/gml/3.2': {
                 pos: Jf(LO.prototype.readFlatPos),
                 posList: Jf(LO.prototype.readFlatPosList),
-                coordinates: Jf(CO.prototype.readFlatCoordinates)
-              }
+                coordinates: Jf(CO.prototype.readFlatCoordinates),
+              },
             }),
             (GO.prototype.FLAT_LINEAR_RINGS_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 interior: LO.prototype.interiorParser,
-                exterior: LO.prototype.exteriorParser
-              }
+                exterior: LO.prototype.exteriorParser,
+              },
             }),
             (GO.prototype.GEOMETRY_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
@@ -34603,111 +34603,111 @@
                 MultiSurface: Jf(LO.prototype.readMultiSurface),
                 Curve: Jf(GO.prototype.readCurve),
                 MultiCurve: Jf(LO.prototype.readMultiCurve),
-                Envelope: Jf(GO.prototype.readEnvelope)
-              }
+                Envelope: Jf(GO.prototype.readEnvelope),
+              },
             }),
             (GO.prototype.MULTICURVE_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 curveMember: Hf(LO.prototype.curveMemberParser),
-                curveMembers: Hf(LO.prototype.curveMemberParser)
-              }
+                curveMembers: Hf(LO.prototype.curveMemberParser),
+              },
             }),
             (GO.prototype.MULTISURFACE_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 surfaceMember: Hf(LO.prototype.surfaceMemberParser),
-                surfaceMembers: Hf(LO.prototype.surfaceMemberParser)
-              }
+                surfaceMembers: Hf(LO.prototype.surfaceMemberParser),
+              },
             }),
             (GO.prototype.CURVEMEMBER_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 LineString: Hf(vO.prototype.readLineString),
-                Curve: Hf(LO.prototype.readCurve)
-              }
+                Curve: Hf(LO.prototype.readCurve),
+              },
             }),
             (GO.prototype.SURFACEMEMBER_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 Polygon: Hf(vO.prototype.readPolygon),
-                Surface: Hf(LO.prototype.readSurface)
-              }
+                Surface: Hf(LO.prototype.readSurface),
+              },
             }),
             (GO.prototype.SURFACE_PARSERS = {
-              'http://www.opengis.net/gml/3.2': { patches: Jf(LO.prototype.readPatch) }
+              'http://www.opengis.net/gml/3.2': { patches: Jf(LO.prototype.readPatch) },
             }),
             (GO.prototype.CURVE_PARSERS = {
-              'http://www.opengis.net/gml/3.2': { segments: Jf(LO.prototype.readSegment) }
+              'http://www.opengis.net/gml/3.2': { segments: Jf(LO.prototype.readSegment) },
             }),
             (GO.prototype.ENVELOPE_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 lowerCorner: Hf(LO.prototype.readFlatPosList),
-                upperCorner: Hf(LO.prototype.readFlatPosList)
-              }
+                upperCorner: Hf(LO.prototype.readFlatPosList),
+              },
             }),
             (GO.prototype.PATCHES_PARSERS = {
-              'http://www.opengis.net/gml/3.2': { PolygonPatch: Jf(LO.prototype.readPolygonPatch) }
+              'http://www.opengis.net/gml/3.2': { PolygonPatch: Jf(LO.prototype.readPolygonPatch) },
             }),
             (GO.prototype.SEGMENTS_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
-                LineStringSegment: Kf(LO.prototype.readLineStringSegment)
-              }
+                LineStringSegment: Kf(LO.prototype.readLineStringSegment),
+              },
             }),
             (GO.prototype.MULTIPOINT_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 pointMember: Hf(vO.prototype.pointMemberParser),
-                pointMembers: Hf(vO.prototype.pointMemberParser)
-              }
+                pointMembers: Hf(vO.prototype.pointMemberParser),
+              },
             }),
             (GO.prototype.MULTILINESTRING_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 lineStringMember: Hf(vO.prototype.lineStringMemberParser),
-                lineStringMembers: Hf(vO.prototype.lineStringMemberParser)
-              }
+                lineStringMembers: Hf(vO.prototype.lineStringMemberParser),
+              },
             }),
             (GO.prototype.MULTIPOLYGON_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 polygonMember: Hf(vO.prototype.polygonMemberParser),
-                polygonMembers: Hf(vO.prototype.polygonMemberParser)
-              }
+                polygonMembers: Hf(vO.prototype.polygonMemberParser),
+              },
             }),
             (GO.prototype.POINTMEMBER_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
-                Point: Hf(vO.prototype.readFlatCoordinatesFromNode)
-              }
+                Point: Hf(vO.prototype.readFlatCoordinatesFromNode),
+              },
             }),
             (GO.prototype.LINESTRINGMEMBER_PARSERS = {
-              'http://www.opengis.net/gml/3.2': { LineString: Hf(vO.prototype.readLineString) }
+              'http://www.opengis.net/gml/3.2': { LineString: Hf(vO.prototype.readLineString) },
             }),
             (GO.prototype.POLYGONMEMBER_PARSERS = {
-              'http://www.opengis.net/gml/3.2': { Polygon: Hf(vO.prototype.readPolygon) }
+              'http://www.opengis.net/gml/3.2': { Polygon: Hf(vO.prototype.readPolygon) },
             }),
             (GO.prototype.RING_PARSERS = {
               'http://www.opengis.net/gml/3.2': {
                 LinearRing: Jf(vO.prototype.readFlatLinearRing),
-                Ring: Jf(GO.prototype.readFlatCurveRing)
-              }
+                Ring: Jf(GO.prototype.readFlatCurveRing),
+              },
             }),
             (GO.prototype.RING_SERIALIZERS = {
               'http://www.opengis.net/gml/3.2': {
                 exterior: nc(LO.prototype.writeRing),
-                interior: nc(LO.prototype.writeRing)
-              }
+                interior: nc(LO.prototype.writeRing),
+              },
             }),
             (GO.prototype.ENVELOPE_SERIALIZERS = {
-              'http://www.opengis.net/gml/3.2': { lowerCorner: nc(EO), upperCorner: nc(EO) }
+              'http://www.opengis.net/gml/3.2': { lowerCorner: nc(EO), upperCorner: nc(EO) },
             }),
             (GO.prototype.SURFACEORPOLYGONMEMBER_SERIALIZERS = {
               'http://www.opengis.net/gml/3.2': {
                 surfaceMember: nc(LO.prototype.writeSurfaceOrPolygonMember),
-                polygonMember: nc(LO.prototype.writeSurfaceOrPolygonMember)
-              }
+                polygonMember: nc(LO.prototype.writeSurfaceOrPolygonMember),
+              },
             }),
             (GO.prototype.POINTMEMBER_SERIALIZERS = {
-              'http://www.opengis.net/gml/3.2': { pointMember: nc(LO.prototype.writePointMember) }
+              'http://www.opengis.net/gml/3.2': { pointMember: nc(LO.prototype.writePointMember) },
             }),
             (GO.prototype.LINESTRINGORCURVEMEMBER_SERIALIZERS = {
               'http://www.opengis.net/gml/3.2': {
                 lineStringMember: nc(LO.prototype.writeLineStringOrCurveMember),
-                curveMember: nc(LO.prototype.writeLineStringOrCurveMember)
-              }
+                curveMember: nc(LO.prototype.writeLineStringOrCurveMember),
+              },
             }),
             (GO.prototype.GEOMETRY_SERIALIZERS = {
               'http://www.opengis.net/gml/3.2': {
@@ -34722,8 +34722,8 @@
                 MultiPolygon: nc(LO.prototype.writeMultiSurfaceOrPolygon),
                 Surface: nc(LO.prototype.writeSurfaceOrPolygon),
                 MultiSurface: nc(LO.prototype.writeMultiSurfaceOrPolygon),
-                Envelope: nc(LO.prototype.writeEnvelope)
-              }
+                Envelope: nc(LO.prototype.writeEnvelope),
+              },
             });
           var DO = GO,
             qO = (function () {
@@ -34790,7 +34790,7 @@
                   var s = Eg(o, !0, r);
                   (e.geometryLayout = s.getLayout()), xj(t, s.getCoordinates(), i);
                 }
-              })
+              }),
             }),
             YO = (function (t) {
               function n(n) {
@@ -34858,7 +34858,7 @@
                     o = r.layoutOptions;
                   vj(e, o, t, i);
                 }
-              }
+              },
             }),
             $O = sc(UO, { ele: tc(mO), time: tc(yO) }),
             KO = sc(UO, {
@@ -34875,7 +34875,7 @@
                 uc(HO, t, n);
                 var r = i.flatCoordinates;
                 i.ends.push(r.length);
-              }
+              },
             }),
             HO = sc(UO, {
               trkpt: function(t, n) {
@@ -34886,7 +34886,7 @@
                     o = r.layoutOptions;
                   vj(e, o, t, i);
                 }
-              }
+              },
             }),
             JO = sc(UO, { ele: tc(mO), time: tc(yO) }),
             QO = sc(UO, {
@@ -34908,7 +34908,7 @@
               pdop: tc(mO),
               ageofdgpsdata: tc(mO),
               dgpsid: tc(gO),
-              extensions: yj
+              extensions: yj,
             }),
             tj = ['text', 'type'],
             nj = sc(UO, { text: nc(EO), type: nc(EO) }),
@@ -34921,7 +34921,7 @@
               link: nc(bj),
               number: nc(jO),
               type: nc(EO),
-              rtept: ic(nc(xj))
+              rtept: ic(nc(xj)),
             }),
             ej = sc(UO, ['ele', 'time']),
             oj = sc(UO, ['name', 'cmt', 'desc', 'src', 'link', 'number', 'type', 'trkseg']),
@@ -34937,8 +34937,8 @@
                 nc(function (t, n, i) {
                   var r = { node: t };
                   (r.geometryLayout = n.getLayout()), (r.properties = {}), fc(r, aj, uj, n.getCoordinates(), i);
-                })
-              )
+                }),
+              ),
             }),
             uj = rc('trkpt'),
             aj = sc(UO, { trkpt: nc(xj) }),
@@ -34961,7 +34961,7 @@
               vdop: nc(OO),
               pdop: nc(OO),
               ageofdgpsdata: nc(OO),
-              dgpsid: nc(jO)
+              dgpsid: nc(jO),
             }),
             cj = { Point: 'wpt', LineString: 'rte', MultiLineString: 'trk' };
           function lj(t, n, i) {
@@ -35273,7 +35273,7 @@
                 open: tc(dO),
                 phoneNumber: tc(xO),
                 styleUrl: tc(vE),
-                visibility: tc(dO)
+                visibility: tc(dO),
               },
               sc(Uj, {
                 MultiTrack: tc(function (t, n) {
@@ -35281,8 +35281,8 @@
                   if(!i) return;
                   return new rg(i);
                 }, 'geometry'),
-                Track: tc(OE, 'geometry')
-              })
+                Track: tc(OE, 'geometry'),
+              }),
             ),
             Wj = sc(Bj, {
               ExtendedData: UE,
@@ -35295,7 +35295,7 @@
               name: tc(xO),
               open: tc(dO),
               phoneNumber: tc(xO),
-              visibility: tc(dO)
+              visibility: tc(dO),
             }),
             Yj = sc(Bj, { href: tc(lE) }),
             Zj = sc(Bj, {
@@ -35314,14 +35314,14 @@
                   (r.maxLodPixels = parseFloat(i.maxLodPixels)),
                   (r.minFadeExtent = parseFloat(i.minFadeExtent)),
                   (r.maxFadeExtent = parseFloat(i.maxFadeExtent));
-              }
+              },
             }),
             $j = sc(Bj, ['Document', 'Placemark']),
             Kj = sc(Bj, {
               Document: nc(function (t, n, i) {
                 fc({ node: t }, JE, QE, n, i, void 0, this);
               }),
-              Placemark: nc(_T)
+              Placemark: nc(_T),
             }),
             Hj = null;
           var Jj,
@@ -35355,7 +35355,7 @@
                     rotation: 0,
                     scale: sE((Aj = [64, 64])),
                     size: Aj,
-                    src: Pj
+                    src: Pj,
                   })),
                   (Jj = 'NO_IMAGE'),
                   (nE = new mv({ color: Oj, width: 1 })),
@@ -35385,11 +35385,11 @@
                     Folder: Kf(this.ky, this),
                     Placemark: Hf(this.Iy, this),
                     Style: this.Ny.bind(this),
-                    StyleMap: this.Ly.bind(this)
+                    StyleMap: this.Ly.bind(this),
                   }),
                   t,
                   n,
-                  this
+                  this,
                 );
                 return i || void 0;
               }),
@@ -35454,8 +35454,8 @@
                                   image: null,
                                   fill: l[0].getFill(),
                                   stroke: l[0].getStroke(),
-                                  text: null
-                                })
+                                  text: null,
+                                }),
                               ].concat(l.slice(1)))
                             : v;
                         }
@@ -35657,7 +35657,7 @@
                 var o = i.Style;
                 o && (n[n.length - 1] = o);
               }
-            }
+            },
           });
           function yE(t, n) {
             return ac(void 0, pE, t, n, this);
@@ -35680,11 +35680,11 @@
                   xunits: Xj[i],
                   y: parseFloat(t.getAttribute('y')),
                   yunits: Xj[r],
-                  origin: n
+                  origin: n,
                 }
               );
             }),
-            scale: tc(dE)
+            scale: tc(dE),
           });
           var wE = sc(Bj, { color: tc(fE), scale: tc(dE) });
           var gE = sc(Bj, { color: tc(fE), width: tc(mO) });
@@ -35702,7 +35702,7 @@
                   r = Vf(t, !1),
                   e = Date.parse(r);
                 i.push(isNaN(e) ? 0 : e);
-              }
+              },
             },
             sc(Uj, {
               coord: function(t, n) {
@@ -35715,8 +35715,8 @@
                     u = parseFloat(e[3]);
                   i.push([o, s, u]);
                 } else i.push([]);
-              }
-            })
+              },
+            }),
           );
           function OE(t, n) {
             var i = ac({ coordinates: [], whens: [] }, SE, t, n);
@@ -35752,7 +35752,7 @@
             LinearRing: Hf(CE),
             MultiGeometry: Hf(IE),
             Point: Hf(NE),
-            Polygon: Hf(zE)
+            Polygon: Hf(zE),
           });
           function IE(t, n) {
             var i,
@@ -35797,7 +35797,7 @@
               if(i) {
                 n[n.length - 1][0] = i;
               }
-            }
+            },
           });
           function zE(t, n) {
             var i = ac({}, AE, t, n),
@@ -35854,7 +35854,7 @@
                       scale: x,
                       size: d,
                       src: this.Cy(r),
-                      color: M
+                      color: M,
                     }),
                     S = _.getScaleArray()[0],
                     O = _.getSize();
@@ -35888,7 +35888,7 @@
                 var r = n[n.length - 1],
                   e = new Ev({
                     fill: new rv({ color: 'color' in i ? i.color : Oj }),
-                    scale: i.scale
+                    scale: i.scale,
                   });
                 r.textStyle = e;
               }
@@ -35899,7 +35899,7 @@
                 var r = n[n.length - 1],
                   e = new mv({
                     color: 'color' in i ? i.color : Oj,
-                    width: 'width' in i ? i.width : 1
+                    width: 'width' in i ? i.width : 1,
                   });
                 r.strokeStyle = e;
               }
@@ -35915,7 +35915,7 @@
                 var s = i.outline;
                 void 0 !== s && (r.outline = s);
               }
-            }
+            },
           });
           function FE(t, n) {
             var i = ac({}, RE, t, n, this);
@@ -35939,7 +35939,7 @@
                             n.getGeometriesArrayRecursive().filter(function (t) {
                               var n = t.getType();
                               return 'Polygon' !== n && 'MultiPolygon' !== n;
-                            })
+                            }),
                           )
                         : 'Polygon' !== i && 'MultiPolygon' !== i
                         ? n
@@ -35949,7 +35949,7 @@
                     image: r,
                     stroke: u,
                     text: s,
-                    zIndex: void 0
+                    zIndex: void 0,
                   }),
                   new Sv({
                     geometry: function(t) {
@@ -35960,7 +35960,7 @@
                             n.getGeometriesArrayRecursive().filter(function (t) {
                               var n = t.getType();
                               return 'Polygon' === n || 'MultiPolygon' === n;
-                            })
+                            }),
                           )
                         : 'Polygon' === i || 'MultiPolygon' === i
                         ? n
@@ -35968,8 +35968,8 @@
                     },
                     fill: e,
                     stroke: null,
-                    zIndex: void 0
-                  })
+                    zIndex: void 0,
+                  }),
                 ];
           }
           function GE(t, n) {
@@ -35999,7 +35999,7 @@
                     displayName: r.displayName,
                     toString: function() {
                       return r.value;
-                    }
+                    },
                   })
                 : null !== i
                 ? (r[i] = r.value)
@@ -36008,7 +36008,7 @@
             },
             SchemaData: function(t, n) {
               uc(VE, t, n);
-            }
+            },
           });
           function UE(t, n) {
             uc(qE, t, n);
@@ -36024,7 +36024,7 @@
                 var r = xO(t);
                 n[n.length - 1][i] = r;
               }
-            }
+            },
           });
           var WE = sc(Bj, {
             altitudeMode: tc(xO),
@@ -36033,13 +36033,13 @@
             north: tc(mO),
             south: tc(mO),
             east: tc(mO),
-            west: tc(mO)
+            west: tc(mO),
           });
           var YE = sc(Bj, {
             minLodPixels: tc(mO),
             maxLodPixels: tc(mO),
             minFadeExtent: tc(mO),
-            maxFadeExtent: tc(mO)
+            maxFadeExtent: tc(mO),
           });
           var ZE = sc(Bj, { LinearRing: Hf(ME) });
           var $E = sc(Bj, { LinearRing: Jf(ME) });
@@ -36064,7 +36064,7 @@
             }),
             displayName: nc(function (t, n) {
               _O(t, n);
-            })
+            }),
           });
           var JE = sc(Bj, { Placemark: nc(_T) }),
             QE = function(t, n, i) {
@@ -36090,7 +36090,7 @@
               hotSpot: nc(function (t, n) {
                 t.setAttribute('x', String(n.x)), t.setAttribute('y', String(n.y)), t.setAttribute('xunits', n.xunits), t.setAttribute('yunits', n.yunits);
               }),
-              scale: nc(IT)
+              scale: nc(IT),
             });
           var sT = sc(Bj, ['color', 'scale']),
             uT = sc(Bj, { color: nc(KE), scale: nc(IT) });
@@ -36104,7 +36104,7 @@
               MultiPoint: 'MultiGeometry',
               MultiLineString: 'MultiGeometry',
               MultiPolygon: 'MultiGeometry',
-              GeometryCollection: 'MultiGeometry'
+              GeometryCollection: 'MultiGeometry',
             },
             cT = function(t, n, i) {
               if(t) return Xf(n[n.length - 1].node.namespaceURI, fT[t.getType()]);
@@ -36117,7 +36117,7 @@
               LineString: nc(jT),
               Point: nc(jT),
               Polygon: nc(CT),
-              GeometryCollection: nc(mT)
+              GeometryCollection: nc(mT),
             });
           function mT(t, n, i) {
             var r,
@@ -36187,7 +36187,7 @@
               open: nc(MO),
               phoneNumber: nc(EO),
               styleUrl: nc(EO),
-              visibility: nc(MO)
+              visibility: nc(MO),
             }),
             xT = sc(Bj, ['name', 'open', 'visibility', 'address', 'phoneNumber', 'description', 'styleUrl', 'Style']),
             MT = rc('ExtendedData');
@@ -36202,7 +36202,7 @@
                 open: 1,
                 phoneNumber: 1,
                 styleUrl: 1,
-                visibility: 1
+                visibility: 1,
               };
             o[n.getGeometryName()] = 1;
             var s = Object.keys(e || {})
@@ -36300,7 +36300,7 @@
                   }
                 }
                 EO(t, a);
-              })
+              }),
             });
           function jT(t, n, i) {
             var r = n.getFlatCoordinates(),
@@ -36385,13 +36385,13 @@
                   s = {
                     color: e ? e.getColor() : void 0,
                     fill: !!e && void 0,
-                    outline: !!o && void 0
+                    outline: !!o && void 0,
                   },
                   u = i[i.length - 1].node,
                   a = ET[u.namespaceURI],
                   h = oc(s, a);
                 fc(r, kT, ec, h, i, a);
-              })
+              }),
             });
           var zT = aE,
             RT = (function () {
@@ -36419,7 +36419,7 @@
               nd: function(t, n) {
                 n[n.length - 1].ndrefs.push(t.getAttribute('ref'));
               },
-              tag: BT
+              tag: BT,
             }),
             DT = sc(FT, {
               node: function(t, n) {
@@ -36439,7 +36439,7 @@
               way: function(t, n) {
                 var i = ac({ id: t.getAttribute('id'), ndrefs: [], tags: {} }, GT, t, n);
                 n[n.length - 1].ways.push(i);
-              }
+              },
             }),
             qT = (function (t) {
               function n() {
@@ -36526,7 +36526,7 @@
               }),
               OperationsMetadata: tc(function (t, n) {
                 return ac({}, eA, t, n);
-              })
+              }),
             }),
             KT = (function (t) {
               function n() {
@@ -36547,17 +36547,17 @@
               AdministrativeArea: tc(xO),
               PostalCode: tc(xO),
               Country: tc(xO),
-              ElectronicMailAddress: tc(xO)
+              ElectronicMailAddress: tc(xO),
             }),
             JT = sc(ZT, {
               Value: Qf(function (t, n) {
                 return xO(t);
-              })
+              }),
             }),
             QT = sc(ZT, {
               AllowedValues: tc(function (t, n) {
                 return ac({}, JT, t, n);
-              })
+              }),
             }),
             tA = sc(ZT, {
               Phone: tc(function (t, n) {
@@ -36565,12 +36565,12 @@
               }),
               Address: tc(function (t, n) {
                 return ac({}, HT, t, n);
-              })
+              }),
             }),
             nA = sc(ZT, {
               HTTP: tc(function (t, n) {
                 return ac({}, iA, t, n);
-              })
+              }),
             }),
             iA = sc(ZT, {
               Get: Qf(function (t, n) {
@@ -36578,12 +36578,12 @@
                 if(!i) return;
                 return ac({ href: i }, sA, t, n);
               }),
-              Post: void 0
+              Post: void 0,
             }),
             rA = sc(ZT, {
               DCP: tc(function (t, n) {
                 return ac({}, nA, t, n);
-              })
+              }),
             }),
             eA = sc(ZT, {
               Operation: function(t, n) {
@@ -36591,7 +36591,7 @@
                   r = ac({}, rA, t, n);
                 if(!r) return;
                 n[n.length - 1][i] = r;
-              }
+              },
             }),
             oA = sc(ZT, { Voice: tc(xO), Facsimile: tc(xO) }),
             sA = sc(ZT, {
@@ -36599,14 +36599,14 @@
                 var i = t.getAttribute('name');
                 if(!i) return;
                 return ac({ name: i }, QT, t, n);
-              })
+              }),
             }),
             uA = sc(ZT, {
               IndividualName: tc(xO),
               PositionName: tc(xO),
               ContactInfo: tc(function (t, n) {
                 return ac({}, tA, t, n);
-              })
+              }),
             }),
             aA = sc(ZT, {
               Abstract: tc(xO),
@@ -36614,14 +36614,14 @@
               Fees: tc(xO),
               Title: tc(xO),
               ServiceTypeVersion: tc(xO),
-              ServiceType: tc(xO)
+              ServiceType: tc(xO),
             }),
             hA = sc(ZT, {
               ProviderName: tc(xO),
               ProviderSite: tc(WT),
               ServiceContact: tc(function (t, n) {
                 return ac({}, uA, t, n);
-              })
+              }),
             });
           var fA = KT,
             cA = (function () {
@@ -36825,7 +36825,7 @@
                   i[r] = s;
                 }
                 return new sg(i);
-              }
+              },
             };
           function OA(t, n) {
             for(var i, r = [], e = 0, o = t.length; e < o; ++e)
@@ -37538,35 +37538,35 @@
             })(),
             AP = {
               'http://www.opengis.net/gml': {
-                boundedBy: tc(vO.prototype.readExtentElement, 'bounds')
+                boundedBy: tc(vO.prototype.readExtentElement, 'bounds'),
               },
-              'http://www.opengis.net/wfs/2.0': { member: Hf(vO.prototype.readFeaturesInternal) }
+              'http://www.opengis.net/wfs/2.0': { member: Hf(vO.prototype.readFeaturesInternal) },
             },
             PP = {
               'http://www.opengis.net/wfs': {
                 totalInserted: tc(gO),
                 totalUpdated: tc(gO),
-                totalDeleted: tc(gO)
+                totalDeleted: tc(gO),
               },
               'http://www.opengis.net/wfs/2.0': {
                 totalInserted: tc(gO),
                 totalUpdated: tc(gO),
-                totalDeleted: tc(gO)
-              }
+                totalDeleted: tc(gO),
+              },
             },
             CP = {
               'http://www.opengis.net/wfs': {
                 TransactionSummary: tc(BP, 'transactionSummary'),
-                InsertResults: tc(YP, 'insertIds')
+                InsertResults: tc(YP, 'insertIds'),
               },
               'http://www.opengis.net/wfs/2.0': {
                 TransactionSummary: tc(BP, 'transactionSummary'),
-                InsertResults: tc(YP, 'insertIds')
-              }
+                InsertResults: tc(YP, 'insertIds'),
+              },
             },
             kP = {
               'http://www.opengis.net/wfs': { PropertyName: nc(EO) },
-              'http://www.opengis.net/wfs/2.0': { PropertyName: nc(EO) }
+              'http://www.opengis.net/wfs/2.0': { PropertyName: nc(EO) },
             },
             IP = {
               'http://www.opengis.net/wfs': {
@@ -37574,37 +37574,37 @@
                 Update: nc(JP),
                 Delete: nc(HP),
                 Property: nc(QP),
-                Native: nc(tC)
+                Native: nc(tC),
               },
               'http://www.opengis.net/wfs/2.0': {
                 Insert: nc(ZP),
                 Update: nc(JP),
                 Delete: nc(HP),
                 Property: nc(QP),
-                Native: nc(tC)
-              }
+                Native: nc(tC),
+              },
             },
             NP = 'feature',
             LP = 'http://www.w3.org/2000/xmlns/',
             zP = {
               '2.0.0': 'http://www.opengis.net/ogc/1.1',
               '1.1.0': 'http://www.opengis.net/ogc',
-              '1.0.0': 'http://www.opengis.net/ogc'
+              '1.0.0': 'http://www.opengis.net/ogc',
             },
             RP = {
               '2.0.0': 'http://www.opengis.net/wfs/2.0',
               '1.1.0': 'http://www.opengis.net/wfs',
-              '1.0.0': 'http://www.opengis.net/wfs'
+              '1.0.0': 'http://www.opengis.net/wfs',
             },
             FP = {
               '2.0.0': 'http://www.opengis.net/fes/2.0',
               '1.1.0': 'http://www.opengis.net/fes',
-              '1.0.0': 'http://www.opengis.net/fes'
+              '1.0.0': 'http://www.opengis.net/fes',
             },
             GP = {
               '2.0.0': 'http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd',
               '1.1.0': 'http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd',
-              '1.0.0': 'http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/wfs.xsd'
+              '1.0.0': 'http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/wfs.xsd',
             },
             DP = { '2.0.0': DO, '1.1.0': LO, '1.0.0': CO },
             qP = (function (t) {
@@ -37687,7 +37687,7 @@
                       srsName: t.srsName,
                       featureNS: t.featureNS ? t.featureNS : this.Gy,
                       featurePrefix: t.featurePrefix,
-                      propertyNames: t.propertyNames ? t.propertyNames : []
+                      propertyNames: t.propertyNames ? t.propertyNames : [],
                     }),
                     St(Array.isArray(t.featureTypes), 11),
                     'string' == typeof t.featureTypes[0])
@@ -37729,9 +37729,9 @@
                         featurePrefix: o,
                         gmlVersion: e,
                         hasZ: r.hasZ,
-                        srsName: r.srsName
+                        srsName: r.srsName,
                       },
-                      n
+                      n,
                     );
                   })(u, e, s, r);
                   return t && UP('Insert', t, o, a), n && UP('Update', n, o, a), i && UP('Delete', i, o, a), r.nativeElements && UP('Native', r.nativeElements, o, a), u;
@@ -37762,20 +37762,20 @@
             'http://www.opengis.net/ogc': {
               FeatureId: Hf(function (t, n) {
                 return t.getAttribute('fid');
-              })
+              }),
             },
             'http://www.opengis.net/ogc/1.1': {
               FeatureId: Hf(function (t, n) {
                 return t.getAttribute('fid');
-              })
-            }
+              }),
+            },
           };
           function VP(t, n) {
             uc(XP, t, n);
           }
           var WP = {
             'http://www.opengis.net/wfs': { Feature: VP },
-            'http://www.opengis.net/wfs/2.0': { Feature: VP }
+            'http://www.opengis.net/wfs/2.0': { Feature: VP },
           };
           function YP(t, n) {
             return ac([], WP, t, n);
@@ -37874,7 +37874,7 @@
               PropertyIsGreaterThanOrEqualTo: nc(fC),
               PropertyIsNull: nc(cC),
               PropertyIsBetween: nc(lC),
-              PropertyIsLike: nc(vC)
+              PropertyIsLike: nc(vC),
             },
             'http://www.opengis.net/fes/2.0': {
               During: nc(uC),
@@ -37898,8 +37898,8 @@
               PropertyIsGreaterThanOrEqualTo: nc(fC),
               PropertyIsNull: nc(cC),
               PropertyIsBetween: nc(lC),
-              PropertyIsLike: nc(vC)
-            }
+              PropertyIsLike: nc(vC),
+            },
           };
           function iC(t, n, i) {
             var r,
@@ -38191,7 +38191,7 @@
                         n.split('').map(function (n, i) {
                           var r;
                           return ((r = {})[n] = t[i]), r;
-                        })
+                        }),
                       ),
                       r = 0,
                       e = this.$y;
@@ -38250,7 +38250,7 @@
                       MultiPoint: OC,
                       MultiLineString: jC,
                       MultiPolygon: EC,
-                      GeometryCollection: TC
+                      GeometryCollection: TC,
                     },
                     r = t.getType(),
                     e = i[r];
@@ -38262,7 +38262,7 @@
                         Polygon: this.writePolygon,
                         MultiPoint: this.writeMultiPoint,
                         MultiLineString: this.writeMultiLineString,
-                        MultiPolygon: this.writeMultiPolygon
+                        MultiPolygon: this.writeMultiPolygon,
                       }[r].call(this, t.getCoordinates(), t.getLayout())
                     : t instanceof Dg && this.writeGeometryCollection(t.getGeometriesArray());
                 }),
@@ -38362,9 +38362,9 @@
                     new Dg(
                       t.map(function (t) {
                         return t.getGeometry();
-                      })
+                      }),
                     ),
-                    n
+                    n,
                   );
                 }),
                 (n.prototype.writeGeometry = function(t, n) {
@@ -38373,7 +38373,7 @@
                       layout: this.$y,
                       littleEndian: this.nm,
                       ewkb: this.im,
-                      nodata: { Z: this.rm, M: this.om }
+                      nodata: { Z: this.rm, M: this.om },
                     }),
                     e = Number.isInteger(this.Zy) ? Number(this.Zy) : null;
                   if(!1 !== this.Zy && !Number.isInteger(this.Zy)) {
@@ -38425,7 +38425,7 @@
               POLYGON: We,
               MULTIPOINT: Kw,
               MULTILINESTRING: rg,
-              MULTIPOLYGON: sg
+              MULTIPOLYGON: sg,
             },
             FC = 'EMPTY',
             GC = 0,
@@ -38443,7 +38443,7 @@
               MultiLineString: 'MULTILINESTRING',
               MultiPolygon: 'MULTIPOLYGON',
               GeometryCollection: 'GEOMETRYCOLLECTION',
-              Circle: 'CIRCLE'
+              Circle: 'CIRCLE',
             },
             YC = (function () {
               function t(t) {
@@ -38727,7 +38727,7 @@
             GeometryCollection: function(t) {
               for(var n = [], i = t.getGeometries(), r = 0, e = i.length; r < e; ++r) n.push(tk(i[r]));
               return n.join(',');
-            }
+            },
           };
           function tk(t) {
             var n = t.getType(),
@@ -38771,7 +38771,7 @@
               }),
               Capability: tc(function (t, n) {
                 return ac({}, ok, t, n);
-              })
+              }),
             }),
             ok = sc(rk, {
               Request: tc(function (t, n) {
@@ -38784,7 +38784,7 @@
                 var i = ac({}, lk, t, n);
                 if(void 0 === i.Layer) return Object.assign(i, Mk(t, n));
                 return i;
-              })
+              }),
             }),
             sk = (function (t) {
               function n() {
@@ -38814,7 +38814,7 @@
               AccessConstraints: tc(xO),
               LayerLimit: tc(gO),
               MaxWidth: tc(gO),
-              MaxHeight: tc(gO)
+              MaxHeight: tc(gO),
             }),
             ak = sc(rk, {
               ContactPersonPrimary: tc(function (t, n) {
@@ -38826,7 +38826,7 @@
               }),
               ContactVoiceTelephone: tc(xO),
               ContactFacsimileTelephone: tc(xO),
-              ContactElectronicMailAddress: tc(xO)
+              ContactElectronicMailAddress: tc(xO),
             }),
             hk = sc(rk, { ContactPerson: tc(xO), ContactOrganization: tc(xO) }),
             fk = sc(rk, {
@@ -38835,7 +38835,7 @@
               City: tc(xO),
               StateOrProvince: tc(xO),
               PostCode: tc(xO),
-              Country: tc(xO)
+              Country: tc(xO),
             }),
             ck = sc(rk, { Format: Hf(xO) }),
             lk = sc(rk, {
@@ -38868,7 +38868,7 @@
                   multipleValues: pO(t.getAttribute('multipleValues')),
                   nearestValue: pO(t.getAttribute('nearestValue')),
                   current: pO(t.getAttribute('current')),
-                  values: xO(t)
+                  values: xO(t),
                 };
               }),
               Attribution: tc(function (t, n) {
@@ -38892,26 +38892,26 @@
               }),
               MinScaleDenominator: tc(mO),
               MaxScaleDenominator: tc(mO),
-              Layer: Qf(Mk)
+              Layer: Qf(Mk),
             }),
             vk = sc(rk, { Title: tc(xO), OnlineResource: tc(WT), LogoURL: tc(Ok) }),
             dk = sc(rk, {
               westBoundLongitude: tc(mO),
               eastBoundLongitude: tc(mO),
               southBoundLatitude: tc(mO),
-              northBoundLatitude: tc(mO)
+              northBoundLatitude: tc(mO),
             }),
             pk = sc(rk, { GetCapabilities: tc(Sk), GetMap: tc(Sk), GetFeatureInfo: tc(Sk) }),
             yk = sc(rk, {
               Format: Qf(xO),
               DCPType: Qf(function (t, n) {
                 return ac({}, mk, t, n);
-              })
+              }),
             }),
             mk = sc(rk, {
               HTTP: tc(function (t, n) {
                 return ac({}, wk, t, n);
-              })
+              }),
             }),
             wk = sc(rk, { Get: tc(_k), Post: tc(_k) }),
             gk = sc(rk, {
@@ -38920,7 +38920,7 @@
               Abstract: tc(xO),
               LegendURL: Qf(Ok),
               StyleSheetURL: tc(_k),
-              StyleURL: tc(_k)
+              StyleURL: tc(_k),
             }),
             bk = sc(rk, { Format: tc(xO), OnlineResource: tc(WT) }),
             xk = sc(rk, { Keyword: Hf(xO) });
@@ -39070,7 +39070,7 @@
             Ik = sc(Ck, {
               Contents: tc(function (t, n) {
                 return ac({}, Lk, t, n);
-              })
+              }),
             }),
             Nk = (function (t) {
               function n() {
@@ -39094,7 +39094,7 @@
               }),
               TileMatrixSet: Qf(function (t, n) {
                 return ac({}, Bk, t, n);
-              })
+              }),
             }),
             zk = sc(
               Ck,
@@ -39121,14 +39121,14 @@
                   r && (o.template = r);
                   e && (o.resourceType = e);
                   return o;
-                })
+                }),
               },
               sc(kk, {
                 Title: tc(xO),
                 Abstract: tc(xO),
                 WGS84BoundingBox: tc(Vk),
-                Identifier: tc(xO)
-              })
+                Identifier: tc(xO),
+              }),
             ),
             Rk = sc(
               Ck,
@@ -39136,27 +39136,27 @@
                 LegendURL: Qf(function (t, n) {
                   var i = {};
                   return (i.format = t.getAttribute('format')), (i.href = WT(t)), i;
-                })
+                }),
               },
-              sc(kk, { Title: tc(xO), Identifier: tc(xO) })
+              sc(kk, { Title: tc(xO), Identifier: tc(xO) }),
             ),
             Fk = sc(Ck, {
               TileMatrixSet: tc(xO),
               TileMatrixSetLimits: tc(function (t, n) {
                 return ac([], Gk, t, n);
-              })
+              }),
             }),
             Gk = sc(Ck, {
               TileMatrixLimits: Hf(function (t, n) {
                 return ac({}, Dk, t, n);
-              })
+              }),
             }),
             Dk = sc(Ck, {
               TileMatrix: tc(xO),
               MinTileRow: tc(gO),
               MaxTileRow: tc(gO),
               MinTileCol: tc(gO),
-              MaxTileCol: tc(gO)
+              MaxTileCol: tc(gO),
             }),
             qk = sc(Ck, { Default: tc(xO), Value: Qf(xO) }, sc(kk, { Identifier: tc(xO) })),
             Uk = sc(kk, { LowerCorner: Hf(Wk), UpperCorner: Hf(Wk) }),
@@ -39166,9 +39166,9 @@
                 WellKnownScaleSet: tc(xO),
                 TileMatrix: Qf(function (t, n) {
                   return ac({}, Xk, t, n);
-                })
+                }),
               },
-              sc(kk, { SupportedCRS: tc(xO), Identifier: tc(xO), BoundingBox: tc(Vk) })
+              sc(kk, { SupportedCRS: tc(xO), Identifier: tc(xO), BoundingBox: tc(Vk) }),
             ),
             Xk = sc(
               Ck,
@@ -39178,9 +39178,9 @@
                 TileWidth: tc(gO),
                 TileHeight: tc(gO),
                 MatrixWidth: tc(gO),
-                MatrixHeight: tc(gO)
+                MatrixHeight: tc(gO),
               },
-              sc(kk, { Identifier: tc(xO) })
+              sc(kk, { Identifier: tc(xO) }),
             );
           function Vk(t, n) {
             var i = ac([], Uk, t, n);
@@ -39457,7 +39457,7 @@
                   t.call(this, {
                     element: document.createElement('div'),
                     render: r.render,
-                    target: r.target
+                    target: r.target,
                   }) || this).iw = i.rw.bind(i)),
                   (i.Sr = void 0 === r.collapsed || r.collapsed),
                   (i.Tr = void 0 === r.collapsible || r.collapsible),
@@ -39612,7 +39612,7 @@
                       function(t) {
                         delete this.mw, this.yw();
                       },
-                      this
+                      this,
                     ));
                 }),
                 (n.prototype.kr = function(t) {
@@ -39691,7 +39691,7 @@
                     t.call(this, {
                       element: document.createElement('div'),
                       render: r.render,
-                      target: r.target
+                      target: r.target,
                     }) || this).on,
                   i.once,
                   i.un,
@@ -39795,7 +39795,7 @@
                           'px;"></div>' +
                           this.createMarker('relative', u) +
                           (u % 2 == 0 || 2 === this.Ow ? this.createStepText(u, t, !1, n, i) : '') +
-                          '</div>'
+                          '</div>',
                       ),
                       u === this.Ow - 1 && e.push(this.createStepText(u + 1, t, !0, n, i)),
                       (s = 'ol-scale-singlebar-odd' === s ? 'ol-scale-singlebar-even' : 'ol-scale-singlebar-odd');
@@ -40503,7 +40503,7 @@
                   return [ci(li(t) + Math.atan2(Math.sin(y) * s * u, o - a * Math.sin(m))), ci(m)];
                 },
                 jr(s, e),
-                o
+                o,
               );
             }),
             (EI.geom.flat.geodesic.meridian = dg),
@@ -40605,7 +40605,7 @@
                 var r = yn(
                     [t[0], t[t.length - 1]].map(function (t) {
                       return Ir(t, i);
-                    })
+                    }),
                   ),
                   e = [[Gn(r), Dn(r), Zn(r), Yn(r), Gn(r)]],
                   o = n;
@@ -40782,8 +40782,8 @@
                         code: o,
                         axisOrientation: s.axis,
                         metersPerUnit: s.to_meter,
-                        units: u
-                      })
+                        units: u,
+                      }),
                     );
                 }
               }
@@ -41055,7 +41055,7 @@
                           }
                         : function(t, i, r) {
                             return t.TileMatrixSet == n.matrixSet;
-                          }
+                          },
                     )
                   : 0) < 0 && (r = 0);
               var o = i.TileMatrixSetLink[r].TileMatrixSet,
@@ -41089,7 +41089,7 @@
                   MinTileCol: 0,
                   MinTileRow: 0,
                   MaxTileCol: m.MatrixWidth - 1,
-                  MaxTileRow: m.MatrixHeight - 1
+                  MaxTileRow: m.MatrixHeight - 1,
                 };
               if(s) {
                 w = s[s.length - 1];
@@ -41143,7 +41143,7 @@
                   style: a,
                   dimensions: h,
                   wrapX: d,
-                  crossOrigin: n.crossOrigin
+                  crossOrigin: n.crossOrigin,
                 }
               );
             }),
@@ -41437,7 +41437,7 @@
             },
             sf: function() {
               return u;
-            }
+            },
           });
           const r = {
               315: 'Artist',
@@ -41540,7 +41540,7 @@
               34735: 'GeoKeyDirectory',
               34736: 'GeoDoubleParams',
               34737: 'GeoAsciiParams',
-              50674: 'LercParameters'
+              50674: 'LercParameters',
             },
             e = {};
           for(const t in r) r.hasOwnProperty(t) && (e[r[t]] = parseInt(t, 10));
@@ -41561,7 +41561,7 @@
               13: 'IFD',
               16: 'LONG8',
               17: 'SLONG8',
-              18: 'IFD8'
+              18: 'IFD8',
             },
             u = {};
           for(const t in s) s.hasOwnProperty(t) && (u[s[t]] = parseInt(t, 10));
@@ -41574,7 +41574,7 @@
               CMYK: 5,
               YCbCr: 6,
               CIELab: 8,
-              ICCLab: 9
+              ICCLab: 9,
             },
             h = { Unspecified: 0, Assocalpha: 1, Unassalpha: 2 },
             f = { Version: 0, AddCompression: 1 },
@@ -41626,11 +41626,11 @@
               4096: 'VerticalCSTypeGeoKey',
               4097: 'VerticalCitationGeoKey',
               4098: 'VerticalDatumGeoKey',
-              4099: 'VerticalUnitsGeoKey'
+              4099: 'VerticalUnitsGeoKey',
             },
             v = {};
           for(const t in l) l.hasOwnProperty(t) && (v[l[t]] = parseInt(t, 10));
-        }
+        },
       },
       i = {};
     function r(t) {
@@ -41648,7 +41648,7 @@
         return Promise.all(
           Object.keys(r.f).reduce(function (n, i) {
             return r.f[i](t, n), n;
-          }, [])
+          }, []),
         );
       }),
       (r.u = function(t) {
@@ -41739,7 +41739,7 @@
                   }
                 },
                 'chunk-' + n,
-                n
+                n,
               );
             }
         };

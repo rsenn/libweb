@@ -29,7 +29,7 @@ export function invariant(condition, format, a, b, c, d, e, f) {
       error = new Error(
         format.replace(/%s/g, function() {
           return args[argIndex++];
-        })
+        }),
       );
       error.name = 'Invariant Violation';
     }

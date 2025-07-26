@@ -402,7 +402,7 @@ let StraightLine = function(index, start, end, parsedCommand, settings) {
       type: that.word,
       start: that.start,
       end: that.end,
-      feedrate: that.feedrate
+      feedrate: that.feedrate,
     };
   };
 
@@ -419,13 +419,13 @@ let StraightLine = function(index, start, end, parsedCommand, settings) {
       min: {
         x: Math.min(that.start.x, that.end.x),
         y: Math.min(that.start.y, that.end.y),
-        z: Math.min(that.start.z, that.end.z)
+        z: Math.min(that.start.z, that.end.z),
       },
       max: {
         x: Math.max(that.start.x, that.end.x),
         y: Math.max(that.start.y, that.end.y),
-        z: Math.max(that.start.z, that.end.z)
-      }
+        z: Math.max(that.start.z, that.end.z),
+      },
     };
   };
 
@@ -466,12 +466,12 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     let cs = {
       x: that.start[axes.re] - that.center[axes.re],
       y: that.start[axes.im] - that.center[axes.im],
-      z: 0
+      z: 0,
     };
     let ce = {
       x: that.end[axes.re] - that.center[axes.re],
       y: that.end[axes.im] - that.center[axes.im],
-      z: 0
+      z: 0,
     };
 
     return util.findAngleOrientedVectors2(cs, ce, that.clockwise === false);
@@ -482,7 +482,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     let cs = {
       x: that.start[axes.re] - that.center[axes.re],
       y: that.start[axes.im] - that.center[axes.im],
-      z: 0
+      z: 0,
     };
     return util.lengthVector3(cs);
   }
@@ -506,7 +506,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
       p1 = {
         x: (4 - p0.x) / 3,
         y: ((1 - p0.x) * (3 - p0.x)) / (3 * p0.y),
-        z: 0
+        z: 0,
       };
     }
     p0.x *= radius;
@@ -591,7 +591,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     let axes = util.findAxes(that.crossAxe);
     let cs = {
       x: that.start[axes.re] - center[axes.re],
-      y: that.start[axes.im] - center[axes.im]
+      y: that.start[axes.im] - center[axes.im],
     };
     let i = 0,
       angle = 0,
@@ -742,7 +742,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
       lineNumber: that.index,
       type: that.word,
       beziers: bez,
-      feedrate: that.feedrate
+      feedrate: that.feedrate,
     };
   };
 
@@ -777,9 +777,9 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     aCSCE = util.findAngleVectors2(
       {
         x: start[axes.re] - center[axes.re],
-        y: start[axes.im] - center[axes.im]
+        y: start[axes.im] - center[axes.im],
       },
-      { x: end[axes.re] - center[axes.re], y: end[axes.im] - center[axes.im] }
+      { x: end[axes.re] - center[axes.re], y: end[axes.im] - center[axes.im] },
     );
 
     if(clockwise === true) {
@@ -862,7 +862,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     let axes = util.findAxes(that.crossAxe);
     let cs = {
       x: that.start[axes.re] - that.center[axes.re],
-      y: that.start[axes.im] - that.center[axes.im]
+      y: that.start[axes.im] - that.center[axes.im],
     };
     let radius = getBezierRadius(),
       aBez = getBezierAngle();
@@ -2348,7 +2348,7 @@ let GParser = (function () {
 
   return {
     SyntaxError,
-    parse
+    parse,
   };
 })();
 
@@ -2729,7 +2729,7 @@ export default function parse(code) {
 
   let totalSize = {
     min: { x: 0, y: 0, z: 0 },
-    max: { x: 0, y: 0, z: 0 }
+    max: { x: 0, y: 0, z: 0 },
   };
   let i = 0,
     j = 0;
@@ -2744,7 +2744,7 @@ export default function parse(code) {
     crossAxe: 'z',
     inMm: false,
     relative: false,
-    position: { x: 0, y: 0, z: 0 }
+    position: { x: 0, y: 0, z: 0 },
   };
 
   if(typeof code !== 'string' || code === '') {
@@ -2753,7 +2753,7 @@ export default function parse(code) {
       lines: [],
       size: totalSize,
       displayInInch: setInInch,
-      errorList: [{ line: 0, message: '(error) No command.' }]
+      errorList: [{ line: 0, message: '(error) No command.' }],
     };
   }
   let gcode = code.split('\n');
@@ -2779,7 +2779,7 @@ export default function parse(code) {
     lines,
     size: totalSize,
     displayInInch: setInInch,
-    errorList
+    errorList,
   };
 }
 

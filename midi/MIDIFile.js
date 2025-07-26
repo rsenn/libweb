@@ -69,7 +69,7 @@ function writeHeader(stream) {
 
 Object.defineProperty(MIDIFile.prototype, Symbol.toStringTag, {
   value: 'MIDIFile',
-  enumerable: false
+  enumerable: false,
 });
 
 export default MIDIFile;

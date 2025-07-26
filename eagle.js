@@ -32,7 +32,7 @@ export {
   CalculateArcRadius,
   LinesToPath,
   MakeCoordTransformer,
-  useAttributes
+  useAttributes,
 } from './eagle/renderUtils.js';
 
 export { EagleDocument } from './eagle/document.js';

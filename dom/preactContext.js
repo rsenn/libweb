@@ -108,7 +108,7 @@
         })(Component);
         return {
           Provider,
-          Consumer
+          Consumer,
         };
       }
 
@@ -141,7 +141,7 @@
             value = newValue;
             registeredUpdaters.forEach(up => up(newValue, bitmask));
             return value;
-          }
+          },
         };
       }
       let noopEmitter = {
@@ -149,7 +149,7 @@
           console.warn('Consumer used without a Provider');
         },
         unregister(_) {},
-        val(_) {}
+        val(_) {},
       };
       return { createEmitter, noopEmitter };
     },
@@ -160,6 +160,6 @@
         return { child, children };
       }
       return { getOnlyChildAndChildren };
-    }
-  )
+    },
+  ),
 );

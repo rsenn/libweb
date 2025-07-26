@@ -25,7 +25,7 @@ Object.assign(SvgCommand.prototype, {
     }
 
     return name + (s == '' ? '' : ' ' + s);
-  }
+  },
 });
 
 export function parseSvgPath(str, absolute) {
@@ -191,7 +191,7 @@ Object.assign(parseSvgPath.prototype, {
         originY = y;
       }
     }
-  }
+  },
 });
 
 export function MakeText(str, font) {
@@ -225,8 +225,8 @@ export function DrawSVGText(str, font) {
     children: [
       {
         tagName: 'path',
-        attributes: { stroke: 'none', 'stroke-width': 10, fill: 'black', d: MakeText(str, font) }
-      }
-    ]
+        attributes: { stroke: 'none', 'stroke-width': 10, fill: 'black', d: MakeText(str, font) },
+      },
+    ],
   };
 }

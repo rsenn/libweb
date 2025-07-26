@@ -13,7 +13,7 @@ const componentIndex = {
   wire: Wire,
   rectangle: Rectangle,
   circle: Circle,
-  polygon: Polygon
+  polygon: Polygon,
 };
 
 export const SchematicSymbol = ({ data, component = Fragment, id, class: className, opts, ...props }) => {
@@ -29,6 +29,6 @@ export const SchematicSymbol = ({ data, component = Fragment, id, class: classNa
 
   return h(component, { id, class: className }, [
     ...children.filter(({ tagName }) => tagName != 'text').map(data => h(componentIndex[data.tagName], { data, ...props })),
-    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(componentIndex[data.tagName], { data, ...props }))
+    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(componentIndex[data.tagName], { data, ...props })),
   ]);
 };

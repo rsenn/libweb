@@ -4,6 +4,7 @@ import { parseSelectors } from './css3-selectors.js';
 import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from './deep.js';
 import { TreeWalker } from './tree_walker.js';
 import { read as readXML, write as writeXML } from './xml.js';
+import { inspect } from './inspect.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
 
@@ -53,7 +54,9 @@ const keyOf = (obj, value) => {
 
 class DereferenceError extends Error {
   constructor(obj, i, path, error) {
-    super(`dereference error of <${obj}> at ${i} '${path.slice(0, i)}': ${error.message}`);
+    const objStr = inspect(obj, { colors: true, showProxy: true, getters: true, compact: true });
+
+    super(`dereference error of <${objStr}> at ${i} '${path.slice(0, i)}': ${error.message}`);
   }
 }
 

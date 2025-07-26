@@ -73,5 +73,5 @@ SVG.extend(SVG.Polyline, SVG.Polygon, SVG.Path, {
 
     // return bbox of created path array
     return new SVG.PathArray(arr).bbox();
-  }
+  },
 });

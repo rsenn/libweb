@@ -16,7 +16,7 @@ import { ImmutableRect, isRect, Rect } from './geom/rect.js';
 import { simplify, simplifyDouglasPeucker, simplifyDPStep, simplifyRadialDist } from './geom/simplify.js';
 import { ImmutableSize, isSize, Size } from './geom/size.js';
 import { SweepLineClass } from './geom/sweepLine.js';
-import { ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation, MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation } from './geom/transformation.js';
+import { ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation, MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, } from './geom/transformation.js';
 import { ImmutableTRBL, isTRBL, TRBL } from './geom/trbl.js';
 import { Vector } from './geom/vector.js';
 
@@ -71,7 +71,7 @@ export default {
   simplifyRadialDist,
   simplifyDPStep,
   simplifyDouglasPeucker,
-  simplify
+  simplify,
 };
 export { Align, Anchor } from './geom/align.js';
 export { isBBox, BBox } from './geom/bbox.js';
@@ -104,7 +104,7 @@ export {
   ImmutableScaling,
   ImmutableTransformation,
   ImmutableTransformationList,
-  ImmutableTranslation
+  ImmutableTranslation,
 } from './geom/transformation.js';
 export { isTRBL, TRBL } from './geom/trbl.js';
 export { Vector } from './geom/vector.js';

@@ -41,7 +41,7 @@ function mix(...args) {
 
   Object.defineProperties(mixin, {
     classes: { value: [], writable: false },
-    mixins: { value: args, writable: false }
+    mixins: { value: args, writable: false },
   });
   const Class = mixin(superclass);
   const constructor = Class.hasOwnProperty('constructor') ? Class.constructor.bind(Class) : (...args) => new Class(...args);
@@ -53,8 +53,8 @@ function mix(...args) {
       get: (
         x => () =>
           x ? x : (x = getInterface(Class.prototype))
-      )()
-    }
+      )(),
+    },
   });
 }
 

@@ -18,7 +18,7 @@ var factories = {
   stats: require('../common/components/stats'),
   readStream: require('../common/streams/read-stream'),
   writeStream: require('../common/streams/write-stream'),
-  syncWriteStream: require('../common/streams/sync-write-stream')
+  syncWriteStream: require('../common/streams/sync-write-stream'),
 };
 
 var rethrow = function(error) {
@@ -65,7 +65,7 @@ function VirtualFS() {
   var storage = new Storage(constants);
 
   var handles = {
-    next: 0
+    next: 0,
   };
 
   var base = assign(
@@ -81,28 +81,28 @@ function VirtualFS() {
     require('../base/permissions')(storage, constants),
     require('../base/read-write')(storage, constants, handles),
     require('../base/utils')(),
-    require('../base/watchers')()
+    require('../base/watchers')(),
   );
 
   Object.defineProperty(this, 'storage', {
     value: storage,
     configurable: false,
     enumerable: false,
-    writable: false
+    writable: false,
   });
 
   Object.defineProperty(this, 'base', {
     value: base,
     configurable: false,
     enumerable: false,
-    writable: false
+    writable: false,
   });
 
   Object.defineProperty(this, 'handles', {
     value: handles,
     configurable: false,
     enumerable: false,
-    writable: false
+    writable: false,
   });
 
   ['F_OK', 'R_OK', 'W_OK', 'X_OK'].forEach(
@@ -110,9 +110,9 @@ function VirtualFS() {
       Object.defineProperty(this, key, {
         value: constants[key],
         enumerable: true,
-        writable: false
+        writable: false,
       });
-    }.bind(this)
+    }.bind(this),
   );
 
   // fs members
@@ -135,21 +135,21 @@ function VirtualFS() {
         return SyncWriteStream;
       },
       'fs.SyncWriteStream is deprecated.',
-      'DEP0061'
+      'DEP0061',
     ),
     set: util.deprecate(
       function(value) {
         SyncWriteStream = value;
       },
       'fs.SyncWriteStream is deprecated.',
-      'DEP0061'
-    )
+      'DEP0061',
+    ),
   });
 
   Object.defineProperty(this, 'constants', {
     configurable: false,
     enumerable: true,
-    value: utils.filter(constants, RegExp.prototype.test.bind(/(^[FRWXOS]_|COPYFILE)/))
+    value: utils.filter(constants, RegExp.prototype.test.bind(/(^[FRWXOS]_|COPYFILE)/)),
   });
 
   // Asynchronous methods
@@ -168,7 +168,7 @@ function VirtualFS() {
       }
 
       return callback(error, result || 0, args[1]);
-    }
+    },
   });
 
   utils.asyncify(this, rethrow);
@@ -523,12 +523,12 @@ VirtualFS.prototype.mkdtemp = function(prefix, options, callback) {
             }
 
             return errors[error.code](error);
-          })
+          }),
         );
       } catch(error) {
         return cb(error);
       }
-    }.bind(this)
+    }.bind(this),
   );
 };
 
@@ -543,7 +543,7 @@ VirtualFS.prototype.mkdtempSync = function(prefix, options) {
 
       return errors[error.code](assign(error, { path: prefix + 'XXXXXX' }));
     }),
-    encoding
+    encoding,
   );
 };
 
@@ -638,7 +638,7 @@ VirtualFS.prototype.readlinkSync = function(path, options) {
 
       return errors[error.code](error);
     }),
-    encoding
+    encoding,
   );
 };
 
@@ -693,7 +693,7 @@ VirtualFS.prototype.realpathSync = function(path, options) {
 
       return errors[error.code](error);
     }),
-    encoding
+    encoding,
   );
 };
 

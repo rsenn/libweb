@@ -166,7 +166,7 @@ var easing = {
   elastic(pos) {
     if(pos == !!pos) return pos;
     return Math.pow(2, -10 * pos) * Math.sin(((pos - 0.075) * (2 * Math.PI)) / 0.3) + 1;
-  }
+  },
 };
 
 for(var key in easing) SVG.easing[key] = easing[key];

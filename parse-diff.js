@@ -7,8 +7,7 @@
  * Copyright (c) 2014 Sergey Todyshev
  */
 
-const fileNameDiffRegex =
-  /(a|i|w|c|o|1|2)\/.*(?=["']? ["']?(b|i|w|c|o|1|2)\/)|(b|i|w|c|o|1|2)\/.*$/g;
+const fileNameDiffRegex = /(a|i|w|c|o|1|2)\/.*(?=["']? ["']?(b|i|w|c|o|1|2)\/)|(b|i|w|c|o|1|2)\/.*$/g;
 const gitFileHeaderRegex = /^(a|b|i|w|c|o|1|2)\//;
 const parseFiles = line => {
   let fileNames = line?.match(fileNameDiffRegex);
@@ -68,7 +67,7 @@ export default function parseDiff(input) {
       normal: true,
       ln1: deletedLineCounter++,
       ln2: addedLineCounter++,
-      content: line
+      content: line,
     });
     currentFileChanges.oldLines--;
     currentFileChanges.newLines--;
@@ -82,7 +81,7 @@ export default function parseDiff(input) {
       deletions: 0,
       additions: 0,
       from: fromFileName,
-      to: toFileName
+      to: toFileName,
     };
 
     files.push(currentFile);
@@ -151,11 +150,11 @@ export default function parseDiff(input) {
       oldStart: +oldStart,
       oldLines: toNumOfLines(oldNumLines),
       newStart: +newStart,
-      newLines: toNumOfLines(newNumLines)
+      newLines: toNumOfLines(newNumLines),
     };
     currentFileChanges = {
       oldLines: toNumOfLines(oldNumLines),
-      newLines: toNumOfLines(newNumLines)
+      newLines: toNumOfLines(newNumLines),
     };
     currentFile.chunks.push(currentChunk);
   };
@@ -167,7 +166,7 @@ export default function parseDiff(input) {
       type: 'del',
       del: true,
       ln: deletedLineCounter++,
-      content: line
+      content: line,
     });
     currentFile.deletions++;
     currentFileChanges.oldLines--;
@@ -180,7 +179,7 @@ export default function parseDiff(input) {
       type: 'add',
       add: true,
       ln: addedLineCounter++,
-      content: line
+      content: line,
     });
     currentFile.additions++;
     currentFileChanges.newLines--;
@@ -197,7 +196,7 @@ export default function parseDiff(input) {
       ln1: mostRecentChange.ln1,
       ln2: mostRecentChange.ln2,
       ln: mostRecentChange.ln,
-      content: line
+      content: line,
     });
   };
 
@@ -211,14 +210,14 @@ export default function parseDiff(input) {
     [/^---\s/, fromFile],
     [/^\+\+\+\s/, toFile],
     [/^@@\s+-(\d+),?(\d+)?\s+\+(\d+),?(\d+)?\s@@/, chunk],
-    [/^\\ No newline at end of file$/, eof]
+    [/^\\ No newline at end of file$/, eof],
   ];
 
   const schemaContent = [
     [/^\\ No newline at end of file$/, eof],
     [/^-/, del],
     [/^\+/, add],
-    [/^\s+/, normal]
+    [/^\s+/, normal],
   ];
 
   const parseContentLine = line => {

@@ -18,11 +18,11 @@
  * @constructor
  */
 
-export  function CrazyGlue ($el, value, changeCb) {
-  if (!this instanceof CrazyGlue) {
+export function CrazyGlue($el, value, changeCb) {
+  if(!this instanceof CrazyGlue) {
     return new CrazyGlue($el, value, changeCb);
   }
-  if (typeof value === 'function') {
+  if(typeof value === 'function') {
     changeCb = value;
     value = undefined;
   }
@@ -33,104 +33,126 @@ export  function CrazyGlue ($el, value, changeCb) {
   this._getJsValue = getPut[0];
   this._putToDom = getPut[1];
 
-  if (typeof value !== 'undefined') { this._putToDom(value); }
+  if(typeof value !== 'undefined') {
+    this._putToDom(value);
+  }
   this.value = this._getJsValue(); // get what's really in the DOM
 
   this.changeCb = typeof changeCb === 'function' ? changeCb : undefined;
 
   // Use non-jQuery event handler so it can refer to our props as 'this'.
   // Checkboxes & radio buttons have $el.length > 1, others $el.length = 1
-  for (var i = 0, len = this.$el.length; i < len; i += 1) {
+  for(var i = 0, len = this.$el.length; i < len; i += 1) {
     this.$el[i].addEventListener('change', this, false);
   }
-};
+}
 
-CrazyGlue.prototype._gettersPutters = function _gettersPutters ($el) {
+CrazyGlue.prototype._gettersPutters = function _gettersPutters($el) {
   var tag = $el.prop('tagName');
 
-  if (tag === 'INPUT') {
+  if(tag === 'INPUT') {
     var type = $el.prop('type');
-    if (type === 'checkbox' || type === 'radio') {
+    if(type === 'checkbox' || type === 'radio') {
       return [this._getElChecked, this._putElChecked];
     }
-  } else if (tag === 'SELECT') {
+  } else if(tag === 'SELECT') {
     return [this._getElSelected, this._putElSelected];
   }
 
   return [this._getElValue, this._putElValue];
 };
 
-CrazyGlue.prototype._getElValue = function () {
+CrazyGlue.prototype._getElValue = function() {
   var val = this.$el.val(),
     type = typeof val;
 
-  if (type === 'undefined' || type === 'null') { val = ''; }
+  if(type === 'undefined' || type === 'null') {
+    val = '';
+  }
 
   return val;
 };
 
-CrazyGlue.prototype._getElChecked = function () {
+CrazyGlue.prototype._getElChecked = function() {
   var val = this.$el.filter(':checked').val(),
     type = typeof val;
 
-  if (type === 'undefined' || type === 'null') { val = []; }
-  if (type === 'string') { val = [val]; }
+  if(type === 'undefined' || type === 'null') {
+    val = [];
+  }
+  if(type === 'string') {
+    val = [val];
+  }
 
   return val;
 };
 
-CrazyGlue.prototype._getElSelected = function () {
+CrazyGlue.prototype._getElSelected = function() {
   var val = this.$el.val(),
     type = typeof val;
 
-  if (type === 'undefined' || type === 'null') { val = []; }
+  if(type === 'undefined' || type === 'null') {
+    val = [];
+  }
 
   return val;
 };
 
-CrazyGlue.prototype._putElValue = function (value) {
+CrazyGlue.prototype._putElValue = function(value) {
   var val = value,
     type = typeof val;
 
-  if (type === 'undefined' || type === 'null') { val = ''; }
+  if(type === 'undefined' || type === 'null') {
+    val = '';
+  }
 
   this.$el.val(val);
 };
 
-CrazyGlue.prototype._putElChecked = function (value) {
+CrazyGlue.prototype._putElChecked = function(value) {
   var val = value,
     type = typeof val;
 
-  if (type === 'undefined' || type === 'null') { val = []; }
-  if (type === 'string') { val = [val]; }
+  if(type === 'undefined' || type === 'null') {
+    val = [];
+  }
+  if(type === 'string') {
+    val = [val];
+  }
 
   this.$el.removeAttr('checked'); // req'd for checkboxes
   this.$el.val(val);
 };
 
-CrazyGlue.prototype._putElSelected = function (value) {
+CrazyGlue.prototype._putElSelected = function(value) {
   var val = value,
     type = typeof val;
 
-  if (type === 'undefined' || type === 'null') { val = []; }
-  if (type === 'string') { val = [val]; }
+  if(type === 'undefined' || type === 'null') {
+    val = [];
+  }
+  if(type === 'string') {
+    val = [val];
+  }
 
   this.$el.val(val);
 };
 
-CrazyGlue.prototype.handleEvent = function handleEvent (event) {
+CrazyGlue.prototype.handleEvent = function handleEvent(event) {
   switch (event.type) {
-    case "change":
+    case 'change':
       this.value = this._getJsValue();
-      if (this.changeCb) { this.changeCb(this.value); }
+      if(this.changeCb) {
+        this.changeCb(this.value);
+      }
   }
 };
 
-CrazyGlue.prototype.change = function change (value) {
+CrazyGlue.prototype.change = function change(value) {
   this._putToDom(value);
   this.value = this._getJsValue(); // get what's really in the DOM
 };
 
-CrazyGlue.prototype.sync = function sync () {
+CrazyGlue.prototype.sync = function sync() {
   this.value = this._getJsValue();
 };

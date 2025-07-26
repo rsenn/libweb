@@ -8,7 +8,7 @@ Path.prototype = Object.assign([], {
   },
   toString() {
     return Array.prototype.join.call(this, Tree.PATH_SEPARATOR);
-  }
+  },
 });
 
 export function Tree(root) {
@@ -39,7 +39,7 @@ export function Tree(root) {
 
   Object.defineProperties(tree, {
     parents: { value: parents, enumerable: false },
-    root: { value: root, enumerable: false, writable: true }
+    root: { value: root, enumerable: false, writable: true },
   });
 
   Object.setPrototypeOf(tree, Tree.prototype);
@@ -48,7 +48,7 @@ export function Tree(root) {
 
 Object.setPrototypeOf(
   Tree.prototype,
-  Object.getPrototypeOf(function Tree() {})
+  Object.getPrototypeOf(function Tree() {}),
 );
 
 Tree.PATH_SEPARATOR = '.';
@@ -80,7 +80,7 @@ Tree.prototype.pathOf = function(obj) {
   else if(p.toString === Array.prototype.toString)
     Object.defineProperty(p, 'toString', {
       value: Path.prototype.toString,
-      enumerable: false
+      enumerable: false,
     });
 
   return parent === null ? p : undefined;
@@ -244,7 +244,7 @@ Tree.prototype.create = function(path) {
     console.log('Tree.create', {
       current,
       path: path.join('.'),
-      parent: parent + ''
+      parent: parent + '',
     });
   }
   /*
@@ -330,7 +330,7 @@ Object.defineProperty(Array, Symbol.hasInstance, {
   value(instance) {
     return typeof instance == 'object' && instance != null && (instance.constructor === Array || instance.constructor === Path);
     return Array.isArray(instance);
-  }
+  },
 });
 Path.prototype = Object.entries(Object.getOwnPropertyDescriptors(Array.prototype))
   .filter(([n]) => typeof n != 'symbol')
@@ -341,20 +341,20 @@ Object.defineProperties(Path, {
     get() {
       return Path;
     },
-    enumerable: true
-  }
+    enumerable: true,
+  },
 });
 Object.defineProperties(Path.prototype, {
   [Symbol.species]: {
     value: Path,
     enumerable: false,
     writable: false,
-    configurable: false
+    configurable: false,
   },
   length: {
     value: 0,
     writable: true,
-    configurable: false
+    configurable: false,
   },
   at: {
     value(index) {
@@ -364,27 +364,27 @@ Object.defineProperties(Path.prototype, {
         return this[index];
       }
     },
-    enumerable: false
+    enumerable: false,
   },
   tail: {
     get() {
       return this[this.length - 1];
     },
-    enumerable: false
+    enumerable: false,
   },
   head: {
     get() {
       return this[0];
     },
-    enumerable: false
+    enumerable: false,
   },
   parent: {
     get() {
       return Array.prototype.slice.call(this, 0, this.length - 1);
     },
-    enumerable: false
+    enumerable: false,
   },
-  [Symbol.isConcatSpreadable]: { value: false }
+  [Symbol.isConcatSpreadable]: { value: false },
 });
 
 //Object.assign(Path.prototype, { ...Object.getPrototypeOf(new Array()), constructor: Path });

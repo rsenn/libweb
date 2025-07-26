@@ -14,7 +14,7 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
         this.running = false;
       }
     },
-    ...props
+    ...props,
   };
 
   if(this instanceof Timer) Object.assign(this, t);
@@ -28,7 +28,7 @@ Timer.until = (deadline, fn, props) => Timer.once(deadline - Date.now(), fn, pro
 
 Timer.std = {
   create: (fn, interval) => setTimeout(fn, interval),
-  destroy: id => clearTimeout(id)
+  destroy: id => clearTimeout(id),
 };
 
 Timer.debug = (impl = Timer.std) => ({
@@ -46,7 +46,7 @@ Timer.debug = (impl = Timer.std) => ({
   destroy(id) {
     impl.destroy(id);
     this.log(`Timer #${id} STOP`);
-  }
+  },
 });
 
 Timer.promise = (timeout, impl = Timer.std /*Timer.debug(Timer.std)*/) =>
@@ -60,9 +60,9 @@ Timer.promise = (timeout, impl = Timer.std /*Timer.debug(Timer.std)*/) =>
         destroy: id => {
           impl.destroy(id);
           reject();
-        }
-      }
-    )
+        },
+      },
+    ),
   );
 
 export default Timer.promise;

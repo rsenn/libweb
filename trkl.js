@@ -20,7 +20,7 @@ export function trkl(initValue) {
       enumerable: true,
       configurable: true,
       get: self,
-      set: self
+      set: self,
     });
     return self;
   };
@@ -82,9 +82,9 @@ trkl.getset = function(arg) {
   return Object.create(
     {
       get: () => trkl(),
-      set: value => trkl(value)
+      set: value => trkl(value),
     },
-    {}
+    {},
   );
 };
 
@@ -124,7 +124,7 @@ trkl.property = function(object, name, options = { enumerable: true, configurabl
   Object.defineProperty(object, name, {
     ...opts,
     get: self,
-    set: self
+    set: self,
   });
   if(options.deletable) {
     trkl.subscribe(value => (value === undefined ? self.delete() : undefined));
@@ -148,18 +148,18 @@ trkl.bind = function(object, name, handler) {
             get: name[key],
             set: name[key],
             enumerable: true,
-            configurable: true
-          }
+            configurable: true,
+          },
         }),
-        {}
-      )
+        {},
+      ),
     );
   else
     Object.defineProperty(object, name, {
       enumerable: true,
       configurable: true,
       get: self,
-      set: self
+      set: self,
     });
   return object;
 };

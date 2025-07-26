@@ -1,6 +1,6 @@
 import * as deep from '../deep.js';
 import { className, define, isObject } from '../misc.js';
-import { ArrowFunctionExpression, BlockStatement, ESNode, FunctionDeclaration, FunctionLiteral, Identifier, IfStatement, ImportDeclaration, ImportSpecifier, Literal, MemberExpression, ObjectPattern, Property, Statement, TemplateLiteral } from './estree.js';
+import { ArrowFunctionExpression, BlockStatement, ESNode, FunctionDeclaration, FunctionLiteral, Identifier, IfStatement, ImportDeclaration, ImportSpecifier, Literal, MemberExpression, ObjectPattern, Property, Statement, TemplateLiteral, } from './estree.js';
 
 const linebreak = new RegExp('\\r?\\n', 'g');
 
@@ -13,7 +13,7 @@ export class Printer {
     numberLiterals: [1, 36],
     regexpLiterals: [1, 35],
     comments: [1, 32],
-    templates: [1, 35]
+    templates: [1, 35],
   };
 
   constructor(options = {}, comments) {
@@ -28,9 +28,9 @@ export class Printer {
       colorText: Object.entries(Printer.colors).reduce(
         (acc, [key, codes]) => ({
           ...acc,
-          [key]: text => `\x1b[${codes.join(';')}m${text}\x1b[0m`
+          [key]: text => `\x1b[${codes.join(';')}m${text}\x1b[0m`,
         }),
-        {}
+        {},
       ),
       colorCode: Object.entries(Printer.colors).reduce(
         (acc, [key, codes]) => ({
@@ -40,10 +40,10 @@ export class Printer {
               if(Util.equals(Util.decodeAnsi(output).slice(0, -1), codes)) return '';
             }*/
             return `\x1b[${codes.join(';')}m`;
-          }
+          },
         }),
-        {}
-      )
+        {},
+      ),
     });
     this.format = format;
   }
@@ -86,7 +86,7 @@ export class Printer {
     //if(ret.length) console.log('code:', escape(code));
     ret += code;
 
-   /* if(ret.indexOf('\x1b[') != -1)*/ {
+    /* if(ret.indexOf('\x1b[') != -1)*/ {
       /*let ansi = Util.decodeAnsi(ret);
      if(!Util.equals(ansi, [0, 'm']))*/ ret += '\x1b[0m';
     }
@@ -100,7 +100,7 @@ export class Printer {
       start: pos,
       end: pos + len,
       text,
-      nodes: this.nodes.slice(this.nodes.findIndex(([position, path]) => position > pos + len) - 1).slice(0, 2)
+      nodes: this.nodes.slice(this.nodes.findIndex(([position, path]) => position > pos + len) - 1).slice(0, 2),
     }));
     let output = this.printNode(tree);
     return output;
@@ -588,9 +588,9 @@ export class Printer {
     let list = specifiers.reduce(
       (acc, spec, i) => [
         ...acc,
-        (isImportSpecifier(specifiers[i - 1]) ^ isImportSpecifier(spec) ? '{ ' : '') + this.printNode(spec) + (isImportSpecifier(specifiers[i + 1]) ^ isImportSpecifier(spec) ? ' }' : '')
+        (isImportSpecifier(specifiers[i - 1]) ^ isImportSpecifier(spec) ? '{ ' : '') + this.printNode(spec) + (isImportSpecifier(specifiers[i + 1]) ^ isImportSpecifier(spec) ? ' }' : ''),
       ],
-      []
+      [],
     );
 
     output += list.join(', ');

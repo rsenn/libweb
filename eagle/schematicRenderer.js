@@ -12,7 +12,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     long: 3,
     middle: 2,
     short: 1,
-    point: 0
+    point: 0,
   };
 
   static palette = Palette.schematic((r, g, b) => new RGBA(r, g, b));
@@ -56,9 +56,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
         {
           className: item.tagName, //...LayerAttributes(layer),
           'data-path': item.path.toString(' '),
-          ...attr
+          ...attr,
         },
-        parent
+        parent,
       );
 
     switch (item.tagName) {
@@ -71,9 +71,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
             cx: x,
             cy: y,
             r: 0.5,
-            stroke: 'none'
+            stroke: 'none',
           },
-          parent
+          parent,
         );
         break;
       }
@@ -102,9 +102,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
               cx: pp.x,
               cy: pp.y,
               r: 0.75,
-              'stroke-width': 0.3
+              'stroke-width': 0.3,
             },
-            parent
+            parent,
           );
         }
 
@@ -114,9 +114,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
             class: 'pin',
             stroke: '#a54b4b',
             ...l.toObject(),
-            'stroke-width': 0.15
+            'stroke-width': 0.15,
           },
-          parent
+          parent,
         );
         if(name != '' && visible != 'off')
           svg(
@@ -131,10 +131,10 @@ export class SchematicRenderer extends EagleSVGRenderer {
               //'font-family': 'Fixed Medium',
               'text-anchor': 'left',
               'alignment-baseline': 'central',
-              children: name
+              children: name,
               //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
             },
-            parent
+            parent,
           );
         break;
       }
@@ -154,7 +154,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     for(let segment of net.children)
       this.renderCollection(segment.children, g, {
         labelText: net.name,
-        transformation: this.transform
+        transformation: this.transform,
       });
   }
 
@@ -192,7 +192,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       doc,
       sheetNo,
       bounds,
-      viewBox: rect
+      viewBox: rect,
     });
     let { transform } = this;
     let svgElem = super.render(sheet, { bounds });

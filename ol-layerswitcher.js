@@ -152,7 +152,7 @@ export default class LayerSwitcher extends Control {
         this.mapListeners.push(
           map.on('pointerdown', () => {
             this.hidePanel();
-          })
+          }),
         );
       }
     }
@@ -218,7 +218,7 @@ export default class LayerSwitcher extends Control {
     this.dispatchEvent('render');
     LayerSwitcher.renderPanel(this.getMap(), this.panel, {
       groupSelectStyle: this.groupSelectStyle,
-      reverse: this.reverse
+      reverse: this.reverse,
     });
     this.dispatchEvent('rendercomplete');
   }
@@ -536,14 +536,14 @@ export default class LayerSwitcher extends Control {
         function(event) {
           scrollStartPos = this.scrollTop + event.touches[0].pageY;
         },
-        false
+        false,
       );
       elm.addEventListener(
         'touchmove',
         function(event) {
           this.scrollTop = scrollStartPos - event.touches[0].pageY;
         },
-        false
+        false,
       );
     }
   }

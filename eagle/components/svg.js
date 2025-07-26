@@ -9,8 +9,8 @@ export const SVG = ({ viewBox, preserveAspectRatio = 'xMinYMin', styles, childre
       preserveAspectRatio,
       xmlns: 'http://www.w3.org/2000/svg',
       version: '1.1',
-      ...props
+      ...props,
     },
-    [defs ? h('defs', {}, [h(FixedMedium), ...toChildArray(defs)]) : null, styles ? h('style', {}, styles) : null, ...children]
+    [defs ? h('defs', {}, [h(FixedMedium), ...toChildArray(defs)]) : null, styles ? h('style', {}, styles) : null, ...children],
   );
 };

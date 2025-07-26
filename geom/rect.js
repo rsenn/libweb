@@ -102,7 +102,7 @@ Rect.prototype.corners = function() {
     { x: rect.x, y: rect.y },
     { x: rect.x + rect.width, y: rect.y },
     { x: rect.x + rect.width, y: rect.y + rect.height },
-    { x: rect.x, y: rect.y + rect.height }
+    { x: rect.x, y: rect.y + rect.height },
   ];
 };
 
@@ -132,7 +132,7 @@ Object.defineProperty(Rect.prototype, 'x1', {
     this.width += extend;
     this.x = value;
   },
-  enumerable: true
+  enumerable: true,
 });
 Object.defineProperty(Rect.prototype, 'x2', {
   get() {
@@ -141,7 +141,7 @@ Object.defineProperty(Rect.prototype, 'x2', {
   set(value) {
     this.width = value - this.x;
   },
-  enumerable: true
+  enumerable: true,
 });
 Object.defineProperty(Rect.prototype, 'y1', {
   get() {
@@ -151,7 +151,7 @@ Object.defineProperty(Rect.prototype, 'y1', {
     const extend = this.y - value;
     this.height += extend;
     this.y -= extend;
-  }
+  },
 });
 Object.defineProperty(Rect.prototype, 'y2', {
   get() {
@@ -159,22 +159,22 @@ Object.defineProperty(Rect.prototype, 'y2', {
   },
   set(value) {
     this.height = value - this.y;
-  }
+  },
 });
 Object.defineProperty(Rect.prototype, 'area', {
   get() {
     return Rect.prototype.getArea.call(this);
-  }
+  },
 });
 Object.defineProperty(Rect.prototype, 'upperLeft', {
   get() {
     return new Point(this.x, this.y);
-  }
+  },
 });
 Object.defineProperty(Rect.prototype, 'lowerRight', {
   get() {
     return new Point(this.x2, this.y2);
-  }
+  },
 });
 
 const getSize = memoize(rect =>
@@ -183,7 +183,7 @@ const getSize = memoize(rect =>
     return v => {
       return v !== undefined ? (rect[k] = v) : rect[k];
     };
-  })
+  }),
 );
 
 const getPoint = memoize(rect => bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => v !== undefined ? (rect[k] = v) : rect[k]));
@@ -191,7 +191,7 @@ const getPoint = memoize(rect => bindProperties(new Point(0, 0), rect, ['x', 'y'
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
     return Rect.center(this);
-  }
+  },
 });
 Rect.prototype.getSize = memoize;
 Object.defineProperty(Rect.prototype, 'size', {
@@ -199,14 +199,14 @@ Object.defineProperty(Rect.prototype, 'size', {
     let ret = getSize(this);
     //console.log('getSize( ) =', ret);
     return ret;
-  }
+  },
 });
 Object.defineProperty(Rect.prototype, 'point', {
   get() {
     let ret = getPoint(this);
     //console.log('getPoint( ) =', ret);
     return ret;
-  }
+  },
 });
 /*Object.defineProperty(Rect.prototype, 'size', {
   get() {
@@ -331,7 +331,7 @@ Rect.prototype.pointFromCenter = function(point) {
 Rect.prototype.toCSS = function() {
   return {
     ...Point.prototype.toCSS.call(this),
-    ...Size.prototype.toCSS.call(this)
+    ...Size.prototype.toCSS.call(this),
   };
 };
 
@@ -345,7 +345,7 @@ Rect.prototype.toTRBL = function() {
     top: this.y,
     right: this.x + this.width,
     bottom: this.y + this.height,
-    left: this.x
+    left: this.x,
   };
 };
 Rect.prototype.toArray = function() {
@@ -370,7 +370,7 @@ Rect.prototype.toLines = function(ctor = lines => Array.from(lines, points => ne
     [a, b],
     [b, c],
     [c, d],
-    [d, a]
+    [d, a],
   ]);
 };
 Rect.prototype.align = function(align_to, a = 0) {
@@ -506,7 +506,7 @@ for(let name of [
   'toCSS',
   'toTRBL',
   'toPoints',
-  'equals'
+  'equals',
 ]) {
   Rect[name] = (rect, ...args) => Rect.prototype[name].call(rect || new Rect(rect), ...args);
 }

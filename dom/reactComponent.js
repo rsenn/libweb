@@ -69,7 +69,7 @@ export class ReactComponent {
   static formats = {
     HTML: 0,
     JSX: 1,
-    H: 2
+    H: 2,
   };
 
   static toString(obj, opts = {}) {

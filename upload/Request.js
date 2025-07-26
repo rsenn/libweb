@@ -24,7 +24,7 @@ export const Request = ({ uid, send, file, action, headers, onProgress, onSucces
     if(status < 200 || status >= 300) {
       return onError(uid, {
         action,
-        status
+        status,
       });
     }
 
@@ -37,7 +37,7 @@ export const Request = ({ uid, send, file, action, headers, onProgress, onSucces
     onError(uid, {
       action,
       status,
-      response
+      response,
     });
   };
 
@@ -47,7 +47,7 @@ export const Request = ({ uid, send, file, action, headers, onProgress, onSucces
     onError(uid, {
       action,
       status,
-      response
+      response,
     });
   };
 
@@ -76,7 +76,7 @@ export const Request = ({ uid, send, file, action, headers, onProgress, onSucces
   return {
     abort() {
       xhr.abort();
-    }
+    },
   };
 };
 

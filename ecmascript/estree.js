@@ -43,7 +43,7 @@ export class ESNode {
 Object.defineProperty(ESNode.prototype, 'position', {
   value: undefined,
   enumerable: false,
-  writable: true
+  writable: true,
 });
 
 ESNode.assoc = weakMapper(() => ({}), (ESNode.assocMap = new Map())); // weakAssoc();
@@ -201,7 +201,7 @@ export class RegExpLiteral extends Literal {
     this.raw = `/${pattern}/${flags}`;
     this.regex = {
       pattern,
-      flags
+      flags,
     };
   }
 }
@@ -234,7 +234,7 @@ export class TemplateElement extends ESNode {
     this.tail = tail;
     this.value = {
       raw,
-      cooked
+      cooked,
     };
   }
 }
@@ -877,7 +877,7 @@ export const CTORS = {
   AnonymousDefaultExportedFunctionDeclaration,
   AnonymousDefaultExportedClassDeclaration,
   ExportDefaultDeclaration,
-  ExportAllDeclaration
+  ExportAllDeclaration,
 };
 
 export function Factory() {
@@ -899,9 +899,9 @@ export function Factory() {
       ...acc,
       [nodeName](...args) {
         return self(nodeName, ...args);
-      }
+      },
     }),
-    {}
+    {},
   );
 
   return self;

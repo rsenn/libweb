@@ -22,7 +22,7 @@ export function SvgPathTracer(path) {
         let distance = Point.distance(relative);
         yield [offset, point];
       }
-    }
+    },
   };
   return self;
 }

@@ -16,7 +16,7 @@ const {
   getOwnPropertyNames,
   getOwnPropertySymbols,
   preventExtensions,
-  hasOwnProperty
+  hasOwnProperty,
 } = Object;
 //const ObjectDefineProperty = define;
 
@@ -89,7 +89,7 @@ class BaseProxyHandler {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     });
     const {
-      membrane: { tagPropertyKey }
+      membrane: { tagPropertyKey },
     } = this;
     if(!isUndefined(tagPropertyKey) && !hasOwnProperty.call(shadowTarget, tagPropertyKey)) {
       ObjectDefineProperty(shadowTarget, tagPropertyKey, ObjectCreate(null));
@@ -109,7 +109,7 @@ class BaseProxyHandler {
   get(shadowTarget, key) {
     const {
       originalTarget,
-      membrane: { valueObserved }
+      membrane: { valueObserved },
     } = this;
     const value = originalTarget[key];
     valueObserved(originalTarget, key);
@@ -119,7 +119,7 @@ class BaseProxyHandler {
   has(shadowTarget, key) {
     const {
       originalTarget,
-      membrane: { tagPropertyKey, valueObserved }
+      membrane: { tagPropertyKey, valueObserved },
     } = this;
     valueObserved(originalTarget, key);
     //since key is never going to be undefined, and tagPropertyKey might be undefined
@@ -130,7 +130,7 @@ class BaseProxyHandler {
   ownKeys(shadowTarget) {
     const {
       originalTarget,
-      membrane: { tagPropertyKey }
+      membrane: { tagPropertyKey },
     } = this;
     //if the membrane tag key exists and it is not in the original target, we add it to the keys.
     const keys = isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey) ? [] : [tagPropertyKey];
@@ -163,7 +163,7 @@ class BaseProxyHandler {
   getOwnPropertyDescriptor(shadowTarget, key) {
     const {
       originalTarget,
-      membrane: { valueObserved, tagPropertyKey }
+      membrane: { valueObserved, tagPropertyKey },
     } = this;
     //keys looked up via getOwnPropertyDescriptor need to be reactive
     valueObserved(originalTarget, key);
@@ -179,7 +179,7 @@ class BaseProxyHandler {
         value: undefined,
         writable: false,
         configurable: false,
-        enumerable: false
+        enumerable: false,
       };
       ObjectDefineProperty(shadowTarget, tagPropertyKey, desc);
       return desc;
@@ -291,7 +291,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   set(shadowTarget, key, value) {
     const {
       originalTarget,
-      membrane: { valueMutated }
+      membrane: { valueMutated },
     } = this;
     const oldValue = originalTarget[key];
     if(oldValue !== value) {
@@ -311,7 +311,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   deleteProperty(shadowTarget, key) {
     const {
       originalTarget,
-      membrane: { valueMutated }
+      membrane: { valueMutated },
     } = this;
     delete originalTarget[key];
     valueMutated(originalTarget, key);
@@ -322,7 +322,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     if(
       tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        process => process.env.NODE_ENV !== 'production',
       )
     ) {
       throw new Error(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
@@ -349,7 +349,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   defineProperty(shadowTarget, key, descriptor) {
     const {
       originalTarget,
-      membrane: { valueMutated, tagPropertyKey }
+      membrane: { valueMutated, tagPropertyKey },
     } = this;
     if(key === tagPropertyKey && !hasOwnProperty.call(originalTarget, key)) {
       //To avoid leaking the membrane tag property into the original target, we must
@@ -405,7 +405,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
       if(
         tryCatch(
           () => process,
-          process => process.env.NODE_ENV !== 'production'
+          process => process.env.NODE_ENV !== 'production',
         )
       ) {
         const { originalTarget } = handler;
@@ -420,7 +420,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        process => process.env.NODE_ENV !== 'production',
       )
     ) {
       const { originalTarget } = this;
@@ -434,7 +434,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        process => process.env.NODE_ENV !== 'production',
       )
     ) {
       const { originalTarget } = this;
@@ -448,7 +448,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        process => process.env.NODE_ENV !== 'production',
       )
     ) {
       const { originalTarget } = this;
@@ -460,7 +460,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        process => process.env.NODE_ENV !== 'production',
       )
     ) {
       const { originalTarget } = this;
@@ -474,7 +474,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        process => process.env.NODE_ENV !== 'production',
       )
     ) {
       const { originalTarget } = this;
@@ -524,7 +524,7 @@ const formatter = {
     return ['object', { object: obj }];
   },
   hasBody: () => false,
-  body: () => null
+  body: () => null,
 };
 
 //Inspired from paulmillr/es6-shim
@@ -556,7 +556,7 @@ function init() {
   if(
     tryCatch(
       () => process,
-      process => process.env.NODE_ENV === 'production'
+      process => process.env.NODE_ENV === 'production',
     )
   ) {
     //this method should never leak to prod
@@ -576,7 +576,7 @@ function init() {
 if(
   tryCatch(
     () => process,
-    process => process.env.NODE_ENV !== 'production'
+    process => process.env.NODE_ENV !== 'production',
   )
 ) {
   init();
@@ -685,7 +685,7 @@ class ReactiveMembrane {
         ObjectDefineProperty(this, 'readOnly', { value: proxy });
         ObjectDefineProperty(this, 'handler', { value: readOnlyHandler });
         return proxy;
-      }
+      },
     };
     objectGraph.set(distortedValue, reactiveState);
     return reactiveState;

@@ -87,7 +87,7 @@ import { TokenList } from './token.js';
 
 const symbols = {
   enter: '⬊',
-  leave: '⬁'
+  leave: '⬁',
 };
 const add = (arr, ...items) => [...(arr || []), ...items];
 const linebreak = new RegExp('\\r?\\n', 'g');
@@ -95,7 +95,7 @@ const inspectOptions = {
   colors: false,
   compact: 0,
   multiline: true,
-  breakLength: 80
+  breakLength: 80,
 };
 
 class ParseError extends Error {
@@ -147,7 +147,7 @@ export class Parser {
           let node = /*new.target ||*/ classes[key](...args);
           parser.onNewNode(node);
           return node;
-        }
+        },
     );
     //
     this.factory.callback = (...args) => this.handleConstruct(...args);
@@ -163,7 +163,7 @@ export class Parser {
           `TRACE[${stack.length / 3}]`, // `${fn} @ ${file.replace(/.*\//g, '')}:${line}`.padEnd(50),
           this.lexer.loc + '',
           ...args,
-          this.tokens.map(tok => tok + '')
+          this.tokens.map(tok => tok + ''),
         );
       };
     }
@@ -197,7 +197,7 @@ export class Parser {
                 }
                 /// console.log(`${symbols.enter}[${locStack.length}]`, (token ?? lexer).loc + '', inspect({ name, arg }, { compact: 10 }) ///);
               }
-            }
+            },
           );
         }
       }
@@ -215,7 +215,7 @@ export class Parser {
                 (tok.type + '').padEnd(20) +
                 ("'" + tok.lexeme.replace(/\n/g, '\\n') + "'").padEnd(32) +
                 (tok.loc + '') +
-                '\n'
+                '\n',
             );
     /* : (tok, ...prefix) => {
             const range = tok.charRange;
@@ -276,7 +276,7 @@ export class Parser {
         return this[1] - this[0];
       },
       enumerable: false,
-      writeable: false
+      writeable: false,
     });
     if(range[0] == range[1]) return;
     if(this.nodeTokenMap[node] === undefined) {
@@ -292,7 +292,7 @@ export class Parser {
     Object.assign(obj, {
       range: positions,
       tokenRange: range /*, tokens*/,
-      comments
+      comments,
     });
 
     if(tokens[0]?.loc) {
@@ -301,7 +301,7 @@ export class Parser {
       Object.defineProperty(node, 'loc', {
         value: loc,
         enumerable: false,
-        configurable: true
+        configurable: true,
       });
     }
   }
@@ -366,7 +366,7 @@ export class Parser {
         type: 'eof',
         id: -1,
         value: null,
-        loc: this.lexer.loc
+        loc: this.lexer.loc,
       });
 
     this.pos = token.loc;
@@ -420,7 +420,7 @@ export class Parser {
         if(this.debug) {
           Object.defineProperty(token, 'stack', {
             value: new Stack(null, (fr, i) => !/esfactory/.test(fr) && i > 2),
-            enumerable: false
+            enumerable: false,
           });
         }
       } else {
@@ -572,7 +572,7 @@ const operatorPrecedence = {
   '*': 10,
   '%': 10,
   '/': 10,
-  '**': 11
+  '**': 11,
 };
 
 export class ECMAScriptParser extends Parser {
@@ -653,7 +653,7 @@ export class ECMAScriptParser extends Parser {
       numericLiteral: Number,
       booleanLiteral: Boolean,
       nullLiteral: () => null,
-      regexpLiteral: RegExp
+      regexpLiteral: RegExp,
     }[token.type](value);
     let ret = new Literal(str ?? value, val);
     //console.log('expectLiteral', { str, val, ret });
@@ -797,7 +797,7 @@ export class ECMAScriptParser extends Parser {
     this.trace(
       'matchFunctionExpression',
       this.tokens,
-      this.processed.map(tok => tok + '')
+      this.processed.map(tok => tok + ''),
     );
     let token = this.lookahead(0);
     const is_async = token.value == 'async';
@@ -1114,7 +1114,7 @@ export class ECMAScriptParser extends Parser {
       const argument = this.parseUnaryExpression();
       return {
         ast: this.addNode(UnaryExpression, operatorToken.value, argument.ast, true),
-        lhs: false
+        lhs: false,
       };
     } else if(this.matchPunctuators(unaryPunctuators)) {
       const operatorToken = this.expectPunctuators(unaryPunctuators);
@@ -1723,7 +1723,7 @@ export class ECMAScriptParser extends Parser {
   parseImportDeclaration(toplevel = false) {
     this.trace('parseImportDeclaration', {
       toplevel,
-      token: this.token.lexeme
+      token: this.token.lexeme,
     });
     this.expectKeywords('import');
     let items = [];
@@ -2266,13 +2266,13 @@ export class ECMAScriptParser extends Parser {
     this.trace('parseClass', {
       token: this.token,
       numTokens: this.tokens.length,
-      tokens: this.tokens
+      tokens: this.tokens,
     });
     this.expectKeywords('class');
     this.trace('parseClass', {
       token: this.token,
       numTokens: this.tokens.length,
-      tokens: this.tokens
+      tokens: this.tokens,
     });
     //Parse name of the function
     let identifier = null;
@@ -2469,7 +2469,7 @@ Parser.prototype.trace = function() {
       frame =>
         `${(frame.tokenIndex + '').padStart(5)} ${(frame.position ? frame.position.toString() : '').padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(
           frame.tokens || []
-        ).join(' ')}`
+        ).join(' ')}`,
     )
     .join('\n');
 };
@@ -2494,7 +2494,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       methodName,
       start: tokenIndex - this.tokens.length,
       position,
-      depth
+      depth,
     };
     this.callStack = Stack.update(this.callStack, new Stack(null, fr => fr.functionName != 'esfactory'));
 

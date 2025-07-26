@@ -13,7 +13,7 @@ export class Token {
     keyword: 'keyword',
     identifier: 'identifier',
     regexpLiteral: 'regexpLiteral',
-    eof: 'eof'
+    eof: 'eof',
   };
 
   constructor(type, value, position, offset) {

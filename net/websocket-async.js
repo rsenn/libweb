@@ -30,14 +30,14 @@ export class WebSocketClient {
         ['ctor', ctor],
         ['receiveDataQueue', []],
         ['receiveCallbacksQueue', []],
-        ['closeEvent', null]
+        ['closeEvent', null],
       ].reduce(
         (acc, [name, value]) => ({
           ...acc,
-          [name]: { value, enumerable: false }
+          [name]: { value, enumerable: false },
         }),
-        {}
-      )
+        {},
+      ),
     );
   }
 
@@ -105,7 +105,7 @@ export class WebSocketClient {
           this.receiveCallbacksQueue.push(callbacks);
         },
 
-        reject: resolve
+        reject: resolve,
       };
 
       this.receiveCallbacksQueue.push(callbacks);

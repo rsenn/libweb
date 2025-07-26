@@ -32,7 +32,7 @@ export const Drawing = ({ data, viewBox, rect, bounds, attrs, grid, nodefs, tran
 
   attrs ??= {
     bg: { color: '#ffffff', visible: true },
-    grid: { color: '#0000aa', width: 0.01, visible: true }
+    grid: { color: '#0000aa', width: 0.01, visible: true },
   };
 
   const id = 'grid';
@@ -43,6 +43,6 @@ export const Drawing = ({ data, viewBox, rect, bounds, attrs, grid, nodefs, tran
 
   return h(SVG, { viewBox, styles, style, ...size, ...defs, ...props }, [
     h('g', { id: 'bg', transform: t }, [h(Background, { rect, attrs: attrs.bg }), h(Grid, { data: grid, id, rect, attrs: attrs.grid })]),
-    ...toChildArray(children)
+    ...toChildArray(children),
   ]);
 };

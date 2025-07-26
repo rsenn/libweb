@@ -2,7 +2,7 @@ import { bindProperties, clamp, define, defineGetter, immutableClass, inspectSym
 
 const SymSpecies = tryCatch(
   () => Symbol,
-  sym => sym.species
+  sym => sym.species,
 );
 
 const CTOR = obj => {
@@ -34,7 +34,7 @@ export function Point(...args) {
   } else if(typeof arg == 'object' && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
     p.x = arg.x;
     p.y = arg.y;
-  } else if(typeof arg == 'object' && arg !== null && arg.length > 0 ) {
+  } else if(typeof arg == 'object' && arg !== null && arg.length > 0) {
     p.x = parseFloat(arg.shift());
     p.y = parseFloat(arg.shift());
   } else if(typeof args[0] === 'number' && typeof args[1] === 'number') {
@@ -258,7 +258,7 @@ define(Point.prototype, {
   toCSS(precision = 0.001, edges = ['left', 'top']) {
     return {
       [edges[0]]: roundTo(this.x, precision) + 'px',
-      [edges[1]]: roundTo(this.y, precision) + 'px'
+      [edges[1]]: roundTo(this.y, precision) + 'px',
     };
   },
   toFixed(digits) {
@@ -286,7 +286,7 @@ define(Point.prototype, {
   scaleTo(minmax) {
     return new Point({
       x: (this.x - minmax.x1) / (minmax.x2 - minmax.x1),
-      y: (this.y - minmax.y1) / (minmax.y2 - minmax.y1)
+      y: (this.y - minmax.y1) / (minmax.y2 - minmax.y1),
     });
   },
   normalize() {
@@ -301,7 +301,7 @@ define(Point.prototype, {
     const { x, y } = this;
     return define({ x, y }, { [Symbol.toStringTag]: 'Point' });
   },
-  [Symbol.toStringTag]: 'Point'
+  [Symbol.toStringTag]: 'Point',
 });
 
 defineGetter(Point.prototype, Symbol.iterator, function() {
@@ -334,7 +334,7 @@ for(let name of [
   'diff',
   'add',
   'sum',
-  'distance'
+  'distance',
 ]) {
   Point[name] = (point, ...args) => Point.prototype[name].call(Point(point), ...args);
 }

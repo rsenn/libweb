@@ -86,7 +86,7 @@ class DragHandler {
       this.el.dispatch('dragmove', {
         event: ev,
         handler: this,
-        box: this.box
+        box: this.box,
       }).defaultPrevented
     ) {
       return;
@@ -130,6 +130,6 @@ export default function() {
       const dragHandler = this.remember('_draggable') || new DragHandler(this);
       dragHandler.init(enable);
       return this;
-    }
+    },
   });
 }

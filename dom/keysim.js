@@ -10,7 +10,7 @@ export const KeyEvents = {
   DOWN: 1 << 0,
   PRESS: 1 << 1,
   UP: 1 << 2,
-  INPUT: 1 << 3
+  INPUT: 1 << 3,
 };
 KeyEvents.ALL = KeyEvents.DOWN | KeyEvents.PRESS | KeyEvents.UP | KeyEvents.INPUT;
 
@@ -479,7 +479,7 @@ const US_ENGLISH_CHARCODE_KEYCODE_MAP = {
   123: new Keystroke(SHIFT, 219), //{
   124: new Keystroke(SHIFT, 220), //|
   125: new Keystroke(SHIFT, 221), //}
-  126: new Keystroke(SHIFT, 192) //~
+  126: new Keystroke(SHIFT, 192), //~
 };
 
 const US_ENGLISH_ACTION_KEYCODE_MAP = {
@@ -514,7 +514,7 @@ const US_ENGLISH_ACTION_KEYCODE_MAP = {
   F9: 120,
   F10: 121,
   F11: 122,
-  F12: 123
+  F12: 123,
 };
 
 /**

@@ -7,7 +7,7 @@ function define(obj, prop, value) {
     value,
     enumerable: false,
     writable: true,
-    configurable: true
+    configurable: true,
   });
 }
 
@@ -105,7 +105,7 @@ export class EventEmitter {
 
   [Symbol.asyncIterator]() {
     return {
-      next: type => new Promise(async resolve => this.once(type, e => resolve({ done: false, value: e })))
+      next: type => new Promise(async resolve => this.once(type, e => resolve({ done: false, value: e }))),
     };
   }
 
@@ -186,7 +186,7 @@ export const eventify = self => {
 
   return Object.assign(self, {
     events: {},
-    ...methods
+    ...methods,
   });
 };
 

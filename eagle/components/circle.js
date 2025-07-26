@@ -8,7 +8,7 @@ export const PinSizes = {
   long: 3,
   middle: 2,
   short: 1,
-  point: 0
+  point: 0,
 };
 
 export const Circle = ({ data, opts = {}, ...props }) => {
@@ -39,6 +39,6 @@ export const Circle = ({ data, opts = {}, ...props }) => {
     'stroke-width': roundTo(width * 0.8, 0.0001),
     fill: 'none',
     ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
-    style: visible ? {} : { display: 'none' }
+    style: visible ? {} : { display: 'none' },
   });
 };

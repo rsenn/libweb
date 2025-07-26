@@ -54,12 +54,12 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
         style: visible ? { ...style } : { ...style, display: 'none' },
         ...AlignmentAttrs(align, VERTICAL),
         ...props,
-        transform
+        transform,
       },
       h('tspan', {
         ...AlignmentAttrs(align, HORIZONTAL),
-        dangerouslySetInnerHTML: { __html: text }
-      })
-    )
+        dangerouslySetInnerHTML: { __html: text },
+      }),
+    ),
   ]);
 };

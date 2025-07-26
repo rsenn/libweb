@@ -1,6 +1,6 @@
 import { RGBA } from '../color/rgba.js';
 import { BBox, Circle, isLine, Line, MakePolygon, Point, PointList, Rect, Transformation, TransformationList } from '../geom.js';
-import { className, define, weakDefine, getOrCreate, inserter, isNumeric, isObject, isFunction, lazyProperties, lazyProperty, properties, nonenumerable, roundTo, tryFunction, ucfirst } from '../misc.js';
+import { className, define, weakDefine, getOrCreate, inserter, isNumeric, isObject, isFunction, lazyProperties, lazyProperty, properties, nonenumerable, roundTo, tryFunction, ucfirst, } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { Repeater } from '../repeater/repeater.js';
 import trkl from '../trkl.js';
@@ -28,8 +28,8 @@ const decodeHTMLEntities = s =>
         lt: '<',
         gt: '>',
         nbsp: ' ',
-        quot: '"'
-      }[entity] || match)
+        quot: '"',
+      }[entity] || match),
   );
 
 const TList = (child, elem) => {
@@ -52,7 +52,7 @@ const TList = (child, elem) => {
         transformation.apply(v);
       }
       return v;
-    }
+    },
   });
 };
 
@@ -147,7 +147,7 @@ export class EagleElement extends EagleNode {
         if(isObject(raw)) return raw.tagName;
       },
       enumerable: true,
-      configurable: false
+      configurable: false,
     });
 
     const elem = this,
@@ -161,16 +161,16 @@ export class EagleElement extends EagleNode {
         properties(
           {
             gates: () => EagleNodeMap.create(this.get(e => e.tagName == 'gates').children, 'name'),
-            devices: () => EagleNodeMap.create(this.get(e => e.tagName == 'devices').children, 'name')
+            devices: () => EagleNodeMap.create(this.get(e => e.tagName == 'devices').children, 'name'),
           },
-          { enumerable: false }
+          { enumerable: false },
         ),
         properties(
           {
-            name: () => this.raw.attributes.name
+            name: () => this.raw.attributes.name,
           },
-          { enumerable: true }
-        )
+          { enumerable: true },
+        ),
       );
     } else if(tagName == 'contactref') {
       define(
@@ -183,8 +183,8 @@ export class EagleElement extends EagleNode {
           pad: () => {
             const { element, pad } = attributes;
             return doc.elements[element].pads[pad];
-          }
-        })
+          },
+        }),
       );
     } else {
       const names = this.names();
@@ -252,7 +252,7 @@ export class EagleElement extends EagleNode {
               const color = doc.palette[colorIndex] || doc.palette[0b0110];
 
               return color;
-            }
+            },
           });
         } else if(EagleElement.isRelation(key) || ['package', 'library' /*, 'layer'*/].indexOf(key) != -1) {
           let hfn;
@@ -310,8 +310,8 @@ export class EagleElement extends EagleNode {
             define(
               this,
               properties({
-                layer: () => this.getLayer()
-              })
+                layer: () => this.getLayer(),
+              }),
             );
           } else if(key + 's' in doc) {
             hfn = () => doc[key + 's'][elem.attrMap[key] + ''];
@@ -406,10 +406,10 @@ export class EagleElement extends EagleNode {
             libraries: () => {
               const libraries = this.lookup(this.tagName == 'board' ? 'libraries' : 'eagle/drawing/board/libraries') ?? this.get('libraries');
               if(libraries) return EagleNodeMap.create(libraries.children, 'name');
-            }*/
+            }*/,
           },
-          { configurable: true, enumerable: false }
-        )
+          { configurable: true, enumerable: false },
+        ),
       );
     }
 
@@ -430,10 +430,10 @@ export class EagleElement extends EagleNode {
             libraries: () => {
               const libraries = this.lookup(this.tagName == 'schematic'  ? 'libraries' : 'eagle/drawing/schematic/libraries') ?? this.get('libraries');
               if(libraries) return EagleNodeMap.create(libraries.children, 'name');
-            }*/
+            }*/,
           },
-          { configurable: true, enumerable: false }
-        )
+          { configurable: true, enumerable: false },
+        ),
       );
     }
 
@@ -458,10 +458,10 @@ export class EagleElement extends EagleNode {
             },
             symbols() {
               return EagleNodeMap.create(this.get(e => e.tagName == 'symbols').children, 'name');
-            }
+            },
           },
-          { configurable: true, enumerable: false }
-        )
+          { configurable: true, enumerable: false },
+        ),
       );
     }
 
@@ -481,7 +481,7 @@ export class EagleElement extends EagleNode {
                 this,
                 this.package.ref.down('children'),
                 e => e.tagName == key,
-                (o, p, r) => TList(EagleElement.get(o, p, r), elem)
+                (o, p, r) => TList(EagleElement.get(o, p, r), elem),
               );
 
               if(key != 'pad') return list;
@@ -495,20 +495,20 @@ export class EagleElement extends EagleNode {
           [
             ...doc.get('signals').owner.getAll({
               tagName: 'contactref',
-              element: attributes.name
-            })
-          ].map(cref => [cref.pad.name, cref.parentNode])
-        )
+              element: attributes.name,
+            }),
+          ].map(cref => [cref.pad.name, cref.parentNode]),
+        ),
       );
       trkl.bind(this, 'contactrefs', () =>
         Object.fromEntries(
           [
             ...doc.get('signals').owner.getAll({
               tagName: 'contactref',
-              element: attributes.name
-            })
-          ].map(cref => [cref.pad.name, cref])
-        )
+              element: attributes.name,
+            }),
+          ].map(cref => [cref.pad.name, cref]),
+        ),
       );
     }
     if(tagName == 'signal') {
@@ -597,8 +597,8 @@ export class EagleElement extends EagleNode {
             pushFn = push;
             push(this);
             await stop;
-          })
-        })
+          }),
+        }),
       );
 
       this.r.next().then(({ value, done }) => {
@@ -614,8 +614,8 @@ export class EagleElement extends EagleNode {
               //console.log(`pushEvent`, {e,k,v});
               if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
               pushFn(this);
-            }
-          })
+            },
+          }),
         );
       });
     }
@@ -672,7 +672,7 @@ export class EagleElement extends EagleNode {
         o.raw.children.push({
           tagName,
           attributes: {},
-          children: []
+          children: [],
         });
       }
 
@@ -775,7 +775,7 @@ export class EagleElement extends EagleNode {
           })
           .map(b => new Rect(b))
           .map(r => r.toPoints())
-          .flat()
+          .flat(),
       );
     } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
       for(let child of this.children) bb.update(child.getBounds(e => true, opts));
@@ -933,9 +933,9 @@ export class EagleElement extends EagleNode {
     return Object.entries(this.scope()).reduce(
       (acc, entry) => ({
         ...acc,
-        [entry[0]]: entry[1].attributes.name
+        [entry[0]]: entry[1].attributes.name,
       }),
-      {}
+      {},
     );
   }
 
@@ -989,7 +989,7 @@ export class EagleElement extends EagleNode {
     const call = tryFunction(
       (v, p, o) => typeof v == 'object' && v !== null && EagleElement.get(o || this.owner, p, v),
       (r, v, p, o) => r && transform(r, p, o),
-      () => undefined
+      () => undefined,
     );
 
     if(!isFunction(pred)) pred = EagleNode.makePredicate(pred);
@@ -1010,7 +1010,7 @@ export class EagleElement extends EagleNode {
     const call = tryFunction(
       (v, p, o) => EagleElement.get(o || this.owner, p),
       (r, v, p, o) => transform(r, p, o),
-      () => undefined
+      () => undefined,
     );
 
     return super.find(pred, call);
@@ -1079,7 +1079,7 @@ export class EagleElement extends EagleNode {
     vertex: ['x', 'y', 'curve'],
     via: ['x', 'y', 'extent', 'drill', 'shape', 'diameter'],
     wire: ['x1', 'y1', 'x2', 'y2', 'width', 'layer', 'curve', 'style', 'cap', 'extent'],
-    '?xml': ['version', 'encoding']
+    '?xml': ['version', 'encoding'],
   };
 }
 

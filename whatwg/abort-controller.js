@@ -91,7 +91,7 @@ function Event(eventTarget, event) {
     stopped: false,
     immediateStopped: false,
     passiveListener: null,
-    timeStamp: event.timeStamp || Date.now()
+    timeStamp: event.timeStamp || Date.now(),
   });
 
   // https://heycam.github.io/webidl/#Unforgeable
@@ -311,14 +311,14 @@ Event.prototype = {
    */
   initEvent() {
     // Do nothing.
-  }
+  },
 };
 
 // `constructor` is not enumerable.
 Object.defineProperty(Event.prototype, 'constructor', {
   value: Event,
   configurable: true,
-  writable: true
+  writable: true,
 });
 
 // Ensure `event instanceof window.Event` is `true`.
@@ -344,7 +344,7 @@ function defineRedirectDescriptor(key) {
       pd(this).event[key] = value;
     },
     configurable: true,
-    enumerable: true
+    enumerable: true,
   };
 }
 
@@ -361,7 +361,7 @@ function defineCallDescriptor(key) {
       return event[key].apply(event, arguments);
     },
     configurable: true,
-    enumerable: true
+    enumerable: true,
   };
 }
 
@@ -384,7 +384,7 @@ function defineWrapper(BaseEvent, proto) {
   }
 
   CustomEvent.prototype = Object.create(BaseEvent.prototype, {
-    constructor: { value: CustomEvent, configurable: true, writable: true }
+    constructor: { value: CustomEvent, configurable: true, writable: true },
   });
 
   // Define accessors.
@@ -571,7 +571,7 @@ function defineEventAttributeDescriptor(eventName) {
           listenerType: ATTRIBUTE,
           passive: false,
           once: false,
-          next: null
+          next: null,
         };
         if(prev === null) {
           listeners.set(eventName, newNode);
@@ -581,7 +581,7 @@ function defineEventAttributeDescriptor(eventName) {
       }
     },
     configurable: true,
-    enumerable: true
+    enumerable: true,
   };
 }
 
@@ -611,8 +611,8 @@ function defineCustomEventTarget(eventNames) {
     constructor: {
       value: CustomEventTarget,
       configurable: true,
-      writable: true
-    }
+      writable: true,
+    },
   });
 
   for(let i = 0; i < eventNames.length; ++i) {
@@ -681,7 +681,7 @@ EventTarget.prototype = {
       listenerType,
       passive: optionsIsObj && Boolean(options.passive),
       once: optionsIsObj && Boolean(options.once),
-      next: null
+      next: null,
     };
 
     // Set it as the first node if the first node is null.
@@ -805,14 +805,14 @@ EventTarget.prototype = {
     setCurrentTarget(wrappedEvent, null);
 
     return !wrappedEvent.defaultPrevented;
-  }
+  },
 };
 
 // `constructor` is not enumerable.
 Object.defineProperty(EventTarget.prototype, 'constructor', {
   value: EventTarget,
   configurable: true,
-  writable: true
+  writable: true,
 });
 
 // Ensure `eventTarget instanceof window.EventTarget` is `true`.
@@ -874,13 +874,13 @@ function abortSignal(signal) {
 const abortedFlags = new WeakMap();
 // Properties should be enumerable.
 Object.defineProperties(AbortSignal.prototype, {
-  aborted: { enumerable: true }
+  aborted: { enumerable: true },
 });
 // `toString()` should return `"[object AbortSignal]"`
 if(typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol') {
   Object.defineProperty(AbortSignal.prototype, Symbol.toStringTag, {
     configurable: true,
-    value: 'AbortSignal'
+    value: 'AbortSignal',
   });
 }
 
@@ -925,13 +925,13 @@ function getSignal(controller) {
 // Properties should be enumerable.
 Object.defineProperties(AbortController.prototype, {
   signal: { enumerable: true },
-  abort: { enumerable: true }
+  abort: { enumerable: true },
 });
 
 if(typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol') {
   Object.defineProperty(AbortController.prototype, Symbol.toStringTag, {
     configurable: true,
-    value: 'AbortController'
+    value: 'AbortController',
   });
 }
 

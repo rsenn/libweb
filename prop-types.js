@@ -9,7 +9,7 @@ function shim(props, propName, componentName, location, propFullName, secret) {
     return;
   }
   let err = new Error(
-    'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types'
+    'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types',
   );
   err.name = 'Invariant Violation';
   throw err;
@@ -42,7 +42,7 @@ export const ReactPropTypes = {
   exact: getShim,
 
   checkPropTypes: emptyFunctionWithReset,
-  resetWarningCache: emptyFunction
+  resetWarningCache: emptyFunction,
 };
 
 ReactPropTypes.PropTypes = ReactPropTypes;
@@ -67,7 +67,7 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
                 'it must be a function, usually from the `prop-types` package, but received `' +
                 typeof typeSpecs[typeSpecName] +
                 '`.' +
-                'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.'
+                'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.',
             );
             err.name = 'Invariant Violation';
             throw err;
@@ -89,7 +89,7 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
               '. ' +
               'You may have forgotten to pass an argument to the type checker ' +
               'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' +
-              'shape all require an argument).'
+              'shape all require an argument).',
           );
         }
         if(error instanceof Error && !(error.message in loggedTypeFailures)) {

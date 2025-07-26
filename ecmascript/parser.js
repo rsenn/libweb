@@ -1,6 +1,6 @@
 import deep from '../deep.js';
 import { abbreviate, className, fnName, getCallerStack, getMethodNames, isObject, once, pad, propertyLookup, tail, trim } from '../misc.js';
-import { AnonymousDefaultExportedClassDeclaration, AnonymousDefaultExportedFunctionDeclaration, ArrayExpression, ArrayPattern, ArrowFunctionExpression, AssignmentExpression, AssignmentPattern, AssignmentProperty, AwaitExpression, BinaryExpression, BlockStatement, BreakStatement, CallExpression, CatchClause, ClassBody, ClassDeclaration, ConditionalExpression, ContinueStatement, DoWhileStatement, EmptyStatement, ESNode, ExportDefaultDeclaration, ExportNamedDeclaration, ExportSpecifier, ExpressionStatement, Factory, ForInStatement, ForOfStatement, ForStatement, FunctionBody, FunctionDeclaration, FunctionLiteral, Identifier, IfStatement, ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, JSXLiteral, LabeledStatement, Literal, LogicalExpression, MemberExpression, MetaProperty, MethodDefinition, NewExpression, ObjectExpression, ObjectPattern, Program, Property, RegExpLiteral, RestElement, ReturnStatement, SequenceExpression, SpreadElement, StatementList, Super, SwitchCase, SwitchStatement, TemplateElement, TemplateLiteral, ThisExpression, ThrowStatement, TryStatement, UnaryExpression, UpdateExpression, VariableDeclaration, VariableDeclarator, WhileStatement, WithStatement, YieldExpression } from './estree.js';
+import { AnonymousDefaultExportedClassDeclaration, AnonymousDefaultExportedFunctionDeclaration, ArrayExpression, ArrayPattern, ArrowFunctionExpression, AssignmentExpression, AssignmentPattern, AssignmentProperty, AwaitExpression, BinaryExpression, BlockStatement, BreakStatement, CallExpression, CatchClause, ClassBody, ClassDeclaration, ConditionalExpression, ContinueStatement, DoWhileStatement, EmptyStatement, ESNode, ExportDefaultDeclaration, ExportNamedDeclaration, ExportSpecifier, ExpressionStatement, Factory, ForInStatement, ForOfStatement, ForStatement, FunctionBody, FunctionDeclaration, FunctionLiteral, Identifier, IfStatement, ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, JSXLiteral, LabeledStatement, Literal, LogicalExpression, MemberExpression, MetaProperty, MethodDefinition, NewExpression, ObjectExpression, ObjectPattern, Program, Property, RegExpLiteral, RestElement, ReturnStatement, SequenceExpression, SpreadElement, StatementList, Super, SwitchCase, SwitchStatement, TemplateElement, TemplateLiteral, ThisExpression, ThrowStatement, TryStatement, UnaryExpression, UpdateExpression, VariableDeclaration, VariableDeclarator, WhileStatement, WithStatement, YieldExpression, } from './estree.js';
 import { Lexer, Location, Token } from './lexer.js';
 import { Printer } from './printer.js';
 import inspect from 'inspect';
@@ -38,7 +38,7 @@ export class Parser {
           parser.onNewNode(node);
 
           return node;
-        }
+        },
     );
 
     //
@@ -99,7 +99,7 @@ export class Parser {
         return this[1] - this[0];
       },
       enumerable: false,
-      writeable: false
+      writeable: false,
     });
     if(range[0] == range[1]) return;
     if(this.nodeTokenMap[node] === undefined) {
@@ -116,7 +116,7 @@ export class Parser {
       range: positions,
       tokenRange: range,
       tokens,
-      comments
+      comments,
     });
 
     /*    console.log("tokens:", tokens);
@@ -295,7 +295,7 @@ function backTrace() {
           name: name.replace(/.*\.prototype\./, ''),
           file: matches[2].replace(new RegExp('/.*lotto//'), ''),
           line: parseInt(matches[3]),
-          column: parseInt(matches[4])
+          column: parseInt(matches[4]),
         };
         let fn = getFn(name);
         let caller = fn ? (fn ? Util.fnName(fn, Parser.prototype) : fn) : undefined;
@@ -370,7 +370,7 @@ const operatorPrecedence = {
   '*': 10,
   '%': 10,
   '/': 10,
-  '**': 11
+  '**': 11,
 };
 
 export class ECMAScriptParser extends Parser {
@@ -448,8 +448,8 @@ export class ECMAScriptParser extends Parser {
         numericLiteral: 'number',
         booleanLiteral: 'boolean',
         nullLiteral: 'object',
-        regexpLiteral: 'regexp'
-      }[token.type]
+        regexpLiteral: 'regexp',
+      }[token.type],
     );
   }
 
@@ -836,7 +836,7 @@ export class ECMAScriptParser extends Parser {
       const argument = this.parseUnaryExpression();
       return {
         ast: new UnaryExpression(operatorToken.value, argument.ast, true),
-        lhs: false
+        lhs: false,
       };
     } else if(this.matchPunctuators(unaryPunctuators)) {
       const operatorToken = this.expectPunctuators(unaryPunctuators);
@@ -2138,8 +2138,8 @@ Parser.prototype.trace = function() {
     .map(
       frame =>
         `${(frame.tokenIndex + '').padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(
-          ' '
-        )}`
+          ' ',
+        )}`,
     )
     .join('\n');
 };
@@ -2171,7 +2171,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       methodName,
       start: tokenIndex - this.tokens.length,
       /*args,*/ position,
-      depth
+      depth,
     };
     this.stack.unshift(entry);
 
@@ -2243,7 +2243,7 @@ function instrumentateParser() {
         methods[methodName] = fn;
 
         return { ...acc, [methodName]: instrumentate(methodName, fn) };
-      }, {})
+      }, {}),
   );
 }
 

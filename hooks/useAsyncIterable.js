@@ -6,7 +6,7 @@ export function useAsyncIterable(iterable) {
     function() {
       return iterable[Symbol.asyncIterator]();
     },
-    [iterable]
+    [iterable],
   );
   return useAsyncIterator(iterator);
 }

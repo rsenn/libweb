@@ -21,7 +21,7 @@ export class WeakStackFrame {
 
     const { parent } = this;
 
-    if (parent) {
+    if(parent) {
       return parent.push(...args);
     } else {
       const frame = new constructor(...args);
@@ -48,9 +48,9 @@ export class WeakStackFrame {
   *ancestors(includeSelf) {
     let ancestor = this;
 
-    if (includeSelf) yield ancestor;
+    if(includeSelf) yield ancestor;
 
-    while ((ancestor = ancestor.parent)) {
+    while((ancestor = ancestor.parent)) {
       yield ancestor;
     }
   }

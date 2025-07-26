@@ -21,7 +21,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
     tryCatch(
       () => children.map(t => (t + '').trim()).join('\n'),
       t => t,
-      () => ''
+      () => '',
     )
   ).trim();
 
@@ -46,7 +46,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
 
   attrs['data-alignment'] = [...Alignment(align)].join('|');
 
-  log(`TextElement.render(3)`, { className,color,x,y,rot,alignment:align,text,visible,opts,...attrs });
+  log(`TextElement.render(3)`, { className, color, x, y, rot, alignment: align, text, visible, opts, ...attrs });
 
   return h(Text, {
     className,
@@ -59,6 +59,6 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
     visible,
     opts,
     style: { 'font-size': roundTo(size * 1.5, 0.001) },
-    ...attrs
+    ...attrs,
   });
 };

@@ -45,7 +45,7 @@ function _catchError(error, vnode) {
 }
 
 var options = {
-  __e: _catchError
+  __e: _catchError,
 };
 var vnodeId = 0;
 
@@ -91,7 +91,7 @@ function createVNode(type, props, key, ref, original) {
     __c: null,
     __h: null,
     constructor: undefined,
-    __v: original == null ? ++vnodeId : original
+    __v: original == null ? ++vnodeId : original,
   };
 
   if(original == null && options.vnode != null) {
@@ -102,7 +102,7 @@ function createVNode(type, props, key, ref, original) {
 
 function createRef() {
   return {
-    current: null
+    current: null,
   };
 }
 
@@ -188,7 +188,7 @@ function renderComponent(component) {
       vnode.__h != null ? [oldDom] : null,
       commitQueue,
       oldDom == null ? getDomSibling(vnode) : oldDom,
-      vnode.__h
+      vnode.__h,
     );
     commitRoot(commitQueue, vnode);
     if(vnode.__e != oldDom) {
@@ -255,11 +255,11 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
       childVNode = newParentVNode.__k[i] = createVNode(
         Fragment,
         {
-          children: childVNode
+          children: childVNode,
         },
         null,
         null,
-        null
+        null,
       );
     } else if(childVNode.__b > 0) {
       childVNode = newParentVNode.__k[i] = createVNode(childVNode.type, childVNode.props, childVNode.key, null, childVNode.__v);
@@ -732,7 +732,7 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
         excessDomChildren,
         commitQueue,
         excessDomChildren ? excessDomChildren[0] : oldVNode.__k && getDomSibling(oldVNode, 0),
-        isHydrating
+        isHydrating,
       );
 
       if(excessDomChildren != null) {
@@ -826,7 +826,7 @@ function render(vnode, parentDom, replaceNode) {
     !isHydrating && replaceNode ? [replaceNode] : oldVNode ? null : parentDom.firstChild ? slice.call(parentDom.childNodes) : null,
     commitQueue,
     !isHydrating && replaceNode ? replaceNode : oldVNode ? oldVNode.__e : parentDom.firstChild,
-    isHydrating
+    isHydrating,
   );
 
   commitRoot(commitQueue, vnode);
@@ -891,7 +891,7 @@ function createContext(defaultValue, contextId) {
         };
       }
       return props.children;
-    }
+    },
   };
 
   return (context.Provider.__ = context.Consumer.contextType = context);
@@ -984,7 +984,7 @@ function getHookState(index, type) {
     currentComponent.__H ||
     (currentComponent.__H = {
       __: [],
-      __h: []
+      __h: [],
     });
   if(index >= hooks.__.length) {
     hooks.__.push({});
@@ -1009,7 +1009,7 @@ function useReducer(reducer, initialState, init) {
           hookState.__ = [nextValue, hookState.__[1]];
           hookState.__c.setState({});
         }
-      }
+      },
     ];
     hookState.__c = currentComponent;
   }
@@ -1037,7 +1037,7 @@ function useRef(initialValue) {
   currentHook = 5;
   return useMemo(function () {
     return {
-      current: initialValue
+      current: initialValue,
     };
   }, []);
 }
@@ -1052,7 +1052,7 @@ function useImperativeHandle(ref, createHandle, args) {
         ref.current = createHandle();
       }
     },
-    args == null ? args : args.concat(ref)
+    args == null ? args : args.concat(ref),
   );
 }
 
@@ -1109,7 +1109,7 @@ function useErrorBoundary(cb) {
     errState[0],
     function() {
       errState[1](undefined);
-    }
+    },
   ];
 }
 
@@ -1396,5 +1396,5 @@ export {
   useMemo,
   useReducer,
   useRef,
-  useState
+  useState,
 };

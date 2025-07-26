@@ -13,6 +13,6 @@ export const Cross = ({ x, y, className = 'cross', radius = 1.27 / 2, width = 0.
     fill: 'none',
     style: visible ? {} : { display: 'none' },
     ...(x !== undefined && y !== undefined ? { transform: `translate(${x},${y})` } : {}),
-    ...props
+    ...props,
   });
 };

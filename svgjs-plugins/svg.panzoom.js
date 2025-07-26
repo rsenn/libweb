@@ -251,12 +251,12 @@ export default function() {
 
         const currentFocus = {
           x: currentTouches[0].clientX + 0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
-          y: currentTouches[0].clientY + 0.5 * (currentTouches[1].clientY - currentTouches[0].clientY)
+          y: currentTouches[0].clientY + 0.5 * (currentTouches[1].clientY - currentTouches[0].clientY),
         };
 
         const lastFocus = {
           x: lastTouches[0].clientX + 0.5 * (lastTouches[1].clientX - lastTouches[0].clientX),
-          y: lastTouches[0].clientY + 0.5 * (lastTouches[1].clientY - lastTouches[0].clientY)
+          y: lastTouches[0].clientY + 0.5 * (lastTouches[1].clientY - lastTouches[0].clientY),
         };
 
         const p = this.point(currentFocus.x, currentFocus.y);
@@ -292,11 +292,11 @@ export default function() {
         lastP = { x: lastTouches[0].clientX, y: lastTouches[0].clientY };
 
         on(document, 'touchmove.panZoom mousemove.panZoom', panning, this, {
-          passive: false
+          passive: false,
         });
 
         on(document, 'touchend.panZoom mouseup.panZoom', panStop, this, {
-          passive: false
+          passive: false,
         });
       };
 
@@ -317,7 +317,7 @@ export default function() {
 
         const currentP = {
           x: currentTouches[0].clientX,
-          y: currentTouches[0].clientY
+          y: currentTouches[0].clientY,
         };
 
         const p1 = this.point(currentP.x, currentP.y);
@@ -356,6 +356,6 @@ export default function() {
       }
 
       return this;
-    }
+    },
   });
 }

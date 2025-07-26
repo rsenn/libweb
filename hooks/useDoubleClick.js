@@ -8,7 +8,7 @@ import { useCallback, useRef } from '../preact.mjs';
 export const useDoubleClick = (doubleClick, click, options) => {
   options = {
     timeout: 200,
-    ...options
+    ...options,
   };
   const clickTimeout = useRef();
   const clearClickTimeout = () => {
@@ -25,6 +25,6 @@ export const useDoubleClick = (doubleClick, click, options) => {
       }
       if(event.detail % 2 === 0) doubleClick.call(options.thisObj || this, event);
     },
-    [click, doubleClick, options.timeout]
+    [click, doubleClick, options.timeout],
   );
 };

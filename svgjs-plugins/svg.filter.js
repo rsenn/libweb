@@ -99,7 +99,7 @@ const updateFunctions = {
 
     this.attr({
       order: Math.sqrt(matrix.split(' ').length),
-      kernelMatrix: matrix
+      kernelMatrix: matrix,
     });
   },
   // DiffuseLighting effect
@@ -127,7 +127,7 @@ const updateFunctions = {
   // Tile effect
   tile: getAttrSetter([]),
   // Turbulence effect
-  turbulence: getAttrSetter(['baseFrequency', 'numOctaves', 'seed', 'stitchTiles', 'type'])
+  turbulence: getAttrSetter(['baseFrequency', 'numOctaves', 'seed', 'stitchTiles', 'type']),
 };
 
 const filterNames = [
@@ -147,7 +147,7 @@ const filterNames = [
   'offset',
   'specularLighting',
   'tile',
-  'turbulence'
+  'turbulence',
 ];
 
 // For every filter create a class
@@ -228,7 +228,7 @@ extend(Filter, {
         r: temp,
         g: temp,
         b: temp,
-        a: temp
+        a: temp,
       };
     }
 
@@ -238,7 +238,7 @@ extend(Filter, {
     }
 
     return node;
-  }
+  },
 });
 
 const filterChildNodes = ['distantLight', 'pointLight', 'spotLight', 'mergeNode', 'FuncR', 'FuncG', 'FuncB', 'FuncA'];
@@ -280,7 +280,7 @@ lights.forEach(light => {
 extend(Filter.MergeEffect, {
   mergeNode(_in) {
     return this.put(new Filter.MergeNode()).attr('in', _in);
-  }
+  },
 });
 
 // add .filter function
@@ -295,14 +295,14 @@ extend(Defs, {
     }
 
     return filter;
-  }
+  },
 });
 
 extend(Container, {
   // Define filter on defs
   filter(block) {
     return this.defs().filter(block);
-  }
+  },
 });
 
 extend(Element, {
@@ -319,7 +319,7 @@ extend(Element, {
   },
   filterer() {
     return this.reference('filter');
-  }
+  },
 });
 
 // chaining
@@ -392,7 +392,7 @@ const chainingEffects = {
   // Turbulence effect
   turbulence(baseFrequency, numOctaves, seed, stitchTiles, type) {
     return this.parent() && this.parent().turbulence(baseFrequency, numOctaves, seed, stitchTiles, type).in(this);
-  }
+  },
 };
 
 extend(Effect, chainingEffects);
@@ -407,7 +407,7 @@ extend(Filter.MergeEffect, {
     }
 
     return this;
-  }
+  },
 });
 
 extend([Filter.CompositeEffect, Filter.BlendEffect, Filter.DisplacementMapEffect], {
@@ -418,10 +418,10 @@ extend([Filter.CompositeEffect, Filter.BlendEffect, Filter.DisplacementMapEffect
       return ref || in2;
     }
     return this.attr('in2', effect);
-  }
+  },
 });
 
 // Presets
 Filter.filter = {
-  sepiatone: [0.343, 0.669, 0.119, 0, 0, 0.249, 0.626, 0.13, 0, 0, 0.172, 0.334, 0.111, 0, 0, 0.0, 0.0, 0.0, 1, 0]
+  sepiatone: [0.343, 0.669, 0.119, 0, 0, 0.249, 0.626, 0.13, 0, 0, 0.172, 0.334, 0.111, 0, 0, 0.0, 0.0, 0.0, 1, 0],
 };

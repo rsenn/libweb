@@ -76,7 +76,7 @@ const parseLine = (() => {
     options.noParseLine = !!options.noParseLine;
 
     const result = {
-      line
+      line,
     };
 
     if(options.noParseLine) {
@@ -228,7 +228,7 @@ export const parseStringSync = (str, options) => {
     }
     const result = parseLine(line, {
       flatten,
-      noParseLine
+      noParseLine,
     });
     results.push(result);
   }
@@ -244,12 +244,12 @@ let TransformStream = globalThis.TransformStream || transformStream.TransformStr
 export class GCodeLineStream extends TransformStream {
   state = {
     lineCount: 0,
-    lastChunkEndedWithCR: false
+    lastChunkEndedWithCR: false,
   };
 
   options = {
     batchSize: 1000,
-    noParseLine: false
+    noParseLine: false,
   };
 
   lineBuffer = '';
@@ -281,15 +281,15 @@ export class GCodeLineStream extends TransformStream {
             while(instance.queue.length) controller.enqueue(instance.queue.shift());
           });
           // console.debug('flush', instance._flush, { instance, controller });
-        }
-      })
+        },
+      }),
     );
 
     tObj.instance = this;
 
     this.options = {
       ...this.options,
-      ...options
+      ...options,
     };
   }
 
@@ -339,12 +339,12 @@ export class GCodeLineStream extends TransformStream {
         if(line.length > 0) {
           const result = parseLine(line, {
             flatten: this.options.flatten,
-            noParseLine: this.options.noParseLine
+            noParseLine: this.options.noParseLine,
           });
           this.push(result);
         }
       },
-      next
+      next,
     );
   }
 
@@ -368,7 +368,7 @@ export class GCodeLineStream extends TransformStream {
       if(line.length > 0) {
         const result = parseLine(line, {
           flatten: this.options.flatten,
-          noParseLine: this.options.noParseLine
+          noParseLine: this.options.noParseLine,
         });
         this.push(result);
       }
@@ -388,5 +388,5 @@ export default {
   parseFile,
   parseFileSync,
   parseString,
-  parseStringSync
+  parseStringSync,
 };

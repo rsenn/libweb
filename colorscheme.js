@@ -71,7 +71,7 @@ export class ColorScheme {
     axios
       .post('/api/put', {
         filename: `static/New-${rng.uint32() % 10000}.tmTheme`,
-        data: btoa(text)
+        data: btoa(text),
       })
       .then(res => console.log('result: ', res))
       .catch(err => console.error('error: ', err));

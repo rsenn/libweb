@@ -18,7 +18,7 @@ let hu = (function () {
       'flex-shrink': 1,
       'font-weight': 1,
       opacity: 1,
-      'z-index': 1
+      'z-index': 1,
     };
 
   function node(a, c) {

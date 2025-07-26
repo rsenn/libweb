@@ -55,19 +55,19 @@ var rgbaParser = new Parser()
   .uint8('alpha', {
     formatter: function(aplha) {
       return Math.round((alpha / 255) * 100);
-    }
+    },
   });
 
 var prop_colorMapParser = new Parser().uint32('length').uint32('numcolours').array('colours', {
   type: rgbParser,
-  length: 'numcolours'
+  length: 'numcolours',
 });
 
 var prop_guidesParser = new Parser().uint32('length').array('guides', {
   type: new Parser().int32('c').int8('o'),
   length: function() {
     return this.length / 5;
-  }
+  },
 });
 
 var prop_modeParser = new Parser().uint32('length', { assert: 4 }).uint32('mode');
@@ -78,7 +78,7 @@ var parasiteArrayItemParser = new Parser()
   .uint32('name_length')
   .string('name', {
     encoding: 'ascii',
-    zeroTerminated: true
+    zeroTerminated: true,
   })
   .uint32('flags')
   .uint32('length')
@@ -86,7 +86,7 @@ var parasiteArrayItemParser = new Parser()
 
 var fullParasiteParser = new Parser().array('items', {
   type: parasiteArrayItemParser,
-  readUntil: 'eof'
+  readUntil: 'eof',
 });
 
 var propLengthF = new Parser().uint32('length', { assert: 4 }).uint32('f');
@@ -127,16 +127,16 @@ var propertyListParser = new Parser()
         .uint32('length', {
           formatter: function(value) {
             return value / 4;
-          }
+          },
         })
         .array('items', { type: 'uint32be', length: 'length' }), // 30
-      [PROP_GROUP_ITEM_FLAGS]: new Parser().uint32('length').uint32('flags')
+      [PROP_GROUP_ITEM_FLAGS]: new Parser().uint32('length').uint32('flags'),
     },
     defaultChoice: new Parser().uint32('length').buffer('buffer', {
       length: function() {
         return this.length;
-      }
-    })
+      },
+    }),
   });
 
 var layerParser = new Parser()
@@ -146,13 +146,13 @@ var layerParser = new Parser()
   .uint32('name_length')
   .string('name', {
     encoding: 'ascii',
-    zeroTerminated: true
+    zeroTerminated: true,
   })
   .array('propertyList', {
     type: propertyListParser,
     readUntil: function(item, buffer) {
       return item.type === 0;
-    }
+    },
   })
   .uint32('hptr')
   .uint32('mptr');
@@ -161,14 +161,14 @@ var hirerarchyParser = new Parser().uint32('width').uint32('height').uint32('bpp
 
 var levelParser = new Parser().uint32('width').uint32('height').array('tptr', {
   type: 'uint32be',
-  readUntil: itemIsZero
+  readUntil: itemIsZero,
 });
 
 var gimpHeader = new Parser()
   .endianess('big')
   .string('magic', {
     encoding: 'ascii',
-    length: 9
+    length: 9,
     /*assert: function(value, name) {
          
             return value == 'gimp xcf';
@@ -176,7 +176,7 @@ var gimpHeader = new Parser()
   })
   .string('version', {
     encoding: 'ascii',
-    length: 4
+    length: 4,
   })
   .int8('padding', { assert: 0 })
   .uint32('width')
@@ -186,15 +186,15 @@ var gimpHeader = new Parser()
     type: propertyListParser,
     readUntil: function(item, buffer) {
       return item.type === 0;
-    }
+    },
   })
   .array('layerList', {
     type: 'int32be',
-    readUntil: itemIsZero
+    readUntil: itemIsZero,
   })
   .array('channelList', {
     type: 'int32be',
-    readUntil: itemIsZero
+    readUntil: itemIsZero,
   });
 
 var remove_empty = function(data) {
@@ -351,7 +351,7 @@ class GimpLayer {
       Lazy(this._details.propertyList).each(
         function(property) {
           this._props[property.type] = property;
-        }.bind(this)
+        }.bind(this),
       );
     }
 
@@ -393,7 +393,7 @@ class GimpLayer {
           var xpoints = Math.min(64, this.width - xIndex);
           var ypoints = Math.min(64, this.height - yIndex);
           this.copyTile(image, this.uncompress(this._parent.getBufferForPointer(tptr), xpoints, ypoints, hDetails.bpp), x + xIndex, y + yIndex, xpoints, ypoints, hDetails.bpp, mode);
-        }.bind(this)
+        }.bind(this),
       );
     }
     return image;
@@ -465,7 +465,7 @@ class GimpLayer {
         var colour = {
           red: tileBuffer[bufferOffset],
           green: tileBuffer[bufferOffset + 1],
-          blue: tileBuffer[bufferOffset + 2]
+          blue: tileBuffer[bufferOffset + 2],
         };
         if(bpp === 4) {
           colour.alpha = tileBuffer[bufferOffset + 3];
@@ -543,7 +543,7 @@ class XCFParser {
             this._groupLayers = toCall.call(this, this._groupLayers, 0);
           }
           return layer;
-        }.bind(this)
+        }.bind(this),
       )
       .toArray();
 
@@ -552,7 +552,7 @@ class XCFParser {
       .map(
         function(channelPointer) {
           return new GimpChannel(this, this._buffer.slice(channelPointer));
-        }.bind(this)
+        }.bind(this),
       )
       .toArray();
   }
@@ -638,7 +638,7 @@ XCFImage.prototype.getAt = function(x, y) {
     red: this._image.getRed(idx),
     green: this._image.getGreen(idx),
     blue: this._image.getBlue(idx),
-    alpha: this._image.getAlpha(idx)
+    alpha: this._image.getAlpha(idx),
   };
 };
 

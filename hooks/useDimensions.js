@@ -13,7 +13,7 @@ function getDimensionObject(element) {
     x: 'x' in rect ? rect.x : rect.left,
     y: 'y' in rect ? rect.y : rect.top,
     right: rect.right,
-    bottom: rect.bottom
+    bottom: rect.bottom,
   };
 }
 

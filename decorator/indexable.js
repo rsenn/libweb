@@ -18,7 +18,7 @@ export const IndexableDecorator = {
   findLastIndex(cb, thisArg) {
     for(let i = this.length - 1; i >= 0; i--) if(cb.call(thisArg, this[i], i, this)) return i;
     return -1;
-  }
+  },
 };
 
 export default IndexableDecorator;

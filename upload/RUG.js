@@ -25,11 +25,11 @@ export class RUG extends React.Component {
         .map(item => {
           return this.create({
             done: true,
-            ...item
+            ...item,
           });
         })
         .reverse(),
-      renderComponent: !ssrSupport
+      renderComponent: !ssrSupport,
     };
   }
 
@@ -40,7 +40,7 @@ export class RUG extends React.Component {
 
     if(ssrSupport) {
       this.setState({
-        renderComponent: true
+        renderComponent: true,
       });
     }
   }
@@ -59,7 +59,7 @@ export class RUG extends React.Component {
       click: () => this.onClick(uid),
       select: () => this.onSelected(uid),
       upload: data => this.tryUpload(uid, data),
-      ...item
+      ...item,
     };
     return item;
   }
@@ -70,11 +70,11 @@ export class RUG extends React.Component {
       {
         error: false,
         done: false,
-        progress: 0
+        progress: 0,
       },
       image => {
         this.upload(image);
-      }
+      },
     );
   }
 
@@ -86,7 +86,7 @@ export class RUG extends React.Component {
         const src = await this.getImageURLToBlob(file);
         changes = {
           file,
-          src
+          src,
         };
       }
 
@@ -115,7 +115,7 @@ export class RUG extends React.Component {
 
     this.setState(
       {
-        images
+        images,
       },
       () => {
         this.props.onChange(this.state.images);
@@ -123,13 +123,13 @@ export class RUG extends React.Component {
         if(deletedImage) {
           this.props.onDeleted(deletedImage, this.state.images);
         }
-      }
+      },
     );
   }
 
   onProgress(uid, percentage) {
     this.setImage(uid, {
-      progress: isNaN(percentage) ? 0 : percentage
+      progress: isNaN(percentage) ? 0 : percentage,
     });
   }
 
@@ -143,7 +143,7 @@ export class RUG extends React.Component {
         uid,
         url,
         error,
-        photo
+        photo,
       });
       this.setImage(
         uid,
@@ -152,9 +152,9 @@ export class RUG extends React.Component {
           done: !error,
           error: !!error,
           uploading: false,
-          progress: 100
+          progress: 100,
         },
-        () => this.props.onSuccess(this.state.images.find(item => item.uid === uid))
+        () => this.props.onSuccess(this.state.images.find(item => item.uid === uid)),
       );
     })();
   }
@@ -166,15 +166,15 @@ export class RUG extends React.Component {
         status,
         error: true,
         uploading: false,
-        refresh: data => this.refresh(uid, data)
+        refresh: data => this.refresh(uid, data),
       },
       image => {
         this.props.onError({
           status,
           response,
-          image
+          image,
         });
-      }
+      },
     );
   }
 
@@ -197,12 +197,12 @@ export class RUG extends React.Component {
       .filter(item => !!item.src);
     this.setState(
       {
-        images
+        images,
       },
       () => {
         if(finish) finish(image);
         this.props.onChange(images);
-      }
+      },
     );
   }
 
@@ -211,11 +211,11 @@ export class RUG extends React.Component {
       {
         images: this.state.images.map(item =>
           Object.assign({}, item, {
-            selected: item.uid === uid
-          })
-        )
+            selected: item.uid === uid,
+          }),
+        ),
       },
-      () => this.props.onChange(this.state.images)
+      () => this.props.onChange(this.state.images),
     );
   }
 
@@ -234,7 +234,7 @@ export class RUG extends React.Component {
           src,
           uploaded: new Date(),
           original_name: file.name,
-          size: bytesToSize(file.size)
+          size: bytesToSize(file.size),
         });
         images.push(image);
       } catch(e) {
@@ -244,7 +244,7 @@ export class RUG extends React.Component {
 
     this.setState(
       {
-        images: images.concat(this.state.images)
+        images: images.concat(this.state.images),
       },
       () => {
         if(this.props.autoUpload) {
@@ -252,7 +252,7 @@ export class RUG extends React.Component {
         }
 
         this.props.onChange(this.state.images);
-      }
+      },
     );
   }
 
@@ -269,7 +269,7 @@ export class RUG extends React.Component {
     if(
       !isAccepted(
         file.type,
-        accept.map(type => `${acceptType}/${type}`)
+        accept.map(type => `${acceptType}/${type}`),
       )
     ) {
       warning('accept');
@@ -327,20 +327,20 @@ export class RUG extends React.Component {
       headers,
       onError: this.onError,
       onSuccess: this.onSuccess,
-      onProgress: this.onProgress
+      onProgress: this.onProgress,
     });
     this.setImage(uid, {
       abort,
-      uploading: true
+      uploading: true,
     });
   }
 
   setSort(images) {
     this.setState(
       {
-        images
+        images,
       },
-      () => this.props.onChange(images)
+      () => this.props.onChange(images),
     );
   }
 
@@ -360,9 +360,9 @@ export class RUG extends React.Component {
         return View(
           {
             type,
-            sorting
+            sorting,
           },
-          images
+          images,
         );
     }
   }
@@ -378,7 +378,7 @@ export class RUG extends React.Component {
         autoUpload: this.props.autoUpload,
         setSort: this.setSort,
         uploadFiles: this.uploadFiles,
-        openDialogue: this.openDialogue
+        openDialogue: this.openDialogue,
       },
       options = contextValue; // hide server side rendering
 
@@ -389,13 +389,13 @@ export class RUG extends React.Component {
     return h(
       Context.Provider,
       {
-        value: contextValue
+        value: contextValue,
       },
       h(
         'div',
         {
           className: `upload ${className}`,
-          style: style
+          style: style,
         },
         header && (typeof header === 'function' ? header(options) : Handle(options, header)),
         this.showChildren(options),
@@ -406,9 +406,9 @@ export class RUG extends React.Component {
           ref: this.fileInput,
           className: 'upload-file-input',
           accept: accept.map(type => `${acceptType}/${type}`),
-          onChange: event => this.uploadFiles(event.target.files)
-        })
-      )
+          onChange: event => this.uploadFiles(event.target.files),
+        }),
+      ),
     );
   }
 }

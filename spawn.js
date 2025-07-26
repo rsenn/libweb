@@ -42,7 +42,7 @@ function QuickJSSpawn(os, ffi) {
                 if(ret[1] !== undefined) this.exitCode = (ret[1] & 0xff0) >> 8;
                 resolve([ret[0], this.exitCode]);
               });
-            }
+            },
           };
       if(pfds[0]) ret.stdin = MakeWriteStream(pfds[0]);
       if(pfds[1]) ret.stdout = MakeReadStream(pfds[1]);
@@ -60,7 +60,7 @@ function QuickJSSpawn(os, ffi) {
         return WaitFd(this.fd, false)
           .then(() => os.read(this.fd, buffer, offset, length))
           .catch(() => -11);
-      }
+      },
     };
   }
   function MakeWriteStream(fd) {
@@ -70,7 +70,7 @@ function QuickJSSpawn(os, ffi) {
         return WaitFd(this.fd, true)
           .then(() => os.write(this.fd, buffer, offset, length))
           .catch(() => -11);
-      }
+      },
     };
   }
 
@@ -86,7 +86,7 @@ function QuickJSSpawn(os, ffi) {
           destroyHandlers();
           reject();
         },
-        timeout
+        timeout,
       );
     });
 
@@ -114,7 +114,7 @@ function NodeJSSpawn(child_process) {
       const { stdin, stdout, stderr, ...restOfOptions } = options;
       let command = args.shift();
       let ret = child_process.spawn(command, args, {
-        stdio: [stdin, stdout, stderr]
+        stdio: [stdin, stdout, stderr],
       });
 
       ret.wait = function() {

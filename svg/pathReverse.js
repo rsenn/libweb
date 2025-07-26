@@ -382,5 +382,5 @@ export default {
   normalizePath,
   reverseNormalizedPath,
   reverseSubPath,
-  reversePath
+  reversePath,
 };

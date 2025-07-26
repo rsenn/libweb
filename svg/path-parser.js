@@ -49,7 +49,7 @@ peg$SyntaxError.buildMessage = function(expected, found) {
     },
     other(expectation) {
       return expectation.description;
-    }
+    },
   };
 
   function hex(ch) {
@@ -168,7 +168,7 @@ function peg$parse(input, options) {
     peg$c13 = function(c, args) {
       return commands(
         c,
-        args.map(x => ({ x }))
+        args.map(x => ({ x })),
       );
     },
     peg$c14 = /^[Vv]/,
@@ -176,7 +176,7 @@ function peg$parse(input, options) {
     peg$c16 = function(c, args) {
       return commands(
         c,
-        args.map(y => ({ y }))
+        args.map(y => ({ y })),
       );
     },
     peg$c17 = /^[Cc]/,
@@ -206,7 +206,7 @@ function peg$parse(input, options) {
         largeArc: large,
         sweep,
         x: xy.x,
-        y: xy.y
+        y: xy.y,
       };
     },
     peg$c31 = function(x, y) {
@@ -289,7 +289,7 @@ function peg$parse(input, options) {
       type: 'class',
       parts,
       inverted,
-      ignoreCase
+      ignoreCase,
     };
   }
 
@@ -320,7 +320,7 @@ function peg$parse(input, options) {
     details = peg$posDetailsCache[p];
     details = {
       line: details.line,
-      column: details.column
+      column: details.column,
     };
 
     while(p < pos) {
@@ -346,13 +346,13 @@ function peg$parse(input, options) {
       start: {
         offset: startPos,
         line: startPosDetails.line,
-        column: startPosDetails.column
+        column: startPosDetails.column,
       },
       end: {
         offset: endPos,
         line: endPosDetails.line,
-        column: endPosDetails.column
-      }
+        column: endPosDetails.column,
+      },
     };
   }
 
@@ -2110,7 +2110,7 @@ function peg$parse(input, options) {
     q: 'quadratic curveto',
     t: 'smooth quadratic curveto',
     a: 'elliptical arc',
-    z: 'closepath'
+    z: 'closepath',
   };
   for(let code in cmds) cmds[code.toUpperCase()] = cmds[code];
   function commands(code, args) {
@@ -2136,7 +2136,7 @@ function peg$parse(input, options) {
   throw peg$buildStructuredError(
     peg$maxFailExpected,
     peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null,
-    peg$maxFailPos < input.length ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1) : peg$computeLocation(peg$maxFailPos, peg$maxFailPos)
+    peg$maxFailPos < input.length ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1) : peg$computeLocation(peg$maxFailPos, peg$maxFailPos),
   );
 }
 

@@ -9,7 +9,7 @@ const [encodeBase64, decodeBase64] = [
   s => {
     console.log(`decode('${s}')`);
     return Util.base64.decode(s);
-  }
+  },
 ];
 
 export class SourceMap {
@@ -78,7 +78,7 @@ export class SourceMap {
   static fromComment = comment =>
     new this.Converter(comment.replace(/^\/\*/g, '//').replace(/\*\/$/g, ''), {
       isEncoded: true,
-      hasComment: true
+      hasComment: true,
     });
 
   static fromMapFileComment = (comment, dir, filesystem) => new this.Converter(comment, { commentFileDir: dir, isFileComment: true, isJSON: true }, filesystem);

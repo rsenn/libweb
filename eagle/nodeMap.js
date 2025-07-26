@@ -128,7 +128,7 @@ export class EagleNodeMap {
       },
       getPrototypeOf(target) {
         return EagleNodeMap.prototype;
-      }
+      },
     });
   }
 }

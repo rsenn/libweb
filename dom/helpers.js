@@ -205,7 +205,7 @@ export class ObjectInterface {
         prop in this ? Reflect.set(target, prop, value) : isString(prop) && (prop in desc ? desc[prop].set.call(this, element, value) : element.setAttribute(prop, value)),
       has: (target, prop) => (prop in this ? Reflect.has(target, prop) : isString(prop) && (prop in desc ? true : element.hasAttribute(prop))),
       getPrototypeOf: target => ObjectInterface.prototype,
-      ownKeys: target => [...element.getAttributeNames(), ...Object.keys(desc).filter(k => desc[k].enumerable == true)]
+      ownKeys: target => [...element.getAttributeNames(), ...Object.keys(desc).filter(k => desc[k].enumerable == true)],
     });
 
     return obj;

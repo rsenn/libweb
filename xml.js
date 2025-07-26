@@ -1,3 +1,6 @@
+import { types } from './misc.js';
+
+const WS = 0x01;
 const START = 0x02;
 const END = 0x04;
 const QUOTE = 0x08;
@@ -23,7 +26,7 @@ const CharacterClasses = {
   '>': END | CLOSE,
   '?': SPECIAL | QUESTION,
   '\\': BACKSLASH,
-  '-': HYPHEN
+  '-': HYPHEN,
 };
 const CharCodeClasses = {
   0x20: WS,
@@ -38,7 +41,7 @@ const CharCodeClasses = {
   0x3e: END | CLOSE,
   0x3f: SPECIAL | QUESTION,
   0x5c: BACKSLASH,
-  0x2d: HYPHEN
+  0x2d: HYPHEN,
 };
 
 export function parse(s) {
@@ -254,3 +257,5 @@ export function read(g) {
   }
   return r;
 }
+
+export { toXML as write } from './json/util.js';

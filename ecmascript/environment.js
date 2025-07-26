@@ -89,7 +89,7 @@ function createVariableStore(parent, vars) {
   vars = vars || {};
   return {
     parent,
-    vars
+    vars,
   };
 }
 
@@ -135,7 +135,7 @@ export class Environment extends EventEmitter {
 
   generate(node) {
     let opts = {
-      locations: true
+      locations: true,
     };
 
     /*   if(typeof node === 'string')
@@ -187,7 +187,7 @@ export class Environment extends EventEmitter {
         TryStatement: this.generateTryStatement,
         ContinueStatement: this.generateContinueStatement,
         BreakStatement: this.generateBreakStatement,
-        SwitchStatement: this.generateSwitchStatement
+        SwitchStatement: this.generateSwitchStatement,
       }[type] ||
       function() {
         //console.debug('node:', node);
@@ -345,7 +345,7 @@ export class Environment extends EventEmitter {
       let key = self.objKey(property.id)();
       items.push({
         key,
-        getVal: self.generateClosure(property.value)
+        getVal: self.generateClosure(property.value),
       });
     });
 
@@ -617,11 +617,11 @@ export class Environment extends EventEmitter {
     log('generateFunctionDeclaration', {
       id,
       node,
-      currentDeclarations: this.currentDeclarations
+      currentDeclarations: this.currentDeclarations,
     });
     this.currentDeclarations[id.value] = this.generateFunctionExpression(node);
     log('generateFunctionDeclaration', {
-      expr: this.currentDeclarations[id.value]
+      expr: this.currentDeclarations[id.value],
     });
     return function* () {
       return noop;
@@ -638,13 +638,13 @@ export class Environment extends EventEmitter {
           type: 'AssignmentExpression',
           operator: '=',
           left: decl.id,
-          right: decl.init
+          right: decl.init,
         });
       }
     }
     return this.generateClosure({
       type: 'BlockStatement',
-      body: assignments
+      body: assignments,
     });
   }
 
@@ -846,8 +846,8 @@ export class Environment extends EventEmitter {
           left,
           right: {
             type: 'Literal',
-            value: x
-          }
+            value: x,
+          },
         })();
         resp = yield* body();
       }
@@ -927,7 +927,7 @@ export class Environment extends EventEmitter {
     let discriminant = self.generateClosure(node.discriminant);
     let cases = node.cases.map(currentCase => ({
       test: currentCase.test ? self.generateClosure(currentCase.test) : null,
-      code: self.generateProgram({ body: currentCase.consequent })
+      code: self.generateProgram({ body: currentCase.consequent }),
     }));
 
     return function* () {

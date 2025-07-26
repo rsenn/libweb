@@ -16,7 +16,7 @@ export function GetMultipliers() {
     [6]: 1e7,
     [7]: 1e8,
     [8]: 1e9,
-    [9]: 1e10
+    [9]: 1e10,
   };
 }
 
@@ -58,7 +58,7 @@ export const BG = Symbol.for('BG');
 export const PartScales = {
   C: 1e12,
   R: 1,
-  L: 1
+  L: 1,
 };
 
 export const digit2color = {
@@ -74,7 +74,7 @@ export const digit2color = {
     [6]: [0x4a, 0x90, 0xe2],
     [7]: [0x90, 0x13, 0xfe],
     [8]: [0x99, 0x99, 0x99],
-    [9]: [0xff, 0xff, 0xff]
+    [9]: [0xff, 0xff, 0xff],
   } /*.map(c => RGBA.fromHex(c))*/,
   ansi: {
     [BG]: [48, 5, 223], // base color (skin)
@@ -89,6 +89,6 @@ export const digit2color = {
     [6]: [48, 5, 27], // blue
     [7]: [48, 5, 63], // violet
     [8]: [48, 5, 241], // grey
-    [9]: [48, 5, 231] // white
-  }
+    [9]: [48, 5, 231], // white
+  },
 };

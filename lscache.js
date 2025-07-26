@@ -177,7 +177,7 @@ export const Implementations = {
           url: request.url,
           status: 200,
           statusText: 'OK',
-          headers: { 'Content-Type': type }
+          headers: { 'Content-Type': type },
         });
       if(typeof cache.put == 'function') return await cache.put(request, response);
     },
@@ -193,7 +193,7 @@ export const Implementations = {
 
       let keys = await cache.keys();
       for await(let request of keys) await fn(request);
-    }
+    },
   },
   localStorage: {
     supported() {
@@ -237,8 +237,8 @@ export const Implementations = {
           fn.call(this, key, expirationKey.call(this, key));
         }
       }
-    }
-  }
+    },
+  },
 };
 
 function flushItem(key) {
@@ -295,7 +295,7 @@ export function brcache(cache) {
   //  const cache = await window.caches.open(name);
 
   let impl = {
-    ...Implementations.browserCache /*, cache */ /*, get cacheBucket() { return obj.cacheBucket; } */
+    ...Implementations.browserCache /*, cache */ /*, get cacheBucket() { return obj.cacheBucket; } */,
   };
 
   if(isObject(cache) && typeof cache.match == 'function') {
@@ -310,7 +310,7 @@ export function brcache(cache) {
       },
       get cache() {
         return this.getCache();
-      }
+      },
     });
   }
 
@@ -394,7 +394,7 @@ export class BaseCache {
           storedKeys.push({
             key,
             size: (impl.getItem.call(this, key) || '').length,
-            expiration
+            expiration,
           });
         });
         // Sorts the keys with oldest expiration time last

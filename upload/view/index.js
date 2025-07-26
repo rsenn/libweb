@@ -24,12 +24,12 @@ const Item = (type, image) => {
   switch (type) {
     case 'card':
       return h(Card, {
-        image: image
+        image: image,
       });
 
     case 'list':
       return h(List, {
-        image: image
+        image: image,
       });
 
     default:
@@ -44,32 +44,32 @@ export const View = ({ type, sorting }, images) => {
     ? h(
         DragArea,
         _extends({}, options, {
-          className: classNames(className, 'upload-dragarea')
+          className: classNames(className, 'upload-dragarea'),
         }),
         image =>
           h(
             'div',
             {
-              className: 'upload-item'
+              className: 'upload-item',
             },
-            Item(type, image)
-          )
+            Item(type, image),
+          ),
       )
     : h(
         'div',
         {
-          className: className
+          className: className,
         },
         images.map((image, key) =>
           h(
             'div',
             {
               className: 'upload-item',
-              key: key
+              key: key,
             },
-            Item(type, image)
-          )
-        )
+            Item(type, image),
+          ),
+        ),
       );
 };
 

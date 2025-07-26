@@ -32,7 +32,7 @@ export class SwipeTracker {
         window.addEventListener('mousemove', e => {
           const pos = {
             x: e.clientX + window.pageXOffset,
-            y: e.clientY + window.pageYOffset
+            y: e.clientY + window.pageYOffset,
           };
           observable(pos);
         });
@@ -45,7 +45,7 @@ export class SwipeTracker {
         const handler = event => {
           let pos = {
             x: event.clientX + window.pageXOffset,
-            y: event.clientY + window.pageYOffset
+            y: event.clientY + window.pageYOffset,
           };
           if(event.touches && event.touches.length !== undefined) {
             [...event.touches].forEach(touch => {
@@ -149,12 +149,12 @@ export class SwipeTracker {
         return (
           `SwipeEvent ${this.name.toUpperCase()}(` + (this.delta && this.delta.toString(false)) + ') ' + this.getAxis() + ' ' + this.dist + ' [' + (this.mouse && this.mouse.toSource(false)) + ']'
         );
-      }
+      },
     };
     Object.defineProperty(SwipeEvent.prototype, 'dist', {
       get() {
         return this.getDist();
-      }
+      },
     });
     return new SwipeEvent(this.position, this);
   }
@@ -218,9 +218,9 @@ export class SwipeTracker {
           inst.quadrant.set(0, 0);
           inst.delta.set(0, 0);
           inst.active = false;
-        }
+        },
       },
-      inst
+      inst,
     );
   }
 

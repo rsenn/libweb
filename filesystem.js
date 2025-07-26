@@ -357,7 +357,7 @@ export function QuickJSFileSystem(std, os) {
         if(ret < bufSize) break;
       } while(ret > 0);
       return output;
-    }
+    },
   };
 }
 
@@ -727,7 +727,7 @@ export function NodeJSFileSystem(fs, tty, process) {
         // file.once('end', () => resolve(data));
         //file.pipe(write);
       });
-    }
+    },
   };
 }
 
@@ -781,12 +781,12 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
                 ? {
                     'http2-duplex-single': 'true',
                     'content-disposition': `attachment; filename="${filename}"`,
-                    'content-type': 'text/plain;charset=UTF-8'
+                    'content-type': 'text/plain;charset=UTF-8',
                   }
                 : {},
-              body: stream
+              body: stream,
             }
-          : {}
+          : {},
       )
         .then(response => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
         .catch(err => (error = err));
@@ -824,14 +824,14 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
     readdir(dir) {},
     getcwd(cb) {},
     chdir(path) {},
-    rename(filename, to) {}
+    rename(filename, to) {},
   };
 }
 
 const CharWidth = {
   1: Uint8Array,
   2: Uint16Array,
-  4: Uint32Array
+  4: Uint32Array,
 };
 
 function Encoding2Bytes(encoding) {
@@ -905,7 +905,7 @@ export async function GetPortableFileSystem() {
       ).TransformStream,
       (
         await import('./stream/writableStream.js')
-      ).WritableStream
+      ).WritableStream,
     );
   } catch(error) {
     err = error;
@@ -988,5 +988,5 @@ const FilesystemDecorator = {
     let arr = new Uint8Array(1);
     if(this.read(file, arr.buffer, 0, 1) > 0) return arr[0];
     return -1;
-  }
+  },
 };

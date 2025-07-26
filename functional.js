@@ -180,7 +180,7 @@ export class Functional {
 
   static _defprop(t, n, v) {
     Object.defineProperty(t, n, {
-      value: v
+      value: v,
     });
     return t;
   }
@@ -229,7 +229,7 @@ export class Functional {
         return f(a, b);
       }),
       '__fnuc_curry',
-      () => f
+      () => f,
     );
   };
 
@@ -250,7 +250,7 @@ export class Functional {
         return f.apply(null, arguments);
       }),
       '__fnuc_curry',
-      () => f
+      () => f,
     );
   };
 
@@ -275,7 +275,7 @@ export class Functional {
         return f(a, b, c);
       }),
       '__fnuc_curry',
-      () => f
+      () => f,
     );
   };
 
@@ -302,7 +302,7 @@ export class Functional {
         return f.apply(null, arguments);
       }),
       '__fnuc_curry',
-      () => f
+      () => f,
     );
   };
 
@@ -369,7 +369,7 @@ export class Functional {
         let as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         return Functional._uncurry(f).apply(null, as.reverse());
-      })
+      }),
     );
     return this._defprop(g, '__fnuc_flip', f);
   };
@@ -388,8 +388,8 @@ export class Functional {
             let as;
             as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
             return f(g.apply(null, as));
-          }
-      )
+          },
+      ),
     );
   }
 
@@ -404,7 +404,7 @@ export class Functional {
           let as;
           as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
           return f(g.apply(null, as));
-        }
+        },
     );
     ar = this.arityof(this.head(fs));
     if(ar >= 2) {
@@ -425,7 +425,7 @@ export class Functional {
       context = this;
       return after.apply(
         context,
-        Functional.map(fs, fn => fn.apply(context, args))
+        Functional.map(fs, fn => fn.apply(context, args)),
       );
     };
     if(ar >= 2) {
@@ -470,9 +470,9 @@ export class Functional {
             return typeof t === 'function' ? t.apply(null, as) : void 0;
           }
           return typeof f === 'function' ? f.apply(null, as) : void 0;
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
   static maybe = fn =>
@@ -483,7 +483,7 @@ export class Functional {
         if(as.every(isdef)) {
           return fn.apply(null, as);
         }
-      })
+      }),
     );
 
   static always = v => this.plift(() => v);
@@ -494,7 +494,7 @@ export class Functional {
         let as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         return as[n];
-      })
+      }),
     );
 
   static once = fn => {
@@ -525,7 +525,7 @@ export class Functional {
           }
         }
         return void 0;
-      })
+      }),
     );
 
   static all = this.curry2var(this.builtin(Array.prototype.every));
@@ -762,7 +762,7 @@ export class Functional {
             return as != null ? as[0] : void 0;
           }
           return f.apply(null, as);
-        })
+        }),
       );
       return this._defprop(nf, '__fnuc_plift', true);
     };
@@ -820,7 +820,7 @@ export class Functional {
         return t[k](v);
       }
       return v;
-    })
+    }),
   );
 
   static pick = this.curry2var(
@@ -836,7 +836,7 @@ export class Functional {
         r[k] = o[k];
       }
       return r;
-    }.bind(this)
+    }.bind(this),
   );
 
   static keyval = this.curry2((k, v) => {
@@ -1010,8 +1010,8 @@ export class Functional {
               results1.push(as[n][i]);
             }
             return results1;
-          })()
-        )
+          })(),
+        ),
       );
     }
     return results;
@@ -1086,7 +1086,7 @@ export class Functional {
                 return false;
               };
           }
-        })()
+        })(),
       )(a, b);
     });
   })();
@@ -1095,7 +1095,7 @@ export class Functional {
     value: fn,
     enumerable: true,
     configurable: false,
-    writable: false
+    writable: false,
   });
 
   static expose = (() => {
@@ -1242,7 +1242,7 @@ const {
   eql,
   exports,
   asprop,
-  expose
+  expose,
 } = Functional;
 
 export default {
@@ -1358,7 +1358,7 @@ export default {
   eql,
   exports,
   asprop,
-  expose
+  expose,
 };
 
 export const and = Functional.aand;

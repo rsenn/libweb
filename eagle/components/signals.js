@@ -7,7 +7,7 @@ import { Polygon } from './polygon.js';
 const componentIndex = {
   wire: Wire,
   via: Via,
-  polygon: Polygon
+  polygon: Polygon,
 };
 
 export const Signals = ({ data, transform, opts = {}, ...props }) => {
@@ -29,7 +29,7 @@ export const Signals = ({ data, transform, opts = {}, ...props }) => {
       transform,
       'stroke-linecap': 'round', // 'square'
       'stroke-linejoin': 'miter', // 'round', 'miter', 'bevel'
-      'font-family': 'Fixed'
+      'font-family': 'Fixed',
     },
 
     layers.reduce((acc, layerNo, i) => {
@@ -43,6 +43,6 @@ export const Signals = ({ data, transform, opts = {}, ...props }) => {
         acc.push(h(comp, { data: item, 'data-signal': signalName, color: colors[i], opts }));
       }
       return acc;
-    }, [])
+    }, []),
   );
 };

@@ -22,7 +22,7 @@ const version = '15.1.0'; // trick libraries to think we are react
 
 const ELEMENTS =
   'a abbr address area article aside audio b base bdi bdo big blockquote body br button canvas caption cite code col colgroup data datalist dd del details dfn dialog div dl dt em embed fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param picture pre progress q rp rt ruby s samp script section select small source span strong style sub summary sup table tbody td textarea tfoot th thead time title tr track u ul var video wbr circle clipPath defs ellipse g image line linearGradient mask path pattern polygon polyline radialGradient rect stop svg text tspan'.split(
-    ' '
+    ' ',
   );
 
 const REACT_ELEMENT_TYPE = (typeof Symbol !== 'undefined' && Symbol.for && Symbol.for('react.element')) || 0xeac7;
@@ -40,7 +40,7 @@ const AUTOBIND_DENYLIST = {
   componentWillMount: 1,
   componentDidMount: 1,
   componentWillUnmount: 1,
-  componentDidUnmount: 1
+  componentDidUnmount: 1,
 };
 
 const CAMEL_PROPS =
@@ -76,7 +76,7 @@ Object.defineProperty(VNode.prototype, 'type', {
   set(v) {
     this.nodeName = v;
   },
-  configurable: true
+  configurable: true,
 });
 
 Object.defineProperty(VNode.prototype, 'props', {
@@ -86,7 +86,7 @@ Object.defineProperty(VNode.prototype, 'props', {
   set(v) {
     this.attributes = v;
   },
-  configurable: true
+  configurable: true,
 });
 
 let oldEventHook = options.event;
@@ -241,7 +241,7 @@ let Children = {
   toArray(children) {
     if(children == null) return [];
     return ARR.concat(children);
-  }
+  },
 };
 
 /** Track current render() component for ref assignment */
@@ -277,7 +277,7 @@ function wrapStatelessComponent(WrappedComponent) {
     displayName: WrappedComponent.displayName || WrappedComponent.name,
     render() {
       return WrappedComponent(this.props, this.context);
-    }
+    },
   });
 }
 
@@ -390,7 +390,7 @@ let classNameDescriptor = {
   },
   set(v) {
     this.class = v;
-  }
+  },
 };
 
 function extend(base, props) {
@@ -583,7 +583,7 @@ extend((Component.prototype = new PreactComponent()), {
 
   isMounted() {
     return !!this.base;
-  }
+  },
 });
 
 function PureComponent(props, context) {

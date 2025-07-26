@@ -29,7 +29,7 @@ export const AsyncGeneratorExtensions = {
   async includes(searchElement) {
     for await(const value of this) if(value === searchElement) return true;
     return false;
-  }
+  },
 };
 
 export const AsyncGeneratorPrototype = Object.getPrototypeOf((async function* () {})()).constructor.prototype;

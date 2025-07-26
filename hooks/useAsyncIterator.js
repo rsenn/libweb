@@ -55,7 +55,7 @@ var __generator =
           return t[1];
         },
         trys: [],
-        ops: []
+        ops: [],
       },
       f,
       y,
@@ -140,7 +140,7 @@ var initialState = {
   value: undefined,
   error: undefined,
   done: false,
-  loading: false
+  loading: false,
 };
 
 export function useAsyncIterator(asyncIterator) {
@@ -162,7 +162,7 @@ export function useAsyncIterator(asyncIterator) {
           return update({ loading: false });
         });
     },
-    [asyncIterator, update]
+    [asyncIterator, update],
   );
   var return_ = useCallback(
     function(value) {
@@ -187,7 +187,7 @@ export function useAsyncIterator(asyncIterator) {
         });
       });
     },
-    [asyncIterator, update]
+    [asyncIterator, update],
   );
   var throw_ = useCallback(
     function(value) {
@@ -212,7 +212,7 @@ export function useAsyncIterator(asyncIterator) {
         });
       });
     },
-    [asyncIterator, update]
+    [asyncIterator, update],
   );
   return useMemo(
     function() {
@@ -222,10 +222,10 @@ export function useAsyncIterator(asyncIterator) {
         loading: result.loading,
         next: next,
         return: return_,
-        throw: throw_
+        throw: throw_,
       };
     },
-    [result, next, return_, throw_]
+    [result, next, return_, throw_],
   );
 }
 

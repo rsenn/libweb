@@ -23,7 +23,7 @@ export async function NormalizeResponse(resp) {
     //let { keys, get } = fn;
     resp.headers = define(Object.fromEntries(fn.entries()), {
       keys: fn,
-      get: fn
+      get: fn,
     });
   }
   return resp;

@@ -27,5 +27,5 @@ SVG.extend(SVG.Gradient, {
     relative = (offset - fo) / (lo - fo);
 
     return blend.at(relative);
-  }
+  },
 });

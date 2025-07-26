@@ -440,7 +440,7 @@ Object.assign(Terminal, {
 
   KeyboardEvent,
   MouseEvent,
-  HighlightEvent
+  HighlightEvent,
 });
 
 /*******************************************************************************\
@@ -571,7 +571,7 @@ function* emitKeys(term) {
       isSpecial: true,
       ctrl: false,
       alt: false,
-      shift: false
+      shift: false,
     };
     let escaped = 0;
     if(ch === '\x1b') {
@@ -590,8 +590,8 @@ function* emitKeys(term) {
           new KeyboardEvent({
             name: 'escape',
             sequence: s,
-            isSpecial: true
-          })
+            isSpecial: true,
+          }),
         );
         ch = yield;
         if(ch === '') {
@@ -624,8 +624,8 @@ function* emitKeys(term) {
             new KeyboardEvent({
               name: 'O',
               sequence: s,
-              alt: true
-            })
+              alt: true,
+            }),
           );
           ch = yield;
           continue main;
@@ -647,8 +647,8 @@ function* emitKeys(term) {
             new KeyboardEvent({
               name: '[',
               sequence: s,
-              alt: true
-            })
+              alt: true,
+            }),
           );
           ch = yield;
           continue main;

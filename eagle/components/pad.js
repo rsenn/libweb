@@ -37,7 +37,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
       stroke: 'none',
       fill: padColor.toRGB(),
-      'fill-opacity': padColor.a / 255
+      'fill-opacity': padColor.a / 255,
     };
 
   if(padColor.a < 255) pathProps['fill-opacity'] = roundTo(padColor.a / 255, 0.001);
@@ -51,7 +51,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     'data-drill': pad.drill,
     'data-diameter': pad.diameter,
     'data-rot': pad.rot,
-    'data-layer': `${layer.number} ${layer.name}`
+    'data-layer': `${layer.number} ${layer.name}`,
   };
 
   const visibleProps = visible ? {} : { style: { display: 'none' } };
@@ -71,9 +71,9 @@ export const Pad = ({ data, opts = {}, ...props }) => {
         'font-size': '0.8px',
         ...AlignmentAttrs(alignment, VERTICAL),
         style: { display: 'none' },
-        transform: t.scaling
+        transform: t.scaling,
       },
-      /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
+      /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name),
     );
 
     return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
@@ -83,6 +83,6 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     ...baseProps,
     ...dataProps,
     ...pathProps,
-    ...visibleProps
+    ...visibleProps,
   });
 };

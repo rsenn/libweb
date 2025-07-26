@@ -21,7 +21,7 @@ export class List extends React.Component {
   constructor() {
     super();
     this.state = {
-      spin: false
+      spin: false,
     };
   }
 
@@ -36,32 +36,32 @@ export class List extends React.Component {
       'div',
       _extends({}, props, {
         key: uid,
-        className: 'upload-list'
+        className: 'upload-list',
       }),
       uploading &&
         h('div', {
           className: `upload-list-progress ${showProgress}`,
           style: {
-            width: `${progress}%`
-          }
+            width: `${progress}%`,
+          },
         }),
       uploading &&
         h(
           'span',
           {
-            className: `upload-list-progress-count ${showProgress}`
+            className: `upload-list-progress-count ${showProgress}`,
           },
           progress || 0,
-          '%'
+          '%',
         ),
       !(done || error || uploading) &&
         h(
           'div',
           {
             onClick: upload,
-            className: 'upload-list-upload-button'
+            className: 'upload-list-upload-button',
           },
-          h(UploadIcon, null)
+          h(UploadIcon, null),
         ),
       error &&
         typeof refresh === 'function' &&
@@ -71,78 +71,78 @@ export class List extends React.Component {
             onClick: () => {
               if(spin) return;
               this.setState({
-                spin: true
+                spin: true,
               });
               setTimeout(() => {
                 this.setState({
-                  spin: false
+                  spin: false,
                 });
                 refresh();
               }, 700);
             },
-            className: `upload-list-refresh ${spin ? '__spin' : ''}`
+            className: `upload-list-refresh ${spin ? '__spin' : ''}`,
           },
           h(
             'div',
             {
               style: {
-                padding: 3
-              }
+                padding: 3,
+              },
             },
-            h(RefreshIcon, null)
-          )
+            h(RefreshIcon, null),
+          ),
         ),
       h(
         'div',
         {
           className: 'upload-list-image',
-          onClick: click
+          onClick: click,
         },
         h('img', {
           src: src,
-          alt: name
-        })
+          alt: name,
+        }),
       ),
       h(
         'div',
         {
           className: 'upload-list-content',
-          onClick: click
+          onClick: click,
         },
         h(
           'div',
           {
-            className: 'upload-list-name'
+            className: 'upload-list-name',
           },
-          name
+          name,
         ),
         h(
           'div',
           {
-            className: 'upload-list-size'
+            className: 'upload-list-size',
           },
-          size
-        )
+          size,
+        ),
       ),
       h(
         'div',
         {
           className: 'upload-list-remove',
-          onClick: remove
+          onClick: remove,
         },
         h(
           'svg',
           {
-            viewBox: '0 0 40 40'
+            viewBox: '0 0 40 40',
           },
           h('path', {
             stroke: 'current',
             strokeLinecap: 'round',
             strokeWidth: '4',
-            d: 'M 10,10 L 30,30 M 30,10 L 10,30'
-          })
-        )
-      )
+            d: 'M 10,10 L 30,30 M 30,10 L 10,30',
+          }),
+        ),
+      ),
     );
   }
 }

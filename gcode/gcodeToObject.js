@@ -7,7 +7,7 @@ export class GcodeObject {
     this.comment = undefined;
     this.commentTag = {
       command: undefined,
-      args: {}
+      args: {},
     };
   }
 
@@ -25,7 +25,7 @@ export class GcodeObject {
 function parseCommentTag(comment) {
   const commentTag = {
     command: undefined,
-    args: {}
+    args: {},
   };
 
   const commentTagRegex = /.*<<<(.+)\s*>>>\s*(.*)/;

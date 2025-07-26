@@ -200,7 +200,7 @@ const MatchOptions = {
   // a perfect match has already been located in the string.
   findAllMatches: false,
   // Minimum number of characters that must be matched before a result is considered a match
-  minMatchCharLength: 1
+  minMatchCharLength: 1,
 };
 
 const BasicOptions = {
@@ -214,7 +214,7 @@ const BasicOptions = {
   // Whether to sort the result list, by score
   shouldSort: true,
   // Default sort function: sort by ascending score, ascending index
-  sortFn: (a, b) => (a.score === b.score ? (a.idx < b.idx ? -1 : 1) : a.score < b.score ? -1 : 1)
+  sortFn: (a, b) => (a.score === b.score ? (a.idx < b.idx ? -1 : 1) : a.score < b.score ? -1 : 1),
 };
 
 const FuzzyOptions = {
@@ -228,7 +228,7 @@ const FuzzyOptions = {
   // would score as a complete mismatch. A distance of '0' requires the match be at
   // the exact location specified, a threshold of '1000' would require a perfect match
   // to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.
-  distance: 100
+  distance: 100,
 };
 
 const AdvancedOptions = {
@@ -244,14 +244,14 @@ const AdvancedOptions = {
   // When `true`, the calculation for the relevance score (used for sorting) will
   // ignore the field-length norm.
   // More info: https://fusejs.io/concepts/scoring-theory.html#field-length-norm
-  ignoreFieldNorm: false
+  ignoreFieldNorm: false,
 };
 
 let Config = {
   ...BasicOptions,
   ...MatchOptions,
   ...FuzzyOptions,
-  ...AdvancedOptions
+  ...AdvancedOptions,
 };
 
 const SPACE = /[^ ]+/g;
@@ -277,7 +277,7 @@ function norm(mantissa = 3) {
     },
     clear() {
       cache.clear();
-    }
+    },
   };
 }
 
@@ -356,7 +356,7 @@ class FuseIndex {
     let record = {
       v: doc,
       i: docIndex,
-      n: this.norm.get(doc)
+      n: this.norm.get(doc),
     };
 
     this.records.push(record);
@@ -388,7 +388,7 @@ class FuseIndex {
             let subRecord = {
               v: value,
               i: nestedArrIndex,
-              n: this.norm.get(value)
+              n: this.norm.get(value),
             };
 
             subRecords.push(subRecord);
@@ -396,7 +396,7 @@ class FuseIndex {
             value.forEach((item, k) => {
               stack.push({
                 nestedArrIndex: k,
-                value: item
+                value: item,
               });
             });
           }
@@ -405,7 +405,7 @@ class FuseIndex {
       } else if(!isBlank(value)) {
         let subRecord = {
           v: value,
-          n: this.norm.get(value)
+          n: this.norm.get(value),
         };
 
         record.$[keyIndex] = subRecord;
@@ -417,7 +417,7 @@ class FuseIndex {
   toJSON() {
     return {
       keys: this.keys,
-      records: this.records
+      records: this.records,
     };
   }
 }
@@ -455,7 +455,7 @@ function transformMatches(result, data) {
 
     let obj = {
       indices,
-      value
+      value,
     };
 
     if(match.key) {
@@ -532,8 +532,8 @@ function search(
     findAllMatches = Config.findAllMatches,
     minMatchCharLength = Config.minMatchCharLength,
     includeMatches = Config.includeMatches,
-    ignoreLocation = Config.ignoreLocation
-  } = {}
+    ignoreLocation = Config.ignoreLocation,
+  } = {},
 ) {
   if(pattern.length > MAX_BITS) {
     throw new Error(PATTERN_LENGTH_TOO_LARGE(MAX_BITS));
@@ -563,7 +563,7 @@ function search(
       currentLocation: index,
       expectedLocation,
       distance,
-      ignoreLocation
+      ignoreLocation,
     });
 
     currentThreshold = Math.min(score, currentThreshold);
@@ -600,7 +600,7 @@ function search(
         currentLocation: expectedLocation + binMid,
         expectedLocation,
         distance,
-        ignoreLocation
+        ignoreLocation,
       });
 
       if(score <= currentThreshold) {
@@ -646,7 +646,7 @@ function search(
           currentLocation,
           expectedLocation,
           distance,
-          ignoreLocation
+          ignoreLocation,
         });
 
         // This match will almost certainly be better than any existing match.
@@ -673,7 +673,7 @@ function search(
       currentLocation: expectedLocation,
       expectedLocation,
       distance,
-      ignoreLocation
+      ignoreLocation,
     });
 
     if(score > currentThreshold) {
@@ -686,7 +686,7 @@ function search(
   const result = {
     isMatch: bestLocation >= 0,
     // Count exact matches (those with a score of 0) to be "almost" exact
-    score: Math.max(0.001, finalScore)
+    score: Math.max(0.001, finalScore),
   };
 
   if(computeMatches) {
@@ -723,8 +723,8 @@ class BitapSearch {
       findAllMatches = Config.findAllMatches,
       minMatchCharLength = Config.minMatchCharLength,
       isCaseSensitive = Config.isCaseSensitive,
-      ignoreLocation = Config.ignoreLocation
-    } = {}
+      ignoreLocation = Config.ignoreLocation,
+    } = {},
   ) {
     this.options = {
       location,
@@ -734,7 +734,7 @@ class BitapSearch {
       findAllMatches,
       minMatchCharLength,
       isCaseSensitive,
-      ignoreLocation
+      ignoreLocation,
     };
 
     this.pattern = isCaseSensitive ? pattern : pattern.toLowerCase();
@@ -749,7 +749,7 @@ class BitapSearch {
       this.chunks.push({
         pattern,
         alphabet: createPatternAlphabet(pattern),
-        startIndex
+        startIndex,
       });
     };
 
@@ -785,7 +785,7 @@ class BitapSearch {
     if(this.pattern === text) {
       let result = {
         isMatch: true,
-        score: 0
+        score: 0,
       };
 
       if(includeMatches) {
@@ -810,7 +810,7 @@ class BitapSearch {
         findAllMatches,
         minMatchCharLength,
         includeMatches,
-        ignoreLocation
+        ignoreLocation,
       });
 
       if(isMatch) {
@@ -826,7 +826,7 @@ class BitapSearch {
 
     let result = {
       isMatch: hasMatches,
-      score: hasMatches ? totalScore / this.chunks.length : 1
+      score: hasMatches ? totalScore / this.chunks.length : 1,
     };
 
     if(hasMatches && includeMatches) {
@@ -876,7 +876,7 @@ class ExactMatch extends BaseMatch {
     return {
       isMatch,
       score: isMatch ? 0 : 1,
-      indices: [0, this.pattern.length - 1]
+      indices: [0, this.pattern.length - 1],
     };
   }
 }
@@ -903,7 +903,7 @@ class InverseExactMatch extends BaseMatch {
     return {
       isMatch,
       score: isMatch ? 0 : 1,
-      indices: [0, text.length - 1]
+      indices: [0, text.length - 1],
     };
   }
 }
@@ -929,7 +929,7 @@ class PrefixExactMatch extends BaseMatch {
     return {
       isMatch,
       score: isMatch ? 0 : 1,
-      indices: [0, this.pattern.length - 1]
+      indices: [0, this.pattern.length - 1],
     };
   }
 }
@@ -955,7 +955,7 @@ class InversePrefixExactMatch extends BaseMatch {
     return {
       isMatch,
       score: isMatch ? 0 : 1,
-      indices: [0, text.length - 1]
+      indices: [0, text.length - 1],
     };
   }
 }
@@ -981,7 +981,7 @@ class SuffixExactMatch extends BaseMatch {
     return {
       isMatch,
       score: isMatch ? 0 : 1,
-      indices: [text.length - this.pattern.length, text.length - 1]
+      indices: [text.length - this.pattern.length, text.length - 1],
     };
   }
 }
@@ -1006,7 +1006,7 @@ class InverseSuffixExactMatch extends BaseMatch {
     return {
       isMatch,
       score: isMatch ? 0 : 1,
-      indices: [0, text.length - 1]
+      indices: [0, text.length - 1],
     };
   }
 }
@@ -1021,8 +1021,8 @@ class FuzzyMatch extends BaseMatch {
       includeMatches = Config.includeMatches,
       findAllMatches = Config.findAllMatches,
       minMatchCharLength = Config.minMatchCharLength,
-      isCaseSensitive = Config.isCaseSensitive
-    } = {}
+      isCaseSensitive = Config.isCaseSensitive,
+    } = {},
   ) {
     super(pattern);
     this._bitapSearch = new BitapSearch(pattern, {
@@ -1032,7 +1032,7 @@ class FuzzyMatch extends BaseMatch {
       includeMatches,
       findAllMatches,
       minMatchCharLength,
-      isCaseSensitive
+      isCaseSensitive,
     });
   }
   static get type() {
@@ -1082,7 +1082,7 @@ class IncludeMatch extends BaseMatch {
     return {
       isMatch,
       score: isMatch ? 1 : 0,
-      indices
+      indices,
     };
   }
 }
@@ -1184,8 +1184,8 @@ class ExtendedSearch {
       findAllMatches = Config.findAllMatches,
       location = Config.location,
       threshold = Config.threshold,
-      distance = Config.distance
-    } = {}
+      distance = Config.distance,
+    } = {},
   ) {
     this.query = null;
     this.options = {
@@ -1195,7 +1195,7 @@ class ExtendedSearch {
       findAllMatches,
       location,
       threshold,
-      distance
+      distance,
     };
 
     this.pattern = isCaseSensitive ? pattern : pattern.toLowerCase();
@@ -1212,7 +1212,7 @@ class ExtendedSearch {
     if(!query) {
       return {
         isMatch: false,
-        score: 1
+        score: 1,
       };
     }
 
@@ -1260,7 +1260,7 @@ class ExtendedSearch {
       if(numMatches) {
         let result = {
           isMatch: true,
-          score: totalScore / numMatches
+          score: totalScore / numMatches,
         };
 
         if(includeMatches) {
@@ -1274,7 +1274,7 @@ class ExtendedSearch {
     // Nothing was matched
     return {
       isMatch: false,
-      score: 1
+      score: 1,
     };
   }
 }
@@ -1298,12 +1298,12 @@ function createSearcher(pattern, options) {
 
 const LogicalOperator = {
   AND: '$and',
-  OR: '$or'
+  OR: '$or',
 };
 
 const KeyType = {
   PATH: '$path',
-  PATTERN: '$val'
+  PATTERN: '$val',
 };
 
 const isExpression = query => !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
@@ -1314,8 +1314,8 @@ const isLeaf = query => !isArray(query) && isObject(query) && !isExpression(quer
 
 const convertToExplicit = query => ({
   [LogicalOperator.AND]: Object.keys(query).map(key => ({
-    [key]: query[key]
-  }))
+    [key]: query[key],
+  })),
 });
 
 // When `auto` is `true`, the parse function will infer and initialize and add
@@ -1341,7 +1341,7 @@ function parse(query, options, { auto = true } = {}) {
 
       const obj = {
         keyId: createKeyId(key),
-        pattern
+        pattern,
       };
 
       if(auto) {
@@ -1353,7 +1353,7 @@ function parse(query, options, { auto = true } = {}) {
 
     let node = {
       children: [],
-      operator: keys[0]
+      operator: keys[0],
     };
 
     keys.forEach(key => {
@@ -1399,7 +1399,7 @@ class Fuse {
     this._myIndex =
       index ||
       createIndex(this.options.keys, this._docs, {
-        getFn: this.options.getFn
+        getFn: this.options.getFn,
       });
   }
 
@@ -1454,7 +1454,7 @@ class Fuse {
 
     return format(results, this._docs, {
       includeMatches,
-      includeScore
+      includeScore,
     });
   }
 
@@ -1475,7 +1475,7 @@ class Fuse {
         results.push({
           item: text,
           idx,
-          matches: [{ score, value: text, norm, indices }]
+          matches: [{ score, value: text, norm, indices }],
         });
       }
     });
@@ -1493,7 +1493,7 @@ class Fuse {
         const matches = this._findMatches({
           key: this._keyStore.get(keyId),
           value: this._myIndex.getValueForItemAtKeyId(item, keyId),
-          searcher
+          searcher,
         });
 
         if(matches && matches.length) {
@@ -1501,8 +1501,8 @@ class Fuse {
             {
               idx,
               item,
-              matches
-            }
+              matches,
+            },
           ];
         }
 
@@ -1582,8 +1582,8 @@ class Fuse {
           ...this._findMatches({
             key,
             value: item[keyIndex],
-            searcher
-          })
+            searcher,
+          }),
         );
       });
 
@@ -1591,7 +1591,7 @@ class Fuse {
         results.push({
           idx,
           item,
-          matches
+          matches,
         });
       }
     });
@@ -1620,7 +1620,7 @@ class Fuse {
             value: text,
             idx,
             norm,
-            indices
+            indices,
           });
         }
       });
@@ -1664,7 +1664,7 @@ function format(results, docs, { includeMatches = Config.includeMatches, include
 
     const data = {
       item: docs[idx],
-      refIndex: idx
+      refIndex: idx,
     };
 
     if(transformers.length) {

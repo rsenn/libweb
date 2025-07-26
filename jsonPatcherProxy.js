@@ -66,7 +66,7 @@ const JSONPatcherProxy = (function () {
     if(instance._treeMetadataMap.has(newValue)) {
       instance._parenthoodMap.set(subtreeMetadata.originalObject, {
         parent: tree,
-        key
+        key,
       });
     }
 
@@ -104,7 +104,7 @@ const JSONPatcherProxy = (function () {
       if(isNonSerializableArrayProperty) {
         //This happens in Vue 1-2 (should not happen in Vue 3). See: https://github.com/vuejs/vue/issues/427, https://github.com/vuejs/vue/issues/9259
         console.warn(
-          `JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch. The value is an object, but it was not proxified, because it would not be addressable in JSON-Pointer`
+          `JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch. The value is an object, but it was not proxified, because it would not be addressable in JSON-Pointer`,
         );
         warnedAboutNonIntegrerArrayProp = true;
       } else {
@@ -126,7 +126,7 @@ const JSONPatcherProxy = (function () {
     const reflectionResult = Reflect.set(tree, key, newValue);
     const operation = {
       op: 'remove',
-      path: pathToKey
+      path: pathToKey,
     };
     if(typeof newValue == 'undefined') {
       //applying De Morgan's laws would be a tad faster, but less readable
@@ -250,7 +250,7 @@ const JSONPatcherProxy = (function () {
 
       instance._defaultCallback({
         op: 'remove',
-        path: pathToKey
+        path: pathToKey,
       });
     }
     return reflectionResult;
@@ -288,7 +288,7 @@ const JSONPatcherProxy = (function () {
     }
     const handler = {
       set: (...args) => trapForSet(this, ...args),
-      deleteProperty: (...args) => trapForDeleteProperty(this, ...args)
+      deleteProperty: (...args) => trapForDeleteProperty(this, ...args),
     };
     const treeMetadata = Proxy.revocable(tree, handler);
     //cache the object that contains traps to disable them later.

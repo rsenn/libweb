@@ -64,17 +64,17 @@ Circle.prototype[Symbol.toStringTag] = 'Circle';
 Object.defineProperty(Circle.prototype, 'x', {
   value: 0,
   enumerable: true,
-  writable: true
+  writable: true,
 });
 Object.defineProperty(Circle.prototype, 'y', {
   value: 0,
   enumerable: true,
-  writable: true
+  writable: true,
 });
 Object.defineProperty(Circle.prototype, 'radius', {
   value: 0,
   enumerable: true,
-  writable: true
+  writable: true,
 });
 
 Object.defineProperty(Circle.prototype, 'center', {
@@ -85,7 +85,7 @@ Object.defineProperty(Circle.prototype, 'center', {
       this.x = value.x;
       this.y = value.y;
     });
-  }
+  },
 });
 
 Circle.prototype.bbox = function(width = 0) {
@@ -96,7 +96,7 @@ Circle.prototype.bbox = function(width = 0) {
     x1: x - distance,
     x2: x + distance,
     y1: y - distance,
-    y2: y + distance
+    y2: y + distance,
   };
 };
 Circle.prototype.clone = function() {

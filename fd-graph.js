@@ -32,7 +32,7 @@ export class Graph {
       damping = 0.000005,
       onUpdateNode = node => true,
       onUpdateEdge = edge => true,
-      onRenderGraph = graph => true
+      onRenderGraph = graph => true,
     } = options;
 
     console.log(`Graph(${origin},${gravitate_to_origin})`);
@@ -269,7 +269,7 @@ export class Graph {
                 index,
                 old: rel,
                 x: node.x + Math.cos(gapPos) * 50,
-                y: node.y + Math.sin(gapPos) * 50
+                y: node.y + Math.sin(gapPos) * 50,
               });
               gapPos += gapStep;
             }
@@ -304,7 +304,7 @@ export class Graph {
       nodes: this.nodes.map(node => Node.prototype.toJS.call(node)),
       edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this)),
       bbox: this.bbox,
-      config: this.config
+      config: this.config,
     };
   }
 
@@ -447,7 +447,7 @@ export class Edge {
   toJS() {
     return {
       a: Node.prototype.toJS.call(this.a),
-      b: Node.prototype.toJS.call(this.b)
+      b: Node.prototype.toJS.call(this.b),
     };
   }
   toIdx(graph) {

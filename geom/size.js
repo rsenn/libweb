@@ -36,11 +36,11 @@ export function Size(...args) {
       Object.defineProperty(obj, 'units', {
         value: {
           width: typeof w == 'string' ? w.replace(obj.width.toString(), '') : 'px',
-          height: typeof h == 'string' ? h.replace(obj.height.toString(), '') : 'px'
+          height: typeof h == 'string' ? h.replace(obj.height.toString(), '') : 'px',
         },
         enumerable: false,
         configurable: true,
-        writable: true
+        writable: true,
       });
     }
   }
@@ -64,7 +64,7 @@ Size.prototype.convertUnits = function(w = 'window' in globalThis ? window : nul
     vw: w.innerWidth,
     vh: w.innerHeight,
     vmin: w.innerWidth < w.innerHeight ? w.innerWidth : w.innerHeight,
-    vmax: w.innerWidth > w.innerHeight ? w.innerWidth : w.innerHeight
+    vmax: w.innerWidth > w.innerHeight ? w.innerWidth : w.innerHeight,
   };
   if(view[this.units.width] !== undefined) {
     this.width = (this.width / 100) * view[this.units.width];

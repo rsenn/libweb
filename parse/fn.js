@@ -276,5 +276,5 @@ export default {
   eof,
   ignore,
   concat,
-  invert
+  invert,
 };

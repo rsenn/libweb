@@ -9,7 +9,7 @@ export class ECMAScriptValue {
     regexp: 3,
     object: 4,
     function: 5,
-    symbol: 6
+    symbol: 6,
   };
 
   constructor(type, init) {
@@ -110,7 +110,7 @@ class Scope {
 
     return {
       depth: Scope.depth(this),
-      declarations: Object.fromEntries([...this.declarations.entries()].map(([name, value]) => [name, className(value)]))
+      declarations: Object.fromEntries([...this.declarations.entries()].map(([name, value]) => [name, className(value)])),
     };
   }
 }
@@ -196,7 +196,7 @@ export class ECMAScriptInterpreter {
       right,
       scope,
       name,
-      obj
+      obj,
     });
     //return obj;
   }

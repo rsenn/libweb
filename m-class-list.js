@@ -122,7 +122,7 @@ function mClassList(element) {
             _replace(list, element, token, newToken);
 
             return mClassList.methodChain ? ins : void 0;
-          }
+          },
         };
       return ins;
     })()

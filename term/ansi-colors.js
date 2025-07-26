@@ -63,7 +63,7 @@ export const create = () => {
         Reflect.setPrototypeOf(color, colors);
         color.stack = this.stack ? this.stack.concat(name) : [name];
         return color;
-      }
+      },
     });
   };
 
@@ -144,7 +144,7 @@ export const create = () => {
         Reflect.setPrototypeOf(color, colors);
         color.stack = this.stack ? this.stack.concat(fn.stack) : fn.stack;
         return color;
-      }
+      },
     });
   };
 

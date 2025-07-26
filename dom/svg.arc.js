@@ -34,14 +34,14 @@
     },
     container() {
       return this.parent(SVG.Container);
-    }
+    },
   });
 
   SVG.extend(SVG.Line, {
     //Get point
     mid() {
       return new SVG.Point((this.x1() + this.x2()) / 2.0, (this.y1() + this.y2()) / 2.0);
-    }
+    },
   });
 
   SVG.extend(SVG.Point, {
@@ -82,19 +82,19 @@
     },
     closeEnough(x, y) {
       return Math.abs(this.x - x) <= Trig.CLOSE_ENOUGH_DISTANCE && Math.abs(this.y - y) <= Trig.CLOSE_ENOUGH_DISTANCE;
-    }
+    },
   });
 
   SVG.extend(SVG.BBox, {
     contains(pt) {
       return pt.x >= this.x && pt.y >= this.y && pt.x <= this.x + this.width && pt.y <= this.y + this.height;
-    }
+    },
   });
 
   SVG.extend(SVG.Circle, {
     inside(x, y) {
       return x >= this.cx() - this.rx() && y >= this.cy() - this.ry() && x <= this.cx() + this.rx() && y <= this.cy() + this.ry();
-    }
+    },
   });
 
   SVG.extend(SVG.Rect, {
@@ -112,7 +112,7 @@
     },
     inside(x, y) {
       return x >= this.x() && x <= this.x() + this.width() && y >= this.y() && y <= this.y() + this.height();
-    }
+    },
   });
 
   SVG.Arc = SVG.invent({
@@ -224,14 +224,14 @@
           this.sweepFlag = f;
           this.plot(this.x1(), this.y1(), this.h(), this.sweepFlag, this.x2(), this.y2());
         } else return this.sweepFlag;
-      }
+      },
     },
     //Add parent method
     construct: {
       //Create a line element
       arc(x1, y1, r, sweepFlag, x2, y2) {
         return this.put(new SVG.Arc()).plot(x1, y1, r, sweepFlag, x2, y2);
-      }
-    }
+      },
+    },
   });
 }.call(this));

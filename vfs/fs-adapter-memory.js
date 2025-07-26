@@ -16,7 +16,7 @@ export default class FsMemoryAdapter {
     this.db.get(
       resolve(filename),
       {
-        valueEncoding: options.encoding
+        valueEncoding: options.encoding,
       },
       (err, value) => {
         if(err) {
@@ -30,7 +30,7 @@ export default class FsMemoryAdapter {
           return callback && callback(err);
         }
         callback && callback(null, value);
-      }
+      },
     );
   }
 
@@ -45,9 +45,9 @@ export default class FsMemoryAdapter {
       resolve(filename),
       contents,
       {
-        valueEncoding: options.encoding
+        valueEncoding: options.encoding,
       },
-      callback
+      callback,
     );
   }
 }

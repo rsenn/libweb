@@ -112,7 +112,7 @@ function createVNode(type, props, key, ref, original) {
     __c: null,
     __h: null,
     constructor: undefined,
-    __v: original == null ? ++options.__v : original
+    __v: original == null ? ++options.__v : original,
   };
 
   if(options.vnode != null) {
@@ -218,7 +218,7 @@ function renderComponent(component) {
       vnode.__h != null ? [oldDom] : null,
       commitQueue,
       oldDom == null ? getDomSibling(vnode) : oldDom,
-      vnode.__h
+      vnode.__h,
     );
     commitRoot(commitQueue, vnode);
 
@@ -920,7 +920,7 @@ function render(vnode, parentDom, replaceNode) {
       replaceNode && !isHydrating ? [replaceNode] : oldVNode ? null : parentDom.childNodes.length ? EMPTY_ARR.slice.call(parentDom.childNodes) : null,
       commitQueue,
       replaceNode || EMPTY_OBJ,
-      isHydrating))
+      isHydrating)),
   );
   commitRoot(commitQueue, vnode);
 }
@@ -1003,7 +1003,7 @@ function createContext(defaultValue, contextId) {
       }
 
       return props.children;
-    }
+    },
   };
 
   return (context.Provider.__ = context.Consumer.contextType = context);
@@ -1142,7 +1142,7 @@ function useReducer(reducer, initialState, init) {
           hookState.__ = [nextValue, hookState.__[1]];
           hookState.__c.setState({});
         }
-      }
+      },
     ];
 
     hookState.__c = currentComponent;
@@ -1191,7 +1191,7 @@ function useImperativeHandle(ref, createHandle, args) {
       }
       console.log('Ruler ref:', ref);
     },
-    args == null ? args : args.concat(ref)
+    args == null ? args : args.concat(ref),
   );
 }
 
@@ -1257,7 +1257,7 @@ function useErrorBoundary(cb) {
     errState[0],
     function() {
       errState[1](undefined);
-    }
+    },
   ];
 }
 
@@ -1634,7 +1634,7 @@ export {
   useMemo,
   useReducer,
   useRef,
-  useState
+  useState,
 };
 
 export default {
@@ -1661,5 +1661,5 @@ export default {
   useMemo,
   useReducer,
   useRef,
-  useState
+  useState,
 };

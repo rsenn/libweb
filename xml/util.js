@@ -114,7 +114,7 @@ define(XMLObject.prototype, {
   },
   [Symbol.toStringTag]() {
     return this.toString();
-  }
+  },
 });
 
 export const XmlObject = XMLObject;

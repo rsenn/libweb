@@ -31,7 +31,7 @@ export class LineList extends Array {
       makeGroup ||
       (() => ({
         tagName: 'g',
-        attributes: { stroke: 'black', fill: 'none', 'stroke-width': 0.025 }
+        attributes: { stroke: 'black', fill: 'none', 'stroke-width': 0.025 },
       }));
     let group,
       lines = this;

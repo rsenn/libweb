@@ -1,5 +1,5 @@
 export function GetExponent(value) {
-  const suffix = (value+'').replace(/\/.*/g, '').replace(/[^KkMmnpuμ\u03bc]/g, '');
+  const suffix = (value + '').replace(/\/.*/g, '').replace(/[^KkMmnpuμ\u03bc]/g, '');
 
   let exp = 0;
   // if(suffix.length > 1) throw new Error(`Suffix '${suffix}' of '${value}' length > 1`);
@@ -29,8 +29,8 @@ export function GetExponent(value) {
 }
 
 export function GetMantissa(value) {
-     console.log('GetMantissa(', value, ')');
-let mantissa = (value+'').replace(/([-+]?[0-9.]+).*/g, '$1');
+  console.log('GetMantissa(', value, ')');
+  let mantissa = (value + '').replace(/([-+]?[0-9.]+).*/g, '$1');
   //console.log('GetMantissa', { value, mantissa });
   if(isNaN(+mantissa)) throw new Error(`GetMantissa '${mantissa}' not a valid number`);
 
@@ -38,7 +38,7 @@ let mantissa = (value+'').replace(/([-+]?[0-9.]+).*/g, '$1');
 }
 
 export function ValueToNumber(value) {
-   console.log('ValueToNumber(', value, ')');
+  console.log('ValueToNumber(', value, ')');
 
   let exp = GetExponent(value);
   let man = GetMantissa(value);
@@ -55,8 +55,8 @@ export function NumberToValue(
     [1e-12, 'p'],
     [1e3, 'k'],
     [1e6, 'M'],
-    [1e9, 'G']
-  ]
+    [1e9, 'G'],
+  ],
 ) {
   let suffix = [1, ''];
   for(let [min, sfx] of suffixes) {

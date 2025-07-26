@@ -19,7 +19,7 @@ var JSXParser = function(a, f) {
 JSXParser.prototype = {
   parse() {
     return parse(this.input, this.getOne);
-  }
+  },
 };
 let rsp = /\s/;
 

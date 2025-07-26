@@ -9,7 +9,7 @@ class PaintHandler {
   // Default values. Can be changed for the whole project if needed
   static defaults = {
     snapToGrid: 1, // Snaps to a grid of `snapToGrid` px
-    drawCircles: true // Draw little circles around line/polyline/polygon points
+    drawCircles: true, // Draw little circles around line/polyline/polygon points
   };
 
   // Container for all types not specified here
@@ -242,7 +242,7 @@ extend(Element, {
     }
 
     return this;
-  }
+  },
 });
 
 PaintHandler.extend(rectable.NAME, rectable);

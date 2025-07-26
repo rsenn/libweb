@@ -104,7 +104,7 @@ function TransformStreamTransform(transformStream, chunk) {
     e => {
       TransformStreamErrorIfNeeded(transformStream, e);
       return Promise.reject(e);
-    }
+    },
   );
 }
 
@@ -426,5 +426,5 @@ export default {
   TransformStreamSink,
   TransformStreamSource,
   TransformStreamDefaultController,
-  TransformStream
+  TransformStream,
 };

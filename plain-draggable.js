@@ -313,7 +313,7 @@ function getScrollable(element, isWindow, dontScroll) {
           scrollable.clientWidth + // Blink for Android bug, scroll* returns size of smaller body
           ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(function (len, prop) {
             return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
-          }, 0)
+          }, 0),
       );
       maxScrollTop = scrollXYWindow(
         element,
@@ -322,7 +322,7 @@ function getScrollable(element, isWindow, dontScroll) {
           scrollable.clientHeight +
           ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(function (len, prop) {
             return len + (parseFloat(cmpStyleHtml[prop]) || 0) + (parseFloat(cmpStyleBody[prop]) || 0);
-          }, 0)
+          }, 0),
       );
       scrollXYWindow(element, 'x', curScrollLeft);
       scrollXYWindow(element, 'y', curScrollTop);
@@ -337,7 +337,7 @@ function getScrollable(element, isWindow, dontScroll) {
           scrollable.clientWidth + // Blink for Android bug, scroll* returns size of smaller body
           ['marginLeft', 'marginRight', 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'].reduce(function (len, prop) {
             return len + (parseFloat(cmpStyleElement[prop]) || 0);
-          }, 0)
+          }, 0),
       );
       maxScrollTop = scrollXYElement(
         element,
@@ -346,7 +346,7 @@ function getScrollable(element, isWindow, dontScroll) {
           scrollable.clientHeight +
           ['marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'].reduce(function (len, prop) {
             return len + (parseFloat(cmpStyleElement[prop]) || 0);
-          }, 0)
+          }, 0),
       );
       scrollXYElement(element, 'x', curScrollLeft);
       scrollXYElement(element, 'y', curScrollTop);
@@ -490,7 +490,7 @@ function validPPValue(value) {
     return matches && isFinite((value = parseFloat(matches[1])))
       ? {
           value: (isRatio = !!(matches[2] && value)) ? value / 100 : value,
-          isRatio: isRatio
+          isRatio: isRatio,
         }
       : null; // 0% -> 0
   }
@@ -498,7 +498,7 @@ function validPPValue(value) {
   return isFinite(value)
     ? {
         value: value,
-        isRatio: false
+        isRatio: false,
       }
     : typeof value === 'string'
     ? string2PPValue(value.replace(/\s/g, ''))
@@ -581,21 +581,21 @@ function resolvePPBBox(ppBBox, baseBBox) {
       top: 'y',
       bottom: 'y',
       y: 'y',
-      height: 'y'
+      height: 'y',
     },
     baseOriginXY = {
       x: baseBBox.left,
-      y: baseBBox.top
+      y: baseBBox.top,
     },
     baseSizeXY = {
       x: baseBBox.width,
-      y: baseBBox.height
+      y: baseBBox.height,
     };
   return validBBox(
     Object.keys(ppBBox).reduce(function (bBox, prop) {
       bBox[prop] = resolvePPValue(ppBBox[prop], prop === 'width' || prop === 'height' ? 0 : baseOriginXY[prop2Axis[prop]], baseSizeXY[prop2Axis[prop]]);
       return bBox;
-    }, {})
+    }, {}),
   );
 }
 
@@ -611,7 +611,7 @@ function getBBox(element, getPaddingBox) {
       left: rect.left,
       top: rect.top,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
     };
   bBox.left += window.pageXOffset;
   bBox.top += window.pageYOffset;
@@ -817,7 +817,7 @@ function move(props, position, cbCheck) {
       left: position.left,
       top: position.top,
       width: elementBBox.width,
-      height: elementBBox.height
+      height: elementBBox.height,
     });
   }
 
@@ -876,7 +876,7 @@ function initTranslate(props) {
   var newBBox = getBBox(element);
   var offset = (props.htmlOffset = {
     left: newBBox.left ? -newBBox.left : 0,
-    top: newBBox.top ? -newBBox.top : 0
+    top: newBBox.top ? -newBBox.top : 0,
   }); // avoid `-0`
   // Restore position
 
@@ -951,7 +951,7 @@ function initLeftTop(props) {
   var newBBox = getBBox(element);
   var offset = (props.htmlOffset = {
     left: newBBox.left ? -newBBox.left : 0,
-    top: newBBox.top ? -newBBox.top : 0
+    top: newBBox.top ? -newBBox.top : 0,
   }); // avoid `-0`
   // Restore position
 
@@ -1009,7 +1009,7 @@ function initSvg(props) {
     // Gecko bug, getScreenCTM returns incorrect CTM, and originPoint might not be current position.
     offset = (props.svgOffset = {
       x: originBBox.x - originPoint.x,
-      y: originBBox.y - originPoint.y
+      y: originBBox.y - originPoint.y,
     }),
     // Restore position
     curPoint = viewPoint2SvgPoint(props, curRect.left, curRect.top);
@@ -1037,7 +1037,7 @@ function initBBox(props, eventType) {
 
   move(props, {
     left: elementBBox.left,
-    top: elementBBox.top
+    top: elementBBox.top,
   }); // [SNAP]
   // Snap-targets
 
@@ -1054,15 +1054,15 @@ function initBBox(props, eventType) {
   if(props.parsedSnapTargets) {
     var elementSizeXY = {
         x: elementBBox.width,
-        y: elementBBox.height
+        y: elementBBox.height,
       },
       minXY = {
         x: props.minLeft,
-        y: props.minTop
+        y: props.minTop,
       },
       maxXY = {
         x: props.maxLeft,
-        y: props.maxTop
+        y: props.maxTop,
       },
       prop2Axis = {
         left: 'x',
@@ -1078,17 +1078,17 @@ function initBBox(props, eventType) {
         height: 'y',
         yStart: 'y',
         yEnd: 'y',
-        yStep: 'y'
+        yStep: 'y',
       },
       snapTargets = props.parsedSnapTargets.reduce(function (snapTargets, parsedSnapTarget) {
         var baseRect = parsedSnapTarget.base === 'containment' ? containmentBBox : docBBox,
           baseOriginXY = {
             x: baseRect.left,
-            y: baseRect.top
+            y: baseRect.top,
           },
           baseSizeXY = {
             x: baseRect.width,
-            y: baseRect.height
+            y: baseRect.height,
           };
         /**
          * Basically, shallow copy from parsedSnapTarget, and it can have resolved values.
@@ -1132,7 +1132,7 @@ function initBBox(props, eventType) {
               if(x >= minXY.x && x <= maxXY.x && y >= minXY.y && y <= maxXY.y) {
                 var snapTarget = {
                     x: x,
-                    y: y
+                    y: y,
                   },
                   gravityXStart = x - targetXY.xGravity,
                   gravityXEnd = x + targetXY.xGravity,
@@ -1252,7 +1252,7 @@ function initBBox(props, eventType) {
                 xEnd: xEnd,
                 y: bBox.top,
                 sides: [side],
-                center: false
+                center: false,
               }); // Top
 
               addSnapTarget({
@@ -1260,7 +1260,7 @@ function initBBox(props, eventType) {
                 yStart: yStart,
                 yEnd: yEnd,
                 sides: [side],
-                center: false
+                center: false,
               }); // Left
 
               side = edge === 'inside' ? 'end' : 'start';
@@ -1269,7 +1269,7 @@ function initBBox(props, eventType) {
                 xEnd: xEnd,
                 y: bBox.bottom,
                 sides: [side],
-                center: false
+                center: false,
               }); // Bottom
 
               addSnapTarget({
@@ -1277,7 +1277,7 @@ function initBBox(props, eventType) {
                 yStart: yStart,
                 yEnd: yEnd,
                 sides: [side],
-                center: false
+                center: false,
               }); // Right
             });
           }
@@ -1289,7 +1289,7 @@ function initBBox(props, eventType) {
               }
 
               return targetXY;
-            }, {})
+            }, {}),
           ];
           ['x', 'y'].forEach(function (axis) {
             var startProp = ''.concat(axis, 'Start'),
@@ -1357,7 +1357,7 @@ function initBBox(props, eventType) {
         left: scrollable.clientX,
         top: scrollable.clientY,
         width: scrollable.clientWidth,
-        height: scrollable.clientHeight
+        height: scrollable.clientHeight,
       });
 
     if(!dontScroll) {
@@ -1370,7 +1370,7 @@ function initBBox(props, eventType) {
 
     [
       ['X', 'Width', 'left', 'right'],
-      ['Y', 'Height', 'top', 'bottom']
+      ['Y', 'Height', 'top', 'bottom'],
     ].forEach(function (axis) {
       var xy = axis[0],
         wh = axis[1],
@@ -1396,20 +1396,20 @@ function initBBox(props, eventType) {
           lines.push({
             dir: -1,
             speed: speed,
-            position: scrollableBBox[back] + sensitivity
+            position: scrollableBBox[back] + sensitivity,
           }); // forward
 
           lines.push({
             dir: 1,
             speed: speed,
-            position: scrollableBBox[forward] - sensitivity - elementSize
+            position: scrollableBBox[forward] - sensitivity - elementSize,
           });
         }
 
         autoScroll[xy.toLowerCase()] = {
           min: min,
           max: max,
-          lines: lines
+          lines: lines,
         };
       }
     });
@@ -1453,7 +1453,7 @@ function dragEnd(props) {
   if(props.onDragEnd) {
     props.onDragEnd({
       left: props.elementBBox.left,
-      top: props.elementBBox.top
+      top: props.elementBBox.top,
     });
   }
 }
@@ -1651,14 +1651,14 @@ function _setOptions(props, newOptions) {
         isObject(newOptions.snap) && newOptions.snap.targets != null
           ? newOptions.snap
           : {
-              targets: newOptions.snap
+              targets: newOptions.snap,
             },
       snapTargetsOptions = [],
       snapOptions = commonSnapOptions(
         {
-          targets: snapTargetsOptions
+          targets: snapTargetsOptions,
         },
-        newSnapOptions
+        newSnapOptions,
       ); // Set default options into top level.
 
     if(!snapOptions.gravity) {
@@ -1697,13 +1697,13 @@ function _setOptions(props, newOptions) {
         newSnapTargetOptions =
           isElementPre || ppBBoxPre
             ? {
-                boundingBox: target
+                boundingBox: target,
               } // Direct Element | PPBBox
             : isObject(target) && target.start == null && target.end == null && target.step == null
             ? target // SnapTargetOptions
             : {
                 x: target,
-                y: target
+                y: target,
               },
         // Others, it might be {step, start, end}
         expandedParsedSnapTargets = [],
@@ -1714,13 +1714,13 @@ function _setOptions(props, newOptions) {
       if(isElementPre || isElement(newOptionsBBox)) {
         // Element
         expandedParsedSnapTargets.push({
-          element: newOptionsBBox
+          element: newOptionsBBox,
         });
         snapTargetOptions.boundingBox = newOptionsBBox;
       } else if((ppBBox = ppBBoxPre || validPPBBox(copyTree(newOptionsBBox)))) {
         // Object -> PPBBox
         expandedParsedSnapTargets.push({
-          ppBBox: ppBBox
+          ppBBox: ppBBox,
         });
         snapTargetOptions.boundingBox = ppBBox2OptionObject(ppBBox);
       } else {
@@ -1751,15 +1751,15 @@ function _setOptions(props, newOptions) {
 
             start = parsedXY[''.concat(axis, 'Start')] = start || {
               value: 0,
-              isRatio: false
+              isRatio: false,
             };
             end = parsedXY[''.concat(axis, 'End')] = end || {
               value: 1,
-              isRatio: true
+              isRatio: true,
             };
             snapTargetOptions[axis] = {
               start: ppValue2OptionValue(start),
-              end: ppValue2OptionValue(end)
+              end: ppValue2OptionValue(end),
             };
 
             if(step) {
@@ -1786,23 +1786,23 @@ function _setOptions(props, newOptions) {
             {
               xStart: parsedXY.xStart,
               xEnd: parsedXY.xEnd,
-              y: parsedXY.yStart
+              y: parsedXY.yStart,
             }, // Top
             {
               xStart: parsedXY.xStart,
               xEnd: parsedXY.xEnd,
-              y: parsedXY.yEnd
+              y: parsedXY.yEnd,
             }, // Bottom
             {
               x: parsedXY.xStart,
               yStart: parsedXY.yStart,
-              yEnd: parsedXY.yEnd
+              yEnd: parsedXY.yEnd,
             }, // Left
             {
               x: parsedXY.xEnd,
               yStart: parsedXY.yStart,
-              yEnd: parsedXY.yEnd
-            } // Right
+              yEnd: parsedXY.yEnd,
+            }, // Right
           );
         } else {
           expandedParsedSnapTargets.push(parsedXY);
@@ -1823,7 +1823,7 @@ function _setOptions(props, newOptions) {
             // Split
             sides: side === 'both' ? SNAP_ALL_SIDES : [side],
             // Split
-            edges: edge === 'both' ? SNAP_ALL_EDGES : [edge] // Split
+            edges: edge === 'both' ? SNAP_ALL_EDGES : [edge], // Split
           };
         expandedParsedSnapTargets.forEach(function (parsedSnapTarget) {
           // Set common SnapOptions
@@ -1866,7 +1866,7 @@ function _setOptions(props, newOptions) {
     var newAutoScrollOptions = isObject(newOptions.autoScroll)
         ? newOptions.autoScroll
         : {
-            target: newOptions.autoScroll === true ? window : newOptions.autoScroll
+            target: newOptions.autoScroll === true ? window : newOptions.autoScroll,
           },
       autoScrollOptions = {}; // target
 
@@ -1954,7 +1954,7 @@ function _setOptions(props, newOptions) {
 
   var position = {
     left: props.elementBBox.left,
-    top: props.elementBBox.top
+    top: props.elementBBox.top,
   };
   var needsMove;
 
@@ -1995,12 +1995,12 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
       ins: this,
       options: {
         // Initial options (not default)
-        zIndex: ZINDEX // Initial state.
+        zIndex: ZINDEX, // Initial state.
       },
-      disabled: false
+      disabled: false,
     };
     Object.defineProperty(this, '_id', {
-      value: ++insId
+      value: ++insId,
     });
     props._id = this._id;
     insProps[this._id] = props;
@@ -2111,7 +2111,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
 
           pointerEvent.unregStartHandler(pointerEvent.removeStartHandler(props.options.handle, props.pointerEventHandlerId));
           delete insProps[this._id];
-        }
+        },
         /**
          * @param {Object} options - New options.
          * @returns {PlainDraggable} Current instance itself.
@@ -2125,14 +2125,14 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
           }
 
           return this;
-        }
+        },
       },
       {
         key: 'position',
         value: function position() {
           initBBox(insProps[this._id]);
           return this;
-        }
+        },
       },
       {
         key: 'disabled',
@@ -2171,19 +2171,19 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
               }
             }
           }
-        }
+        },
       },
       {
         key: 'element',
         get: function get() {
           return insProps[this._id].element;
-        }
+        },
       },
       {
         key: 'rect',
         get: function get() {
           return copyTree(insProps[this._id].elementBBox);
-        }
+        },
       },
       {
         key: 'left',
@@ -2192,9 +2192,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            left: value
+            left: value,
           });
-        }
+        },
       },
       {
         key: 'top',
@@ -2203,9 +2203,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            top: value
+            top: value,
           });
-        }
+        },
       },
       {
         key: 'containment',
@@ -2215,9 +2215,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            containment: value
+            containment: value,
           });
-        } // [SNAP]
+        }, // [SNAP]
       },
       {
         key: 'snap',
@@ -2226,9 +2226,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            snap: value
+            snap: value,
           });
-        } // [/SNAP]
+        }, // [/SNAP]
         // [AUTO-SCROLL]
       },
       {
@@ -2238,9 +2238,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            autoScroll: value
+            autoScroll: value,
           });
-        } // [/AUTO-SCROLL]
+        }, // [/AUTO-SCROLL]
       },
       {
         key: 'handle',
@@ -2249,9 +2249,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            handle: value
+            handle: value,
           });
-        }
+        },
       },
       {
         key: 'zIndex',
@@ -2260,9 +2260,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            zIndex: value
+            zIndex: value,
           });
-        }
+        },
       },
       {
         key: 'onDrag',
@@ -2271,9 +2271,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            onDrag: value
+            onDrag: value,
           });
-        }
+        },
       },
       {
         key: 'onMove',
@@ -2282,9 +2282,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            onMove: value
+            onMove: value,
           });
-        }
+        },
       },
       {
         key: 'onDragStart',
@@ -2293,9 +2293,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            onDragStart: value
+            onDragStart: value,
           });
-        }
+        },
       },
       {
         key: 'onMoveStart',
@@ -2304,9 +2304,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            onMoveStart: value
+            onMoveStart: value,
           });
-        }
+        },
       },
       {
         key: 'onDragEnd',
@@ -2315,10 +2315,10 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
         },
         set: function set(value) {
           _setOptions(insProps[this._id], {
-            onDragEnd: value
+            onDragEnd: value,
           });
-        }
-      }
+        },
+      },
     ],
     [
       {
@@ -2347,7 +2347,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
               }
             });
           }
-        }
+        },
       },
       {
         key: 'draggingCursor',
@@ -2373,7 +2373,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
                 window.getComputedStyle(activeProps.options.handle, '').cursor;
             }
           }
-        }
+        },
       },
       {
         key: 'draggableClass',
@@ -2401,7 +2401,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
             });
             draggableClass = value;
           }
-        }
+        },
       },
       {
         key: 'draggingClass',
@@ -2426,7 +2426,7 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
 
             draggingClass = value;
           }
-        }
+        },
       },
       {
         key: 'movingClass',
@@ -2451,9 +2451,9 @@ export const PlainDraggable = /*#__PURE__*/ (function () {
 
             movingClass = value;
           }
-        }
-      }
-    ]
+        },
+      },
+    ],
   );
 
   return PlainDraggable;
@@ -2466,7 +2466,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
 
   var position = {
     left: pointerXY.clientX + window.pageXOffset + pointerOffset.left,
-    top: pointerXY.clientY + window.pageYOffset + pointerOffset.top
+    top: pointerXY.clientY + window.pageYOffset + pointerOffset.top,
   };
 
   if(
@@ -2507,7 +2507,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
             position.snapped = snappedX || snappedY;
             return activeProps.onDrag ? activeProps.onDrag(position) : true;
           } // [/SNAP]
-        : activeProps.onDrag
+        : activeProps.onDrag,
     )
   ) {
     // [AUTO-SCROLL]
@@ -2517,7 +2517,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
     if(autoScroll) {
       var clientXY = {
         x: activeProps.elementBBox.left - window.pageXOffset,
-        y: activeProps.elementBBox.top - window.pageYOffset
+        y: activeProps.elementBBox.top - window.pageYOffset,
       };
       ['x', 'y'].forEach(function (axis) {
         if(autoScroll[axis]) {
@@ -2529,7 +2529,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
                 dir: line.dir,
                 speed: line.speed / 1000,
                 min: min,
-                max: max
+                max: max,
               };
               return true;
             }
@@ -2640,7 +2640,7 @@ pointerEvent.addMoveHandler(document, function(pointerXY) {
         body = document.body;
         initDoc();
       },
-      true
+      true,
     );
   }
 }

@@ -106,12 +106,12 @@ export function ObjectInspect(obj, options, depth, seen) {
     }
     let newOpts = {
       ...opts,
-      multiline: opts.multiline ? (typeof opts.multiline == 'number' ? opts.multiline - 1 : true) : false
+      multiline: opts.multiline ? (typeof opts.multiline == 'number' ? opts.multiline - 1 : true) : false,
     };
     if(noIndent) {
       newOpts = {
         ...newOpts,
-        depth: opts.depth
+        depth: opts.depth,
       };
       if(has(opts, 'quoteStyle')) {
         newOpts.quoteStyle = opts.quoteStyle;
@@ -130,7 +130,7 @@ export function ObjectInspect(obj, options, depth, seen) {
     if(inspectName) {
       let r = obj[inspectName]({
         ...opts,
-        depth: depth > 0 ? depth - 1 : depth
+        depth: depth > 0 ? depth - 1 : depth,
       });
       /*  if(typeof r == 'string')*/ {
         s += r;
@@ -185,7 +185,7 @@ export function ObjectInspect(obj, options, depth, seen) {
               acc[acc.length - 1] += item;
               return acc;
             },
-            ['']
+            [''],
           );
           multiline = true;
         }
@@ -454,7 +454,7 @@ function lowbyte(c) {
     9: 't',
     10: 'n',
     12: 'f',
-    13: 'r'
+    13: 'r',
   }[n];
   if(x) {
     return '\\' + x;
@@ -496,7 +496,7 @@ function getIndent(opts, depth) {
   }
   return {
     base: baseIndent,
-    prev: Array(depth + 1).join(baseIndent)
+    prev: Array(depth + 1).join(baseIndent),
   };
 }
 

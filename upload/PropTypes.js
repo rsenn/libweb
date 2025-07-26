@@ -26,7 +26,7 @@ export const defaultProps = {
   onChange: func,
   onError: func,
   onClick: func,
-  onConfirmDelete: () => true
+  onConfirmDelete: () => true,
 };
 
 export const propTypes = {
@@ -47,12 +47,12 @@ export const propTypes = {
     limit: PropTypes.number,
     width: PropTypes.shape({
       min: PropTypes.number,
-      max: PropTypes.number
+      max: PropTypes.number,
     }),
     height: PropTypes.shape({
       min: PropTypes.number,
-      max: PropTypes.number
-    })
+      max: PropTypes.number,
+    }),
   }),
   customRequest: PropTypes.func,
   source: PropTypes.func,
@@ -64,5 +64,5 @@ export const propTypes = {
   onClick: PropTypes.func,
   onConfirmDelete: PropTypes.func,
   acceptType: PropTypes.string,
-  accept: PropTypes.array
+  accept: PropTypes.array,
 };

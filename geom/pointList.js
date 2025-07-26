@@ -290,7 +290,7 @@ export class PointList extends Array {
       ...PointList.prototype.map.call(this, p => {
         const angle = Point.prototype.toAngle.call(p);
         return t(angle, Point.prototype.distance.call(p));
-      })
+      }),
     ]);
     return ret;
   }
@@ -308,7 +308,7 @@ export class PointList extends Array {
       ...PointList.prototype.map.call(this, p => {
         let r = t(p.x, p.y);
         return Point.prototype.fromAngle.call(r.x, r.y);
-      })
+      }),
     ]);
     return ret;
   }
@@ -372,8 +372,8 @@ export class PointList extends Array {
       constructor: PointList.prototype.bbox,
       toString() {
         return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + '').padStart(4, ' ')},y2:${(this.y2 + '').padStart(4, ' ')}}`;
-      }
-    }
+      },
+    },
   ) {
     const len = PointList.prototype.getLength.call(this);
     if(!len) return {};
@@ -382,7 +382,7 @@ export class PointList extends Array {
       x1: first.x,
       x2: first.x,
       y1: first.y,
-      y2: first.y
+      y2: first.y,
     };
 
     for(let i = 1; i < len; i++) {
@@ -472,9 +472,9 @@ export class PointList extends Array {
               step++;
             }
             return { value, done };
-          }
+          },
         };
-      }
+      },
     };
     return iterableObj;
   }
@@ -509,12 +509,12 @@ export class PointList extends Array {
           Point.toSource(p, {
             space: '',
             padding: ' ',
-            separator: ','
+            separator: ',',
           })
       : point =>
           Point.prototype.toSource.call(point, {
             ...opts,
-            plainObj: true
+            plainObj: true,
           });
     return 'new PointList([' + PointList.prototype.map.call(this, fn).join(',') + '])';
   }
@@ -563,13 +563,13 @@ PointList.prototype[Symbol.toStringTag] = 'PointList';
 define(PointList, {
   get [Symbol.species]() {
     return PointList;
-  }
+  },
 });
 
 Object.defineProperty(PointList.prototype, 'size', {
   get() {
     return PointList.prototype.getLength.call(this);
-  }
+  },
 });
 
 define(PointList.prototype, {
@@ -579,7 +579,7 @@ define(PointList.prototype, {
   [inspectSymbol](depth, options) {
     const obj = Array.from(this);
     return `\x1b[1;31m${className(this)}\x1b[0;36m` + obj.reduce((acc, { x, y }) => acc + ` ${x},${y}`, '') + `\x1b[0m`;
-  }
+  },
 });
 
 for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {

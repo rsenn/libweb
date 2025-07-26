@@ -21,7 +21,7 @@ import { SVG } from '../svg.js';
       function() {
         handler.update(index, this.p1 ? [this.p1.cx(), this.p1.cy()] : null, [this.cp1.cx(), this.cp1.cy()], [this.cp2.cx(), this.cp2.cy()], [this.p2.cx(), this.p2.cy()]);
       },
-      this
+      this,
     );
   }
 
@@ -142,7 +142,7 @@ import { SVG } from '../svg.js';
       handlesHandler.init(value === undefined ? true : value, options || {});
 
       return this;
-    }
+    },
   });
 
   SVG.Path.prototype.handles.defaults = {};

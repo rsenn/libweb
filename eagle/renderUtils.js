@@ -29,7 +29,7 @@ export const PinSizes = {
   long: 3,
   middle: 2,
   short: 1,
-  point: 0
+  point: 0,
 };
 
 export const EscapeClassName = name =>
@@ -126,7 +126,7 @@ export const EagleAlignments = {
   'center-right': [0, 1],
   'top-left': [1, -1],
   'top-center': [1, 0],
-  'top-right': [1, 1]
+  'top-right': [1, 1],
 };
 
 export const Alignment = (align, rot = 0, scaling = null, def = 'bottom-left') => {
@@ -143,7 +143,7 @@ export const Alignment = (align, rot = 0, scaling = null, def = 'bottom-left') =
 
 export const SVGAlignments = [
   ['baseline', 'middle' /* 'mathematical'*/, 'hanging'],
-  ['start', 'middle', 'end']
+  ['start', 'middle', 'end'],
 ];
 
 export const AlignmentAttrs = (align, hv = HORIZONTAL_VERTICAL, rot = 0) => {
@@ -169,7 +169,7 @@ export const RotateTransformation = (rot, f = 1) => {
 export const LayerAttributes = layer =>
   layer
     ? {
-        'data-layer': `${layer.number} ${layer.name} color: ${layer.color}`
+        'data-layer': `${layer.number} ${layer.name} color: ${layer.color}`,
       }
     : {};
 
@@ -186,7 +186,7 @@ export const PolarToCartesian = ([radius, angle], origin = { x: 0, y: 0 }) => {
   let a = (angle - 90) * DEG2RAD;
   return {
     x: origin.x + radius * Math.cos(a),
-    y: origin.y + radius * Math.sin(a)
+    y: origin.y + radius * Math.sin(a),
   };
 };
 

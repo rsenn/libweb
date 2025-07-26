@@ -8,9 +8,9 @@ export function useMousePosition() {
       onMouseMove: e => {
         setX(e.nativeEvent.offsetX);
         setY(e.nativeEvent.offsetY);
-      }
+      },
     }),
-    []
+    [],
   );
   return [x, y, bind];
 }

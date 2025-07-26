@@ -26,6 +26,6 @@ export function useElement(callback) {
     unsubscribe(handler) {
       emitter.unsubscribe(handler);
       return this;
-    }
+    },
   }));
 }

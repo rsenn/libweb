@@ -21,7 +21,7 @@ ResizeHandler.prototype._extractPosition = function(event) {
   // Returns { x: .., y: .. }
   return {
     x: event.clientX != null ? event.clientX : event.touches[0].clientX,
-    y: event.clientY != null ? event.clientY : event.touches[0].clientY
+    y: event.clientY != null ? event.clientY : event.touches[0].clientY,
   };
 };
 
@@ -114,7 +114,7 @@ ResizeHandler.prototype.resize = function(event) {
     x: event.detail.x, // x-position of the mouse when resizing started
     y: event.detail.y, // y-position of the mouse when resizing started
     box: this.el.bbox(), // The bounding-box of the element
-    rotation: this.el.transform().rotation // The current rotation of the element
+    rotation: this.el.transform().rotation, // The current rotation of the element
   };
 
   this.resizeLimits = this.options.resizeLimits || this.resize.defaults.resizeLimits;
@@ -407,7 +407,7 @@ ResizeHandler.prototype.snapToGrid = function(diffX, diffY, flag, pointCoordsY) 
     flag = flag == null ? 1 | (1 << 1) : flag;
     temp = [
       (this.parameters.box.x + diffX + (flag & 1 ? 0 : this.parameters.box.width)) % this.options.snapToGrid,
-      (this.parameters.box.y + diffY + (flag & (1 << 1) ? 0 : this.parameters.box.height)) % this.options.snapToGrid
+      (this.parameters.box.y + diffY + (flag & (1 << 1) ? 0 : this.parameters.box.height)) % this.options.snapToGrid,
     ];
   }
 
@@ -488,7 +488,7 @@ export default function() {
       (this.remember('_resizeHandler') || new ResizeHandler(this)).init(options || {});
 
       return this;
-    }
+    },
   });
 
   Element.prototype.resize.defaults = {
@@ -496,6 +496,6 @@ export default function() {
     snapToGrid: 1, // Snaps to a grid of `snapToGrid` Pixels
     constraint: {}, // keep element within constrained box
     resizeLimits: { width: 0, height: 0 }, // rect limit size on resize
-    saveAspectRatio: false // Save aspect ratio when resizing using lt, rt, rb or lb points
+    saveAspectRatio: false, // Save aspect ratio when resizing using lt, rt, rb or lb points
   };
 }

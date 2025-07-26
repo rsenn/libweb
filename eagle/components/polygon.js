@@ -35,6 +35,6 @@ export const Polygon = ({ data, opts = {}, ...props }) => {
     'stroke-width': width * 0.8,
     ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
     style: visible ? {} : { display: 'none' },
-    'data-layer': `${layer.number} ${layer.name}`
+    'data-layer': `${layer.number} ${layer.name}`,
   });
 };

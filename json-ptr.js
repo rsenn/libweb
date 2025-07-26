@@ -31,7 +31,7 @@ const _set = (pointer, subject, value, cursor) => {
     const segment = pointer.shift();
     return {
       ...subject,
-      [segment]: _set(pointer, applySegment(subject, segment, cursor), value, append(segment, cursor))
+      [segment]: _set(pointer, applySegment(subject, segment, cursor), value, append(segment, cursor)),
     };
   } else if(Array.isArray(subject)) {
     const clonedSubject = [...subject];
@@ -76,7 +76,7 @@ const _unset = (pointer, subject, cursor) => {
     const value = applySegment(subject, segment, cursor);
     return {
       ...subject,
-      [segment]: _unset(pointer, value, append(segment, cursor))
+      [segment]: _unset(pointer, value, append(segment, cursor)),
     };
   } else if(Array.isArray(subject)) {
     return subject.filter((_, ndx) => ndx != pointer[0]);

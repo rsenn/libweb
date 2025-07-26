@@ -203,7 +203,7 @@ export class Lexer {
     STRING: 3,
     PUNCTUATION: 4,
     NUMBER: 5,
-    REGEXP: 6
+    REGEXP: 6,
   };
 
   static tokenName(i) {
@@ -242,7 +242,7 @@ export class Lexer {
         console.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`);
         return 0;
       }
-    }
+    },
   ];
 
   constructor(source, file = null) {
@@ -258,7 +258,7 @@ export class Lexer {
       len,
       line: 1,
       column: 1,
-      eof: false
+      eof: false,
     });
 
     const { pos, start } = this;
@@ -309,7 +309,7 @@ export class Lexer {
       let str = s || (this.pos == this.len ? -1 : this.source.substring(this.start, this.pos));
       let value = Lexer.token({
         tok,
-        str
+        str,
       });
       let unget = () => {
         this.tok = value;
@@ -319,7 +319,7 @@ export class Lexer {
       //console.log(`token ${this.line}:`, value);
       return {
         value,
-        done
+        done,
       };
     };
 

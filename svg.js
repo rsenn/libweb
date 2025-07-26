@@ -93,7 +93,7 @@ function proportionalSize(element, width, height, box) {
   }
   return {
     width: width,
-    height: height
+    height: height,
   };
 }
 
@@ -135,7 +135,7 @@ const descriptiveElements = new Set(['desc', 'metadata', 'title']);
 const isDescriptive = element => descriptiveElements.has(element.nodeName);
 const writeDataToDom = (element, data, defaults = {}) => {
   const cloned = {
-    ...data
+    ...data,
   };
   for(const key in cloned) {
     if(cloned[key].valueOf() === defaults[key]) {
@@ -161,7 +161,7 @@ var utils = {
   proportionalSize: proportionalSize,
   radians: radians,
   unCamelCase: unCamelCase,
-  writeDataToDom: writeDataToDom
+  writeDataToDom: writeDataToDom,
 };
 
 // Default namespaces
@@ -175,12 +175,12 @@ var namespaces = {
   html: html,
   svg: svg,
   xlink: xlink,
-  xmlns: xmlns
+  xmlns: xmlns,
 };
 
 const globals = {
   window: typeof window === 'undefined' ? null : window,
-  document: typeof document === 'undefined' ? null : document
+  document: typeof document === 'undefined' ? null : document,
 };
 function registerWindow(win = null, doc = null) {
   globals.window = win;
@@ -427,7 +427,7 @@ registerMethods('Dom', {
   before,
   after,
   insertBefore,
-  insertAfter
+  insertAfter,
 });
 
 // Parse unit value
@@ -483,7 +483,7 @@ var regex = {
   reference: reference,
   rgb: rgb,
   transforms: transforms,
-  whitespace: whitespace
+  whitespace: whitespace,
 };
 
 // Return array of classes on the node
@@ -516,7 +516,7 @@ function removeClass(name) {
         .filter(function (c) {
           return c !== name;
         })
-        .join(' ')
+        .join(' '),
     );
   }
   return this;
@@ -531,7 +531,7 @@ registerMethods('Dom', {
   hasClass,
   addClass,
   removeClass,
-  toggleClass
+  toggleClass,
 });
 
 // Dynamic style generator
@@ -599,7 +599,7 @@ registerMethods('Dom', {
   css,
   show,
   hide,
-  visible
+  visible,
 });
 
 // Store data values on svg nodes
@@ -609,8 +609,8 @@ function data(a, v, r) {
     return this.data(
       map(
         filter(this.node.attributes, el => el.nodeName.indexOf('data-') === 0),
-        el => el.nodeName.slice(5)
-      )
+        el => el.nodeName.slice(5),
+      ),
     );
   } else if(a instanceof Array) {
     const data = {};
@@ -634,7 +634,7 @@ function data(a, v, r) {
   return this;
 }
 registerMethods('Dom', {
-  data
+  data,
 });
 
 // Remember arbitrary data
@@ -675,7 +675,7 @@ function memory() {
 registerMethods('Dom', {
   remember,
   forget,
-  memory
+  memory,
 });
 
 function sixDigitHex(hex) {
@@ -702,7 +702,7 @@ function getParameters(a, b) {
         _b: a.g,
         _c: a.b,
         _d: 0,
-        space: 'rgb'
+        space: 'rgb',
       }
     : is(a, 'xyz')
     ? {
@@ -710,7 +710,7 @@ function getParameters(a, b) {
         _b: a.y,
         _c: a.z,
         _d: 0,
-        space: 'xyz'
+        space: 'xyz',
       }
     : is(a, 'hsl')
     ? {
@@ -718,7 +718,7 @@ function getParameters(a, b) {
         _b: a.s,
         _c: a.l,
         _d: 0,
-        space: 'hsl'
+        space: 'hsl',
       }
     : is(a, 'lab')
     ? {
@@ -726,7 +726,7 @@ function getParameters(a, b) {
         _b: a.a,
         _c: a.b,
         _d: 0,
-        space: 'lab'
+        space: 'lab',
       }
     : is(a, 'lch')
     ? {
@@ -734,7 +734,7 @@ function getParameters(a, b) {
         _b: a.c,
         _c: a.h,
         _d: 0,
-        space: 'lch'
+        space: 'lch',
       }
     : is(a, 'cmyk')
     ? {
@@ -742,13 +742,13 @@ function getParameters(a, b) {
         _b: a.m,
         _c: a.y,
         _d: a.k,
-        space: 'cmyk'
+        space: 'cmyk',
       }
     : {
         _a: 0,
         _b: 0,
         _c: 0,
-        space: 'rgb'
+        space: 'rgb',
       };
   params.space = b || params.space;
   return params;
@@ -903,7 +903,7 @@ class Color {
         _b: b,
         _c: c,
         _d: d,
-        space
+        space,
       });
       // If the user gave us an array, make the color from it
     } else if(a instanceof Array) {
@@ -912,7 +912,7 @@ class Color {
         _a: a[0],
         _b: a[1],
         _c: a[2],
-        _d: a[3] || 0
+        _d: a[3] || 0,
       });
     } else if(a instanceof Object) {
       // Set the object up and assign its values directly
@@ -930,7 +930,7 @@ class Color {
           _b,
           _c,
           _d: 0,
-          space: 'rgb'
+          space: 'rgb',
         });
       } else if(isHex.test(a)) {
         const hexParse = v => parseInt(v, 16);
@@ -940,7 +940,7 @@ class Color {
           _b,
           _c,
           _d: 0,
-          space: 'rgb'
+          space: 'rgb',
         });
       } else throw Error("Unsupported string format, can't construct Color");
     }
@@ -952,38 +952,38 @@ class Color {
         ? {
             r: _a,
             g: _b,
-            b: _c
+            b: _c,
           }
         : this.space === 'xyz'
         ? {
             x: _a,
             y: _b,
-            z: _c
+            z: _c,
           }
         : this.space === 'hsl'
         ? {
             h: _a,
             s: _b,
-            l: _c
+            l: _c,
           }
         : this.space === 'lab'
         ? {
             l: _a,
             a: _b,
-            b: _c
+            b: _c,
           }
         : this.space === 'lch'
         ? {
             l: _a,
             c: _b,
-            h: _c
+            h: _c,
           }
         : this.space === 'cmyk'
         ? {
             c: _a,
             m: _b,
             y: _c,
-            k: _d
+            k: _d,
           }
         : {};
     Object.assign(this, components);
@@ -1180,23 +1180,23 @@ class Point {
   init(x, y) {
     const base = {
       x: 0,
-      y: 0
+      y: 0,
     };
 
     // ensure source as object
     const source = Array.isArray(x)
       ? {
           x: x[0],
-          y: x[1]
+          y: x[1],
         }
       : typeof x === 'object'
       ? {
           x: x.x,
-          y: x.y
+          y: x.y,
         }
       : {
           x: x,
-          y: y
+          y: y,
         };
 
     // merge source
@@ -1275,7 +1275,7 @@ class Matrix {
       ox,
       oy,
       px,
-      py
+      py,
     };
   }
   static fromArray(a) {
@@ -1285,7 +1285,7 @@ class Matrix {
       c: a[2],
       d: a[3],
       e: a[4],
-      f: a[5]
+      f: a[5],
     };
   }
   static isMatrixLike(o) {
@@ -1375,7 +1375,7 @@ class Matrix {
       c: this.c,
       d: this.d,
       e: this.e,
-      f: this.f
+      f: this.f,
     };
   }
 
@@ -1634,7 +1634,7 @@ class Matrix {
       c: this.c,
       d: this.d,
       e: this.e,
-      f: this.f
+      f: this.f,
     };
   }
 }
@@ -1671,7 +1671,7 @@ function parser() {
     const path = svg.path().node;
     parser.nodes = {
       svg,
-      path
+      path,
     };
   }
   if(!parser.nodes.svg.node.parentNode) {
@@ -1879,12 +1879,12 @@ registerMethods({
       const box = new Box(v).transform(
         new Matrix({
           scale: zoomAmount,
-          origin: point
-        })
+          origin: point,
+        }),
       );
       return this.viewbox(box);
-    }
-  }
+    },
+  },
 });
 register(Box, 'Box');
 
@@ -1912,7 +1912,7 @@ extend([List], {
   },
   toArray() {
     return Array.prototype.concat.apply([], this);
-  }
+  },
 });
 const reserved = ['toArray', 'constructor', 'each'];
 List.extend = function(methods) {
@@ -1941,7 +1941,7 @@ function baseFind(query, parent) {
   return new List(
     map((parent || globals.document).querySelectorAll(query), function(node) {
       return adopt(node);
-    })
+    }),
   );
 }
 
@@ -2071,7 +2071,7 @@ function dispatch(node, event, data, options) {
     event = new globals.window.CustomEvent(event, {
       detail: data,
       cancelable: true,
-      ...options
+      ...options,
     });
     n.dispatchEvent(event);
   }
@@ -2128,7 +2128,7 @@ function noop() {}
 const timeline = {
   duration: 400,
   ease: '>',
-  delay: 0
+  delay: 0,
 };
 
 // Default attribute values
@@ -2159,14 +2159,14 @@ const attrs = {
   'stop-opacity': 1,
   'stop-color': '#000000',
   // text
-  'text-anchor': 'start'
+  'text-anchor': 'start',
 };
 
 var defaults = {
   __proto__: null,
   attrs: attrs,
   noop: noop,
-  timeline: timeline
+  timeline: timeline,
 };
 
 class SVGArray extends Array {
@@ -2397,7 +2397,7 @@ class Dom extends EventTarget {
     return new List(
       map(this.node.children, function(node) {
         return adopt(node);
-      })
+      }),
     );
   }
 
@@ -2663,7 +2663,7 @@ class Dom extends EventTarget {
 extend(Dom, {
   attr,
   find,
-  findOne
+  findOne,
 });
 register(Dom, 'Dom');
 
@@ -2809,7 +2809,7 @@ extend(Element, {
   inside,
   point,
   ctm,
-  screenCTM
+  screenCTM,
 });
 register(Element, 'Element');
 
@@ -2819,7 +2819,7 @@ const sugar = {
   fill: ['color', 'opacity', 'rule'],
   prefix: function(t, a) {
     return a === 'color' ? t : t + '-' + a;
-  }
+  },
 };
 
 // Add sugar for fill and stroke
@@ -2861,9 +2861,9 @@ registerMethods(['Element', 'Runner'], {
       {
         rotate: angle,
         ox: cx,
-        oy: cy
+        oy: cy,
       },
-      true
+      true,
     );
   },
   // Map skew to transform
@@ -2873,17 +2873,17 @@ registerMethods(['Element', 'Runner'], {
           {
             skew: x,
             ox: y,
-            oy: cx
+            oy: cx,
           },
-          true
+          true,
         )
       : this.transform(
           {
             skew: [x, y],
             ox: cx,
-            oy: cy
+            oy: cy,
           },
-          true
+          true,
         );
   },
   shear: function(lam, cx, cy) {
@@ -2891,9 +2891,9 @@ registerMethods(['Element', 'Runner'], {
       {
         shear: lam,
         ox: cx,
-        oy: cy
+        oy: cy,
       },
-      true
+      true,
     );
   },
   // Map scale to transform
@@ -2903,35 +2903,35 @@ registerMethods(['Element', 'Runner'], {
           {
             scale: x,
             ox: y,
-            oy: cx
+            oy: cx,
           },
-          true
+          true,
         )
       : this.transform(
           {
             scale: [x, y],
             ox: cx,
-            oy: cy
+            oy: cy,
           },
-          true
+          true,
         );
   },
   // Map translate to transform
   translate: function(x, y) {
     return this.transform(
       {
-        translate: [x, y]
+        translate: [x, y],
       },
-      true
+      true,
     );
   },
   // Map relative translations to transform
   relative: function(x, y) {
     return this.transform(
       {
-        relative: [x, y]
+        relative: [x, y],
       },
-      true
+      true,
     );
   },
   // Map flip to transform
@@ -2943,22 +2943,22 @@ registerMethods(['Element', 'Runner'], {
     return this.transform(
       {
         flip: direction,
-        origin: origin
+        origin: origin,
       },
-      true
+      true,
     );
   },
   // Opacity
   opacity: function(value) {
     return this.attr('opacity', value);
-  }
+  },
 });
 registerMethods('radius', {
   // Add x and y radius
   radius: function(x, y = x) {
     const type = (this._element || this).type;
     return type === 'radialGradient' ? this.attr('r', new SVGNumber(x)) : this.rx(x).ry(y);
-  }
+  },
 });
 registerMethods('Path', {
   // Get path length
@@ -2968,7 +2968,7 @@ registerMethods('Path', {
   // Get point at length
   pointAt: function(length) {
     return new Point(this.node.getPointAtLength(length));
-  }
+  },
 });
 registerMethods(['Element', 'Runner'], {
   // Set font
@@ -2984,7 +2984,7 @@ registerMethods(['Element', 'Runner'], {
       : a === 'size' || a === 'family' || a === 'weight' || a === 'stretch' || a === 'variant' || a === 'style'
       ? this.attr('font-' + a, v)
       : this.attr(a, v);
-  }
+  },
 });
 
 // Add events to elements
@@ -3009,7 +3009,7 @@ const methods = [
   'pointermove',
   'pointerup',
   'pointerleave',
-  'pointercancel'
+  'pointercancel',
 ].reduce(function (last, event) {
   // add event to Element
   const fn = function(f) {
@@ -3043,7 +3043,7 @@ function matrixify() {
         kv[0],
         kv[1].split(delimiter).map(function (str) {
           return parseFloat(str);
-        })
+        }),
       ];
     })
     .reverse()
@@ -3083,7 +3083,7 @@ function transform(o, relative) {
     // Set the origin according to the defined transform
     o = {
       ...o,
-      origin: getOrigin(o, this)
+      origin: getOrigin(o, this),
     };
   }
 
@@ -3097,7 +3097,7 @@ registerMethods('Element', {
   matrixify,
   toParent,
   toRoot,
-  transform
+  transform,
 });
 
 class Container extends Element {
@@ -3186,7 +3186,7 @@ var circled = {
   ry: ry,
   width: width$2,
   x: x$3,
-  y: y$3
+  y: y$3,
 };
 
 class Ellipse extends Shape {
@@ -3203,7 +3203,7 @@ registerMethods('Container', {
   // Create an ellipse
   ellipse: wrapWithAttrCheck(function (width = 0, height = width) {
     return this.put(new Ellipse()).size(width, height).move(0, 0);
-  })
+  }),
 });
 register(Ellipse, 'Ellipse');
 
@@ -3238,29 +3238,29 @@ function from(x, y) {
   return (this._element || this).type === 'radialGradient'
     ? this.attr({
         fx: new SVGNumber(x),
-        fy: new SVGNumber(y)
+        fy: new SVGNumber(y),
       })
     : this.attr({
         x1: new SVGNumber(x),
-        y1: new SVGNumber(y)
+        y1: new SVGNumber(y),
       });
 }
 function to(x, y) {
   return (this._element || this).type === 'radialGradient'
     ? this.attr({
         cx: new SVGNumber(x),
-        cy: new SVGNumber(y)
+        cy: new SVGNumber(y),
       })
     : this.attr({
         x2: new SVGNumber(x),
-        y2: new SVGNumber(y)
+        y2: new SVGNumber(y),
       });
 }
 
 var gradiented = {
   __proto__: null,
   from: from,
-  to: to
+  to: to,
 };
 
 class Gradient extends Container {
@@ -3308,14 +3308,14 @@ registerMethods({
     // Create gradient element in defs
     gradient(...args) {
       return this.defs().gradient(...args);
-    }
+    },
   },
   // define gradient
   Defs: {
     gradient: wrapWithAttrCheck(function (type, block) {
       return this.put(new Gradient(type)).update(block);
-    })
-  }
+    }),
+  },
 });
 register(Gradient, 'Gradient');
 
@@ -3364,7 +3364,7 @@ registerMethods({
     // Create pattern element in defs
     pattern(...args) {
       return this.defs().pattern(...args);
-    }
+    },
   },
   Defs: {
     pattern: wrapWithAttrCheck(function (width, height, block) {
@@ -3373,10 +3373,10 @@ registerMethods({
         y: 0,
         width: width,
         height: height,
-        patternUnits: 'userSpaceOnUse'
+        patternUnits: 'userSpaceOnUse',
       });
-    })
-  }
+    }),
+  },
 });
 register(Pattern, 'Pattern');
 
@@ -3409,7 +3409,7 @@ class Image extends Shape {
           callback.call(this, e);
         }
       },
-      this
+      this,
     );
     on(img, 'load error', function() {
       // dont forget to unbind memory leaking events
@@ -3440,8 +3440,8 @@ registerMethods({
     // create image element, load image and set its size
     image: wrapWithAttrCheck(function (source, callback) {
       return this.put(new Image()).size(0, 0).load(source, callback);
-    })
-  }
+    }),
+  },
 });
 register(Image, 'Image');
 
@@ -3521,7 +3521,7 @@ class PointArray extends SVGArray {
       x1: this[0][0],
       y1: this[0][1],
       x2: this[1][0],
-      y2: this[1][1]
+      y2: this[1][1],
     };
   }
 
@@ -3583,7 +3583,7 @@ var pointed = {
   height: height$1,
   width: width$1,
   x: x$2,
-  y: y$2
+  y: y$2,
 };
 
 class Line extends Shape {
@@ -3596,7 +3596,7 @@ class Line extends Shape {
   array() {
     return new PointArray([
       [this.attr('x1'), this.attr('y1')],
-      [this.attr('x2'), this.attr('y2')]
+      [this.attr('x2'), this.attr('y2')],
     ]);
   }
 
@@ -3614,7 +3614,7 @@ class Line extends Shape {
         x1,
         y1,
         x2,
-        y2
+        y2,
       };
     } else {
       x1 = new PointArray(x1).toLine();
@@ -3636,8 +3636,8 @@ registerMethods({
       // make sure plot is called as a setter
       // x1 is not necessarily a number, it can also be an array, a string and a PointArray
       return Line.prototype.plot.apply(this.put(new Line()), args[0] != null ? args : [0, 0, 0, 0]);
-    })
-  }
+    }),
+  },
 });
 register(Line, 'Line');
 
@@ -3687,7 +3687,7 @@ registerMethods({
     marker(...args) {
       // Create marker element in defs
       return this.defs().marker(...args);
-    }
+    },
   },
   Defs: {
     // Create marker
@@ -3699,7 +3699,7 @@ registerMethods({
         .viewbox(0, 0, width, height)
         .attr('orient', 'auto')
         .update(block);
-    })
+    }),
   },
   marker: {
     // Create and attach markers
@@ -3713,8 +3713,8 @@ registerMethods({
       // Set marker attribute
       marker = arguments[1] instanceof Marker ? arguments[1] : this.defs().marker(width, height, block);
       return this.attr(attr, marker);
-    }
-  }
+    },
+  },
 });
 register(Marker, 'Marker');
 
@@ -3799,7 +3799,7 @@ const easing = {
       }
       return step / jumps;
     };
-  }
+  },
 };
 class Stepper {
   done() {
@@ -3888,7 +3888,7 @@ class Spring extends Controller {
 }
 extend(Spring, {
   duration: makeSetterGetter('_duration', recalculate),
-  overshoot: makeSetterGetter('_overshoot', recalculate)
+  overshoot: makeSetterGetter('_overshoot', recalculate),
 });
 class PID extends Controller {
   constructor(p = 0.1, i = 0.01, d = 0, windup = 1000) {
@@ -3919,7 +3919,7 @@ extend(PID, {
   windup: makeSetterGetter('_windup'),
   p: makeSetterGetter('P'),
   i: makeSetterGetter('I'),
-  d: makeSetterGetter('D')
+  d: makeSetterGetter('D'),
 });
 
 const segmentParameters = {
@@ -3932,7 +3932,7 @@ const segmentParameters = {
   Q: 4,
   T: 2,
   A: 7,
-  Z: 0
+  Z: 0,
 };
 const pathHandlers = {
   M: function(c, p, p0) {
@@ -3982,7 +3982,7 @@ const pathHandlers = {
     p.x = c[5];
     p.y = c[6];
     return ['A', c[0], c[1], c[2], c[3], c[4], c[5], c[6]];
-  }
+  },
 };
 const mlhvqtcsaz = 'mlhvqtcsaz'.split('');
 for(let i = 0, il = mlhvqtcsaz.length; i < il; ++i) {
@@ -4066,7 +4066,7 @@ function pathParser(d, toAbsolute = true) {
     hasExponent: false,
     absolute: toAbsolute,
     p0: new Point(),
-    p: new Point()
+    p: new Point(),
   };
   while(((parser.lastToken = token), (token = d.charAt(index++)))) {
     if(!parser.inSegment) {
@@ -4393,7 +4393,7 @@ class TransformBag {
         translateX: obj[4],
         translateY: obj[5],
         originX: obj[6],
-        originY: obj[7]
+        originY: obj[7],
       };
     }
     Object.assign(this, TransformBag.defaults, obj);
@@ -4412,7 +4412,7 @@ TransformBag.defaults = {
   translateX: 0,
   translateY: 0,
   originX: 0,
-  originY: 0
+  originY: 0,
 };
 const sortByKey = (a, b) => {
   return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0;
@@ -4509,7 +4509,7 @@ function makeMorphable() {
         return stepper.step(i, to[index], pos, context[index], context);
       };
       return this.fromArray(from.map(mapper));
-    }
+    },
   });
 }
 
@@ -4577,8 +4577,8 @@ registerMethods({
     path: wrapWithAttrCheck(function (d) {
       // make sure plot is called as a setter
       return this.put(new Path()).plot(d || new PathArray());
-    })
-  }
+    }),
+  },
 });
 register(Path, 'Path');
 
@@ -4615,7 +4615,7 @@ var poly = {
   clear: clear,
   move: move$2,
   plot: plot,
-  size: size$1
+  size: size$1,
 };
 
 class Polygon extends Shape {
@@ -4630,8 +4630,8 @@ registerMethods({
     polygon: wrapWithAttrCheck(function (p) {
       // make sure plot is called as a setter
       return this.put(new Polygon()).plot(p || new PointArray());
-    })
-  }
+    }),
+  },
 });
 extend(Polygon, pointed);
 extend(Polygon, poly);
@@ -4649,8 +4649,8 @@ registerMethods({
     polyline: wrapWithAttrCheck(function (p) {
       // make sure plot is called as a setter
       return this.put(new Polyline()).plot(p || new PointArray());
-    })
-  }
+    }),
+  },
 });
 extend(Polyline, pointed);
 extend(Polyline, poly);
@@ -4664,15 +4664,15 @@ class Rect extends Shape {
 }
 extend(Rect, {
   rx,
-  ry
+  ry,
 });
 registerMethods({
   Container: {
     // Create a rect element
     rect: wrapWithAttrCheck(function (width, height) {
       return this.put(new Rect()).size(width, height);
-    })
-  }
+    }),
+  },
 });
 register(Rect, 'Rect');
 
@@ -4699,7 +4699,7 @@ class Queue {
         : {
             value: value,
             next: null,
-            prev: null
+            prev: null,
           };
 
     // Deal with the queue being empty or populated
@@ -4751,7 +4751,7 @@ const Animator = {
   frame(fn) {
     // Store the node
     const node = Animator.frames.push({
-      run: fn
+      run: fn,
     });
 
     // Request an animation frame if we don't have one
@@ -4771,7 +4771,7 @@ const Animator = {
     // Add the timeout to the end of the queue
     const node = Animator.timeouts.push({
       run: fn,
-      time: time
+      time: time,
     });
 
     // Request another animation frame if we need one
@@ -4828,7 +4828,7 @@ const Animator = {
 
     // If we have remaining timeouts or frames, draw until we don't anymore
     Animator.nextDraw = Animator.timeouts.first() || Animator.frames.first() ? globals.window.requestAnimationFrame(Animator._draw) : null;
-  }
+  },
 };
 
 const makeSchedule = function(runnerInfo) {
@@ -4839,7 +4839,7 @@ const makeSchedule = function(runnerInfo) {
     start: start,
     duration: duration,
     end: end,
-    runner: runnerInfo.runner
+    runner: runnerInfo.runner,
   };
 };
 const defaultSource = function() {
@@ -4946,7 +4946,7 @@ class Timeline extends EventTarget {
     const runnerInfo = {
       persist: persist === null ? this._persist : persist,
       start: absoluteStartTime + delay,
-      runner
+      runner,
     };
     this._lastRunnerId = runner.id;
     this._runners.push(runnerInfo);
@@ -5136,8 +5136,8 @@ registerMethods({
         this._timeline = timeline;
         return this;
       }
-    }
-  }
+    },
+  },
 });
 
 class Runner extends EventTarget {
@@ -5217,7 +5217,7 @@ class Runner extends EventTarget {
       swing: swing,
       times: times,
       wait: wait,
-      when: when
+      when: when,
     };
   }
   active(enabled) {
@@ -5382,7 +5382,7 @@ class Runner extends EventTarget {
       retarget: retargetFn,
       isTransform: isTransform,
       initialised: false,
-      finished: false
+      finished: false,
     });
     const timeline = this.timeline();
     timeline && this.timeline()._continue();
@@ -5515,7 +5515,7 @@ class Runner extends EventTarget {
   _rememberMorpher(method, morpher) {
     this._history[method] = {
       morpher: morpher,
-      caller: this._queue[this._queue.length - 1]
+      caller: this._queue[this._queue.length - 1],
     };
 
     // We have to resume the timeline in case a controller
@@ -5588,7 +5588,7 @@ class FakeRunner {
 extend([Runner, FakeRunner], {
   mergeWith(runner) {
     return new FakeRunner(runner.transforms.lmultiply(this.transforms), runner.id);
-  }
+  },
 });
 
 // FakeRunner.emptyRunner = new FakeRunner()
@@ -5707,8 +5707,8 @@ registerMethods({
       if(this._frameId == null) {
         this._transformationRunners = new RunnerArray().add(new FakeRunner(new Matrix(this)));
       }
-    }
-  }
+    },
+  },
 });
 
 // Will output the elements from array A that are not in the array B
@@ -5724,7 +5724,7 @@ extend(Runner, {
   styleAttr(type, nameOrAttrs, val) {
     if(typeof nameOrAttrs === 'string') {
       return this.styleAttr(type, {
-        [nameOrAttrs]: val
+        [nameOrAttrs]: val,
       });
     }
     let attrs = nameOrAttrs;
@@ -5769,7 +5769,7 @@ extend(Runner, {
         // Make sure that we save the work we did so we don't need it to do again
         keys = newKeys;
         attrs = newToAttrs;
-      }
+      },
     );
     this._rememberMorpher(type, morpher);
     return this;
@@ -5788,7 +5788,7 @@ extend(Runner, {
       function(newLevel, newPoint) {
         point = newPoint;
         morpher.to(newLevel);
-      }
+      },
     );
     this._rememberMorpher('zoom', morpher);
     return this;
@@ -5849,7 +5849,7 @@ extend(Runner, {
       const { x, y } = new Point(origin).transform(element._currentTransform(this));
       let target = new Matrix({
         ...transforms,
-        origin: [x, y]
+        origin: [x, y],
       });
       let start = this._isDeclarative && current ? current : startTransform;
       if(affine) {
@@ -5895,7 +5895,7 @@ extend(Runner, {
       // overwrite the old transformations with the new ones
       transforms = {
         ...newTransforms,
-        origin
+        origin,
       };
     }
     this.queue(setup, run, retarget, true);
@@ -5946,7 +5946,7 @@ extend(Runner, {
       },
       function(newTo) {
         morpher.to(from + new SVGNumber(newTo));
-      }
+      },
     );
 
     // Register the morpher so that if it is changed again, we can retarget it
@@ -5966,7 +5966,7 @@ extend(Runner, {
       function(pos) {
         this.element()[method](morpher.at(pos));
         return morpher.done();
-      }
+      },
     );
 
     // Register the morpher so that if it is changed again, we can retarget it
@@ -6033,7 +6033,7 @@ extend(Runner, {
       function(pos) {
         this._element.plot(morpher.at(pos));
         return morpher.done();
-      }
+      },
     );
     this._rememberMorpher('plot', morpher);
     return this;
@@ -6051,20 +6051,20 @@ extend(Runner, {
       return this.update({
         offset: arguments[0],
         color: arguments[1],
-        opacity: arguments[2]
+        opacity: arguments[2],
       });
     }
     if(o.opacity != null) this.attr('stop-opacity', o.opacity);
     if(o.color != null) this.attr('stop-color', o.color);
     if(o.offset != null) this.attr('offset', o.offset);
     return this;
-  }
+  },
 });
 extend(Runner, {
   rx,
   ry,
   from,
-  to
+  to,
 });
 register(Runner, 'Runner');
 
@@ -6088,13 +6088,13 @@ class Svg extends Container {
     if(!this.isRoot()) return this.root().namespace();
     return this.attr({
       xmlns: svg,
-      version: '1.1'
+      version: '1.1',
     }).attr('xmlns:xlink', xlink, xmlns);
   }
   removeNamespace() {
     return this.attr({
       xmlns: null,
-      version: null
+      version: null,
     })
       .attr('xmlns:xlink', null, xmlns)
       .attr('xmlns:svgjs', null, xmlns);
@@ -6112,8 +6112,8 @@ registerMethods({
     // Create nested svg document
     nested: wrapWithAttrCheck(function () {
       return this.put(new Svg());
-    })
-  }
+    }),
+  },
 });
 register(Svg, 'Svg', true);
 
@@ -6127,8 +6127,8 @@ registerMethods({
   Container: {
     symbol: wrapWithAttrCheck(function () {
       return this.put(new Symbol());
-    })
-  }
+    }),
+  },
 });
 register(Symbol, 'Symbol');
 
@@ -6217,7 +6217,7 @@ var textable = {
   move: move$1,
   plain: plain,
   x: x$1,
-  y: y$1
+  y: y$1,
 };
 
 class Text extends Shape {
@@ -6281,7 +6281,7 @@ class Text extends Shape {
   }
   writeDataToDom() {
     writeDataToDom(this, this.dom, {
-      leading: 1.3
+      leading: 1.3,
     });
     return this;
   }
@@ -6340,8 +6340,8 @@ registerMethods({
     // Create plain text element
     plain: wrapWithAttrCheck(function (text = '') {
       return this.put(new Text()).plain(text);
-    })
-  }
+    }),
+  },
 });
 register(Text, 'Text');
 
@@ -6408,13 +6408,13 @@ registerMethods({
 
       // add new tspan
       return this.put(tspan).text(text);
-    })
+    }),
   },
   Text: {
     newLine: function(text = '') {
       return this.tspan(text).newLine();
-    }
-  }
+    },
+  },
 });
 register(Tspan, 'Tspan');
 
@@ -6445,15 +6445,15 @@ extend(Circle, {
   cx: cx$1,
   cy: cy$1,
   width: width$2,
-  height: height$2
+  height: height$2,
 });
 registerMethods({
   Container: {
     // Create circle element
     circle: wrapWithAttrCheck(function (size = 0) {
       return this.put(new Circle()).size(size).move(0, 0);
-    })
-  }
+    }),
+  },
 });
 register(Circle, 'Circle');
 
@@ -6481,7 +6481,7 @@ registerMethods({
     // Create clipping element
     clip: wrapWithAttrCheck(function () {
       return this.defs().put(new ClipPath());
-    })
+    }),
   },
   Element: {
     // Distribute clipPath to svg element
@@ -6498,8 +6498,8 @@ registerMethods({
     // Unclip element
     unclip() {
       return this.attr('clip-path', null);
-    }
-  }
+    },
+  },
 });
 register(ClipPath, 'ClipPath');
 
@@ -6512,8 +6512,8 @@ registerMethods({
   Container: {
     foreignObject: wrapWithAttrCheck(function (width, height) {
       return this.put(new ForeignObject()).size(width, height);
-    })
-  }
+    }),
+  },
 });
 register(ForeignObject, 'ForeignObject');
 
@@ -6590,7 +6590,7 @@ var containerGeometry = {
   size: size,
   width: width,
   x: x,
-  y: y
+  y: y,
 };
 
 class G extends Container {
@@ -6604,8 +6604,8 @@ registerMethods({
     // Create a group element
     group: wrapWithAttrCheck(function () {
       return this.put(new G());
-    })
-  }
+    }),
+  },
 });
 register(G, 'G');
 
@@ -6630,7 +6630,7 @@ registerMethods({
     // Create a hyperlink element
     link: wrapWithAttrCheck(function (url) {
       return this.put(new A()).to(url);
-    })
+    }),
   },
   Element: {
     unlink() {
@@ -6665,8 +6665,8 @@ registerMethods({
         return link;
       }
       return null;
-    }
-  }
+    },
+  },
 });
 register(A, 'A');
 
@@ -6694,7 +6694,7 @@ registerMethods({
   Container: {
     mask: wrapWithAttrCheck(function () {
       return this.defs().put(new Mask());
-    })
+    }),
   },
   Element: {
     // Distribute mask to svg element
@@ -6711,8 +6711,8 @@ registerMethods({
     // Unmask element
     unmask() {
       return this.attr('mask', null);
-    }
-  }
+    },
+  },
 });
 register(Mask, 'Mask');
 
@@ -6727,7 +6727,7 @@ class Stop extends Element {
       o = {
         offset: arguments[0],
         color: arguments[1],
-        opacity: arguments[2]
+        opacity: arguments[2],
       };
     }
 
@@ -6743,8 +6743,8 @@ registerMethods({
     // Add a color stop
     stop: function(offset, color, opacity) {
       return this.put(new Stop()).update(offset, color, opacity);
-    }
-  }
+    },
+  },
 });
 register(Stop, 'Stop');
 
@@ -6770,7 +6770,7 @@ class Style extends Element {
     return this.rule('@font-face', {
       fontFamily: name,
       src: src,
-      ...params
+      ...params,
     });
   }
   rule(selector, obj) {
@@ -6783,7 +6783,7 @@ registerMethods('Dom', {
   },
   fontface(name, src, params) {
     return this.put(new Style()).font(name, src, params);
-  }
+  },
 });
 register(Style, 'Style');
 
@@ -6822,7 +6822,7 @@ registerMethods({
         text = this.text(text);
       }
       return text.path(path);
-    })
+    }),
   },
   Text: {
     // Create path for text to run on
@@ -6852,7 +6852,7 @@ registerMethods({
     // Get the textPath children
     textPath() {
       return this.findOne('textPath');
-    }
+    },
   },
   Path: {
     // creates a textPath from this path
@@ -6872,8 +6872,8 @@ registerMethods({
 
       // Does not work in IE11. Use when IE support is dropped
       // return baseFind('svg textPath[*|href*=' + this.id() + ']')
-    }
-  }
+    },
+  },
 });
 
 TextPath.prototype.MorphArray = PathArray;
@@ -6895,8 +6895,8 @@ registerMethods({
     // Create a use element
     use: wrapWithAttrCheck(function (element, file) {
       return this.put(new Use()).use(element, file);
-    })
-  }
+    }),
+  },
 });
 register(Use, 'Use');
 
@@ -7006,6 +7006,6 @@ export {
   utils,
   windowEvents,
   withWindow,
-  wrapWithAttrCheck
+  wrapWithAttrCheck,
 };
 //# sourceMappingURL=svg.esm.js.map

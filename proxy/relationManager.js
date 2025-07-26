@@ -149,7 +149,7 @@ function addRelations(instance, specs) {
         enumerable: subjectSpec.enumerable,
         configurable: true,
         writable: false,
-        value: new RelationManager(instance, subjectSpec, spec)
+        value: new RelationManager(instance, subjectSpec, spec),
       });
     } else if(!instance[subjectSpec.property]) {
       Object.defineProperty(instance, subjectSpec.property, {
@@ -158,7 +158,7 @@ function addRelations(instance, specs) {
         get() {
           return set.value;
         },
-        set
+        set,
       });
     }
   }
@@ -227,7 +227,7 @@ Relation.define = function(scope) {
             proto = Object.getPrototypeOf(proto);
           }
           return object;
-        }
+        },
       });
       //save a version of the spec class in this closure scope
       let cls = spec.class;
@@ -261,14 +261,14 @@ Relation.define = function(scope) {
     if(i > 0) {
       spec.class.prototype.relations.push({
         subject: subjectSpec,
-        object: spec
+        object: spec,
       });
     }
   });
   if(specs.length === 1) {
     subjectSpec.class.prototype.relations.push({
       subject: subjectSpec,
-      object: subjectSpec
+      object: subjectSpec,
     });
   }
   //define the actual Relation class

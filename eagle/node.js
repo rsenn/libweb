@@ -79,11 +79,11 @@ export class EagleNode {
           if(i == 0) ignore();
           if(!value || !value.attributes || !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)) ignore();
           return p.up(2);
-        })
+        }),
       ].map(path => {
         let v = path.deref(owner.raw, true);
         return t(owner, path, v);
-      })
+      }),
     );
 
     return chain;
@@ -209,7 +209,7 @@ export class EagleNode {
     if(typeof node == 'string')
       node = {
         tagName: node,
-        children: []
+        children: [],
       };
 
     node.attributes = attributes;
@@ -350,9 +350,9 @@ export class EagleNode {
               text(':', 1, 36),
               /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(attr)
                 ? text(getAttr(attr), 1, 36)
-                : text("'" + getAttr(attr) + "'", 1, 32)
+                : text("'" + getAttr(attr) + "'", 1, 32),
             ),
-          attrs
+          attrs,
         );
     }
 
@@ -445,8 +445,8 @@ export class EagleNode {
       tryCatch(
         () => ImmutableXPath.from(this.path, this.document.raw),
         xpath => xpath,
-        () => Object.setPrototypeOf([...this.path], ImmutableXPath.prototype)
-      )
+        () => Object.setPrototypeOf([...this.path], ImmutableXPath.prototype),
+      ),
     );
   }
 
@@ -479,14 +479,14 @@ define(
   EagleNode.prototype,
   nonenumerable({
     [Symbol.toStringTag]: 'EagleNode',
-    ref: null
-  })
+    ref: null,
+  }),
 );
 
 define(
   EagleNode,
   nonenumerable({
     raw: node => node2raw.get(node),
-    get: raw => raw2node.get(raw)
-  })
+    get: raw => raw2node.get(raw),
+  }),
 );

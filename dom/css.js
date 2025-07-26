@@ -48,7 +48,7 @@ function adapter(obj, getLength = obj => obj.length, getKey = (obj, index) => ob
     },
     toMap() {
       return new Map(this.entries());
-    }
+    },
   };
   return adapter;
 }
@@ -77,7 +77,7 @@ const getStyleMap = (obj, key) => {
       obj.styleMap
         .getAll(key)
         .map(v => String(v))
-        .join(' ')
+        .join(' '),
   );
 };
 const getStyleSheet = (obj, key) => {
@@ -87,7 +87,7 @@ const getStyleSheet = (obj, key) => {
     sheet.rules,
     obj => (obj && obj.length !== undefined ? obj.length : 0),
     (obj, i) => obj[i].selectorText,
-    getStyleMap
+    getStyleMap,
   );
 };
 
@@ -99,8 +99,8 @@ export class CSS {
   static getDocument = memoize(() =>
     tryCatch(
       () => window.document,
-      d => (console.log('document:', d), d)
-    )
+      d => (console.log('document:', d), d),
+    ),
   );
 
   static list = memoize(doc => {
@@ -109,7 +109,7 @@ export class CSS {
       [...doc.styleSheets],
       obj => obj.length,
       (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
-      getStyleSheet
+      getStyleSheet,
     );
 
     return [...adapter].map(([file, stylesheet]) => ({ file, stylesheet }));
@@ -142,7 +142,7 @@ export class CSS {
       [...Element.findAll(selector)]
         .filter(e => e.classList.length)
         .map(e => [...e.classList])
-        .flat()
+        .flat(),
     );
   }
 
@@ -229,7 +229,7 @@ export class CSS {
       },
       get text() {
         return (this.element.innerText + '').trim();
-      }
+      },
     };
 
     const obj = Object.create(null);

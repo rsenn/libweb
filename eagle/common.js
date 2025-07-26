@@ -8,11 +8,11 @@ const pathPadding = isBrowser() ? 0 : 40;
 export const coloring = isBrowser()
   ? {
       concat: (...args) => args.join(''),
-      text: t => t
+      text: t => t,
     }
   : {
       concat: (...args) => args.join(''),
-      text: (t, ...ansi) => `\x1b[${ansi.join(';')}m${t}\x1b[0m`
+      text: (t, ...ansi) => `\x1b[${ansi.join(';')}m${t}\x1b[0m`,
     };
 
 export const concat = coloring.concat.bind(coloring);
@@ -42,7 +42,7 @@ export const Palette = {
       [165, 165, 165],
       [180, 180, 180], // 16
       [90, 90, 90],
-      [192, 192, 192] // 24
+      [192, 192, 192], // 24
     ].map(c => m(...c)),
   schematic: (m = (r, g, b) => [r, g, b]) =>
     [
@@ -62,8 +62,8 @@ export const Palette = {
       [255, 255, 75],
       [75, 75, 75],
       [165, 165, 165],
-      [175, 175, 175]
-    ].map(c => m(...c))
+      [175, 175, 175],
+    ].map(c => m(...c)),
 };
 
 export const dump = (o, depth = 2, breakLength = 400) => {
@@ -83,7 +83,7 @@ export const dump = (o, depth = 2, breakLength = 400) => {
       depth,
       newline: '',
       colors: !isBrowser(),
-      breakLength
+      breakLength,
     });
   return s;
 };

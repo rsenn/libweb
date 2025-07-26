@@ -30,7 +30,7 @@ function multiply(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, A, B, C, D, E,
     m * A + n * E + o * I + p * M,
     m * B + n * F + o * J + p * N,
     m * C + n * G + o * K + p * O,
-    m * D + n * H + o * L + p * P
+    m * D + n * H + o * L + p * P,
   ];
 }
 

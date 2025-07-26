@@ -61,7 +61,7 @@ SVG.extend(SVG.PathArray, {
     this.destination.value = destArr;
 
     return this;
-  }
+  },
 });
 
 // sorry for the long declaration

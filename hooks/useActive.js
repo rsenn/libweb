@@ -5,9 +5,9 @@ export function useActive() {
   const bind = useMemo(
     () => ({
       onMouseDown: e => void setActive(true),
-      onMouseUp: e => void setActive(false)
+      onMouseUp: e => void setActive(false),
     }),
-    []
+    [],
   );
   return [isActive, bind];
 }

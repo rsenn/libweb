@@ -107,13 +107,13 @@ class FetchQL extends FetchInterceptor {
           {},
           {
             Accept: 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
-          headers
+          headers,
         ),
-        credentials: 'same-origin'
+        credentials: 'same-origin',
       },
-      requestOptions
+      requestOptions,
     );
 
     this.url = url;
@@ -128,7 +128,7 @@ class FetchQL extends FetchInterceptor {
 
     this.callbacks = {
       onStart,
-      onEnd
+      onEnd,
     };
 
     this.addInterceptors(interceptors);
@@ -157,7 +157,7 @@ class FetchQL extends FetchInterceptor {
     const body = {
       operationName,
       query,
-      variables: vars
+      variables: vars,
     };
     options.body = JSON.stringify(body);
 
@@ -173,9 +173,9 @@ class FetchQL extends FetchInterceptor {
           errors: [
             {
               message: res.statusText,
-              stack: res
-            }
-          ]
+              stack: res,
+            },
+          ],
         };
       })
       .then(
@@ -193,7 +193,7 @@ class FetchQL extends FetchInterceptor {
               return reject(errors);
             }
             return resolve({ data, errors });
-          })
+          }),
       );
   }
 
@@ -246,7 +246,7 @@ class FetchQL extends FetchInterceptor {
       type =>
         `${type}: __type(name: "${type}") {
         ...EnumFragment
-      }`
+      }`,
     );
 
     const query = `
@@ -278,9 +278,9 @@ class FetchQL extends FetchInterceptor {
           errors: [
             {
               message: res.statusText,
-              stack: res
-            }
-          ]
+              stack: res,
+            },
+          ],
         };
       })
       .then(
@@ -305,7 +305,7 @@ class FetchQL extends FetchInterceptor {
               return key;
             });
             return resolve({ data: passData, errors });
-          })
+          }),
       );
   }
 

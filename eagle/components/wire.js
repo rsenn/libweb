@@ -24,7 +24,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
 
   const extraStyle = {
     'stroke-linecap': 'round',
-    'stroke-linejoin': 'round'
+    'stroke-linejoin': 'round',
   };
 
   return h('path', {
@@ -38,6 +38,6 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     'data-path': data.path.join(' '),
     style: visible ? { ...extraStyle } : { ...extraStyle, display: 'none' },
     transform,
-    ...props
+    ...props,
   });
 };

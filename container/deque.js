@@ -188,7 +188,7 @@ Object.defineProperty(Deque.prototype, 'length', {
   },
   set() {
     throw new RangeError('');
-  }
+  },
 });
 
 Deque.prototype._checkCapacity = function Deque$_checkCapacity(size) {

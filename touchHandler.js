@@ -88,7 +88,7 @@ class Line {
       x: Math.min(this.x1, this.x2),
       y: Math.min(this.y1, this.y2),
       width: Math.abs(this.x1 - this.x2),
-      height: Math.abs(this.y1 - this.y2)
+      height: Math.abs(this.y1 - this.y2),
     };
   }
 }
@@ -144,7 +144,7 @@ export function MovementListener(handler, options) {
         cancel,
         type,
         index,
-        active
+        active,
       };
       end.time = Date.now() - starttime;
       if(end && prev) end.timediff = end.time - prev.time;
@@ -172,7 +172,7 @@ export function MovementListener(handler, options) {
 
     const getPos = (obj, prefix) => ({
       x: obj[prefix + 'X'],
-      y: obj[prefix + 'Y']
+      y: obj[prefix + 'Y'],
     });
     [...touches].forEach((touch, touchNum) => {
       let { rotationAngle, target } = touch;
@@ -186,7 +186,7 @@ export function MovementListener(handler, options) {
         currentTarget,
         button,
         buttons,
-        ...client
+        ...client,
       };
       let angle;
       if(started) {
@@ -201,7 +201,7 @@ export function MovementListener(handler, options) {
           time: 0,
           ...newpos,
           client,
-          page
+          page,
         };
         started = false;
         end = null;
@@ -283,7 +283,7 @@ export function MultitouchListener(handler, options) {
 
   const getPos = (obj, prefix) => ({
     x: obj[prefix + 'X'],
-    y: obj[prefix + 'Y']
+    y: obj[prefix + 'Y'],
   });
 
   const cancel = new trkl(() => {
@@ -356,7 +356,7 @@ export function MultitouchListener(handler, options) {
   self.handler.subscribe(event =>
     //console.debug('MultitouchListener handler(', event, ')');
 
-    handler(event)
+    handler(event),
   );
   return self;
 }
@@ -421,12 +421,12 @@ export function TurnListener(handler, options) {
         angle,
         direction,
         prev,
-        cancel: cancel.bind(event)
+        cancel: cancel.bind(event),
       };
       handler(turnEvent);
       prev = turnEvent;
     }, options),
-    { num: 1, ...options }
+    { num: 1, ...options },
   );
 }
 
@@ -443,7 +443,7 @@ export function SelectionListener(handler, options) {
     noscroll: true,
     color: 'white',
     shadow: 'black',
-    ...options
+    ...options,
   };
   function cancel(event) {
     running = false;
@@ -493,7 +493,7 @@ export function SelectionRenderer() {
         position: 'fixed',
         border: '3px dashed white',
         filter: `drop-shadow(1px 1px 1px black)`,
-        zIndex: 999999999
+        zIndex: 999999999,
       });
       this.update(rect);
     },
@@ -504,7 +504,7 @@ export function SelectionRenderer() {
     destroy() {
       //Element.remove(this.element);
       this.element.parentElement.removeChild(this.element);
-    }
+    },
   };
 }
 
@@ -512,13 +512,13 @@ export const TouchEvents = listener => ({
   onTouchStart: listener,
   onTouchEnd: listener,
   onTouchMove: listener,
-  onTouchCancel: listener
+  onTouchCancel: listener,
 });
 
 export const MouseEvents = listener => ({
   onMouseDown: listener,
   onMouseMove: listener,
-  onMouseUp: listener //e => {console.log("onMouseUp"); listener(e); }
+  onMouseUp: listener, //e => {console.log("onMouseUp"); listener(e); }
 });
 
 export const addTouchListeners = (listener, element, passive = true) => {
@@ -541,7 +541,7 @@ export function TouchListener(handler, options) {
     listener: MovementListener,
     noscroll: true,
     lastTouch: true,
-    ...options
+    ...options,
   };
   //console.log("new TouchListener ", { handler, options });
 
@@ -554,7 +554,7 @@ export function TouchListener(handler, options) {
   } else {
     listen.handler.events = {
       ...TouchEvents(listen),
-      ...MouseEvents(listen)
+      ...MouseEvents(listen),
     };
   }
 

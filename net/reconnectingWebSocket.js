@@ -156,7 +156,7 @@ const SocketEvent = Object.freeze({
   OPEN: 'open',
   MESSAGE: 'message',
   ERROR: 'error',
-  CLOSE: 'close'
+  CLOSE: 'close',
 });
 
 export default ReconnectingWebSocket;

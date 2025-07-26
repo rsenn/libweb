@@ -4,7 +4,7 @@ export const FindIndexDecorator = {
   },
   findLast(cb, thisArg) {
     return this[this.findLastIndex(cb, thisArg)];
-  }
+  },
 };
 
 export default FindIndexDecorator;

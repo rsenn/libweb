@@ -138,5 +138,5 @@ ansiEscapes.iTerm = {
     }
 
     return ret + BEL;
-  }
+  },
 };

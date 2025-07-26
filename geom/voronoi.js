@@ -92,7 +92,7 @@ export class Voronoi {
       circleEventJunkyard: [],
       vertexJunkyard: [],
       edgeJunkyard: [],
-      cellJunkyard: []
+      cellJunkyard: [],
     });
   }
 
@@ -627,7 +627,7 @@ export class Voronoi {
           this.site = null;
           this.x = this.y = this.ycenter = 0;
         }
-      }
+      },
   );
 
   attachCircleEvent(arc) {
@@ -1719,7 +1719,7 @@ export class Cell {
       x: xmin,
       y: ymin,
       width: xmax - xmin,
-      height: ymax - ymin
+      height: ymax - ymin,
     };
   }
 

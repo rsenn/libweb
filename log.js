@@ -19,7 +19,7 @@ export var LogJS = {
     try {
       return globalThis.window;
     } catch(e) {}
-  }
+  },
 };
 
 let appenders = {};
@@ -114,7 +114,7 @@ Object.defineProperty(LogJS, 'config', {
   configurable: false,
   value: {},
   writable: true,
-  enumerable: false
+  enumerable: false,
 });
 
 //--------------------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ Object.defineProperty(LogJS.BaseAppender.prototype, 'LOGJSAPPENDER', {
   configurable: false,
   value: true,
   writable: false,
-  enumerable: false
+  enumerable: false,
 });
 
 LogJS.BaseAppender.prototype.log = function(type, message, url, lineNumber) {};
@@ -138,13 +138,13 @@ Object.defineProperty(LogJS.BaseAppender.prototype, 'name', {
   configurable: false,
   value: 'LogJSBaseAppender',
   writable: true,
-  enumerable: false
+  enumerable: false,
 });
 
 //Angular
 if(typeof angular !== 'undefined') {
   LogJS.config.global = {
-    debug: true
+    debug: true,
   };
 
   function LogJSProvider() {
@@ -154,7 +154,7 @@ if(typeof angular !== 'undefined') {
     this.debugEnabled = function(flag) {
       if(typeof flag !== 'undefined') {
         this.config.global = {
-          debug: flag
+          debug: flag,
         };
         return this;
       }

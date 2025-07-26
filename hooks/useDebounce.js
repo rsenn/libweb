@@ -14,7 +14,7 @@ export function useDebounce(value, delay, options) {
         return dispatch(value);
       }, []),
       delay,
-      options
+      options,
     ),
     callback = _b[0],
     cancel = _b[1],
@@ -28,7 +28,7 @@ export function useDebounce(value, delay, options) {
         previousValue.current = value;
       }
     },
-    [value, callback, eq]
+    [value, callback, eq],
   );
   return [state, cancel, callPending];
 }

@@ -33,7 +33,7 @@ State.prototype.clone = function() {
     spindle,
     tool,
     program,
-    arc
+    arc,
   } = this;
   return new State({ x: vx, y: vy, z: vz }, e, f, time, { x: rx, y: ry, z: rz }, erel, fp, spindle, tool, program, arc);
 };

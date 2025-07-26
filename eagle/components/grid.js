@@ -19,7 +19,7 @@ export const useGrid = data => {
     altdistance: calcDist(+altdistance, altunitdist || altunit),
     display: display == 'yes',
     style,
-    multiple: +multiple
+    multiple: +multiple,
   };
   return result;
 };
@@ -53,7 +53,7 @@ export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', widt
         },
         set current(value) {
           ret(value);
-        }
+        },
       });
       return ret;
     })();
@@ -73,8 +73,8 @@ export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', widt
       stroke: color,
       //  'vector-effect': 'non-scaling-stroke',
       'stroke-width': style == 'dots' ? width * 2 : width,
-      'stroke-dasharray': style == 'dots' ? `${width}  ${size * 4}` : `${size * 2}`
-    })
+      'stroke-dasharray': style == 'dots' ? `${width}  ${size * 4}` : `${size * 2}`,
+    }),
   );
 };
 
@@ -92,6 +92,6 @@ export const Grid = ({ data, rect, id, attrs = { visible: true }, opts = {}, ...
     fill: `url(#${id})`,
     style: grid.visible ? {} : { display: 'none' },
     ...rect.toObject(),
-    transform
+    transform,
   });
 };

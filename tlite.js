@@ -111,7 +111,7 @@ if(elem)
 
     return (el.tooltip = {
       show: () => show(el),
-      hide: isAuto => hide(isAuto, el)
+      hide: isAuto => hide(isAuto, el),
     });
   }
 
@@ -169,7 +169,7 @@ if(elem)
             ? left + width + arrowSize
             : vertGrav === 'e'
             ? left - tooltipWidth - arrowSize
-            : centerEl - tooltipWidth / 2
+            : centerEl - tooltipWidth / 2,
       };
 
       if(pos.left < 0) pos.left = 0;

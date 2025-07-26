@@ -5,7 +5,7 @@ export class TextDecodeTransformer {
     const { encoding = 'utf-8', fatal, ignoreBOM } = options;
     this._decoder = new TextDecoder(encoding, {
       fatal: fatal,
-      ignoreBOM: ignoreBOM
+      ignoreBOM: ignoreBOM,
     });
   }
 

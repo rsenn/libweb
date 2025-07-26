@@ -97,7 +97,7 @@ function set(property, value, line) {
     type: 'set',
     line: line || -1,
     prop: property,
-    value
+    value,
   };
 }
 
@@ -114,7 +114,7 @@ function op(operation, location, line) {
     type: 'op',
     line: line || -1,
     op: operation,
-    coord: location
+    coord: location,
   };
 }
 
@@ -128,7 +128,7 @@ let commandMap = {
   level,
   tool,
   op,
-  macro
+  macro,
 };
 
 // convert a decimal number or gerber/drill coordinate into an svg coordinate
@@ -184,7 +184,7 @@ let MATCH = [
   { coord: 'y', test: /Y([+-]?[\d\.]+)/ },
   { coord: 'i', test: /I([+-]?[\d\.]+)/ },
   { coord: 'j', test: /J([+-]?[\d\.]+)/ },
-  { coord: 'a', test: /A([\d\.]+)/ }
+  { coord: 'a', test: /A([\d\.]+)/ },
 ];
 
 function parse$1(coord, format) {
@@ -362,7 +362,7 @@ function parseMacroBlock(parser, block) {
       cx: mods[3],
       cy: mods[4],
       // handle optional rotation with circle primitives
-      rot: mods[5] || 0
+      rot: mods[5] || 0,
     };
   }
 
@@ -380,7 +380,7 @@ function parseMacroBlock(parser, block) {
       y1: mods[4],
       x2: mods[5],
       y2: mods[6],
-      rot: mods[7]
+      rot: mods[7],
     };
   }
 
@@ -393,7 +393,7 @@ function parseMacroBlock(parser, block) {
       height: mods[3],
       cx: mods[4],
       cy: mods[5],
-      rot: mods[6]
+      rot: mods[6],
     };
   }
 
@@ -406,7 +406,7 @@ function parseMacroBlock(parser, block) {
       height: mods[3],
       x: mods[4],
       y: mods[5],
-      rot: mods[6]
+      rot: mods[6],
     };
   }
 
@@ -415,7 +415,7 @@ function parseMacroBlock(parser, block) {
       type: 'outline',
       exp,
       points: mods.slice(3, -1).map(Number),
-      rot: Number(mods[mods.length - 1])
+      rot: Number(mods[mods.length - 1]),
     };
   }
 
@@ -427,7 +427,7 @@ function parseMacroBlock(parser, block) {
       cx: mods[3],
       cy: mods[4],
       dia: mods[5],
-      rot: mods[6]
+      rot: mods[6],
     };
   }
 
@@ -444,7 +444,7 @@ function parseMacroBlock(parser, block) {
       maxRings: mods[6],
       crossThx: mods[7],
       crossLen: mods[8],
-      rot: mods[9]
+      rot: mods[9],
     };
   }
 
@@ -458,7 +458,7 @@ function parseMacroBlock(parser, block) {
       outerDia: mods[3],
       innerDia: mods[4],
       gap: mods[5],
-      rot: mods[6]
+      rot: mods[6],
     };
   }
   parser.warn(code + ' is an unrecognized primitive for a macro aperture');
@@ -640,7 +640,7 @@ function parse(parser, block) {
       x: Number(x),
       y: Number(y),
       i: Number(i),
-      j: Number(j)
+      j: Number(j),
     };
     return parser.push(commandMap.level('stepRep', sr));
   }
@@ -708,7 +708,7 @@ let drillMode = {
   MOVE: '0',
   LINEAR: '1',
   CW_ARC: '2',
-  CCW_ARC: '3'
+  CCW_ARC: '3',
 };
 
 // parse drill function
@@ -851,7 +851,7 @@ function parseBlock(parser, block, line) {
     let toolDef = {
       shape: 'circle',
       params: [toolDia],
-      hole: []
+      hole: [],
     };
 
     return parser.push(commandMap.tool(toolCode, toolDef, line));
@@ -959,7 +959,7 @@ function parse$2(parser, block) {
 
     return parser.drillStash.push({
       line: parser.line,
-      block
+      block,
     });
   }
 

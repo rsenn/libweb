@@ -4,7 +4,7 @@ import * as deep from '../deep.js';
 import { BBox, Rect } from '../geom.js';
 import { ImmutablePath } from '../json.js';
 import { PathMapper } from '../json/pathMapper.js';
-import { define, nonenumerable, properties, lazyProperties, lazyProperty, mapAdapter, mapFunction, weakMapper, tryCatch, } from '../misc.js';
+import { define, nonenumerable, properties, lazyProperties, lazyProperty, mapAdapter, mapFunction, weakMapper, tryCatch } from '../misc.js';
 import { read as fromXML, write as toXML } from '../xml.js';
 import { Palette } from './common.js';
 import { EagleElement } from './element.js';
@@ -87,10 +87,7 @@ export class EagleDocument extends EagleNode {
     const { pathMapper, raw2element } = this;
 
     const [obj2path, path2obj] = pathMapper.maps.map(mapFunction);
-    const [obj2eagle, path2eagle] = [
-      mapFunction(raw2element),
-      mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined)),
-    ];
+    const [obj2eagle, path2eagle] = [mapFunction(raw2element), mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))];
     const [eagle2path, eagle2obj] = [
       mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
       mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined)),
@@ -98,14 +95,7 @@ export class EagleDocument extends EagleNode {
 
     define(this, nonenumerable({ maps: { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj } }));
 
-    type =
-      type || /<library>/.test(xmlStr)
-        ? 'lbr'
-        : /(<element\ |<board)/.test(xmlStr)
-          ? 'brd'
-          : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr)
-            ? 'sch'
-            : null;
+    type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
 
     if(filename) {
       this.file = filename;
@@ -146,9 +136,7 @@ export class EagleDocument extends EagleNode {
       );
     }
 
-    lazyProperty(this, 'layers', () =>
-      EagleNodeMap.create(this./*lookup('eagle/drawing').lookup*/ get('layers').children, ['name', 'number']),
-    );
+    lazyProperty(this, 'layers', () => EagleNodeMap.create(this./*lookup('eagle/drawing').lookup*/ get('layers').children, ['name', 'number']));
     //lazyProperties({ layers: () => EagleNodeMap.create(this.get('layers').children, ['name', 'number']) });
 
     if(this.type == 'brd') {
@@ -299,9 +287,7 @@ export class EagleDocument extends EagleNode {
           .filter(c => !!c.geometry),
       );
 
-      bb.update(
-        [...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())),
-      );
+      bb.update([...this.elements.list].map(e => e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())));
     }
 
     /*if(this.plain)

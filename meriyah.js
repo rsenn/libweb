@@ -163,7 +163,7 @@ export const errorMessages = {
   [162]: 'Invalid optional chain from super property',
   [163]: 'Invalid optional chain from new expression',
   [164]: 'Cannot use "import.meta" outside a module',
-  [165]: 'Leading decorators must be attached to a class declaration'
+  [165]: 'Leading decorators must be attached to a class declaration',
 };
 
 class ParseError extends SyntaxError {
@@ -176,7 +176,7 @@ class ParseError extends SyntaxError {
     this.description = message;
     this.loc = {
       line,
-      column
+      column,
     };
   }
 }
@@ -318,7 +318,7 @@ const unicodeLookup = ((compressed, lookup) => {
     4110942569, 0, 1432950139, 0, 2701658217, 0, 4026532864, 0, 4026532881, 2, 0, 2, 45, 3, 0, 8, -1, 2, 158, -2, 2, 169, 0, 98304, 0, 65537, 2, 170, -5, 0, 4294950912, 2, 0, 2, 118, 0, 65528, 2, 177,
     0, 4294770176, 2, 26, 3, 0, 4, -30, 2, 174, 0, 3758153728, -3, 2, 169, -2, 2, 155, 2, 188, 2, 158, -1, 2, 191, -1, 2, 161, 0, 4294754304, 3, 0, 2, -3, 0, 33554432, -2, 2, 200, -3, 2, 169, 0,
     4175478784, 2, 201, 0, 4286643712, 0, 4286644216, 2, 0, -4, 2, 202, -1, 2, 165, 0, 4227923967, 3, 0, 32, -1334, 2, 163, 2, 0, -129, 2, 94, -6, 2, 163, -180, 2, 203, -233, 2, 4, 3, 0, 96, -16, 2,
-    163, 3, 0, 47, -154, 2, 165, 3, 0, 22381, -7, 2, 17, 3, 0, 6128
+    163, 3, 0, 47, -154, 2, 165, 3, 0, 22381, -7, 2, 17, 3, 0, 6128,
   ],
   [
     4294967295, 4294967291, 4092460543, 4294828031, 4294967294, 134217726, 268435455, 2147483647, 1048575, 1073741823, 3892314111, 134217727, 1061158911, 536805376, 4294910143, 4160749567, 4294901759,
@@ -332,8 +332,8 @@ const unicodeLookup = ((compressed, lookup) => {
     2862017156, 1593309078, 268434431, 268434414, 4294901763, 536870912, 2952790016, 202506752, 139264, 402653184, 4261412864, 4227922944, 49152, 61440, 3758096384, 117440512, 65280, 3233808384,
     3221225472, 2097152, 4294965248, 32768, 57152, 67108864, 4293918720, 4290772992, 25165824, 57344, 4227915776, 4278190080, 4227907584, 65520, 4026531840, 4227858432, 4160749568, 3758129152,
     4294836224, 63488, 1073741824, 4294967040, 4194304, 251658240, 196608, 4294963200, 64512, 417808, 4227923712, 12582912, 50331648, 65472, 4294967168, 4294966784, 16, 4294917120, 2080374784, 4096,
-    65408, 524288, 65532
-  ]
+    65408, 524288, 65532,
+  ],
 );
 
 //# sourceMappingURL=unicode.js.map
@@ -552,17 +552,17 @@ const CharTypes = [
   0,
   0,
   0,
-  0
+  0,
 ];
 
 const isIdStart = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
 ];
 
 const isIdPart = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
 ];
 
 function isIdentifierStart(code) {
@@ -616,12 +616,12 @@ function skipSingleLineComment(parser, source, state, type, start, line, column)
     const loc = {
       start: {
         line,
-        column
+        column,
       },
       end: {
         line: parser.linePos,
-        column: parser.colPos
-      }
+        column: parser.colPos,
+      },
     };
     parser.onComment(CommentTypes[type & 0xff], source.slice(index, parser.tokenPos), start, parser.tokenPos, loc);
   }
@@ -644,12 +644,12 @@ function skipMultiLineComment(parser, source, state) {
             const loc = {
               start: {
                 line: parser.linePos,
-                column: parser.colPos
+                column: parser.colPos,
               },
               end: {
                 line: parser.line,
-                column: parser.column
-              }
+                column: parser.column,
+              },
             };
             parser.onComment(CommentTypes[1 & 0xff], source.slice(index, parser.index - 2), index - 2, parser.index, loc);
           }
@@ -1382,7 +1382,7 @@ export const KeywordDescTable = [
   'meta',
   'LineFeed',
   'Escaped',
-  'JSXText'
+  'JSXText',
 ];
 export const descKeywordTable = Object.create(null, {
   this: { value: 86113 },
@@ -1441,7 +1441,7 @@ export const descKeywordTable = Object.create(null, {
   as: { value: 77934 },
   arguments: { value: 537079928 },
   target: { value: 143494 },
-  meta: { value: 143495 }
+  meta: { value: 143495 },
 });
 
 //# sourceMappingURL=token.js.map
@@ -1572,7 +1572,7 @@ const TokenLookup = [
   8457015, 8455751, 134283267, 67174411, 16, 8457014, 25233970, 18, 25233971, 67108877, 8457016, 134283266, 134283266, 134283266, 134283266, 134283266, 134283266, 134283266, 134283266, 134283266,
   134283266, 21, 1074790417, 8456258, 1077936157, 8456259, 22, 133, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897,
   208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 208897, 69271571, 137, 20, 8455497, 208897, 132, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 208897, 4096, 208897, 208897, 4096,
-  208897, 4096, 208897, 4096, 208897, 4096, 4096, 4096, 208897, 4096, 4096, 208897, 4096, 4096, 2162700, 8455240, 1074790415, 16842801, 129
+  208897, 4096, 208897, 4096, 208897, 4096, 4096, 4096, 208897, 4096, 4096, 208897, 4096, 4096, 2162700, 8455240, 1074790415, 16842801, 129,
 ];
 
 function nextToken(parser, context) {
@@ -1585,12 +1585,12 @@ function nextToken(parser, context) {
     const loc = {
       start: {
         line: parser.linePos,
-        column: parser.colPos
+        column: parser.colPos,
       },
       end: {
         line: parser.line,
-        column: parser.column
-      }
+        column: parser.column,
+      },
     };
     parser.onToken(convertTokenType(parser.token), parser.tokenPos, parser.index, loc);
   }
@@ -4067,7 +4067,7 @@ const entities = {
   zopf: '\uD835\uDD6B',
   zscr: '\uD835\uDCCF',
   zwj: '\u200D',
-  zwnj: '\u200C'
+  zwnj: '\u200C',
 };
 const decodeMap = {
   0: 65533,
@@ -4097,7 +4097,7 @@ const decodeMap = {
   155: 8250,
   156: 339,
   158: 382,
-  159: 376
+  159: 376,
 };
 
 function decodeHTMLStrict(text) {
@@ -4372,12 +4372,12 @@ function finishNode(parser, context, start, line, column, node) {
     node.loc = {
       start: {
         line,
-        column
+        column,
       },
       end: {
         line: parser.startLine,
-        column: parser.startColumn
-      }
+        column: parser.startColumn,
+      },
     };
     if(parser.sourceFile) {
       node.loc.source = parser.sourceFile;
@@ -4411,14 +4411,14 @@ function recordScopeError(parser, type, ...params) {
     params,
     index,
     line,
-    column
+    column,
   };
 }
 
 function createScope() {
   return {
     parent: void 0,
-    type: 2
+    type: 2,
   };
 }
 
@@ -4426,7 +4426,7 @@ function addChildScope(parent, type) {
   return {
     parent,
     type,
-    scopeError: void 0
+    scopeError: void 0,
   };
 }
 
@@ -4509,7 +4509,7 @@ function pushComment(context, array) {
   return function(type, value, start, end, loc) {
     const comment = {
       type,
-      value
+      value,
     };
     if(context & 2) {
       comment.start = start;
@@ -4526,7 +4526,7 @@ function pushComment(context, array) {
 function pushToken(context, array) {
   return function(token, start, end, loc) {
     const tokens = {
-      token
+      token,
     };
     if(context & 2) {
       tokens.start = start;
@@ -4586,7 +4586,7 @@ function create(source, sourceFile, onComment, onToken) {
     destructible: 0,
     onComment,
     onToken,
-    leadingDecorators: []
+    leadingDecorators: [],
   };
 }
 
@@ -4637,7 +4637,7 @@ function parseSource(source, options, context) {
   const node = {
     type: 'Program',
     sourceType,
-    body
+    body,
   };
   if(context & 2) {
     node.start = 0;
@@ -4647,7 +4647,7 @@ function parseSource(source, options, context) {
   if(context & 4) {
     node.loc = {
       start: { line: 1, column: 0 },
-      end: { line: parser.line, column: parser.column }
+      end: { line: parser.line, column: parser.column },
     };
     if(parser.sourceFile) node.loc.source = sourceFile;
   }
@@ -4815,7 +4815,7 @@ function parseBlock(parser, context, scope, labels, start, line, column) {
   consume(parser, context | 32768, 1074790415);
   return finishNode(parser, context, start, line, column, {
     type: 'BlockStatement',
-    body
+    body,
   });
 }
 
@@ -4826,7 +4826,7 @@ function parseReturnStatement(parser, context, start, line, column) {
   matchOrInsertSemicolon(parser, context | 32768);
   return finishNode(parser, context, start, line, column, {
     type: 'ReturnStatement',
-    argument
+    argument,
   });
 }
 
@@ -4834,7 +4834,7 @@ function parseExpressionStatement(parser, context, expression, start, line, colu
   matchOrInsertSemicolon(parser, context | 32768);
   return finishNode(parser, context, start, line, column, {
     type: 'ExpressionStatement',
-    expression
+    expression,
   });
 }
 
@@ -4849,7 +4849,7 @@ function parseLabelledStatement(parser, context, scope, origin, labels, value, e
   return finishNode(parser, context, start, line, column, {
     type: 'LabeledStatement',
     label: expr,
-    body
+    body,
   });
 }
 
@@ -4903,18 +4903,18 @@ function parseDirective(parser, context, expression, token, start, line, column)
     ? finishNode(parser, context, start, line, column, {
         type: 'ExpressionStatement',
         expression,
-        directive: expression.raw.slice(1, -1)
+        directive: expression.raw.slice(1, -1),
       })
     : finishNode(parser, context, start, line, column, {
         type: 'ExpressionStatement',
-        expression
+        expression,
       });
 }
 
 function parseEmptyStatement(parser, context, start, line, column) {
   nextToken(parser, context | 32768);
   return finishNode(parser, context, start, line, column, {
-    type: 'EmptyStatement'
+    type: 'EmptyStatement',
   });
 }
 
@@ -4925,7 +4925,7 @@ function parseThrowStatement(parser, context, start, line, column) {
   matchOrInsertSemicolon(parser, context | 32768);
   return finishNode(parser, context, start, line, column, {
     type: 'ThrowStatement',
-    argument
+    argument,
   });
 }
 
@@ -4945,7 +4945,7 @@ function parseIfStatement(parser, context, scope, labels, start, line, column) {
     type: 'IfStatement',
     test,
     consequent,
-    alternate
+    alternate,
   });
 }
 
@@ -4979,23 +4979,23 @@ function parseSwitchStatement(parser, context, scope, labels, start, line, colum
     while(parser.token !== 20558 && parser.token !== 1074790415 && parser.token !== 20563) {
       consequent.push(
         parseStatementListItem(parser, context | 4096, scope, 2, {
-          $: labels
-        })
+          $: labels,
+        }),
       );
     }
     cases.push(
       finishNode(parser, context, tokenPos, linePos, colPos, {
         type: 'SwitchCase',
         test,
-        consequent
-      })
+        consequent,
+      }),
     );
   }
   consume(parser, context | 32768, 1074790415);
   return finishNode(parser, context, start, line, column, {
     type: 'SwitchStatement',
     discriminant,
-    cases
+    cases,
   });
 }
 
@@ -5008,7 +5008,7 @@ function parseWhileStatement(parser, context, scope, labels, start, line, column
   return finishNode(parser, context, start, line, column, {
     type: 'WhileStatement',
     test,
-    body
+    body,
   });
 }
 
@@ -5028,7 +5028,7 @@ function parseContinueStatement(parser, context, labels, start, line, column) {
   matchOrInsertSemicolon(parser, context | 32768);
   return finishNode(parser, context, start, line, column, {
     type: 'ContinueStatement',
-    label
+    label,
   });
 }
 
@@ -5045,7 +5045,7 @@ function parseBreakStatement(parser, context, labels, start, line, column) {
   matchOrInsertSemicolon(parser, context | 32768);
   return finishNode(parser, context, start, line, column, {
     type: 'BreakStatement',
-    label
+    label,
   });
 }
 
@@ -5059,7 +5059,7 @@ function parseWithStatement(parser, context, scope, labels, start, line, column)
   return finishNode(parser, context, start, line, column, {
     type: 'WithStatement',
     object,
-    body
+    body,
   });
 }
 
@@ -5067,7 +5067,7 @@ function parseDebuggerStatement(parser, context, start, line, column) {
   nextToken(parser, context | 32768);
   matchOrInsertSemicolon(parser, context | 32768);
   return finishNode(parser, context, start, line, column, {
-    type: 'DebuggerStatement'
+    type: 'DebuggerStatement',
   });
 }
 
@@ -5090,7 +5090,7 @@ function parseTryStatement(parser, context, scope, labels, start, line, column) 
     type: 'TryStatement',
     block,
     handler,
-    finalizer
+    finalizer,
   });
 }
 
@@ -5112,7 +5112,7 @@ function parseCatchBlock(parser, context, scope, labels, start, line, column) {
   return finishNode(parser, context, start, line, column, {
     type: 'CatchClause',
     param,
-    body
+    body,
   });
 }
 
@@ -5123,7 +5123,7 @@ function parseStaticBlock(parser, context, scope, start, line, column) {
   const { body } = parseBlock(parser, context, scope, {}, start, line, column);
   return finishNode(parser, context, start, line, column, {
     type: 'StaticBlock',
-    body
+    body,
   });
 }
 
@@ -5138,7 +5138,7 @@ function parseDoWhileStatement(parser, context, scope, labels, start, line, colu
   return finishNode(parser, context, start, line, column, {
     type: 'DoWhileStatement',
     body,
-    test
+    test,
   });
 }
 
@@ -5151,7 +5151,7 @@ function parseLetIdentOrVarDeclarationStatement(parser, context, scope, origin, 
     return finishNode(parser, context, start, line, column, {
       type: 'VariableDeclaration',
       kind: 'let',
-      declarations
+      declarations,
     });
   }
   parser.assignable = 1;
@@ -5181,7 +5181,7 @@ function parseLexicalDeclaration(parser, context, scope, kind, origin, start, li
   return finishNode(parser, context, start, line, column, {
     type: 'VariableDeclaration',
     kind: kind & 8 ? 'let' : 'const',
-    declarations
+    declarations,
   });
 }
 
@@ -5192,7 +5192,7 @@ function parseVariableStatement(parser, context, scope, origin, start, line, col
   return finishNode(parser, context, start, line, column, {
     type: 'VariableDeclaration',
     kind: 'var',
-    declarations
+    declarations,
   });
 }
 
@@ -5227,7 +5227,7 @@ function parseVariableDeclaration(parser, context, scope, kind, origin) {
   return finishNode(parser, context, tokenPos, linePos, colPos, {
     type: 'VariableDeclarator',
     id,
-    init
+    init,
   });
 }
 
@@ -5253,7 +5253,7 @@ function parseForStatement(parser, context, scope, labels, start, line, column) 
           init = finishNode(parser, context, tokenPos, linePos, colPos, {
             type: 'VariableDeclaration',
             kind: 'let',
-            declarations: parseVariableDeclarationList(parser, context | 134217728, scope, 8, 32)
+            declarations: parseVariableDeclarationList(parser, context | 134217728, scope, 8, 32),
           });
         }
         parser.assignable = 1;
@@ -5277,13 +5277,13 @@ function parseForStatement(parser, context, scope, labels, start, line, column) 
           ? {
               type: 'VariableDeclaration',
               kind: 'var',
-              declarations: parseVariableDeclarationList(parser, context | 134217728, scope, 4, 32)
+              declarations: parseVariableDeclarationList(parser, context | 134217728, scope, 4, 32),
             }
           : {
               type: 'VariableDeclaration',
               kind: 'const',
-              declarations: parseVariableDeclarationList(parser, context | 134217728, scope, 16, 32)
-            }
+              declarations: parseVariableDeclarationList(parser, context | 134217728, scope, 16, 32),
+            },
       );
       parser.assignable = 1;
     }
@@ -5316,7 +5316,7 @@ function parseForStatement(parser, context, scope, labels, start, line, column) 
         left: init,
         right,
         body,
-        await: forAwait
+        await: forAwait,
       });
     }
     if(parser.assignable & 2) report(parser, 78, 'in');
@@ -5330,7 +5330,7 @@ function parseForStatement(parser, context, scope, labels, start, line, column) 
       type: 'ForInStatement',
       body,
       left: init,
-      right
+      right,
     });
   }
   if(forAwait) report(parser, 80);
@@ -5352,7 +5352,7 @@ function parseForStatement(parser, context, scope, labels, start, line, column) 
     init,
     test,
     update,
-    body
+    body,
   });
 }
 
@@ -5379,8 +5379,8 @@ function parseImportDeclaration(parser, context, scope) {
       specifiers = [
         finishNode(parser, context, tokenPos, linePos, colPos, {
           type: 'ImportDefaultSpecifier',
-          local
-        })
+          local,
+        }),
       ];
       if(consumeOpt(parser, context, 18)) {
         switch (parser.token) {
@@ -5416,7 +5416,7 @@ function parseImportDeclaration(parser, context, scope) {
   return finishNode(parser, context, start, line, column, {
     type: 'ImportDeclaration',
     specifiers,
-    source
+    source,
   });
 }
 
@@ -5429,7 +5429,7 @@ function parseImportNamespaceSpecifier(parser, context, scope) {
   }
   return finishNode(parser, context, tokenPos, linePos, colPos, {
     type: 'ImportNamespaceSpecifier',
-    local: parseRestrictedIdentifier(parser, context, scope)
+    local: parseRestrictedIdentifier(parser, context, scope),
   });
 }
 
@@ -5462,8 +5462,8 @@ function parseImportSpecifierOrNamedImports(parser, context, scope, specifiers) 
       finishNode(parser, context, tokenPos, linePos, colPos, {
         type: 'ImportSpecifier',
         local,
-        imported
-      })
+        imported,
+      }),
     );
     if(parser.token !== 1074790415) consume(parser, context, 18);
   }
@@ -5477,11 +5477,11 @@ function parseImportMetaDeclaration(parser, context, start, line, column) {
     context,
     finishNode(parser, context, start, line, column, {
       type: 'Identifier',
-      name: 'import'
+      name: 'import',
     }),
     start,
     line,
-    column
+    column,
   );
   expr = parseMemberOrUpdateExpression(parser, context, expr, 0, 0, start, line, column);
   expr = parseAssignmentExpression(parser, context, 0, 0, start, line, column, expr);
@@ -5543,7 +5543,7 @@ function parseExportDeclaration(parser, context, scope) {
     if(scope) declareUnboundVariable(parser, 'default');
     return finishNode(parser, context, start, line, column, {
       type: 'ExportDefaultDeclaration',
-      declaration
+      declaration,
     });
   }
   switch (parser.token) {
@@ -5562,7 +5562,7 @@ function parseExportDeclaration(parser, context, scope) {
       return finishNode(parser, context, start, line, column, {
         type: 'ExportAllDeclaration',
         source,
-        exported
+        exported,
       });
     }
     case 2162700: {
@@ -5594,8 +5594,8 @@ function parseExportDeclaration(parser, context, scope) {
           finishNode(parser, context, tokenPos, linePos, colPos, {
             type: 'ExportSpecifier',
             local,
-            exported
-          })
+            exported,
+          }),
         );
         if(parser.token !== 1074790415) consume(parser, context, 18);
       }
@@ -5651,7 +5651,7 @@ function parseExportDeclaration(parser, context, scope) {
     type: 'ExportNamedDeclaration',
     declaration,
     specifiers,
-    source
+    source,
   });
 }
 
@@ -5668,7 +5668,7 @@ function parseSequenceExpression(parser, context, inGroup, start, line, column, 
   }
   return finishNode(parser, context, start, line, column, {
     type: 'SequenceExpression',
-    expressions
+    expressions,
   });
 }
 
@@ -5697,14 +5697,14 @@ function parseAssignmentExpression(parser, context, inGroup, isPattern, start, l
         ? {
             type: 'AssignmentPattern',
             left,
-            right
+            right,
           }
         : {
             type: 'AssignmentExpression',
             left,
             operator: KeywordDescTable[token & 255],
-            right
-          }
+            right,
+          },
     );
   }
   if((token & 8454144) === 8454144) {
@@ -5730,14 +5730,14 @@ function parseAssignmentExpressionOrPattern(parser, context, inGroup, isPattern,
       ? {
           type: 'AssignmentPattern',
           left,
-          right
+          right,
         }
       : {
           type: 'AssignmentExpression',
           left,
           operator: KeywordDescTable[token & 255],
-          right
-        }
+          right,
+        },
   );
   parser.assignable = 2;
   return left;
@@ -5753,7 +5753,7 @@ function parseConditionalExpression(parser, context, test, start, line, column) 
     type: 'ConditionalExpression',
     test,
     consequent,
-    alternate
+    alternate,
   });
 }
 
@@ -5782,9 +5782,9 @@ function parseBinaryExpression(parser, context, inGroup, start, line, column, mi
         parser.colPos,
         prec,
         t,
-        parseLeftHandSideExpression(parser, context, 0, inGroup, 1, parser.tokenPos, parser.linePos, parser.colPos)
+        parseLeftHandSideExpression(parser, context, 0, inGroup, 1, parser.tokenPos, parser.linePos, parser.colPos),
       ),
-      operator: KeywordDescTable[t & 255]
+      operator: KeywordDescTable[t & 255],
     });
   }
   if(parser.token === 1077936157) report(parser, 24);
@@ -5809,7 +5809,7 @@ function parseUnaryExpression(parser, context, isLHS, start, line, column, inGro
     type: 'UnaryExpression',
     operator: KeywordDescTable[unaryOperator & 255],
     argument: arg,
-    prefix: true
+    prefix: true,
   });
 }
 
@@ -5856,7 +5856,7 @@ function parseYieldExpression(parser, context, inGroup, canAssign, start, line, 
     return finishNode(parser, context, start, line, column, {
       type: 'YieldExpression',
       argument,
-      delegate
+      delegate,
     });
   }
   if(context & 1024) report(parser, 95, 'yield');
@@ -5876,7 +5876,7 @@ function parseAwaitExpression(parser, context, inNew, inGroup, start, line, colu
     parser.assignable = 2;
     return finishNode(parser, context, start, line, column, {
       type: 'AwaitExpression',
-      argument
+      argument,
     });
   }
   if(context & 2048) report(parser, 96);
@@ -5929,7 +5929,7 @@ function parseFunctionBody(parser, context, scope, origin, firstRestricted, scop
   if(parser.token === 1077936157) report(parser, 24);
   return finishNode(parser, context, tokenPos, linePos, colPos, {
     type: 'BlockStatement',
-    body
+    body,
   });
 }
 
@@ -5971,7 +5971,7 @@ function parseUpdateExpression(parser, context, expr, start, line, column) {
     type: 'UpdateExpression',
     argument: expr,
     operator: KeywordDescTable[token & 255],
-    prefix: false
+    prefix: false,
   });
 }
 
@@ -5989,7 +5989,7 @@ function parseMemberOrUpdateExpression(parser, context, expr, inGroup, inChain, 
           type: 'MemberExpression',
           object: expr,
           computed: false,
-          property
+          property,
         });
         break;
       }
@@ -6008,7 +6008,7 @@ function parseMemberOrUpdateExpression(parser, context, expr, inGroup, inChain, 
           type: 'MemberExpression',
           object: expr,
           computed: true,
-          property
+          property,
         });
         if(restoreHasOptionalChaining) {
           parser.flags |= 2048;
@@ -6030,7 +6030,7 @@ function parseMemberOrUpdateExpression(parser, context, expr, inGroup, inChain, 
         expr = finishNode(parser, context, start, line, column, {
           type: 'CallExpression',
           callee: expr,
-          arguments: args
+          arguments: args,
         });
         if(restoreHasOptionalChaining) {
           parser.flags |= 2048;
@@ -6052,7 +6052,7 @@ function parseMemberOrUpdateExpression(parser, context, expr, inGroup, inChain, 
         expr = finishNode(parser, context, start, line, column, {
           type: 'TaggedTemplateExpression',
           tag: expr,
-          quasi: parser.token === 67174408 ? parseTemplate(parser, context | 65536) : parseTemplateLiteral(parser, context, parser.tokenPos, parser.linePos, parser.colPos)
+          quasi: parser.token === 67174408 ? parseTemplate(parser, context | 65536) : parseTemplateLiteral(parser, context, parser.tokenPos, parser.linePos, parser.colPos),
         });
     }
     expr = parseMemberOrUpdateExpression(parser, context, expr, 0, 1, start, line, column);
@@ -6061,7 +6061,7 @@ function parseMemberOrUpdateExpression(parser, context, expr, inGroup, inChain, 
     parser.flags = (parser.flags | 2048) ^ 2048;
     expr = finishNode(parser, context, start, line, column, {
       type: 'ChainExpression',
-      expression: expr
+      expression: expr,
     });
   }
   return expr;
@@ -6087,7 +6087,7 @@ function parseOptionalChain(parser, context, expr, start, line, column) {
       object: expr,
       computed: true,
       optional: true,
-      property
+      property,
     });
   } else if(parser.token === 67174411) {
     const args = parseArguments(parser, context, 0);
@@ -6096,7 +6096,7 @@ function parseOptionalChain(parser, context, expr, start, line, column) {
       type: 'CallExpression',
       callee: expr,
       arguments: args,
-      optional: true
+      optional: true,
     });
   } else {
     if((parser.token & (143360 | 4096)) === 0) report(parser, 155);
@@ -6107,7 +6107,7 @@ function parseOptionalChain(parser, context, expr, start, line, column) {
       object: expr,
       computed: false,
       optional: true,
-      property
+      property,
     });
   }
   if(restoreHasOptionalChaining) {
@@ -6137,7 +6137,7 @@ function parseUpdateExpressionPrefixed(parser, context, inNew, isLHS, start, lin
     type: 'UpdateExpression',
     argument: arg,
     operator: KeywordDescTable[token & 255],
-    prefix: true
+    prefix: true,
   });
 }
 
@@ -6242,7 +6242,7 @@ function parseImportMetaExpression(parser, context, meta, start, line, column) {
   return finishNode(parser, context, start, line, column, {
     type: 'MetaProperty',
     meta,
-    property: parseIdentifier(parser, context, 0)
+    property: parseIdentifier(parser, context, 0),
   });
 }
 
@@ -6253,7 +6253,7 @@ function parseImportExpression(parser, context, inGroup, start, line, column) {
   consume(parser, context, 16);
   return finishNode(parser, context, start, line, column, {
     type: 'ImportExpression',
-    source
+    source,
   });
 }
 
@@ -6272,13 +6272,13 @@ function parseBigIntLiteral(parser, context, start, line, column) {
           type: 'Literal',
           value: tokenValue,
           bigint: tokenRaw.slice(0, -1),
-          raw: tokenRaw
+          raw: tokenRaw,
         }
       : {
           type: 'Literal',
           value: tokenValue,
-          bigint: tokenRaw.slice(0, -1)
-        }
+          bigint: tokenRaw.slice(0, -1),
+        },
   );
 }
 
@@ -6290,7 +6290,7 @@ function parseTemplateLiteral(parser, context, start, line, column) {
   return finishNode(parser, context, start, line, column, {
     type: 'TemplateLiteral',
     expressions: [],
-    quasis
+    quasis,
   });
 }
 
@@ -6316,7 +6316,7 @@ function parseTemplate(parser, context) {
   return finishNode(parser, context, tokenPos, linePos, colPos, {
     type: 'TemplateLiteral',
     expressions,
-    quasis
+    quasis,
   });
 }
 
@@ -6325,9 +6325,9 @@ function parseTemplateElement(parser, context, cooked, raw, start, line, col, ta
     type: 'TemplateElement',
     value: {
       cooked,
-      raw
+      raw,
     },
-    tail
+    tail,
   });
   const tailSize = tail ? 1 : 2;
   if(context & 2) {
@@ -6350,7 +6350,7 @@ function parseSpreadElement(parser, context, start, line, column) {
   parser.assignable = 1;
   return finishNode(parser, context, start, line, column, {
     type: 'SpreadElement',
-    argument
+    argument,
   });
 }
 
@@ -6388,12 +6388,12 @@ function parseIdentifier(parser, context, isPattern) {
       ? {
           type: 'Identifier',
           name: tokenValue,
-          pattern: isPattern === 1
+          pattern: isPattern === 1,
         }
       : {
           type: 'Identifier',
-          name: tokenValue
-        }
+          name: tokenValue,
+        },
   );
 }
 
@@ -6414,12 +6414,12 @@ function parseLiteral(parser, context) {
       ? {
           type: 'Literal',
           value: tokenValue,
-          raw: tokenRaw
+          raw: tokenRaw,
         }
       : {
           type: 'Literal',
-          value: tokenValue
-        }
+          value: tokenValue,
+        },
   );
 }
 
@@ -6438,12 +6438,12 @@ function parseNullOrTrueOrFalseLiteral(parser, context, start, line, column) {
       ? {
           type: 'Literal',
           value,
-          raw
+          raw,
         }
       : {
           type: 'Literal',
-          value
-        }
+          value,
+        },
   );
 }
 
@@ -6452,7 +6452,7 @@ function parseThisExpression(parser, context) {
   nextToken(parser, context);
   parser.assignable = 2;
   return finishNode(parser, context, tokenPos, linePos, colPos, {
-    type: 'ThisExpression'
+    type: 'ThisExpression',
   });
 }
 
@@ -6496,7 +6496,7 @@ function parseFunctionDeclaration(parser, context, scope, origin, allowGen, flag
     scope ? addChildScope(functionScope, 128) : functionScope,
     8,
     firstRestricted,
-    scope ? functionScope.scopeError : void 0
+    scope ? functionScope.scopeError : void 0,
   );
   return finishNode(parser, context, start, line, column, {
     type: 'FunctionDeclaration',
@@ -6504,7 +6504,7 @@ function parseFunctionDeclaration(parser, context, scope, origin, allowGen, flag
     params,
     body,
     async: isAsync === 1,
-    generator: isGenerator === 1
+    generator: isGenerator === 1,
   });
 }
 
@@ -6532,7 +6532,7 @@ function parseFunctionExpression(parser, context, isAsync, inGroup, start, line,
     params,
     body,
     async: isAsync === 1,
-    generator: isGenerator === 1
+    generator: isGenerator === 1,
   });
 }
 
@@ -6575,14 +6575,14 @@ function parseArrayExpressionOrPattern(parser, context, scope, skipInitializer, 
               ? {
                   type: 'AssignmentPattern',
                   left,
-                  right
+                  right,
                 }
               : {
                   type: 'AssignmentExpression',
                   operator: '=',
                   left,
-                  right
-                }
+                  right,
+                },
           );
           destructible |= parser.destructible & 256 ? 256 : 0 | (parser.destructible & 128) ? 128 : 0;
         } else if(parser.token === 18 || parser.token === 20) {
@@ -6648,7 +6648,7 @@ function parseArrayExpressionOrPattern(parser, context, scope, skipInitializer, 
   consume(parser, context, 20);
   const node = finishNode(parser, context, start, line, column, {
     type: isPattern ? 'ArrayPattern' : 'ArrayExpression',
-    elements
+    elements,
   });
   if(!skipInitializer && parser.token & 4194304) {
     return parseArrayOrObjectAssignmentPattern(parser, context, destructible, inGroup, isPattern, start, line, column, node);
@@ -6675,14 +6675,14 @@ function parseArrayOrObjectAssignmentPattern(parser, context, destructible, inGr
       ? {
           type: 'AssignmentPattern',
           left: node,
-          right
+          right,
         }
       : {
           type: 'AssignmentExpression',
           left: node,
           operator: '=',
-          right
-        }
+          right,
+        },
   );
 }
 
@@ -6756,7 +6756,7 @@ function parseSpreadOrRestElement(parser, context, scope, closingToken, kind, or
     if(parser.token !== closingToken && parser.token !== 18) report(parser, 156);
     return finishNode(parser, context, start, line, column, {
       type: isPattern ? 'RestElement' : 'SpreadElement',
-      argument: argument
+      argument: argument,
     });
   }
   if(parser.token !== closingToken) {
@@ -6775,14 +6775,14 @@ function parseSpreadOrRestElement(parser, context, scope, closingToken, kind, or
           ? {
               type: 'AssignmentPattern',
               left: argument,
-              right
+              right,
             }
           : {
               type: 'AssignmentExpression',
               left: argument,
               operator: '=',
-              right
-            }
+              right,
+            },
       );
       destructible = 16;
     } else {
@@ -6792,7 +6792,7 @@ function parseSpreadOrRestElement(parser, context, scope, closingToken, kind, or
   parser.destructible = destructible;
   return finishNode(parser, context, start, line, column, {
     type: isPattern ? 'RestElement' : 'SpreadElement',
-    argument: argument
+    argument: argument,
   });
 }
 
@@ -6809,7 +6809,7 @@ function parseMethodDefinition(parser, context, kind, inGroup, start, line, colu
     body,
     async: (kind & 16) > 0,
     generator: (kind & 8) > 0,
-    id: null
+    id: null,
   });
 }
 
@@ -6856,7 +6856,7 @@ function parseObjectLiteralOrPattern(parser, context, scope, skipInitializer, in
             value = finishNode(parser, context, tokenPos, linePos, colPos, {
               type: 'AssignmentPattern',
               left: context & -2147483648 ? Object.assign({}, key) : key,
-              right
+              right,
             });
           } else {
             destructible |= (token === 209008 ? 128 : 0) | (token === 121 ? 16 : 0);
@@ -7185,8 +7185,8 @@ function parseObjectLiteralOrPattern(parser, context, scope, skipInitializer, in
           kind: !(state & 768) ? 'init' : state & 512 ? 'set' : 'get',
           computed: (state & 2) > 0,
           method: (state & 1) > 0,
-          shorthand: (state & 4) > 0
-        })
+          shorthand: (state & 4) > 0,
+        }),
       );
     }
     destructible |= parser.destructible;
@@ -7197,7 +7197,7 @@ function parseObjectLiteralOrPattern(parser, context, scope, skipInitializer, in
   if(prototypeCount > 1) destructible |= 64;
   const node = finishNode(parser, context, start, line, column, {
     type: isPattern ? 'ObjectPattern' : 'ObjectExpression',
-    properties
+    properties,
   });
   if(!skipInitializer && parser.token & 4194304) {
     return parseArrayOrObjectAssignmentPattern(parser, context, destructible, inGroup, isPattern, start, line, column, node);
@@ -7257,7 +7257,7 @@ function parseMethodFormals(parser, context, scope, kind, type, inGroup) {
       left = finishNode(parser, context, tokenPos, linePos, colPos, {
         type: 'AssignmentPattern',
         left: left,
-        right
+        right,
       });
     }
     setterArgs++;
@@ -7367,7 +7367,7 @@ function parseParenthesizedExpression(parser, context, canAssign, kind, origin, 
         parser.assignable = 2;
         expr = finishNode(parser, context, iStart, lStart, cStart, {
           type: 'SequenceExpression',
-          expressions
+          expressions,
         });
       }
       consume(parser, context, 16);
@@ -7391,7 +7391,7 @@ function parseParenthesizedExpression(parser, context, canAssign, kind, origin, 
     parser.assignable = 2;
     expr = finishNode(parser, context, iStart, lStart, cStart, {
       type: 'SequenceExpression',
-      expressions
+      expressions,
     });
   }
   consume(parser, context, 16);
@@ -7412,7 +7412,7 @@ function parseParenthesizedExpression(parser, context, canAssign, kind, origin, 
   return context & 128
     ? finishNode(parser, context, piStart, plStart, pcStart, {
         type: 'ParenthesizedExpression',
-        expression: expr
+        expression: expr,
       })
     : expr;
 }
@@ -7485,7 +7485,7 @@ function parseArrowFunctionExpression(parser, context, scope, params, isAsync, s
     params,
     body,
     async: isAsync === 1,
-    expression
+    expression,
   });
 }
 
@@ -7531,7 +7531,7 @@ function parseFormalParametersOrFormalList(parser, context, scope, inGroup, kind
       left = finishNode(parser, context, tokenPos, linePos, colPos, {
         type: 'AssignmentPattern',
         left,
-        right
+        right,
       });
     }
     params.push(left);
@@ -7562,12 +7562,12 @@ function parseMembeExpressionNoCall(parser, context, expr, inGroup, start, line,
           type: 'MemberExpression',
           object: expr,
           computed: false,
-          property
+          property,
         }),
         0,
         start,
         line,
-        column
+        column,
       );
     } else if(token === 69271571) {
       nextToken(parser, context | 32768);
@@ -7582,12 +7582,12 @@ function parseMembeExpressionNoCall(parser, context, expr, inGroup, start, line,
           type: 'MemberExpression',
           object: expr,
           computed: true,
-          property
+          property,
         }),
         0,
         start,
         line,
-        column
+        column,
       );
     } else if(token === 67174408 || token === 67174409) {
       parser.assignable = 2;
@@ -7597,12 +7597,12 @@ function parseMembeExpressionNoCall(parser, context, expr, inGroup, start, line,
         finishNode(parser, context, start, line, column, {
           type: 'TaggedTemplateExpression',
           tag: expr,
-          quasi: parser.token === 67174408 ? parseTemplate(parser, context | 65536) : parseTemplateLiteral(parser, context, parser.tokenPos, parser.linePos, parser.colPos)
+          quasi: parser.token === 67174408 ? parseTemplate(parser, context | 65536) : parseTemplateLiteral(parser, context, parser.tokenPos, parser.linePos, parser.colPos),
         }),
         0,
         start,
         line,
-        column
+        column,
       );
     }
   }
@@ -7631,7 +7631,7 @@ function parseNewExpression(parser, context, inGroup, start, line, column) {
   return finishNode(parser, context, start, line, column, {
     type: 'NewExpression',
     callee,
-    arguments: parser.token === 67174411 ? parseArguments(parser, context, inGroup) : []
+    arguments: parser.token === 67174411 ? parseArguments(parser, context, inGroup) : [],
   });
 }
 
@@ -7640,7 +7640,7 @@ function parseMetaProperty(parser, context, meta, start, line, column) {
   return finishNode(parser, context, start, line, column, {
     type: 'MetaProperty',
     meta,
-    property
+    property,
   });
 }
 
@@ -7667,7 +7667,7 @@ function parseAsyncArrowOrCallExpression(parser, context, callee, canAssign, kin
     return finishNode(parser, context, start, line, column, {
       type: 'CallExpression',
       callee,
-      arguments: []
+      arguments: [],
     });
   }
   let destructible = 0;
@@ -7736,7 +7736,7 @@ function parseAsyncArrowOrCallExpression(parser, context, callee, canAssign, kin
       return finishNode(parser, context, start, line, column, {
         type: 'CallExpression',
         callee,
-        arguments: params
+        arguments: params,
       });
     }
     params.push(expr);
@@ -7758,7 +7758,7 @@ function parseAsyncArrowOrCallExpression(parser, context, callee, canAssign, kin
   return finishNode(parser, context, start, line, column, {
     type: 'CallExpression',
     callee,
-    arguments: params
+    arguments: params,
   });
 }
 
@@ -7771,12 +7771,12 @@ function parseRegExpLiteral(parser, context, start, line, column) {
         type: 'Literal',
         value: tokenValue,
         regex: tokenRegExp,
-        raw: tokenRaw
+        raw: tokenRaw,
       })
     : finishNode(parser, context, start, line, column, {
         type: 'Literal',
         value: tokenValue,
-        regex: tokenRegExp
+        regex: tokenRegExp,
       });
 }
 
@@ -7836,14 +7836,14 @@ function parseClassDeclaration(parser, context, scope, flags, start, line, colum
           id,
           superClass,
           decorators,
-          body
+          body,
         }
       : {
           type: 'ClassDeclaration',
           id,
           superClass,
-          body
-        }
+          body,
+        },
   );
 }
 
@@ -7886,14 +7886,14 @@ function parseClassExpression(parser, context, inGroup, start, line, column) {
           id,
           superClass,
           decorators,
-          body
+          body,
         }
       : {
           type: 'ClassExpression',
           id,
           superClass,
-          body
-        }
+          body,
+        },
   );
 }
 
@@ -7913,7 +7913,7 @@ function parseDecoratorList(parser, context, start, line, column) {
   expression = parseMemberOrUpdateExpression(parser, context, expression, 0, 0, start, line, column);
   return finishNode(parser, context, start, line, column, {
     type: 'Decorator',
-    expression
+    expression,
   });
 }
 
@@ -7941,7 +7941,7 @@ function parseClassBody(parser, context, inheritedContext, scope, kind, origin, 
   consume(parser, origin & 8 ? context | 32768 : context, 1074790415);
   return finishNode(parser, context, tokenPos, linePos, colPos, {
     type: 'ClassBody',
-    body
+    body,
   });
 }
 
@@ -8054,7 +8054,7 @@ function parseClassElementList(parser, context, scope, inheritedContext, type, d
           computed: (kind & 2) > 0,
           key,
           decorators,
-          value
+          value,
         }
       : {
           type: 'MethodDefinition',
@@ -8062,8 +8062,8 @@ function parseClassElementList(parser, context, scope, inheritedContext, type, d
           static: (kind & 32) > 0,
           computed: (kind & 2) > 0,
           key,
-          value
-        }
+          value,
+        },
   );
 }
 
@@ -8074,7 +8074,7 @@ function parsePrivateIdentifier(parser, context, start, line, column) {
   nextToken(parser, context);
   return finishNode(parser, context, start, line, column, {
     type: 'PrivateIdentifier',
-    name: tokenValue
+    name: tokenValue,
   });
 }
 
@@ -8100,7 +8100,7 @@ function parsePropertyDefinition(parser, context, key, state, decorators, start,
     value,
     static: (state & 32) > 0,
     computed: (state & 2) > 0,
-    decorators
+    decorators,
   });
 }
 
@@ -8141,7 +8141,7 @@ function parseAndClassifyIdentifier(parser, context, scope, kind, origin, start,
   if(scope) addVarOrBlock(parser, context, scope, tokenValue, kind, origin);
   return finishNode(parser, context, start, line, column, {
     type: 'Identifier',
-    name: tokenValue
+    name: tokenValue,
   });
 }
 
@@ -8152,7 +8152,7 @@ function parseJSXRootElementOrFragment(parser, context, inJSXChild, start, line,
       type: 'JSXFragment',
       openingFragment: parseOpeningFragment(parser, context, start, line, column),
       children: parseJSXChildren(parser, context),
-      closingFragment: parseJSXClosingFragment(parser, context, inJSXChild, parser.tokenPos, parser.linePos, parser.colPos)
+      closingFragment: parseJSXClosingFragment(parser, context, inJSXChild, parser.tokenPos, parser.linePos, parser.colPos),
     });
   }
   let closingElement = null;
@@ -8168,14 +8168,14 @@ function parseJSXRootElementOrFragment(parser, context, inJSXChild, start, line,
     type: 'JSXElement',
     children,
     openingElement,
-    closingElement
+    closingElement,
   });
 }
 
 function parseOpeningFragment(parser, context, start, line, column) {
   scanJSXToken(parser, context);
   return finishNode(parser, context, start, line, column, {
-    type: 'JSXOpeningFragment'
+    type: 'JSXOpeningFragment',
   });
 }
 
@@ -8189,7 +8189,7 @@ function parseJSXClosingElement(parser, context, inJSXChild, start, line, column
   }
   return finishNode(parser, context, start, line, column, {
     type: 'JSXClosingElement',
-    name
+    name,
   });
 }
 
@@ -8201,7 +8201,7 @@ function parseJSXClosingFragment(parser, context, inJSXChild, start, line, colum
     consume(parser, context, 8456259);
   }
   return finishNode(parser, context, start, line, column, {
-    type: 'JSXClosingFragment'
+    type: 'JSXClosingFragment',
   });
 }
 
@@ -8228,7 +8228,7 @@ function parseJSXText(parser, context, start, line, column) {
   scanJSXToken(parser, context);
   const node = {
     type: 'JSXText',
-    value: parser.tokenValue
+    value: parser.tokenValue,
   };
   if(context & 512) {
     node.raw = parser.tokenRaw;
@@ -8255,7 +8255,7 @@ function parseJSXOpeningFragmentOrSelfCloseElement(parser, context, inJSXChild, 
     type: 'JSXOpeningElement',
     name: tagName,
     attributes,
-    selfClosing
+    selfClosing,
   });
 }
 
@@ -8275,7 +8275,7 @@ function parseJSXMemberExpression(parser, context, object, start, line, column) 
   return finishNode(parser, context, start, line, column, {
     type: 'JSXMemberExpression',
     object,
-    property
+    property,
   });
 }
 
@@ -8294,7 +8294,7 @@ function parseJSXSpreadAttribute(parser, context, start, line, column) {
   consume(parser, context, 1074790415);
   return finishNode(parser, context, start, line, column, {
     type: 'JSXSpreadAttribute',
-    argument: expression
+    argument: expression,
   });
 }
 
@@ -8326,7 +8326,7 @@ function parseJsxAttribute(parser, context, start, line, column) {
   return finishNode(parser, context, start, line, column, {
     type: 'JSXAttribute',
     value,
-    name
+    name,
   });
 }
 
@@ -8336,7 +8336,7 @@ function parseJSXNamespacedName(parser, context, namespace, start, line, column)
   return finishNode(parser, context, start, line, column, {
     type: 'JSXNamespacedName',
     namespace,
-    name
+    name,
   });
 }
 
@@ -8358,7 +8358,7 @@ function parseJSXExpressionContainer(parser, context, inJSXChild, isAttr, start,
   }
   return finishNode(parser, context, start, line, column, {
     type: 'JSXExpressionContainer',
-    expression
+    expression,
   });
 }
 
@@ -8368,7 +8368,7 @@ function parseJSXSpreadChild(parser, context, start, line, column) {
   consume(parser, context, 1074790415);
   return finishNode(parser, context, start, line, column, {
     type: 'JSXSpreadChild',
-    expression
+    expression,
   });
 }
 
@@ -8377,7 +8377,7 @@ function parseJSXEmptyExpression(parser, context, start, line, column) {
   parser.startLine = parser.linePos;
   parser.startColumn = parser.colPos;
   return finishNode(parser, context, start, line, column, {
-    type: 'JSXEmptyExpression'
+    type: 'JSXEmptyExpression',
   });
 }
 
@@ -8386,7 +8386,7 @@ function parseJSXIdentifier(parser, context, start, line, column) {
   nextToken(parser, context);
   return finishNode(parser, context, start, line, column, {
     type: 'JSXIdentifier',
-    name: tokenValue
+    name: tokenValue,
   });
 }
 

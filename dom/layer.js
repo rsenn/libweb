@@ -9,7 +9,7 @@ const GetSet = (getFn, setFn) => value => value !== undefined ? setFn(value) : g
 const PropSetterGetter = (obj, property) =>
   GetSet(
     () => obj[property],
-    value => (obj[property] = value)
+    value => (obj[property] = value),
   );
 const PropGetter = (obj, property) => () => obj[property];
 
@@ -48,9 +48,9 @@ export class Layer {
         position: cssGetSet(this.elm, 'position'),
         opacity: cssGetSet(this.elm, 'opacity'),
         display: cssGetSet(this.elm, 'display'),
-        boxSizing: cssGetSet(this.elm, 'box-sizing')
+        boxSizing: cssGetSet(this.elm, 'box-sizing'),
       }),
-      this
+      this,
     );
   }
 
@@ -74,7 +74,7 @@ export class Layer {
 lazyProperties(Layer.prototype, {
   renderer() {
     return new Renderer(null, this.elm);
-  }
+  },
 });
 
 export class Renderer {

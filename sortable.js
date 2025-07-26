@@ -50,7 +50,7 @@ export class Manager {
   getActive() {
     return this.refs[this.active.collection].find(
       // eslint-disable-next-line eqeqeq
-      ({ node }) => node.sortableInfo.index == this.active.index
+      ({ node }) => node.sortableInfo.index == this.active.index,
     );
   }
 
@@ -66,14 +66,14 @@ export class Manager {
 function sortByIndex(
   {
     node: {
-      sortableInfo: { index: index1 }
-    }
+      sortableInfo: { index: index1 },
+    },
   },
   {
     node: {
-      sortableInfo: { index: index2 }
-    }
-  }
+      sortableInfo: { index: index2 },
+    },
+  },
 ) {
   return index1 - index2;
 }
@@ -104,7 +104,7 @@ function omit(obj, keysToOmit) {
 const events = {
   end: ['touchend', 'touchcancel', 'mouseup'],
   move: ['touchmove', 'mousemove'],
-  start: ['touchstart', 'mousedown']
+  start: ['touchstart', 'mousedown'],
 };
 
 const vendorPrefix = (function () {
@@ -176,7 +176,7 @@ function getElementMargin(element) {
     bottom: getPixelValue(style.marginBottom),
     left: getPixelValue(style.marginLeft),
     right: getPixelValue(style.marginRight),
-    top: getPixelValue(style.marginTop)
+    top: getPixelValue(style.marginTop),
   };
 }
 
@@ -191,7 +191,7 @@ function getScrollAdjustedBoundingClientRect(node, scrollDelta) {
 
   return {
     top: boundingClientRect.top + scrollDelta.top,
-    left: boundingClientRect.left + scrollDelta.left
+    left: boundingClientRect.left + scrollDelta.left,
   };
 }
 
@@ -199,17 +199,17 @@ function getPosition(event) {
   if(event.touches && event.touches.length) {
     return {
       x: event.touches[0].pageX,
-      y: event.touches[0].pageY
+      y: event.touches[0].pageY,
     };
   } else if(event.changedTouches && event.changedTouches.length) {
     return {
       x: event.changedTouches[0].pageX,
-      y: event.changedTouches[0].pageY
+      y: event.changedTouches[0].pageY,
     };
   } else {
     return {
       x: event.pageX,
-      y: event.pageY
+      y: event.pageY,
     };
   }
 }
@@ -226,7 +226,7 @@ function getEdgeOffset(node, parent, offset = { left: 0, top: 0 }) {
   // Get the actual offsetTop / offsetLeft value, no matter how deep the node is nested
   const nodeOffset = {
     left: offset.left + node.offsetLeft,
-    top: offset.top + node.offsetTop
+    top: offset.top + node.offsetTop,
   };
 
   if(node.parentNode === parent) {
@@ -270,7 +270,7 @@ function getLockPixelOffset({ lockOffset, width, height }) {
 
   return {
     x: offsetX,
-    y: offsetY
+    y: offsetY,
   };
 }
 
@@ -308,7 +308,7 @@ function getContainerGridGap(element) {
   if(style.display === 'grid') {
     return {
       x: getPixelValue(style.gridColumnGap),
-      y: getPixelValue(style.gridRowGap)
+      y: getPixelValue(style.gridRowGap),
     };
   }
 
@@ -322,7 +322,7 @@ const KEYCODE = {
   LEFT: 37,
   UP: 38,
   RIGHT: 39,
-  DOWN: 40
+  DOWN: 40,
 };
 
 const NodeType = {
@@ -332,7 +332,7 @@ const NodeType = {
   Input: 'INPUT',
   Option: 'OPTION',
   Textarea: 'TEXTAREA',
-  Select: 'SELECT'
+  Select: 'SELECT',
 };
 
 function cloneNode(node) {
@@ -416,15 +416,15 @@ class AutoScroller {
   update({ translate, minTranslate, maxTranslate, width, height }) {
     const direction = {
       x: 0,
-      y: 0
+      y: 0,
     };
     const speed = {
       x: 1,
-      y: 1
+      y: 1,
     };
     const acceleration = {
       x: 10,
-      y: 10
+      y: 10,
     };
 
     const { scrollTop, scrollLeft, scrollHeight, scrollWidth, clientHeight, clientWidth } = this.container;
@@ -462,7 +462,7 @@ class AutoScroller {
         this.isAutoScrolling = true;
         const offset = {
           left: speed.x * direction.x,
-          top: speed.y * direction.y
+          top: speed.y * direction.y,
         };
         this.container.scrollTop += offset.top;
         this.container.scrollLeft += offset.left;
@@ -479,7 +479,7 @@ class AutoScroller {
 function defaultGetHelperDimensions({ node }) {
   return {
     height: node.offsetHeight,
-    width: node.offsetWidth
+    width: node.offsetWidth,
   };
 }
 
@@ -508,7 +508,7 @@ function defaultShouldCancelStart(event) {
 /* ----- start of './react-sortable-hoc/src/SortableContainer/index.js' ----- */
 
 const SortableContext = React.createContext({
-  manager: {}
+  manager: {},
 });
 
 export function SortableContainer(WrappedComponent, config = { withRef: false }) {
@@ -537,13 +537,13 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
       drop: PropTypes.arrayOf(PropTypes.number),
       cancel: PropTypes.arrayOf(PropTypes.number),
       up: PropTypes.arrayOf(PropTypes.number),
-      down: PropTypes.arrayOf(PropTypes.number)
+      down: PropTypes.arrayOf(PropTypes.number),
     }),
     shouldCancelStart: PropTypes.func,
     transitionDuration: PropTypes.number,
     updateBeforeSortStart: PropTypes.func,
     useDragHandle: PropTypes.bool,
-    useWindowAsScrollContainer: PropTypes.bool
+    useWindowAsScrollContainer: PropTypes.bool,
   };
 
   const defaultKeyCodes = {
@@ -551,7 +551,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
     drop: [KEYCODE.SPACE],
     cancel: [KEYCODE.ESC],
     up: [KEYCODE.UP, KEYCODE.LEFT],
-    down: [KEYCODE.DOWN, KEYCODE.RIGHT]
+    down: [KEYCODE.DOWN, KEYCODE.RIGHT],
   };
 
   const defaultProps = {
@@ -567,7 +567,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
     keyCodes: defaultKeyCodes,
     shouldCancelStart: defaultShouldCancelStart,
     transitionDuration: 300,
-    useWindowAsScrollContainer: false
+    useWindowAsScrollContainer: false,
   };
 
   const omittedProps = Object.keys(propTypes);
@@ -590,7 +590,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
       this.events = {
         end: this.handleEnd,
         move: this.handleMove,
-        start: this.handleStart
+        start: this.handleStart,
       };
     }
 
@@ -695,7 +695,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
         const position = getPosition(event);
         const delta = {
           x: this.position.x - position.x,
-          y: this.position.y - position.y
+          y: this.position.y - position.y,
         };
         const combinedDelta = Math.abs(delta.x) + Math.abs(delta.y);
 
@@ -760,7 +760,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
         this.height = dimensions.height;
         this.marginOffset = {
           x: this.margin.left + this.margin.right + this.gridGap.x,
-          y: Math.max(this.margin.top, this.margin.bottom, this.gridGap.y)
+          y: Math.max(this.margin.top, this.margin.bottom, this.gridGap.y),
         };
         this.boundingClientRect = node.getBoundingClientRect();
         this.containerBoundingRect = containerBoundingRect;
@@ -769,7 +769,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
         this.axis = {
           x: axis.indexOf('x') >= 0,
-          y: axis.indexOf('y') >= 0
+          y: axis.indexOf('y') >= 0,
         };
         this.offsetEdge = getEdgeOffset(node, this.container);
 
@@ -777,7 +777,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
           this.initialOffset = getPosition({
             ...event,
             pageX: this.boundingClientRect.left,
-            pageY: this.boundingClientRect.top
+            pageY: this.boundingClientRect.top,
           });
         } else {
           this.initialOffset = getPosition(event);
@@ -785,12 +785,12 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
         this.initialScroll = {
           left: this.scrollContainer.scrollLeft,
-          top: this.scrollContainer.scrollTop
+          top: this.scrollContainer.scrollTop,
         };
 
         this.initialWindowScroll = {
           left: window.pageXOffset,
-          top: window.pageYOffset
+          top: window.pageYOffset,
         };
 
         this.helper = this.helperContainer.appendChild(cloneNode(node));
@@ -802,7 +802,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
           pointerEvents: 'none',
           position: 'fixed',
           top: `${this.boundingClientRect.top - margin.top}px`,
-          width: `${this.width}px`
+          width: `${this.width}px`,
         });
 
         if(isKeySorting) {
@@ -814,7 +814,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
           setInlineStyles(node, {
             opacity: 0,
-            visibility: 'hidden'
+            visibility: 'hidden',
           });
         }
 
@@ -826,13 +826,13 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
             top: containerTop,
             left: containerLeft,
             width: containerWidth,
-            height: containerHeight
+            height: containerHeight,
           } = useWindowAsScrollContainer
             ? {
                 top: 0,
                 left: 0,
                 width: this.contentWindow.innerWidth,
-                height: this.contentWindow.innerHeight
+                height: this.contentWindow.innerHeight,
               }
             : this.containerBoundingRect;
           const containerBottom = containerTop + containerHeight;
@@ -878,7 +878,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
         this.setState({
           sorting: true,
-          sortingIndex: index
+          sortingIndex: index,
         });
 
         if(onSortStart) {
@@ -889,9 +889,9 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
               collection,
               isKeySorting,
               nodes: this.manager.getOrderedRefs(),
-              helper: this.helper
+              helper: this.helper,
             },
-            event
+            event,
           );
         }
 
@@ -923,7 +923,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
       const { hideSortableGhost, onSortEnd } = this.props;
       const {
         active: { collection },
-        isKeySorting
+        isKeySorting,
       } = this.manager;
       const nodes = this.manager.getOrderedRefs();
 
@@ -945,7 +945,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
       if(hideSortableGhost && this.sortableGhost) {
         setInlineStyles(this.sortableGhost, {
           opacity: '',
-          visibility: ''
+          visibility: '',
         });
       }
 
@@ -972,7 +972,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
       this.setState({
         sorting: false,
-        sortingIndex: null
+        sortingIndex: null,
       });
 
       if(typeof onSortEnd === 'function') {
@@ -982,9 +982,9 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
             newIndex: this.newIndex,
             oldIndex: this.index,
             isKeySorting,
-            nodes
+            nodes,
           },
-          event
+          event,
         );
       }
 
@@ -999,7 +999,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
       const offset = getPosition(event);
       const translate = {
         x: offset.x - this.initialOffset.x,
-        y: offset.y - this.initialOffset.y
+        y: offset.y - this.initialOffset.y,
       };
 
       // Adjust for window scroll
@@ -1012,15 +1012,15 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
         const [minLockOffset, maxLockOffset] = getLockPixelOffsets({
           height: this.height,
           lockOffset,
-          width: this.width
+          width: this.width,
         });
         const minOffset = {
           x: this.width / 2 - minLockOffset.x,
-          y: this.height / 2 - minLockOffset.y
+          y: this.height / 2 - minLockOffset.y,
         };
         const maxOffset = {
           x: this.width / 2 - maxLockOffset.x,
-          y: this.height / 2 - maxLockOffset.y
+          y: this.height / 2 - maxLockOffset.y,
         };
 
         translate.x = limit(this.minTranslate.x + minOffset.x, this.maxTranslate.x - maxOffset.x, translate.x);
@@ -1046,7 +1046,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
       const nodes = this.manager.getOrderedRefs();
       const sortingOffset = {
         left: this.offsetEdge.left + this.translate.x + containerScrollDelta.left,
-        top: this.offsetEdge.top + this.translate.y + containerScrollDelta.top
+        top: this.offsetEdge.top + this.translate.y + containerScrollDelta.top,
       };
       const { isKeySorting } = this.manager;
 
@@ -1060,7 +1060,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
         const height = node.offsetHeight;
         const offset = {
           height: this.height > height ? height / 2 : this.height / 2,
-          width: this.width > width ? width / 2 : this.width / 2
+          width: this.width > width ? width / 2 : this.width / 2,
         };
 
         // For keyboard sorting, we want user input to dictate the position of the nodes
@@ -1069,7 +1069,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
         const translate = {
           x: 0,
-          y: 0
+          y: 0,
         };
         let { edgeOffset } = nodes[i];
 
@@ -1108,7 +1108,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
             setInlineStyles(node, {
               opacity: 0,
-              visibility: 'hidden'
+              visibility: 'hidden',
             });
           }
           continue;
@@ -1208,7 +1208,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
           oldIndex,
           isKeySorting,
           nodes,
-          helper: this.helper
+          helper: this.helper,
         });
       }
     }
@@ -1250,7 +1250,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
         maxTranslate: this.maxTranslate,
         minTranslate: this.minTranslate,
         translate: this.translate,
-        width: this.width
+        width: this.width,
       });
     };
 
@@ -1283,7 +1283,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
       const keyCodes = {
         ...defaultKeyCodes,
-        ...customKeyCodes
+        ...customKeyCodes,
       };
 
       if((this.manager.active && !this.manager.isKeySorting) || (!this.manager.active && (!keyCodes.lift.includes(keyCode) || shouldCancelStart(event) || !this.isValidSortingTarget(event)))) {
@@ -1317,7 +1317,7 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
       this.manager.isKeySorting = true;
       this.manager.active = {
         index,
-        collection
+        collection,
       };
 
       this.handlePress(event);
@@ -1346,19 +1346,19 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
       const targetPosition = {
         top: targetBoundingClientRect.top + targetTranslate.y - scrollDelta.top,
-        left: targetBoundingClientRect.left + targetTranslate.x - scrollDelta.left
+        left: targetBoundingClientRect.left + targetTranslate.x - scrollDelta.left,
       };
 
       const shouldAdjustForSize = prevIndex < newIndex;
       const sizeAdjustment = {
         x: shouldAdjustForSize && this.axis.x ? targetNode.offsetWidth - this.width : 0,
-        y: shouldAdjustForSize && this.axis.y ? targetNode.offsetHeight - this.height : 0
+        y: shouldAdjustForSize && this.axis.y ? targetNode.offsetHeight - this.height : 0,
       };
 
       this.handleSortMove({
         pageX: targetPosition.left + sizeAdjustment.x,
         pageY: targetPosition.top + sizeAdjustment.y,
-        ignoreTransition: shift === 0
+        ignoreTransition: shift === 0,
       });
     };
 
@@ -1414,14 +1414,14 @@ export function SortableContainer(WrappedComponent, config = { withRef: false })
 
       return {
         left: this.scrollContainer.scrollLeft - this.initialScroll.left,
-        top: this.scrollContainer.scrollTop - this.initialScroll.top
+        top: this.scrollContainer.scrollTop - this.initialScroll.top,
       };
     }
 
     get windowScrollDelta() {
       return {
         left: this.contentWindow.pageXOffset - this.initialWindowScroll.left,
-        top: this.contentWindow.pageYOffset - this.initialWindowScroll.top
+        top: this.contentWindow.pageYOffset - this.initialWindowScroll.top,
       };
     }
   };
@@ -1435,7 +1435,7 @@ export function SortableElement(WrappedComponent, config = { withRef: false }) {
   const propTypes = {
     index: PropTypes.number.isRequired,
     collection: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
   };
 
   const omittedProps = Object.keys(propTypes);
@@ -1447,7 +1447,7 @@ export function SortableElement(WrappedComponent, config = { withRef: false }) {
     static propTypes = propTypes;
 
     static defaultProps = {
-      collection: 0
+      collection: 0,
     };
 
     componentDidMount() {
@@ -1483,7 +1483,7 @@ export function SortableElement(WrappedComponent, config = { withRef: false }) {
         collection,
         disabled,
         index,
-        manager: this.context.manager
+        manager: this.context.manager,
       };
 
       this.node = node;

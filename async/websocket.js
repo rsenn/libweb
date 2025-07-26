@@ -21,7 +21,7 @@ const oncePromise = (emitter, events) => {
             resolve(e);
           };
           for(let name of events) emitter['on' + name] = handler;
-        }
+        },
   );
 };
 
@@ -111,7 +111,7 @@ export class ReconnectingWebSocket {
     return new WritableStream({
       write: chunk => this.socket.send(chunk),
       close: () => this.socket.close(),
-      abort: err => this.socket.close(err)
+      abort: err => this.socket.close(err),
     });
   }
 
@@ -119,7 +119,7 @@ export class ReconnectingWebSocket {
     return new ReadableStream({
       start: async controller => {
         for await(let chunk of this) controller.enqueue(chunk);
-      }
+      },
     });
   }
 
