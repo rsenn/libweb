@@ -33,7 +33,7 @@ export function Alea(...args) {
     return {
       h: random() * 360,
       s: random() * 100,
-      l: random() * 100
+      l: random() * 100,
     };
   };
   random.seed = function(...args) {

@@ -17,7 +17,7 @@ var FUNC_KEYS = {
     linear: [0, 0, 1, 1],
     'ease-in': [0.42, 0, 1, 1],
     'ease-out': [0, 0, 0.58, 1],
-    'ease-in-out': [0.42, 0, 0.58, 1]
+    'ease-in-out': [0.42, 0, 0.58, 1],
   },
   MSPF = 1000 / 60 / 2, // precision ms/frame (FPS: 60)
   requestAnim =
@@ -169,7 +169,7 @@ var AnimSequence = {
         p2f = 3 * t1 * t2;
       return {
         x: p1f * timing[0] + p2f * timing[2] + t3,
-        y: p1f * timing[1] + p2f * timing[3] + t3
+        y: p1f * timing[1] + p2f * timing[3] + t3,
       };
     }
 
@@ -215,7 +215,7 @@ var AnimSequence = {
       duration: duration,
       count: count, // task properties
       frames: frames,
-      reverse: !!reverse
+      reverse: !!reverse,
     };
     tasks.push(task);
     if(timeRatio !== false) {
@@ -297,7 +297,7 @@ var AnimSequence = {
         })
       ? [timing[0], timing[1], timing[2], timing[3]]
       : null;
-  }
+  },
 };
 
 export default AnimSequence;

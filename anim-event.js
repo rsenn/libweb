@@ -97,8 +97,8 @@ var AnimEvent = {
     if(indexOfTasks(listener) === -1) {
       tasks.push(
         (task = {
-          listener: listener
-        })
+          listener: listener,
+        }),
       );
       return function(event) {
         task.event = event;
@@ -122,6 +122,6 @@ var AnimEvent = {
         requestID = null;
       }
     }
-  }
+  },
 };
 export default AnimEvent;

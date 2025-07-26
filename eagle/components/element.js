@@ -15,13 +15,12 @@ export const Element = ({ data, opts = {}, ...props }) => {
 
   let { x, y, rot, library, name, value, package: pkg } = element;
 
-  log('Element.render', { x, y, rot, library, name, value, package:pkg });
+  log('Element.render', { x, y, rot, library, name, value, package: pkg });
 
   let transform = new TransformationList();
 
   transform.translate(x, y);
 
-<<<<<<< HEAD
   if(rot) {
     rot = MakeRotation(rot);
     transform = transform.concat(rot);
@@ -30,12 +29,11 @@ export const Element = ({ data, opts = {}, ...props }) => {
   let pkg = element.library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
 
   if(!value && pkg) value = pkg.name;
-=======
-  if(rot) 
-    transform = transform.concat(MakeRotation(rot));
->>>>>>> d28162443cf9258c2c6a336327dd1454ef068614
 
-/*  if(/^R[0-9]/.test(name)) {
+  /* if(rot) 
+    transform = transform.concat(MakeRotation(rot));*/
+
+  /*  if(/^R[0-9]/.test(name)) {
     const number = ValueToNumber(value);
 
     log('name:', name, ' number:', number, ' value:', value);
@@ -47,15 +45,11 @@ export const Element = ({ data, opts = {}, ...props }) => {
 
   const child = h(Package, {
     data: pkg,
-<<<<<<< HEAD
     opts: {
-=======
-     opts: {
->>>>>>> d28162443cf9258c2c6a336327dd1454ef068614
       ...opts,
       ...{ name, value },
-      transformation: transformation.concat(transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/)
-    }
+      transformation: transformation.concat(transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/),
+    },
   });
 
   return h(
@@ -64,8 +58,8 @@ export const Element = ({ data, opts = {}, ...props }) => {
       id: `element-${element.name}`,
       class: `element-${element.name}`,
       'data-path': element.path.toString(' '),
-      transform
+      transform,
     },
-    [child]
+    [child],
   );
 };

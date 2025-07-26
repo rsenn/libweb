@@ -43,12 +43,12 @@ export class BoardRenderer extends EagleSVGRenderer {
           'data-path': item.path.toString(' '),
           ...(layer
             ? {
-                'data-layer': `${layer.number} ${layer.name}`
+                'data-layer': `${layer.number} ${layer.name}`,
               }
             : {}),
-          ...attr
+          ...attr,
         },
-        parent
+        parent,
       );
     const { coordFn = i => i, name, value } = opts;
 
@@ -71,9 +71,9 @@ export class BoardRenderer extends EagleSVGRenderer {
           {
             fill: padColor,
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
-            transform
+            transform,
           },
-          parent
+          parent,
         );
 
         this.debug('name:', name);
@@ -83,7 +83,7 @@ export class BoardRenderer extends EagleSVGRenderer {
             'tspan',
             {
               children: name,
-              ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL)
+              ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL),
             },
             svg(
               'text',
@@ -95,7 +95,7 @@ export class BoardRenderer extends EagleSVGRenderer {
                 y: -0.04,
                 ...(layer
                   ? {
-                      'data-layer': `${layer.number} ${layer.name}`
+                      'data-layer': `${layer.number} ${layer.name}`,
                     }
                   : {}),
                 //     filter: 'url(#shadow)',
@@ -104,10 +104,10 @@ export class BoardRenderer extends EagleSVGRenderer {
                 'font-style': 'bold',
                 // 'font-family': 'Fixed Medium',
                 transformation: transform.concat([t]),
-                transform: `${transform} ${t} scale(1,-1)`
+                transform: `${transform} ${t} scale(1,-1)`,
               },
-              parent
-            )
+              parent,
+            ),
           );
         }
         break;
@@ -170,7 +170,7 @@ export class BoardRenderer extends EagleSVGRenderer {
             if(wire.curve !== undefined) line.curve = wire.curve;
             line.width = wire.width;
             return line;
-          })
+          }),
         );
         const layer = layers[layerId] || this.layers.Bottom;
         const color = layer.color;
@@ -185,7 +185,7 @@ export class BoardRenderer extends EagleSVGRenderer {
               if(l.curve !== undefined) ret.curve = l.curve;
               if(l.element !== undefined) ret.element = l.element;
               return ret;
-            })
+            }),
           );
           if(flat) cmds = cmds.flat();
 
@@ -200,9 +200,9 @@ export class BoardRenderer extends EagleSVGRenderer {
               width,
               layer,
               separator: flat ? ' ' : '\n',
-              ...addProps
+              ...addProps,
             },
-            parent
+            parent,
           );
         } else {
           LinesToPath(lines).map(cmds =>
@@ -214,10 +214,10 @@ export class BoardRenderer extends EagleSVGRenderer {
                 color,
                 width,
                 layer,
-                ...addProps
+                ...addProps,
               },
-              parent
-            )
+              parent,
+            ),
           );
         }
       }
@@ -327,7 +327,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     parent = super.render(doc, {
       transform,
       rect,
-      viewBox
+      viewBox,
     });
 
     bounds = this.bounds;

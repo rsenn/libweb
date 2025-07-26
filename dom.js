@@ -20,16 +20,18 @@ import { PointList } from './geom/pointList.js';
 import { Polyline } from './geom/polyline.js';
 import { isRect, Rect } from './geom/rect.js';
 import { isSize, Size } from './geom/size.js';
+import { read as readXML, write as writeXML } from './xml.js';
 import { TRBL } from './geom/trbl.js';
-
 export { HSLA, RGBA } from './color.js';
+import { define, gettersetter, isObject,isFunction } from './util.js';
+
 export function dom() {
   let args = [...arguments];
   let ret = [];
 
   const extend = (e, functions) => {
     const keys = [...members(functions)].filter(
-      key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function'
+      key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function',
     );
     for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
@@ -60,7 +62,7 @@ export function Unit(str) {
       : {
           format(number) {
             return `${number}${this.name}`;
-          }
+          },
         };
   u.name = str.replace(/^[a-z]*/, '');
   return u;
@@ -77,7 +79,7 @@ export const ElementTransformation = () => ({
   toString() {
     const { rotate, translate, scale } = this;
     return `rotate(${rotate}deg) translate(${translate.x}, ${translate.y}) scale(${scale.w},${scale.h})`;
-  }
+  },
 });
 
 export const CSSTransformSetters = element => ({
@@ -107,7 +109,7 @@ export const CSSTransformSetters = element => ({
     const t = this.transformation.toString();
     console.log('CSSTransformSetters.updateTransformation', t);
     this.style.transform = t;
-  }
+  },
 });
 
 export class Transition {
@@ -144,7 +146,7 @@ export class TransitionList extends Array {
       transitionDelay: this.propertyList('delay').join(', '),
       transitionDuration: this.propertyList('duration').join(', '),
       transitionProperty: this.propertyList('property').join(', '),
-      transitionTimingFunction: this.propertyList('timing').join(', ')
+      transitionTimingFunction: this.propertyList('timing').join(', '),
     };
   }
 }
@@ -231,5 +233,137 @@ export default Object.assign(dom, {
   TRBL,
   Tree,
   Event,
-  XPath
+  XPath,
 });
+
+export function Document() {}
+
+export function Prototypes(
+  constructors = {
+    Node,
+    Element, 
+  },
+) {
+  const prototypes = {};
+
+  for(let key in constructors) prototypes[key] = constructors[key].prototype;
+
+  return prototypes;
+}
+
+const EntityNames = ['Document', 'Node', 'NodeList', 'Element', 'NamedNodeMap', 'Attr', 'Text', 'Comment', 'TokenList', 'CSSStyleDeclaration'];
+
+
+const factories = gettersetter(new WeakMap());
+
+export function Factory(types = Prototypes()) {
+  let result;
+
+  if(new.target) {
+    result = function Factory(type) {
+      if(isNumber(type)) type = EntityNames[type];
+
+      return result[type].new;
+    };
+
+    if(Array.isArray(types)) types = types.reduce((acc, proto, i) => ({ [EntityNames[i]]: proto, ...acc }), {});
+
+    if(!isFunction(types)) {
+      const obj = types;
+
+      types = (type, ...args) => {
+        if(isNumber(type)) type = EntityNames[type];
+
+console.log('Factory', { type});
+        return new obj[type].constructor(...args);
+      };
+
+      types.cache = (type, ...args) => {
+        if(isNumber(type)) type = EntityNames[type];
+
+        const proto = obj[type];
+
+        return (proto.constructor.cache ?? MakeCache((...a) => new proto.constructor(...a)))(...args);
+      };
+    }
+
+    for(let i = 0; i < EntityNames.length; i++) {
+      const name = EntityNames[i];
+
+      result[name] = {
+        new: (...args) => types(name, ...args),
+        cache: (...args) => types.cache(name, ...args),
+      };
+    }
+
+    return Object.setPrototypeOf(result, Factory.prototype);
+  }
+
+  return factories(types);
+}
+
+Object.setPrototypeOf(Factory.prototype, Function.prototype);
+
+define(Factory, {
+  for: node => {
+    let parent = node;
+
+    do {
+      const factory = factories(Node.raw(parent));
+
+      if(factory) return factory;
+    } while((parent = Node.parent(parent) ?? Node.owner(parent)));
+
+    for(let n of Node.hier(node)) {
+      const factory = factories(Node.raw(n));
+
+      if(factory) return factory;
+    }
+  },
+  set: (node, factory) => factories(Node.raw(node), factory),
+});
+
+export class Parser {
+  constructor(factory) {
+  factory ??= new Factory();
+
+    this.factory = factory;
+  }
+
+  parseFromString(str, file) {
+
+console.log('Parser.parseFromString',{str,file});
+
+    let data = readXML(str, file);
+
+    if(Array.isArray(data)) {
+      if(data[0].tagName != '?xml')
+        data = {
+          tagName: '?xml',
+          attributes: { version: '1.0', encoding: 'utf-8' },
+          children: data,
+        };
+      else if(data.length == 1) data = data[0];
+    }
+
+    const { factory } = this;
+    const doc = factory.Document.new(data, factory);
+
+    Factory.set(doc, factory);
+
+    return doc;
+  }
+
+  parseFromFile(file) {
+    const xml = readFileSync(file);
+    const { factory } = this;
+
+    return this.parseFromString(xml, file, factory);
+  }
+}
+
+export class Serializer {
+  serializeToString(node) {
+    return writeXML(Node.raw(node));
+  }
+}
