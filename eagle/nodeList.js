@@ -164,7 +164,7 @@ export class EagleNodeList {
       },
       getPrototypeOf(target) {
         return EagleNodeList.prototype;
-      }
+      },
     });
   }
 }

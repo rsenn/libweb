@@ -16,10 +16,10 @@ no member '${inspect(member, { colors: false })}' in ${inspect(prev, {
           depth: 2,
           multiline: true,
           indent: 2,
-          colors: false
+          colors: false,
         })} \n` + stack,
-      stack
-    }
+      stack,
+    },
   );
 }
 
@@ -75,7 +75,7 @@ export class Pointer extends Array {
         }
         return a;
       },
-      { o, n: 0 }
+      { o, n: 0 },
     );
     if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, a.p, this);
     return a.o;
@@ -161,7 +161,7 @@ export class Pointer extends Array {
             }
             return acc;
           },
-          []
+          [],
         )
         .join('') + t('', 0)
     );

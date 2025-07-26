@@ -18,7 +18,7 @@ export class EagleProject {
       documents: {},
       list: [],
       data: { sch: null, brd: null, lbr: {} },
-      fs
+      fs,
     });
 
     const loadFile = file => {
@@ -75,10 +75,10 @@ export class EagleProject {
             if(doc.libraries) this.addLibraries([...doc.libraries.list].map(l => l.name));
 
             return doc;
-          }
+          },
         },
-        { memoize: true, configurable: true, enumerable: true }
-      )
+        { memoize: true, configurable: true, enumerable: true },
+      ),
     );
   }
 
@@ -243,11 +243,11 @@ export class EagleProject {
 
     tryCatch(
       () => this.schematic.libraries.keys(),
-      names => (libraryNames = libraryNames.concat(names))
+      names => (libraryNames = libraryNames.concat(names)),
     );
     tryCatch(
       () => this.board.libraries.keys(),
-      names => (libraryNames = libraryNames.concat(names))
+      names => (libraryNames = libraryNames.concat(names)),
     );
 
     return unique(libraryNames);
@@ -271,7 +271,7 @@ export class EagleProject {
     let libraries = {
       file: this.getLibrary(name),
       schematic: schematic.getLibrary(name),
-      board: board.getLibrary(name)
+      board: board.getLibrary(name),
     };
 
     for(let destDoc of ['schematic', 'board']) {
