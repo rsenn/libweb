@@ -6220,12 +6220,12 @@ export const GLOB_TILDE = 2048;
 
 export function glob(pattern, flags, errfunc = (path, errno) => {}, arr) {
   let result = globSync(pattern);
-  let ok=false;
+  let ok = false;
 
   if(Array.isArray(result)) {
     if(Array.isArray(arr)) arr.splice(0, arr.length, ...result);
-ok =true;
-   // result = 0;
+    ok = true;
+    // result = 0;
   }
 
   if(!ok) errfunc(process.cwd(), 0);
@@ -6262,7 +6262,6 @@ export function isFunction(v) {
 export function isNumber(v) {
   return typeof v == 'number';
 }
-
 
 /**
  * Returns a function that either sets or gets (abstract) properties on the target,

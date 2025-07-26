@@ -23,7 +23,7 @@ import { isSize, Size } from './geom/size.js';
 import { read as readXML, write as writeXML } from './xml.js';
 import { TRBL } from './geom/trbl.js';
 export { HSLA, RGBA } from './color.js';
-import { define, gettersetter, isObject,isFunction } from './util.js';
+import { define, gettersetter, isObject, isFunction } from './util.js';
 
 export function dom() {
   let args = [...arguments];
@@ -241,7 +241,7 @@ export function Document() {}
 export function Prototypes(
   constructors = {
     Node,
-    Element, 
+    Element,
   },
 ) {
   const prototypes = {};
@@ -252,7 +252,6 @@ export function Prototypes(
 }
 
 const EntityNames = ['Document', 'Node', 'NodeList', 'Element', 'NamedNodeMap', 'Attr', 'Text', 'Comment', 'TokenList', 'CSSStyleDeclaration'];
-
 
 const factories = gettersetter(new WeakMap());
 
@@ -274,7 +273,7 @@ export function Factory(types = Prototypes()) {
       types = (type, ...args) => {
         if(isNumber(type)) type = EntityNames[type];
 
-console.log('Factory', { type});
+        console.log('Factory', { type });
         return new obj[type].constructor(...args);
       };
 
@@ -325,14 +324,13 @@ define(Factory, {
 
 export class Parser {
   constructor(factory) {
-  factory ??= new Factory();
+    factory ??= new Factory();
 
     this.factory = factory;
   }
 
   parseFromString(str, file) {
-
-console.log('Parser.parseFromString',{str,file});
+    console.log('Parser.parseFromString', { str, file });
 
     let data = readXML(str, file);
 

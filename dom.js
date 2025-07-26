@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs';
 import { extend, arrayFacade, assert, camelize, decamelize, define, getset, gettersetter, isBool, isObject, isFunction, isNumber, isString, lazyProperties, memoize, modifier, quote, range, properties, } from 'util';
 import { parseSelectors } from './css3-selectors.js';
-import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from 'deep';
-import { TreeWalker } from 'tree_walker';
-import { read as readXML, write as writeXML } from 'xml';
+import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from './deep.js';
+import { TreeWalker } from './tree_walker.js';
+import { read as readXML, write as writeXML } from './xml.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
 
