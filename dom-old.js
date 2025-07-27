@@ -20,10 +20,10 @@ import { PointList } from './geom/pointList.js';
 import { Polyline } from './geom/polyline.js';
 import { isRect, Rect } from './geom/rect.js';
 import { isSize, Size } from './geom/size.js';
-import { read as readXML, write as writeXML } from './xml.js';
+import { read as readXML, write as writeXML } from './xml-old.js';
 import { TRBL } from './geom/trbl.js';
 export { HSLA, RGBA } from './color.js';
-import { define, gettersetter, isObject, isFunction } from './util.js';
+import { define, gettersetter, isObject, isFunction } from './misc.js';
 
 export function dom() {
   let args = [...arguments];

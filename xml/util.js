@@ -1,4 +1,4 @@
-import deep from '../deep.js';
+import * as deep from '../deep.js';
 import { IteratorAdapter } from '../json/util.js';
 import { define, defineGetter, isObject, weakMapper } from '../misc.js';
 
