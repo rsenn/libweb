@@ -46,11 +46,18 @@ const CharCodeClasses = {
   0x2d: HYPHEN,
 };
 
+const SelfClosing = {
+  br: true,
+  img: true,
+  hr: true,
+  meta: true,
+  link: true,
+};
+
 export function parse(s) {
   if(typeof s != 'string') {
     if(s instanceof ArrayBuffer) s = new Uint8Array(s);
   }
-
   let i = 0,
     n = s.length,
     r = [];
@@ -76,29 +83,23 @@ export function parse(s) {
   const skipws = () => {
     while(m[s[i]] & WS) i++;
   };
-
   while(i < n) {
     let j;
-
     for(j = i; (m[s[j]] & START) == 0; ) j++;
 
     if(j > i) {
       const data = range(i, j);
       if(data.trim() != '') st[0].push(data);
     }
-
     i = j;
 
     if(m[s[i]] & START) {
       let closing = false;
       i++;
-
       if(m[s[i]] & SLASH) {
         closing = true;
         i++;
       }
-
-      //console.log('#1', { i, n,closing }, `'${range(i,i+1)}'`, `c=${codeAt(i)}`);
       j = skip(c => (m[c] & (WS | END)) == 0);
       let name = range(i, j);
       i = j;
@@ -112,34 +113,29 @@ export function parse(s) {
           if(m[s[i]] & END) break;
 
           j = skip(c => (m[c] & (EQUAL | WS | SPECIAL | CLOSE)) == 0);
-
           if(j == i) break;
 
           let attr = range(i, j);
           let value = true;
-
           i = j;
 
           if(m[s[i]] & EQUAL && m[s[i + 1]] & QUOTE) {
-            //console.log('#2', { i, name }, `'${range(i,i+1)}'`, `"${range(i, i + 20)}..."`);
-
             i += 2;
 
             for(j = i; (m[s[j]] & QUOTE) == 0; j++) if(m[s[j]] & BACKSLASH) j++;
-
             value = range(i, j);
 
             if(m[s[j]] & QUOTE) j++;
-
             i = j;
           }
-
           e.attributes[attr] = value;
-          //console.log('#3', { attr, value });
+        }
+
+        if(SelfClosing[name]) {
+          closing = true;
+          end();
         }
       } else end(name);
-
-      //console.log('#4', { i, j }, `'${range(i,i+1)}'`, `"${range(i, i + 10)}..."`);
 
       if(name[0] == '!') end(name);
 
@@ -149,17 +145,13 @@ export function parse(s) {
         i++;
         end(name);
       }
-
       skipws();
 
       if(m[s[i]] & CLOSE) i++;
-
       skipws();
-      //console.log('#5', { i,  n }, `'${range(i,i+1)}'`, `"${range(i, i + 10)}..."`);
     }
   }
 
-  //console.log('#6', { i,  n } , r);
   return r;
 }
 
@@ -239,7 +231,11 @@ export function read(g) {
       //console.log("BN", {c}, String.fromCodePoint(c), m[c]);
       let name = skip(c => (m[c] & (WS | END)) == 0);
       add(c);
-      //console.log("AN", {name,closing});
+
+      /* if(SelfClosing[name])
+        closing=true;*/
+
+      if(name == 'br') console.log('AN', { c, name, closing });
 
       if(m[name[0]] & EXCLAM && m[name[1]] & HYPHEN && m[name[2]] & HYPHEN) {
         while(next()) {
@@ -279,6 +275,11 @@ export function read(g) {
 
             e.attributes[str(attr)] = str(value);
           }
+
+          if(SelfClosing[name]) {
+            closing = true;
+            end();
+          }
         } else end();
 
         if(!closing) {
@@ -302,4 +303,25 @@ export function read(g) {
   }
 
   return r;
+}
+
+export function write(obj, level = 0) {
+  let s = `<${obj.tagName}`;
+
+  if('attributes' in obj) if (typeof obj.attributes == 'object') for(let attr in obj.attributes) s += ` ${attr}` + (obj.attributes[attr] === true ? '' : `="${obj.attributes[attr]}"`);
+
+  if(obj.tagName[0] == '!') s += `>`;
+  else if(['img', 'br', 'hr'].indexOf(obj.tagName.toLowerCase()) == -1 && 'children' in obj && Array.isArray(obj.children) /*&& obj.children.length > 0*/) {
+    const indent = '  '.repeat(level + 1);
+
+    s += `>`;
+
+    for(let child of obj.children) s += '\n' + indent + (typeof child == 'string' ? child.trim() : write(child, level + 1));
+
+    s += `\n${'  '.repeat(level)}</${obj.tagName}>`;
+  } else {
+    s += ` />`;
+  }
+
+  return s;
 }
