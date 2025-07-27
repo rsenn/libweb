@@ -66,25 +66,32 @@ export function parse(s) {
   const m = typeof s == 'string' ? CharacterClasses : CharCodeClasses;
   const codeAt = typeof s == 'string' ? i => s.codePointAt(i) : i => s[i];
   const range = typeof s == 'string' ? (i, j) => s.substring(i, j) : (i, j) => [...s.slice(i, j)].reduce((a, c) => a + String.fromCharCode(c), '');
+
   const start = tagName => {
     e = { tagName, attributes: {}, children: [] };
     st[0].push(e);
     st.unshift(e.children);
   };
+
   const end = tagName => {
     st.shift();
     e = null;
   };
+
   const skip = pred => {
     let k;
+
     for(k = i; pred(s[k]); ) k++;
+
     return k;
   };
   const skipws = () => {
     while(m[s[i]] & WS) i++;
   };
+
   while(i < n) {
     let j;
+
     for(j = i; (m[s[j]] & START) == 0; ) j++;
 
     if(j > i) {
@@ -94,17 +101,24 @@ export function parse(s) {
     i = j;
 
     if(m[s[i]] & START) {
-      let closing = false;
+      let closing = false,
+        self_closing = false;
       i++;
+
       if(m[s[i]] & SLASH) {
         closing = true;
         i++;
       }
+
       j = skip(c => (m[c] & (WS | END)) == 0);
+
       let name = range(i, j);
+
       i = j;
 
-      if(!closing) {
+      if(closing) {
+        end(name);
+      } else {
         start(name);
 
         for(;;) {
@@ -113,38 +127,41 @@ export function parse(s) {
           if(m[s[i]] & END) break;
 
           j = skip(c => (m[c] & (EQUAL | WS | SPECIAL | CLOSE)) == 0);
+
           if(j == i) break;
 
           let attr = range(i, j);
           let value = true;
+
           i = j;
 
           if(m[s[i]] & EQUAL && m[s[i + 1]] & QUOTE) {
             i += 2;
 
             for(j = i; (m[s[j]] & QUOTE) == 0; j++) if(m[s[j]] & BACKSLASH) j++;
+
             value = range(i, j);
 
             if(m[s[j]] & QUOTE) j++;
+
             i = j;
           }
+
           e.attributes[attr] = value;
         }
+      }
 
-        if(SelfClosing[name]) {
-          closing = true;
-          end();
-        }
-      } else end(name);
-
-      if(name[0] == '!') end(name);
-
-      if(name[0] == '?' && m[s[i]] & QUESTION) {
+      if(name[0] == '!' || ['br', 'hr', 'img'].indexOf(name) != -1) {
+        end(name);
+      } else if(name[0] == '?' && m[s[i]] & QUESTION) {
         i++;
       } else if(m[s[i]] & SLASH) {
         i++;
         end(name);
-      }
+      } /*else if(self_closing) {
+        end(name);
+      }*/
+
       skipws();
 
       if(m[s[i]] & CLOSE) i++;

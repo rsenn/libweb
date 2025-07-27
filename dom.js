@@ -3,7 +3,7 @@ import { className, extend, arrayFacade, assert, camelize, decamelize, define, g
 import { parseSelectors } from './css3-selectors.js';
 import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from './deep.js';
 import { TreeWalker } from './tree_walker.js';
-import { read as readXML, write as writeXML } from './xml.js';
+import { parse as readXML, write as writeXML } from './xml.js';
 import { inspect } from './inspect.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
