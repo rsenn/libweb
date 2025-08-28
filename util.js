@@ -2662,9 +2662,9 @@ Util.numberParts = (num, base) => {
   let exp = 0;
   let sgn = 0;
   if(num === 0) return { sign: 0, mantissa: 0, exponent: 0 };
-  if(num < 0) (sgn = 1), (num = -num);
-  while(num > base) (num /= base), exp++;
-  while(num < 1) (num *= base), exp--;
+  if(num < 0) ((sgn = 1), (num = -num));
+  while(num > base) ((num /= base), exp++);
+  while(num < 1) ((num *= base), exp--);
   return { sign: sgn, mantissa: num, exponent: exp };
 };
 Util.roundDigits = precision => {
@@ -2801,7 +2801,7 @@ Util.versionCompare = (a, b) => {
   for(dp = i = 0; a[i] == b[i]; i++) {
     let c;
     if(!(c = a[i])) return 0;
-    if(!isdigit(c)) (dp = i + 1), (z = 1);
+    if(!isdigit(c)) ((dp = i + 1), (z = 1));
     else if(c != '0') z = 0;
   }
   if(a[dp] != '0' && b[dp] != '0') {
@@ -4531,73 +4531,73 @@ Util.coloring = (useColor = true) =>
         },
       }
     : Util.isBrowser()
-    ? {
-        palette: [
-          'rgb(0,0,0)',
-          'rgb(80,0,0)',
-          'rgb(0,80,0)',
-          'rgb(80,80,0)',
-          'rgb(0,0,80)',
-          'rgb(80,0,80)',
-          'rgb(0,80,80)',
-          'rgb(80,80,80)',
-          'rgb(0,0,0)',
-          'rgb(160,0,0)',
-          'rgb(0,160,0)',
-          'rgb(160,160,0)',
-          'rgb(0,0,160)',
-          'rgb(160,0,160)',
-          'rgb(0,160,160)',
-          'rgb(160,160,160)',
-        ],
-        /*Util.range(0, 15).map(i =>
+      ? {
+          palette: [
+            'rgb(0,0,0)',
+            'rgb(80,0,0)',
+            'rgb(0,80,0)',
+            'rgb(80,80,0)',
+            'rgb(0,0,80)',
+            'rgb(80,0,80)',
+            'rgb(0,80,80)',
+            'rgb(80,80,80)',
+            'rgb(0,0,0)',
+            'rgb(160,0,0)',
+            'rgb(0,160,0)',
+            'rgb(160,160,0)',
+            'rgb(0,0,160)',
+            'rgb(160,0,160)',
+            'rgb(0,160,160)',
+            'rgb(160,160,160)',
+          ],
+          /*Util.range(0, 15).map(i =>
             `rgb(${Util.range(0, 2)
               .map(bitno => Util.getBit(i, bitno) * (i & 0x08 ? 160 : 80))
               .join(',')})`
         )*/ code(...args) {
-          let css = '';
-          let bold = 0;
-          for(let arg of args) {
-            let c = (arg % 10) + bold;
-            let rgb = this.palette[c];
-            //console.realLog("code:", {arg, c, rgb});
-            if(arg >= 40) css += `background-color:${rgb};`;
-            else if(arg >= 30) css += `color:${rgb};`;
-            else if(arg == 1) bold = 8;
-            else if(arg == 0) bold = 0;
-            else throw new Error('No such color code:' + arg);
-          }
-          css += 'padding: 2px 0 2px 0;';
-          return css;
-        },
-        text(text, ...color) {
-          return [`%c${text}`, this.code(...color)];
-        },
-        concat(...args) {
-          let out = args.shift() || [''];
-          for(let arg of args) {
-            if(Array.isArray(arg) && typeof arg[0] == 'string') out[0] += arg.shift();
-            else if(Util.isObject(arg)) {
-              out.push(arg);
-              continue;
+            let css = '';
+            let bold = 0;
+            for(let arg of args) {
+              let c = (arg % 10) + bold;
+              let rgb = this.palette[c];
+              //console.realLog("code:", {arg, c, rgb});
+              if(arg >= 40) css += `background-color:${rgb};`;
+              else if(arg >= 30) css += `color:${rgb};`;
+              else if(arg == 1) bold = 8;
+              else if(arg == 0) bold = 0;
+              else throw new Error('No such color code:' + arg);
             }
+            css += 'padding: 2px 0 2px 0;';
+            return css;
+          },
+          text(text, ...color) {
+            return [`%c${text}`, this.code(...color)];
+          },
+          concat(...args) {
+            let out = args.shift() || [''];
+            for(let arg of args) {
+              if(Array.isArray(arg) && typeof arg[0] == 'string') out[0] += arg.shift();
+              else if(Util.isObject(arg)) {
+                out.push(arg);
+                continue;
+              }
 
-            out = out.concat(arg);
-          }
-          return out;
-        },
-      }
-    : {
-        code(...args) {
-          return `\x1b[${[...args].join(';')}m`;
-        },
-        text(text, ...color) {
-          return this.code(...color) + text + this.code(0);
-        },
-        concat(...args) {
-          return args.join('');
-        },
-      };
+              out = out.concat(arg);
+            }
+            return out;
+          },
+        }
+      : {
+          code(...args) {
+            return `\x1b[${[...args].join(';')}m`;
+          },
+          text(text, ...color) {
+            return this.code(...color) + text + this.code(0);
+          },
+          concat(...args) {
+            return args.join('');
+          },
+        };
 
 let color;
 Util.colorText = (...args) => {
@@ -4700,7 +4700,7 @@ Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
   const [propMap, propNames] = Array.isArray(props) ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props] : [props, Object.keys(props)];
 
-  gen ??= p => v => v === undefined ? target[propMap[p]] : (target[propMap[p]] = v);
+  gen ??= p => v => (v === undefined ? target[propMap[p]] : (target[propMap[p]] = v));
   const propGetSet = propNames
     .map(k => [k, propMap[k]])
 

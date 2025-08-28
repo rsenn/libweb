@@ -164,12 +164,12 @@ if(elem)
           horzGrav === 'w'
             ? left
             : horzGrav === 'e'
-            ? left + width - tooltipWidth
-            : vertGrav === 'w'
-            ? left + width + arrowSize
-            : vertGrav === 'e'
-            ? left - tooltipWidth - arrowSize
-            : centerEl - tooltipWidth / 2,
+              ? left + width - tooltipWidth
+              : vertGrav === 'w'
+                ? left + width + arrowSize
+                : vertGrav === 'e'
+                  ? left - tooltipWidth - arrowSize
+                  : centerEl - tooltipWidth / 2,
       };
 
       if(pos.left < 0) pos.left = 0;
