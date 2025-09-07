@@ -837,7 +837,7 @@ export function bindMethods(obj, methods, target) {
   return target;
 }
 
-export function properties(obj, options = { enumerable: true }) {
+export function properties(obj, options = { enumerable: true, configurable: true }) {
   let desc = {};
   const { memoize: memo = false, ...opts } = options;
   const mfn = memo ? fn => memoize(fn) : fn => fn;
@@ -994,7 +994,7 @@ export const matchAll = curry(function* (re, str) {
 export function bindProperties(obj, target, props, gen) {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
   const [propMap, propNames] = Array.isArray(props) ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props] : [props, Object.keys(props)];
-  gen ??= p => v => v === undefined ? target[propMap[p]] : (target[propMap[p]] = v);
+  gen ??= p => v => (v === undefined ? target[propMap[p]] : (target[propMap[p]] = v));
   const propGetSet = propNames
     .map(k => [k, propMap[k]])
     .reduce(

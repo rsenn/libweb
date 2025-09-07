@@ -29,7 +29,7 @@ const decodeHTMLEntities = s =>
         gt: '>',
         nbsp: ' ',
         quot: '"',
-      }[entity] || match),
+      })[entity] || match,
   );
 
 const TList = (child, elem) => {
@@ -309,9 +309,12 @@ export class EagleElement extends EagleNode {
           } else if(key == 'layer') {
             define(
               this,
-              properties({
-                layer: () => this.getLayer(),
-              }),
+              properties(
+                {
+                  layer: () => this.getLayer(),
+                },
+                { configurable: true },
+              ),
             );
           } else if(key + 's' in doc) {
             hfn = () => doc[key + 's'][elem.attrMap[key] + ''];
@@ -328,6 +331,7 @@ export class EagleElement extends EagleNode {
             };
             if(this[key] == undefined) this.initRelation(key, this.handlers[key], hfn);
           }
+
           define(this, properties({ [key]: hfn }, { configurable: true, enumerable: true }));
         } else {
           define(this, properties({ [key]: handler }, { configurable: true, enumerable: true }));
@@ -830,14 +834,14 @@ export class EagleElement extends EagleNode {
     const { raw } = this;
 
     const keys = Object.keys(raw.attributes ?? {});
-    const makeGetterSetter = k => v => v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + '');
+    const makeGetterSetter = k => v => (v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + ''));
 
     if(this.shape == 'octagon') {
       let { radius = 1.27, x = 0, y = 0 } = this;
       let octagon = MakePolygon(8, radius * 1.082392200292395, 0.5).map(p => p.add(x, y).round(0.001));
       return octagon;
     } else if(['x', 'y', 'radius'].every(prop => isNumeric(this[prop]))) {
-      return Circle.bind(this, null, k => v => v === undefined ? +this[k] : (this[k] = +v));
+      return Circle.bind(this, null, k => v => (v === undefined ? +this[k] : (this[k] = +v)));
       /*} else if(['diameter', 'drill'].find(prop => keys.includes(prop))) {
       return Circle.bind(this, null, makeGetterSetter);*/
     } else if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
@@ -872,7 +876,7 @@ export class EagleElement extends EagleNode {
 
   position(offset = null) {
     const keys = Object.keys(this.attributes);
-    const makeGetterSetter = k => v => v === undefined ? +this.handlers[k]() : this.handlers[k](+v);
+    const makeGetterSetter = k => v => (v === undefined ? +this.handlers[k]() : this.handlers[k](+v));
 
     if(['x', 'y'].every(prop => keys.includes(prop))) {
       let pos = offset ? new Point(this.x, this.y).sum(offset) : Point.bind(this, null, makeGetterSetter);
