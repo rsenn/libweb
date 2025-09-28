@@ -705,51 +705,51 @@ function getParameters(a, b) {
         space: 'rgb',
       }
     : is(a, 'xyz')
-    ? {
-        _a: a.x,
-        _b: a.y,
-        _c: a.z,
-        _d: 0,
-        space: 'xyz',
-      }
-    : is(a, 'hsl')
-    ? {
-        _a: a.h,
-        _b: a.s,
-        _c: a.l,
-        _d: 0,
-        space: 'hsl',
-      }
-    : is(a, 'lab')
-    ? {
-        _a: a.l,
-        _b: a.a,
-        _c: a.b,
-        _d: 0,
-        space: 'lab',
-      }
-    : is(a, 'lch')
-    ? {
-        _a: a.l,
-        _b: a.c,
-        _c: a.h,
-        _d: 0,
-        space: 'lch',
-      }
-    : is(a, 'cmyk')
-    ? {
-        _a: a.c,
-        _b: a.m,
-        _c: a.y,
-        _d: a.k,
-        space: 'cmyk',
-      }
-    : {
-        _a: 0,
-        _b: 0,
-        _c: 0,
-        space: 'rgb',
-      };
+      ? {
+          _a: a.x,
+          _b: a.y,
+          _c: a.z,
+          _d: 0,
+          space: 'xyz',
+        }
+      : is(a, 'hsl')
+        ? {
+            _a: a.h,
+            _b: a.s,
+            _c: a.l,
+            _d: 0,
+            space: 'hsl',
+          }
+        : is(a, 'lab')
+          ? {
+              _a: a.l,
+              _b: a.a,
+              _c: a.b,
+              _d: 0,
+              space: 'lab',
+            }
+          : is(a, 'lch')
+            ? {
+                _a: a.l,
+                _b: a.c,
+                _c: a.h,
+                _d: 0,
+                space: 'lch',
+              }
+            : is(a, 'cmyk')
+              ? {
+                  _a: a.c,
+                  _b: a.m,
+                  _c: a.y,
+                  _d: a.k,
+                  space: 'cmyk',
+                }
+              : {
+                  _a: 0,
+                  _b: 0,
+                  _c: 0,
+                  space: 'rgb',
+                };
   params.space = b || params.space;
   return params;
 }
@@ -955,37 +955,37 @@ class Color {
             b: _c,
           }
         : this.space === 'xyz'
-        ? {
-            x: _a,
-            y: _b,
-            z: _c,
-          }
-        : this.space === 'hsl'
-        ? {
-            h: _a,
-            s: _b,
-            l: _c,
-          }
-        : this.space === 'lab'
-        ? {
-            l: _a,
-            a: _b,
-            b: _c,
-          }
-        : this.space === 'lch'
-        ? {
-            l: _a,
-            c: _b,
-            h: _c,
-          }
-        : this.space === 'cmyk'
-        ? {
-            c: _a,
-            m: _b,
-            y: _c,
-            k: _d,
-          }
-        : {};
+          ? {
+              x: _a,
+              y: _b,
+              z: _c,
+            }
+          : this.space === 'hsl'
+            ? {
+                h: _a,
+                s: _b,
+                l: _c,
+              }
+            : this.space === 'lab'
+              ? {
+                  l: _a,
+                  a: _b,
+                  b: _c,
+                }
+              : this.space === 'lch'
+                ? {
+                    l: _a,
+                    c: _b,
+                    h: _c,
+                  }
+                : this.space === 'cmyk'
+                  ? {
+                      c: _a,
+                      m: _b,
+                      y: _c,
+                      k: _d,
+                    }
+                  : {};
     Object.assign(this, components);
   }
   lab() {
@@ -1190,14 +1190,14 @@ class Point {
           y: x[1],
         }
       : typeof x === 'object'
-      ? {
-          x: x.x,
-          y: x.y,
-        }
-      : {
-          x: x,
-          y: y,
-        };
+        ? {
+            x: x.x,
+            y: x.y,
+          }
+        : {
+            x: x,
+            y: y,
+          };
 
     // merge source
     this.x = source.x == null ? base.x : source.x;
@@ -1403,16 +1403,16 @@ class Matrix {
       source instanceof Element
         ? source.matrixify()
         : typeof source === 'string'
-        ? Matrix.fromArray(source.split(delimiter).map(parseFloat))
-        : Array.isArray(source)
-        ? Matrix.fromArray(source)
-        : typeof source === 'object' && Matrix.isMatrixLike(source)
-        ? source
-        : typeof source === 'object'
-        ? new Matrix().transform(source)
-        : arguments.length === 6
-        ? Matrix.fromArray([].slice.call(arguments))
-        : base;
+          ? Matrix.fromArray(source.split(delimiter).map(parseFloat))
+          : Array.isArray(source)
+            ? Matrix.fromArray(source)
+            : typeof source === 'object' && Matrix.isMatrixLike(source)
+              ? source
+              : typeof source === 'object'
+                ? new Matrix().transform(source)
+                : arguments.length === 6
+                  ? Matrix.fromArray([].slice.call(arguments))
+                  : base;
 
     // Merge the source matrix with the base matrix
     this.a = source.a != null ? source.a : base.a;
@@ -1715,12 +1715,12 @@ class Box {
       typeof source === 'string'
         ? source.split(delimiter).map(parseFloat)
         : Array.isArray(source)
-        ? source
-        : typeof source === 'object'
-        ? [source.left != null ? source.left : source.x, source.top != null ? source.top : source.y, source.width, source.height]
-        : arguments.length === 4
-        ? [].slice.call(arguments)
-        : base;
+          ? source
+          : typeof source === 'object'
+            ? [source.left != null ? source.left : source.x, source.top != null ? source.top : source.y, source.width, source.height]
+            : arguments.length === 4
+              ? [].slice.call(arguments)
+              : base;
     this.x = source[0] || 0;
     this.y = source[1] || 0;
     this.width = this.w = source[2] || 0;
@@ -2980,10 +2980,10 @@ registerMethods(['Element', 'Runner'], {
     return a === 'leading'
       ? this.leading(v)
       : a === 'anchor'
-      ? this.attr('text-anchor', v)
-      : a === 'size' || a === 'family' || a === 'weight' || a === 'stretch' || a === 'variant' || a === 'style'
-      ? this.attr('font-' + a, v)
-      : this.attr(a, v);
+        ? this.attr('text-anchor', v)
+        : a === 'size' || a === 'family' || a === 'weight' || a === 'stretch' || a === 'variant' || a === 'style'
+          ? this.attr('font-' + a, v)
+          : this.attr(a, v);
   },
 });
 

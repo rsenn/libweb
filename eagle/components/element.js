@@ -13,7 +13,7 @@ export const Element = ({ data, opts = {}, ...props }) => {
       for await(let change of data.repeater) yield change;
     }) || data;
 
-  let { x, y, rot, library, name, value  } = element;
+  let { x, y, rot, library, name, value } = element;
 
   log('Element.render', { x, y, rot, library, name, value });
 
@@ -27,9 +27,9 @@ export const Element = ({ data, opts = {}, ...props }) => {
   }
 
   {
-  let pkg = element.library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
+    let pkg = element.library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
 
-  if(!value && pkg) value = pkg.name;
+    if(!value && pkg) value = pkg.name;
   }
   /* if(rot) 
     transform = transform.concat(MakeRotation(rot));*/
