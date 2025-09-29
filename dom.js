@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { className, extend, arrayFacade, assert, camelize, decamelize, define, getset, gettersetter, isBool, isObject, isFunction, isNumber, isString, lazyProperties, memoize, modifier, quote, range, properties, } from './misc.js';
 import { parseSelectors } from './css3-selectors.js';
 import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from './deep.js';
@@ -238,8 +237,8 @@ export class Parser {
     return doc;
   }
 
-  parseFromFile(file) {
-    const xml = readFileSync(file, 'utf-8');
+  async parseFromFile(file) {
+    const xml = (await import('fs')).readFileSync(file, 'utf-8');
     const { factory } = this;
 
     return this.parseFromString(xml, file, factory);
