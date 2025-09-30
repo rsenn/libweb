@@ -1,4 +1,4 @@
-import { SelectorType, AttributeAction } from "./types.js";
+import { SelectorType, AttributeAction } from './types.js';
 const reName = /^[^#\\]?(?:\\(?:[\da-f]{1,6}\s?|.)|[\w\u00B0-\uFFFF-])+/;
 const reEscape = /\\([\da-f]{1,6}\s?|(\s)|.)/gi;
 const actionTypes = new Map([
@@ -10,20 +10,22 @@ const actionTypes = new Map([
   [124, AttributeAction.Hyphen]
 ]);
 // Pseudos, whose data property is parsed as well.
-const unpackPseudos = new Set(["has", "not", "matches", "is", "where", "host", "host-context"]);
+const unpackPseudos = new Set(['has', 'not', 'matches', 'is', 'where', 'host', 'host-context']);
 /**
  * Pseudo elements defined in CSS Level 1 and CSS Level 2 can be written with
  * a single colon; eg. :before will turn into ::before.
  *
  * @see {@link https://www.w3.org/TR/2018/WD-selectors-4-20181121/#pseudo-element-syntax}
- */ const pseudosToPseudoElements = new Set(["before", "after", "first-line", "first-letter"]);
+ */
+const pseudosToPseudoElements = new Set(['before', 'after', 'first-line', 'first-letter']);
 /**
  * Checks whether a specific selector is a traversal.
  * This is useful eg. in swapping the order of elements that
  * are not traversals.
  *
  * @param selector Selector to check.
- */ export function isTraversal(selector) {
+ */
+export function isTraversal(selector) {
   switch (selector.type) {
     case SelectorType.Adjacent:
     case SelectorType.Child:
@@ -38,7 +40,7 @@ const unpackPseudos = new Set(["has", "not", "matches", "is", "where", "host", "
     }
   }
 }
-const stripQuotesFromPseudos = new Set(["contains", "icontains"]);
+const stripQuotesFromPseudos = new Set(['contains', 'icontains']);
 // Unescape function taken from https://github.com/jquery/sizzle/blob/master/src/sizzle.js#L152
 function funescape(_, escaped, escapedWhitespace) {
   const high = Number.parseInt(escaped, 16) - 0x1_00_00;
@@ -61,7 +63,8 @@ function isWhitespace(c) {
  * @returns Returns a two-dimensional array.
  * The first dimension represents selectors separated by commas (eg. `sub1, sub2`),
  * the second contains the relevant tokens for that selector.
- */ export function parse(selector) {
+ */
+export function parse(selector) {
   const subselects = [];
   const endIndex = parseSelector(subselects, `${selector}`, 0);
   if (endIndex < selector.length) {
@@ -109,11 +112,11 @@ function parseSelector(subselects, selector, selectorIndex) {
         }
       }
     }
-    throw new Error("Parenthesis not matched");
+    throw new Error('Parenthesis not matched');
   }
   function ensureNotTraversal() {
     if (tokens.length > 0 && isTraversal(tokens[tokens.length - 1])) {
-      throw new Error("Did not expect successive traversals.");
+      throw new Error('Did not expect successive traversals.');
     }
   }
   function addTraversal(type) {
@@ -133,7 +136,7 @@ function parseSelector(subselects, selector, selectorIndex) {
       action,
       value: getName(1),
       namespace: null,
-      ignoreCase: "quirks"
+      ignoreCase: 'quirks'
     });
   }
   /**
@@ -147,7 +150,7 @@ function parseSelector(subselects, selector, selectorIndex) {
       tokens.pop();
     }
     if (tokens.length === 0) {
-      throw new Error("Empty sub-selector");
+      throw new Error('Empty sub-selector');
     }
     subselects.push(tokens);
   }
@@ -196,11 +199,11 @@ function parseSelector(subselects, selector, selectorIndex) {
       }
       // Special attribute selectors: .class, #id
       case 46: {
-        addSpecialAttribute("class", AttributeAction.Element);
+        addSpecialAttribute('class', AttributeAction.Element);
         break;
       }
       case 35: {
-        addSpecialAttribute("id", AttributeAction.Equals);
+        addSpecialAttribute('id', AttributeAction.Equals);
         break;
       }
       case 91: {
@@ -211,8 +214,8 @@ function parseSelector(subselects, selector, selectorIndex) {
         if (selector.charCodeAt(selectorIndex) === 124) {
           // Equivalent to no namespace
           name = getName(1);
-        } else if (selector.startsWith("*|", selectorIndex)) {
-          namespace = "*";
+        } else if (selector.startsWith('*|', selectorIndex)) {
+          namespace = '*';
           name = getName(2);
         } else {
           name = getName(0);
@@ -228,7 +231,7 @@ function parseSelector(subselects, selector, selectorIndex) {
         if (possibleAction) {
           action = possibleAction;
           if (selector.charCodeAt(selectorIndex + 1) !== 61) {
-            throw new Error("Expected `=`");
+            throw new Error('Expected `=`');
           }
           stripWhitespace(2);
         } else if (selector.charCodeAt(selectorIndex) === 61) {
@@ -236,9 +239,9 @@ function parseSelector(subselects, selector, selectorIndex) {
           stripWhitespace(1);
         }
         // Determine value
-        let value = "";
+        let value = '';
         let ignoreCase = null;
-        if (action !== "exists") {
+        if (action !== 'exists') {
           if (isQuote(selector.charCodeAt(selectorIndex))) {
             const quote = selector.charCodeAt(selectorIndex);
             selectorIndex += 1;
@@ -344,10 +347,10 @@ function parseSelector(subselects, selector, selectorIndex) {
         break;
       }
       default: {
-        if (selector.startsWith("/*", selectorIndex)) {
-          const endIndex = selector.indexOf("*/", selectorIndex + 2);
+        if (selector.startsWith('/*', selectorIndex)) {
+          const endIndex = selector.indexOf('*/', selectorIndex + 2);
           if (endIndex < 0) {
-            throw new Error("Comment was not terminated");
+            throw new Error('Comment was not terminated');
           }
           selectorIndex = endIndex + 2;
           // Remove leading whitespace
@@ -360,9 +363,9 @@ function parseSelector(subselects, selector, selectorIndex) {
         let name;
         if (firstChar === 42) {
           selectorIndex += 1;
-          name = "*";
+          name = '*';
         } else if (firstChar === 124) {
-          name = "";
+          name = '';
           if (selector.charCodeAt(selectorIndex + 1) === 124) {
             addTraversal(SelectorType.ColumnCombinator);
             stripWhitespace(2);
@@ -376,14 +379,14 @@ function parseSelector(subselects, selector, selectorIndex) {
         if (selector.charCodeAt(selectorIndex) === 124 && selector.charCodeAt(selectorIndex + 1) !== 124) {
           namespace = name;
           if (selector.charCodeAt(selectorIndex + 1) === 42) {
-            name = "*";
+            name = '*';
             selectorIndex += 2;
           } else {
             name = getName(1);
           }
         }
         tokens.push(
-          name === "*"
+          name === '*'
             ? {
                 type: SelectorType.Universal,
                 namespace
