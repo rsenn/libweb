@@ -24,7 +24,7 @@ export const IgnoreCaseMode = {
   Unknown: null,
   QuirksMode: 'quirks',
   IgnoreCase: true,
-  CaseSensitive: false
+  CaseSensitive: false,
 };
 export var AttributeAction = /*#__PURE__*/ (function (AttributeAction) {
   AttributeAction['Any'] = 'any';
