@@ -50,7 +50,7 @@ export const getImageDimensions = data => {
       const { width, height } = image;
       resolve({
         width,
-        height
+        height,
       });
     };
 

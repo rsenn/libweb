@@ -202,7 +202,7 @@ Relation.define = function(scope) {
     name = '',
     head,
     sname = uFirst(subjectSpec.relation ? subjectSpec.relation : subjectSpec.property);
-  (subjectSpec.class = subjectSpec.class ? subjectSpec.class : Object), head;
+  ((subjectSpec.class = subjectSpec.class ? subjectSpec.class : Object), head);
   specs.forEach((spec, i) => {
     let s = spec.relation ? spec.relation : spec.property;
     name += uFirst(s);

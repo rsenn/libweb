@@ -112,7 +112,7 @@ function emulateArray(obj, update, dotPath) {
       }
 
       return true;
-    }
+    },
   });
 }
 
@@ -144,7 +144,7 @@ function proxyObject(obj, update, dotPath) {
       }
 
       return true;
-    }
+    },
   });
 }
 

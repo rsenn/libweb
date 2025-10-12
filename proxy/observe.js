@@ -37,8 +37,8 @@ export class Observe {
           name: key,
           object: JSON.toString(target),
           type: 'update',
-          oldValue: target[key]
-        }
+          oldValue: target[key],
+        },
       ]);
       return Reflect.set(target, key, value, context);
     }
@@ -52,8 +52,8 @@ export class Observe {
         name: key,
         object: JSON.toString(target),
         type: 'delete',
-        oldValue: target[key]
-      }
+        oldValue: target[key],
+      },
     ]);
     return Reflect.deleteProperty(target, key);
   }
@@ -64,8 +64,8 @@ export class Observe {
         name: key,
         object: JSON.toString(target),
         type: 'reconfigure',
-        descriptor: JSON.toString(desc)
-      }
+        descriptor: JSON.toString(desc),
+      },
     ]);
     return Reflect.defineProperty(target, key, desc);
   }
@@ -76,8 +76,8 @@ export class Observe {
         name: JSON.toString(proto),
         object: JSON.toString(target),
         type: 'setPrototype',
-        oldValue: JSON.toString(target)
-      }
+        oldValue: JSON.toString(target),
+      },
     ]);
     return Reflect.setPrototypeOf(target, proto);
   }
@@ -87,5 +87,5 @@ Reflect.defineProperty(Observe.prototype, Symbol.toStringTag, {
   configurable: false,
   writable: false,
   enumerable: false,
-  value: 'Observe'
+  value: 'Observe',
 });

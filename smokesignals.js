@@ -78,5 +78,5 @@ smokesignals = {
     };
 
     return obj;
-  }
+  },
 };

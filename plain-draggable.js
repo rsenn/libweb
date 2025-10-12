@@ -379,13 +379,13 @@ function copyTree(obj) {
   return !obj
     ? obj
     : isObject(obj)
-    ? Object.keys(obj).reduce(function (copyObj, key) {
-        copyObj[key] = copyTree(obj[key]);
-        return copyObj;
-      }, {})
-    : Array.isArray(obj)
-    ? obj.map(copyTree)
-    : obj;
+      ? Object.keys(obj).reduce(function (copyObj, key) {
+          copyObj[key] = copyTree(obj[key]);
+          return copyObj;
+        }, {})
+      : Array.isArray(obj)
+        ? obj.map(copyTree)
+        : obj;
 }
 
 function hasChanged(a, b) {
@@ -399,11 +399,11 @@ function hasChanged(a, b) {
           return hasChanged(a[prop], b[prop]);
         })
       : typeA === 'array'
-      ? a.length !== b.length ||
-        a.some(function (aVal, i) {
-          return hasChanged(aVal, b[i]);
-        })
-      : a !== b)
+        ? a.length !== b.length ||
+          a.some(function (aVal, i) {
+            return hasChanged(aVal, b[i]);
+          })
+        : a !== b)
   );
 }
 
@@ -501,8 +501,8 @@ function validPPValue(value) {
         isRatio: false,
       }
     : typeof value === 'string'
-    ? string2PPValue(value.replace(/\s/g, ''))
-    : null;
+      ? string2PPValue(value.replace(/\s/g, ''))
+      : null;
 }
 
 function ppValue2OptionValue(ppValue) {
@@ -1700,11 +1700,11 @@ function _setOptions(props, newOptions) {
                 boundingBox: target,
               } // Direct Element | PPBBox
             : isObject(target) && target.start == null && target.end == null && target.step == null
-            ? target // SnapTargetOptions
-            : {
-                x: target,
-                y: target,
-              },
+              ? target // SnapTargetOptions
+              : {
+                  x: target,
+                  y: target,
+                },
         // Others, it might be {step, start, end}
         expandedParsedSnapTargets = [],
         snapTargetOptions = {},

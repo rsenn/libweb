@@ -195,9 +195,12 @@ export function useAsyncIter(callback, deps) {
       1,
     ),
     iter = _b[0];
-  useEffect(() => {
-    push(deps);
-  }, __spread([push], deps)); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(
+    () => {
+      push(deps);
+    },
+    __spread([push], deps),
+  ); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(
     () =>
       function() {

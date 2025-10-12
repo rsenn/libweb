@@ -26,7 +26,7 @@ const trapNames = [
   'ownKeys',
   'preventExtensions',
   'set',
-  'setPrototypeOf'
+  'setPrototypeOf',
 ];
 
 //a list of paramer indexes that indicate that the a recieves a key at that parameter
@@ -37,7 +37,7 @@ const keys = {
   deleteProperty: 1,
   has: 1,
   defineProperty: 1,
-  getOwnPropertyDescriptor: 1
+  getOwnPropertyDescriptor: 1,
 };
 
 export function DeepProxy(rootTarget, traps, options) {

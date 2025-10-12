@@ -353,7 +353,7 @@ Grammar.prototype = {
     configSets[0][0] = {
       lhs: this.tokens.indexOf(this.aST),
       rhs: [this.tokens.indexOf(this.sT)],
-      index: 0
+      index: 0,
     };
     closure(configSets[0]);
 
@@ -563,7 +563,7 @@ Grammar.prototype = {
     } catch(e) {
       displayError(e);
     }
-  }
+  },
 };
 
 export default Grammar;

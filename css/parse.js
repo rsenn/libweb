@@ -7,7 +7,7 @@ const actionTypes = new Map([
   [36, AttributeAction.End],
   [42, AttributeAction.Any],
   [33, AttributeAction.Not],
-  [124, AttributeAction.Hyphen]
+  [124, AttributeAction.Hyphen],
 ]);
 // Pseudos, whose data property is parsed as well.
 const unpackPseudos = new Set(['has', 'not', 'matches', 'is', 'where', 'host', 'host-context']);
@@ -67,7 +67,7 @@ function isWhitespace(c) {
 export function parse(selector) {
   const subselects = [];
   const endIndex = parseSelector(subselects, `${selector}`, 0);
-  if (endIndex < selector.length) {
+  if(endIndex < selector.length) {
     throw new Error(`Unmatched selector: ${selector.slice(endIndex)}`);
   }
   return subselects;
@@ -76,7 +76,7 @@ function parseSelector(subselects, selector, selectorIndex) {
   let tokens = [];
   function getName(offset) {
     const match = selector.slice(selectorIndex + offset).match(reName);
-    if (!match) {
+    if(!match) {
       throw new Error(`Expected name, found ${selector.slice(selectorIndex)}`);
     }
     const [name] = match;
@@ -85,14 +85,14 @@ function parseSelector(subselects, selector, selectorIndex) {
   }
   function stripWhitespace(offset) {
     selectorIndex += offset;
-    while (selectorIndex < selector.length && isWhitespace(selector.charCodeAt(selectorIndex))) {
+    while(selectorIndex < selector.length && isWhitespace(selector.charCodeAt(selectorIndex))) {
       selectorIndex++;
     }
   }
   function readValueWithParenthesis() {
     selectorIndex += 1;
     const start = selectorIndex;
-    for (let counter = 1; selectorIndex < selector.length; selectorIndex++) {
+    for(let counter = 1; selectorIndex < selector.length; selectorIndex++) {
       switch (selector.charCodeAt(selectorIndex)) {
         case 92: {
           // Skip next character
@@ -105,7 +105,7 @@ function parseSelector(subselects, selector, selectorIndex) {
         }
         case 41: {
           counter -= 1;
-          if (counter === 0) {
+          if(counter === 0) {
             return unescapeCSS(selector.slice(start, selectorIndex++));
           }
           break;
@@ -115,18 +115,18 @@ function parseSelector(subselects, selector, selectorIndex) {
     throw new Error('Parenthesis not matched');
   }
   function ensureNotTraversal() {
-    if (tokens.length > 0 && isTraversal(tokens[tokens.length - 1])) {
+    if(tokens.length > 0 && isTraversal(tokens[tokens.length - 1])) {
       throw new Error('Did not expect successive traversals.');
     }
   }
   function addTraversal(type) {
-    if (tokens.length > 0 && tokens[tokens.length - 1].type === SelectorType.Descendant) {
+    if(tokens.length > 0 && tokens[tokens.length - 1].type === SelectorType.Descendant) {
       tokens[tokens.length - 1].type = type;
       return;
     }
     ensureNotTraversal();
     tokens.push({
-      type
+      type,
     });
   }
   function addSpecialAttribute(name, action) {
@@ -136,7 +136,7 @@ function parseSelector(subselects, selector, selectorIndex) {
       action,
       value: getName(1),
       namespace: null,
-      ignoreCase: 'quirks'
+      ignoreCase: 'quirks',
     });
   }
   /**
@@ -146,19 +146,19 @@ function parseSelector(subselects, selector, selectorIndex) {
    * and return the last index, so that parsing can be
    * picked up from here.
    */ function finalizeSubselector() {
-    if (tokens.length > 0 && tokens[tokens.length - 1].type === SelectorType.Descendant) {
+    if(tokens.length > 0 && tokens[tokens.length - 1].type === SelectorType.Descendant) {
       tokens.pop();
     }
-    if (tokens.length === 0) {
+    if(tokens.length === 0) {
       throw new Error('Empty sub-selector');
     }
     subselects.push(tokens);
   }
   stripWhitespace(0);
-  if (selector.length === selectorIndex) {
+  if(selector.length === selectorIndex) {
     return selectorIndex;
   }
-  loop: while (selectorIndex < selector.length) {
+  loop: while(selectorIndex < selector.length) {
     const firstChar = selector.charCodeAt(selectorIndex);
     switch (firstChar) {
       // Whitespace
@@ -167,10 +167,10 @@ function parseSelector(subselects, selector, selectorIndex) {
       case 10:
       case 12:
       case 13: {
-        if (tokens.length === 0 || tokens[0].type !== SelectorType.Descendant) {
+        if(tokens.length === 0 || tokens[0].type !== SelectorType.Descendant) {
           ensureNotTraversal();
           tokens.push({
-            type: SelectorType.Descendant
+            type: SelectorType.Descendant,
           });
         }
         stripWhitespace(1);
@@ -211,15 +211,15 @@ function parseSelector(subselects, selector, selectorIndex) {
         // Determine attribute name and namespace
         let name;
         let namespace = null;
-        if (selector.charCodeAt(selectorIndex) === 124) {
+        if(selector.charCodeAt(selectorIndex) === 124) {
           // Equivalent to no namespace
           name = getName(1);
-        } else if (selector.startsWith('*|', selectorIndex)) {
+        } else if(selector.startsWith('*|', selectorIndex)) {
           namespace = '*';
           name = getName(2);
         } else {
           name = getName(0);
-          if (selector.charCodeAt(selectorIndex) === 124 && selector.charCodeAt(selectorIndex + 1) !== 61) {
+          if(selector.charCodeAt(selectorIndex) === 124 && selector.charCodeAt(selectorIndex + 1) !== 61) {
             namespace = name;
             name = getName(1);
           }
@@ -228,35 +228,35 @@ function parseSelector(subselects, selector, selectorIndex) {
         // Determine comparison operation
         let action = AttributeAction.Exists;
         const possibleAction = actionTypes.get(selector.charCodeAt(selectorIndex));
-        if (possibleAction) {
+        if(possibleAction) {
           action = possibleAction;
-          if (selector.charCodeAt(selectorIndex + 1) !== 61) {
+          if(selector.charCodeAt(selectorIndex + 1) !== 61) {
             throw new Error('Expected `=`');
           }
           stripWhitespace(2);
-        } else if (selector.charCodeAt(selectorIndex) === 61) {
+        } else if(selector.charCodeAt(selectorIndex) === 61) {
           action = AttributeAction.Equals;
           stripWhitespace(1);
         }
         // Determine value
         let value = '';
         let ignoreCase = null;
-        if (action !== 'exists') {
-          if (isQuote(selector.charCodeAt(selectorIndex))) {
+        if(action !== 'exists') {
+          if(isQuote(selector.charCodeAt(selectorIndex))) {
             const quote = selector.charCodeAt(selectorIndex);
             selectorIndex += 1;
             const sectionStart = selectorIndex;
-            while (selectorIndex < selector.length && selector.charCodeAt(selectorIndex) !== quote) {
+            while(selectorIndex < selector.length && selector.charCodeAt(selectorIndex) !== quote) {
               selectorIndex += selector.charCodeAt(selectorIndex) === 92 ? 2 : 1; // Skip next character if it is escaped
             }
-            if (selector.charCodeAt(selectorIndex) !== quote) {
+            if(selector.charCodeAt(selectorIndex) !== quote) {
               throw new Error("Attribute value didn't end");
             }
             value = unescapeCSS(selector.slice(sectionStart, selectorIndex));
             selectorIndex += 1;
           } else {
             const valueStart = selectorIndex;
-            while (selectorIndex < selector.length && !isWhitespace(selector.charCodeAt(selectorIndex)) && selector.charCodeAt(selectorIndex) !== 93) {
+            while(selectorIndex < selector.length && !isWhitespace(selector.charCodeAt(selectorIndex)) && selector.charCodeAt(selectorIndex) !== 93) {
               selectorIndex += selector.charCodeAt(selectorIndex) === 92 ? 2 : 1; // Skip next character if it is escaped
             }
             value = unescapeCSS(selector.slice(valueStart, selectorIndex));
@@ -277,7 +277,7 @@ function parseSelector(subselects, selector, selectorIndex) {
             }
           }
         }
-        if (selector.charCodeAt(selectorIndex) !== 93) {
+        if(selector.charCodeAt(selectorIndex) !== 93) {
           throw new Error("Attribute selector didn't terminate");
         }
         selectorIndex += 1;
@@ -287,46 +287,46 @@ function parseSelector(subselects, selector, selectorIndex) {
           action,
           value,
           namespace,
-          ignoreCase
+          ignoreCase,
         };
         tokens.push(attributeSelector);
         break;
       }
       case 58: {
-        if (selector.charCodeAt(selectorIndex + 1) === 58) {
+        if(selector.charCodeAt(selectorIndex + 1) === 58) {
           tokens.push({
             type: SelectorType.PseudoElement,
             name: getName(2).toLowerCase(),
-            data: selector.charCodeAt(selectorIndex) === 40 ? readValueWithParenthesis() : null
+            data: selector.charCodeAt(selectorIndex) === 40 ? readValueWithParenthesis() : null,
           });
           break;
         }
         const name = getName(1).toLowerCase();
-        if (pseudosToPseudoElements.has(name)) {
+        if(pseudosToPseudoElements.has(name)) {
           tokens.push({
             type: SelectorType.PseudoElement,
             name,
-            data: null
+            data: null,
           });
           break;
         }
         let data = null;
-        if (selector.charCodeAt(selectorIndex) === 40) {
-          if (unpackPseudos.has(name)) {
-            if (isQuote(selector.charCodeAt(selectorIndex + 1))) {
+        if(selector.charCodeAt(selectorIndex) === 40) {
+          if(unpackPseudos.has(name)) {
+            if(isQuote(selector.charCodeAt(selectorIndex + 1))) {
               throw new Error(`Pseudo-selector ${name} cannot be quoted`);
             }
             data = [];
             selectorIndex = parseSelector(data, selector, selectorIndex + 1);
-            if (selector.charCodeAt(selectorIndex) !== 41) {
+            if(selector.charCodeAt(selectorIndex) !== 41) {
               throw new Error(`Missing closing parenthesis in :${name} (${selector})`);
             }
             selectorIndex += 1;
           } else {
             data = readValueWithParenthesis();
-            if (stripQuotesFromPseudos.has(name)) {
+            if(stripQuotesFromPseudos.has(name)) {
               const quot = data.charCodeAt(0);
-              if (quot === data.charCodeAt(data.length - 1) && isQuote(quot)) {
+              if(quot === data.charCodeAt(data.length - 1) && isQuote(quot)) {
                 data = data.slice(1, -1);
               }
             }
@@ -336,7 +336,7 @@ function parseSelector(subselects, selector, selectorIndex) {
         tokens.push({
           type: SelectorType.Pseudo,
           name,
-          data
+          data,
         });
         break;
       }
@@ -347,38 +347,38 @@ function parseSelector(subselects, selector, selectorIndex) {
         break;
       }
       default: {
-        if (selector.startsWith('/*', selectorIndex)) {
+        if(selector.startsWith('/*', selectorIndex)) {
           const endIndex = selector.indexOf('*/', selectorIndex + 2);
-          if (endIndex < 0) {
+          if(endIndex < 0) {
             throw new Error('Comment was not terminated');
           }
           selectorIndex = endIndex + 2;
           // Remove leading whitespace
-          if (tokens.length === 0) {
+          if(tokens.length === 0) {
             stripWhitespace(0);
           }
           break;
         }
         let namespace = null;
         let name;
-        if (firstChar === 42) {
+        if(firstChar === 42) {
           selectorIndex += 1;
           name = '*';
-        } else if (firstChar === 124) {
+        } else if(firstChar === 124) {
           name = '';
-          if (selector.charCodeAt(selectorIndex + 1) === 124) {
+          if(selector.charCodeAt(selectorIndex + 1) === 124) {
             addTraversal(SelectorType.ColumnCombinator);
             stripWhitespace(2);
             break;
           }
-        } else if (reName.test(selector.slice(selectorIndex))) {
+        } else if(reName.test(selector.slice(selectorIndex))) {
           name = getName(0);
         } else {
           break loop;
         }
-        if (selector.charCodeAt(selectorIndex) === 124 && selector.charCodeAt(selectorIndex + 1) !== 124) {
+        if(selector.charCodeAt(selectorIndex) === 124 && selector.charCodeAt(selectorIndex + 1) !== 124) {
           namespace = name;
-          if (selector.charCodeAt(selectorIndex + 1) === 42) {
+          if(selector.charCodeAt(selectorIndex + 1) === 42) {
             name = '*';
             selectorIndex += 2;
           } else {
@@ -389,13 +389,13 @@ function parseSelector(subselects, selector, selectorIndex) {
           name === '*'
             ? {
                 type: SelectorType.Universal,
-                namespace
+                namespace,
               }
             : {
                 type: SelectorType.Tag,
                 name,
-                namespace
-              }
+                namespace,
+              },
         );
       }
     }

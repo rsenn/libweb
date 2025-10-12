@@ -4,7 +4,7 @@ export function literal(lit) {
       return { input: input.substr(lit.length), ast };
     }
     return {
-      error: `expected ${lit}, but got ${input.substr(0, lit.length)}...`
+      error: `expected ${lit}, but got ${input.substr(0, lit.length)}...`,
     };
   };
 }
@@ -58,7 +58,7 @@ export function param(name, re = /^[a-z]+/, parse = String) {
     if(match) {
       return {
         input: match.input.substr(match.index + match[0].length),
-        ast: assoc(ast, name, parse(match[0]))
+        ast: assoc(ast, name, parse(match[0])),
       };
     }
     return { error: 'Did not match ' + re };
@@ -81,5 +81,5 @@ export default {
   seq,
   or,
   param,
-  exhaustive
+  exhaustive,
 };

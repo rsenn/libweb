@@ -145,7 +145,7 @@ export const extend = (_value, _extension = nullObject) => {
         return targetProp;
       }
       return targetProp;
-    }
+    },
   };
 
   return new Proxy(target, handler);
@@ -205,7 +205,7 @@ export const registerProxyFormatter = () => {
         }
 
         return ['object', { object: value[proxyKey].value }];
-      }
+      },
     });
   }
 };

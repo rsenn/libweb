@@ -47,14 +47,14 @@ function stringifyToken(token, index, array) {
       return `:${escapeName(token.name, charsToEscapeInName)}${token.data === null ? '' : `(${typeof token.data === 'string' ? escapeName(token.data, charsToEscapeInPseudoValue) : stringify(token.data)})`}`;
     }
     case SelectorType.Attribute: {
-      if (token.name === 'id' && token.action === AttributeAction.Equals && token.ignoreCase === 'quirks' && !token.namespace) {
+      if(token.name === 'id' && token.action === AttributeAction.Equals && token.ignoreCase === 'quirks' && !token.namespace) {
         return `#${escapeName(token.value, charsToEscapeInName)}`;
       }
-      if (token.name === 'class' && token.action === AttributeAction.Element && token.ignoreCase === 'quirks' && !token.namespace) {
+      if(token.name === 'class' && token.action === AttributeAction.Element && token.ignoreCase === 'quirks' && !token.namespace) {
         return `.${escapeName(token.value, charsToEscapeInName)}`;
       }
       const name = getNamespacedName(token);
-      if (token.action === AttributeAction.Exists) {
+      if(token.action === AttributeAction.Exists) {
         return `[${name}]`;
       }
       return `[${name}${getActionValue(token.action)}="${escapeName(token.value, charsToEscapeInAttributeValue)}"${token.ignoreCase === null ? '' : token.ignoreCase ? ' i' : ' s'}]`;
@@ -98,8 +98,8 @@ function getNamespace(namespace) {
 function escapeName(name, charsToEscape) {
   let lastIndex = 0;
   let escapedName = '';
-  for (let index = 0; index < name.length; index++) {
-    if (charsToEscape.has(name.charCodeAt(index))) {
+  for(let index = 0; index < name.length; index++) {
+    if(charsToEscape.has(name.charCodeAt(index))) {
       escapedName += `${name.slice(lastIndex, index)}\\${name.charAt(index)}`;
       lastIndex = index + 1;
     }

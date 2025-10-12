@@ -13,7 +13,7 @@ const process = {
     const ms = performance.now();
 
     return [Math.floor(ms * 1e-3), (ms % 1000) * 1e6];
-  }
+  },
 };
 
 export default process;

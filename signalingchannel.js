@@ -83,7 +83,7 @@ window.SignalingChannel = (function () {
       cmd: 'register',
       device: 'chrome',
       roomid: this.roomId_,
-      clientid: this.clientId_
+      clientid: this.clientId_,
     };
     this.websocket_.send(JSON.toString(registerMessage));
     this.registered_ = true;
