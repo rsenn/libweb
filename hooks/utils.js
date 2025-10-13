@@ -7,11 +7,10 @@ export const compose = (...fns) =>
       (...args) =>
         f(g(...args)),
   );
-export const maybe = (f, g) => v => v === null || v === undefined ? f() : g(v);
+export const maybe = (f, g) => v => (v === null || v === undefined ? f() : g(v));
 export const snd =
   g =>
-  ([x, y]) =>
-    [x, g(y)];
+  ([x, y]) => [x, g(y)];
 export const toPair = v => [v, v];
 
 export const getOffset = maybe(

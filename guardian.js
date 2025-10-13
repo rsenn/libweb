@@ -21,7 +21,7 @@ function failures(tests) {
 function report(tests) {
   return tests.reduce(reportReduce, {
     pass: 0,
-    fail: 0
+    fail: 0,
   });
 }
 
@@ -39,8 +39,8 @@ export function guardian(overrides) {
         return result;
       },
       failures: failures.bind(null, d.tests),
-      report: report.bind(null, d.tests)
-    })
+      report: report.bind(null, d.tests),
+    }),
   );
 
   return guard;
@@ -57,11 +57,11 @@ guardian.defaults = function(tests) {
         Object.create(this, {
           pass: {
             value: pass,
-            enumerable: true
-          }
-        })
+            enumerable: true,
+          },
+        }),
       );
-    }
+    },
   };
 };
 

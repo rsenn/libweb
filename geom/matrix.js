@@ -407,7 +407,7 @@ define(Matrix.prototype, {
     const calcFromValues = (r1, m1, r2, m2) => {
       if(!isFinite(r1)) return r2;
       else if(!isFinite(r2)) return r1;
-      (m1 = Math.abs(m1)), (m2 = Math.abs(m2));
+      ((m1 = Math.abs(m1)), (m2 = Math.abs(m2)));
       return roundTo((m1 * r1 + m2 * r2) / (m1 + m2), 0.0001);
     };
 

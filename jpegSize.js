@@ -15,7 +15,7 @@ var sof = {
   0xcb: true,
   0xcd: true,
   0xce: true,
-  0xcf: true
+  0xcf: true,
 };
 
 /**

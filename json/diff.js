@@ -122,7 +122,7 @@ export function arrayDiff(a, b) {
       var va = x[i - 1];
       var o = {
         action: 'common',
-        type: whatis(va)
+        type: whatis(va),
       };
       if(o.type === 'object') o.diff = objectDiff(va, va);
       else if(o.type === 'array') o.diff = arrayDiff(va, va);
@@ -133,7 +133,7 @@ export function arrayDiff(a, b) {
       let vb = y[j - 1];
       var o = {
         action: 'add',
-        type: whatis(vb)
+        type: whatis(vb),
       };
       if(o.type === 'object') o.diff = objectDiff({}, vb);
       else if(o.type === 'array') o.diff = arrayDiff([], vb);
@@ -144,7 +144,7 @@ export function arrayDiff(a, b) {
       var va = x[i - 1];
       var o = {
         action: 'remove',
-        type: whatis(va)
+        type: whatis(va),
       };
       if(o.type === 'object') o.diff = objectDiff(va, {});
       else if(o.type === 'array') o.diff = arrayDiff(va, []);
@@ -186,21 +186,21 @@ export function objectDiff(a, b) {
           key,
           type: wva,
           action: 'common',
-          diff: objectDiff(va, vb)
+          diff: objectDiff(va, vb),
         });
       } else if(va === vb) {
         list.push({
           action: 'common',
           key,
           type: wva,
-          value: va
+          value: va,
         });
       } else {
         let orem = {
           action: 'remove',
           key,
           type: wva,
-          value: va
+          value: va,
         };
         if(orem.type === 'object') orem.diff = objectDiff(orem.value, {});
         else if(orem.type === 'array') orem.diff = objectDiff(orem.value, []);
@@ -210,7 +210,7 @@ export function objectDiff(a, b) {
           action: 'add',
           key,
           type: wvb,
-          value: vb
+          value: vb,
         };
         if(oadd.type === 'object') oadd.diff = objectDiff({}, oadd.value);
         else if(oadd.type === 'array') oadd.diff = objectDiff([], oadd.value);
@@ -222,7 +222,7 @@ export function objectDiff(a, b) {
       var o = {
         action: 'add',
         key,
-        type: whatis(b[key])
+        type: whatis(b[key]),
       };
       if(o.type === 'object') o.diff = objectDiff({}, b[key]);
       else if(o.type === 'array') o.diff = objectDiff([], b[key]);
@@ -234,7 +234,7 @@ export function objectDiff(a, b) {
       var o = {
         action: 'remove',
         key,
-        type: whatis(a[key])
+        type: whatis(a[key]),
       };
       if(o.type === 'object') o.diff = objectDiff(a[key], {});
       else if(o.type === 'array') o.diff = objectDiff(a[key], []);

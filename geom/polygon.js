@@ -131,7 +131,7 @@ export function MakePolygon(n = 8, r = 1.27, start = 0) {
   return new Polygon(
     range(0, n - 1)
       .map(i => ($2pi * i) / n)
-      .map(a => Point.fromAngle(a + step * start, r))
+      .map(a => Point.fromAngle(a + step * start, r)),
   );
 }
 

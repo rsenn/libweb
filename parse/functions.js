@@ -1,8 +1,8 @@
 const nothing = str => ['', str];
 
-const char = c => str => str.length && str[0] === c ? [str[0], str.slice(1)] : [];
+const char = c => str => (str.length && str[0] === c ? [str[0], str.slice(1)] : []);
 
-const range = (start, end) => str => str[0] >= start && str[0] <= end ? [str[0], str.slice(1)] : [];
+const range = (start, end) => str => (str[0] >= start && str[0] <= end ? [str[0], str.slice(1)] : []);
 
 const some = parser => str => {
   const recurse = (memo, remaining) => {

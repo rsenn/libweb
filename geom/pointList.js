@@ -505,17 +505,17 @@ export class PointList extends Array {
     let fn = opts.asArray
       ? p => `[${p.x},${p.y}]`
       : opts.plainObj
-      ? p =>
-          Point.toSource(p, {
-            space: '',
-            padding: ' ',
-            separator: ',',
-          })
-      : point =>
-          Point.prototype.toSource.call(point, {
-            ...opts,
-            plainObj: true,
-          });
+        ? p =>
+            Point.toSource(p, {
+              space: '',
+              padding: ' ',
+              separator: ',',
+            })
+        : point =>
+            Point.prototype.toSource.call(point, {
+              ...opts,
+              plainObj: true,
+            });
     return 'new PointList([' + PointList.prototype.map.call(this, fn).join(',') + '])';
   }
 

@@ -94,6 +94,6 @@ let ReconnectSocket = (function () {
     init,
     send,
     close,
-    clear
+    clear,
   };
 })();

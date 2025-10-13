@@ -6,7 +6,8 @@
 
 var Indexed = {};
 
-Indexed.indexed_vert = '\
+Indexed.indexed_vert =
+  '\
 attribute vec4 position;\
 void main() {\
 	gl_Position = position;\

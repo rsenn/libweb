@@ -27,7 +27,7 @@ Lexer.defunct = function(chr) {
       '\nstate=' +
       [...this.stateStack.map(n => this.states[n]), this.topState()] +
       '\nrules:\n' +
-      rules.map(r => '  ' + (r.name + ': ').padEnd(20) + r.pattern.source).join('\n')
+      rules.map(r => '  ' + (r.name + ': ').padEnd(20) + r.pattern.source).join('\n'),
   );
 };
 
@@ -129,18 +129,18 @@ Lexer.prototype.addRule = function(name, pattern, callback, start) {
           get() {
             return offset;
           },
-          enumerable: false
+          enumerable: false,
         },
         type: {
           get() {
             return lexer.tokens[this.id - 1];
           },
-          enumerable: false
-        }
+          enumerable: false,
+        },
       });
     },
     mask,
-    start
+    start,
   });
 
   return this;
@@ -307,7 +307,7 @@ export function Lexer(defunct) {
             result: result,
             rule: rule.name,
             action: rule.action,
-            length: result[0].length
+            length: result[0].length,
           });
 
           if(rule.global) index = j;

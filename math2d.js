@@ -51,5 +51,5 @@ export default {
   sqrlen,
   len,
   setlen,
-  rectptmid
+  rectptmid,
 };

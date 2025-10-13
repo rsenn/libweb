@@ -9,7 +9,7 @@ export function Location(line, column, pos, file, freeze = true) {
     line,
     column,
     pos,
-    file
+    file,
   });
   if(this !== obj) Object.setPrototypeOf(obj, Location.prototype);
 
@@ -44,7 +44,7 @@ Location.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts)
   return inspect(this, {
     colors: true,
     ...opts,
-    toString: Symbol.toStringTag
+    toString: Symbol.toStringTag,
   });
 };
 /*
@@ -55,5 +55,5 @@ Location.prototype.valueOf = function() {
 define(Location.prototype, {
   /* prettier-ignore */ get offset() {
     return this.valueOf();
-  }
+  },
 });

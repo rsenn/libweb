@@ -13,7 +13,7 @@ module.exports = ({ code, sourceType, reproductionData = {} }) => {
     linux: posixcmd,
     openbsd: posixcmd,
     //sunos: posixcmd,
-    win32: 'cd gen && grun JavaScript program temp.js 2>&1 1>NUL'
+    win32: 'cd gen && grun JavaScript program temp.js 2>&1 1>NUL',
   };
   let child = cp.execSync(cmd[os.platform()]).toString();
 
@@ -22,7 +22,7 @@ module.exports = ({ code, sourceType, reproductionData = {} }) => {
     console.log(child);
     return {
       child,
-      reproductionData
+      reproductionData,
     };
   }
 };

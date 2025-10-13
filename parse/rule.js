@@ -32,7 +32,7 @@ export class Rule {
     let nl = '',
       sep = ' ';
 
-    if(multiline) (nl = '\n'), (sep = ' | ');
+    if(multiline) ((nl = '\n'), (sep = ' | '));
     return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
   }
 

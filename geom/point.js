@@ -358,7 +358,7 @@ Point.isPoint = isPoint;
 Point.bind = (o, keys, g) => {
   keys ??= ['x', 'y'];
   o ??= new Point();
-  g ??= k => value => value !== undefined ? (o[k] = value) : o[k];
+  g ??= k => value => (value !== undefined ? (o[k] = value) : o[k]);
 
   const { x, y } = Array.isArray(keys) ? keys.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {}) : keys;
   return Object.setPrototypeOf(bindProperties({}, o, { x, y }), Point.prototype);

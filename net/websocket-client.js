@@ -105,7 +105,7 @@ export class WebSocketClient {
           // until callbacks.reject() (which is resolve) is called.
           ws._receiveCallbacksQueue.push(callbacks);
         },
-        reject: resolve
+        reject: resolve,
       };
       ws._receiveCallbacksQueue.push(callbacks);
       // After this, we will imminently get a close event.

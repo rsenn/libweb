@@ -238,7 +238,7 @@ Size.aspect = sz => Size.prototype.aspect.call(sz);
 Size.bind = (o, keys, g) => {
   keys ??= ['width', 'width'];
   o ??= new Size();
-  g ??= k => value => value !== undefined ? (o[k] = value) : o[k];
+  g ??= k => value => (value !== undefined ? (o[k] = value) : o[k]);
 
   const { width, height } = Array.isArray(keys) ? keys.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {}) : keys;
   //console.debug('Size.bind', { keys, o, p, x, y });

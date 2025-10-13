@@ -81,5 +81,5 @@ export function some(iterable, fn) {
 }
 
 export function accumulate(iterable, accu) {
-  return consume(iterable, a => accu.push(a)), accu;
+  return (consume(iterable, a => accu.push(a)), accu);
 }

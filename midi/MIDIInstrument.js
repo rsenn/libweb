@@ -127,7 +127,7 @@ export const MIDIInstrument = (function () {
     TELEPHONE_RING: 124,
     HELICOPTER: 125,
     APPLAUSE: 126,
-    GUNSHOT: 127
+    GUNSHOT: 127,
   };
 
   var index = 0;

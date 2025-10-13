@@ -207,7 +207,7 @@ return [...n];
     let nl = '',
       sep = ' ';
 
-    if(multiline) (nl = '\n\t'), (sep = ' | ');
+    if(multiline) ((nl = '\n\t'), (sep = ' | '));
     return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
   }
 

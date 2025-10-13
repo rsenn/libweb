@@ -50,10 +50,7 @@ function mix(...args) {
     mixin: { value: mixin, writable: false },
     class: { value: Class, writable: false },
     interface: {
-      get: (
-        x => () =>
-          x ? x : (x = getInterface(Class.prototype))
-      )(),
+      get: (x => () => (x ? x : (x = getInterface(Class.prototype))))(),
     },
   });
 }

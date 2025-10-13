@@ -327,5 +327,5 @@ function generateParser(grammar, tokensDefinition, filename) {
 module.exports = {
   generateParser,
   generate,
-  generateTokenizer
+  generateTokenizer,
 };

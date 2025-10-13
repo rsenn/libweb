@@ -186,7 +186,7 @@ const getSize = memoize(rect =>
   }),
 );
 
-const getPoint = memoize(rect => bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => v !== undefined ? (rect[k] = v) : rect[k]));
+const getPoint = memoize(rect => bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => (v !== undefined ? (rect[k] = v) : rect[k])));
 
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
