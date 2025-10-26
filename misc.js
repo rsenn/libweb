@@ -1941,7 +1941,7 @@ export function showHelp(opts, exitCode = 0) {
   let s = entries.reduce(
     (acc, [name, [hasArg, fn, shortOpt]]) =>
       acc + (`    ${(shortOpt ? '-' + shortOpt + ',' : '').padStart(4, ' ')} --${name.padEnd(maxlen, ' ')} ` + (hasArg ? (typeof hasArg == 'boolean' ? 'ARG' : hasArg) : '')).padEnd(40, ' ') + '\n',
-    'Usage: ' + scriptArgs[0].replace(/.*[\x5c\x2f]/g, '') + ' [OPTIONS] <FILES...>\n\n',
+    'Usage: ' + process.argv[1].replace(/.*[\x5c\x2f]/g, '') + ' [OPTIONS] <FILES...>\n\n',
   );
 
   process.stdout.write(s + '\n');
