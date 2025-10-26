@@ -12,6 +12,7 @@ export function waitOne(emitter, events, options = { passive: true, capture: fal
     function handler(event) {
       events.forEach(type => emitter.removeEventListener(type, handler, options));
       resolve(event);
+      return options.return;
     }
   });
 }
