@@ -271,7 +271,7 @@ export class CompileCommand extends Command {
       args = [];
 
     for(let s of this.argv) {
-      console.log('p', p);
+      //console.log('p', p);
       if(i == 0) program = s;
       else if(p == '-isystem') {
         flags.shift();

@@ -61,10 +61,10 @@ export {
   VariableDeclaration,
   VariableDeclarator,
   WhileStatement,
-  WithStatement
+  WithStatement,
 } from './ecmascript/estree.js';
 export { Parser, ECMAScriptParser } from './ecmascript/parser2.js';
-export { Lexer, Token, Location } from './ecmascript/lexer.js';
+export * from /*{ Lexer, Token, Location }*/ './ecmascript/lexer.js';
 export { Printer } from './ecmascript/printer.js';
 export { ECMAScriptInterpreter } from './ecmascript/interpreter.js';
 export { Environment } from './ecmascript/environment.js';
