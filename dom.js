@@ -1,16 +1,27 @@
-import { className, extend, arrayFacade, assert, camelize, decamelize, define, getset, gettersetter, isBool, isObject, isFunction, isNumber, isString, lazyProperties, memoize, modifier, quote, range, properties, } from './misc.js';
+import { readFileSync } from './fs.js';
+import { wrapFunction, isInstanceOf, types, className, nonenumerable, arrayFacade, assert, camelize, decamelize, define, declare, extend, mapObject, getset, getter, gettersetter, isBool, isObject, isFunction, isNumeric, isNumber, isString, isSymbol, isPropertyKey, memoize, modifier, quote, range, properties, isPrototypeOf, weakMapper, decodeHTMLEntities, } from './misc.js';
 import { parseSelectors } from './css3-selectors.js';
-import { get, iterate, find, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT } from './deep.js';
+import { get, iterate, find, clone, select, RECURSE, YIELD_NO_RECURSE, PATH_AS_POINTER, FILTER_KEY_OF, FILTER_HAS_KEY, FILTER_NEGATE, RETURN_VALUE_PATH, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT, } from './deep.js';
 import { TreeWalker } from './tree_walker.js';
-import { parse as readXML, write as writeXML } from './xml.js';
-import { inspect } from './inspect.js';
+import { read as readXML, write as writeXML } from './xml.js';
+import { DereferenceError, Pointer } from './pointer.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
-const inspectOptions = { colors: true, showProxy: true, getters: true, compact: true, breakLength: Infinity };
+
+const DEBUG = (env => {
+  const { length } = [...env.matchAll(/\bdom\b/gi)];
+  return length > 0 ? (...args) => console.log('\x1b[1;33mDOM\x1b[0m', console.config({ depth: 1, compact: true }), ...args) : () => {};
+})(process.env.DEBUG ?? '');
+
+const proxyOf = gettersetter(new WeakMap());
+const proxyFor = gettersetter(new WeakMap());
+
+const proxy = (proxy, obj) => (proxyOf(obj, proxy), proxyFor(proxy, obj));
 
 const rawNode = gettersetter(new WeakMap());
 const parentNodes = gettersetter(new WeakMap());
 const ownerElements = gettersetter(new WeakMap());
+const ownerDocument = gettersetter(new WeakMap());
 const textValues = gettersetter(new WeakMap());
 
 const ELEMENT_NODE = 1;
@@ -42,69 +53,55 @@ const createFunctions = [
   'createNotation',
 ];
 
-const EntityNames = ['Document', 'Node', 'NodeList', 'Element', 'NamedNodeMap', 'Attr', 'Text', 'Comment', 'TokenList', 'CSSStyleDeclaration'];
+const EntityNames = ['Document', 'Node', 'NodeList', 'Element', 'NamedNodeMap', 'Attr', 'Text', 'Comment', 'TokenList', 'CSSStyleDeclaration', 'HTMLCollection'];
 const EntityType = name => EntityNames.indexOf(name);
+const TypeName = n => (isNumber(n) ? EntityNames[n] : n);
 
 export const Entities = EntityNames.reduce((obj, name, id) => ({ [name]: id, ...obj }), {});
 
-const keyOf = (obj, value) => {
-  for(let key in obj) if(obj[key] === value) return key;
-  return -1;
-};
+export class DOMException extends Error {
+  constructor(message, name) {
+    super(message ?? 'DOMException');
 
-class DereferenceError extends Error {
-  constructor(obj, i, path, error) {
-    const objStr = inspect(obj, inspectOptions);
-    const pathStr = inspect(path.slice(), inspectOptions);
-
-    super(`dereference error of <${objStr}> at ${i} '${pathStr}': ${error.message}`);
+    if(name) define(this, nonenumerable({ name }));
   }
 }
 
-function applyPath(path, obj) {
-  //console.log('applyPath', inspect({ path: path.join('.'), obj }, { compact: true, breakLength: Infinity, colors: true }));
+extend(DOMException.prototype, nonenumerable({ name: 'DOMException' }));
 
+function applyPath(path, obj) {
   const { length } = path;
-  let raw = rawNode(obj);
+
+  let raw = Node.raw(obj) ?? rawNode(obj);
 
   for(let i = 0; i < length; i++) {
     const k = path[i];
-
     try {
       obj = obj[k];
     } catch(error) {
-      throw new DereferenceError(obj, i, path, error);
+      throw new DereferenceError(obj, i, path);
     }
-
     if(raw)
       try {
         raw = raw[k];
-
         rawNode(obj, raw);
       } catch(error) {
         raw = undefined;
       }
   }
-
   return obj;
 }
 
-function query(root, selectors, t = (path, root) => path) {
-  for(const selector of selectors) {
-    //const path = find(root, selector, FILTER_HAS_KEY|RETURN_PATH, TYPE_OBJECT, ['children']);
-    const path = find(root, selector, RETURN_PATH, TYPE_OBJECT);
+function* walk(root) {
+  const raw = Node.raw(root) ?? rawNode(root);
+  const it = iterate(raw, undefined, RETURN_PATH | FILTER_KEY_OF | FILTER_NEGATE, TYPE_OBJECT | TYPE_STRING, ['attributes', 'tagName']);
 
-    //console.log('query', { /*root,*/ selector, path });
-
-    if(path) return t(path, root);
+  for(let path of it) {
+    yield path.reduce((o, k) => o[k], root);
   }
 }
 
-function* queryAll(root, selectors, t = (path, root) => path) {
-  for(const selector of selectors) for (let path of iterate(root, selector, RETURN_PATH, TYPE_OBJECT, ['children'])) yield t(path, root);
-}
-
-export const nodeTypes = [
+const nodeTypes = [
   undefined,
   'ELEMENT_NODE',
   'ATTRIBUTE_NODE',
@@ -120,8 +117,8 @@ export const nodeTypes = [
   'NOTATION_NODE',
 ];
 
-export function Prototypes(
-  constructors = {
+export function Classes() {
+  return {
     Document,
     Node,
     NodeList,
@@ -132,88 +129,138 @@ export function Prototypes(
     Comment,
     TokenList,
     CSSStyleDeclaration,
-  },
-) {
-  const prototypes = {};
+    HTMLCollection,
+  };
+}
 
-  for(let key in constructors) prototypes[key] = constructors[key].prototype;
+export function Prototypes(constructors = Classes()) {
+  const prototypes = {};
+  for(const key in constructors) {
+    prototypes[key] = constructors[key].prototype;
+
+    if(constructors[key].name && constructors[key].name != prototypes[key][Symbol.toStringTag]) Object.assign(prototypes[key], { [Symbol.toStringTag]: constructors[key].name });
+  }
 
   return prototypes;
 }
 
 const factories = gettersetter(new WeakMap());
 
-export function Factory(types = Prototypes()) {
-  let result;
+export class Factory {
+  constructor(obj = Prototypes()) {
+    if(Array.isArray(obj)) obj = obj.reduce((acc, proto, i) => ({ [EntityNames[i]]: proto, ...acc }), {});
 
-  if(new.target) {
-    result = function Factory(type) {
-      if(isNumber(type)) type = EntityNames[type];
+    const GetProto = type => ((type = TypeName(type)), obj[type] ?? Prototypes()[type]);
+    const GetConstructor = type => GetProto(type).constructor; //((type = TypeName(type)), Classes()[type]);
+    const fn = type => fn[TypeName(type)]?.new;
 
-      return result[type].new;
+    const entities = gettersetter(new WeakMap()),
+      classes = Object.create(null);
+
+    let create = obj;
+
+    if(!isFunction(create))
+      create = (type, ...args) => {
+        let proto = GetProto(type);
+        let ctor = GetConstructor(type);
+
+        if(type == 'Element' && ctor.elements) {
+          const ctor2 = ctor.elements[args[0].tagName];
+          //DEBUG('Factory', { type, raw: args[0], ctor2 });
+          if(ctor2?.constructor) ctor = ctor2.constructor;
+          else if(ctor2) ctor = ctor2;
+        }
+        return new ctor(...args);
+      };
+
+    const cr = create;
+
+    create = (type, ...args) => {
+      const obj = cr(type, ...args);
+      entities(obj, { type, args });
+      factories(obj, fn);
+      return obj;
     };
-
-    if(Array.isArray(types)) types = types.reduce((acc, proto, i) => ({ [EntityNames[i]]: proto, ...acc }), {});
-
-    if(!isFunction(types)) {
-      const obj = types;
-
-      types = (type, ...args) => {
-        if(isNumber(type)) type = EntityNames[type];
-
-        return new obj[type].constructor(...args);
-      };
-
-      types.cache = (type, ...args) => {
-        if(isNumber(type)) type = EntityNames[type];
-
-        const proto = obj[type];
-
-        return (proto.constructor.cache ?? MakeCache((...a) => new proto.constructor(...a)))(...args);
-      };
-    }
 
     for(let i = 0; i < EntityNames.length; i++) {
       const name = EntityNames[i];
+      const ctor = GetProto(name).constructor;
 
-      result[name] = {
-        new: (...args) => types(name, ...args),
-        cache: (...args) => types.cache(name, ...args),
+      fn[name] = {
+        new: (...args) => create(name, ...args),
+        cache(...args) {
+          return (ctor.cache ??= MakeCache((...a) => this.new(...a)))(...args);
+        },
       };
+
+      classes[name] = ctor;
     }
 
-    return Object.setPrototypeOf(result, Factory.prototype);
+    try {
+      delete fn.name;
+    } catch(e) {}
+
+    const proto = new.target ? new.target.prototype : Factory.prototype;
+
+    define(fn, nonenumerable({ name: proto[Symbol.toStringTag], entities, classes }));
+
+    return Object.setPrototypeOf(fn, proto);
   }
 
-  return factories(types);
+  static type(node) {
+    const factory = this.get(node);
+    let cl;
+    return factory.entities(node)?.type ?? ((cl = className(node)) in factory && cl);
+  }
+
+  static for(node) {
+    const factory = this.get(node);
+
+    if(!factory) {
+      throw new Error(`No factory for <${className(node)}> [[ ${node + ''} ]]`);
+    }
+
+    return factory;
+  }
+
+  static get(node) {
+    let tmp;
+    if((tmp = proxyFor(node))) node = tmp;
+
+    if(!('nodeType' in node) && (tmp = ownerElements(node))) node = tmp;
+
+    if(node.nodeType != DOCUMENT_NODE && (tmp = Node.document(node))) node = tmp;
+
+    return factories(node);
+  }
+
+  static set(node, factory) {
+    let tmp;
+
+    if((tmp = proxyFor(node))) node = tmp;
+
+    if(!('nodeType' in node) && (tmp = ownerElements(node))) node = tmp;
+
+    factories(node, factory);
+
+    if(Node.document(node) !== node) this.set(Node.document(node), factory);
+  }
 }
 
-Object.setPrototypeOf(Factory.prototype, Function.prototype);
+Object.setPrototypeOf(Factory.prototype, function Factory(type) {});
 
-define(Factory, {
-  for: node => {
-    let parent = node;
+extend(
+  Factory.prototype,
+  nonenumerable({
+    [Symbol.toStringTag]: 'Factory',
+  }),
+);
 
-    do {
-      const factory = factories(Node.raw(parent));
-
-      if(factory) return factory;
-    } while((parent = Node.parent(parent) ?? Node.owner(parent)));
-
-    for(let n of Node.hier(node)) {
-      const factory = factories(Node.raw(n));
-
-      if(factory) return factory;
-    }
-  },
-  set: (node, factory) => factories(Node.raw(node), factory),
-});
+const parsers = gettersetter(new WeakMap());
 
 export class Parser {
-  constructor(factory) {
-    factory ??= new Factory();
-
-    this.factory = factory;
+  constructor(factory = new Factory()) {
+    define(this, nonenumerable({ factory }));
   }
 
   parseFromString(str, file) {
@@ -230,99 +277,142 @@ export class Parser {
     }
 
     const { factory } = this;
-    const doc = factory.Document.new(data, factory);
+    const doc = factory['Document'].new(data, factory);
 
     Factory.set(doc, factory);
+
+    parsers(doc, this);
 
     return doc;
   }
 
-  async parseFromFile(file) {
-    const xml = (await import('fs')).readFileSync(file, 'utf-8');
+  parseFromFile(file) {
     const { factory } = this;
+    return this.parseFromString(readFileSync(file), file, factory);
+  }
 
-    return this.parseFromString(xml, file, factory);
+  static for(node) {
+    return parsers(Node.document(node));
   }
 }
 
-function GetNode(obj, owner, factory) {
-  const type = GetType(obj, owner);
+extend(Parser.prototype, nonenumerable({ [Symbol.toStringTag]: 'Parser' }));
 
-  if(type == Entities.Text && isString(obj) && isFunction(owner.indexOf)) obj = owner.indexOf(obj);
+function GetType(raw) {
+  if(Array.isArray(raw)) return Entities.NodeList;
+  if(isComment(raw)) return Entities.Comment;
+  if(isElement(raw)) return Entities.Element;
+  if(isString(raw)) return Entities.Text;
+  if(isObject(raw)) return Entities.NamedNodeMap;
+}
 
-  factory ??= Factory.for(owner);
+function GetNode(raw, owner, factory = Factory.for(owner)) {
+  const type = GetType(raw);
 
-  if(!factory) console.log('No factory for', owner, owner.constructor.name);
+  if(type == Entities.Text) {
+    const rawOwner = Node.raw(owner);
+    raw = rawOwner.indexOf(raw);
+  }
 
   const ctor = factory(type);
 
-  if(!ctor) throw new Error(`No such node type for ${obj[Symbol.inspect]()}`);
-  if(ctor.cache) return ctor.cache(obj, owner);
+  if(!ctor) throw new Error(`No such node type for ${raw}`);
 
-  return ctor(obj, owner);
+  const node = ctor.cache ? ctor.cache(raw, owner) : ctor(raw, owner);
+
+  //DEBUG('GetNode', { node, raw, owner });
+
+  rawNode(node, raw);
+  ownerElements(node, owner);
+
+  return node;
 }
 
 export class Interface {
+  static [Symbol.hasInstance](instance) {
+    return isObject(instance) && 'nodeType' in instance;
+  }
+
+  get textContent() {
+    if(this.nodeType == TEXT_NODE) return this.nodeValue;
+
+    const texts = [];
+
+    for(const value of iterate(Node.raw(this), undefined, RETURN_VALUE | FILTER_KEY_OF | FILTER_NEGATE, TYPE_STRING, ['attributes', 'tagName'])) texts.push(value.replace(/<s+/g, ' '));
+
+    return decodeHTMLEntities(texts.join(' '));
+  }
+
+  get isConnected() {
+    return isObject(ownerElements(this));
+  }
+
+  get nodeName() {
+    return { [DOCUMENT_NODE]: '#document', [TEXT_NODE]: '#text', [ELEMENT_NODE]: this.tagName.toUpperCase() }[this.nodeType];
+  }
+
+  get nodeValue() {
+    return { [TEXT_NODE]: this.textContent }[this.nodeType] ?? null;
+  }
+
   get parentNode() {
-    let result = Node.parent(this);
-
-    if(isObject(result) && !(result instanceof Node)) result = Node.owner(result);
-
-    return result;
+    return Node.parent(this);
+    /*let result = ownerElements(this);
+    if(!isNode(result)) result = ownerElements(result);
+    return result;*/
   }
 
   get parentElement() {
     const { parentNode } = this;
-
     return parentNode.nodeType == ELEMENT_NODE ? parentNode : null;
   }
 
-  isSameNode(other) {
-    if(Node.raw(other) == Node.raw(this)) return true;
-
-    if(Node.document(other) == Node.document(this)) {
-      if(Node.path(other) + '' == Node.path(this) + '') return true;
+  contains(other) {
+    for(const node of walk(this)) {
+      if(node == other) return true;
+      if(isInstanceOf(Node, node) && node.isSameNode(other)) return true;
     }
+    return false;
+  }
+
+  isSameNode(other) {
+    return Node.raw(other) == Node.raw(this);
+  }
+
+  isEqualNode(other) {
+    const s = new Serializer();
+    const [a, b] = [this, other].map(n => s.serializeToString(n));
+    return a == b;
   }
 
   hasChildNodes() {
-    const children = Node.children(this);
-
+    const { children } = Node.raw(this);
     return children && children.length > 0;
   }
 
   getRootNode() {
-    for(let parent, node = Node.parent(this); node; node = parent) {
-      if(!(parent = Node.parent(node))) return node;
-
-      node = parent;
-    }
+    for(let parent, node = ownerElements(this); node; node = parent) if(!(parent = ownerElements(node))) return node;
   }
 
   get ownerDocument() {
-    return Node.document(this);
+    return Node.document(this) || ownerDocument(this);
   }
 
   get childNodes() {
     const raw = Node.raw(this);
-
-    return Factory.for(this).NodeList.cache((raw.children ??= []), this, NodeList);
+    const list = Factory.for(this).NodeList.cache((raw.children ??= []), this, NodeList);
+    ownerElements(list, this);
+    return list;
   }
 
   get firstChild() {
-    if(this.hasChildNodes()) {
-      const [first] = Node.children(this);
-
-      return GetNode(first, this);
-    }
+    if(this.hasChildNodes()) return GetNode(Node.raw(this).children[0], this);
   }
 
   get lastChild() {
     if(this.hasChildNodes()) {
-      const children = Node.children(this);
-      const last = children[children.length - 1];
-
-      return GetNode(last, this);
+      const { children } = Node.raw(this);
+      return GetNode(children[children.length - 1], this);
     }
   }
 
@@ -330,13 +420,10 @@ export class Interface {
     const { parentNode } = this;
 
     if(parentNode.hasChildNodes()) {
-      const children = Node.children(parentNode);
-      const raw = Node.raw(this);
+      const { children } = Node.raw(parentNode);
+      const index = children.indexOf(Node.raw(this));
 
-      const index = children.indexOf(raw);
-      const owner = Node.owner(this) ?? Node.owner(raw) ?? parentNode;
-
-      if(index != -1 && children[index + 1]) return GetNode(children[index + 1], owner);
+      if(index != -1 && children[index + 1]) return GetNode(children[index + 1], ownerElements(this));
     }
   }
 
@@ -344,237 +431,166 @@ export class Interface {
     const { parentNode } = this;
 
     if(parentNode.hasChildNodes()) {
-      const children = Node.children(parentNode);
-      const raw = Node.raw(this);
+      const { children } = Node.raw(parentNode);
+      const index = children.indexOf(Node.raw(this));
 
-      const index = children.indexOf(raw);
-      const owner = Node.owner(this) ?? Node.owner(raw) ?? parentNode;
-
-      if(index != -1 && children[index - 1]) return GetNode(children[index - 1], owner);
+      if(index != -1 && children[index - 1]) return GetNode(children[index - 1], ownerElements(this));
     }
   }
 
+  cloneNode(deep = true) {
+    const obj = clone(Node.raw(this));
+    const factory = Factory.for(this);
+    const el = factory(Factory.type(this))?.(obj, null);
+
+    ownerDocument(el, this.ownerDocument);
+
+    return el;
+  }
+
   appendChild(node) {
+    ownerElements(node)?.removeChild(node);
+
+    const raw = Node.raw(node);
     const { children } = Node.raw(this);
 
-    if(node instanceof Text) {
-      const k = children.length;
+    if(isInstanceOf(Text, node)) textValues(this, Text.own(this, children.length));
 
-      textValues(
-        this,
-        modifier(
-          () => children[k] ?? '',
-          v => (children[k] = v),
-        ),
-      );
-    }
-
-    const { parentNode, ownerElement } = this;
+    children.push(raw);
 
     ownerElements(node, this.childNodes);
-    parentNodes(node, this);
+    ownerElements(this.childNodes, this);
 
-    children.push(Node.raw(node));
+    parentNodes(node, this);
 
     return node;
   }
 
   insertBefore(node, ref) {
+    ownerElements(node)?.removeChild(node);
+
     const { children } = Node.raw(this);
-
-    const old = isObject(node) && node instanceof Node ? Node.raw(node) : node,
-      before = isObject(ref) && ref instanceof Node ? Node.raw(ref) : ref;
-
-    const index = children.indexOf(before);
+    const old = isNode(node) ? Node.raw(node) : node,
+      before = isNode(ref) ? Node.raw(ref) : ref;
+    let index = children.indexOf(before);
 
     if(index == -1) index = children.length;
 
     children.splice(index, 0, old);
+
+    ownerElements(node, this.childNodes);
+    ownerElements(this.childNodes, this);
+    parentNodes(node, this);
+
     return node;
   }
 
   removeChild(node) {
     const { children } = Node.raw(this);
-
-    const old = isObject(node) && node instanceof Node ? Node.raw(node) : node;
-
-    const index = children.indexOf(old);
-
+    let index = children.indexOf(isNode(node) ? Node.raw(node) : node);
     if(index == -1) throw new Error(`Node.removeChild no such child!`);
-
     children.splice(index, 1);
+    setParentOwner(node, null);
     return node;
   }
 
   replaceChild(newChild, oldChild) {
+    ownerElements(newChild)?.removeChild(newChild);
+
     const { children } = Node.raw(this);
+    const old = Node.raw(oldChild),
+      node = Node.raw(newChild);
+    const idx = children.indexOf(old);
 
-    const old = isObject(oldChild) && oldChild instanceof Node ? Node.raw(oldChild) : oldChild,
-      replacement = isObject(newChild) && newChild instanceof Node ? Node.raw(newChild) : newChild;
+    if(idx == -1) throw new Error(`Node.replaceChild no such child!`);
 
-    const index = children.indexOf(old);
+    children.splice(idx, 1, node);
 
-    if(index == -1) throw new Error(`Node.replaceChild no such child!`);
+    setParentOwner(old, null);
+    ownerElements(node, this.childNodes);
+    ownerElements(this.childNodes, this);
+    parentNodes(node, this);
 
-    children.splice(index, 1, replacement);
-    return newChild;
+    return oldChild;
   }
 
-  querySelector(...selectors) {
-    if(isString(selectors[0])) selectors = [...parseSelectors(...selectors)];
-
+  querySelector(s) {
     const raw = Node.raw(this);
-    //console.log(className(this) + '.querySelector', { selectors: selectors.map(f => f.toSource()) });
 
-    let path;
+    try {
+      for(let sel of parseSelectors(s)) {
+        const values = sel && sel.values();
 
-    if((path = query(raw, selectors))) {
-      //console.log(className(this) + '.querySelector', { path });
+        let path = find(
+          raw,
+          sel
+            ? (node, path) => {
+                return values.every(v =>
+                  path
+                    .hier()
+                    .filter(p => p[p.length - 1] != 'children')
+                    .reverse()
+                    .some(p => v(p.deref(raw))),
+                )
+                  ? YIELD_NO_RECURSE
+                  : RECURSE;
+              }
+            : e => !/^[!?]/.test(e.tagName),
+          RETURN_PATH | PATH_AS_POINTER | FILTER_KEY_OF | FILTER_NEGATE,
+          TYPE_OBJECT | TYPE_STRING,
+          ['attributes', 'tagName'],
+        );
 
-      return applyPath(path, this);
+        if(path) return path.deref(this); //applyPath(path, this);
+      }
+    } catch(e) {
+      DEBUG('querySelector', e);
+      const { message, pointer, root, pos, stack } = e;
+      DEBUG('querySelector', console.config({ compact: 1 }), { s, message, pointer, root, pos, stack });
+      throw new Error(message);
     }
   }
 
-  querySelectorAll(...selectors) {
-    if(isString(selectors[0])) selectors = [...parseSelectors(...selectors)];
+  *querySelectorAll(s) {
+    const raw = Node.raw(this);
+    try {
+      for(let sel of parseSelectors(s)) {
+        const values = sel && sel.values();
 
-    return queryAll((globalThis.raw = Node.raw(this)), (globalThis.selectors = selectors), p => applyPath(p, this));
+        for(const path of iterate(
+          raw,
+          sel
+            ? (node, path) => {
+                return values.every(v =>
+                  path
+                    .hier()
+                    .filter(p => p[p.length - 1] != 'children')
+                    .reverse()
+                    .some(p => v(p.deref(raw))),
+                )
+                  ? YIELD_NO_RECURSE
+                  : RECURSE;
+              }
+            : e => !/^[!?]/.test(e.tagName),
+          RETURN_PATH | PATH_AS_POINTER | FILTER_KEY_OF | FILTER_NEGATE,
+          TYPE_OBJECT | TYPE_STRING,
+          ['attributes', 'tagName'],
+        ))
+          yield applyPath(path, this);
+      }
+    } catch(e) {
+      const { message, pointer, root, pos, stack } = e;
+      DEBUG('querySelectorAll', console.config({ compact: 1 }), { message, pointer, root, pos, stack });
+      throw new Error(message);
+    }
+  }
+
+  *getElementsByTagName(name) {
+    const it = iterate(Node.raw(this), name == '*' ? undefined : e => e.tagName == name, RETURN_PATH | FILTER_KEY_OF | FILTER_NEGATE, TYPE_OBJECT, ['attributes', 'tagName']);
+
+    for(const path of it) yield applyPath(path, this);
   }
 }
-
-export class Node {
-  constructor(obj, parent) {
-    if(isObject(obj)) rawNode(this, obj);
-
-    parentNodes(this, parent);
-  }
-
-  get path() {
-    return Node.path(this);
-  }
-
-  [Symbol.inspect]() {
-    return `\x1b[1;31m${this.constructor.name}\x1b[0m`;
-  }
-
-  static check(node) {
-    if(!isObject(node)) throw new TypeError('node is not an object');
-  }
-
-  static [Symbol.hasInstance](obj) {
-    return isObject(obj) && [Node.prototype, Element.prototype, Document.prototype].indexOf(Object.getPrototypeOf(obj)) != -1;
-  }
-
-  static raw(node, raw) {
-    this.check(node);
-
-    if(raw !== undefined) {
-      rawNode(node, raw);
-    } else {
-      if(isObject(node) && Object.getPrototypeOf(node) == Object.prototype) return node;
-
-      return rawNode(node) ?? undefined;
-    }
-  }
-
-  static children(node) {
-    return Node.raw(node)?.children;
-  }
-
-  static owner(node) {
-    this.check(node);
-    let owner, parent;
-
-    if((parent = parentNodes(node)) && Array.isArray(parent.children)) return parent.children;
-
-    const raw = Node.raw(node);
-
-    if((parent = parentNodes(raw)) && Array.isArray(parent.children)) return parent.children;
-
-    if((owner = ownerElements(node))) return owner;
-
-    return ownerElements(raw);
-  }
-
-  static parent(node) {
-    this.check(node);
-
-    return parentNodes(node);
-  }
-
-  static document(node) {
-    while(node) {
-      if(node.nodeType == Node.DOCUMENT_NODE) return node;
-
-      node = Node.parent(node);
-    }
-  }
-
-  static hier(node, pred = node => true) {
-    const result = [];
-
-    this.check(node);
-
-    let parent;
-
-    do {
-      if(pred(node)) result.unshift(node);
-
-      parent = Node.owner(node) ?? Node.parent(node);
-
-      if(result.indexOf(parent) != -1) throw new Error(`circular loop`);
-    } while(parent && (node = parent));
-
-    return result;
-  }
-
-  static document(node) {
-    const hier = Node.hier(node);
-
-    return hier.find(({ nodeType }) => nodeType == DOCUMENT_NODE);
-  }
-
-  static path(arg, path) {
-    if(arg.ownerElement) {
-      const child = {
-        NodeList: ['children'],
-        NamedNodeMap: ['attributes'],
-        Attr: ['attributes', arg.name],
-      }[arg.constructor.name];
-
-      if(child.reduce((acc, key) => acc[key], arg.ownerElement)) return Node.path(arg.ownerElement).concat(child);
-    }
-
-    const hier = Node.hier(arg);
-
-    if(!Array.isArray(path)) path = [];
-
-    while(hier.length >= 2) {
-      let index = keyOf(Node.raw(hier[0]), Node.raw(hier[1]));
-
-      if(index == -1) index = keyOf(hier[0], hier[1]);
-
-      if(!isNaN(+index)) index = +index;
-
-      path.push(index);
-      hier.shift();
-    }
-
-    return extend(
-      path,
-      {
-        toString() {
-          return this.join('.');
-        },
-      },
-      { enumerable: false },
-    );
-  }
-
-  static from(obj) {}
-}
-
-Node.types = nodeTypes;
 
 export const NODE_TYPES = {
   ATTRIBUTE_NODE,
@@ -591,178 +607,416 @@ export const NODE_TYPES = {
   TEXT_NODE,
 };
 
-define(Node.prototype, Interface.prototype);
-extend(Node.prototype, NODE_TYPES, { enumerable: false });
-extend(Node.prototype, { [Symbol.toStringTag]: 'Node' }, { enumerable: false });
+extend(Interface.prototype, nonenumerable(NODE_TYPES));
 
-function MakeCache(ctor, store = new WeakMap()) {
-  const [get, set] = getset(store);
+export class Node extends Interface {
+  constructor(obj, parent) {
+    super();
+    rawNode(this, obj);
+    setParentOwner(this, parent);
+  }
 
-  return (key, ...args) => {
-    let value;
+  static [Symbol.hasInstance](instance) {
+    return isObject(instance) && 'nodeType' in instance;
+  }
 
-    if(!(value = get(key))) {
-      value = ctor(key, ...args);
-      set(key, value);
+  [Symbol.inspect]() {
+    return `\x1b[1;31m${className(this) || 'Node'}\x1b[0m`;
+  }
+
+  static check(node) {
+    if(!isObject(node)) throw new TypeError('node is not an object');
+  }
+
+  static [Symbol.hasInstance](obj) {
+    return isObject(obj) && [Node.prototype, Element.prototype, Document.prototype].indexOf(Object.getPrototypeOf(obj)) != -1;
+  }
+
+  static raw(node) {
+    let tmp;
+    if((tmp = proxyFor(node))) node = tmp;
+
+    return rawNode(node);
+  }
+
+  static proxyFor(proxy) {
+    return proxyFor(proxy);
+  }
+
+  static proxyOf(node) {
+    return proxyOf(node);
+  }
+
+  /*static parentOrOwner(node) {
+    this.check(node);
+    return parentNodes(node) ?? ownerElements(node);
+  }*/
+
+  static document(node) {
+    let doc = node;
+    while(doc) {
+      if(doc.nodeType == Node.DOCUMENT_NODE) break;
+      doc = ownerElements(doc);
     }
+    if(doc) ownerDocument(node, doc);
+    else doc = ownerDocument(node);
+    return doc;
+  }
 
-    ownerElements(value, args[0]);
-    return value;
-  };
+  static *up(node) {
+    this.check(node);
+    let next;
+    do {
+      yield node;
+      next = parentNodes(node) ?? ownerElements(node);
+    } while(next && (node = next));
+  }
+
+  static depth(node, pred = (node, path) => true) {
+    return this.hier(node, pred).length;
+  }
+
+  static owner = ownerElements;
+
+  static parent(node) {
+    let tmp;
+    if((tmp = parentNodes(node))) return tmp;
+    if((tmp = ownerElements(node))) if ((tmp = ownerElements(tmp))) return tmp;
+  }
+
+  static hier(node, pred = (node, path) => true, forward = false, t) {
+    const r = [],
+      p = [],
+      method = r[forward ? 'push' : 'unshift'];
+    let prev;
+    for(const n of this.up(node)) {
+      const raw = rawNode(n) ?? Node.raw(n);
+      if(raw && prev) {
+        const entries = Object.entries(raw);
+        let [k] = entries.find(([k, v]) => v == prev) ?? [];
+        //if(k === undefined) DEBUG('hier', { k, raw, prev });
+        if(isNumeric(k)) k = +k;
+        p.unshift(k);
+      }
+      if(!pred || pred(n, p)) {
+        if(r.indexOf(n) != -1) throw new Error(`circular loop`);
+        method.call(r, isFunction(t) ? t(n, p) : n);
+      }
+      prev = raw;
+    }
+    return r;
+  }
+
+  static document(node) {
+    const hier = Node.hier(node);
+    return hier.find(({ nodeType }) => nodeType == DOCUMENT_NODE);
+  }
+
+  static path(node, path) {
+    const [tmp] = Node.hier(
+      node,
+      n => isInstanceOf(Document, n),
+      false,
+      (n, p) => p.slice(),
+    );
+    if(!tmp) return undefined;
+    (path ??= []).push(...tmp);
+    return define(
+      path,
+      nonenumerable({
+        toString() {
+          return this.join('.');
+        },
+      }),
+    );
+  }
 }
 
-function MakeCache2(ctor, store = new WeakMap()) {
-  const cache = memoize(key => [], store);
+Node.types = nodeTypes;
 
-  return (id, owner) => {
-    const textList = cache(owner);
+//Object.setPrototypeOf(Node.prototype, Object.create(Interface.prototype));
 
-    id = isNaN(+id) ? id : +id;
-
-    textList[id] ??= ctor(id, owner);
-
-    return textList[id];
-  };
-}
+extend(Node.prototype, nonenumerable({ [Symbol.toStringTag]: 'Node' }));
 
 export class NodeList {
   constructor(obj, owner) {
-    const isElement = prop => isString(prop) && !isNaN(+prop);
-    const isList = prop => isElement(prop) || prop == 'length';
+    // DEBUG('NodeList.constructor', { obj, owner });
 
-    const factory = Factory.for(owner);
+    const isIndex = prop => isString(prop) && isNumeric(prop);
+    const inRange = index => index >= 0 && index < obj.length;
 
     rawNode(this, obj);
     ownerElements(this, owner);
 
+    //setParentOwner(this, owner);
+
     const nodeList = new Proxy(this, {
       get: (target, prop, receiver) => {
-        if(prop === Symbol.iterator && isFunction(NodeList.prototype[prop])) return NodeList.prototype[prop].bind(this);
+        if(prop == 'length') return obj.length;
 
-        if(isList(prop)) {
-          if(prop == 'length') return obj.length;
-          if(prop >= 0 && prop < obj.length) return GetNode(obj[prop], nodeList, factory);
+        if(isIndex(prop)) {
+          let node;
+          if(prop in obj) {
+            node = GetNode(obj[prop], nodeList, Factory.for(owner));
+            ownerElements(node, this);
+          }
+          return node;
         }
+
+        if(isFunction(NodeList.prototype[prop])) return NodeList.prototype[prop];
 
         return Reflect.get(target, prop, receiver);
       },
-      getOwnPropertyDescriptor: (target, prop) => {
-        if(isList(prop)) {
-          if(prop == 'length' || (prop >= 0 && prop < obj.length)) return { configurable: true, enumerable: true, value: obj[prop] };
+      deleteProperty: (target, prop) => {
+        if(isIndex(prop)) {
+          if(+prop + 1 == obj.length) obj.pop();
+          else delete obj[prop];
+          return true;
         }
 
-        return Reflect.getOwnPropertyDescriptor(target, prop);
+        return Reflect.deleteProperty(target, prop);
       },
-      ownKeys: target =>
+      set: (target, prop, value, receiver) => {
+        if(isIndex(prop)) {
+          obj[prop] = Node.raw(value);
+          return;
+        }
+        return Reflect.set(target, prop, value, receiver);
+      } /*,
+      getOwnPropertyDescriptor: (target, prop) => {
+        if(prop == 'length') return { value: obj.length, configurable: false, enumerable: true, writable: false };
+        if(isIndex(prop)) return { value: inRange(+prop) ? GetNode(obj[prop], nodeList, Factory.for(owner)) : undefined, configurable: true, enumerable: true, writable: true };
+        return Reflect.getOwnPropertyDescriptor(target, prop);
+      }*/,
+      ownKeys: () =>
         range(0, obj.length - 1)
           .map(prop => prop + '')
           .concat(['length']),
-      getPrototypeOf: target => NodeList.prototype,
+      //getPrototypeOf: () => NodeList.prototype,
     });
 
-    rawNode(nodeList, obj);
+    /*rawNode(nodeList, obj);
+    setParentOwner(nodeList, owner);*/
+
     ownerElements(nodeList, owner);
+    proxy(nodeList, this);
 
     return nodeList;
   }
-
-  /*[Symbol.inspect](depth, opts) {
-    return inspect([...this], depth + 1, { ...opts, customInspect: true }).substring(...(str[0] == '[' ? [str.indexOf('[') + 1, str.lastIndexOf(']')] : [0]));
-  }*/
 }
 
 extend(
   NodeList.prototype,
-  {
+  nonenumerable({
     [Symbol.toStringTag]: 'NodeList',
     *[Symbol.iterator]() {
       const factory = Factory.for(this);
 
-      for(let node of Node.raw(this)) yield factory(isString(node) ? Entities.Text : Entities.Element)(node, this);
+      for(const node of Node.raw(this)) {
+        const type = isString(node) ? Entities.Text : isElement(node) ? (isComment(node) ? Entities.Comment : Entities.Element) : undefined;
+
+        yield factory(type)(node, this);
+      }
     },
-  },
-  { enumerable: false },
+  }),
 );
 
-export function NamedNodeMap(obj, owner) {
-  if(!this) return new NamedNodeMap(obj, owner);
+export function Collection(obj, get, len, proto) {
+  if(!get) {
+    const owner = ownerElements(obj);
+    const factory = Factory.for(obj);
+    const arr = Node.raw(obj).children;
 
-  const isAttr = prop => isString(prop) && prop in obj;
-  const wrapAttr = (value, prop) => new Attr([obj, prop], nodeMap);
+    get = k => GetNode(arr[k], owner, factory);
+    len = () => arr.length;
+  }
 
-  rawNode(this, obj);
-  ownerElements(this, owner);
-
-  const nodeMap = new Proxy(this, {
+  const coll = new Proxy(obj, {
     get: (target, prop, receiver) => {
-      if(prop == 'length') return Object.keys(obj).length;
+      if(prop == 'length') return len();
 
-      if(isString(prop)) {
-        if(!isNaN(+prop)) {
-          const keys = Object.keys(obj);
+      if(isNumeric(prop)) return get(prop);
 
-          if(prop >= 0 && prop < keys.length) return wrapAttr(obj[keys[+prop]], keys[+prop]);
-        } else if(prop in obj) return wrapAttr(obj[prop], prop);
-      }
+      if(proto && isFunction(proto[prop])) return proto[prop];
 
       return Reflect.get(target, prop, receiver);
     },
-    ownKeys: target => Object.keys(obj),
+    getOwnPropertyDescriptor: (target, prop) => {
+      if(prop == 'length') return { value: len(), configurable: true, enumerable: false };
+
+      if(isNumeric(prop)) return { value: get(prop), configurable: true, enumerable: true };
+
+      return Reflect.getOwnPropertyDescriptor(target, prop);
+    },
+    ownKeys: () =>
+      range(0, len() - 1)
+        .map(prop => prop + '')
+        .concat(['length']),
+    ...(proto ? { getPrototypeOf: () => proto } : {}),
   });
 
-  rawNode(nodeMap, obj);
-  ownerElements(nodeMap, owner);
+  proxy(coll, obj);
 
-  return nodeMap;
+  return coll;
 }
 
-Object.setPrototypeOf(NamedNodeMap.prototype, Array.prototype);
+export class HTMLCollection {
+  constructor(obj, owner, pred = e => true) {
+    const arr = () => obj.filter(pred);
+
+    rawNode(this, obj);
+    setParentOwner(this, owner);
+
+    const coll = Collection(
+      this,
+      (
+        factory => k =>
+          GetNode(arr()[k], owner, factory)
+      )(Factory.for(owner)),
+      () => arr().length,
+      HTMLCollection.prototype,
+    );
+
+    rawNode(coll, obj);
+    setParentOwner(coll, owner);
+    proxy(coll, this);
+
+    return coll;
+  }
+
+  *[Symbol.iterator]() {
+    const { length } = this;
+
+    for(let i = 0; i < length; i++) yield this[i];
+  }
+}
+
+extend(HTMLCollection.prototype, nonenumerable({ [Symbol.toStringTag]: 'HTMLCollection' }));
+
+export function NamedMap(node, get, keys) {
+  const raw = Node.raw(node);
+
+  if(isString(get)) {
+    const key = get;
+    get = n => ((n = raw.children.find(e => e.attributes[key] == n)), n ? GetNode(n, node.children) : n);
+    keys ??= () => [...raw.children].map(e => e.attributes[key]);
+  }
+
+  const obj = new Proxy(node, {
+    get: keys
+      ? (target, prop, receiver) => {
+          if(prop == 'length') return keys().filter(isPropertyKey).length;
+
+          if(isNumeric(prop)) {
+            const a = keys();
+            if(prop >= 0 && prop < a.length) prop = a[+prop];
+          }
+
+          if(isString(prop)) {
+            let tmp = get(prop);
+            if(tmp) return tmp;
+          }
+
+          return Reflect.get(target, prop, receiver);
+        }
+      : (target, prop, receiver) => {
+          if(isString(prop)) {
+            let tmp = get(prop);
+            if(tmp) return tmp;
+          }
+
+          return Reflect.get(target, prop, receiver);
+        },
+    ...(keys ? { ownKeys: target => keys().filter(isPropertyKey) } : {}),
+  });
+
+  proxy(obj, node);
+
+  return obj;
+}
+
+export function NamedNodeMap(delegate, owner) {
+  if(!this) return new NamedNodeMap(delegate, owner);
+
+  //const getset = isFunction(delegate) ? delegate : 'set' in delegate ? gettersetter(delegate) : getter(delegate);
+  const adapter = isFunction(delegate) ? mapObject(delegate) : delegate;
+
+  rawNode(this, delegate);
+  setParentOwner(this, owner);
+
+  const obj = NamedMap(this, adapter.get, adapter.keys);
+
+  rawNode(obj, delegate);
+  setParentOwner(obj, owner);
+
+  return obj;
+}
+
+extend(
+  NamedNodeMap,
+  nonenumerable({
+    toString(obj) {
+      let s = '';
+      for(const { name, value } of [...obj]) {
+        if(s) s += ' ';
+        s += `${name}="${value}"`;
+      }
+      return s;
+    },
+    inspect(obj) {
+      const a = [],
+        keys = Reflect.ownKeys(obj);
+
+      for(const key of keys) {
+        const part = obj[key];
+
+        let s = part[Symbol.inspect]?.(0, {}) ?? '';
+
+        const pos = s.indexOf('Attr');
+        if(pos != -1) s = s.slice(pos + 4);
+        else s = (isNumeric(key) ? `[${key}]` : key) + ': ' + s;
+
+        s = s.replaceAll(/{\s*([^}]+)\s*}/g, '$1');
+        s = s.replaceAll(/\x1b\[0m\s+\x1b/g, '\x1b');
+
+        a.push(s);
+      }
+
+      if(isPrototypeOf(Element.prototype, obj[keys[0]])) return `\x1b[1;31m${className(obj)}\x1b[0m {\n  ` + a.join(',\n  ') + `\n}`;
+
+      return ' ' + a.join('').trim();
+    },
+  }),
+);
 
 extend(
   NamedNodeMap.prototype,
-  {
+  nonenumerable({
     constructor: NamedNodeMap,
-
     [Symbol.toStringTag]: 'NamedNodeMap',
-
     get path() {
-      return Node.path(Node.owner(this)).concat(['attributes']);
+      return Node.path(ownerElements(this)).concat(['attributes']);
     },
-
     item(key) {
       return this[key];
     },
-
     setNamedItem(attr) {
       const { name, value } = attr;
-
       Node.raw(this)[name] = value;
     },
-
     removeNamedItem(name) {
       delete Node.raw(this)[name];
     },
-
     getNamedItem(name) {
-      const raw = Node.raw(this);
-
-      return raw[name];
+      return Node.raw(this)[name];
     },
-
     *[Symbol.iterator]() {
-      const { length } = this;
-
-      for(let i = 0; i < length; i++) yield this.item(i);
+      for(let i = 0; this[i]; i++) yield this[i];
     },
-
     [Symbol.inspect]() {
-      const raw = Node.raw(this);
-      let str = '';
-      for(let attr in raw) str += ' \x1b[1;35m' + attr + '\x1b[1;36m="' + raw[attr] + '"\x1b[0m';
-      return '{' + str + ' }';
+      return NamedNodeMap.inspect(this);
     },
-  },
-  { enumerable: false },
+  }),
 );
 
 /* Element methods:
@@ -854,13 +1108,20 @@ Element properties:
 
 export class Element extends Node {
   constructor(obj, parent) {
+    //DEBUG('Element.constructor', { obj, parent });
     super(obj, parent);
 
-    lazyProperties(this, { classList: () => new TokenList(this, 'class') });
+    //lazyProperties(this, { classList: () => new TokenList(this, 'class') });
+  }
+
+  static [Symbol.hasInstance](instance) {
+    return isObject(instance) && instance.nodeType == ELEMENT_NODE;
   }
 
   get tagName() {
-    return Node.raw(this).tagName;
+    const raw = Node.raw(this);
+    if(!raw) DEBUG('get tagName', { thisObj: this, raw });
+    return raw?.tagName;
   }
 
   set tagName(value) {
@@ -875,46 +1136,38 @@ export class Element extends Node {
     return this.tagName;
   }
 
-  get parentElement() {
-    let parent = this;
-
-    do {
-      parent = parent.parentNode;
-    } while(parent.nodeType != ELEMENT_NODE);
-
-    return parent;
-  }
-
   get attributes() {
-    const factory = Factory.for(this.ownerDocument);
+    const raw = Node.raw(this);
 
-    if(!factory) console.log(this.constructor.name, 'No factory', this);
+    const attributes = (raw.attributes ??= {});
+    const gs = gettersetter(attributes);
 
-    return factory.NamedNodeMap.cache((Node.raw(this).attributes ??= {}), this);
+    const factory = Factory.for(this);
+
+    return factory.NamedNodeMap.cache(
+      {
+        get: k => new Attr([(...args) => gs(k, ...args), k], this),
+        has: k => k in attributes,
+        keys: () => Reflect.ownKeys(attributes),
+      },
+      this,
+    );
   }
 
   get children() {
-    const factory = Factory.for(this.ownerDocument);
-
-    if(!factory) console.log(this.constructor.name, 'No factory', this);
-
-    return factory.NodeList.cache((Node.raw(this).children ??= []), this);
+    return Factory.for(this).NodeList.cache((Node.raw(this).children ??= []), this /*, e=> e.nodeType == ELEMENT_NODE*/);
   }
 
   get style() {
-    const factory = Factory.for(this.ownerDocument);
-
-    if(!factory) console.log(this.constructor.name, 'No factory', this);
-
-    return factory.CSSStyleDeclaration.cache((Node.raw(this).attributes ??= {}), this);
+    return Factory.for(this).CSSStyleDeclaration.cache((Node.raw(this).attributes ??= {}), this);
   }
 
   get childElementCount() {
-    return Node.children(this)?.length ?? 0;
+    return Node.raw(this).children?.length ?? 0;
   }
 
   get firstElementChild() {
-    const element = Node.children(this).find(n => isObject(n) && 'tagName' in n);
+    const element = Node.raw(this).children.find(n => isObject(n) && 'tagName' in n);
 
     if(element) return Element.cache(element, this.children);
 
@@ -922,7 +1175,7 @@ export class Element extends Node {
   }
 
   get lastElementChild() {
-    const children = Node.children(this);
+    const { children } = Node.raw(this);
 
     if(!children?.length) return null;
 
@@ -933,20 +1186,35 @@ export class Element extends Node {
     return null;
   }
 
+  get nextElementSibling() {
+    let node = this;
+    while((node = node.nextSibling)) if(node.nodeType == node.ELEMENT_NODE) break;
+    return node;
+  }
+
+  get previousElementSibling() {
+    let node = this;
+    while((node = node.previousSibling)) if(node.nodeType == node.ELEMENT_NODE) break;
+    return node;
+  }
+
   get id() {
     if(this.hasAttribute('id')) return this.getAttribute('id');
   }
 
   getAttribute(name) {
-    return Element.attributes(this)(attributes => attributes[name]);
+    return Node.raw(this).attributes[name];
+    //return Element.attributes(this)(attributes => attributes[name]);
   }
 
   getAttributeNames() {
-    return Element.attributes(this)(attributes => Object.keys(attributes));
+    return Object.keys(Node.raw(this).attributes);
+    //return Element.attributes(this)(attributes => Object.keys(attributes));
   }
 
   hasAttribute(name) {
-    return Element.attributes(this)(attributes => name in attributes);
+    return name in Node.raw(this).attributes;
+    //return Element.attributes(this)(attributes => name in attributes);
   }
 
   hasAttributes() {
@@ -954,7 +1222,8 @@ export class Element extends Node {
   }
 
   removeAttribute(name) {
-    Element.attributes(this)(attributes => delete attributes[name]);
+    return delete Node.raw(this).attributes[name];
+    //return Element.attributes(this)(attributes => delete attributes[name]);
   }
 
   getAttributeNode(name) {
@@ -966,34 +1235,29 @@ export class Element extends Node {
 
     value = value + '';
 
-    Element.attributes(this)(attributes => (attributes[name] = value));
+    const raw = Node.raw(this);
+
+    const oldValue = raw.attributes[name];
+
+    raw.attributes[name] = value;
+
+    try {
+      MutationObserver.eventFor(this, MutationRecord.attribute(name, null, this, oldValue));
+    } catch(e) {}
   }
 
   get innerText() {
-    const texts = [];
-
-    for(let value of iterate(Node.raw(this), undefined, RETURN_VALUE, TYPE_STRING /*, ['children']*/)) {
-      if(typeof value == 'string') value = value.replace(/<s+/g, ' ');
-
-      texts.push(value);
-    }
-
-    return texts.join(' ');
+    return this.textContent;
   }
 
-  [Symbol.inspect](depth, opts) {
-    const { tagName, attributes, children } = this;
-    const attrs = attributes[Symbol.inspect](depth + 1, opts)
-      .slice(1, -1)
-      .trim();
-    let str = `<${tagName}`;
-    if(attrs) str += ' ' + attrs;
-    str += '>';
-    try {
-      const tmp = children[Symbol.inspect](depth + 1, opts);
-      if(tmp) str += tmp + `</${tagName}>`;
-    } catch(err) {}
-    return str;
+  set innerText(s) {
+    const { children } = Node.raw(this);
+    children.splice(0, children.length);
+    this.appendChild(this.ownerDocument.createTextNode(s));
+  }
+
+  get outerText() {
+    return this.textContent;
   }
 
   static [Symbol.hasInstance](obj) {
@@ -1002,16 +1266,81 @@ export class Element extends Node {
 
   static cache = MakeCache((obj, owner) => new Element(obj, owner));
 
-  static attributes(elem) {
+  /*static attributes(elem) {
     return modifier(Node.raw(elem), 'attributes');
+  }*/
+
+  get innerHTML() {
+    return [...this.children].map(e => (e.nodeType == e.TEXT_NODE ? e.data : 'outerHTML' in e ? e.outerHTML : e.toString?.())).join('\n');
   }
 
-  static toString(elem) {
-    return elem[Symbol.inspect](0, {}).replace(/\x1b\[[^a-z]*[a-z]/g, '');
+  get outerHTML() {
+    return new Serializer().serializeToString(this);
+  }
+
+  static xpath(elem, attr = 'name') {
+    let r = [],
+      prev;
+
+    for(const e of Node.hier(elem, n => n.nodeType == ELEMENT_NODE, false)) {
+      let s = e.tagName,
+        sameName = [...(prev?.children ?? [])].filter(e2 => e2.tagName == e.tagName);
+
+      if(sameName.length > 1) {
+        if(sameName.every(e => attr in e.attributes)) s += '[' + attr + '="' + e.getAttribute(attr) + '"]';
+        else s += '[' + (sameName.indexOf(e) + 1) + ']';
+      }
+
+      r.push(s);
+      prev = Node.raw(e);
+    }
+
+    return r.join('/');
   }
 }
 
-extend(Element.prototype, { [Symbol.toStringTag]: 'Element', nodeType: ELEMENT_NODE }, { enumerable: false });
+extend(
+  Element.prototype,
+  nonenumerable({
+    [Symbol.toStringTag]: 'Element',
+    nodeType: ELEMENT_NODE,
+    namespaceURI: 'http://www.w3.org/1999/xhtml',
+  }),
+);
+
+extend(
+  Element.prototype,
+  nonenumerable({
+    [Symbol.inspect](depth, opts) {
+      const { tagName, attributes, children } = this;
+      const { length } = children ?? [];
+      let str = `<${tagName}`;
+      if(attributes) str += ' ' + NamedNodeMap.inspect(attributes, depth + 1, opts).trim();
+      if(length == 0) str += ' /';
+      str = str.trimEnd() + '>';
+
+      if(length) {
+        if(depth <= opts.depth) {
+          let i = 0;
+          for(const child of children) {
+            if(i++ == opts.maxArrayLength) {
+              str += `\n... ${length - opts.maxArrayLength} more children ...`;
+              break;
+            }
+            str += ('\n' + child[Symbol.inspect](depth + 1, opts)).replaceAll('\n', '\n  ');
+          }
+          str += '\n';
+        } else {
+          str += `[... ${length} children ...]`;
+        }
+        str += `</${tagName}>`;
+      }
+      return `\x1b[1;31m${className(this) || 'Element'}\x1b[0m ${str}`;
+    },
+  }),
+);
+
+Object.defineProperty(Element.prototype, 'attributes', { configurable: false });
 
 /*
   Document methods:
@@ -1142,19 +1471,27 @@ extend(Element.prototype, { [Symbol.toStringTag]: 'Element', nodeType: ELEMENT_N
 
 export class Document extends Element {
   constructor(obj, factory) {
+    //DEBUG('Document.constructor', { obj, factory });
+
     super(obj, null, factory);
   }
 
   createAttribute(name, value) {
-    return new Attr([null, name], null);
+    const a = new Attr([null, name], null);
+    ownerDocument(a, this);
+    return a;
   }
 
   createElement(tagName) {
-    return Element.cache({ tagName, attributes: {}, children: [] }, null);
+    const e = Element.cache({ tagName, attributes: {}, children: [] }, null);
+    ownerDocument(e, this);
+    return e;
   }
 
   createTextNode(text) {
-    return new Text(text);
+    const n = new Text(text);
+    ownerDocument(n, this);
+    return n;
   }
 
   createTreeWalker(root, whatToShow = TreeWalker.TYPE_ALL, filter = { acceptNode: node => TreeWalker.FILTER_ACCEPT }, expandEntityReferences = false) {
@@ -1170,30 +1507,38 @@ export class Document extends Element {
   get body() {
     const element = this.lastElementChild.lastElementChild;
 
-    if(/^body$/i.test(element.tagName)) return element;
+    try {
+      if(/^body$/i.test(element.tagName)) return element;
+    } catch(e) {}
+
+    return this.querySelector('frameset') ?? this.querySelector('body');
   }
 
-  /*[Symbol.inspect](depth, opts) {
-    const { tagName, attributes, children } = this;
-
-    return `\x1b[1;31mDocument\x1b[0m ${tagName} attributes: ${attributes[Symbol.inspect](depth + 1, opts)} children: ${children.reduce((acc, c) => acc + c[Symbol.inspect](depth + 2, opts), '')}>`;
-  }*/
+  [Symbol.inspect](depth, opts) {
+    return `\x1b[1;31m${className(this) || 'Document'}\x1b[0m`;
+  }
 
   static [Symbol.hasInstance](obj) {
     return isObject(obj) && [Document.prototype].indexOf(Object.getPrototypeOf(obj)) != -1;
   }
 }
 
-extend(Document.prototype, { [Symbol.toStringTag]: 'Document', nodeType: DOCUMENT_NODE }, { enumerable: false });
+extend(Document.prototype, nonenumerable({ [Symbol.toStringTag]: 'Document', nodeType: DOCUMENT_NODE }));
 
 export class Attr extends Node {
   constructor(raw, owner) {
     super(raw, owner);
 
-    rawNode(this, raw);
-    ownerElements(this, owner);
+    if(raw) {
+      rawNode(this, raw);
+      setParentOwner(this, owner);
 
-    define(this, {});
+      if(!isFunction(raw[0])) {
+        const [obj] = raw;
+        const fn = gettersetter(obj);
+        raw[0] = (...args) => fn(raw[1], ...args);
+      }
+    }
   }
 
   get path() {
@@ -1204,11 +1549,13 @@ export class Attr extends Node {
   }
 
   get ownerElement() {
-    return Node.owner(Node.owner(this));
+    return ownerElements(ownerElements(this));
   }
 
   get ownerDocument() {
-    return Node.document(this);
+    let doc;
+    if((doc = Node.document(this))) ownerDocument(this, doc);
+    return ownerDocument(this);
   }
 
   get name() {
@@ -1217,71 +1564,89 @@ export class Attr extends Node {
     return name;
   }
 
-  set name(value) {
-    Node.raw(this)[1] = value;
-  }
-
   get value() {
-    const [obj, name] = Node.raw(this);
+    const [fn, name] = Node.raw(this);
 
-    return obj[name];
+    return fn();
   }
 
   set value(value) {
-    const [obj, name] = Node.raw(this);
+    const [fn, name] = Node.raw(this);
 
-    obj[name] = value;
+    fn(value);
   }
 
   [Symbol.inspect]() {
-    const [obj, name] = Node.raw(this);
-    return `\x1b[1;35m${name}\x1b[1;34m=${quote(obj[name], '"')}\x1b[0m`;
+    const [fn, name] = Node.raw(this);
+    return `\x1b[1;31m${className(this) || 'Attr'}\x1b[0m { \x1b[1;35m${name}\x1b[1;34m=${quote(fn(), '"')}\x1b[0m }`;
   }
 }
 
 extend(
   Attr.prototype,
-  {
+  nonenumerable({
     nodeType: ATTRIBUTE_NODE,
     [Symbol.toStringTag]: 'Attr',
-  },
-  { enumerable: false },
+  }),
 );
 
-export class Text extends Node {
-  static store = gettersetter(rawNode);
+//const charData = gettersetter(new WeakMap());
 
-  constructor(key, owner) {
-    super(owner ? key : null, owner);
+export class CharacterData extends Node {
+  constructor(gs, owner) {
+    super(null, owner);
 
-    let get, set;
-
-    if(owner) {
-      const raw = owner instanceof NodeList ? Node.raw(owner) : owner;
-
-      if(key in raw) {
-      } else if(raw.indexOf(key) != -1) {
-        key = raw.indexOf(key);
-      }
-
-      get = () => raw[key] ?? '';
-      set = value => (raw[key] = value);
-    } else {
-      Text.store(this, key);
-
-      get = () => Text.store(this);
-      set = value => Text.store(this, value);
-    }
-
-    textValues(this, modifier(get, set));
+    if(isFunction(gs)) textValues(this, gs);
   }
 
   get data() {
-    return textValues(this)(value => value);
+    return textValues(this)();
   }
 
-  get nodeValue() {
-    return textValues(this)(value => value);
+  set data(v) {
+    textValues(this)(v);
+  }
+
+  appendData(data) {
+    const s = textValues(this)() + data;
+    textValues(this)(s);
+    return s;
+  }
+
+  deleteData(offset, count) {
+    const s = textValues(this)();
+    textValues(this)(s.slice(0, offset) + s.slice(offset + count));
+  }
+
+  insertData(offset, data) {
+    const s = textValues(this)();
+    textValues(this)(s.slice(0, offset) + data + s.slice(offset));
+  }
+
+  replaceData(offset, count, data) {
+    const s = textValues(this)();
+    textValues(this)(s.slice(0, offset) + data + s.slice(offset + count));
+  }
+}
+
+export class Text extends CharacterData {
+  static store = gettersetter(rawNode);
+
+  static [Symbol.hasInstance](instance) {
+    return instance.nodeType == TEXT_NODE;
+  }
+
+  constructor(key, owner) {
+    super(owner ? Text.own(owner, key) : (...args) => Text.store(this, ...args));
+    if(!owner && typeof key == 'string') Text.store(this, key);
+    //textValues(this, owner ? Text.own(owner, key) : (...args) => Text.store(this, ...args));
+  }
+
+  static own(owner, key) {
+    const raw = Node.raw(owner) ?? owner;
+    const idx = raw.indexOf?.(key);
+    if(!(key in raw) && idx != -1) key = idx;
+    return gettersetter([() => raw[key] ?? '', value => (raw[key] = value)]);
   }
 
   toString() {
@@ -1289,31 +1654,39 @@ export class Text extends Node {
   }
 
   [Symbol.inspect](depth, opts) {
-    return `\x1b[1;31m${this[Symbol.toStringTag]}\x1b[0m \x1b[38;2;192;2550m${quote(this.data, "'")}\x1b[0m`;
+    return `\x1b[1;31m${className(this) || 'Text'}\x1b[0m \x1b[38;2;192;2550m${quote(this.data, "'")}\x1b[0m`;
   }
 
   static cache = MakeCache2((key, owner) => new Text(key, owner));
 }
 
-Text.prototype.__proto__ = Node.prototype;
+//Object.setPrototypeOf(Text.prototype, Node.prototype);
 
 extend(
   Text.prototype,
-  {
+  nonenumerable({
     nodeType: TEXT_NODE,
     nodeName: '#text',
     [Symbol.toStringTag]: 'Text',
-  },
-  { enumerable: false },
+    get data() {
+      return textValues(this)?.();
+    },
+    get nodeValue() {
+      return textValues(this)?.();
+    },
+  }),
 );
+
+//define(Text.prototype, Interface.prototype);
 
 const Tag = gettersetter(new WeakMap());
 
-export class Comment extends Node {
+export class Comment extends CharacterData {
   constructor(raw, owner) {
     super(raw, owner);
 
-    ownerElements(this, owner);
+    rawNode(this, raw);
+    setParentOwner(this, owner);
 
     const get = () => raw.tagName ?? '!----';
     const set = value => (raw.tagName = value);
@@ -1336,7 +1709,7 @@ export class Comment extends Node {
   }
 
   [Symbol.inspect](depth, opts) {
-    return `Comment \x1b[38;2;184;0;234m${tthis.data}\x1b[0m`;
+    return `\x1b[38;5;236m${className(this) || 'Comment'} \x1b[38;2;184;0;234m${this.data}\x1b[0m`;
   }
 
   static cache = MakeCache2((node, owner) => new Comment(node, owner));
@@ -1346,19 +1719,18 @@ Comment.prototype.__proto__ = Node.prototype;
 
 extend(
   Comment.prototype,
-  {
+  nonenumerable({
     nodeType: COMMENT_NODE,
     nodeName: '#comment',
     [Symbol.toStringTag]: 'Comment',
-  },
-  { enumerable: false },
+  }),
 );
 
 const Tokens = gettersetter(new WeakMap());
 
 export class TokenList {
   constructor(owner, key = 'class') {
-    ownerElements(this, owner);
+    setParentOwner(this, owner);
 
     const { attributes } = Node.raw(owner);
 
@@ -1394,7 +1766,7 @@ export class TokenList {
     Tokens(this)((arr, set) => {
       let index;
 
-      for(let token of tokens) {
+      for(const token of tokens) {
         if((index = arr.indexOf(token)) == -1) arr.push(token);
       }
 
@@ -1406,7 +1778,7 @@ export class TokenList {
     Tokens(this)((arr, set) => {
       let index;
 
-      for(let token of tokens) {
+      for(const token of tokens) {
         while((index = arr.indexOf(token)) != -1) arr.splice(index, 1);
       }
 
@@ -1445,21 +1817,27 @@ export class TokenList {
   }
 
   [Symbol.inspect](depth, opts) {
-    return 'TokenList [' + Tokens(this)().join(',') + ']';
+    return `\x1b[1;31m${className(this) || 'TokenList'}\x1b[0m [` + [...this].join(',') + ']';
   }
+
+  [Symbol.iterator]() {
+    return this.values();
+  }
+
+  static tokens = Tokens;
 }
 
 extend(
   TokenList.prototype,
-  {
+  nonenumerable({
     [Symbol.toStringTag]: 'TokenList',
-  },
-  { enumerable: false },
+  }),
 );
 
 const tokenListFacade = arrayFacade({}, (container, i) => container.item(i));
 
-extend(TokenList.prototype, tokenListFacade, { enumerable: false });
+extend(TokenList.prototype, nonenumerable(tokenListFacade));
+extend(TokenList.prototype, { [Symbol.toStringTag]: 'TokenList' });
 
 const styleImpl = gettersetter(new WeakMap());
 
@@ -1488,10 +1866,10 @@ export class CSSStyleDeclaration {
         return value;
       },
       clear() {
-        for(let k in this.styles) delete this.styles[k];
+        for(const k in this.styles) delete this.styles[k];
       },
       *keys() {
-        for(let k in this.styles) yield k;
+        for(const k in this.styles) yield k;
       },
     };
 
@@ -1499,23 +1877,17 @@ export class CSSStyleDeclaration {
       get(target, prop, receiver) {
         if(prop == 'constructor') return CSSStyleDeclaration;
         if(prop == 'length') return Object.keys(impl.styles).length;
-
         if(prop in target) return Reflect.get(target, prop, receiver);
-
         if(isString(prop) && prop != 'cssText') {
           const key = decamelize(prop);
-
           if(key in impl.styles) return impl.styles[key];
         }
       },
       set(target, prop, value) {
         if(prop == 'length') throw new TypeError(`length property is read-only`);
-
         if(prop in target) return Reflect.set(target, prop, value);
-
         if(isString(prop) && prop != 'cssText') {
           const key = decamelize(prop);
-
           impl.set(key, value);
           return;
         }
@@ -1525,7 +1897,6 @@ export class CSSStyleDeclaration {
 
         if(isString(prop) && prop != 'cssText') {
           const key = decamelize(prop);
-
           if(key in impl.styles) {
             impl.remove(key);
             return;
@@ -1534,16 +1905,16 @@ export class CSSStyleDeclaration {
 
         if(prop in target) return Reflect.deleteProperty(target, prop);
       },
-      ownKeys(target) {
-        return [...impl.keys()].map(k => camelize(k));
-      },
+      ownKeys: target => [...impl.keys()].map(k => camelize(k)),
     });
 
-    for(let lnk of [this, obj]) {
+    proxy(obj, this);
+
+    for(const lnk of [this, obj]) {
       styleImpl(lnk, impl);
       rawNode(lnk, style);
 
-      if(isObject(owner)) ownerElements(lnk, owner);
+      if(isObject(owner)) setParentOwner(lnk, owner);
     }
 
     return obj;
@@ -1555,8 +1926,7 @@ export class CSSStyleDeclaration {
 
   item(index) {
     let i = 0;
-
-    for(let k of styleImpl(this).keys()) if(i++ == index) return k;
+    for(const k of styleImpl(this).keys()) if(i++ == index) return k;
   }
 
   getPropertyValue(key) {
@@ -1581,13 +1951,11 @@ export class CSSStyleDeclaration {
 
   [Symbol.inspect](depth, opts) {
     const { compact } = opts;
-
     const multiline = compact !== true && (compact === false || (!isBool(compact) && depth - 1 > compact));
-
     const spacing = multiline ? '\n' : ' ',
       indent = multiline ? '  ' : '';
 
-    return `\x1b[1;31mCSSStyleDeclaration\x1b[0m {${spacing}${formatStyle(styleImpl(this).styles, ';', spacing, indent)}${spacing}}`;
+    return `\x1b[1;31m${className(this) || 'CSSStyleDeclaration'}\x1b[0m {${spacing}${formatStyle(styleImpl(this).styles, ';', spacing, indent)}${spacing}}`;
   }
 }
 
@@ -1607,19 +1975,16 @@ function formatStyle(styles, eol = ';', spc = ' ', ind = '') {
 
 extend(
   CSSStyleDeclaration.prototype,
-  {
+  nonenumerable({
     constructor: CSSStyleDeclaration,
-
     [Symbol.toStringTag]: 'CSSStyleDeclaration',
-
     get parentRule() {
       return null;
     },
     get cssFloat() {
       return '';
     },
-  },
-  { enumerable: false },
+  }),
 );
 
 export class Serializer {
@@ -1628,12 +1993,180 @@ export class Serializer {
   }
 }
 
-export function GetType(raw, owner, ctor) {
-  if(Array.isArray(raw)) return Entities.NodeList;
-  if(isObject(raw) && 'tagName' in raw) return /^!--.*--$/.test(raw.tagName) ? Entities.Comment : Entities.Element;
+extend(Serializer.prototype, nonenumerable({ [Symbol.toStringTag]: 'Serializer' }));
 
-  if(isString(raw)) return Entities.Text;
-  if(isObject(raw)) return Entities.NamedNodeMap;
+function keyOf(obj, value) {
+  for(const key in obj) if(obj[key] === value) return key;
+  return -1;
 }
+
+function isNode(obj) {
+  return isObject(obj) && 'nodeType' in obj;
+}
+
+function isElement(node) {
+  return isObject(node) && 'tagName' in node;
+}
+
+function isComment(node) {
+  return isElement(node) && node.tagName[0] == '!';
+}
+
+function isCollection(node) {
+  return isInstanceOf([NodeList, HTMLCollection], node);
+}
+
+function setParentOwner(node, ancestor) {
+  const is = isNode(node);
+
+  let ok = [node, ancestor].reduce((i, e) => i ^ isCollection(e), 0);
+
+  //DEBUG('setParentOwner', console.config({ compact: true }), { ok, node, ancestor });
+
+  if(!is || ancestor == null) parentNodes(node, ancestor);
+  if(is || ancestor == null) ownerElements(node, ancestor);
+}
+
+export function* MapItems(list, t) {
+  const { length } = list;
+
+  for(let i = 0; i < length; i++) yield t(list[i], i, list);
+}
+
+export function FindItemIndex(list, pred) {
+  const { length } = list;
+
+  for(let i = 0; i < length; i++) if(pred(list[i], i, list)) return i;
+
+  return -1;
+}
+
+export function FindItem(list, pred) {
+  return list[FindItemIndex(list, pred)];
+}
+
+export function ListAdapter(list, key = 'name') {
+  if(!isFunction(key)) {
+    const attr = key;
+    key = item => Node.raw(item).attributes[attr];
+  }
+
+  return Object.setPrototypeOf(
+    {
+      get: id => FindItem(list, item => key(item) == id),
+      keys: () => [...MapItems(list, key)],
+      has(id) {
+        return this.keys().indexOf(id) != -1;
+      },
+    },
+    ListAdapter.prototype,
+  );
+}
+
+extend(ListAdapter.prototype, nonenumerable({ [Symbol.toStringTag]: 'ListAdapter' }));
+
+function MakeCache(ctor, store = new WeakMap()) {
+  const [get, set] = getset(store);
+
+  return (key, ...args) => {
+    let value;
+
+    if(!(value = get(key))) {
+      value = ctor(key, ...args);
+      set(key, value);
+    }
+
+    setParentOwner(value, args[0]);
+    return value;
+  };
+}
+
+function MakeCache2(ctor, store = new WeakMap()) {
+  const cache = memoize(key => [], store);
+
+  return (id, owner) => {
+    const textList = cache(owner);
+    if(isNumeric(id)) id = +id;
+    textList[id] ??= ctor(id, owner);
+    return textList[id];
+  };
+}
+
+export class MutationRecord {
+  addedNodes = new NodeList();
+  removedNodes = new NodeList();
+  attributeName = null;
+  attributeNamespace = null;
+  nextSibling = null;
+  previousSibling = null;
+
+  constructor(opts = {}) {
+    define(this, opts);
+  }
+
+  static attribute(name, ns = null, target, oldValue) {
+    return new MutationRecord({ type: 'attribute', attributeName: name, attributeNamespace: ns, target, oldValue });
+  }
+
+  static characterData(target, oldValue) {
+    return new MutationRecord({ type: 'characterData', target, oldValue });
+  }
+
+  static childList(target, nextSibling, previousSibling) {
+    return new MutationRecord({ type: 'childList', target, nextSibling, previousSibling });
+  }
+}
+
+MutationRecord.prototype[Symbol.toStringTag] = 'MutationRecord';
+
+export class MutationObserver {
+  #callback;
+  static #observe = weakMapper(() => new Array(), new WeakMap());
+  #targets = new Set();
+
+  static observationsFor(target) {
+    return MutationObserver.#observe.get(target);
+  }
+
+  static eventFor(target, ...records) {
+    const recordsFor = weakMapper(() => new Array(), new Map());
+
+    for(let { observer, ...options } of this.observationsFor(target)) {
+      for(let record of records) {
+        if(options[{ attribute: 'attributes' }[record.type] ?? record.type]) recordsFor(observer).push(record);
+      }
+    }
+
+    for(let [observer, records] of recordsFor.map) {
+      observer.event(...records);
+    }
+  }
+
+  constructor(callback) {
+    this.#callback = callback;
+  }
+
+  observe(target, options = {}) {
+    let { subtree = false, childList = false, attributes, attributeFilter, attributeOldValue, characterData, characterDataOldValue = false } = options;
+
+    if(attributes === undefined) attributes = isObject(attributeFilter) || attributeOldValue !== undefined;
+    if(characterData === undefined) characterData = characterDataOldValue !== undefined;
+
+    MutationObserver.#observe(target).push({ observer: this, subtree, childList, attributes, attributeFilter, attributeOldValue, characterData, characterDataOldValue });
+    this.#targets.add(target);
+  }
+
+  disconnect() {
+    for(const target of this.#targets) {
+      const observers = this.#observe(target);
+    }
+  }
+
+  event(...args) {
+    return this.#callback(args, this);
+  }
+}
+
+MutationObserver.prototype[Symbol.toStringTag] = 'MutationObserver';
 
 export { URLSearchParams, URL } from './url.js';

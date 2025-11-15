@@ -1,4 +1,9 @@
-import { Predicate } from './predicate.js';
+import { Predicate } from 'predicate';
+
+export function LogicPredicate(pred = Predicate.or, ...args) {
+  /*if(args.length == 1) return args[0];
+  else*/ if(args.length > 0) return pred(...args);
+}
 
 export function TypeSelector(tagName) {
   return Predicate.property('tagName', Predicate.regexp('^' + tagName + '$', 'i'));
@@ -55,21 +60,31 @@ export function IdSelector(id) {
 
 export function* parseSelectors(s) {
   let match,
-    re = /(\[([-_\w]+)(\W+)?['"]?([-_\w]+)?['"]?\]|(?:,\s*)?([.#]?[-_\w]+|:[-_\w]+(\([^\)]*\)|)|\s+))/g;
-  let selectors = [];
+    re = /(\[([-_\w]+)(\W+)?['"]?([-_\w/]+)?['"]?\]|(?:,\s*)?([.#]?[-_\w]+|:[-_\w]+(\([^\)]*\)|)|\s+))/g;
+  let or = [],
+    selectors = [],
+    logic = Predicate.and;
 
   while((match = re.exec(s))) {
     let [str, ...capture] = match;
     let sel;
 
-    if(str[0] == ',') str = str.replace(/^,\s*/g, '');
+    if(str[0] == ',') {
+      str = str.replace(/^,\s*/g, '');
+      or.push(LogicPredicate(Predicate.and, ...selectors));
+      selectors = [];
+    }
 
-    if(str[0] == ' ') {
+    //console.log(`parseSelectors '${str}'`);
+
+    /* if(str[0] == ' ') {
       if(selectors.length == 1) yield selectors[0];
       else if(selectors.length) yield Predicate.and(...selectors);
       selectors = [];
       continue;
-    }
+    }*/
+
+    if(/^\s*$/.test(str)) continue;
 
     if(str[0] == ':') {
       sel = PseudoClassSelector(str.substring(1));
@@ -87,6 +102,11 @@ export function* parseSelectors(s) {
     selectors.push(sel);
   }
 
-  if(selectors.length > 1) yield Predicate.and(...selectors);
-  else yield selectors[0];
+  if(selectors) or.push(LogicPredicate(Predicate.and, ...selectors));
+
+  yield* or;
+  //return LogicPredicate(Predicate.or, ...or);
+
+  /*  if(or.length > 1) yield Predicate.or(...or);
+  else yield or[0];*/
 }
