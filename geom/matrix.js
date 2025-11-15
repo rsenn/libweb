@@ -90,25 +90,43 @@ Object.defineProperty(Matrix.prototype, 'length', {
   configurable: false,
 });
 
-Matrix.prototype.keys = ['xx', 'xy', 'x0', 'yx', 'yy', 'y0'];
-Matrix.prototype.keySeq = ['xx', 'yx', 'xy', 'yy', 'x0', 'y0'];
+Matrix.prototype.keys = [
+  'xx', 'xy', 'xz',
+  'yx', 'yy', 'yz',
+  'zx', 'zy', 'zz'
+];
+
+Matrix.prototype.keySeq = [
+  [ 'xx', 'xy', 'xz' ],
+  [ 'yx', 'yy', 'yz' ],
+  [ 'zx', 'zy', 'zz' ]
+];
 
 const keyIndexes = {
-  xx: 0,
   a: 0,
-  xy: 1,
   c: 1,
-  x0: 2,
-  tx: 2,
   e: 2,
-  yx: 3,
   b: 3,
-  yy: 4,
   d: 4,
-  y0: 5,
-  ty: 5,
   f: 5,
-};
+
+  xx: 0,
+  xy: 1,
+ xz: 2,
+  yx: 3,
+  yy: 4, 
+yz: 5,
+zx: 6,
+zy: 7,
+zz: 8,
+
+ tx: 2,
+  x0: 2,
+  
+  ty: 5,
+  y0: 5,
+}
+
 Matrix.keyIndexes = keyIndexes;
 Matrix.valueNames = ['a', 'c', 'e', 'b', 'd', 'f'];
 
@@ -362,6 +380,7 @@ define(Matrix.prototype, {
   scaleSign() {
     return this[0] * this[4] < 0 || this[1] * this[3] > 0 ? -1 : 1;
   },
+
   affineTransform(a, b) {
     if(typeof a == 'object' && a.toPoints !== undefined) a = a.toPoints();
     if(typeof b == 'object' && b.toPoints !== undefined) b = b.toPoints();
@@ -393,61 +412,58 @@ define(Matrix.prototype, {
   },
 
   decompose(degrees = false, useLU = true) {
-    let { a, b, c, d, e, f } = this;
+    const [a, c, e, b, d, f] = this;
 
-    let translate = { x: e, y: f },
-      rotation = 0,
-      scale = { x: 1, y: 1 },
-      skew = { x: 0, y: 0 };
-
-    let determ = a * d - b * c,
-      r,
-      s;
+    let  skew = { x: 0, y: 0 };
 
     const calcFromValues = (r1, m1, r2, m2) => {
       if(!isFinite(r1)) return r2;
-      else if(!isFinite(r2)) return r1;
-      ((m1 = Math.abs(m1)), (m2 = Math.abs(m2)));
+      if(!isFinite(r2)) return r1;
+      m1 = Math.abs(m1);
+      m2 = Math.abs(m2);
       return roundTo((m1 * r1 + m2 * r2) / (m1 + m2), 0.0001);
     };
 
-    //if(useLU) {
-    let sign, cos, sin;
-    sign = Matrix.prototype.scaleSign.call(this);
-    rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
-    cos = Math.cos(rotation);
-    sin = Math.sin(rotation);
-    scale = {
-      x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
-      y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin),
+    const sign = a * d < 0 || c * b > 0 ? -1 : 1;
+
+    const rotation = (Math.atan2(b, d) + Math.atan2(-sign * c, sign * a)) / 2;
+
+    const cos = Math.cos(rotation);
+    const sin = Math.sin(rotation);
+    
+    let scale = {
+      x: calcFromValues(a / cos, cos, -c / sin, sin),
+      y: calcFromValues(d / cos, cos, b / sin, sin),
     };
 
-    /*if(c || d) {
-    if(a) {
-      skew = { x: Math.atan(c / a), y: Math.atan(b / a) };
-      scale = { x: a, y: determ / a };
+    /*const determ = a * d - b * c;
+
+    if(c || d) {
+      if(a) {
+        skew = { x: Math.atan(c / a), y: Math.atan(b / a) };
+        scale = { x: a, y: determ / a };
+      } else {
+        scale = { x: c, y: d };
+        skew.x = Math.PI * 0.25;
+      }
     } else {
-      scale = { x: c, y: d };
-      skew.x = Math.PI * 0.25;
-    }
-  } else {
-    if(a || b) {
-      r = Math.sqrt(a * a + b * b);
-      rotation = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
-      scale = { x: r, y: determ / r };
-      skew.x = Math.atan((a * c + b * d) / (r * r));
-    } else if(c || d) {
-      s = Math.sqrt(c * c + d * d);
-      rotation = Math.PI * 0.5 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s));
-      scale = { x: determ / s, y: s };
-      skew.y = Math.atan((a * c + b * d) / (s * s));
-    } else {
-      scale = { x: 0, y: 0 };
-    }
-  }*/
+      if(a || b) {
+        const r = Math.sqrt(a * a + b * b);
+        rotation = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
+        scale = { x: r, y: determ / r };
+        skew.x = Math.atan((a * c + b * d) / (r * r));
+      } else if(c || d) {
+        const  s = Math.sqrt(c * c + d * d);
+        rotation = Math.PI * 0.5 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s));
+        scale = { x: determ / s, y: s };
+        skew.y = Math.atan((a * c + b * d) / (s * s));
+      } else {
+        scale = { x: 0, y: 0 };
+      }
+    }*/
 
     return {
-      translate,
+      translate: { x: e, y: f },
       rotate: degrees === true ? roundTo((rotation * 180) / Math.PI, 0.1) : rotation,
       scale,
       skew:

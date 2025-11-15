@@ -1,6 +1,5 @@
 export { EagleSVGRenderer, SchematicRenderer, BoardRenderer, LibraryRenderer } from './eagle/renderer.js';
 
-export { EagleNodeList } from './eagle/nodeList.js';
 export {
   useTrkl,
   RAD2DEG,
@@ -35,12 +34,15 @@ export {
   useAttributes,
 } from './eagle/renderUtils.js';
 
+/*export { EagleNodeList } from './eagle/nodeList.js';
 export { EagleDocument } from './eagle/document.js';
 export { EagleReference, EagleRef } from './eagle/ref.js';
 export { makeEagleNode, EagleNode } from './eagle/node.js';
-export { Renderer } from './eagle/renderer.js';
 export { EagleProject } from './eagle/project.js';
 export { EagleElement, makeEagleElement } from './eagle/element.js';
 export { EagleElementProxy } from './eagle/elementProxy.js';
-export { EagleNodeMap } from './eagle/nodeMap.js';
+export { EagleNodeMap } from './eagle/nodeMap.js';*/
+
+
+export { Renderer } from './eagle/renderer.js';
 export { ImmutablePath, DereferenceError } from './json.js';
