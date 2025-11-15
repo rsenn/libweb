@@ -43,6 +43,5 @@ export { EagleElement, makeEagleElement } from './eagle/element.js';
 export { EagleElementProxy } from './eagle/elementProxy.js';
 export { EagleNodeMap } from './eagle/nodeMap.js';*/
 
-
 export { Renderer } from './eagle/renderer.js';
 export { ImmutablePath, DereferenceError } from './json.js';

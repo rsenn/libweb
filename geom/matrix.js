@@ -90,16 +90,12 @@ Object.defineProperty(Matrix.prototype, 'length', {
   configurable: false,
 });
 
-Matrix.prototype.keys = [
-  'xx', 'xy', 'xz',
-  'yx', 'yy', 'yz',
-  'zx', 'zy', 'zz'
-];
+Matrix.prototype.keys = ['xx', 'xy', 'xz', 'yx', 'yy', 'yz', 'zx', 'zy', 'zz'];
 
 Matrix.prototype.keySeq = [
-  [ 'xx', 'xy', 'xz' ],
-  [ 'yx', 'yy', 'yz' ],
-  [ 'zx', 'zy', 'zz' ]
+  ['xx', 'xy', 'xz'],
+  ['yx', 'yy', 'yz'],
+  ['zx', 'zy', 'zz'],
 ];
 
 const keyIndexes = {
@@ -112,20 +108,20 @@ const keyIndexes = {
 
   xx: 0,
   xy: 1,
- xz: 2,
+  xz: 2,
   yx: 3,
-  yy: 4, 
-yz: 5,
-zx: 6,
-zy: 7,
-zz: 8,
+  yy: 4,
+  yz: 5,
+  zx: 6,
+  zy: 7,
+  zz: 8,
 
- tx: 2,
+  tx: 2,
   x0: 2,
-  
+
   ty: 5,
   y0: 5,
-}
+};
 
 Matrix.keyIndexes = keyIndexes;
 Matrix.valueNames = ['a', 'c', 'e', 'b', 'd', 'f'];
@@ -414,7 +410,7 @@ define(Matrix.prototype, {
   decompose(degrees = false, useLU = true) {
     const [a, c, e, b, d, f] = this;
 
-    let  skew = { x: 0, y: 0 };
+    let skew = { x: 0, y: 0 };
 
     const calcFromValues = (r1, m1, r2, m2) => {
       if(!isFinite(r1)) return r2;
@@ -430,7 +426,7 @@ define(Matrix.prototype, {
 
     const cos = Math.cos(rotation);
     const sin = Math.sin(rotation);
-    
+
     let scale = {
       x: calcFromValues(a / cos, cos, -c / sin, sin),
       y: calcFromValues(d / cos, cos, b / sin, sin),
