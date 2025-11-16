@@ -33,7 +33,7 @@ export const IsChildren = a => a === Pointer.CHILDREN_GLYPH || a === Pointer.CHI
 const CHILDREN_SPACE = '';
 
 export class Pointer extends Array {
-  constructor(arr) {
+  constructor(arr = []) {
     const { length } = arr;
     super(length);
 
@@ -221,13 +221,12 @@ export class Pointer extends Array {
     return null;
   }
 
-  slice(start = 0, end = this.length) {
+  /*slice(start = 0, end = this.length) {
     const ctor = this.constructor[Symbol.species] || this.constructor;
     let r = Array.prototype.slice.call(Pointer.prototype.toArray.call(this), start, end);
     r = Object.setPrototypeOf(r, ctor.prototype);
-    //if(ctor == ImmutablePointer) r = Object.freeze(r);
     return r;
-  }
+  }*/
 
   splice(start = 0, remove = this.length, ...insert) {
     const ctor = this.constructor[Symbol.species];
@@ -260,10 +259,10 @@ export class Pointer extends Array {
     return new ctor(this.toArray().slice(n), this.absolute && n < 1);
   }
 
-  concat(a) {
+  /*concat(a) {
     const ctor = this.constructor[Symbol.species] || this.constructor;
     return Object.setPrototypeOf([...this].concat(a), ctor.prototype);
-  }
+  }*/
 
   map(fn) {
     const ctor = this.constructor[Symbol.species] || this.constructor;
@@ -354,6 +353,13 @@ export class Pointer extends Array {
     }
   }
 
+  hier() {
+    const { length } = this;
+    const r = [];
+    for(let i = 0; i < length; i++) r.push(this.slice(0, i + 1));
+    return r;
+  }
+
   static compare(a, b) {
     if(a.length != b.length) return a.length - b.length;
     for(let i = 0, len = a.length; i < len; i++) {
@@ -374,6 +380,6 @@ export class Pointer extends Array {
   }
 }
 
-define(Pointer, { isChildren: IsChildren });
+define(Pointer, { isChildren: IsChildren, [Symbol.species]: Pointer });
 
 export default Pointer;

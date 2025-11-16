@@ -1,5 +1,5 @@
 //export { types } from  '../quickjs/qjs-modules/lib/util.js';
-//import { basename } from  'path';
+//import { basename } from  './path.js';
 
 const slice = (x, s, e) =>
   typeof x == 'object' ? (isArrayBuffer(x) ? dupArrayBuffer(x, s, e) : Array.isArray(x) ? Array.prototype.slice.call(x, s, e) : x.slice(s, e)) : String.prototype.slice.call(x, s, e);
@@ -7,6 +7,18 @@ const stringify = v => `${v}`;
 const protoOf = Object.getPrototypeOf;
 const formatNumber = n => (n === -0 ? '-0' : `${n}`);
 const isNative = fn => /\[native\scode\]/.test(stringify(fn));
+
+export const isPropertyKey = k => isString(k) || isSymbol(k);
+export const isPrototypeOf = (p, o) => isObject(o) && Object.prototype.isPrototypeOf.call(p, o);
+
+export const isInstanceOf = (c, o) => {
+  if(Array.isArray(c)) return c.some(c => isInstanceOf(c, o));
+  if(isObject(c) && 'prototype' in c && isPrototypeOf(c.prototype, o)) return true;
+  try {
+    if(o instanceof c) return true;
+  } catch(e) {}
+  return false;
+};
 
 /*export default*/ function util() {
   return util;
@@ -718,6 +730,10 @@ export function enumerable(props, obj = {}) {
   return Object.defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => ((v.enumerable = true), [k, v]))));
 }
 
+export function declare(obj, ...props) {
+  return define(obj, ...props.map(o => nonenumerable(o)));
+}
+
 export function defineGetter(obj, key, fn, enumerable = false) {
   if(!obj.hasOwnProperty(key))
     Object.defineProperty(obj, key, {
@@ -1183,8 +1199,7 @@ Object.assign(catchable, {
 });
 
 export function isNumeric(value) {
-  for(let f of [v => +v, parseInt, parseFloat]) if(!isNaN(f(value))) return true;
-  return false;
+  return !isNaN(+value);
 }
 
 export function isIndex(value) {
@@ -1282,6 +1297,12 @@ export function trim(str, charset) {
   return str.replace(r1, '').replace(r2, '');
 }
 
+export function copyFunctionNameAndLength(dst, src) {
+  if(typeof src.name == 'string' && src.name != '') (delete dst.name, define(dst, { name: src.name }));
+  if(typeof src.length == 'number') (delete dst.length, define(dst, { length: src.length }));
+  return dst;
+}
+
 export function tryFunction(fn, resolve = a => a, reject = () => null) {
   if(!isFunction(resolve)) {
     let rval = resolve;
@@ -1310,6 +1331,19 @@ export function tryFunction(fn, resolve = a => a, reject = () => null) {
         }
         return resolve(ret, ...args);
       };
+}
+
+export function wrapFunction(self, onBefore) {
+  const result =
+    [self, onBefore].some(types.isAsyncFunction) && !types.isAsyncGeneratorFunction(onBefore)
+      ? async function(...args) {
+          return await onBefore((...args) => self.apply(this, args), args);
+        }
+      : function(...args) {
+          return onBefore((...args) => self.apply(this, args), args);
+        };
+
+  return define(copyFunctionNameAndLength(result, self), { fn: self });
 }
 
 export function tryCatch(fn, resolve = a => a, reject = () => null, ...args) {
@@ -2016,6 +2050,22 @@ export function chunkArray(arr, size) {
   return arr.reduce(fn, []);
 }
 
+export function decodeHTMLEntities(text) {
+  const entities = {
+    amp: '&',
+    apos: "'",
+    '#x27': "'",
+    '#x2F': '/',
+    '#39': "'",
+    '#47': '/',
+    lt: '<',
+    gt: '>',
+    nbsp: ' ',
+    quot: '"',
+  };
+  return (text + '').replace(new RegExp('&([^;]+);', 'gm'), (match, entity) => entities[entity] || match);
+}
+
 export function ucfirst(str) {
   if(typeof str != 'string') str = str + '';
   return str.substring(0, 1).toUpperCase() + str.substring(1);
@@ -2465,13 +2515,6 @@ export function isFunction(value) {
 
 export function isHTMLDDA(value) {
   return false;
-}
-
-export function isInstanceOf(value, ctor) {
-  if(ctor[Symbol.hasInstance]) {
-    return ctor[Symbol.hasInstance](value);
-  }
-  return typeof value == 'object' && value !== null && value instanceof ctor;
 }
 
 export function isInteger(value) {

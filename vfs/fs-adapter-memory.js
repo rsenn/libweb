@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve } from './path.js';
 
 export default class FsMemoryAdapter {
   constructor(db) {

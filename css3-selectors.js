@@ -1,4 +1,4 @@
-import { Predicate } from 'predicate';
+import { Predicate } from './predicate.js';
 
 export function LogicPredicate(pred = Predicate.or, ...args) {
   /*if(args.length == 1) return args[0];

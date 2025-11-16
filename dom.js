@@ -10,8 +10,8 @@ const inspectSymbol = Symbol.for('quickjs.inspect.custom');
 
 const DEBUG = (env => {
   const { length } = [...env.matchAll(/\bdom\b/gi)];
-  return length > 0 ? (...args) => console.log('\x1b[1;33mDOM\x1b[0m', console.config({ depth: 1, compact: true }), ...args) : () => {};
-})(process.env.DEBUG ?? '');
+  return length > 0 ? (...args) => console.log('\x1b[1;33mDOM\x1b[0m', ...args) : () => {};
+})('dom');
 
 const proxyOf = gettersetter(new WeakMap());
 const proxyFor = gettersetter(new WeakMap());
@@ -524,8 +524,8 @@ export class Interface {
         let path = find(
           raw,
           sel
-            ? (node, path) => {
-                return values.every(v =>
+            ? (node, path) =>
+                values.every(v =>
                   path
                     .hier()
                     .filter(p => p[p.length - 1] != 'children')
@@ -533,8 +533,7 @@ export class Interface {
                     .some(p => v(p.deref(raw))),
                 )
                   ? YIELD_NO_RECURSE
-                  : RECURSE;
-              }
+                  : RECURSE
             : e => !/^[!?]/.test(e.tagName),
           RETURN_PATH | PATH_AS_POINTER | FILTER_KEY_OF | FILTER_NEGATE,
           TYPE_OBJECT | TYPE_STRING,
@@ -546,7 +545,7 @@ export class Interface {
     } catch(e) {
       DEBUG('querySelector', e);
       const { message, pointer, root, pos, stack } = e;
-      DEBUG('querySelector', console.config({ compact: 1 }), { s, message, pointer, root, pos, stack });
+      DEBUG('querySelector', { s, message, pointer, root, pos, stack });
       throw new Error(message);
     }
   }
@@ -580,7 +579,7 @@ export class Interface {
       }
     } catch(e) {
       const { message, pointer, root, pos, stack } = e;
-      DEBUG('querySelectorAll', console.config({ compact: 1 }), { message, pointer, root, pos, stack });
+      DEBUG('querySelectorAll', { message, pointer, root, pos, stack });
       throw new Error(message);
     }
   }
@@ -2021,7 +2020,7 @@ function setParentOwner(node, ancestor) {
 
   let ok = [node, ancestor].reduce((i, e) => i ^ isCollection(e), 0);
 
-  //DEBUG('setParentOwner', console.config({ compact: true }), { ok, node, ancestor });
+  //DEBUG('setParentOwner', { ok, node, ancestor });
 
   if(!is || ancestor == null) parentNodes(node, ancestor);
   if(is || ancestor == null) ownerElements(node, ancestor);

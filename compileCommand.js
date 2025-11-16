@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { absolute, relative, isAbsolute, isRelative, join, normalize, basename, basepos } from 'path';
+import { absolute, relative, isAbsolute, isRelative, join, normalize, basename, basepos } from './path.js';
 import { assert, define, nonenumerable, types, abbreviate, escape, unescape } from 'util';
 //import inspect from 'inspect';
 

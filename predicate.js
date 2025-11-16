@@ -1,3 +1,5 @@
+import { extend } from './misc.js';
+
 const isKeyword = s =>
   /\b(instanceof|debugger|function|continue|finally|extends|default|static|export|switch|import|typeof|return|delete|async|yield|await|throw|super|const|class|catch|while|break|from|enum|case|with|void|this|else|let|try|var|new|for|as|of|do|in|if)\b/.test(
     s,
@@ -43,10 +45,13 @@ export class Predicate extends Function {
   }
 
   static and(...predicates) {
-    return returnPredicate(
-      (...args) => predicates.every(pred => pred(...args)),
-      predicates.map(pred => pred + '').join(' && '),
-      (a = 'args...') => `(args...) => ` + predicates.map(pred => pred + '(...args)').join(' && '),
+    return extend(
+      returnPredicate(
+        (...args) => predicates.every(pred => pred(...args)),
+        predicates.map(pred => pred + '').join(' && '),
+        (a = 'args...') => `(args...) => ` + predicates.map(pred => pred + '(...args)').join(' && '),
+      ),
+      { values: () => predicates },
     );
   }
 }

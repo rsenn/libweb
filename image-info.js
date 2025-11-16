@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from './path.js';
 import { isJpeg, jpegSize } from './jpegSize.js';
 import { isPng, PngReadHeader, PngSize } from './png.js';
 

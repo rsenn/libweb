@@ -1,5 +1,5 @@
-import { define } from './util.js';
-import { normalize, join, isAbsolute } from 'path';
+import { define } from './misc.js';
+import { normalize, join, isAbsolute } from './path.js';
 
 export class URLSearchParams {
   #entries = [];
