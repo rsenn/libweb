@@ -5,6 +5,23 @@ function FindChild(element, name) {
   return element.children[Node.raw(element).children.findIndex(e => e.tagName == name)];
 }
 
+const AttributeProperty = attrName => ({
+  [attrName]: {
+    get() {
+      return this.getAttribute(attrName);
+    },
+    set(value) {
+      this.setAttribute(attrName, value);
+    },
+    enumerable: true,
+  },
+});
+
+const AddProperty = (ctors, props) => {
+for(const ctor of ctors) 
+Object.defineProperties(ctor.prototype, props);
+}
+
 export class EagleProject {
   #filename;
   #parser;

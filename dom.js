@@ -133,15 +133,14 @@ export function Classes() {
   };
 }
 
-export function Prototypes(constructors = Classes()) {
-  const prototypes = {};
-  for(const key in constructors) {
-    prototypes[key] = constructors[key].prototype;
-
-    if(constructors[key].name && constructors[key].name != prototypes[key][Symbol.toStringTag]) Object.assign(prototypes[key], { [Symbol.toStringTag]: constructors[key].name });
+export function Prototypes(c = Classes()) {
+  const p = {};
+  for(const name in c) {
+    p[name] = c[name].prototype;
+    if(c[name].name && c[name].name != p[name][Symbol.toStringTag]) Object.assign(p[name], { [Symbol.toStringTag]: c[name].name });
   }
 
-  return prototypes;
+  return p;
 }
 
 const factories = gettersetter(new WeakMap());
