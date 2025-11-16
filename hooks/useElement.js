@@ -1,4 +1,4 @@
-import { useMemo } from '../preact.mjs';
+import { useMemo } from '../preact.js';
 import { trkl } from '../trkl.js';
 
 export function useElement(callback) {

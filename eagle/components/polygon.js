@@ -1,5 +1,5 @@
 import { Point, PointList, TransformationList } from '../../geom.js';
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
 

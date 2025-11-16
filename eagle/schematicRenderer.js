@@ -1,7 +1,7 @@
 import { RGBA } from '../color/rgba.js';
 import { BBox, Line, Point, Rect } from '../geom.js';
 import { className } from '../misc.js';
-import { h } from '../preact.mjs';
+import { h } from '../preact.js';
 import { Palette } from './common.js';
 import { Instance } from './components/instance.js';
 import { MakeCoordTransformer, useTransform } from './renderUtils.js';

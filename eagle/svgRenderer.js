@@ -1,7 +1,7 @@
 import { Point, Rect, TransformationList } from '../geom.js';
 import { define, inserter, isObject, mapWrapper, tryCatch } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
-import { h } from '../preact.mjs';
+import { h } from '../preact.js';
 import trkl from '../trkl.js';
 import { Drawing, ElementToComponent } from './components.js';
 import { EagleElement } from './element.js';

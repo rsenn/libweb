@@ -1,4 +1,4 @@
-import { Fragment, h as createElement, options } from './preact.mjs';
+import { Fragment, h as createElement, options } from './preact.js';
 // DOM properties that should NOT have "px" added when numeric
 var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 function encodeEntities(s) {

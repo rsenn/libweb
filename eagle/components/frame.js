@@ -1,5 +1,5 @@
 import { classNames } from '../../classNames.js';
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { log } from '../renderUtils.js';
 
 export const Frame = ({ class: className, title, children, ...props }) => {

@@ -1,4 +1,4 @@
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { log } from '../renderUtils.js';
 import { Wire } from './wire.js';
 import { Via } from './via.js';

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from '../preact.mjs';
+import { useEffect, useRef } from '../preact.js';
 
 export const useClick = onClick => {
   if(typeof onClick !== 'function') return;

@@ -1,4 +1,4 @@
-import { useMemo, useState } from '../preact.mjs';
+import { useMemo, useState } from '../preact.js';
 
 export function useMousePosition() {
   const [x, setX] = useState(0);

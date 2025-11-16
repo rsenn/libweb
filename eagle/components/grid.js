@@ -1,7 +1,7 @@
 import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl } from '../../hooks/useTrkl.js';
 import { define } from '../../misc.js';
-import { h, useRef } from '../../preact.mjs';
+import { h, useRef } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { log, useAttributes } from '../renderUtils.js';
 

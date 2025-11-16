@@ -1,4 +1,4 @@
-import { useCallback, useState } from '../preact.mjs';
+import { useCallback, useState } from '../preact.js';
 
 const initialState = { attributeId: 'name' };
 

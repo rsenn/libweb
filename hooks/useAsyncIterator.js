@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer } from '../preact.mjs';
+import { useCallback, useMemo, useReducer } from '../preact.js';
 ('use strict');
 var __assign =
   (this && this.__assign) ||

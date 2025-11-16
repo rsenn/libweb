@@ -1,4 +1,4 @@
-import { useCallback, useRef } from '../preact.mjs';
+import { useCallback, useRef } from '../preact.js';
 /**
  * @param {clickEvent} doubleClick
  * @param {clickEvent} [click]

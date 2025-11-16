@@ -1,6 +1,6 @@
 import { ValueToNumber } from '../../eda/colorCoding.js';
 import { TransformationList } from '../../geom/transformation.js';
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { log, MakeRotation } from '../renderUtils.js';
 import { Package } from './package.js';

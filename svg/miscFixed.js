@@ -1,4 +1,4 @@
-import { h } from '../preact.mjs';
+import { h } from '../preact.js';
 
 export const MiscFixedSC613 = props =>
   h(

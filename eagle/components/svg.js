@@ -1,4 +1,4 @@
-import { h, toChildArray } from '../../preact.mjs';
+import { h, toChildArray } from '../../preact.js';
 import { FixedMedium } from '../../svg/fixedMedium.js';
 
 export const SVG = ({ viewBox, preserveAspectRatio = 'xMinYMin', styles, children, defs = [], ...props }) => {

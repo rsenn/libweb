@@ -1,6 +1,6 @@
 import { TransformationList } from '../../geom/transformation.js';
 import { roundTo } from '../../misc.js';
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
 

@@ -1,4 +1,4 @@
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { log, MakeRotation, useTransform } from '../renderUtils.js';
 import { SchematicSymbol } from './symbol.js';
 

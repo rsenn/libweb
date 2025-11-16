@@ -1,6 +1,6 @@
 import { RGBA } from '../../color/rgba.js';
 import { Line, Point, TransformationList } from '../../geom.js';
-import { Fragment, h } from '../../preact.mjs';
+import { Fragment, h } from '../../preact.js';
 import { Palette } from '../common.js';
 import { Alignment, AlignmentAttrs, ElementToClass, HORIZONTAL, log, MakeCoordTransformer, MakeRotation, PinSizes, VERTICAL } from '../renderUtils.js';
 

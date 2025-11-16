@@ -1,4 +1,4 @@
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { log, useTransform } from '../renderUtils.js';
 import { Instance } from './instance.js';

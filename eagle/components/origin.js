@@ -1,4 +1,4 @@
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { log, useTrkl } from '../renderUtils.js';
 import { Cross } from './cross.js';
 

@@ -1,4 +1,4 @@
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 
 export function polarToCartesian(x, y, r, deg) {
   const rad = ((deg - 90) * Math.PI) / 180.0;

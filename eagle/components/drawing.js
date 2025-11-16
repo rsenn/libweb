@@ -1,6 +1,6 @@
 import { TransformationList } from '../../geom.js';
 import { useTrkl } from '../../hooks/useTrkl.js';
-import { h, toChildArray } from '../../preact.mjs';
+import { h, toChildArray } from '../../preact.js';
 import { log } from '../renderUtils.js';
 import { Background } from './background.js';
 import { Board } from './board.js';

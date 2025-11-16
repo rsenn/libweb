@@ -2167,5 +2167,3 @@ export class MutationObserver {
 }
 
 MutationObserver.prototype[Symbol.toStringTag] = 'MutationObserver';
-
-export { URLSearchParams, URL } from './url.js';

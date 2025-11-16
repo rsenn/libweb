@@ -1,6 +1,6 @@
 import { HSLA } from '../../color/hsla.js';
 import { TransformationList } from '../../geom/transformation.js';
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { log } from '../renderUtils.js';
 import { Element } from './element.js';
 import { Signals } from './signals.js';

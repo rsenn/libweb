@@ -1,4 +1,4 @@
-import { useState } from '../preact.mjs';
+import { useState } from '../preact.js';
 
 export function useDrag() {
   // const state = {

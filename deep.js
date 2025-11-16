@@ -29,7 +29,7 @@ export const RECURSE = 0;
 export const YIELD = 1;
 export const YIELD_NO_RECURSE = 3;
 
-function ValueType(value) {
+export function ValueType(value) {
   return {
     bigdecimal: TYPE_BIG_DECIMAL,
     bigfloat: TYPE_BIG_FLOAT,
@@ -38,7 +38,8 @@ function ValueType(value) {
     number: isNaN(value) ? TYPE_NAN : Number.isInteger(value) ? TYPE_INT : TYPE_FLOAT64,
     undefined: TYPE_UNDEFINED,
     symbol: TYPE_SYMBOL,
-    object: value === null ? TYPE_NULL : TYPE_OBJECT,
+    string: TYPE_STRING,
+    object: value === null ? TYPE_NULL : Array.isArray(value) ? TYPE_ARRAY | TYPE_OBJECT : TYPE_OBJECT,
     function: TYPE_FUNCTION | TYPE_OBJECT,
   }[typeof value];
 }
@@ -156,7 +157,11 @@ export function select(root, filter, flags = 0, mask = TYPE_ALL, props = null, p
   const selected = [];
 
   function recurse(value, path) {
-    const ret = filter(value, path, root);
+    let ret;
+
+    if(!(flags & (FILTER_NEGATE | FILTER_HAS_KEY)) || typeof path[path.length - 1] == 'number') {
+      ret = filter(value, path, root);
+    }
 
     if(ret === -1) return -1;
     if(ret) selected.push(valuePathFn(value, path, flags));
@@ -183,7 +188,11 @@ export function find(root, filter, flags = 0, mask = TYPE_ALL, props = null, pat
   const negate = !!(flags & FILTER_NEGATE);
 
   function recurse(value, path) {
-    const ret = filter(value, path, root);
+    let ret;
+
+    if(!(flags & (FILTER_NEGATE | FILTER_HAS_KEY)) || typeof path[path.length - 1] == 'number') {
+      ret = filter(value, path, root);
+    }
 
     if(ret === -1) return -1;
     if(ret) return ReturnValuePath(value, path, flags);
@@ -223,16 +232,19 @@ export const iterate = (root, filter, flags = RETURN_VALUE_PATH, mask = TYPE_ALL
   function* gen(value, path) {
     let r;
 
-    if((r = filter(value, path, root))) yield valuePathFn(value, path, root);
+    if(!(flags & (FILTER_NEGATE | FILTER_HAS_KEY)) || typeof path[path.length - 1] == 'number') {
+      if((r = filter(value, path, root))) yield valuePathFn(value, path, root);
+    }
 
     if(r !== -1)
       if(typeof value == 'object' && value != null) {
+        const isArr = Array.isArray(value);
+
         for(let k in value) {
           const v = value[k];
 
           if(mask != TYPE_ALL && !(ValueType(v) & mask)) continue;
-
-          if(keyOf && (props.indexOf(k) == -1) ^ negate) continue;
+          if(!isArr && keyOf && (props.indexOf(k) == -1) ^ negate) continue;
 
           yield* gen(v, path.concat([isNaN(+k) ? k : +k]));
         }

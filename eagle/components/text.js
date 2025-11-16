@@ -1,6 +1,6 @@
 import { Point, TransformationList, Translation, Scaling } from '../../geom.js';
 import { mod } from '../../misc.js';
-import { Fragment, h } from '../../preact.mjs';
+import { Fragment, h } from '../../preact.js';
 import { Alignment, AlignmentAttrs, ExtractRotation, HORIZONTAL, log, MakeRotation, RAD2DEG, useTransformation, VERTICAL } from '../renderUtils.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, data, ...props }) => {

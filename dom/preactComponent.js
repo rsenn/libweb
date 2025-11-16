@@ -1,5 +1,5 @@
 import { className, functionName } from '../misc.js';
-import { Component, createContext, h, html, options, render, useCallback, useContext, useDebugValue, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState, } from '../preact.mjs';
+import { Component, createContext, h, html, options, render, useCallback, useContext, useDebugValue, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState, } from '../preact.js';
 import { forwardRef } from '../preact/forwardRef.js';
 import { Element } from './element.js';
 
@@ -24,7 +24,7 @@ export {
   useContext,
   useDebugValue,
   cloneElement,
-} from '../preact.mjs';
+} from '../preact.js';
 
 export const Fragment = props => props.children;
 

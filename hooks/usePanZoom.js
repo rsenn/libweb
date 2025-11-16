@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from '../preact.mjs';
+import { useCallback, useEffect, useRef } from '../preact.js';
 import useForceUpdate from './useForceUpdate.js';
 import useGetSet from './useGetSet.js';
 import * as _ from './utils.js';

@@ -1,4 +1,4 @@
-import { Fragment, h } from '../../preact.mjs';
+import { Fragment, h } from '../../preact.js';
 import { log } from '../renderUtils.js';
 import { Circle } from './circle.js';
 import { Hole } from './hole.js';

@@ -1,5 +1,5 @@
 import { TransformationList } from '../../geom/transformation.js';
-import { h } from '../../preact.mjs';
+import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass, log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
 

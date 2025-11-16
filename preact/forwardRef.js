@@ -1,4 +1,4 @@
-import { options } from '../preact.mjs';
+import { options } from '../preact.js';
 import { assign } from './util.js';
 let oldDiffHook = options._diff;
 options._diff = vnode => {

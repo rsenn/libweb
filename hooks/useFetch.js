@@ -1,4 +1,4 @@
-import { useEffect, useState } from '../preact.mjs';
+import { useEffect, useState } from '../preact.js';
 
 export function useFetch(url, cb = resp => resp.text()) {
   const [data, setData] = useState(null);

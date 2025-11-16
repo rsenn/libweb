@@ -1,7 +1,7 @@
-import { Fragment } from './preact.mjs';
-import { h } from './preact.mjs';
-import { h as createElement } from './preact.mjs';
-import { options } from './preact.mjs';
+import { Fragment } from './preact.js';
+import { h } from './preact.js';
+import { h as createElement } from './preact.js';
+import { options } from './preact.js';
 let IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 let encodeEntities = function(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

@@ -1,4 +1,4 @@
-import { useMemo } from '../preact.mjs';
+import { useMemo } from '../preact.js';
 import { useIterator } from './useIterator.js';
 
 export function useIterable(iterable) {
