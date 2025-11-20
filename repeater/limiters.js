@@ -1,6 +1,6 @@
-import { FixedBuffer } from '@repeaterjs/repeater';
-import { Repeater } from '@repeaterjs/repeater';
-import { delay } from '@repeaterjs/timers';
+import { FixedBuffer } from './repeater.js';
+import { Repeater } from './repeater.js';
+import { delay } from './timers.js';
 export function semaphore(limit) {
   if(limit < 1) {
     throw new RangeError('limit cannot be less than 1');

@@ -1,6 +1,6 @@
 import * as deep from './deep.js';
 import { FetchURL, ResponseData } from './fetch.js';
-import { tXml } from './xml.js';
+import { read as tXml } from './xml.js';
 
 export async function FetchAndParseXML(url) {
   let data = await fetch(url).then(ResponseData);

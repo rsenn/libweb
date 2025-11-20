@@ -1,6 +1,6 @@
 import { makeLocalStorage } from './autoStore.js';
 import HashList from './container/hashList.js';
-import { CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, isElement, Line, Matrix, Node, Point, PointList, Rect, Size, SVG, Timer, default as dom, } from './dom.js';
+import { CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, isElement, Line, Matrix, Node, Point, PointList, Rect, Size, SVG, Timer, default as dom, } from './dom-old.js';
 import { trkl } from './trkl.js';
 import { decamelize, defineGetterSetter, unique } from './misc.js';
 //prettier-ignore

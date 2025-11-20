@@ -1,4 +1,4 @@
-import { Repeater } from '@repeaterjs/repeater';
+import { Repeater } from './repeater.js';
 export class InMemoryPubSub {
   publishers = {};
   publish(topic, value) {

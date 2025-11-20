@@ -1,7 +1,7 @@
-import { MAX_QUEUE_LENGTH } from '@repeaterjs/repeater';
-import { Repeater } from '@repeaterjs/repeater';
-import { RepeaterOverflowError } from '@repeaterjs/repeater';
-import { SlidingBuffer } from '@repeaterjs/repeater';
+import { MAX_QUEUE_LENGTH } from './repeater.js';
+import { Repeater } from './repeater.js';
+import { RepeaterOverflowError } from './repeater.js';
+import { SlidingBuffer } from './repeater.js';
 export class TimeoutError extends Error {
   constructor(message) {
     super(message);

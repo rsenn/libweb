@@ -5,6 +5,7 @@ import { get, iterate, find, clone, select, RECURSE, YIELD_NO_RECURSE, PATH_AS_P
 import { TreeWalker } from './tree_walker.js';
 import { read as readXML, write as writeXML } from './xml.js';
 import { DereferenceError, Pointer } from './pointer.js';
+export { DereferenceError, Pointer } from './pointer.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
 
@@ -213,13 +214,18 @@ export class Factory {
   static set(node, factory) {
     let tmp;
 
+console.log('Factory.set', { node });
+
     if((tmp = proxyFor(node))) node = tmp;
 
     if(!('nodeType' in node) && (tmp = ownerElements(node))) node = tmp;
 
+
+console.log('Factory.set', { node });
+
     factories(node, factory);
 
-    if(Node.document(node) !== node) this.set(Node.document(node), factory);
+    if((tmp=Node.document(node)) && tmp !== node) this.set(tmp, factory);
   }
 }
 
@@ -236,7 +242,7 @@ const parsers = gettersetter(new WeakMap());
 
 export class Parser {
   constructor(factory = new Factory()) {
-    define(this, nonenumerable({ factory }));
+    this.factory=factory;
   }
 
   parseFromString(str, file) {
@@ -253,6 +259,8 @@ export class Parser {
     }
 
     const { factory } = this;
+
+    console.log('Parser.parseFromString', { factory });
     const doc = factory['Document'].new(data, factory);
 
     Factory.set(doc, factory);

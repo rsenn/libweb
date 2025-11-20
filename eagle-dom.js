@@ -1,5 +1,6 @@
 import { declare, properties, define } from './misc.js';
 import { Prototypes, Factory, Parser, HTMLCollection, NamedMap, NamedNodeMap, Element, Document, Node, Collection } from './dom.js';
+export * from './dom.js';
 
 function FindChild(element, name) {
   return element.children[Node.raw(element).children.findIndex(e => e.tagName == name)];
