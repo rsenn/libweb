@@ -69,29 +69,6 @@ export class DOMException extends Error {
 
 extend(DOMException.prototype, nonenumerable({ name: 'DOMException' }));
 
-function applyPath(path, obj) {
-  const { length } = path;
-
-  let raw = Node.raw(obj) ?? rawNode(obj);
-
-  for(let i = 0; i < length; i++) {
-    const k = path[i];
-    try {
-      obj = obj[k];
-    } catch(error) {
-      throw new DereferenceError(obj, i, path);
-    }
-    if(raw)
-      try {
-        raw = raw[k];
-        rawNode(obj, raw);
-      } catch(error) {
-        raw = undefined;
-      }
-  }
-  return obj;
-}
-
 function* walk(root) {
   const raw = Node.raw(root) ?? rawNode(root);
   const it = iterate(raw, undefined, RETURN_PATH | FILTER_KEY_OF | FILTER_NEGATE, TYPE_OBJECT | TYPE_STRING, ['attributes', 'tagName']);
@@ -448,7 +425,7 @@ export class Interface {
   }
 
   appendChild(node) {
-    ownerElements(node)?.removeChild(node);
+    parentNodes(node)?.removeChild(node);
 
     const raw = Node.raw(node);
     const { children } = Node.raw(this);
@@ -466,7 +443,7 @@ export class Interface {
   }
 
   insertBefore(node, ref) {
-    ownerElements(node)?.removeChild(node);
+    parentNodes(node)?.removeChild(node);
 
     const { children } = Node.raw(this);
     const old = isNode(node) ? Node.raw(node) : node,
@@ -479,6 +456,7 @@ export class Interface {
 
     ownerElements(node, this.childNodes);
     ownerElements(this.childNodes, this);
+
     parentNodes(node, this);
 
     return node;
@@ -489,12 +467,14 @@ export class Interface {
     let index = children.indexOf(isNode(node) ? Node.raw(node) : node);
     if(index == -1) throw new Error(`Node.removeChild no such child!`);
     children.splice(index, 1);
-    setParentOwner(node, null);
+
+    parentNodes(node, null);
+
     return node;
   }
 
   replaceChild(newChild, oldChild) {
-    ownerElements(newChild)?.removeChild(newChild);
+    parentNodes(newChild)?.removeChild(newChild);
 
     const { children } = Node.raw(this);
     const old = Node.raw(oldChild),
@@ -505,9 +485,11 @@ export class Interface {
 
     children.splice(idx, 1, node);
 
-    setParentOwner(old, null);
+    parentNodes(old, null);
+
     ownerElements(node, this.childNodes);
     ownerElements(this.childNodes, this);
+
     parentNodes(node, this);
 
     return oldChild;
@@ -574,7 +556,7 @@ export class Interface {
           TYPE_OBJECT | TYPE_STRING,
           ['attributes', 'tagName'],
         ))
-          yield applyPath(path, this);
+          yield path.deref(this);
       }
     } catch(e) {
       const { message, pointer, root, pos, stack } = e;
@@ -584,9 +566,9 @@ export class Interface {
   }
 
   *getElementsByTagName(name) {
-    const it = iterate(Node.raw(this), name == '*' ? undefined : e => e.tagName == name, RETURN_PATH | FILTER_KEY_OF | FILTER_NEGATE, TYPE_OBJECT, ['attributes', 'tagName']);
+    const it = iterate(Node.raw(this), name == '*' ? undefined : e => e.tagName == name, RETURN_PATH | PATH_AS_POINTER | FILTER_KEY_OF | FILTER_NEGATE, TYPE_OBJECT, ['attributes', 'tagName']);
 
-    for(const path of it) yield applyPath(path, this);
+    for(const path of it) yield path.deref(this);
   }
 }
 
@@ -645,17 +627,14 @@ export class Node extends Interface {
     return proxyOf(node);
   }
 
-  /*static parentOrOwner(node) {
-    this.check(node);
-    return parentNodes(node) ?? ownerElements(node);
-  }*/
-
   static document(node) {
     let doc = node;
+
     while(doc) {
       if(doc.nodeType == Node.DOCUMENT_NODE) break;
       doc = ownerElements(doc);
     }
+
     if(doc) ownerDocument(node, doc);
     else doc = ownerDocument(node);
     return doc;
@@ -780,12 +759,12 @@ export class NodeList {
           return;
         }
         return Reflect.set(target, prop, value, receiver);
-      } /*,
-      getOwnPropertyDescriptor: (target, prop) => {
+      },
+      /*getOwnPropertyDescriptor: (target, prop) => {
         if(prop == 'length') return { value: obj.length, configurable: false, enumerable: true, writable: false };
         if(isIndex(prop)) return { value: inRange(+prop) ? GetNode(obj[prop], nodeList, Factory.for(owner)) : undefined, configurable: true, enumerable: true, writable: true };
         return Reflect.getOwnPropertyDescriptor(target, prop);
-      }*/,
+      },*/
       ownKeys: () =>
         range(0, obj.length - 1)
           .map(prop => prop + '')
@@ -793,9 +772,7 @@ export class NodeList {
       //getPrototypeOf: () => NodeList.prototype,
     });
 
-    /*rawNode(nodeList, obj);
-    setParentOwner(nodeList, owner);*/
-
+    rawNode(nodeList, obj);
     ownerElements(nodeList, owner);
     proxy(nodeList, this);
 
@@ -863,20 +840,17 @@ export class HTMLCollection {
     const arr = () => obj.filter(pred);
 
     rawNode(this, obj);
-    setParentOwner(this, owner);
+    ownerElements(this, owner);
 
     const coll = Collection(
       this,
-      (
-        factory => k =>
-          GetNode(arr()[k], owner, factory)
-      )(Factory.for(owner)),
+      k => GetNode(arr()[k], owner),
       () => arr().length,
       HTMLCollection.prototype,
     );
 
     rawNode(coll, obj);
-    setParentOwner(coll, owner);
+    ownerElements(coll, owner);
     proxy(coll, this);
 
     return coll;
@@ -940,12 +914,12 @@ export function NamedNodeMap(delegate, owner) {
   const adapter = isFunction(delegate) ? mapObject(delegate) : delegate;
 
   rawNode(this, delegate);
-  setParentOwner(this, owner);
+  ownerElements(this, owner);
 
   const obj = NamedMap(this, adapter.get, adapter.keys);
 
   rawNode(obj, delegate);
-  setParentOwner(obj, owner);
+  ownerElements(obj, owner);
 
   return obj;
 }
@@ -1202,17 +1176,14 @@ export class Element extends Node {
 
   getAttribute(name) {
     return Node.raw(this).attributes[name];
-    //return Element.attributes(this)(attributes => attributes[name]);
   }
 
   getAttributeNames() {
     return Object.keys(Node.raw(this).attributes);
-    //return Element.attributes(this)(attributes => Object.keys(attributes));
   }
 
   hasAttribute(name) {
     return name in Node.raw(this).attributes;
-    //return Element.attributes(this)(attributes => name in attributes);
   }
 
   hasAttributes() {
@@ -1221,7 +1192,6 @@ export class Element extends Node {
 
   removeAttribute(name) {
     return delete Node.raw(this).attributes[name];
-    //return Element.attributes(this)(attributes => delete attributes[name]);
   }
 
   getAttributeNode(name) {
@@ -1263,10 +1233,6 @@ export class Element extends Node {
   }
 
   static cache = MakeCache((obj, owner) => new Element(obj, owner));
-
-  /*static attributes(elem) {
-    return modifier(Node.raw(elem), 'attributes');
-  }*/
 
   get innerHTML() {
     return [...this.children].map(e => (e.nodeType == e.TEXT_NODE ? e.data : 'outerHTML' in e ? e.outerHTML : e.toString?.())).join('\n');
@@ -1503,9 +1469,9 @@ export class Document extends Element {
   }
 
   get body() {
-    const element = this.lastElementChild.lastElementChild;
-
     try {
+      const element = this.lastElementChild.lastElementChild;
+
       if(/^body$/i.test(element.tagName)) return element;
     } catch(e) {}
 
@@ -1529,7 +1495,7 @@ export class Attr extends Node {
 
     if(raw) {
       rawNode(this, raw);
-      setParentOwner(this, owner);
+      ownerElements(this, owner);
 
       if(!isFunction(raw[0])) {
         const [obj] = raw;
@@ -1547,13 +1513,11 @@ export class Attr extends Node {
   }
 
   get ownerElement() {
-    return ownerElements(ownerElements(this));
+    return ownerElements(this);
   }
 
   get ownerDocument() {
-    let doc;
-    if((doc = Node.document(this))) ownerDocument(this, doc);
-    return ownerDocument(this);
+    return Node.document(this.ownerElement);
   }
 
   get name() {
@@ -2002,12 +1966,20 @@ function isNode(obj) {
   return isObject(obj) && 'nodeType' in obj;
 }
 
+function isProcessingInstruction(node) {
+  return isObject(node) && 'tagName' in node && node.tagName[0] == '?';
+}
+
+function isDocumentType(node) {
+  return isObject(node) && 'tagName' in node && node.tagName[0] == '!';
+}
+
 function isElement(node) {
-  return isObject(node) && 'tagName' in node;
+  return isObject(node) && 'tagName' in node && !['?', '!'].includes(node.tagName[0]);
 }
 
 function isComment(node) {
-  return isElement(node) && node.tagName[0] == '!';
+  return isObject(node) && 'tagName' in node && node.tagName.startsWith('!--');
 }
 
 function isCollection(node) {

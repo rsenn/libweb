@@ -11,6 +11,8 @@ const isNative = fn => /\[native\scode\]/.test(stringify(fn));
 export const isPropertyKey = k => isString(k) || isSymbol(k);
 export const isPrototypeOf = (p, o) => isObject(o) && Object.prototype.isPrototypeOf.call(p, o);
 
+export const getPrototypeOf = o => Object.getPrototypeOf(o);
+
 export const isInstanceOf = (c, o) => {
   if(Array.isArray(c)) return c.some(c => isInstanceOf(c, o));
   if(isObject(c) && 'prototype' in c && isPrototypeOf(c.prototype, o)) return true;
@@ -776,12 +778,20 @@ export function defineGettersSetters(obj, gettersSetters) {
   }
 }*/
 
-export function* prototypeIterator(obj, pred = (obj, depth) => true) {
+export function* prototypeIterator(obj, start, end) {
   let depth = 0;
 
+  start ??= 0;
+  end ??= (o, d) => o == Object.prototype;
+
+  const pred = isFunction(end) ? (obj, d) => (end(obj, d) ? null : d >= start) : (obj, d) => (d >= end ? null : d >= start);
+
   while(obj) {
-    if(pred(obj, depth)) yield obj;
-    let tmp = Object.getPrototypeOf(obj);
+    const ok = pred(obj, depth);
+    if(ok === null) break;
+    if(ok === true) yield obj;
+
+    const tmp = getPrototypeOf(obj);
     if(tmp === obj) break;
     obj = tmp;
     ++depth;
