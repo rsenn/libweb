@@ -28,7 +28,7 @@ export const consume = async function(stream, fn = a => console.log(`async consu
 };
 
 export const accumulate = async function(stream, accu) {
-  return await consume(stream, a => accu.push(a)), accu;
+  return (await consume(stream, a => accu.push(a)), accu);
 };
 
 // Add an async iterator to all WebSockets
@@ -67,5 +67,5 @@ export default {
   consume,
   oncePromise,
   filter,
-  accumulate
+  accumulate,
 };

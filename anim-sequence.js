@@ -292,11 +292,11 @@ var AnimSequence = {
     return typeof timing === 'string'
       ? FUNC_KEYS[timing]
       : Array.isArray(timing) &&
-        [0, 1, 2, 3].every(function (i) {
-          return isFinite(timing[i]) && timing[i] >= 0 && timing[i] <= 1;
-        })
-      ? [timing[0], timing[1], timing[2], timing[3]]
-      : null;
+          [0, 1, 2, 3].every(function (i) {
+            return isFinite(timing[i]) && timing[i] >= 0 && timing[i] <= 1;
+          })
+        ? [timing[0], timing[1], timing[2], timing[3]]
+        : null;
   },
 };
 
