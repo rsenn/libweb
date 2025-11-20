@@ -214,18 +214,17 @@ export class Factory {
   static set(node, factory) {
     let tmp;
 
-console.log('Factory.set', { node });
+    console.log('Factory.set', { node });
 
     if((tmp = proxyFor(node))) node = tmp;
 
     if(!('nodeType' in node) && (tmp = ownerElements(node))) node = tmp;
 
-
-console.log('Factory.set', { node });
+    console.log('Factory.set', { node });
 
     factories(node, factory);
 
-    if((tmp=Node.document(node)) && tmp !== node) this.set(tmp, factory);
+    if((tmp = Node.document(node)) && tmp !== node) this.set(tmp, factory);
   }
 }
 
@@ -242,7 +241,7 @@ const parsers = gettersetter(new WeakMap());
 
 export class Parser {
   constructor(factory = new Factory()) {
-    this.factory=factory;
+    this.factory = factory;
   }
 
   parseFromString(str, file) {

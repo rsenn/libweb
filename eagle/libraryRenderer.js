@@ -22,9 +22,9 @@ export class LibraryRenderer extends EagleSVGRenderer {
   };
 
   constructor(obj, factory) {
-    super(obj.document, factory);
+    super(obj, factory);
 
-    let library = obj.tagName == 'library' ? obj : obj.document.lookup('eagle/drawing/library');
+    let library = obj.tagName == 'library' ? obj : obj.library;
 
     this.id = 0;
     this.palette = LibraryRenderer.palette;

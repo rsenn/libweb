@@ -94,7 +94,7 @@ export class DrawingElement extends EagleElement {
   /* prettier-ignore */ get layers() { return FindChild(this, 'layers'); }
   /* prettier-ignore */ get schematic() { return FindChild(this, 'schematic'); }
   /* prettier-ignore */ get board() { return FindChild(this, 'board'); }
-  /* prettier-ignore */ get library() { return FindChild(this, 'board'); }
+  /* prettier-ignore */ get library() { return FindChild(this, 'library'); }
   /* prettier-ignore */ get type() { return [...this.children].find(e => ['schematic', 'board', 'library'].includes(e.tagName))?.tagName; }
 }
 

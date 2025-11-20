@@ -11,14 +11,14 @@ export { BoardRenderer } from './boardRenderer.js';
 export function Renderer(doc, factory, debug) {
   let ret;
   switch (doc.type) {
-    case 'brd':
+    case 'board':
       ret = new BoardRenderer(doc, factory);
       break;
-    case 'sch':
+    case 'schematic':
       ret = new SchematicRenderer(doc, factory);
       break;
 
-    case 'lbr':
+    case 'library':
       ret = new LibraryRenderer(doc, factory);
       break;
     default:

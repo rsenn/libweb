@@ -7,12 +7,14 @@ const stringify = v => `${v}`;
 const protoOf = Object.getPrototypeOf;
 const formatNumber = n => (n === -0 ? '-0' : `${n}`);
 const isNative = fn => /\[native\scode\]/.test(stringify(fn));
-
 export const isPropertyKey = k => isString(k) || isSymbol(k);
+export const isClass = o => isConstructor(o) && /^class\b/.test(o + '');
+export const typeIsObject = isObject;
+
+/* prettier-ignore */ export const requireObject = o => { if(!isObject(o)) throw new TypeError(`object required`); return o; };
+export const allObjects = (...a) => a.every(isObject);
+
 export const isPrototypeOf = (p, o) => isObject(o) && Object.prototype.isPrototypeOf.call(p, o);
-
-export const getPrototypeOf = o => Object.getPrototypeOf(o);
-
 export const isInstanceOf = (c, o) => {
   if(Array.isArray(c)) return c.some(c => isInstanceOf(c, o));
   if(isObject(c) && 'prototype' in c && isPrototypeOf(c.prototype, o)) return true;
@@ -21,6 +23,31 @@ export const isInstanceOf = (c, o) => {
   } catch(e) {}
   return false;
 };
+export const hasOwnProperty = (o, k) => isObject(o) && Object.prototype.hasOwnProperty.call(o, k);
+export const hasProperty = (o, k) => isObject(o) && k in o;
+export const propertyIsEnumerable = (o, k) => isObject(o) && Object.prototype.propertyIsEnumerable.call(o, k);
+export const valueOf = (o, ...a) => isObject(o) && Object.prototype.valueOf.call(o, ...a);
+//export const toString = (o, ...a) => isObject(o) && Object.prototype.toString.call(o, ...a);
+export const toLocaleString = (o, ...a) => isObject(o) && Object.prototype.toLocaleString.call(o, ...a);
+
+export const getConstructorOf = o => (requireObject(o) && hasProperty(o, 'constructor') && o.constructor) || hasProperty(((o = getPrototypeOf(o)), 'constructor') && o.constructor);
+export const getPrototypeOf = o => Object.getPrototypeOf(o);
+export const setPrototypeOf = (o, p = null) => requireObject(o) && Object.setPrototypeOf(o, p);
+export const defineProperty = (o, k, d) => Object.defineProperty(o, k, d);
+export const defineProperties = (o, d = {}) => Object.defineProperties(o, d);
+export const getOwnPropertyNames = o => Object.getOwnPropertyNames(o);
+export const getOwnPropertySymbols = o => Object.getOwnPropertySymbols(o);
+export const preventExtensions = o => Object.preventExtensions(o);
+export const getOwnPropertyDescriptor = (o, k) => Object.getOwnPropertyDescriptor(o, k);
+export const getOwnPropertyDescriptors = o => Object.getOwnPropertyDescriptors(o);
+
+export const seal = o => Object.seal(o);
+export const freeze = o => Object.freeze(o);
+export const isSealed = o => Object.isSealed(o);
+export const isFrozen = o => Object.isFrozen(o);
+export const hasOwn = (o, k) => Object.hasOwn(o, k);
+export const is = o => allObjects(a, b) && Object.is(a, b);
+export const assign = (...a) => Object.assign(...a);
 
 /*export default*/ function util() {
   return util;
@@ -707,29 +734,29 @@ export function extend(dst, src, options = { enumerable: false }) {
 }
 
 export function define(obj, ...args) {
-  for(let props of args) {
-    const desc = Object.getOwnPropertyDescriptors(props);
-
-    for(let prop in desc)
+  for(const props of args) {
+    const desc = getOwnPropertyDescriptors(props);
+    const keys = getOwnPropertyNames(props).concat(getOwnPropertySymbols(props));
+    for(const prop of keys /*in desc*/) {
       try {
         delete obj[prop];
-        Object.defineProperty(obj, prop, desc[prop]);
       } catch(e) {}
+      if(prop == '__proto__') setPrototypeOf(obj, props[prop]);
+      else defineProperty(obj, prop, desc[prop]);
+    }
   }
 
   return obj;
 }
 
-export function nonenumerable(props, obj = {}) {
-  const desc = Object.getOwnPropertyDescriptors(props);
-
-  return Object.defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => (delete v.enumerable, [k, v]))));
+export function nonenumerable(props, obj = Object.create(null)) {
+  const desc = getOwnPropertyDescriptors(props);
+  return defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => (delete v.enumerable, [k, v]))));
 }
 
-export function enumerable(props, obj = {}) {
-  const desc = Object.getOwnPropertyDescriptors(props);
-
-  return Object.defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => ((v.enumerable = true), [k, v]))));
+export function enumerable(props, obj = Object.create(null)) {
+  const desc = getOwnPropertyDescriptors(props);
+  return defineProperties(obj, Object.fromEntries(entries(desc).map(([k, v]) => ((v.enumerable = true), [k, v]))));
 }
 
 export function declare(obj, ...props) {
@@ -737,19 +764,18 @@ export function declare(obj, ...props) {
 }
 
 export function defineGetter(obj, key, fn, enumerable = false) {
-  if(!obj.hasOwnProperty(key))
-    Object.defineProperty(obj, key, {
+  if(!hasOwnProperty(obj, key)) try {
+    defineProperty(obj, key, {
       enumerable,
       configurable: true,
       get: fn,
-    });
-
+    }); } catch(e) {}
   return obj;
 }
 
 export function defineGetterSetter(obj, key, g, s, enumerable = false) {
-  if(!obj.hasOwnProperty(key))
-    Object.defineProperty(obj, key, {
+  if(!hasOwnProperty(obj, key))
+    defineProperty(obj, key, {
       get: g,
       set: s,
       enumerable,
@@ -758,25 +784,10 @@ export function defineGetterSetter(obj, key, g, s, enumerable = false) {
 }
 
 export function defineGettersSetters(obj, gettersSetters) {
-  for(let name in gettersSetters) defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
+  for(const name in gettersSetters) defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
+
   return obj;
 }
-
-/*export function defineGettersSetters(obj, gettersSetters, enumerable = false) {
-  let props = {};
-  try {
-    for(let name in gettersSetters) props[name] = { get: gettersSetters[name], set: gettersSetters[name], enumerable };
-    return Object.defineProperties(obj, props);
-  } catch(e) {
-    for(let name in gettersSetters)
-      try {
-        defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
-      } catch(e) {
-        console.log(`Failed setting property '${name}'`);
-      }
-    return obj;
-  }
-}*/
 
 export function* prototypeIterator(obj, start, end) {
   let depth = 0;
@@ -810,24 +821,9 @@ export function omit(obj, keys) {
   return newObj;
 }
 
-export function keys(obj, start = 0, end = obj => obj === Object.prototype) {
-  let pred,
-    a = [],
-    depth = 0;
-
-  if(!isFunction(end)) {
-    let n = end;
-    pred = (obj, depth) => depth >= start && depth < n;
-    end = () => false;
-  } else {
-    pred = (obj, depth) => depth >= start;
-  }
-
-  for(let proto of prototypeIterator(obj, pred)) {
-    if(end(proto, depth++)) break;
-    a.push(...Object.getOwnPropertySymbols(proto).concat(Object.getOwnPropertyNames(proto)));
-  }
-
+export function keys(obj, start, end) {
+  const a = [];
+  for(const proto of prototypeIterator(obj, start, end)) a.push(...getOwnPropertySymbols(proto).concat(getOwnPropertyNames(proto)));
   return [...new Set(a)];
 }
 
@@ -1209,7 +1205,7 @@ Object.assign(catchable, {
 });
 
 export function isNumeric(value) {
-  return !isNaN(+value);
+  return typeof value != 'symbol' && !isNaN(+value);
 }
 
 export function isIndex(value) {
