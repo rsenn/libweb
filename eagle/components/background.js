@@ -9,6 +9,6 @@ export const Background = ({ rect, attrs, ...props }) => {
     ...rect.toObject(),
     fill: bg.color,
     style: bg.visible ? {} : { display: 'none' },
-    ...props
+    ...props,
   });
 };

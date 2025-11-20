@@ -7,7 +7,7 @@
 DOMinate = function dom(
   array, //Array containing the DOM fragment in JsonML
   namespace, //Namespace
-  returnObject
+  returnObject,
 ) {
   //Contains elements identified by their id
 

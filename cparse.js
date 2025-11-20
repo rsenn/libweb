@@ -39,7 +39,7 @@ const ops = {
   '%': 11,
 
   '.': 13, //structure member access
-  '->': 13 //structure pointer member access
+  '->': 13, //structure pointer member access
 };
 var sortedOps = Object.keys(ops);
 sortedOps.sort(function (a, b) {
@@ -55,18 +55,18 @@ const prefixedOps = {
   '*': 12, //dereference
   '+': 12, //unary +
   '-': 12, //unary -
-  sizeof: 12
+  sizeof: 12,
 };
 
 const suffixedOps = {
   '++': 13, //suffixed ++
-  '--': 13 //suffixed --
+  '--': 13, //suffixed --
 };
 
 const rightToLeftAssociativity = {
   1: true,
   2: true,
-  12: true
+  12: true,
 };
 
 const stringEscapes = {
@@ -80,7 +80,7 @@ const stringEscapes = {
   '\\': '\\',
   "'": "'",
   '"': '"',
-  '?': '?'
+  '?': '?',
 };
 
 const defaultTypeNames = ['void', 'char', 'short', 'int', 'long', 'float', 'double'];
@@ -223,7 +223,7 @@ export function cparse(src, options) {
       return {
         type: 'ReturnStatement',
         value: parseExpression(';'),
-        pos: pos
+        pos: pos,
       };
     } else if(lookahead('if')) {
       consume('(');
@@ -240,7 +240,7 @@ export function cparse(src, options) {
         type: 'WhileStatement',
         condition: parseExpression(')'),
         body: parseBody(),
-        pos: pos
+        pos: pos,
       };
     } else if(lookahead('do')) {
       var stmt = { type: 'DoWhileStatement', pos: pos };
@@ -273,7 +273,7 @@ export function cparse(src, options) {
       return {
         type: 'ExpressionStatement',
         expression: parseExpression(';'),
-        pos: pos
+        pos: pos,
       };
     }
   }
@@ -314,7 +314,7 @@ export function cparse(src, options) {
         operator: op,
         left: left,
         right: right,
-        pos: pos
+        pos: pos,
       };
     }
     return left;
@@ -330,7 +330,7 @@ export function cparse(src, options) {
           type: 'PrefixExpression',
           operator: op,
           value: parseUnary(),
-          pos: pos
+          pos: pos,
         };
       }
     }
@@ -339,7 +339,7 @@ export function cparse(src, options) {
       if(definitionIncoming()) {
         expr = {
           type: 'CastExpression',
-          targetType: readDefinition(true)
+          targetType: readDefinition(true),
         };
         consume(')');
         expr.value = parseUnary();
@@ -358,7 +358,7 @@ export function cparse(src, options) {
 
       expr = {
         type: 'Literal',
-        value: entries
+        value: entries,
       };
     } else if(lookahead("'")) {
       var val = curr.charCodeAt(0);
@@ -369,23 +369,23 @@ export function cparse(src, options) {
       expr = {
         type: 'Literal',
         source: 'CharCode',
-        value: val
+        value: val,
       };
     } else if(stringIncoming()) {
       expr = {
         type: 'Literal',
-        value: readString()
+        value: readString(),
       };
     } else if(numberIncoming()) {
       expr = {
         type: 'Literal',
-        value: readNumber()
+        value: readNumber(),
       };
     } else if(identifierIncoming()) {
       var val = readIdentifier();
       expr = {
         type: 'Identifier',
-        value: val
+        value: val,
       };
     } else {
       return;
@@ -398,7 +398,7 @@ export function cparse(src, options) {
       expr = {
         type: 'IndexExpression',
         value: expr,
-        index: index
+        index: index,
       };
     } else if(lookahead('(')) {
       var args = [];
@@ -413,7 +413,7 @@ export function cparse(src, options) {
       expr = {
         type: 'CallExpression',
         base: expr,
-        arguments: args
+        arguments: args,
       };
     }
     expr.pos = pos;
@@ -425,7 +425,7 @@ export function cparse(src, options) {
           type: 'SuffixExpression',
           operator: op,
           value: expr,
-          pos: suffixPos
+          pos: suffixPos,
         };
       }
     }
@@ -456,7 +456,7 @@ export function cparse(src, options) {
     var def = {
       type: 'Type',
       modifier: [],
-      pos: getPos()
+      pos: getPos(),
     };
 
     do {
@@ -490,7 +490,7 @@ export function cparse(src, options) {
         def = {
           type: 'PointerType',
           target: def,
-          pos: getPos()
+          pos: getPos(),
         };
       }
 
@@ -500,7 +500,7 @@ export function cparse(src, options) {
         def = {
           type: 'PointerType',
           target: def,
-          pos: getPos()
+          pos: getPos(),
         };
 
         if(!lookahead(']')) {
@@ -514,7 +514,7 @@ export function cparse(src, options) {
           type: 'Definition',
           defType: def,
           name: name,
-          pos: pos
+          pos: pos,
         };
       }
       return def;
@@ -611,7 +611,7 @@ export function cparse(src, options) {
   function getPos() {
     return {
       file: position.file,
-      line: position.line
+      line: position.line,
     };
   }
 

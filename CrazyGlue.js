@@ -19,7 +19,7 @@
  */
 
 export function CrazyGlue($el, value, changeCb) {
-  if(!this instanceof CrazyGlue) {
+  if((!this) instanceof CrazyGlue) {
     return new CrazyGlue($el, value, changeCb);
   }
   if(typeof value === 'function') {

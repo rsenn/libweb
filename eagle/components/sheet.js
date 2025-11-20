@@ -19,11 +19,11 @@ export const Sheet = ({ data, opts = {}, ...props }) => {
     {
       class: `sheet`,
       'data-path': sheet.path.toString(' '),
-      opts: accumulate(...opts)
+      opts: accumulate(...opts),
     },
     [
       //...sheet.nets.map(net => h(Net, {data: net, opts: accumulate(...opts) }))
-      ...sheet.instances.map(instance => h(Instance, { data: instance, opts: accumulate(...opts) }))
-    ]
+      ...sheet.instances.map(instance => h(Instance, { data: instance, opts: accumulate(...opts) })),
+    ],
   );
 };

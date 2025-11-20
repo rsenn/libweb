@@ -8,20 +8,20 @@ function inherits(ctor, superCtor) {
       value: ctor,
       enumerable: false,
       writable: true,
-      configurable: true
-    }
+      configurable: true,
+    },
   });
 }
 
 function Diff(kind, path) {
   Object.defineProperty(this, 'kind', {
     value: kind,
-    enumerable: true
+    enumerable: true,
   });
   if(path && path.length) {
     Object.defineProperty(this, 'path', {
       value: path,
-      enumerable: true
+      enumerable: true,
     });
   }
 }
@@ -30,11 +30,11 @@ function DiffEdit(path, origin, value) {
   DiffEdit.super_.call(this, 'E', path);
   Object.defineProperty(this, 'lhs', {
     value: origin,
-    enumerable: true
+    enumerable: true,
   });
   Object.defineProperty(this, 'rhs', {
     value,
-    enumerable: true
+    enumerable: true,
   });
 }
 
@@ -44,7 +44,7 @@ function DiffNew(path, value) {
   DiffNew.super_.call(this, 'N', path);
   Object.defineProperty(this, 'rhs', {
     value,
-    enumerable: true
+    enumerable: true,
   });
 }
 
@@ -54,7 +54,7 @@ function DiffDeleted(path, value) {
   DiffDeleted.super_.call(this, 'D', path);
   Object.defineProperty(this, 'lhs', {
     value,
-    enumerable: true
+    enumerable: true,
   });
 }
 
@@ -64,11 +64,11 @@ function DiffArray(path, index, item) {
   DiffArray.super_.call(this, 'A', path);
   Object.defineProperty(this, 'index', {
     value: index,
-    enumerable: true
+    enumerable: true,
   });
   Object.defineProperty(this, 'item', {
     value: item,
-    enumerable: true
+    enumerable: true,
   });
 }
 
@@ -451,42 +451,42 @@ function applyDiff(target, source, filter) {
 Object.defineProperties(accumulateDiff, {
   diff: {
     value: accumulateDiff,
-    enumerable: true
+    enumerable: true,
   },
   orderIndependentDiff: {
     value: accumulateOrderIndependentDiff,
-    enumerable: true
+    enumerable: true,
   },
   observableDiff: {
     value: observableDiff,
-    enumerable: true
+    enumerable: true,
   },
   orderIndependentObservableDiff: {
     value: orderIndependentDeepDiff,
-    enumerable: true
+    enumerable: true,
   },
   orderIndepHash: {
     value: getOrderIndependentHash,
-    enumerable: true
+    enumerable: true,
   },
   applyDiff: {
     value: applyDiff,
-    enumerable: true
+    enumerable: true,
   },
   applyChange: {
     value: applyChange,
-    enumerable: true
+    enumerable: true,
   },
   revertChange: {
     value: revertChange,
-    enumerable: true
+    enumerable: true,
   },
   isConflict: {
     value() {
       return typeof $conflict !== 'undefined';
     },
-    enumerable: true
-  }
+    enumerable: true,
+  },
 });
 
 //hackish...

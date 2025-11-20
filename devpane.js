@@ -22,7 +22,7 @@ export default class devpane {
       top: '',
       bottom: '10px',
       right: '10px',
-      left: ''
+      left: '',
     });
     e.id = 'devpane-root';
     return e;
@@ -34,9 +34,9 @@ export default class devpane {
       {
         width: rect.width,
         height: rect.height,
-        viewBox: `0 0 ${rect.width} ${rect.height}`
+        viewBox: `0 0 ${rect.width} ${rect.height}`,
       },
-      this.root()
+      this.root(),
     );
     this.createSVGElement('defs', {}, svg);
     this.createSVGElement('rect', { x: 100, y: 100, w: 100, h: 100, fill: '#f0f' }, svg);
@@ -55,9 +55,9 @@ export default class devpane {
         padding: '2px',
         textAlign: 'left',
         fontFamily: 'MiscFixedSC613,Fixed,MiscFixed,Monospace,fixed-width',
-        fontSize: '12px'
-      }
-    )
+        fontSize: '12px',
+      },
+    ),
   );
 
   getTranslations(done = () => {}) {
@@ -68,7 +68,7 @@ export default class devpane {
       data: x => {
         this.translations = x;
         done(x);
-      }
+      },
     });
   }
 
@@ -100,8 +100,8 @@ export default class devpane {
           opacity: 1,
           textAlign: 'left',
           fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
-          fontSize: '11px'
-        }
+          fontSize: '11px',
+        },
       );
       let p = this.renderPaneLayer(layer, reactDOM);
       /*   layer.appendChild(p); */ return layer;
@@ -165,7 +165,7 @@ export default class devpane {
         cellspacing: 0,
         style: {
           /*width: '100%'*/
-        }
+        },
       });
       let pane = this.pane();
       while(pane.lastElementChild && pane.lastElementChild.tagName.toLowerCase() == 'table') {
@@ -215,9 +215,9 @@ export default class devpane {
           stroke: '#ffee00',
           fill: 'none',
           strokeWidth: 3,
-          strokeDasharray: '16 16'
+          strokeDasharray: '16 16',
         },
-        this.svg()
+        this.svg(),
       );
     }
     if(!(svgcircle && svgpath.tagName == 'path')) {
@@ -281,14 +281,14 @@ export default class devpane {
               if(idx == -1) a.push(r);
               return a;
             }, []),
-            ({ name }) => name == 'boundary'
+            ({ name }) => name == 'boundary',
           );
           rect.bounds.sort((a, b) => Rect.area(a) - Rect.area(b));
           list.push(rect);
         }
         return list;
       },
-      []
+      [],
     );
   }
 
@@ -370,8 +370,8 @@ export default class devpane {
         zIndex: 18,
         position: 'absolute',
         /*pointerEvents: "none",*/ ...(rect ? Rect.toCSS(rect) : {}),
-        ...css
-      }
+        ...css,
+      },
     });
   }
 
@@ -394,8 +394,8 @@ export default class devpane {
         borderRadius: '0.5em',*/
         opacity: 1.0,
         //pointerEvents: "none",
-        ...css
-      }
+        ...css,
+      },
     });
   }
 
@@ -442,7 +442,7 @@ export default class devpane {
       cellpadding: 0,
       border: 0,
       style: { border: '0.5px solid #000' },
-      ...attrs
+      ...attrs,
     });
     const createRow = (parent, tag = 'td', cells, style = {}) => {
       parent = Element.create('tr', { parent });
@@ -450,19 +450,19 @@ export default class devpane {
         Element.create(tag, {
           parent,
           innerHTML,
-          style: { border: '0.5px solid #000', padding: '2px', ...style }
-        })
+          style: { border: '0.5px solid #000', padding: '2px', ...style },
+        }),
       );
       return parent;
     };
     createRow(table, 'th', header, {
       backgroundColor: '#000000',
-      color: '#ffffff'
+      color: '#ffffff',
     });
     rows.forEach((columns, i) =>
       createRow(table, 'td', columns, {
-        backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0'
-      })
+        backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0',
+      }),
     );
     return table;
   }
@@ -492,8 +492,8 @@ export default class devpane {
         display: 'flex',
         flexFlow: 'row nowrap',
         alignItems: 'flex-end',
-        padding: '4px'
-      }
+        padding: '4px',
+      },
     );
     t.form.addEventListener('submit', e => false);
     t.select = t.renderer.refresh();
@@ -505,7 +505,7 @@ export default class devpane {
 
     t.fields = Element.create('div', {
       parent: t.form,
-      style: { minWidth: '100px' }
+      style: { minWidth: '100px' },
     });
 
     const createLabel = text =>
@@ -517,8 +517,8 @@ export default class devpane {
           fontFamily: 'DejaVu Sans',
           fontSize: '12px',
           width: '72px',
-          padding: '6px'
-        }
+          padding: '6px',
+        },
       });
 
     const createEditBox = (label, value, onChange) => (
@@ -532,8 +532,8 @@ export default class devpane {
         onchange: onChange,
         style: {
           border: '1px inset #848484',
-          backgroundColor: '#fff'
-        }
+          backgroundColor: '#fff',
+        },
       })
     );
 
@@ -546,7 +546,7 @@ export default class devpane {
         cellpadding: padding,
         cellspacing: spacing,
         border,
-        ...props
+        ...props,
       });
       rows.forEach(row => {
         let r = Element.create('tr', { parent: tbl });
@@ -559,8 +559,8 @@ export default class devpane {
             style: {
               textAlign: lang == 'fa' ? 'right' : 'left',
               verticalAlign: 'middle',
-              backgroundColor: 'white'
-            }
+              backgroundColor: 'white',
+            },
           });
           r.appendChild(c);
           c.innerHTML = col;
@@ -575,7 +575,7 @@ export default class devpane {
         parent: t.form,
         className: 'bp3-button bp3-small',
         onclick: handler,
-        style: { margin: '1em auto 0 auto' }
+        style: { margin: '1em auto 0 auto' },
       });
 
     t.save = function(event) {
@@ -597,7 +597,7 @@ export default class devpane {
         '',
         function({ currentTarget }) {
           this[lang] = currentTarget.value;
-        }.bind(t)
+        }.bind(t),
       );
       Element.create('br', { parent: t.fields });
     });
@@ -612,8 +612,8 @@ export default class devpane {
             rows: 25,
             style: {
               fontFamily: "monospace,fixed,'Courier New'",
-              fontSize: '12px'
-            }
+              fontSize: '12px',
+            },
           });
 
           const json = Util.base64.decode(data.data);
@@ -632,7 +632,7 @@ export default class devpane {
 
           t.trans = json;
         });
-      })
+      }),
     };
     t.set = t.set.bind(t);
 
@@ -683,7 +683,7 @@ export default class devpane {
               //console.log("selectElement (fontSize) = ", css.fontSize);*/
             }
           });
-        }
+        },
       });
       Element.create('input', {
         type: 'button',
@@ -694,7 +694,7 @@ export default class devpane {
         onclick: event => {
           this.elements.splice(0, this.elements.length);
           p.innerHTML = '';
-        }
+        },
       });
       Element.create('br', { parent: elm });
       Element.create('input', {
@@ -718,12 +718,12 @@ export default class devpane {
 
             console.log('Clearance: ', { rect1, border1, rect2, border2 });
           }
-        }
+        },
       });
       let p = Element.create('p', {
         parent: elm,
         id: 'selected-list',
-        style: { maxWidth: '250px' }
+        style: { maxWidth: '250px' },
       });
     }
 
@@ -775,7 +775,7 @@ export default class devpane {
               id: 'select-rect',
               parent: Element.find('body'),
               style: { position: 'absolute', border: '2px solid green' },
-              zIndex: 999999
+              zIndex: 999999,
             });
           }
           Element.setRect(elm, r);
@@ -822,10 +822,10 @@ export default class devpane {
             {
               ...Rect(rect),
               stroke: HSLA(hue, 100, 25 + (50 * i) / length).toString(),
-              fill: 'none'
+              fill: 'none',
             },
-            rect.boxes
-          )
+            rect.boxes,
+          ),
         );
       } else if(!inside && rect.boxes) {
         //console.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
@@ -853,7 +853,7 @@ export default class devpane {
     this.svgRects = rects;
     rects = rects.map((rect, index) => ({
       color: new HSLA((60 + (index * 360) / 10) % 360, 100, 50, 1),
-      ...rect
+      ...rect,
     }));
     let svgRects = rects.map(({ x, y, width, height, color }, index) =>
       f('rect', {
@@ -863,15 +863,15 @@ export default class devpane {
         height,
         stroke: color.toString(),
         strokeWidth: 3,
-        fill: 'none'
-      })
+        fill: 'none',
+      }),
     );
     const selectedList = Element.find('#selected-list');
     Element.setCSS(selectedList, {
       display: 'block',
       backgroundColor: 'black',
       padding: '2px',
-      overflow: 'scroll'
+      overflow: 'scroll',
     });
     //prettier-ignore
     selectedList.innerHTML = `<pre>${rects .map(({ color, e }) => `<span style="color: ${color.toString()};">` + Element.xpath(e, document.body) + `</span>` ) .reverse() .join('\n')}${`</pre>`}`;

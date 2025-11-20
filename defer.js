@@ -17,7 +17,7 @@ export function defer() {
       rej(...args);
       this[PromiseState] = 'rejected';
     },
-    [PromiseState]: 'pending'
+    [PromiseState]: 'pending',
   });
 }
 
@@ -25,7 +25,7 @@ export function rejectDefer(e) {
   return Object.assign(Promise.reject(e), {
     resolve: () => {},
     reject: () => {},
-    [PromiseState]: 'rejected'
+    [PromiseState]: 'rejected',
   });
 }
 
@@ -33,6 +33,6 @@ export function resolveDefer(e) {
   return Object.assign(Promise.resolve(e), {
     resolve: () => {},
     reject: () => {},
-    [PromiseState]: 'resolved'
+    [PromiseState]: 'resolved',
   });
 }

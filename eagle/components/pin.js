@@ -42,8 +42,8 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         cx: pp.x,
         cy: pp.y,
         r: 0.75,
-        'stroke-width': 0.3
-      })
+        'stroke-width': 0.3,
+      }),
     );
     log('Pin.render(2)', { pp });
   }
@@ -54,8 +54,8 @@ export const Pin = ({ data, opts = {}, ...props }) => {
         class: 'pin',
         stroke: '#a54b4b',
         ...l.toObject(),
-        'stroke-width': 0.15
-      })
+        'stroke-width': 0.15,
+      }),
     );
     log('Pin.render(3)', { l });
   }
@@ -96,16 +96,16 @@ export const Pin = ({ data, opts = {}, ...props }) => {
           transform: new TransformationList() /*transformation.invert()*/
             .translate(tp.x, tp.y)
             .rotate(angle % 180)
-            .concat((transformation ?? new TransformationList()).invert())
+            .concat((transformation ?? new TransformationList()).invert()),
         },
         h(
           'tspan',
           {
             ...AlignmentAttrs(align, HORIZONTAL),
-            dangerouslySetInnerHTML: { __html: name }
-          } /*, h(Fragment, {}, [text])*/
-        )
-      )
+            dangerouslySetInnerHTML: { __html: name },
+          } /*, h(Fragment, {}, [text])*/,
+        ),
+      ),
     );
     /*children.push(
       h('circle', {

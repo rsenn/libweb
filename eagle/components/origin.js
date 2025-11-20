@@ -15,6 +15,6 @@ export const Origin = ({ x, y, layer, element, color, radius = 0.45, width = 0.0
     color,
     radius,
     'data-layer': `${layer.number} ${layer.name}`,
-    ...props
+    ...props,
   });
 };

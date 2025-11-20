@@ -181,6 +181,6 @@ function getValue(propName, propValue) {
 
 var CSSPrefix = {
   getName: getName,
-  getValue: getValue
+  getValue: getValue,
 };
 export default CSSPrefix;

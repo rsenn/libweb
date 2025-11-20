@@ -184,7 +184,7 @@ var english = {
   months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   today: 'Today',
   clear: 'Clear',
-  close: 'Close'
+  close: 'Close',
 };
 
 /**
@@ -234,7 +234,7 @@ function defaults() {
       return true;
     },
 
-    appendTo: document.body
+    appendTo: document.body,
   };
 }
 
@@ -256,7 +256,7 @@ var Key = {
   right: 39,
   down: 40,
   enter: 13,
-  esc: 27
+  esc: 27,
 };
 
 /**
@@ -309,9 +309,9 @@ var dayPicker = {
     'dp-clear': clear,
     'dp-close': close,
     'dp-cal-month': showMonthPicker,
-    'dp-cal-year': showYearPicker
+    'dp-cal-year': showYearPicker,
   },
-  render: render
+  render: render,
 };
 
 /**
@@ -394,20 +394,20 @@ function keyDown(e, dp) {
   } else if(shiftBy) {
     e.preventDefault();
     dp.setState({
-      hilightedDate: shiftDay(dp.state.hilightedDate, shiftBy)
+      hilightedDate: shiftDay(dp.state.hilightedDate, shiftBy),
     });
   }
 }
 
 function selectToday(e, dp) {
   dp.setState({
-    selectedDate: now()
+    selectedDate: now(),
   });
 }
 
 function clear(e, dp) {
   dp.setState({
-    selectedDate: null
+    selectedDate: null,
   });
 }
 
@@ -417,33 +417,33 @@ function close(e, dp) {
 
 function showMonthPicker(e, dp) {
   dp.setState({
-    view: 'month'
+    view: 'month',
   });
 }
 
 function showYearPicker(e, dp) {
   dp.setState({
-    view: 'year'
+    view: 'year',
   });
 }
 
 function gotoNextMonth(e, dp) {
   var hilightedDate = dp.state.hilightedDate;
   dp.setState({
-    hilightedDate: shiftMonth(hilightedDate, 1)
+    hilightedDate: shiftMonth(hilightedDate, 1),
   });
 }
 
 function gotoPrevMonth(e, dp) {
   var hilightedDate = dp.state.hilightedDate;
   dp.setState({
-    hilightedDate: shiftMonth(hilightedDate, -1)
+    hilightedDate: shiftMonth(hilightedDate, -1),
   });
 }
 
 function selectDay(e, dp) {
   dp.setState({
-    selectedDate: new Date(parseInt(e.target.getAttribute('data-date')))
+    selectedDate: new Date(parseInt(e.target.getAttribute('data-date'))),
   });
 }
 
@@ -477,15 +477,15 @@ function mapDays(currentDate, dayOffset, fn) {
 var monthPicker = {
   onKeyDown: keyDown$1,
   onClick: {
-    'dp-month': onChooseMonth
+    'dp-month': onChooseMonth,
   },
-  render: render$1
+  render: render$1,
 };
 
 function onChooseMonth(e, dp) {
   dp.setState({
     hilightedDate: setMonth(dp.state.hilightedDate, parseInt(e.target.getAttribute('data-month'))),
-    view: 'day'
+    view: 'day',
   });
 }
 
@@ -528,12 +528,12 @@ function keyDown$1(e, dp) {
 
   if(key === Key.esc) {
     dp.setState({
-      view: 'day'
+      view: 'day',
     });
   } else if(shiftBy) {
     e.preventDefault();
     dp.setState({
-      hilightedDate: shiftMonth(dp.state.hilightedDate, shiftBy, true)
+      hilightedDate: shiftMonth(dp.state.hilightedDate, shiftBy, true),
     });
   }
 }
@@ -546,8 +546,8 @@ var yearPicker = {
   render: render$2,
   onKeyDown: keyDown$2,
   onClick: {
-    'dp-year': onChooseYear
-  }
+    'dp-year': onChooseYear,
+  },
 };
 
 /**
@@ -577,7 +577,7 @@ function render$2(dp) {
 function onChooseYear(e, dp) {
   dp.setState({
     hilightedDate: setYear(dp.state.hilightedDate, parseInt(e.target.getAttribute('data-year'))),
-    view: 'day'
+    view: 'day',
   });
 }
 
@@ -588,14 +588,14 @@ function keyDown$2(e, dp) {
 
   if(key === Key.esc) {
     dp.setState({
-      view: 'day'
+      view: 'day',
     });
   } else if(shiftBy) {
     e.preventDefault();
     var shiftedYear = shiftYear(dp.state.hilightedDate, shiftBy);
 
     dp.setState({
-      hilightedDate: constrainDate(shiftedYear, opts.min, opts.max)
+      hilightedDate: constrainDate(shiftedYear, opts.min, opts.max),
     });
   }
 }
@@ -618,7 +618,7 @@ function mapYears(dp, fn) {
 var views = {
   day: dayPicker,
   year: yearPicker,
-  month: monthPicker
+  month: monthPicker,
 };
 
 function BaseMode(input, emit, opts) {
@@ -746,7 +746,7 @@ function BaseMode(input, emit, opts) {
 
       emit('statechange');
       dp.render();
-    }
+    },
   };
 
   detatchInputEvents = attachInputEvents(input, dp);
@@ -776,7 +776,7 @@ function BaseMode(input, emit, opts) {
         emit('select');
         dp.close();
       },
-      view: 'day'
+      view: 'day',
     };
   }
 
@@ -809,7 +809,7 @@ function attachInputEvents(input, dp) {
         if(!dp.hasFocus()) {
           dp.close(true);
         }
-      })
+      }),
     ),
 
     on('mousedown', input, function() {
@@ -824,9 +824,9 @@ function attachInputEvents(input, dp) {
       var date = dp.opts.parse(e.target.value);
       isNaN(date) ||
         dp.setState({
-          hilightedDate: date
+          hilightedDate: date,
         });
-    })
+    }),
   ];
 
   // Unregister all events that were registered above.
@@ -869,7 +869,7 @@ function attachContainerEvents(dp) {
       if(!dp.hasFocus()) {
         dp.close(true);
       }
-    })
+    }),
   );
 
   on('keydown', el, function(e) {
@@ -938,7 +938,7 @@ function DropdownMode(input, emit, opts) {
   Object.defineProperty(dp, 'shouldFocusOnRender', {
     get: function() {
       return input !== document.activeElement;
-    }
+    },
   });
 
   dp.adjustPosition = function() {
@@ -1084,7 +1084,7 @@ function Emitter() {
       }
 
       return this;
-    }
+    },
   };
 }
 
@@ -1159,7 +1159,7 @@ function TinyDatePicker(input, opts) {
     setState: mode.setState,
     open: mode.open,
     close: mode.close,
-    destroy: mode.destroy
+    destroy: mode.destroy,
   };
 
   function emit(evt) {
@@ -1204,32 +1204,32 @@ function DateRangePicker(container, opts) {
   var hoverDate;
   var state = {
     start: undefined,
-    end: undefined
+    end: undefined,
   };
   var start = TinyDatePicker(
     root.querySelector('.dr-cal-start'),
     cp({}, opts.startOpts, {
       mode: 'dp-permanent',
-      dateClass: dateClass
-    })
+      dateClass: dateClass,
+    }),
   );
   var end = TinyDatePicker(
     root.querySelector('.dr-cal-end'),
     cp({}, opts.endOpts, {
       mode: 'dp-permanent',
       hilightedDate: shiftMonth(start.state.hilightedDate, 1),
-      dateClass: dateClass
-    })
+      dateClass: dateClass,
+    }),
   );
   var handlers = {
     statechange: onStateChange,
-    select: dateSelected
+    select: dateSelected,
   };
   var me = {
     state: state,
     setState: setState,
     on: emitter.on,
-    off: emitter.off
+    off: emitter.off,
   };
 
   start.on(handlers);
@@ -1246,11 +1246,11 @@ function DateRangePicker(container, opts) {
 
     if(dp === start) {
       end.setState({
-        hilightedDate: shiftMonth(dp.state.hilightedDate, 1)
+        hilightedDate: shiftMonth(dp.state.hilightedDate, 1),
       });
     } else {
       start.setState({
-        hilightedDate: shiftMonth(dp.state.hilightedDate, -1)
+        hilightedDate: shiftMonth(dp.state.hilightedDate, -1),
       });
     }
   }
@@ -1261,12 +1261,12 @@ function DateRangePicker(container, opts) {
     if(!state.start || state.end) {
       setState({
         start: dt,
-        end: undefined
+        end: undefined,
       });
     } else {
       setState({
         start: dt > state.start ? state.start : dt,
-        end: dt > state.start ? dt : state.start
+        end: dt > state.start ? dt : state.start,
       });
     }
   }

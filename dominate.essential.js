@@ -15,7 +15,7 @@ DOMinate = function dom(a, b, c, x) {
     x = a[c];
 
     if(x.big) a[0].innerHTML = x;
-    else if(x.pop) dom(x), a[0].appendChild(x[0]);
+    else if(x.pop) (dom(x), a[0].appendChild(x[0]));
     else for(b in x) a[0].setAttribute(b, x[b]);
   }
 };

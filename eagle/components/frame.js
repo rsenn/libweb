@@ -9,8 +9,8 @@ export const Frame = ({ class: className, title, children, ...props }) => {
     h(
       'div',
       { class: 'title' },
-      title.map(line => h('p', {}, [line]))
+      title.map(line => h('p', {}, [line])),
     ),
-    h('div', { class: 'rendering' }, [...children])
+    h('div', { class: 'rendering' }, [...children]),
   ]);
 };

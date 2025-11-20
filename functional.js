@@ -329,7 +329,7 @@ export class Functional {
 
   static partial() {
     let as, f, fn, n;
-    (f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
+    ((f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []));
     f = this._uncurry(f);
     n = this.arityof(f) - as.length;
     fn = function() {
@@ -345,7 +345,7 @@ export class Functional {
 
   static partialr() {
     let as, f, fn, n;
-    (f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
+    ((f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []));
     f = this._uncurry(f);
     n = this.arityof(f) - as.length;
     fn = function() {
@@ -415,7 +415,7 @@ export class Functional {
 
   static converge = this.curry3var(function () {
     let after, ar, fn, fs, q;
-    (fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (after = arguments[q++]);
+    ((fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (after = arguments[q++]));
     fs = this._pliftall(fs);
     after = this.plift(after);
     ar = this.apply(Math.max)(this.map(fs, arityof));
@@ -443,7 +443,7 @@ export class Functional {
 
   static call = this.curry2var(function () {
     let as, fn;
-    (fn = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
+    ((fn = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []));
     return fn.apply(null, as);
   });
 
@@ -519,7 +519,7 @@ export class Functional {
         let as, fn, len1, q, ref;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         for(q = 0, len1 = cs.length; q < len1; q++) {
-          (ref = cs[q]), (cond = ref[0]), (fn = ref[1]);
+          ((ref = cs[q]), (cond = ref[0]), (fn = ref[1]));
           if(cond.apply(null, as)) {
             return fn.apply(null, as);
           }
@@ -683,7 +683,7 @@ export class Functional {
 
   static merge() {
     let k, len1, o, os, q, t, v;
-    (t = arguments[0]), (os = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
+    ((t = arguments[0]), (os = 2 <= arguments.length ? slice1.call(arguments, 1) : []));
     for(q = 0, len1 = os.length; q < len1; q++) {
       o = os[q];
       for(k in o) {
@@ -826,7 +826,7 @@ export class Functional {
   static pick = this.curry2var(
     function() {
       let as, k, len1, o, q, r;
-      (o = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
+      ((o = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []));
       if(Functional.typeis(as[0], 'array')) {
         as = as[0];
       }
@@ -996,7 +996,7 @@ export class Functional {
 
   static zipwith = this.curry3var(function () {
     let as, f, i, ml, n, q, ref, results, u;
-    (as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (f = arguments[q++]);
+    ((as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (f = arguments[q++]));
     ml = Functional.apply(min)(Functional.map(as, len));
     results = [];
     for(i = u = 0, ref = ml; u < ref; i = u += 1) {
@@ -1104,7 +1104,7 @@ export class Functional {
     return function(exp) {
       return function() {
         let as, fns, ks, obj, ofexp, props, valid;
-        (obj = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
+        ((obj = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []));
         if(obj[guard]) {
           return;
         }

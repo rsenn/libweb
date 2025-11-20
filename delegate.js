@@ -9,7 +9,7 @@ export const proxyDelegate = (target, origin) =>
       if(key in target) return Reflect.set(target, key, value, receiver);
       origin[key] = value;
       return true;
-    }
+    },
   });
 
 export default proxyDelegate;

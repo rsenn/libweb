@@ -1,10 +1,9 @@
 import { makeLocalStorage } from './autoStore.js';
 import HashList from './container/hashList.js';
-import { CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, isElement, Line, Matrix, Node, Point, PointList, Rect, Size, SVG, Timer, default as dom } from './dom.js';
+import { CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, isElement, Line, Matrix, Node, Point, PointList, Rect, Size, SVG, Timer, default as dom, } from './dom.js';
 import { trkl } from './trkl.js';
 import { decamelize, defineGetterSetter, unique } from './misc.js';
 //prettier-ignore
-
 
 //var root = globalThis.window ? window : global;
 
@@ -20,7 +19,7 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
         acc.push(e.getAttribute('class'));
         return acc;
       },
-      []
+      [],
     )
       .join(' ')
       .split(/\s+/g)
@@ -57,7 +56,7 @@ if(!Array.prototype.back) {
         else this.push(value);
         return this;
       },
-      false
+      false,
     );
   } catch(error) {}
 }
@@ -75,7 +74,7 @@ if(!Array.prototype.front) {
         else this.push(value);
         return this;
       },
-      false
+      false,
     );
   } catch(error) {}
 }
@@ -113,8 +112,8 @@ export const colors = (() => {
         top: '134px',
         width: `${opts.width}px`,
         height: `${dim.height || opts.height}px`,
-        zIndex: 100000
-      }
+        zIndex: 100000,
+      },
     });
     let f = Element.factory({}, e);
     let prev = 0;
@@ -145,8 +144,8 @@ export const colors = (() => {
           padding: '2px',
           justifyContent: 'flex-start',
           alignItems: 'center',
-          transition: 'opacity 1s linear'
-        }
+          transition: 'opacity 1s linear',
+        },
       });
     }
     elements.unshift(e);
@@ -175,7 +174,7 @@ export async function getStars() {
   r.paths = dom.Element.findAll('path', r.svg).filter(e => getRect(e).isSquare());
   r.circles = r.paths.map(e => ({
     position: getRect(e).center,
-    radius: getRect(e).width / 2
+    radius: getRect(e).width / 2,
   }));
   r.points = new PointList(r.paths.map(e => getRect(e).center));
   r.radii = r.paths.map(e => getRect(e).width / 2);
@@ -194,10 +193,10 @@ export async function getStars() {
           cy: c.position.y.toFixed(3),
           r: c.radius.toFixed(3),
           fill: 'url(#' + gr.getAttribute('id') + ')',
-          style: 'mix-blend-mode: screen'
+          style: 'mix-blend-mode: screen',
         },
-        this.svg
-      )
+        this.svg,
+      ),
     ));
   };
   return r;
@@ -238,7 +237,7 @@ export function gradient(element) {
         offset,
         toString() {
           return RGBA.toHex(this.color) + ' ' + this.offset * 100 + '%';
-        }
+        },
       };
     }),
     toString() {
@@ -251,16 +250,16 @@ export function gradient(element) {
           const { offset, color } = obj.steps[this.index] || {};
           return {
             value: [offset, color],
-            done: this.index++ >= obj.steps.length
+            done: this.index++ >= obj.steps.length,
           };
         }
       })(),
     getColors() {
       return Util.reduce(this.steps, (acc, step) => ({
         ...acc,
-        [step.offset]: step.color
+        [step.offset]: step.color,
       }));
-    }
+    },
   };
   console.log('obj: ', obj);
   arr.push(obj);
@@ -280,8 +279,8 @@ export function starAnim() {
       ...Rect.toCSS(rect),
       top: 0,
       position: 'fixed',
-      backgroundColor: '#ff000000'
-    }
+      backgroundColor: '#ff000000',
+    },
   });
   let f = SVG.factory(c, Size(rect));
   /* Element.attr(c.root, { width: '100%', height: '100%' });
@@ -311,8 +310,8 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
     id: 'page1-halo',
     stops: [
       [0, '#d8d8f4'],
-      [1, '#edd455']
-    ]
+      [1, '#edd455'],
+    ],
   });
   console.log('PointList: ', { d, g });
   //f.root.parentElement.removeChild(f.root);
@@ -322,7 +321,7 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
     stroke: '#000',
     strokeWidth: '3',
     fill: '#ff0',
-    transform: 'translate(150,150)'
+    transform: 'translate(150,150)',
   });
   //console.log('c: ', c);
 
@@ -437,7 +436,7 @@ export function boxes(state) {
     boxes = Element.create('div', {
       className: 'boxes',
       id: 'boxes',
-      parent: body
+      parent: body,
     });
     let cr = Element.rect(page);
     //console.log('container Rect: ', cr);
@@ -447,7 +446,7 @@ export function boxes(state) {
       backgroundRepeat: 'none',
       backgroundSize: '100% auto',
       zIndex: 200,
-      position: 'fixed'
+      position: 'fixed',
     });
     cr.w = 480;
     cr.h = 800;
@@ -530,7 +529,7 @@ export function ws(cmd = 'send', filename, data) {
         let json = {
           cmd,
           filename,
-          data: data ? window.btoa(encodeURIComponent(data)) : null
+          data: data ? window.btoa(encodeURIComponent(data)) : null,
         };
         ws.send(JSON.toString(json) + '\r\n');
         console.log('ws.send ', json);
@@ -572,7 +571,7 @@ export function settext(en, fa) {
       data: JSON.toString({ ...x, ...obj })
         .replace(/\",\"/g, '",' + nl + '"')
         .replace(/{\"/g, '{' + nl + '"')
-        .replace(/\"}/g, '"' + nl + '}' + nl)
+        .replace(/\"}/g, '"' + nl + '}' + nl),
     });
   });
 }
@@ -603,7 +602,7 @@ export async function img(name, arg = {}) {
           //console.log("HashList ctor ", { width, r, id });
           return e;
           //return { e, r, id, xpath, svg };
-        }
+        },
       ));
 
   return new Promise(async (resolve, reject) => {
@@ -632,9 +631,9 @@ export async function img(name, arg = {}) {
           'z-index': -1,
           opacity: 0.5,
           border: '1px dotted black',
-          ...style
+          ...style,
         },
-        ...props
+        ...props,
       });
       e.innerHTML = await res.data;
       const av = e && e.firstChild && e.firstChild.viewBox && e.firstChild.viewBox.animVal;
@@ -704,7 +703,7 @@ export function createsvg(wh, fixed = false) {
   let e = createsvg.factory('polygon', {
     points: '0,100 100,0 0,0 100,100',
     fill: 'none',
-    stroke: 'green'
+    stroke: 'green',
   });
   let pl = PointList(e.getAttribute('points'));
   let svg = e.parentElement;
@@ -786,7 +785,7 @@ export function walk(element) {
       obj.x = obj.r.x - svgr.x;
       if(obj.name === undefined) obj.name = Element.xpath(obj.e).replace(/.*\//, '');
       return obj;
-    }
+    },
   );
   elements.forEach(element =>
     Element.walk(element, e => {
@@ -812,7 +811,7 @@ export function walk(element) {
           console.log('Text ', line[line.length - 1]);
         }
       }
-    })
+    }),
   );
   if(global.lines == undefined) global.lines = [[], []];
 
@@ -889,9 +888,9 @@ export function polyline(points, closed = false) {
         width,
         height,
         viewBox: `0 0 ${width} ${height}`,
-        style: `position: fixed; left: 0; top: 0; z-index: 999999;`
+        style: `position: fixed; left: 0; top: 0; z-index: 999999;`,
       },
-      document.body
+      document.body,
     );
   SVG.create(
     closed ? 'polygon' : 'polyline',
@@ -899,9 +898,9 @@ export function polyline(points, closed = false) {
       points: points.toString(3),
       fill: 'none',
       stroke: 'red',
-      strokeWidth: 1.5
+      strokeWidth: 1.5,
     },
-    window.svg
+    window.svg,
   );
 }
 
@@ -916,9 +915,9 @@ export function circle(point, radius = 10) {
         width,
         height,
         viewBox: `0 0 ${width} ${height}`,
-        style: `position: fixed; left: 0; top: 0; z-index: 999999;`
+        style: `position: fixed; left: 0; top: 0; z-index: 999999;`,
       },
-      document.body
+      document.body,
     );
   SVG.create(
     'circle',
@@ -928,9 +927,9 @@ export function circle(point, radius = 10) {
       r: radius,
       fill: 'none',
       stroke: 'red',
-      strokeWidth: 1.5
+      strokeWidth: 1.5,
     },
-    window.svg
+    window.svg,
   );
 }
 
@@ -985,7 +984,7 @@ export function rect(...args) {
       borderRadius: '0px',
       backgroundColor: color,
       zIndex,
-      pointerEvents: 'none'
+      pointerEvents: 'none',
     });
 
     //console.log("__rect ", rect, color);
@@ -1047,7 +1046,7 @@ export function storage(name) {
     self,
     'value',
     () => self(),
-    value => self(value)
+    value => self(value),
   );
   self.get = function(key) {
     return key ? this.value[key] : this.value;
@@ -1110,7 +1109,7 @@ export const devtools = {
   walk,
   trkl,
   ws,
-  maxZindex
+  maxZindex,
 
   /*  React,
   ReactDOM,*/

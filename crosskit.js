@@ -94,7 +94,7 @@ let vec3 = {
       return false;
     }
     return Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon && Math.abs(a[2] - b[2]) < epsilon;
-  }
+  },
 };
 
 let mat3 = {
@@ -138,7 +138,7 @@ let mat3 = {
   },
   transpose(m) {
     return [m[0], m[3], m[6], m[1], m[4], m[7], m[2], m[5], m[8]];
-  }
+  },
 }; //mat3
 
 //Transform library from CubicVR.js
@@ -334,7 +334,7 @@ WebGL2D.enable = function(canvas, options) {
 let shaderMask = {
   texture: 1,
   crop: 2,
-  path: 4
+  path: 4,
 };
 
 //Fragment shader source
@@ -362,7 +362,7 @@ WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMa
     '#else',
     'gl_FragColor = vColor;',
     '#endif',
-    '}'
+    '}',
   ].join('\n');
 
   return fsSource;
@@ -398,7 +398,7 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDe
     '#if hasTexture',
     'vTextureCoord = aVertexPosition.zw;',
     '#endif',
-    '}'
+    '}',
   ].join('\n');
   return vsSource;
 };
@@ -557,7 +557,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       sameType;
 
     if((match = reRGBAColor.exec(value))) {
-      (hasAlpha = match[1]), (alphaChannel = parseFloat(match[8]));
+      ((hasAlpha = match[1]), (alphaChannel = parseFloat(match[8])));
 
       if((hasAlpha && isNaN(alphaChannel)) || (!hasAlpha && !isNaN(alphaChannel))) {
         return false;
@@ -566,7 +566,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       sameType = match[3];
 
       for(let i = 2; i < 8; i += 2) {
-        (channel = match[i]), (isPercent = match[i + 1]);
+        ((channel = match[i]), (isPercent = match[i + 1]));
 
         if(isPercent !== sameType) {
           return false;
@@ -586,7 +586,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
       result.push(hasAlpha ? alphaChannel : 1.0);
     } else if((match = reHSLAColor.exec(value))) {
-      (hasAlpha = match[1]), (alphaChannel = parseFloat(match[5]));
+      ((hasAlpha = match[1]), (alphaChannel = parseFloat(match[5])));
       result = HSLAToRGBA(match[2], match[3], match[4], parseFloat(hasAlpha && alphaChannel ? alphaChannel : 1.0));
     } else if((match = reHex6Color.exec(value))) {
       let colorInt = parseInt(match[1], 16);
@@ -751,7 +751,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     white: '#ffffff',
     whitesmoke: '#f5f5f5',
     yellow: '#ffff00',
-    yellowgreen: '#9acd32'
+    yellowgreen: '#9acd32',
   };
 
   //Maintain drawing state params during gl.save and gl.restore. see saveDrawState() and restoreDrawState()
@@ -785,7 +785,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       shadowOffsetY: drawState.shadowOffsetY,
       textAlign: drawState.textAlign,
       font: drawState.font,
-      textBaseline: drawState.textBaseline
+      textBaseline: drawState.textBaseline,
     };
 
     drawStateStack.push(bakedDrawState);
@@ -807,7 +807,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.fillStyle = colorStringToVec4(value) || drawState.fillStyle;
-    }
+    },
   });
 
   drawState.strokeStyle = [0, 0, 0, 1]; //default black
@@ -818,7 +818,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.strokeStyle = colorStringToVec4(value) || drawStyle.strokeStyle;
-    }
+    },
   });
 
   //WebGL already has a lineWidth() function but Canvas2D requires a lineWidth property
@@ -833,7 +833,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     set(value) {
       gl.$lineWidth(value);
       drawState.lineWidth = value;
-    }
+    },
   });
 
   //Currently unsupported attributes and their default values
@@ -845,7 +845,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.lineCap = value;
-    }
+    },
   });
 
   drawState.lineJoin = 'miter';
@@ -856,7 +856,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.lineJoin = value;
-    }
+    },
   });
 
   drawState.miterLimit = 10;
@@ -867,7 +867,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.miterLimit = value;
-    }
+    },
   });
 
   drawState.shadowOffsetX = 0;
@@ -878,7 +878,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.shadowOffsetX = value;
-    }
+    },
   });
 
   drawState.shadowOffsetY = 0;
@@ -889,7 +889,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.shadowOffsetY = value;
-    }
+    },
   });
 
   drawState.shadowBlur = 0;
@@ -900,7 +900,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.shadowBlur = value;
-    }
+    },
   });
 
   drawState.shadowColor = 'rgba(0, 0, 0, 0.0)';
@@ -911,7 +911,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.shadowColor = value;
-    }
+    },
   });
 
   drawState.font = '10px sans-serif';
@@ -923,7 +923,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     set(value) {
       textCtx.font = value;
       drawState.font = value;
-    }
+    },
   });
 
   drawState.textAlign = 'start';
@@ -934,7 +934,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.textAlign = value;
-    }
+    },
   });
 
   drawState.textBaseline = 'alphabetic';
@@ -945,7 +945,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.textBaseline = value;
-    }
+    },
   });
 
   //This attribute will need to control global alpha of objects drawn.
@@ -957,7 +957,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.globalAlpha = value;
-    }
+    },
   });
 
   //This attribute will need to set the gl.blendFunc mode
@@ -969,7 +969,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     },
     set(value) {
       drawState.globalCompositeOperation = value;
-    }
+    },
   });
 
   //Need a solution for drawing text that isnt stupid slow
@@ -1866,7 +1866,7 @@ export const crosskit = {
       dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
         'points',
-        (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString()
+        (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString(),
       );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
@@ -1879,7 +1879,7 @@ export const crosskit = {
       svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
       svg_shapes[svg_shapes.length - 1].setAttribute(
         'points',
-        (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString()
+        (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString(),
       );
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
@@ -1998,7 +1998,7 @@ export const crosskit = {
   pause(v) {
     if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.cancelAnimationFrame(v.frame);
     if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.clearInterval(v.interval);
-  }
+  },
 };
 let rgb = function(v) {
   return 'rgb(' + v.r + ',' + v.g + ',' + v.b + ')';
