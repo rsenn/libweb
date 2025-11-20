@@ -7,6 +7,7 @@ import { ElementToComponent, Origin } from './components.js';
 import { Frame } from './components/frame.js';
 import { MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
+import { h } from '../preact.js';
 
 export class LibraryRenderer extends EagleSVGRenderer {
   static pinSizes = {
@@ -54,22 +55,19 @@ export class LibraryRenderer extends EagleSVGRenderer {
         elem,
         {
           class: item.tagName,
-          'data-path': item.path.toString(' '),
-          'data-xpath': item.xpath() + '',
+          //'data-path': item.path ,
+          //'data-xpath': item.xpath() + '',
           ...attr,
         },
         children,
       );
 
-    let devicesets = [...this.doc.getAll(e => e && e.attributes && e.attributes[item.tagName] == item.name)]
-      .map(e => [e, e.scope().deviceset])
-      .map(([e, deviceset]) => deviceset)
-      .filter(deviceset => !!deviceset);
+    let devicesets = [...this.doc.library.devicesets];
     let prefixes = unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix));
     let suffix = '';
     if(item.tagName == 'symbol') {
       let symbolUsages = devicesets
-        .map(set => [set, [...set.gates.list].map((g, i) => [i, g.name, g.symbol]).filter(([i, name, symbol]) => symbol.name == item.name)])
+        .map(set => [set, [...set.gates].map((g, i) => [i, g.name, g.symbol]).filter(([i, name, symbol]) => symbol.name == item.name)])
         .filter(([set, gates]) => gates.length > 0);
 
       if(symbolUsages[0]) {
@@ -101,7 +99,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
       'stroke-dasharray': `${1.6 / 11} ${1.6 / 11}`,
     });
     if(svgElement) {
-      let bounds = viewRect ? new BBox(viewRect) : item.getBounds();
+      let bounds = viewRect ? new BBox(viewRect) : new BBox();
       let measure = new Rect(bounds);
 
       if(viewSize) {
@@ -154,13 +152,15 @@ if(translation) {
   render(options = {}) {
     let { component = Fragment, props = {}, item = { component: Fragment, props: {} }, asEntries = false, ...opts } = options;
     const { symbols, packages, devicesets } = this.doc.library;
-    let allItems = (window.allItems = [...symbols.children, ...packages.children]);
-    let bbox = allItems.reduce((a, it) => a.update(it.getBounds()), new BBox());
+      let allItems = (window.allItems = [...symbols, ...packages]);
+
+
+    let bbox = allItems.reduce((a, it) => a.update(it), new BBox());
     let size = bbox.toRect(Rect.prototype).size;
     let items = [symbols, packages].reduce(
       (a, collection) => [
         ...a,
-        ...this.renderCollection(collection, {
+        ...this.renderCollection([...collection], {
           ...opts,
           viewSize: size,
         }),

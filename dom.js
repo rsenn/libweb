@@ -886,6 +886,11 @@ export function NamedMap(node, get, keys) {
       ? (target, prop, receiver) => {
           if(prop == 'length') return keys().filter(isPropertyKey).length;
 
+          if(prop==Symbol.iterator) 
+return function*() {
+      for(let i = 0; this[i]; i++) yield this[i];
+    }
+
           if(isNumeric(prop)) {
             const a = keys();
             if(prop >= 0 && prop < a.length) prop = a[+prop];
@@ -988,10 +993,7 @@ extend(
     },
     getNamedItem(name) {
       return Node.raw(this)[name];
-    },
-    *[Symbol.iterator]() {
-      for(let i = 0; this[i]; i++) yield this[i];
-    },
+      },
     [Symbol.inspect]() {
       return NamedNodeMap.inspect(this);
     },
