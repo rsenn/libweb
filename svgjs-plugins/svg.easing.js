@@ -1,5 +1,4 @@
 import { SVG } from '../svg.js';
-
 // Based on Easing Equations (c) 2003 [Robert Penner](http://www.robertpenner.com/), all rights reserved.
 
 var easing = {

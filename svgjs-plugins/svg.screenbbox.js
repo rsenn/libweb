@@ -1,5 +1,4 @@
 import { SVG } from '../svg.js';
-
 SVG.extend(SVG.Polyline, SVG.Polygon, SVG.Path, {
   screenBBox() {
     var i,

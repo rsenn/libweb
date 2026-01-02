@@ -1,9 +1,15 @@
 import { Anchor } from '../geom/align.js';
 import { Point } from '../geom/point.js';
-import { isRect, Rect } from '../geom/rect.js';
+import { isRect } from '../geom/rect.js';
+import { Rect } from '../geom/rect.js';
 import { Size } from '../geom/size.js';
 import { TRBL } from '../geom/trbl.js';
-import { camelize, decamelize, getMethodNames, keys, memoize, tryCatch } from '../misc.js';
+import { camelize } from '../misc.js';
+import { decamelize } from '../misc.js';
+import { getMethodNames } from '../misc.js';
+import { keys } from '../misc.js';
+import { memoize } from '../misc.js';
+import { tryCatch } from '../misc.js';
 import { iterator } from './iterator.js';
 import { Node } from './node.js';
 /**

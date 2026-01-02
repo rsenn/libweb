@@ -1,14 +1,27 @@
 import { classNames } from '../classNames.js';
 import { RGBA } from '../color/rgba.js';
 import { ValueToNumber } from '../eda/colorCoding.js';
-import { Line, LineList, Rect, BBox } from '../geom.js';
-import { TransformationList, Translation } from '../geom/transformation.js';
+import { BBox } from '../geom.js';
+import { Line } from '../geom.js';
+import { LineList } from '../geom.js';
+import { Rect } from '../geom.js';
+import { TransformationList } from '../geom/transformation.js';
+import { Translation } from '../geom/transformation.js';
 import { partition } from '../misc.js';
 import { Palette } from './common.js';
-import { ElementToComponent, Origin, WirePath } from './components.js';
-import { ElementToClass, EscapeClassName, HORIZONTAL, LinesToPath, MakeRotation, RenderShape, RotateTransformation, VERTICAL } from './renderUtils.js';
-import { EagleSVGRenderer } from './svgRenderer.js';
+import { ElementToComponent } from './components.js';
+import { Origin } from './components.js';
+import { WirePath } from './components.js';
 import { Element } from './components/element.js';
+import { ElementToClass } from './renderUtils.js';
+import { EscapeClassName } from './renderUtils.js';
+import { HORIZONTAL } from './renderUtils.js';
+import { LinesToPath } from './renderUtils.js';
+import { MakeRotation } from './renderUtils.js';
+import { RenderShape } from './renderUtils.js';
+import { RotateTransformation } from './renderUtils.js';
+import { VERTICAL } from './renderUtils.js';
+import { EagleSVGRenderer } from './svgRenderer.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
@@ -258,8 +271,6 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
-
-
     if(/^[RLC][0-9]/.test(name)) {
       let re;
 

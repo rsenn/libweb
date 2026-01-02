@@ -1,4 +1,5 @@
-import { generate, isFunction } from 'util';
+import { generate } from 'util';
+import { isFunction } from 'util';
 
 export const ObjectExtensions = {
   getMemberNames: generate(getMemberNames),

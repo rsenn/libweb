@@ -1,8 +1,14 @@
-import { parse, parseSVG, makeAbsolute } from './path-parser.js';
-import { SvgPath, Command } from './path.js';
-import { Matrix } from '../geom/matrix.js';
 import { Point } from '../geom.js';
-import { isObject, partitionArray, define, nonenumerable } from '../misc.js';
+import { Matrix } from '../geom/matrix.js';
+import { define } from '../misc.js';
+import { isObject } from '../misc.js';
+import { nonenumerable } from '../misc.js';
+import { partitionArray } from '../misc.js';
+import { makeAbsolute } from './path-parser.js';
+import { parse } from './path-parser.js';
+import { parseSVG } from './path-parser.js';
+import { Command } from './path.js';
+import { SvgPath } from './path.js';
 
 export const isUpper = s => s.toUpperCase() == s;
 

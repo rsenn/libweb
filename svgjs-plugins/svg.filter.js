@@ -1,4 +1,13 @@
-import { Array as SVGArray, Container, Defs, Element, extend, find, namespaces as ns, nodeOrNew, utils, wrapWithAttrCheck } from '../svg.js';
+import { Array as SVGArray } from '../svg.js';
+import { Container } from '../svg.js';
+import { Defs } from '../svg.js';
+import { Element } from '../svg.js';
+import { extend } from '../svg.js';
+import { find } from '../svg.js';
+import { namespaces as ns } from '../svg.js';
+import { nodeOrNew } from '../svg.js';
+import { utils } from '../svg.js';
+import { wrapWithAttrCheck } from '../svg.js';
 
 export default class Filter extends Element {
   constructor(node) {

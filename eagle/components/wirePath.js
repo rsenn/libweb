@@ -1,5 +1,6 @@
 import { h } from '../../preact.js';
-import { log, useTrkl } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, data, ...props }) => {
   if(data) layer ??= data.document.getLayer(isNaN(+data.attributes.layer) ? data.attributes.layer : +data.attributes.layer);

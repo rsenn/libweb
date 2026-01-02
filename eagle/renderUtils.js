@@ -1,8 +1,14 @@
 import { classNames } from '../classNames.js';
-import { ImmutableTransformationList, TransformationList } from '../geom/transformation.js';
 import { Point } from '../geom/point.js';
+import { ImmutableTransformationList } from '../geom/transformation.js';
+import { TransformationList } from '../geom/transformation.js';
 import { useTrkl } from '../hooks/useTrkl.js';
-import { range, roundTo, unique, mod, mul } from '../misc.js';
+import { mod } from '../misc.js';
+import { mul } from '../misc.js';
+import { range } from '../misc.js';
+import { roundTo } from '../misc.js';
+import { unique } from '../misc.js';
+
 export { useTrkl } from '../hooks/useTrkl.js';
 
 const PI = Math.PI;
@@ -10,6 +16,7 @@ export const RAD2DEG = 180 / Math.PI;
 export const DEG2RAD = Math.PI / 180;
 
 const rad2deg = mul(RAD2DEG);
+
 const deg2rad = mul(DEG2RAD);
 
 export const VERTICAL = 1;

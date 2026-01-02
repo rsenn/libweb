@@ -1,6 +1,10 @@
+import { decamelize } from '../misc.js';
+import { isObject } from '../misc.js';
+import { matchAll } from '../misc.js';
+import { memoize } from '../misc.js';
+import { tryCatch } from '../misc.js';
+import { unique } from '../misc.js';
 import { Element } from './element.js';
-import { decamelize, isObject, matchAll, memoize, tryCatch, unique } from '../misc.js';
-
 function size(...args) {
   function size(obj) {
     if(isObject(obj)) {
@@ -80,6 +84,7 @@ const getStyleMap = (obj, key) => {
         .join(' '),
   );
 };
+
 const getStyleSheet = (obj, key) => {
   let sheet = obj.cssRules ? obj : find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
 

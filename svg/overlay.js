@@ -1,4 +1,6 @@
-import { Element, Point, SVG } from '../dom.js';
+import { Element } from '../dom.js';
+import { Point } from '../dom.js';
+import { SVG } from '../dom.js';
 
 export function SvgPathTracer(path) {
   let bbox = SVG.bbox(path);

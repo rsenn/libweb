@@ -3,10 +3,15 @@ import { Line } from '../geom/line.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { isSize } from '../geom/size.js';
-import { defineGetterSetter, isObject, memoize, padAnsi } from '../misc.js';
-import { makeAbsolute, parseSVG } from '../svg/path-parser.js';
+import { defineGetterSetter } from '../misc.js';
+import { isObject } from '../misc.js';
+import { memoize } from '../misc.js';
+import { padAnsi } from '../misc.js';
+import { makeAbsolute } from '../svg/path-parser.js';
+import { parseSVG } from '../svg/path-parser.js';
 import SvgPath from '../svg/path.js';
-import { Element, isElement } from './element.js';
+import { Element } from './element.js';
+import { isElement } from './element.js';
 
 export class SVG extends Element {
   static create(name, { outerHTML, innerHTML, text, ...attr }, parent) {

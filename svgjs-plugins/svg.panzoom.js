@@ -1,4 +1,9 @@
-import { Svg, on, off, extend, Matrix, Box } from '../svg.js';
+import { Box } from '../svg.js';
+import { extend } from '../svg.js';
+import { Matrix } from '../svg.js';
+import { off } from '../svg.js';
+import { on } from '../svg.js';
+import { Svg } from '../svg.js';
 
 const normalizeEvent = ev => ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }];
 

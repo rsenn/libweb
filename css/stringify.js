@@ -1,4 +1,6 @@
-import { SelectorType, AttributeAction } from './types.js';
+import { AttributeAction } from './types.js';
+import { SelectorType } from './types.js';
+
 const attribValueChars = ['\\', '"'];
 const pseudoValueChars = [...attribValueChars, '(', ')'];
 const charsToEscapeInAttributeValue = new Set(attribValueChars.map(c => c.charCodeAt(0)));

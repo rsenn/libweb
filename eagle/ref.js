@@ -1,9 +1,14 @@
 import { toXML } from '../json.js';
-import { abbreviate, className, isObject, define, nonenumerable } from '../misc.js';
+import { abbreviate } from '../misc.js';
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { isObject } from '../misc.js';
+import { nonenumerable } from '../misc.js';
 import inspect from '../objectInspect.js';
 import { Pointer } from '../pointer.js';
 import { ImmutableXPath } from '../xml/xpath.js';
-import { concat, text } from './common.js';
+import { concat } from './common.js';
+import { text } from './common.js';
 
 export const ChildrenSym = Symbol('⊳');
 

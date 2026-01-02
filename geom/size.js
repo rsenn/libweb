@@ -1,4 +1,12 @@
-import { bindProperties, define, defineGetter, getMethodNames, immutableClass, isObject, keys, matchAll, roundTo } from '../misc.js';
+import { bindProperties } from '../misc.js';
+import { define } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { getMethodNames } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { isObject } from '../misc.js';
+import { keys } from '../misc.js';
+import { matchAll } from '../misc.js';
+import { roundTo } from '../misc.js';
 import { isPoint } from './point.js';
 
 export function Size(...args) {

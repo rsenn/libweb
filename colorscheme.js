@@ -1,4 +1,5 @@
-import { HSLA, RGBA } from '../lib/color.js';
+import { HSLA } from '../lib/color.js';
+import { RGBA } from '../lib/color.js';
 import { Element } from '../lib/dom.js';
 
 export class ColorScheme {

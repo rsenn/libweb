@@ -1,5 +1,11 @@
-import { bindProperties, defineGetter, inspectSymbol, isObject, roundDigits, roundTo } from '../misc.js';
-import { isPoint, Point } from './point.js';
+import { bindProperties } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { inspectSymbol } from '../misc.js';
+import { isObject } from '../misc.js';
+import { roundDigits } from '../misc.js';
+import { roundTo } from '../misc.js';
+import { isPoint } from './point.js';
+import { Point } from './point.js';
 
 export function Circle(x, y, radius) {
   let obj = this || null;

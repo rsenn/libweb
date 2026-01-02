@@ -1,14 +1,19 @@
 import { ucfirst } from '../misc.js';
-import { Arc, describeArc, polarToCartesian } from './components/arc.js';
+import { Arc } from './components/arc.js';
+import { describeArc } from './components/arc.js';
+import { polarToCartesian } from './components/arc.js';
 import { Background } from './components/background.js';
 import { Board } from './components/board.js';
-import { Circle, PinSizes } from './components/circle.js';
+import { Circle } from './components/circle.js';
+import { PinSizes } from './components/circle.js';
 import { Cross } from './components/cross.js';
 import { Dimension } from './components/dimension.js';
 import { Drawing } from './components/drawing.js';
 import { Element } from './components/element.js';
 import { Frame } from './components/frame.js';
-import { Grid, Pattern, useGrid } from './components/grid.js';
+import { Grid } from './components/grid.js';
+import { Pattern } from './components/grid.js';
+import { useGrid } from './components/grid.js';
 import { Hole } from './components/hole.js';
 import { Instance } from './components/instance.js';
 import { Origin } from './components/origin.js';
@@ -28,7 +33,6 @@ import { TextElement } from './components/textElement.js';
 import { Via } from './components/via.js';
 import { Wire } from './components/wire.js';
 import { WirePath } from './components/wirePath.js';
-
 let prevName;
 
 export const ElementNameToComponent = name => {
@@ -72,9 +76,13 @@ export const ElementNameToComponent = name => {
 export const ElementToComponent = element => ElementNameToComponent(element.tagName);
 
 export { polarToCartesian, describeArc, Arc } from './components/arc.js';
+
 export { Background } from './components/background.js';
+
 export { Board } from './components/board.js';
+
 export { PinSizes, Circle } from './components/circle.js';
+
 export { Cross } from './components/cross.js';
 export { Dimension } from './components/dimension.js';
 export { Drawing } from './components/drawing.js';

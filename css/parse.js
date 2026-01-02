@@ -1,4 +1,6 @@
-import { SelectorType, AttributeAction } from './types.js';
+import { AttributeAction } from './types.js';
+import { SelectorType } from './types.js';
+
 const reName = /^[^#\\]?(?:\\(?:[\da-f]{1,6}\s?|.)|[\w\u00B0-\uFFFF-])+/;
 const reEscape = /\\([\da-f]{1,6}\s?|(\s)|.)/gi;
 const actionTypes = new Map([

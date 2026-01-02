@@ -2,7 +2,8 @@ import { Rect } from '../geom/rect.js';
 import { TransformationList } from '../geom/transformation.js';
 import { lazyProperties } from '../misc.js';
 import trkl from '../trkl.js';
-import { Element, isElement } from './element.js';
+import { Element } from './element.js';
+import { isElement } from './element.js';
 import { React } from './preactComponent.js';
 
 const GetSet = (getFn, setFn) => value => value !== undefined ? setFn(value) : getFn();

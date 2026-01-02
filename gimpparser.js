@@ -1,9 +1,9 @@
-import { Parser } from 'binary-parser';
-import FS from 'fs';
 import { Buffer } from 'buffer';
+import FS from 'fs';
+import XCFCompositer from './lib/xcfcompositer';
+import { Parser } from 'binary-parser';
 import Lazy from 'lazy.js';
 import PNGImage from 'pngjs-image';
-import XCFCompositer from './lib/xcfcompositer';
 
 const PROP_END = 0;
 const PROP_COLORMAP = 1;

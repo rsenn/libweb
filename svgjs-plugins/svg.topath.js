@@ -1,5 +1,6 @@
-import { Path, Shape, extend } from '../svg.js';
-
+import { extend } from '../svg.js';
+import { Path } from '../svg.js';
+import { Shape } from '../svg.js';
 // Normalise attributes
 const normaliseAttributes = attr => {
   for(const a in attr) {

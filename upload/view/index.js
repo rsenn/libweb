@@ -74,4 +74,5 @@ export const View = ({ type, sorting }, images) => {
 };
 
 export default View;
+
 export { List, Card };

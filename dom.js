@@ -1,10 +1,52 @@
-import { readFileSync } from './fs.js';
-import { wrapFunction, isInstanceOf, types, className, nonenumerable, arrayFacade, assert, camelize, decamelize, define, declare, extend, mapObject, getset, getter, gettersetter, isBool, isObject, isFunction, isNumeric, isNumber, isString, isSymbol, isPropertyKey, memoize, modifier, quote, range, properties, isPrototypeOf, weakMapper, decodeHTMLEntities, } from './misc.js';
 import { parseSelectors } from './css3-selectors.js';
-import { get, iterate, find, clone, select, RECURSE, YIELD_NO_RECURSE, PATH_AS_POINTER, FILTER_KEY_OF, FILTER_HAS_KEY, FILTER_NEGATE, RETURN_VALUE_PATH, RETURN_PATH, RETURN_VALUE, TYPE_STRING, TYPE_OBJECT, } from './deep.js';
+import { clone } from './deep.js';
+import { FILTER_KEY_OF } from './deep.js';
+import { FILTER_NEGATE } from './deep.js';
+import { find } from './deep.js';
+import { get } from './deep.js';
+import { iterate } from './deep.js';
+import { PATH_AS_POINTER } from './deep.js';
+import { RECURSE } from './deep.js';
+import { RETURN_PATH } from './deep.js';
+import { RETURN_VALUE } from './deep.js';
+import { TYPE_OBJECT } from './deep.js';
+import { TYPE_STRING } from './deep.js';
+import { YIELD_NO_RECURSE } from './deep.js';
+import { readFileSync } from './fs.js';
+import { arrayFacade } from './misc.js';
+import { camelize } from './misc.js';
+import { className } from './misc.js';
+import { decamelize } from './misc.js';
+import { decodeHTMLEntities } from './misc.js';
+import { define } from './misc.js';
+import { extend } from './misc.js';
+import { getset } from './misc.js';
+import { getter } from './misc.js';
+import { gettersetter } from './misc.js';
+import { isBool } from './misc.js';
+import { isFunction } from './misc.js';
+import { isInstanceOf } from './misc.js';
+import { isNumber } from './misc.js';
+import { isNumeric } from './misc.js';
+import { isObject } from './misc.js';
+import { isPropertyKey } from './misc.js';
+import { isPrototypeOf } from './misc.js';
+import { isString } from './misc.js';
+import { mapObject } from './misc.js';
+import { memoize } from './misc.js';
+import { modifier } from './misc.js';
+import { nonenumerable } from './misc.js';
+import { properties } from './misc.js';
+import { quote } from './misc.js';
+import { range } from './misc.js';
+import { types } from './misc.js';
+import { weakMapper } from './misc.js';
+import { DereferenceError } from './pointer.js';
+import { Pointer } from './pointer.js';
 import { TreeWalker } from './tree_walker.js';
-import { read as readXML, write as writeXML } from './xml.js';
-import { DereferenceError, Pointer } from './pointer.js';
+import { read as readXML } from './xml.js';
+import { write as writeXML } from './xml.js';
+
 export { DereferenceError, Pointer } from './pointer.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
@@ -15,13 +57,17 @@ const DEBUG = (env => {
 })('dom');
 
 const proxyOf = gettersetter(new WeakMap());
+
 const proxyFor = gettersetter(new WeakMap());
 
 const proxy = (proxy, obj) => (proxyOf(obj, proxy), proxyFor(proxy, obj));
 
 const rawNode = gettersetter(new WeakMap());
+
 const parentNodes = gettersetter(new WeakMap());
+
 const ownerElements = gettersetter(new WeakMap());
+
 const ownerDocument = gettersetter(new WeakMap());
 const textValues = gettersetter(new WeakMap());
 

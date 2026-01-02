@@ -1,5 +1,6 @@
+import { extend } from '../misc.js';
+import { properties } from '../misc.js';
 import { Point } from './point.js';
-import { extend, define, properties } from '../misc.js';
 
 export class Arc {
   constructor() {}

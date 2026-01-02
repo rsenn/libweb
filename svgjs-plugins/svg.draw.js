@@ -1,9 +1,11 @@
-import { extend, Element, on, off } from '../svg.js';
+import { Element } from '../svg.js';
+import { extend } from '../svg.js';
+import { off } from '../svg.js';
+import { on } from '../svg.js';
 import { circle } from './circle.js';
 import { ellipse } from './ellipse.js';
 import { lineable } from './lineable.js';
 import { rectable } from './rectable.js';
-
 // Our Object which manages drawing
 class PaintHandler {
   // Default values. Can be changed for the whole project if needed

@@ -1,5 +1,17 @@
-import { declare, properties, define } from './misc.js';
-import { Prototypes, Factory, Parser, HTMLCollection, NamedMap, NamedNodeMap, Element, Document, Node, Collection } from './dom.js';
+import { Collection } from './dom.js';
+import { Document } from './dom.js';
+import { Element } from './dom.js';
+import { Factory } from './dom.js';
+import { HTMLCollection } from './dom.js';
+import { NamedMap } from './dom.js';
+import { NamedNodeMap } from './dom.js';
+import { Node } from './dom.js';
+import { Parser } from './dom.js';
+import { Prototypes } from './dom.js';
+import { declare } from './misc.js';
+import { define } from './misc.js';
+import { properties } from './misc.js';
+
 export * from './dom.js';
 
 function FindChild(element, name) {

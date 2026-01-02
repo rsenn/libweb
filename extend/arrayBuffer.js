@@ -1,5 +1,9 @@
-import { searchArrayBuffer, dupArrayBuffer, toArrayBuffer, toString, toPointer } from 'misc';
-import { define, nonenumerable } from 'util';
+import { nonenumerable } from 'util';
+import { dupArrayBuffer } from 'misc';
+import { searchArrayBuffer } from 'misc';
+import { toArrayBuffer } from 'misc';
+import { toPointer } from 'misc';
+import { toString } from 'misc';
 
 export function extendArrayBuffer(proto = ArrayBuffer.prototype, ctor = ArrayBuffer) {
   nonenumerable(

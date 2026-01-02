@@ -1,4 +1,7 @@
-import { className, define, inspectSymbol, isFunction } from '../misc.js';
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { inspectSymbol } from '../misc.js';
+import { isFunction } from '../misc.js';
 import { text } from './common.js';
 
 const toArray = arg => (Array.isArray(arg) ? arg : [arg]);

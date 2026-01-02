@@ -1,4 +1,7 @@
-import { className, isNumeric, isObject, weakMapper } from '../misc.js';
+import { className } from '../misc.js';
+import { isNumeric } from '../misc.js';
+import { isObject } from '../misc.js';
+import { weakMapper } from '../misc.js';
 import ObservableMembrane from '../proxy/observableMembrane.js';
 import { ImmutableXPath } from '../xml/xpath.js';
 import { ImmutablePath } from './path.js';

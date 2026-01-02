@@ -1,5 +1,4 @@
 import { SVG } from '../svg.js';
-
 SVG.extend(SVG.Gradient, {
   // Get color at given offset
   colorAt(offset) {

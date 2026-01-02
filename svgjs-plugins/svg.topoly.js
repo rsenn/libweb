@@ -1,5 +1,11 @@
-import { Path, PathArray, PointArray, Polygon, Polyline, Number as SVGNumber, extend, parser } from '../svg.js';
-
+import { extend } from '../svg.js';
+import { Number as SVGNumber } from '../svg.js';
+import { parser } from '../svg.js';
+import { Path } from '../svg.js';
+import { PathArray } from '../svg.js';
+import { PointArray } from '../svg.js';
+import { Polygon } from '../svg.js';
+import { Polyline } from '../svg.js';
 // Normalise attributes
 const normaliseAttributes = attr => {
   for(var a in attr) {

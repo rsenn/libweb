@@ -1,10 +1,14 @@
 import { RGBA } from '../color/rgba.js';
-import { BBox, Line, Point, Rect } from '../geom.js';
+import { BBox } from '../geom.js';
+import { Line } from '../geom.js';
+import { Point } from '../geom.js';
+import { Rect } from '../geom.js';
 import { className } from '../misc.js';
 import { h } from '../preact.js';
 import { Palette } from './common.js';
 import { Instance } from './components/instance.js';
-import { MakeCoordTransformer, useTransform } from './renderUtils.js';
+import { MakeCoordTransformer } from './renderUtils.js';
+import { useTransform } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 
 export class SchematicRenderer extends EagleSVGRenderer {

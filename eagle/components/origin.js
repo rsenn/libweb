@@ -1,5 +1,6 @@
 import { h } from '../../preact.js';
-import { log, useTrkl } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
 import { Cross } from './cross.js';
 
 export const Origin = ({ x, y, layer, element, color, radius = 0.45, width = 0.05, ...props }) => {

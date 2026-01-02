@@ -1,5 +1,4 @@
 import { SVG } from '../svg.js';
-
 function parseXML(xmlStr) {
   return new window.DOMParser().parseFromString(xmlStr, 'text/xml');
 }

@@ -1,5 +1,4 @@
 import { SVG } from '../svg.js';
-
 (function (SVG, undefined) {
   function PathSegmentHandle(pos, seg, handler, index) {
     if(seg[0] !== 'C') return this;

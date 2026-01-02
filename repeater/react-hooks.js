@@ -1,4 +1,5 @@
-import { useEffect, useState } from '../preact.js';
+import { useEffect } from '../preact.js';
+import { useState } from '../preact.js';
 import { Repeater } from './repeater.js';
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.

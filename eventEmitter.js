@@ -1,3 +1,5 @@
+import { isFunction } from './misc.js';
+import { isNumber } from './misc.js';
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18,9 +20,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-import { isFunction, isNumber } from './misc.js';
-
 export function EventEmitter() {
   this.events = this.events || {};
   this.maxListeners = this.maxListeners || undefined;

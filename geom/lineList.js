@@ -1,4 +1,6 @@
-import { defineGetter, immutableClass, types } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { types } from '../misc.js';
 import { BBox } from './bbox.js';
 import { Line } from './line.js';
 import { Point } from './point.js';

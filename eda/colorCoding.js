@@ -1,5 +1,8 @@
 import { HSLA } from '../color.js';
-import { GetExponent, GetMantissa, NumberToValue, ValueToNumber } from './values.js';
+import { GetExponent } from './values.js';
+import { GetMantissa } from './values.js';
+import { NumberToValue } from './values.js';
+import { ValueToNumber } from './values.js';
 
 export { GetExponent, GetMantissa, ValueToNumber, NumberToValue } from './values.js';
 

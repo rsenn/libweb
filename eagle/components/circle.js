@@ -2,7 +2,9 @@ import { TransformationList } from '../../geom/transformation.js';
 import { roundTo } from '../../misc.js';
 import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { MakeCoordTransformer } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const PinSizes = {
   long: 3,

@@ -21,6 +21,7 @@ const {
 //const ObjectDefineProperty = define;
 
 const { push: ArrayPush, concat: ArrayConcat, map: ArrayMap } = Array.prototype;
+
 const OtS = {}.toString;
 
 function toString(obj) {
@@ -198,8 +199,11 @@ class BaseProxyHandler {
 }
 
 const getterMap = new WeakMap();
+
 const setterMap = new WeakMap();
+
 const reverseGetterMap = new WeakMap();
+
 const reverseSetterMap = new WeakMap();
 
 class ReactiveProxyHandler extends BaseProxyHandler {

@@ -1,3 +1,4 @@
+import { globSync } from 'fs';
 // ==UserScript==
 
 // @name         util.js
@@ -14,9 +15,6 @@
 
 /* jshint esversion: 6 */
 /* jshint ignore:start */
-
-import { globSync } from 'fs';
-
 /**
  * Class for utility.
  *
@@ -6200,11 +6198,15 @@ Util.setReadHandler = (fd, handler) => (Util.getPlatform() == 'quickjs' ? import
 export default Util();
 
 export const GLOB_NOSPACE = -1;
+
 export const GLOB_ABORTED = -2;
+
 export const GLOB_NOMATCH = -3;
+
 export const GLOB_NOSYS = -4;
 
 export const GLOB_ALTDIRFUNC = 64;
+
 export const GLOB_APPEND = 1;
 export const GLOB_BRACE = 128;
 export const GLOB_DOOFFS = 2;

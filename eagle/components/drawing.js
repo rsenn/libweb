@@ -1,10 +1,12 @@
 import { TransformationList } from '../../geom.js';
 import { useTrkl } from '../../hooks/useTrkl.js';
-import { h, toChildArray } from '../../preact.js';
+import { h } from '../../preact.js';
+import { toChildArray } from '../../preact.js';
 import { log } from '../renderUtils.js';
 import { Background } from './background.js';
 import { Board } from './board.js';
-import { Grid, Pattern } from './grid.js';
+import { Grid } from './grid.js';
+import { Pattern } from './grid.js';
 import { SVG } from './svg.js';
 
 export const Drawing = ({ data, viewBox, rect, bounds, attrs, grid, nodefs, transform, styles, children, style, ...props }) => {

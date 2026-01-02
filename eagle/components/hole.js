@@ -1,7 +1,10 @@
 import { TransformationList } from '../../geom.js';
 import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { ElementToClass, log, MakeCoordTransformer, useTrkl } from '../renderUtils.js';
+import { ElementToClass } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { MakeCoordTransformer } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const Hole = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;

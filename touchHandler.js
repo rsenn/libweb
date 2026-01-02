@@ -1,8 +1,7 @@
 import { ScrollDisabler } from '../lib/scrollHandler.js';
-//import { Element } from './dom.js';
+import { roundTo } from './misc.js';
 import { trkl } from './trkl.js';
-import { roundDigits, roundTo } from './misc.js';
-
+//import { Element } from './dom.js';
 function CreateElement(tag, attributes = {}, parent = document.body) {
   let e = attributes.xmlns ? document.createElementNS(attributes.xmlns, tag) : document.createElement(tag);
 

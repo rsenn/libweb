@@ -1,5 +1,15 @@
-import { escape, abbreviate, className, getMethodNames, isObject, once, pad, propertyLookup, randInt, trim, weakMapper } from '../misc.js';
 import * as deep from '../deep.js';
+import { abbreviate } from '../misc.js';
+import { className } from '../misc.js';
+import { escape } from '../misc.js';
+import { getMethodNames } from '../misc.js';
+import { isObject } from '../misc.js';
+import { once } from '../misc.js';
+import { pad } from '../misc.js';
+import { propertyLookup } from '../misc.js';
+import { randInt } from '../misc.js';
+import { trim } from '../misc.js';
+import { weakMapper } from '../misc.js';
 import inspect from '../objectInspect.js';
 import { Stack } from '../stack.js';
 import { AnonymousDefaultExportedClassDeclaration } from './estree.js';

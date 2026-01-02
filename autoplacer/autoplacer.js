@@ -1,5 +1,4 @@
 import m2d from './math2d.js';
-
 let vdec = m2d.inc;
 let vinc = m2d.dec;
 let vmul = m2d.mul;

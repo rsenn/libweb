@@ -1,8 +1,26 @@
 import { makeLocalStorage } from './autoStore.js';
 import HashList from './container/hashList.js';
-import { CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, isElement, Line, Matrix, Node, Point, PointList, Rect, Size, SVG, Timer, default as dom, } from './dom-old.js';
+import { CSSTransformSetters } from './dom-old.js';
+import { default as dom } from './dom-old.js';
+import { Element } from './dom-old.js';
+import { ElementRectProxy } from './dom-old.js';
+import { ElementSizeProps } from './dom-old.js';
+import { ElementTransformation } from './dom-old.js';
+import { ElementXYProps } from './dom-old.js';
+import { isElement } from './dom-old.js';
+import { Line } from './dom-old.js';
+import { Matrix } from './dom-old.js';
+import { Node } from './dom-old.js';
+import { Point } from './dom-old.js';
+import { PointList } from './dom-old.js';
+import { Rect } from './dom-old.js';
+import { Size } from './dom-old.js';
+import { SVG } from './dom-old.js';
+import { Timer } from './dom-old.js';
+import { decamelize } from './misc.js';
+import { defineGetterSetter } from './misc.js';
+import { unique } from './misc.js';
 import { trkl } from './trkl.js';
-import { decamelize, defineGetterSetter, unique } from './misc.js';
 //prettier-ignore
 
 //var root = globalThis.window ? window : global;

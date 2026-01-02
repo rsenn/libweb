@@ -1,5 +1,4 @@
 import { SVG } from '../svg.js';
-
 // Add builders to polygon
 SVG.extend(SVG.Polyline, SVG.Polygon, SVG.FX, {
   // Dynamic star shape

@@ -1,4 +1,5 @@
-import { extend, Element } from '../svg.js';
+import { Element } from '../svg.js';
+import { extend } from '../svg.js';
 
 export function ResizeHandler(el) {
   el.remember('_resizeHandler', this);

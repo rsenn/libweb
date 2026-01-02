@@ -1,6 +1,22 @@
 import * as deep from '../deep.js';
-import { className, define, isObject } from '../misc.js';
-import { ArrowFunctionExpression, BlockStatement, ESNode, FunctionDeclaration, FunctionLiteral, Identifier, IfStatement, ImportDeclaration, ImportSpecifier, Literal, MemberExpression, ObjectPattern, Property, Statement, TemplateLiteral, } from './estree.js';
+import { className } from '../misc.js';
+import { define } from '../misc.js';
+import { isObject } from '../misc.js';
+import { ArrowFunctionExpression } from './estree.js';
+import { BlockStatement } from './estree.js';
+import { ESNode } from './estree.js';
+import { FunctionDeclaration } from './estree.js';
+import { FunctionLiteral } from './estree.js';
+import { Identifier } from './estree.js';
+import { IfStatement } from './estree.js';
+import { ImportDeclaration } from './estree.js';
+import { ImportSpecifier } from './estree.js';
+import { Literal } from './estree.js';
+import { MemberExpression } from './estree.js';
+import { ObjectPattern } from './estree.js';
+import { Property } from './estree.js';
+import { Statement } from './estree.js';
+import { TemplateLiteral } from './estree.js';
 
 const linebreak = new RegExp('\\r?\\n', 'g');
 

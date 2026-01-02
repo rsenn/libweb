@@ -1,7 +1,19 @@
-import { Point, TransformationList, Translation, Scaling } from '../../geom.js';
+import { Point } from '../../geom.js';
+import { Scaling } from '../../geom.js';
+import { TransformationList } from '../../geom.js';
+import { Translation } from '../../geom.js';
 import { mod } from '../../misc.js';
-import { Fragment, h } from '../../preact.js';
-import { Alignment, AlignmentAttrs, ExtractRotation, HORIZONTAL, log, MakeRotation, RAD2DEG, useTransformation, VERTICAL } from '../renderUtils.js';
+import { Fragment } from '../../preact.js';
+import { h } from '../../preact.js';
+import { Alignment } from '../renderUtils.js';
+import { AlignmentAttrs } from '../renderUtils.js';
+import { ExtractRotation } from '../renderUtils.js';
+import { HORIZONTAL } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { MakeRotation } from '../renderUtils.js';
+import { RAD2DEG } from '../renderUtils.js';
+import { useTransformation } from '../renderUtils.js';
+import { VERTICAL } from '../renderUtils.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, data, ...props }) => {
   const transformation2 = useTransformation(props.transformation);

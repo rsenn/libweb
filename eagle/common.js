@@ -1,5 +1,6 @@
 import { ImmutablePath } from '../json.js';
-import { className, isObject } from '../misc.js';
+import { className } from '../misc.js';
+import { isObject } from '../misc.js';
 
 const isBrowser = () => !!globalThis.navigator;
 

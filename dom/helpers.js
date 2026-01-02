@@ -1,4 +1,6 @@
-import { isString, isSymbol, isObject, arrayFacade } from '../misc.js';
+import { arrayFacade } from '../misc.js';
+import { isObject } from '../misc.js';
+import { isString } from '../misc.js';
 
 const inspectSymbol = Symbol.for('quickjs.inspect.custom');
 

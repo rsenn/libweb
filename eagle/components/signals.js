@@ -1,8 +1,8 @@
 import { h } from '../../preact.js';
 import { log } from '../renderUtils.js';
-import { Wire } from './wire.js';
-import { Via } from './via.js';
 import { Polygon } from './polygon.js';
+import { Via } from './via.js';
+import { Wire } from './wire.js';
 
 const componentIndex = {
   wire: Wire,

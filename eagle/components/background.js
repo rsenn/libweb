@@ -1,5 +1,6 @@
 import { h } from '../../preact.js';
-import { log, useTrkl } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const Background = ({ rect, attrs, ...props }) => {
   let bg = typeof attrs == 'function' ? useTrkl(attrs) : attrs;

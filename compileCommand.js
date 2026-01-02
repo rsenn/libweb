@@ -1,6 +1,18 @@
 import { spawn } from 'child_process';
-import { absolute, relative, isAbsolute, isRelative, join, normalize, basename, basepos } from './path.js';
-import { assert, define, nonenumerable, types, abbreviate, escape, unescape } from 'util';
+import { assert } from 'util';
+import { define } from 'util';
+import { escape } from 'util';
+import { nonenumerable } from 'util';
+import { types } from 'util';
+import { unescape } from 'util';
+import { absolute } from './path.js';
+import { basename } from './path.js';
+import { basepos } from './path.js';
+import { isAbsolute } from './path.js';
+import { isRelative } from './path.js';
+import { join } from './path.js';
+import { normalize } from './path.js';
+import { relative } from './path.js';
 //import inspect from 'inspect';
 
 export function PathTransformer(dir) {

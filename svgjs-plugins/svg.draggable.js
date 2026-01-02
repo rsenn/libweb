@@ -1,4 +1,9 @@
-import { Box, Element, G, extend, off, on } from '../svg.js';
+import { Box } from '../svg.js';
+import { Element } from '../svg.js';
+import { extend } from '../svg.js';
+import { G } from '../svg.js';
+import { off } from '../svg.js';
+import { on } from '../svg.js';
 
 const getCoordsFromEvent = ev => {
   if(ev.changedTouches) {

@@ -1,6 +1,7 @@
 import { h } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { log, useTransform } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { useTransform } from '../renderUtils.js';
 import { Instance } from './instance.js';
 
 export const Sheet = ({ data, opts = {}, ...props }) => {

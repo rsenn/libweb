@@ -1,5 +1,11 @@
-import { clamp, curry, define, defineGetter, immutableClass, randInt, roundTo, tryCatch } from '../misc.js';
-
+import { clamp } from '../misc.js';
+import { curry } from '../misc.js';
+import { define } from '../misc.js';
+import { defineGetter } from '../misc.js';
+import { immutableClass } from '../misc.js';
+import { randInt } from '../misc.js';
+import { roundTo } from '../misc.js';
+import { tryCatch } from '../misc.js';
 /**
  * @brief [brief description]
  * @param r  red value 0-255
@@ -637,6 +643,7 @@ for(let name of ['fromLAB']) {
 defineGetter(RGBA, Symbol.species, function() {
   return this;
 });
+
 export const ImmutableRGBA = immutableClass(RGBA);
 defineGetter(ImmutableRGBA, Symbol.species, () => ImmutableRGBA);
 

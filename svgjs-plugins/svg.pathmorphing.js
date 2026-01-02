@@ -1,5 +1,4 @@
 import { SVG } from '../svg.js';
-
 SVG.extend(SVG.PathArray, {
   morph(array) {
     var startArr = this.value,

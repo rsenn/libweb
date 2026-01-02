@@ -1,13 +1,17 @@
 import { RGBA } from '../color/rgba.js';
-import { BBox, Matrix, Rect } from '../geom.js';
+import { BBox } from '../geom.js';
+import { Matrix } from '../geom.js';
+import { Rect } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
-import { ucfirst, unique } from '../misc.js';
+import { ucfirst } from '../misc.js';
+import { unique } from '../misc.js';
+import { h } from '../preact.js';
 import { Palette } from './common.js';
-import { ElementToComponent, Origin } from './components.js';
+import { ElementToComponent } from './components.js';
+import { Origin } from './components.js';
 import { Frame } from './components/frame.js';
 import { MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
-import { h } from '../preact.js';
 
 export class LibraryRenderer extends EagleSVGRenderer {
   static pinSizes = {
@@ -153,8 +157,6 @@ if(translation) {
     let { component = Fragment, props = {}, item = { component: Fragment, props: {} }, asEntries = false, ...opts } = options;
     const { symbols, packages, devicesets } = this.doc.library;
       let allItems = (window.allItems = [...symbols, ...packages]);
-
-
     let bbox = allItems.reduce((a, it) => a.update(it), new BBox());
     let size = bbox.toRect(Rect.prototype).size;
     let items = [symbols, packages].reduce(

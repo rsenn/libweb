@@ -1,9 +1,11 @@
 import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl } from '../../hooks/useTrkl.js';
 import { define } from '../../misc.js';
-import { h, useRef } from '../../preact.js';
+import { h } from '../../preact.js';
+import { useRef } from '../../preact.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { log, useAttributes } from '../renderUtils.js';
+import { log } from '../renderUtils.js';
+import { useAttributes } from '../renderUtils.js';
 
 export const useGrid = data => {
   const factors = { inch: 25.4, mm: 1 };

@@ -1,5 +1,8 @@
+import { className } from '../misc.js';
+import { inspectSymbol } from '../misc.js';
+import { isObject } from '../misc.js';
+import { weakMapper } from '../misc.js';
 import inspect from '../objectInspect.js';
-import { inspectSymbol, className, isObject, weakMapper } from '../misc.js';
 
 const linebreak = /\r?\n/g;
 

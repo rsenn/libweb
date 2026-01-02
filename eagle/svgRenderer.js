@@ -1,11 +1,20 @@
-import { Point, Rect, TransformationList } from '../geom.js';
-import { define, inserter, isObject, mapWrapper, tryCatch } from '../misc.js';
+import { Point } from '../geom.js';
+import { Rect } from '../geom.js';
+import { TransformationList } from '../geom.js';
+import { define } from '../misc.js';
+import { inserter } from '../misc.js';
+import { isObject } from '../misc.js';
+import { mapWrapper } from '../misc.js';
+import { tryCatch } from '../misc.js';
 import { Pointer as ImmutablePath } from '../pointer.js';
 import { h } from '../preact.js';
 import trkl from '../trkl.js';
-import { Drawing, ElementToComponent } from './components.js';
+import { Drawing } from './components.js';
+import { ElementToComponent } from './components.js';
 import { EagleElement } from './element.js';
-import { HORIZONTAL, HORIZONTAL_VERTICAL, VERTICAL } from './renderUtils.js';
+import { HORIZONTAL } from './renderUtils.js';
+import { HORIZONTAL_VERTICAL } from './renderUtils.js';
+import { VERTICAL } from './renderUtils.js';
 
 const transformXPath = p => p.replace(/➟/g, 'children').replace(/ /g, '.').split(/\./g);
 

@@ -1,5 +1,6 @@
-import { DereferenceError, Pointer } from './pointer.js';
-import { isObject, isNumeric } from './misc.js';
+import { isNumeric } from './misc.js';
+import { isObject } from './misc.js';
+import { Pointer } from './pointer.js';
 
 export const TYPE_ALL = 0b11111111111111;
 export const TYPE_ARRAY = 1 << 13;
