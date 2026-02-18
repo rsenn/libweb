@@ -3,9 +3,9 @@
  * Licensed under MIT License. See LICENSE file for details.
  */
 
-import fs from 'fs';
+import { readFile, readFileSync } from 'fs';
 
-class Token {
+export class Token {
   constructor(type, content, ln) {
     this.type = type;
     this.content = content;
@@ -13,7 +13,7 @@ class Token {
   }
 }
 
-class TokenStream {
+export class TokenStream {
   constructor(input) {
     this.lines = input.split('\n');
     this.cur = 0;
@@ -60,7 +60,7 @@ class TokenStream {
   }
 }
 
-class UdiffParser {
+export class UdiffParser {
   constructor(stream) {
     this.stream = stream;
     this.errors = [];
@@ -68,7 +68,7 @@ class UdiffParser {
 
   parse() {
     this.errors = [];
-    return this.rule_diff();
+    return this.ruleDiff();
   }
 
   error(msg) {
@@ -89,15 +89,15 @@ class UdiffParser {
     return this.errors;
   }
 
-  rule_diff() {
+  ruleDiff() {
     let header = [];
     if(['ANY', 'EMPTY_LINE'].includes(this.stream.get().type)) {
-      header = this.rule_header();
+      header = this.ruleHeader();
     }
 
     let files = [];
     if(['DIFF', 'NEW_FMODE', 'DELETED_FMODE', 'OLD_MODE', 'INDEX', 'OLD_FILE'].includes(this.stream.get().type)) {
-      files = this.rule_files();
+      files = this.ruleFiles();
     }
 
     // optional empty line at the end
@@ -111,7 +111,7 @@ class UdiffParser {
     return { header, files, errors: this.getErrors() };
   }
 
-  rule_header() {
+  ruleHeader() {
     let header = [];
     while(['ANY', 'EMPTY_LINE'].includes(this.stream.get().type)) {
       const t = this.stream.next();
@@ -121,17 +121,17 @@ class UdiffParser {
     return header;
   }
 
-  rule_files() {
+  ruleFiles() {
     const files = [];
     while(['DIFF', 'NEW_FMODE', 'DELETED_FMODE', 'OLD_MODE', 'INDEX', 'OLD_FILE'].includes(this.stream.get().type)) {
-      const file = this.rule_file();
+      const file = this.ruleFile();
       files.push(file);
     }
 
     return files;
   }
 
-  rule_modes() {
+  ruleModes() {
     let fileMode = null;
     let oldMode = null;
     let newMode = null;
@@ -160,7 +160,7 @@ class UdiffParser {
     };
   }
 
-  rule_diffBody() {
+  ruleDiffBody() {
     // index line
     let index = null;
     if(this.stream.get().type === 'INDEX') {
@@ -180,7 +180,7 @@ class UdiffParser {
     const t = this.stream.get();
     switch (t.type) {
       case 'CHUNK':
-        chunks = this.rule_chunks();
+        chunks = this.ruleChunks();
         break;
       case 'DIFF':
       case 'EMPTY_LINE':
@@ -198,7 +198,7 @@ class UdiffParser {
     };
   }
 
-  rule_file() {
+  ruleFile() {
     // diff line
     let header = null;
     if(this.stream.get().type === 'DIFF') {
@@ -208,13 +208,13 @@ class UdiffParser {
     // mode line (optional)
     let modes = null;
     if(['NEW_FMODE', 'DELETED_FMODE', 'OLD_MODE'].includes(this.stream.get().type)) {
-      modes = this.rule_modes();
+      modes = this.ruleModes();
     }
 
     let diffBody = null;
     const t = this.stream.get();
     if(['INDEX', 'OLD_FILE'].includes(t.type)) {
-      diffBody = this.rule_diffBody();
+      diffBody = this.ruleDiffBody();
     } else if(modes.fileMode !== null) {
       // If no body & has file mode (new or deleted), it is an error
       this.expect(t, ['INDEX', 'OLD_FILE']);
@@ -232,17 +232,17 @@ class UdiffParser {
     };
   }
 
-  rule_chunks() {
+  ruleChunks() {
     const chunks = [];
     while(this.stream.get().type === 'CHUNK') {
-      const chunk = this.rule_chunk();
+      const chunk = this.ruleChunk();
       chunks.push(chunk);
     }
 
     return chunks;
   }
 
-  rule_chunk() {
+  ruleChunk() {
     const header = this.stream.next();
     this.expect(header, 'CHUNK');
 
@@ -256,21 +256,30 @@ class UdiffParser {
   }
 }
 
-const parseDiffString = input => {
+export function parseDiffString(input) {
   const tokenStream = new TokenStream(input);
   const parser = new UdiffParser(tokenStream);
 
   return parser.parse();
-};
+}
 
-const parseDiffFile = async filepath => {
-  let data = await fs.readFile(filepath, 'utf-8');
+export async function parseDiffFile(filepath) {
+  const data = await readFile(filepath, 'utf-8');
   return parseDiffString(data);
-};
+}
 
-const parseDiffFileSync = filepath => {
-  const data = fs.readFileSync(filepath, 'utf8');
+export function parseDiffFileSync(filepath) {
+  const data = readFileSync(filepath, 'utf-8');
   return parseDiffString(data);
-};
+}
 
-export { parseDiffFile, parseDiffFileSync, parseDiffString };
+export function printDiffString(diff) {
+  let o = '';
+
+  for(const { header, index, oldFile, newFile, chunks } of diff.files) {
+    o += header + '\n' + index + '\n' + oldFile + '\n' + newFile + '\n';
+    for(const { header, content } of chunks) o += header + '\n' + content.reduce((a, s) => a + s + '\n', '');
+  }
+
+  return o;
+}
