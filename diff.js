@@ -12,13 +12,12 @@ export class DiffFile {
   }
 }
 
+export const readDiff = input => {
+  if(!input) return [];
+  if(typeof input !== 'string' || input.match(/^\s+$/)) return [];
 
-export const readDiff = (input) => {
-  if (!input) return [];
-  if (typeof input !== "string" || input.match(/^\s+$/)) return [];
-
-  const lines = input.split("\n");
-  if (lines.length === 0) return [];
+  const lines = input.split('\n');
+  if(lines.length === 0) return [];
 
   const files = [];
   let currentFile = null;
@@ -27,9 +26,9 @@ export const readDiff = (input) => {
   let addedLineCounter = 0;
   let currentFileChanges = null;
 
-  const normal = (line) => {
+  const normal = line => {
     currentChunk?.changes.push({
-      type: "normal",
+      type: 'normal',
       normal: true,
       ln1: deletedLineCounter++,
       ln2: addedLineCounter++,
@@ -39,7 +38,7 @@ export const readDiff = (input) => {
     currentFileChanges.newLines--;
   };
 
-  const start = (line) => {
+  const start = line => {
     const [fromFileName, toFileName] = parseFiles(line) ?? [];
 
     currentFile = {
@@ -54,21 +53,21 @@ export const readDiff = (input) => {
   };
 
   const restart = () => {
-    if (!currentFile || currentFile.chunks.length) start();
+    if(!currentFile || currentFile.chunks.length) start();
   };
 
   const newFile = (_, match) => {
     restart();
     currentFile.new = true;
     currentFile.newMode = match[1];
-    currentFile.from = "/dev/null";
+    currentFile.from = '/dev/null';
   };
 
   const deletedFile = (_, match) => {
     restart();
     currentFile.deleted = true;
     currentFile.oldMode = match[1];
-    currentFile.to = "/dev/null";
+    currentFile.to = '/dev/null';
   };
 
   const oldMode = (_, match) => {
@@ -83,26 +82,26 @@ export const readDiff = (input) => {
 
   const index = (line, match) => {
     restart();
-    currentFile.index = line.split(" ").slice(1);
-    if (match[1]) {
+    currentFile.index = line.split(' ').slice(1);
+    if(match[1]) {
       currentFile.oldMode = currentFile.newMode = match[1].trim();
     }
   };
 
-  const fromFile = (line) => {
+  const fromFile = line => {
     restart();
     currentFile.from = parseOldOrNewFile(line);
   };
 
-  const toFile = (line) => {
+  const toFile = line => {
     restart();
     currentFile.to = parseOldOrNewFile(line);
   };
 
-  const toNumOfLines = (number) => +(number || 1);
+  const toNumOfLines = number => +(number || 1);
 
   const chunk = (line, match) => {
-    if (!currentFile) {
+    if(!currentFile) {
       start(line);
     }
 
@@ -125,11 +124,11 @@ export const readDiff = (input) => {
     currentFile.chunks.push(currentChunk);
   };
 
-  const del = (line) => {
-    if (!currentChunk) return;
+  const del = line => {
+    if(!currentChunk) return;
 
     currentChunk.changes.push({
-      type: "del",
+      type: 'del',
       del: true,
       ln: deletedLineCounter++,
       content: line,
@@ -138,11 +137,11 @@ export const readDiff = (input) => {
     currentFileChanges.oldLines--;
   };
 
-  const add = (line) => {
-    if (!currentChunk) return;
+  const add = line => {
+    if(!currentChunk) return;
 
     currentChunk.changes.push({
-      type: "add",
+      type: 'add',
       add: true,
       ln: addedLineCounter++,
       content: line,
@@ -151,8 +150,8 @@ export const readDiff = (input) => {
     currentFileChanges.newLines--;
   };
 
-  const eof = (line) => {
-    if (!currentChunk) return;
+  const eof = line => {
+    if(!currentChunk) return;
 
     const [mostRecentChange] = currentChunk.changes.slice(-1);
 
@@ -186,34 +185,31 @@ export const readDiff = (input) => {
     [/^\s+/, normal],
   ];
 
-  const parseContentLine = (line) => {
-    for (const [pattern, handler] of schemaContent) {
+  const parseContentLine = line => {
+    for(const [pattern, handler] of schemaContent) {
       const match = line.match(pattern);
-      if (match) {
+      if(match) {
         handler(line, match);
         break;
       }
     }
-    if (
-      currentFileChanges.oldLines === 0 &&
-      currentFileChanges.newLines === 0
-    ) {
+    if(currentFileChanges.oldLines === 0 && currentFileChanges.newLines === 0) {
       currentFileChanges = null;
     }
   };
 
-  const parseHeaderLine = (line) => {
-    for (const [pattern, handler] of schemaHeaders) {
+  const parseHeaderLine = line => {
+    for(const [pattern, handler] of schemaHeaders) {
       const match = line.match(pattern);
-      if (match) {
+      if(match) {
         handler(line, match);
         break;
       }
     }
   };
 
-  const parseLine = (line) => {
-    if (currentFileChanges) {
+  const parseLine = line => {
+    if(currentFileChanges) {
       parseContentLine(line);
     } else {
       parseHeaderLine(line);
@@ -221,7 +217,7 @@ export const readDiff = (input) => {
     return;
   };
 
-  for (const line of lines) parseLine(line);
+  for(const line of lines) parseLine(line);
 
   return files;
 };
