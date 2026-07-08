@@ -6,9 +6,22 @@ import { isObject } from '../misc.js';
 import { weakMapper } from '../misc.js';
 
 const Object2Array = (xmlObj, flat) => {
-  let entries = [...deep.flatten(xmlObj, new Map()).entries()].map(([k, v]) => [{ attributes: 1, tagName: 0, children: 2 }[k], v]);
+  let entries = [...deep.flatten(xmlObj, new Map()).entries()].map(([k, v]) => [
+    { attributes: 1, tagName: 0, children: 2 }[k],
+    v,
+  ]);
 
-  if(!flat) entries = entries.reduce((acc, [k, v]) => /*console.log('deep.set(', acc, k, abbreviate(v, 10), ')'), */ (deep.set(acc, k, v), acc), []);
+  if(!flat)
+    entries = entries.reduce(
+      (
+        acc,
+        [k, v],
+      ) => /*console.log('deep.set(', acc, k, abbreviate(v, 10), ')'), */ (
+        deep.set(acc, k, v),
+        acc
+      ),
+      [],
+    );
   return entries;
 };
 
@@ -24,7 +37,8 @@ export class XMLIterator extends IteratorAdapter {
     if(node.children && node.children.length > 0) {
       let a = node.children;
       let p = (path || []).concat(['children']);
-      for(let i = 0; i < a.length; i++) yield* this.iterate(a[i], f, p.concat([i]), root);
+      for(let i = 0; i < a.length; i++)
+        yield* this.iterate(a[i], f, p.concat([i]), root);
     }
   }
 }
@@ -41,7 +55,8 @@ class XMLAttribute {
     let i = 0;
     define(a, { length });
 
-    for(let name of keys) if(a[name] === undefined) a[name] = new XMLAttribute(name, obj);
+    for(let name of keys)
+      if(a[name] === undefined) a[name] = new XMLAttribute(name, obj);
 
     return a;
   });
@@ -75,7 +90,8 @@ class XMLObject {
   constructor({ attributes, children, tagName }) {
     Array.prototype.push.call(this, tagName);
     /* prettier-ignore */ Object.assign(this, Object.keys(attributes).reduce((acc, key) => ({ ...acc, [key]: attributes[key] }), {}) );
-    if(isObject(children) && children.length !== undefined) this.children = [].concat(children);
+    if(isObject(children) && children.length !== undefined)
+      this.children = [].concat(children);
   }
 
   static toArray(...args) {
