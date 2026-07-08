@@ -27,11 +27,9 @@ export const Element = ({ data, opts = {}, ...props }) => {
     transform = transform.concat(rot);
   }
 
-  {
-    let pkg = element.library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
+  let pkg = element.library.get(e => e.tagName == 'package' && e.attributes.name == element.attributes.package);
 
-    if(!value && pkg) value = pkg.name;
-  }
+  if(!value && pkg) value = pkg.name;
   /* if(rot) 
     transform = transform.concat(MakeRotation(rot));*/
 
@@ -59,7 +57,7 @@ export const Element = ({ data, opts = {}, ...props }) => {
     {
       id: `element-${element.name}`,
       class: `element-${element.name}`,
-      'data-path': element.path.toString(' '),
+      'data-path': element.path.join(' '),
       transform,
     },
     [child],

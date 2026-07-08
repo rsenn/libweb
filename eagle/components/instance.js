@@ -43,7 +43,7 @@ export const Instance = ({ data, opts = {}, ...props }) => {
     'g',
     {
       class: `part ${part.name}`,
-      'data-path': part.path.toString(' '),
+      'data-path': part.path.join(' '),
       transform,
     },
     [sym],
