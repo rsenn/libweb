@@ -35,7 +35,7 @@ export const SMD = ({ data, opts = {}, ...props }) => {
     width: dx,
     height: dy,
     'data-layer': `${layer.number} ${layer.name}`,
-    transform,
+    ...(String(transform) ? { transform } : {}),
     style: visible ? {} : { display: 'none' },
   });
 };

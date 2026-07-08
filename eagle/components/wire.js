@@ -40,7 +40,7 @@ export const Wire = ({ data, opts = {}, color, ...props }) => {
     'data-layer': `${layer.number} ${layer.name}`,
     'data-path': data.path.join(' '),
     style: visible ? { ...extraStyle } : { ...extraStyle, display: 'none' },
-    transform,
+    ...(String(transform) ? { transform } : {}),
     ...props,
   });
 };

@@ -30,7 +30,7 @@ export const SchematicSymbol = ({ data, component = Fragment, id, class: classNa
   //log(`SchematicSymbol(${data.name}).render`, children);
 
   return h(component, { id, class: className }, [
-    ...children.filter(({ tagName }) => tagName != 'text').map(data => h(componentIndex[data.tagName], { data, ...props })),
-    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(componentIndex[data.tagName], { data, ...props })),
+    ...children.filter(({ tagName }) => tagName != 'text').map(data => h(componentIndex[data.tagName], { data, opts, ...props })),
+    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(componentIndex[data.tagName], { data, opts, ...props })),
   ]);
 };
