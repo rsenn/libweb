@@ -260,13 +260,11 @@ export class Factory {
   static set(node, factory) {
     let tmp;
 
-    console.log('Factory.set', { node });
 
     if((tmp = proxyFor(node))) node = tmp;
 
     if(!('nodeType' in node) && (tmp = ownerElements(node))) node = tmp;
 
-    console.log('Factory.set', { node });
 
     factories(node, factory);
 
@@ -305,7 +303,6 @@ export class Parser {
 
     const { factory } = this;
 
-    console.log('Parser.parseFromString', { factory });
     const doc = factory['Document'].new(data, factory);
 
     Factory.set(doc, factory);
