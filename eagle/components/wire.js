@@ -1,7 +1,6 @@
 import { ArcTo } from '../../geom.js';
 import { TransformationList } from '../../geom.js';
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass } from '../renderUtils.js';
 import { log } from '../renderUtils.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
@@ -10,10 +9,7 @@ import { useTrkl } from '../renderUtils.js';
 const RoundToMil = n => Math.round(n * 1000) / 1000;
 
 export const Wire = ({ data, opts = {}, color, ...props }) => {
-  const wire =
-    useValue(async function* () {
-      for await(const change of data.repeater) yield change;
-    }) || data;
+  const wire = data;
 
   const { transform = new TransformationList() } = opts;
   const { width, curve = '', x1, y1, x2, y2 } = (transform ? MakeCoordTransformer(transform) : i => i)(wire);

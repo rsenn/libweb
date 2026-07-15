@@ -1,6 +1,5 @@
 import { TransformationList } from '../../geom/transformation.js';
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass } from '../renderUtils.js';
 import { log } from '../renderUtils.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
@@ -9,14 +8,7 @@ import { useTrkl } from '../renderUtils.js';
 export const SMD = ({ data, opts = {}, ...props }) => {
   log('SMD.render ', { data, opts });
 
-  let smd =
-    useValue(async function* () {
-      // log('data.repeater:', data.repeater);
-      for await(let change of data.repeater) {
-        // log('change:', change);
-        yield change;
-      }
-    }) || data;
+  let smd = data;
 
   let { labelText, transform = new TransformationList() } = opts;
 

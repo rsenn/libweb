@@ -2,7 +2,6 @@ import { Point } from '../../geom.js';
 import { PointList } from '../../geom.js';
 import { TransformationList } from '../../geom.js';
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass } from '../renderUtils.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
 import { useTrkl } from '../renderUtils.js';
@@ -10,13 +9,7 @@ import { useTrkl } from '../renderUtils.js';
 export const Polygon = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  let polygon =
-    useValue(async function* () {
-      for await(let change of data.repeater) {
-        //     log('change:', change);
-        yield change;
-      }
-    }) || data;
+  let polygon = data;
 
   //log('Polygon.render ', { polygon, opts });
   let { transform = new TransformationList() } = opts;

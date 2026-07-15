@@ -1,5 +1,4 @@
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { log } from '../renderUtils.js';
 import { useTransform } from '../renderUtils.js';
 import { Instance } from './instance.js';
@@ -8,12 +7,7 @@ export const Sheet = ({ data, opts = {}, ...props }) => {
   let [transformation, transform, accumulate] = useTransform(opts);
 
   log('Sheet.render', { transformation, data });
-  let sheet =
-    useValue(async function* () {
-      for await(let change of data.repeater) {
-        yield change;
-      }
-    }) || data;
+  let sheet = data;
 
   return h(
     'g',

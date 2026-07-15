@@ -1,7 +1,6 @@
 import { TransformationList } from '../../geom/transformation.js';
 import { roundTo } from '../../misc.js';
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { Alignment } from '../renderUtils.js';
 import { AlignmentAttrs } from '../renderUtils.js';
 import { HORIZONTAL } from '../renderUtils.js';
@@ -14,13 +13,7 @@ import { VERTICAL } from '../renderUtils.js';
 export const Via = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
   log('Via.render ', { transformation, data, opts });
-  let via =
-    useValue(async function* () {
-      for await(let change of data.repeater) {
-        //  log('Via.render:', change);
-        yield change;
-      }
-    }) || data;
+  let via = data;
 
   let coordFn = opts.transform ? MakeCoordTransformer(opts.transform) : i => i;
   let { name, drill, diameter, shape } = via;

@@ -3,7 +3,6 @@ import { useTrkl } from '../../hooks/useTrkl.js';
 import { define } from '../../misc.js';
 import { h } from '../../preact.js';
 import { useRef } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { log } from '../renderUtils.js';
 import { useAttributes } from '../renderUtils.js';
 

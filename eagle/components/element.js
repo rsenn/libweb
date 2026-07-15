@@ -1,7 +1,6 @@
 import { ValueToNumber } from '../../eda/colorCoding.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { log } from '../renderUtils.js';
 import { MakeRotation } from '../renderUtils.js';
 import { Package } from './package.js';
@@ -9,10 +8,7 @@ import { Package } from './package.js';
 export const Element = ({ data, opts = {}, ...props }) => {
   const { transformation = new TransformationList() } = opts;
 
-  const element =
-    useValue(async function* () {
-      for await(let change of data.repeater) yield change;
-    }) || data;
+  const element = data;
 
   let { x, y, rot, library, name, value } = element;
 

@@ -1,7 +1,6 @@
 import { TransformationList } from '../../geom.js';
 import { roundTo } from '../../misc.js';
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { Alignment } from '../renderUtils.js';
 import { AlignmentAttrs } from '../renderUtils.js';
 import { HORIZONTAL } from '../renderUtils.js';
@@ -17,10 +16,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
 
   let { transformation = new TransformationList() } = opts;
 
-  let pad =
-    useValue(async function* () {
-      for await(let change of data.repeater) yield change;
-    }) || data;
+  let pad = data;
 
   const coordFn = opts.transform ? MakeCoordTransformer(opts.transform) : i => i;
 

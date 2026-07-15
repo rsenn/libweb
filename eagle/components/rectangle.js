@@ -1,7 +1,6 @@
 import { Rect } from '../../geom/rect.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { h } from '../../preact.js';
-import { useValue } from '../../repeater/react-hooks.js';
 import { ElementToClass } from '../renderUtils.js';
 import { log } from '../renderUtils.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
@@ -9,10 +8,7 @@ import { MakeRotation } from '../renderUtils.js';
 import { useTrkl } from '../renderUtils.js';
 
 export const Rectangle = ({ data, opts = {}, ...props }) => {
-  let rectangle =
-    useValue(async function* () {
-      for await(let change of data.repeater) yield change;
-    }) || data;
+  let rectangle = data;
 
   log('Rectangle.render ', { rectangle, opts });
 
