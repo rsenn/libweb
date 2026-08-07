@@ -910,17 +910,17 @@ function render(vnode, parentDom, replaceNode) {
   var oldVNode = isHydrating ? null : (replaceNode && replaceNode.__k) || parentDom.__k;
   vnode = createElement(Fragment, null, [vnode]);
   var commitQueue = [];
+  (isHydrating ? parentDom : replaceNode || parentDom).__k = vnode;
   diff(
     parentDom,
-    ((isHydrating ? parentDom : replaceNode || parentDom).__k =
-      (vnode,
-      oldVNode || EMPTY_OBJ,
-      EMPTY_OBJ,
-      parentDom.ownerSVGElement !== undefined,
-      replaceNode && !isHydrating ? [replaceNode] : oldVNode ? null : parentDom.childNodes.length ? EMPTY_ARR.slice.call(parentDom.childNodes) : null,
-      commitQueue,
-      replaceNode || EMPTY_OBJ,
-      isHydrating)),
+    vnode,
+    oldVNode || EMPTY_OBJ,
+    EMPTY_OBJ,
+    parentDom.ownerSVGElement !== undefined,
+    replaceNode && !isHydrating ? [replaceNode] : oldVNode ? null : parentDom.childNodes.length ? EMPTY_ARR.slice.call(parentDom.childNodes) : null,
+    commitQueue,
+    replaceNode || EMPTY_OBJ,
+    isHydrating,
   );
   commitRoot(commitQueue, vnode);
 }
