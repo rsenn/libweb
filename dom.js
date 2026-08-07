@@ -650,7 +650,7 @@ export class Node extends Interface {
     return isObject(instance) && 'nodeType' in instance;
   }
 
-  [Symbol.inspect]() {
+  [inspectSymbol]() {
     return `\x1b[1;31m${className(this) || 'Node'}\x1b[0m`;
   }
 
@@ -993,7 +993,7 @@ extend(
       for(const key of keys) {
         const part = obj[key];
 
-        let s = part[Symbol.inspect]?.(0, {}) ?? '';
+        let s = part[inspectSymbol]?.(0, {}) ?? '';
 
         const pos = s.indexOf('Attr');
         if(pos != -1) s = s.slice(pos + 4);
@@ -1033,7 +1033,7 @@ extend(
     getNamedItem(name) {
       return Node.raw(this)[name];
       },
-    [Symbol.inspect]() {
+    [inspectSymbol]() {
       return NamedNodeMap.inspect(this);
     },
   }),
@@ -1323,7 +1323,7 @@ extend(
 extend(
   Element.prototype,
   nonenumerable({
-    [Symbol.inspect](depth, opts) {
+    [inspectSymbol](depth, opts) {
       const { tagName, attributes, children } = this;
       const { length } = children ?? [];
       let str = `<${tagName}`;
@@ -1339,7 +1339,7 @@ extend(
               str += `\n... ${length - opts.maxArrayLength} more children ...`;
               break;
             }
-            str += ('\n' + child[Symbol.inspect](depth + 1, opts)).replaceAll('\n', '\n  ');
+            str += ('\n' + child[inspectSymbol](depth + 1, opts)).replaceAll('\n', '\n  ');
           }
           str += '\n';
         } else {
@@ -1526,7 +1526,7 @@ export class Document extends Element {
     return this.querySelector('frameset') ?? this.querySelector('body');
   }
 
-  [Symbol.inspect](depth, opts) {
+  [inspectSymbol](depth, opts) {
     return `\x1b[1;31m${className(this) || 'Document'}\x1b[0m`;
   }
 
@@ -1586,7 +1586,7 @@ export class Attr extends Node {
     fn(value);
   }
 
-  [Symbol.inspect]() {
+  [inspectSymbol]() {
     const [fn, name] = Node.raw(this);
     return `\x1b[1;31m${className(this) || 'Attr'}\x1b[0m { \x1b[1;35m${name}\x1b[1;34m=${quote(fn(), '"')}\x1b[0m }`;
   }
@@ -1663,7 +1663,7 @@ export class Text extends CharacterData {
     return this.data;
   }
 
-  [Symbol.inspect](depth, opts) {
+  [inspectSymbol](depth, opts) {
     return `\x1b[1;31m${className(this) || 'Text'}\x1b[0m \x1b[38;2;192;2550m${quote(this.data, "'")}\x1b[0m`;
   }
 
@@ -1718,7 +1718,7 @@ export class Comment extends CharacterData {
     return Tag(this)(value => value);
   }
 
-  [Symbol.inspect](depth, opts) {
+  [inspectSymbol](depth, opts) {
     return `\x1b[38;5;236m${className(this) || 'Comment'} \x1b[38;2;184;0;234m${this.data}\x1b[0m`;
   }
 
@@ -1826,7 +1826,7 @@ export class TokenList {
     });
   }
 
-  [Symbol.inspect](depth, opts) {
+  [inspectSymbol](depth, opts) {
     return `\x1b[1;31m${className(this) || 'TokenList'}\x1b[0m [` + [...this].join(',') + ']';
   }
 
@@ -1959,7 +1959,7 @@ export class CSSStyleDeclaration {
     Node.raw(this)(formatStyle((styleImpl(this).styles = parseStyle(value))));
   }
 
-  [Symbol.inspect](depth, opts) {
+  [inspectSymbol](depth, opts) {
     const { compact } = opts;
     const multiline = compact !== true && (compact === false || (!isBool(compact) && depth - 1 > compact));
     const spacing = multiline ? '\n' : ' ',
