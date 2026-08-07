@@ -11,8 +11,14 @@ import { Prototypes } from './dom.js';
 import { declare } from './misc.js';
 import { define } from './misc.js';
 import { properties } from './misc.js';
+import { Palette } from './eagle/common.js';
+import { RGBA } from './color/rgba.js';
+import trkl from './trkl.js';
 
 export * from './dom.js';
+
+const LAYER_REF_BY_TAG = { pad: 'Pads', via: 'Vias', hole: 'Holes' };
+const VISIBLE_HANDLERS = new WeakMap();
 
 function FindChild(element, name) {
   return element.children[Node.raw(element).children.findIndex(e => e.tagName == name)];
@@ -74,6 +80,16 @@ export class EagleDocument extends Document {
   /* prettier-ignore */ get library() { return this.eagle.drawing.library; }
   /* prettier-ignore */ get layers() { return this.eagle.drawing.layers; }
   /* prettier-ignore */ get type() { return this.eagle.drawing.type; }
+
+  get palette() {
+    let p = this._palette;
+    if(!p) p = this._palette = Palette[this.type == 'board' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b));
+    return p;
+  }
+
+  getLayer(ref) {
+    return ref == null || ref === '' ? undefined : this.layers[ref];
+  }
 }
 
 export class EagleElement extends Element {
@@ -94,6 +110,15 @@ export class EagleElement extends Element {
   }
 
   /* prettier-ignore */ get drawing() { return this.ownerDocument.querySelector('drawing'); }
+
+  getLayer() {
+    const ref = LAYER_REF_BY_TAG[this.tagName] ?? this.getAttribute('layer');
+    return this.ownerDocument.getLayer(ref);
+  }
+
+  getColor() {
+    return this.getLayer()?.getColor() ?? this.ownerDocument.palette[16];
+  }
 }
 
 /*
@@ -142,8 +167,30 @@ export class LayerElement extends EagleElement {
   /* prettier-ignore */ get number() { return +this.getAttribute('number'); }
   /* prettier-ignore */ get color() { return +this.getAttribute('color'); }
   /* prettier-ignore */ get fill() { return +this.getAttribute('fill'); }
-  /* prettier-ignore */ get visible() { return this.getAttribute('visible') == 'yes'; }
+  /* prettier-ignore */ get visible() { return this.handlers.visible() == 'yes'; }
+  /* prettier-ignore */ set visible(v) { this.handlers.visible(v ? 'yes' : 'no'); }
   /* prettier-ignore */ get active() { return this.getAttribute('active') == 'yes'; }
+
+  getLayer() {
+    return this;
+  }
+
+  getColor() {
+    return this.ownerDocument.palette[this.color];
+  }
+
+  get handlers() {
+    let h = VISIBLE_HANDLERS.get(this);
+    if(!h) {
+      const visible = trkl(this.getAttribute('visible') ?? 'yes');
+      visible.subscribe(v => {
+        if(this.getAttribute('visible') !== v) this.setAttribute('visible', v);
+      });
+      h = { visible };
+      VISIBLE_HANDLERS.set(this, h);
+    }
+    return h;
+  }
 }
 
 export class DescriptionElement extends EagleElement {}
