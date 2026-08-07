@@ -432,13 +432,13 @@ export class Interface {
   }
 
   get firstChild() {
-    if(this.hasChildNodes()) return GetNode(Node.raw(this).children[0], this);
+    if(this.hasChildNodes()) return GetNode(Node.raw(this).children[0], this.childNodes);
   }
 
   get lastChild() {
     if(this.hasChildNodes()) {
       const { children } = Node.raw(this);
-      return GetNode(children[children.length - 1], this);
+      return GetNode(children[children.length - 1], this.childNodes);
     }
   }
 
@@ -478,9 +478,12 @@ export class Interface {
     parentNodes(node)?.removeChild(node);
 
     const raw = Node.raw(node);
-    const { children } = Node.raw(this);
+    const self = Node.raw(this);
+    const children = (self.children ??= []);
 
     if(isInstanceOf(Text, node)) textValues(this, Text.own(this, children.length));
+
+    const previousSibling = children.length > 0 ? GetNode(children[children.length - 1], this.childNodes) : null;
 
     children.push(raw);
 
@@ -489,13 +492,15 @@ export class Interface {
 
     parentNodes(node, this);
 
+    MutationObserver.eventFor(this, MutationRecord.childList(this, { addedNodes: [node], previousSibling }));
+
     return node;
   }
 
   insertBefore(node, ref) {
     parentNodes(node)?.removeChild(node);
 
-    const { children } = Node.raw(this);
+    const children = (Node.raw(this).children ??= []);
     const old = isNode(node) ? Node.raw(node) : node,
       before = isNode(ref) ? Node.raw(ref) : ref;
     let index = children.indexOf(before);
@@ -509,16 +514,22 @@ export class Interface {
 
     parentNodes(node, this);
 
+    MutationObserver.eventFor(this, MutationRecord.childList(this, { addedNodes: [node], nextSibling: ref ?? null, previousSibling: index > 0 ? GetNode(children[index - 1], this.childNodes) : null }));
+
     return node;
   }
 
   removeChild(node) {
-    const { children } = Node.raw(this);
+    const children = (Node.raw(this).children ??= []);
     let index = children.indexOf(isNode(node) ? Node.raw(node) : node);
     if(index == -1) throw new Error(`Node.removeChild no such child!`);
+    const previousSibling = index > 0 ? GetNode(children[index - 1], this.childNodes) : null;
+    const nextSibling = index + 1 < children.length ? GetNode(children[index + 1], this.childNodes) : null;
     children.splice(index, 1);
 
     parentNodes(node, null);
+
+    MutationObserver.eventFor(this, MutationRecord.childList(this, { removedNodes: [node], nextSibling, previousSibling }));
 
     return node;
   }
@@ -526,7 +537,7 @@ export class Interface {
   replaceChild(newChild, oldChild) {
     parentNodes(newChild)?.removeChild(newChild);
 
-    const { children } = Node.raw(this);
+    const children = (Node.raw(this).children ??= []);
     const old = Node.raw(oldChild),
       node = Node.raw(newChild);
     const idx = children.indexOf(old);
@@ -541,6 +552,8 @@ export class Interface {
     ownerElements(this.childNodes, this);
 
     parentNodes(node, this);
+
+    MutationObserver.eventFor(this, MutationRecord.childList(this, { addedNodes: [newChild], removedNodes: [oldChild] }));
 
     return oldChild;
   }
@@ -1239,7 +1252,13 @@ export class Element extends Node {
   }
 
   removeAttribute(name) {
-    return delete Node.raw(this).attributes[name];
+    const raw = Node.raw(this);
+    const oldValue = raw.attributes[name];
+    const ret = delete raw.attributes[name];
+
+    MutationObserver.eventFor(this, MutationRecord.attribute(name, null, this, oldValue));
+
+    return ret;
   }
 
   getAttributeNode(name) {
@@ -1257,9 +1276,7 @@ export class Element extends Node {
 
     raw.attributes[name] = value;
 
-    try {
-      MutationObserver.eventFor(this, MutationRecord.attribute(name, null, this, oldValue));
-    } catch(e) {}
+    MutationObserver.eventFor(this, MutationRecord.attribute(name, null, this, oldValue));
   }
 
   get innerText() {
@@ -1602,6 +1619,17 @@ extend(
 
 //const charData = gettersetter(new WeakMap());
 
+function setCharacterData(node, value) {
+  const oldValue = textValues(node)();
+
+  if(oldValue !== value) {
+    textValues(node)(value);
+    MutationObserver.eventFor(node, MutationRecord.characterData(node, oldValue));
+  }
+
+  return value;
+}
+
 export class CharacterData extends Node {
   constructor(gs, owner) {
     super(null, owner);
@@ -1614,28 +1642,28 @@ export class CharacterData extends Node {
   }
 
   set data(v) {
-    textValues(this)(v);
+    setCharacterData(this, v);
   }
 
   appendData(data) {
     const s = textValues(this)() + data;
-    textValues(this)(s);
+    setCharacterData(this, s);
     return s;
   }
 
   deleteData(offset, count) {
     const s = textValues(this)();
-    textValues(this)(s.slice(0, offset) + s.slice(offset + count));
+    setCharacterData(this, s.slice(0, offset) + s.slice(offset + count));
   }
 
   insertData(offset, data) {
     const s = textValues(this)();
-    textValues(this)(s.slice(0, offset) + data + s.slice(offset));
+    setCharacterData(this, s.slice(0, offset) + data + s.slice(offset));
   }
 
   replaceData(offset, count, data) {
     const s = textValues(this)();
-    textValues(this)(s.slice(0, offset) + data + s.slice(offset + count));
+    setCharacterData(this, s.slice(0, offset) + data + s.slice(offset + count));
   }
 }
 
@@ -1680,6 +1708,9 @@ extend(
     [Symbol.toStringTag]: 'Text',
     get data() {
       return textValues(this)?.();
+    },
+    set data(v) {
+      setCharacterData(this, v);
     },
     get nodeValue() {
       return textValues(this)?.();
@@ -2111,12 +2142,13 @@ function MakeCache2(ctor, store = new WeakMap()) {
 }
 
 export class MutationRecord {
-  addedNodes = new NodeList();
-  removedNodes = new NodeList();
+  addedNodes = [];
+  removedNodes = [];
   attributeName = null;
   attributeNamespace = null;
   nextSibling = null;
   previousSibling = null;
+  oldValue = null;
 
   constructor(opts = {}) {
     define(this, opts);
@@ -2130,8 +2162,8 @@ export class MutationRecord {
     return new MutationRecord({ type: 'characterData', target, oldValue });
   }
 
-  static childList(target, nextSibling, previousSibling) {
-    return new MutationRecord({ type: 'childList', target, nextSibling, previousSibling });
+  static childList(target, { addedNodes = [], removedNodes = [], nextSibling = null, previousSibling = null } = {}) {
+    return new MutationRecord({ type: 'childList', target, addedNodes, removedNodes, nextSibling, previousSibling });
   }
 }
 
@@ -2141,23 +2173,34 @@ export class MutationObserver {
   #callback;
   static #observe = weakMapper(() => new Array(), new WeakMap());
   #targets = new Set();
+  #queue = [];
+  #scheduled = false;
 
   static observationsFor(target) {
-    return MutationObserver.#observe.get(target);
+    return MutationObserver.#observe.get(target) ?? [];
   }
 
   static eventFor(target, ...records) {
     const recordsFor = weakMapper(() => new Array(), new Map());
 
-    for(let { observer, ...options } of this.observationsFor(target)) {
-      for(let record of records) {
-        if(options[{ attribute: 'attributes' }[record.type] ?? record.type]) recordsFor(observer).push(record);
+    for(let node = target; node; node = Node.parent(node)) {
+      for(let { observer, ...options } of this.observationsFor(node)) {
+        if(node !== target && !options.subtree) continue;
+
+        for(let record of records) {
+          const key = { attribute: 'attributes' }[record.type] ?? record.type;
+
+          if(!options[key]) continue;
+          if(record.type == 'attribute' && Array.isArray(options.attributeFilter) && !options.attributeFilter.includes(record.attributeName)) continue;
+
+          const deliver = record.type == 'attribute' && !options.attributeOldValue ? new MutationRecord({ ...record, oldValue: null }) : record.type == 'characterData' && !options.characterDataOldValue ? new MutationRecord({ ...record, oldValue: null }) : record;
+
+          recordsFor(observer).push(deliver);
+        }
       }
     }
 
-    for(let [observer, records] of recordsFor.map) {
-      observer.event(...records);
-    }
+    for(let [observer, records] of recordsFor.map) observer.event(...records);
   }
 
   constructor(callback) {
@@ -2165,23 +2208,61 @@ export class MutationObserver {
   }
 
   observe(target, options = {}) {
-    let { subtree = false, childList = false, attributes, attributeFilter, attributeOldValue, characterData, characterDataOldValue = false } = options;
+    let { subtree = false, childList = false, attributes, attributeFilter, attributeOldValue, characterData, characterDataOldValue } = options;
 
     if(attributes === undefined) attributes = isObject(attributeFilter) || attributeOldValue !== undefined;
     if(characterData === undefined) characterData = characterDataOldValue !== undefined;
 
-    MutationObserver.#observe(target).push({ observer: this, subtree, childList, attributes, attributeFilter, attributeOldValue, characterData, characterDataOldValue });
+    if(!(childList || attributes || characterData)) throw new TypeError(`MutationObserver.observe(): one of 'childList', 'attributes', or 'characterData' must be true`);
+    if(attributes === false && (attributeOldValue !== undefined || attributeFilter !== undefined)) throw new TypeError(`MutationObserver.observe(): 'attributeOldValue'/'attributeFilter' require 'attributes'`);
+    if(characterData === false && characterDataOldValue !== undefined) throw new TypeError(`MutationObserver.observe(): 'characterDataOldValue' requires 'characterData'`);
+
+    const observations = MutationObserver.#observe(target);
+    const existing = observations.findIndex(o => o.observer === this);
+
+    if(existing != -1) observations.splice(existing, 1);
+
+    observations.push({ observer: this, subtree, childList, attributes, attributeFilter, attributeOldValue: !!attributeOldValue, characterData, characterDataOldValue: !!characterDataOldValue });
     this.#targets.add(target);
   }
 
   disconnect() {
     for(const target of this.#targets) {
-      const observers = this.#observe(target);
+      const observations = MutationObserver.#observe.get(target);
+
+      if(observations) {
+        const index = observations.findIndex(o => o.observer === this);
+
+        if(index != -1) observations.splice(index, 1);
+      }
     }
+
+    this.#targets.clear();
+    this.#queue = [];
   }
 
-  event(...args) {
-    return this.#callback(args, this);
+  takeRecords() {
+    const records = this.#queue;
+    this.#queue = [];
+    return records;
+  }
+
+  event(...records) {
+    if(!records.length) return;
+
+    this.#queue.push(...records);
+
+    if(!this.#scheduled) {
+      this.#scheduled = true;
+
+      queueMicrotask(() => {
+        this.#scheduled = false;
+
+        const records = this.takeRecords();
+
+        if(records.length) this.#callback(records, this);
+      });
+    }
   }
 }
 
