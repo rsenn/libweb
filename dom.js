@@ -925,9 +925,9 @@ export function NamedMap(node, get, keys) {
       ? (target, prop, receiver) => {
           if(prop == 'length') return keys().filter(isPropertyKey).length;
 
-          if(prop==Symbol.iterator) 
+          if(prop==Symbol.iterator)
 return function*() {
-      for(let i = 0; this[i]; i++) yield this[i];
+      for(const key of keys().filter(isPropertyKey)) yield this[key];
     }
 
           if(isNumeric(prop)) {
