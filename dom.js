@@ -363,8 +363,11 @@ export class Interface {
     if(this.nodeType == TEXT_NODE) return this.nodeValue;
 
     const texts = [];
-
-    for(const value of iterate(Node.raw(this), undefined, RETURN_VALUE | FILTER_KEY_OF | FILTER_NEGATE, TYPE_STRING, ['attributes', 'tagName'])) texts.push(value.replace(/<s+/g, ' '));
+    const walk = node => {
+      if(typeof node == 'string') texts.push(node.replace(/\s+/g, ' '));
+      else if(node && typeof node == 'object' && Array.isArray(node.children)) for(const child of node.children) walk(child);
+    };
+    walk(Node.raw(this));
 
     return decodeHTMLEntities(texts.join(' '));
   }
