@@ -1,8 +1,9 @@
-import Emitter from '../../quickjs/qjs-modules/lib/events.js';
+import { EventEmitter } from '../../quickjs/qjs-modules/lib/events.js';
 import { tryCatch } from '../misc.js';
+import { Repeater } from '../repeater/repeater.js';
 
 export function EventIterator(events, target = tryCatch(() => window)) {
-  let emitter = new Emitter(target);
+  let emitter = new EventEmitter(target);
   if(typeof events == 'string') events = EventIterator[events + 'Events'] || events.split(/,/g);
 
   let iter = new Repeater(async (push, stop) => {
