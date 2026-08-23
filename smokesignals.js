@@ -71,7 +71,7 @@ smokesignals = {
       //loop through all handlers for this event name and call them all
       //it would be more efficient to stash the length and compare i
       //to that, but that is longer so we'll go with this.
-      for(let list = handlers[eventName], i = 0; list && list[i]; ) {
+      for(let list = handlers[eventName], i = 0; list && list[i];) {
         list[i++].apply(obj, list.slice.call(arguments, 1));
       }
       return obj;

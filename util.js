@@ -1742,7 +1742,7 @@ Util.not = fn =>
   function(...args) {
     return !fn(...args);
   };
-Util.isAsync = fn => typeof fn == 'function' && /^[\n]*async/.test(fn + '') /*|| fn() instanceof Promise*/;
+Util.isAsync = fn => typeof fn == 'function' && /^[\n]*async/.test(fn + ''); /*|| fn() instanceof Promise*/
 
 Util.isArrowFunction = fn => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
@@ -4270,7 +4270,7 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   const tokens = str.split(/\s/g);
   let lines = [];
   let line = tokens.shift();
-  for(; tokens.length; ) {
+  for(; tokens.length;) {
     if((line.length ? line.length + 1 : 0) + tokens[0].length > max_linelen) {
       lines.push(line);
       line = '';

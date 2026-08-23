@@ -688,7 +688,7 @@ function componentHex(component) {
   return hex.length === 1 ? '0' + hex : hex;
 }
 function is(object, space) {
-  for(let i = space.length; i--; ) {
+  for(let i = space.length; i--;) {
     if(object[space[i]] == null) {
       return false;
     }
@@ -2651,7 +2651,7 @@ class Dom extends EventTarget {
     well.innerHTML = xmlOrFn;
 
     // Transplant nodes into the fragment
-    for(let len = well.children.length; len--; ) {
+    for(let len = well.children.length; len--;) {
       fragment.appendChild(well.firstElementChild);
     }
     const parent = this.parent();
@@ -3543,7 +3543,7 @@ class PointArray extends SVGArray {
     if(!Matrix.isMatrixLike(m)) {
       m = new Matrix(m);
     }
-    for(let i = this.length; i--; ) {
+    for(let i = this.length; i--;) {
       // Perform the matrix multiplication
       const [x, y] = this[i];
       this[i][0] = m.a * x + m.c * y + m.e;
@@ -5035,7 +5035,7 @@ class Timeline extends EventTarget {
     // runner always wins the reset even if the other runner started earlier
     // and therefore should win the attribute battle
     // this can be solved by resetting them backwards
-    for(let k = this._runners.length; k--; ) {
+    for(let k = this._runners.length; k--;) {
       // Get and run the current runner and ignore it if its inactive
       const runnerInfo = this._runners[k];
       const runner = runnerInfo.runner;
