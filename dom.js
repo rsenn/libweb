@@ -260,11 +260,9 @@ export class Factory {
   static set(node, factory) {
     let tmp;
 
-
     if((tmp = proxyFor(node))) node = tmp;
 
     if(!('nodeType' in node) && (tmp = ownerElements(node))) node = tmp;
-
 
     factories(node, factory);
 
@@ -517,7 +515,10 @@ export class Interface {
 
     parentNodes(node, this);
 
-    MutationObserver.eventFor(this, MutationRecord.childList(this, { addedNodes: [node], nextSibling: ref ?? null, previousSibling: index > 0 ? GetNode(children[index - 1], this.childNodes) : null }));
+    MutationObserver.eventFor(
+      this,
+      MutationRecord.childList(this, { addedNodes: [node], nextSibling: ref ?? null, previousSibling: index > 0 ? GetNode(children[index - 1], this.childNodes) : null }),
+    );
 
     return node;
   }
@@ -941,12 +942,21 @@ export function NamedMap(node, get, keys) {
       ? (target, prop, receiver) => {
           if(prop == 'length') return keys().filter(isPropertyKey).length;
 
-          if(prop==Symbol.iterator)
-return function*() {
-      for(const key of keys().filter(isPropertyKey)) yield this[key];
-    }
+          if(prop == Symbol.iterator)
+            return function* () {
+              for(const key of keys().filter(isPropertyKey)) yield this[key];
+            };
 
           if(isNumeric(prop)) {
+            /* A literal name match (e.g. a pad literally named "1") takes priority
+             * over treating the numeric-looking prop as a positional index into
+             * keys() - otherwise a name that collides with another entry's index
+             * (e.g. pads "1","2" in that document order: "1" is keys()[0], but
+             * looking it up as an index would resolve to keys()[1] == "2" instead)
+             * silently returns the wrong entry. */
+            let tmp = get(prop);
+            if(tmp) return tmp;
+
             const a = keys();
             if(prop >= 0 && prop < a.length) prop = a[+prop];
           }
@@ -1048,7 +1058,7 @@ extend(
     },
     getNamedItem(name) {
       return Node.raw(this)[name];
-      },
+    },
     [inspectSymbol]() {
       return NamedNodeMap.inspect(this);
     },
@@ -2196,7 +2206,12 @@ export class MutationObserver {
           if(!options[key]) continue;
           if(record.type == 'attribute' && Array.isArray(options.attributeFilter) && !options.attributeFilter.includes(record.attributeName)) continue;
 
-          const deliver = record.type == 'attribute' && !options.attributeOldValue ? new MutationRecord({ ...record, oldValue: null }) : record.type == 'characterData' && !options.characterDataOldValue ? new MutationRecord({ ...record, oldValue: null }) : record;
+          const deliver =
+            record.type == 'attribute' && !options.attributeOldValue
+              ? new MutationRecord({ ...record, oldValue: null })
+              : record.type == 'characterData' && !options.characterDataOldValue
+                ? new MutationRecord({ ...record, oldValue: null })
+                : record;
 
           recordsFor(observer).push(deliver);
         }
@@ -2217,7 +2232,8 @@ export class MutationObserver {
     if(characterData === undefined) characterData = characterDataOldValue !== undefined;
 
     if(!(childList || attributes || characterData)) throw new TypeError(`MutationObserver.observe(): one of 'childList', 'attributes', or 'characterData' must be true`);
-    if(attributes === false && (attributeOldValue !== undefined || attributeFilter !== undefined)) throw new TypeError(`MutationObserver.observe(): 'attributeOldValue'/'attributeFilter' require 'attributes'`);
+    if(attributes === false && (attributeOldValue !== undefined || attributeFilter !== undefined))
+      throw new TypeError(`MutationObserver.observe(): 'attributeOldValue'/'attributeFilter' require 'attributes'`);
     if(characterData === false && characterDataOldValue !== undefined) throw new TypeError(`MutationObserver.observe(): 'characterDataOldValue' requires 'characterData'`);
 
     const observations = MutationObserver.#observe(target);
