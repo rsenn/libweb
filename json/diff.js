@@ -111,7 +111,7 @@ export function arrayDiff(a, b) {
   let typeB = whatis(b);
   let list = [];
   if(typeA !== 'array' || typeB !== 'array') {
-    log('ERROR: top level types should be array');
+    console.error('ERROR: top level types should be array');
     return null;
   }
   let cc = makeLCSArray2(a, b);
@@ -163,7 +163,7 @@ export function objectDiff(a, b) {
   let list = [];
 
   if(typeA !== typeB) {
-    log('ERROR: top level types should be the same: had ' + typeA + ' and ' + typeB);
+    console.error('ERROR: top level types should be the same: had ' + typeA + ' and ' + typeB);
     return null;
   }
 
@@ -265,21 +265,21 @@ function printDiff(a, topType) {
                o.action === 'remove' ? '-' : ' ';
       if(o.type === 'object' || o.type === 'array') {
         var del = o.type === 'object' ? ['{', '}'] : ['[', ']'];
-        log(ch + indent() + (k ? o.key + ': ' : '') + del[0]);
+        console.log(ch + indent() + (k ? o.key + ': ' : '') + del[0]);
         ind++;
         recurs(o.diff, o.type === 'object');
         ind--;
-        log(ch + indent() + del[1] + comma());
+        console.log(ch + indent() + del[1] + comma());
       } else {
-        log(ch + indent() + (k ? o.key + ': ' : '') +
+        console.log(ch + indent() + (k ? o.key + ': ' : '') +
           JSON.stringify(o.value) + comma());
       }
     }
   }
 
-  log(topType === 'object' ? '{' : '[');
+  console.log(topType === 'object' ? '{' : '[');
   recurs(a, topType === 'object');
-  log(topType === 'object' ? '}' : ']');
+  console.log(topType === 'object' ? '}' : ']');
 }
 
 */
@@ -294,7 +294,7 @@ var exit = process.exit;
 var ins = util.inspect;
 
 if(process.argv.length !== 4) {
-  log('Usage: ' + process.argv[1] + ' <jsonfile1> <jsonfile2>');
+  console.log('Usage: ' + process.argv[1] + ' <jsonfile1> <jsonfile2>');
   exit(1);
 }
 
@@ -302,7 +302,7 @@ try {
   var left = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
   var right = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
 } catch(err) {
-  log('ERROR: while reading input files: ' + err.message);
+  console.error('ERROR: while reading input files: ' + err.message);
   exit(2);
 }
 

@@ -1,18 +1,6 @@
 import { spawn } from 'child_process';
-import { assert } from 'util';
-import { define } from 'util';
-import { escape } from 'util';
-import { nonenumerable } from 'util';
-import { types } from 'util';
-import { unescape } from 'util';
-import { absolute } from './path.js';
-import { basename } from './path.js';
-import { basepos } from './path.js';
-import { isAbsolute } from './path.js';
-import { isRelative } from './path.js';
-import { join } from './path.js';
-import { normalize } from './path.js';
-import { relative } from './path.js';
+import { assert, define, escape, nonenumerable, types, unescape } from 'util';
+import { realpath as absolute, basename, isAbsolute, join, normalize, relative } from 'path';
 //import inspect from 'inspect';
 
 export function PathTransformer(dir) {
@@ -22,7 +10,7 @@ export function PathTransformer(dir) {
 
   return {
     relative: p => (isAbsolute(p) ? relative(dir, p) : p),
-    absolute: p => (isRelative(p) ? join(dir, p) : p),
+    absolute: p => (!isAbsolute(p) ? join(dir, p) : p),
   };
 }
 
@@ -134,7 +122,6 @@ export class Command {
 
   [Symbol.inspect](depth, options = {}) {
     const name = this[Symbol.toStringTag ?? this.construtor?.name];
-    const bpos = basepos(this.argv[0]);
     let maxLen = os.ttyGetWinSize?.()?.[1] ?? options.maxArrayLength ?? 1024;
 
     const str = this.argv.reduce((s, arg, i) => {
