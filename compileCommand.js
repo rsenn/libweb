@@ -299,6 +299,31 @@ export class CompileCommand extends Command {
 
     return r;
   }
+
+  // --- Static Reducer for Array<CompileCommand> ---
+  static accumulate(acc, cmd) {
+    if (!acc) {
+      acc = { includes: new Set(), defines: new Set(), flags: new Set() };
+    }
+    
+    if (cmd && typeof cmd.toObject === 'function') {
+      const obj = cmd.toObject();
+
+      if (obj.includes) {
+        for (const inc of obj.includes) acc.includes.add(inc);
+      }
+      if (obj.defines) {
+        for (const def of obj.defines) acc.defines.add(def);
+      }
+      if (obj.flags) {
+        for (const flag of obj.flags) {
+          if (flag === '-c' || flag === '-o') continue;
+          acc.flags.add(flag);
+        }
+      }
+    }
+    return acc;
+  }
 }
 
 define(
